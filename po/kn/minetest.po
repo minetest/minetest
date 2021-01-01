@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Kannada (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"PO-Revision-Date: 2021-01-02 07:29+0000\n"
+"Last-Translator: Tejaswi Hegde <tejaswihegde1@gmail.com>\n"
 "Language-Team: Kannada <https://hosted.weblate.org/projects/minetest/"
 "minetest/kn/>\n"
 "Language: kn\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,17 +24,15 @@ msgstr "ನೀನು ಸತ್ತುಹೋದೆ"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "ಸರಿ"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "ಒಂದು ಲುವಾ ಸ್ಕ್ರಿಪ್ಟ್ ನಲ್ಲಿ ತಪ್ಪಾಗಿದೆ, ಉದಾಹರಣೆ ಮಾಡ್‍ನಲ್ಲಿ"
+msgstr "ಒಂದು ಲುವಾ ಸ್ಕ್ರಿಪ್ಟ್ ನಲ್ಲಿ ತಪ್ಪಾಗಿದೆ:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "ಒಂದು ತಪ್ಪಾಗಿದೆ:"
+msgstr "ದೋಷ ವೊಂದು ಸಂಭವಿಸಿದೆ:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -61,17 +59,13 @@ msgid "Server enforces protocol version $1. "
 msgstr "ಸರ್ವರ್ ಪ್ರೋಟೋಕಾಲ್ ಆವೃತ್ತಿ $1 ಅನ್ನು ಜಾರಿಗೊಳಿಸುತ್ತದೆ. "
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
-"ಸರ್ವರ್ $1 ಮತ್ತು $2 ನಡುವೆಯ ಪ್ರೋಟೋಕಾಲ್ \n"
-"ಅವೃತ್ತಿಗಳನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. "
+msgstr "ಸರ್ವರ್ $1 ಮತ್ತು $2 ನಡುವೆಯ ಪ್ರೋಟೋಕಾಲ್ ಅವೃತ್ತಿಗಳನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"ಪಬ್ಲಿಕ್ ಸರ್ವರ್ಲಿಸ್ಟ್ಅನ್ನು ರಿಎನೆಬಲ್ ಮಾಡಿ ಮತ್ತು ಅಂತರ್ಜಾಲ ಸಂಪರ್ಕ \n"
-"ಪರಿಶೀಲಿಸಿ."
+"ಪಬ್ಲಿಕ್ ಸರ್ವರ್ಲಿಸ್ಟ್ಅನ್ನು ರಿಎನೆಬಲ್ ಮಾಡಿ ಮತ್ತು ಅಂತರ್ಜಾಲ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -101,7 +95,7 @@ msgstr "ಎಲ್ಲವನ್ನೂ ನಿಷ್ಕ್ರಿಯೆಗೊಳ�
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "ಮಾಡ್ ಪ್ಯಾಕ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -109,47 +103,43 @@ msgstr "ಎಲ್ಲವನ್ನೂ ಸಕ್ರಿಯಗೊಳಿಸಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "ಮಾಡ್ ಪ್ಯಾಕ್ ಕ್ರಿಯಾತ್ಮಕಗೊಳಿಸಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"\"$1\" ಮಾಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ಅನುಮತಿಸದ ಅಕ್ಷರಗಳನ್ನು ಒಳಗೊಂಡಿದೆ. "
-"ಮಾತ್ರ chararacters [a-z0-9_] ಅನುಮತಿಸಲಾಗಿದೆ."
+"ಅನುಮತಿಸದೇ ಇರುವ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರುವ ುದರಿಂದ mod \"$1\" ಅನ್ನು ಕ್ರಿಯಾತ್ಮಕಗೊಳಿಸಲು"
+" ವಿಫಲವಾಗಿದೆ. ಕೇವಲ ಅಕ್ಷರಗಳನ್ನು [a-z0-9_] ಗೆ ಮಾತ್ರ ಅನುಮತಿಸಲಾಗುತ್ತದೆ."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "ಇನ್ನಷ್ಟು ಮಾಡ್ ಗಳನ್ನು ಹುಡುಕಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "ಮಾಡ್:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+msgstr "(ಐಚ್ಛಿಕ) ಅವಲಂಬನೆಗಳು ಇಲ್ಲ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "ಯಾವುದೇ ಆಟದ ವಿವರಣೆ ಒದಗಿಸಿಲ್ಲ."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+msgstr "ಯಾವುದೇ ಗಟ್ಟಿ ಅವಲಂಬನೆಗಳಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "ಯಾವುದೇ ಮಾಡ್ಪ್ಯಾಕ್ ವಿವರಣೆ ಕೊಟ್ಟಿಲ್ಲ."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+msgstr "ಯಾವುದೇ ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -178,12 +168,11 @@ msgstr "ಮುಖ್ಯ ಮೆನುಗೆ ಹಿಂತಿರುಗಿ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "cURL ಇಲ್ಲದೆ ಮೈನ್ ಟೆಸ್ಟ್ ಅನ್ನು ಕಂಪೈಲ್ ಮಾಡಿದಾಗ ContentDB ಲಭ್ಯವಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
+msgstr "ಡೌನ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -205,7 +194,7 @@ msgstr "ಮಾಡ್‍ಗಳು"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "ಯಾವುದೇ ಪ್ಯಾಕೇಜ್ ಗಳನ್ನು ಪಡೆಯಲಾಗಲಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -229,16 +218,17 @@ msgid "Update"
 msgstr "ನವೀಕರಿಸಿ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "View"
-msgstr ""
+msgstr "ತೋರಿಸು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "\"$1\" ಹೆಸರಿನ ಒಂದು ಪ್ರಪಂಚವು ಈಗಾಗಲೇ ಇದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "ಹೆಚ್ಚುವರಿ ಭೂಪ್ರದೇಶ"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -249,133 +239,150 @@ msgid "Altitude dry"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Biome blending"
-msgstr ""
+msgstr "ಪ್ರದೇಶ ಮಿಶ್ರಣ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Biomes"
-msgstr ""
+msgstr "ಪ್ರದೇಶಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Caverns"
-msgstr ""
+msgstr "ಗುಹೆಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Caves"
-msgstr ""
+msgstr "ಗುಹೆಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Create"
-msgstr ""
+msgstr "ರಚಿಸು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "ಅಲಂಕಾರಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "minetest.net ನಿಂದ ಮೈನ್ಟೆಸ್ಟ್ ಗೇಮ್ ನಂತಹ ಆಟವನ್ನು ಡೌನ್ ಲೋಡ್ ಮಾಡಿ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "minetest.net ಇಂದ ಒಂದನ್ನು ಡೌನ್ ಲೋಡ್ ಮಾಡಿ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Dungeons"
-msgstr ""
+msgstr "ಡಂಗೆನ್ಸ್"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "ಸಮತಟ್ಟಾದ ಭೂಪ್ರದೇಶ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "ಆಕಾಶದಲ್ಲಿ ತೇಲುತ್ತಿರುವ ಭೂಭಾಗಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "ತೇಲುವ ಭೂಮಿಗಳು (ಪ್ರಾಯೋಗಿಕ)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "ಆಟ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "ಫ್ರಾಕ್ಟಲ್ ಅಲ್ಲದ ಭೂಪ್ರದೇಶ ಸೃಷ್ಟಿಸಿ: ಸಾಗರಗಳು ಮತ್ತು ಭೂಗರ್ಭ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "ಬೆಟ್ಟಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Humid rivers"
-msgstr ""
+msgstr "ಆರ್ದ್ರ ನದಿಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "ನದಿಗಳ ಸುತ್ತ ತೇವಾಂಶ ವನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "ಕೆರೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"ಕಡಿಮೆ ಆರ್ದ್ರತೆ ಮತ್ತು ಅಧಿಕ ಶಾಖವು ಆಳವಿಲ್ಲದ ಅಥವಾ ಶುಷ್ಕ ನದಿಗಳನ್ನು ಉಂಟುಮಾಡುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen"
-msgstr ""
+msgstr "ಮ್ಯಾಪ್ಜೆನ್"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen flags"
-msgstr ""
+msgstr "ಮ್ಯಾಪ್ಜೆನ್ ಧ್ವಜಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "ಮ್ಯಾಪ್ಜೆನ್-ನಿರ್ದಿಷ್ಟ ಧ್ವಜಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "ಪರ್ವತಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Mud flow"
-msgstr ""
+msgstr "ಮಣ್ಣಿನ ಹರಿವು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "ಸುರಂಗಗಳು ಮತ್ತು ಗುಹೆಗಳ ಜಾಲ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "ಯಾವುದೇ ಆಟ ಆಯ್ಕೆಯಾಗಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "ಎತ್ತರದಲ್ಲಿ ಶಾಖವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "ಎತ್ತರದಲ್ಲಿ ತೇವಾಂಶವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "ನದಿಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "ಸಮುದ್ರ ಮಟ್ಟದಲ್ಲಿರುವ ನದಿಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "ಬೀಜ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "ಪ್ರದೇಶಗಳ ನಡುವೆ ಸುಗಮವಾದ ಸ್ಥಿತ್ಯಂತರ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
