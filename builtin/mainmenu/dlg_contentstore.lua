@@ -479,7 +479,7 @@ function store.get_formspec(dlgdata)
 
 				local elem_name = "uninstall_" .. i .. ";"
 				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
-				formspec[#formspec + 1] = left_base .. "clear.png;" .. elem_name .. "]"
+				formspec[#formspec + 1] = left_base .. "cdb_clear.png;" .. elem_name .. "]"
 				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") ..
 					" " .. package.title .. tooltip_colors
 			end
