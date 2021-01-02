@@ -1164,7 +1164,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 		// If known by some client, don't delete immediately
 		if (obj->m_known_by_count > 0) {
-			obj->m_pending_removal = true;
+			obj->markForRemoval();
 			return false;
 		}
 
@@ -1792,7 +1792,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Delete static data from block if removed
 		*/
-		if (obj->m_pending_removal)
+		if (obj->isPendingRemoval())
 			deleteStaticFromBlock(obj, id, MOD_REASON_REMOVE_OBJECTS_REMOVE, false);
 
 		// If still known by clients, don't actually remove. On some future
@@ -1803,7 +1803,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Move static data from active to stored if deactivated
 		*/
-		if (!obj->m_pending_removal && obj->m_static_exists) {
+		if (!obj->isPendingRemoval() && obj->m_static_exists) {
 			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if (block) {
 				const auto i = block->m_static_objects.m_active.find(id);
@@ -1991,6 +1991,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		if (!force_delete && obj->m_static_exists &&
 		   !m_active_blocks.contains(obj->m_static_block) &&
 		   m_active_blocks.contains(blockpos_o)) {
+
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 
@@ -2068,6 +2069,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				force_delete = true;
 		}
 
+		// Regardless of what happens to the object at this point, deactivate it first.
+		// This ensures that LuaEntity on_deactivate is always called.
+		obj->markForDeactivation();
+
 		/*
 			If known by some client, set pending deactivation.
 			Otherwise delete it immediately.
@@ -2077,7 +2082,6 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 						  << "object id=" << id << " is known by clients"
 						  << "; not deleting yet" << std::endl;
 
-			obj->m_pending_deactivation = true;
 			return false;
 		}
 

@@ -70,6 +70,10 @@ public:
 	virtual bool environmentDeletes() const
 	{ return true; }
 
+	// Safely mark the object for removal or deactivation
+	void markForRemoval();
+	void markForDeactivation();
+
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(ActiveObjectType type,
 			ServerEnvironment *env, u16 id, v3f pos,
@@ -214,30 +218,14 @@ public:
 	u16 m_known_by_count = 0;
 
 	/*
-		- Whether this object is to be removed when nobody knows about
-		  it anymore.
-		- Removal is delayed to preserve the id for the time during which
-		  it could be confused to some other object by some client.
-		- This is usually set to true by the step() method when the object wants
-		  to be deleted but can be set by anything else too.
-	*/
-	bool m_pending_removal = false;
-
-	/*
-		Same purpose as m_pending_removal but for deactivation.
-		deactvation = save static data in block, remove active object
-
-		If this is set alongside with m_pending_removal, removal takes
-		priority.
-	*/
-	bool m_pending_deactivation = false;
-
-	/*
 		A getter that unifies the above to answer the question:
 		"Can the environment still interact with this object?"
 	*/
 	inline bool isGone() const
 	{ return m_pending_removal || m_pending_deactivation; }
+
+	inline bool isPendingRemoval() const
+	{ return m_pending_removal; }
 
 	/*
 		Whether the object's static data has been stored to a block
@@ -250,12 +238,36 @@ public:
 	v3s16 m_static_block = v3s16(1337,1337,1337);
 
 protected:
+	virtual void onMarkedForDeactivation() {}
+	virtual void onMarkedForRemoval() {}
+
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
+
+	/*
+		Same purpose as m_pending_removal but for deactivation.
+		deactvation = save static data in block, remove active object
+
+		If this is set alongside with m_pending_removal, removal takes
+		priority.
+		Note: Do not assign this directly, use markForDeactivation() instead.
+	*/
+	bool m_pending_deactivation = false;
+
+	/*
+		- Whether this object is to be removed when nobody knows about
+		  it anymore.
+		- Removal is delayed to preserve the id for the time during which
+		  it could be confused to some other object by some client.
+		- This is usually set to true by the step() method when the object wants
+		  to be deleted but can be set by anything else too.
+		Note: Do not assign this directly, use markForRemoval() instead.
+	*/
+	bool m_pending_removal = false;
 
 	/*
 		Queue of messages to be sent to the client

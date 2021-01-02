@@ -160,6 +160,7 @@ local function init()
 		-- Simple iteration would ignore lookup via __index.
 		local entity_instrumentation = {
 			"on_activate",
+			"on_deactivate",
 			"on_step",
 			"on_punch",
 			"on_rightclick",

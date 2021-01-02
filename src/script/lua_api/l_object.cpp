@@ -110,7 +110,7 @@ int ObjectRef::l_remove(lua_State *L)
 	sao->clearParentAttachment();
 
 	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
-	sao->m_pending_removal = true;
+	sao->markForRemoval();
 	return 0;
 }
 
