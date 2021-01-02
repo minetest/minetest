@@ -420,10 +420,8 @@ function store.get_formspec(dlgdata)
 
 	-- download/queued tooltips always have the same message
 	local tooltip_colors = ";#dff6f5;#302c2e]"
-	formspec[#formspec + 1] = "tooltip[downloading;" .. fgettext("Downloading...")
-		.. tooltip_colors
-	formspec[#formspec + 1] = "tooltip[queued;" .. fgettext("Queued")
-		.. tooltip_colors
+	formspec[#formspec + 1] = "tooltip[downloading;" .. fgettext("Downloading...") .. tooltip_colors
+	formspec[#formspec + 1] = "tooltip[queued;" .. fgettext("Queued") .. tooltip_colors
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
@@ -481,10 +479,11 @@ function store.get_formspec(dlgdata)
 			end
 		end
 
+		local web_elem_name = "view_" .. i .. ";"
 		formspec[#formspec + 1] = "image_button[-0.7,0;0.7,0.7;" ..
-			core.formspec_escape(defaulttexturedir) .. "cdb_viewonline.png;view_"
-		formspec[#formspec + 1] = tostring(i)
-		formspec[#formspec + 1] = ";]"
+			core.formspec_escape(defaulttexturedir) .. "cdb_viewonline.png;" .. web_elem_name .. "]"
+		formspec[#formspec + 1] = "tooltip[" .. web_elem_name ..
+			fgettext("View more information in a web browser") .. tooltip_colors
 		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
