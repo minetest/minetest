@@ -631,7 +631,7 @@ function store.get_formspec(dlgdata)
 			"size[15.75,9.5]",
 			"position[0.5,0.55]",
 
-			"style[status;border=false]",
+			"style[status,downloading,queued;border=false]",
 
 			"container[0.375,0.375]",
 			"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
@@ -658,7 +658,7 @@ function store.get_formspec(dlgdata)
 		}
 
 		if number_downloading > 0 then
-			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
+			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;downloading;"
 			if #download_queue > 0 then
 				formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
 			else
@@ -702,11 +702,17 @@ function store.get_formspec(dlgdata)
 		}
 	end
 
+	-- download/queued tooltips always have the same message
+	local tooltip_colors = ";#dff6f5;#302c2e]"
+	formspec[#formspec + 1] = "tooltip[downloading;" .. fgettext("Downloading...") .. tooltip_colors
+	formspec[#formspec + 1] = "tooltip[queued;" .. fgettext("Queued") .. tooltip_colors
+
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
 		local package = store.packages[i]
+		local container_y = (i - start_idx) * 1.375 + (2*0.375 + 0.8)
 		formspec[#formspec + 1] = "container[0.375,"
-		formspec[#formspec + 1] = (i - start_idx) * 1.375 + (2*0.375 + 0.8)
+		formspec[#formspec + 1] = container_y
 		formspec[#formspec + 1] = "]"
 
 		-- image
@@ -722,52 +728,50 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
-		local description_width = W - 0.375*5 - 1 - 2*1.5
+		local left_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
 		formspec[#formspec + 1] = "container["
 		formspec[#formspec + 1] = W - 0.375*2
 		formspec[#formspec + 1] = ",0.1]"
 
 		if package.downloading then
-			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;status;"
-			formspec[#formspec + 1] = fgettext("Downloading...")
-			formspec[#formspec + 1] = "]"
+			formspec[#formspec + 1] = "animated_image[-1.7,-0.15;1,1;downloading;"
+			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
+			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
 		elseif package.queued then
-			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;status;"
-			formspec[#formspec + 1] = fgettext("Queued")
-			formspec[#formspec + 1] = "]"
+			formspec[#formspec + 1] = left_base
+			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
+			formspec[#formspec + 1] = "cdb_queued.png;queued]"
 		elseif not package.path then
-			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;install_"
-			formspec[#formspec + 1] = tostring(i)
-			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = fgettext("Install")
-			formspec[#formspec + 1] = "]"
+			local elem_name = "install_" .. i .. ";"
+			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"
+			formspec[#formspec + 1] = left_base .. "cdb_add.png;" .. elem_name .. "]"
+			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Install") .. tooltip_colors
 		else
 			if package.installed_release < package.release then
-				description_width = description_width - 1.5
 
 				-- The install_ action also handles updating
-				formspec[#formspec + 1] = "button[-4.5,0;1.5,0.8;install_"
-				formspec[#formspec + 1] = tostring(i)
-				formspec[#formspec + 1] = ";"
-				formspec[#formspec + 1] = fgettext("Update")
-				formspec[#formspec + 1] = "]"
-			end
+				local elem_name = "install_" .. i .. ";"
+				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#28ccdf]"
+				formspec[#formspec + 1] = left_base .. "cdb_update.png;" .. elem_name .. "]"
+				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Update") .. tooltip_colors
+			else
 
-			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;uninstall_"
-			formspec[#formspec + 1] = tostring(i)
-			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = fgettext("Uninstall")
-			formspec[#formspec + 1] = "]"
+				local elem_name = "uninstall_" .. i .. ";"
+				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
+				formspec[#formspec + 1] = left_base .. "cdb_clear.png;" .. elem_name .. "]"
+				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") .. tooltip_colors
+			end
 		end
 
-		formspec[#formspec + 1] = "button[-1.5,0;1.5,0.8;view_"
-		formspec[#formspec + 1] = tostring(i)
-		formspec[#formspec + 1] = ";"
-		formspec[#formspec + 1] = fgettext("View")
-		formspec[#formspec + 1] = "]"
+		local web_elem_name = "view_" .. i .. ";"
+		formspec[#formspec + 1] = "image_button[-0.7,0;0.7,0.7;" ..
+			core.formspec_escape(defaulttexturedir) .. "cdb_viewonline.png;" .. web_elem_name .. "]"
+		formspec[#formspec + 1] = "tooltip[" .. web_elem_name ..
+			fgettext("View more information in a web browser") .. tooltip_colors
 		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
+		local description_width = W - 0.375*5 - 0.85 - 2*0.7
 		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
 		formspec[#formspec + 1] = ",0.8;;;"
