@@ -463,8 +463,7 @@ function store.get_formspec(dlgdata)
 			local elem_name = "install_" .. i .. ";"
 			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"
 			formspec[#formspec + 1] = left_base .. "cdb_add.png;" .. elem_name .. "]"
-			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Install") ..
-				" " .. package.title .. tooltip_colors
+			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Install") .. tooltip_colors
 		else
 			if package.installed_release < package.release then
 
@@ -472,15 +471,13 @@ function store.get_formspec(dlgdata)
 				local elem_name = "install_" .. i .. ";"
 				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#28ccdf]"
 				formspec[#formspec + 1] = left_base .. "cdb_update.png;" .. elem_name .. "]"
-				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Update") ..
-					" " .. package.title .. tooltip_colors
+				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Update") .. tooltip_colors
 			else
 
 				local elem_name = "uninstall_" .. i .. ";"
 				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
 				formspec[#formspec + 1] = left_base .. "cdb_clear.png;" .. elem_name .. "]"
-				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") ..
-					" " .. package.title .. tooltip_colors
+				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") .. tooltip_colors
 			end
 		end
 
