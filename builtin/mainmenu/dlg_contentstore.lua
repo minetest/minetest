@@ -446,7 +446,6 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
-		local description_width = W - 0.375*5 - 1 - 2*1.5
 		local left_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
 		formspec[#formspec + 1] = "container["
 		formspec[#formspec + 1] = W - 0.375*2
@@ -492,6 +491,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
+		local description_width = W - 0.375*5 - 0.85 - 2*0.7
 		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
 		formspec[#formspec + 1] = ",0.8;;;"
