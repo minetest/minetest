@@ -4327,11 +4327,14 @@ Utilities
 
 * `minetest.get_current_modname()`: returns the currently loading mod's name,
   when loading a mod.
-* `minetest.get_modpath(modname)`: returns e.g.
-  `"/home/user/.minetest/usermods/modname"`.
-    * Useful for loading additional `.lua` modules or static data from mod
-* `minetest.get_modnames()`: returns a list of installed mods
-    * Return a list of installed mods, sorted alphabetically
+* `minetest.get_modpath(modname)`: returns the directory path for a mod,
+  e.g. `"/home/user/.minetest/usermods/modname"`.
+    * Returns nil if the mod is not enabled or does not exist (not installed).
+    * Works regardless of whether the mod has been loaded yet.
+    * Useful for loading additional `.lua` modules or static data from a mod,
+  or checking if a mod is enabled.
+* `minetest.get_modnames()`: returns a list of enabled mods, sorted alphabetically.
+    * Does not include disabled mods, even if they are installed.
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
 * `minetest.is_singleplayer()`
