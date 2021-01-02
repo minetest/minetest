@@ -18,12 +18,12 @@ variables:
     - mkdir cmakebuild
     - mkdir -p artifact/minetest/usr/
     - cd cmakebuild
-    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
+    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DENABLE_SYSTEM_JSONCPP=TRUE -DBUILD_SERVER=TRUE ..
     - make -j2
     - make install
   artifacts:
     when: on_success
-    expire_in: 2h
+    expire_in: 1h
     paths:
       - artifact/*
 
@@ -34,15 +34,14 @@ variables:
     - apt-get install -y git
     - mkdir -p build/deb/minetest/DEBIAN/
     - cp misc/debpkg-control build/deb/minetest/DEBIAN/control
-    - cp -Rp artifact/minetest/usr build/deb/minetest/
+    - cp -a artifact/minetest/usr build/deb/minetest/
   script:
     - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest_game
-    - rm -Rf build/deb/minetest/usr/share/minetest/games/minetest/.git
+    - rm -rf build/deb/minetest/usr/share/minetest/games/minetest/.git
     - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
     - cd build/deb/ && dpkg-deb -b minetest/ && mv minetest.deb ../../
   artifacts:
-    when: on_success
     expire_in: 90 day
     paths:
       - ./*.deb
@@ -51,43 +50,13 @@ variables:
   stage: deploy
   before_script:
     - apt-get update -y
-    - apt-get install -y libc6 libcurl3-gnutls libfreetype6 libirrlicht1.8 $LEVELDB_PKG liblua5.1-0 libluajit-5.1-2 libopenal1 libstdc++6 libvorbisfile3 libx11-6 zlib1g
   script:
-    - dpkg -i ./*.deb
+    - apt-get install -y ./*.deb
+    - minetest --version
 
 ##
 ## Debian
 ##
-
-# Jessie
-
-build:debian-8:
-  extends: .build_template
-  image: debian:8
-  before_script:
-    - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" > /etc/apt/sources.list.d/uptodate-toolchain.list
-    - apt-key adv --keyserver keyserver.ubuntu.com --recv BA9EF27F
-    - apt-get update -y
-    - apt-get -y install build-essential gcc-6 g++-6 libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
-  variables:
-    CC: gcc-6
-    CXX: g++-6
-
-package:debian-8:
-  extends: .debpkg_template
-  image: debian:8
-  dependencies:
-    - build:debian-8
-  variables:
-    LEVELDB_PKG: libleveldb1
-
-deploy:debian-8:
-  extends: .debpkg_install
-  image: debian:8
-  dependencies:
-    - package:debian-8
-  variables:
-    LEVELDB_PKG: libleveldb1
 
 # Stretch
 
@@ -101,7 +70,7 @@ build:debian-9:
 package:debian-9:
   extends: .debpkg_template
   image: debian:9
-  dependencies:
+  needs:
     - build:debian-9
   variables:
     LEVELDB_PKG: libleveldb1v5
@@ -109,12 +78,10 @@ package:debian-9:
 deploy:debian-9:
   extends: .debpkg_install
   image: debian:9
-  dependencies:
+  needs:
     - package:debian-9
-  variables:
-    LEVELDB_PKG: libleveldb1v5
 
-# Stretch
+# Buster
 
 build:debian-10:
  extends: .build_template
@@ -126,7 +93,7 @@ build:debian-10:
 package:debian-10:
   extends: .debpkg_template
   image: debian:10
-  dependencies:
+  needs:
     - build:debian-10
   variables:
     LEVELDB_PKG: libleveldb1d
@@ -134,10 +101,9 @@ package:debian-10:
 deploy:debian-10:
   extends: .debpkg_install
   image: debian:10
-  dependencies:
+  needs:
     - package:debian-10
-  variables:
-    LEVELDB_PKG: libleveldb1d
+
 ##
 ## Ubuntu
 ##
@@ -154,7 +120,7 @@ build:ubuntu-16.04:
 package:ubuntu-16.04:
   extends: .debpkg_template
   image: ubuntu:xenial
-  dependencies:
+  needs:
     - build:ubuntu-16.04
   variables:
     LEVELDB_PKG: libleveldb1v5
@@ -162,10 +128,8 @@ package:ubuntu-16.04:
 deploy:ubuntu-16.04:
   extends: .debpkg_install
   image: ubuntu:xenial
-  dependencies:
+  needs:
     - package:ubuntu-16.04
-  variables:
-    LEVELDB_PKG: libleveldb1v5
 
 # Bionic
 
@@ -179,7 +143,7 @@ build:ubuntu-18.04:
 package:ubuntu-18.04:
   extends: .debpkg_template
   image: ubuntu:bionic
-  dependencies:
+  needs:
     - build:ubuntu-18.04
   variables:
     LEVELDB_PKG: libleveldb1v5
@@ -187,25 +151,22 @@ package:ubuntu-18.04:
 deploy:ubuntu-18.04:
   extends: .debpkg_install
   image: ubuntu:bionic
-  dependencies:
+  needs:
     - package:ubuntu-18.04
-  variables:
-    LEVELDB_PKG: libleveldb1v5
 
 ##
 ## Fedora
 ##
 
-# Do we need to support this old version ?
-build:fedora-24:
+# Fedora 28 <-> RHEL 8
+build:fedora-28:
   extends: .build_template
-  image: fedora:24
+  image: fedora:28
   before_script:
-    - dnf -y install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
-
+    - dnf -y install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
 
 ##
-## Mingw for Windows
+## MinGW for Windows
 ##
 
 .generic_win_template:
@@ -213,67 +174,62 @@ build:fedora-24:
   before_script:
     - apt-get update -y
     - apt-get install -y wget xz-utils unzip git cmake gettext
-    - wget -q http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+    - wget -nv http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
     - tar -xaf mingw.tar.xz -C /usr
 
 .build_win_template:
   extends: .generic_win_template
   stage: build
   artifacts:
-    when: on_success
-    expire_in: 2h
+    expire_in: 1h
     paths:
-      - build/*
+      - build/minetest/_build/*
 
 .package_win_template:
   extends: .generic_win_template
   stage: package
   script:
-    - cd build/minetest/_build
-    - make package
-    - cd ../../../
-    - mkdir minetest-win-${WIN_ARCH}
-    - unzip build/minetest/_build/minetest-*-win*.zip -d minetest-win-${WIN_ARCH}
-    - cp /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-win-${WIN_ARCH}/minetest-*-win*/bin
-    - cp /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-win-${WIN_ARCH}/minetest-*-win*/bin
-    - cp /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-win-${WIN_ARCH}/minetest-*-win*/bin
+    - unzip build/minetest/_build/minetest-*.zip
+    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-*-win*/bin/
+    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-*-win*/bin/
+    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-*-win*/bin/
   artifacts:
-    when: on_success
     expire_in: 90 day
     paths:
-      - minetest-win-*/*
+      - minetest-*-win*/*
 
 build:win32:
   extends: .build_win_template
   script:
     - ./util/buildbot/buildwin32.sh build
   variables:
-    NO_PACKAGE: "1"
     WIN_ARCH: "i686"
 
 package:win32:
   extends: .package_win_template
-  dependencies:
+  needs:
     - build:win32
   variables:
-    NO_PACKAGE: "1"
     WIN_ARCH: "i686"
+
 
 build:win64:
   extends: .build_win_template
   script:
     - ./util/buildbot/buildwin64.sh build
   variables:
-    NO_PACKAGE: "1"
     WIN_ARCH: "x86_64"
 
 package:win64:
   extends: .package_win_template
-  dependencies:
+  needs:
     - build:win64
   variables:
-    NO_PACKAGE: "1"
     WIN_ARCH: "x86_64"
+
+##
+## Docker
+##
 
 package:docker:
   stage: package
@@ -287,6 +243,10 @@ package:docker:
     - docker push ${CONTAINER_IMAGE}/server:$CI_COMMIT_SHA
     - docker push ${CONTAINER_IMAGE}/server:$CI_COMMIT_REF_NAME
     - docker push ${CONTAINER_IMAGE}/server:latest
+
+##
+## Gitlab Pages (Lua API documentation)
+##
 
 pages:
   stage: deploy
@@ -303,10 +263,14 @@ pages:
   only:
     - master
 
+##
+## AppImage
+##
+
 package:appimage-client:
   stage: package
   image: appimagecrafters/appimage-builder
-  dependencies:
+  needs:
     - build:ubuntu-18.04
   before_script:
     - apt-get update -y
@@ -315,16 +279,15 @@ package:appimage-client:
     - mkdir AppDir
     - cp -a artifact/minetest/usr/ AppDir/usr/
     - rm AppDir/usr/bin/minetestserver
-    - cp -R clientmods AppDir/usr/share/minetest
+    - cp -a clientmods AppDir/usr/share/minetest
   script:
     - git clone $MINETEST_GAME_REPO AppDir/usr/share/minetest/games/minetest_game
-    - rm -Rf AppDir/usr/share/minetest/games/minetest/.git
+    - rm -rf AppDir/usr/share/minetest/games/minetest/.git
     - export VERSION=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
     # Remove PrefersNonDefaultGPU property due to validation errors
     - sed -i '/PrefersNonDefaultGPU/d' AppDir/usr/share/applications/net.minetest.minetest.desktop
     - appimage-builder --skip-test
   artifacts:
-    when: on_success
     expire_in: 90 day
     paths:
       - ./*.AppImage
