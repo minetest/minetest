@@ -463,8 +463,8 @@ function confirm_overwrite.handle_submit(this, fields)
 	end
 
 	if fields.install then
-		confirm_overwrite.callback()
 		this:delete()
+		confirm_overwrite.callback()
 		return true
 	end
 
