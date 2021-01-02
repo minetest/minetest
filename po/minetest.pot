@@ -218,7 +218,7 @@ msgid "Uninstall"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View more information in a web browser"
+msgid "View"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
