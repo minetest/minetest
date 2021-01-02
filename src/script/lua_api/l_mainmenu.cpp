@@ -806,7 +806,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_is_dir(lua_State *L)
 {
-	const char *path	= luaL_checkstring(L, 1);
+	const char *path = luaL_checkstring(L, 1);
 
 	lua_pushboolean(L, fs::IsDir(path));
 	return 1;
