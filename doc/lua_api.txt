@@ -4586,6 +4586,10 @@ Call these functions only at load time!
     * `dir`: Unit vector of direction of punch. Always defined. Points from
       the puncher to the punched.
     * `damage`: Number that represents the damage calculated by the engine
+* `minetest.register_on_rightclickplayer(function(player, clicker))`
+    * Called when a player is right-clicked
+    * `player`: ObjectRef - Player that was right-clicked
+    * `clicker`: ObjectRef - Player that right-click
     * should return `true` to prevent the default damage mechanism
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
