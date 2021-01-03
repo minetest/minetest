@@ -19,6 +19,14 @@ function core.node_metadata_inventory_move_allow_all()
 	core.log("deprecated", "core.node_metadata_inventory_move_allow_all is obsolete and does nothing.")
 end
 
+function core.node_metadata_inventory_offer_allow_all()
+	core.log("deprecated", "core.node_metadata_inventory_offer_allow_all is obsolete and does nothing.")
+end
+
+function core.node_metadata_inventory_take_allow_all()
+	core.log("deprecated", "core.node_metadata_inventory_take_allow_all is obsolete and does nothing.")
+end
+
 function core.add_to_creative_inventory(itemstring)
 	core.log("deprecated", "core.add_to_creative_inventory is obsolete and does nothing.")
 end
