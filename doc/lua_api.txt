@@ -6934,7 +6934,11 @@ Player properties need to be saved manually.
         -- in mods.
 
         nametag = "",
-        -- By default empty, for players their name is shown if empty
+        -- By default empty, for players their name is shown if empty.
+        -- When not empty, nametags are displayed on a semi-transparent box,
+        -- except for players, where it'll be showed anyway. In this last case,
+        -- to make it disappear, the alpha of the nametag shall be set to zero
+        -- via `set_nametag_attributes`.
 
         nametag_color = <ColorSpec>,
         -- Sets color of nametag
