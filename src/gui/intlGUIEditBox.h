@@ -7,16 +7,15 @@
 #include "IrrCompileConfig.h"
 //#ifdef _IRR_COMPILE_WITH_GUI_
 
-#include <IGUIEditBox.h>
+#include "guiEditBox.h"
 #include "irrArray.h"
 #include "IOSOperator.h"
-#include "guiScrollBar.h"
 
 namespace irr
 {
 namespace gui
 {
-	class intlGUIEditBox : public IGUIEditBox
+	class intlGUIEditBox : public GUIEditBox
 	{
 	public:
 
@@ -28,32 +27,6 @@ namespace gui
 		//! destructor
 		virtual ~intlGUIEditBox();
 
-		//! Sets another skin independent font.
-		virtual void setOverrideFont(IGUIFont* font=0);
-
-		//! Gets the override font (if any)
-		/** \return The override font (may be 0) */
-		virtual IGUIFont* getOverrideFont() const;
-
-		//! Get the font which is used right now for drawing
-		/** Currently this is the override font when one is set and the
-		font of the active skin otherwise */
-		virtual IGUIFont* getActiveFont() const;
-
-		//! Sets another color for the text.
-		virtual void setOverrideColor(video::SColor color);
-
-		//! Gets the override color
-		virtual video::SColor getOverrideColor() const;
-
-		//! Sets if the text should use the overide color or the
-		//! color in the gui skin.
-		virtual void enableOverrideColor(bool enable);
-
-		//! Checks if an override color is enabled
-		/** \return true if the override color is enabled, false otherwise */
-		virtual bool isOverrideColorEnabled(void) const;
-
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw);
 
@@ -63,30 +36,6 @@ namespace gui
 		virtual void setDrawBorder(bool border);
 
 		virtual bool isDrawBorderEnabled() const { return Border; }
-
-		//! Enables or disables word wrap for using the edit box as multiline text editor.
-		virtual void setWordWrap(bool enable);
-
-		//! Checks if word wrap is enabled
-		//! \return true if word wrap is enabled, false otherwise
-		virtual bool isWordWrapEnabled() const;
-
-		//! Enables or disables newlines.
-		/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
-		instead a newline character will be inserted. */
-		virtual void setMultiLine(bool enable);
-
-		//! Checks if multi line editing is enabled
-		//! \return true if mult-line is enabled, false otherwise
-		virtual bool isMultiLineEnabled() const;
-
-		//! Enables or disables automatic scrolling with cursor position
-		//! \param enable: If set to true, the text will move around with the cursor position
-		virtual void setAutoScroll(bool enable);
-
-		//! Checks to see if automatic scrolling is enabled
-		//! \return true if automatic scrolling is enabled, false if not
-		virtual bool isAutoScrollEnabled() const;
 
 		//! Gets the size area of the text in the edit box
 		//! \return Returns the size in pixels of the text
@@ -143,7 +92,7 @@ namespace gui
 
 	protected:
 		//! Breaks the single text line.
-		void breakText();
+		virtual void breakText();
 		//! sets the area of the given line
 		void setTextRect(s32 line);
 		//! returns the line number that the cursor is on
@@ -169,12 +118,9 @@ namespace gui
 
 		bool MouseMarking = false;
 		bool Border;
-		bool OverrideColorEnabled = false;
 		s32 MarkBegin = 0;
 		s32 MarkEnd = 0;
 
-		video::SColor OverrideColor = video::SColor(101,255,255,255);
-		gui::IGUIFont *OverrideFont = nullptr;
 		gui::IGUIFont *LastBreakFont = nullptr;
 		IOSOperator *Operator = nullptr;
 
@@ -184,9 +130,6 @@ namespace gui
 		s32 VScrollPos = 0; // scroll position in characters
 		u32 Max = 0;
 
-		bool WordWrap = false;
-		bool MultiLine = false;
-		bool AutoScroll = true;
 		bool PasswordBox = false;
 		wchar_t PasswordChar = L'*';
 		EGUI_ALIGNMENT HAlign = EGUIA_UPPERLEFT;

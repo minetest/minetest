@@ -59,7 +59,7 @@ namespace gui
 intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 		const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
-	: IGUIEditBox(environment, parent, id, rectangle),
+	: GUIEditBox(environment, parent, id, rectangle),
 	Border(border), FrameRect(rectangle),
 	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable)
 {
@@ -108,60 +108,11 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 //! destructor
 intlGUIEditBox::~intlGUIEditBox()
 {
-	if (OverrideFont)
-		OverrideFont->drop();
-
 	if (Operator)
 		Operator->drop();
 
 	if (m_vscrollbar)
 		m_vscrollbar->drop();
-}
-
-
-//! Sets another skin independent font.
-void intlGUIEditBox::setOverrideFont(IGUIFont* font)
-{
-	if (OverrideFont == font)
-		return;
-
-	if (OverrideFont)
-		OverrideFont->drop();
-
-	OverrideFont = font;
-
-	if (OverrideFont)
-		OverrideFont->grab();
-
-	breakText();
-}
-
-IGUIFont * intlGUIEditBox::getOverrideFont() const
-{
-	return OverrideFont;
-}
-
-//! Get the font which is used right now for drawing
-IGUIFont* intlGUIEditBox::getActiveFont() const
-{
-	if ( OverrideFont )
-		return OverrideFont;
-	IGUISkin* skin = Environment->getSkin();
-	if (skin)
-		return skin->getFont();
-	return 0;
-}
-
-//! Sets another color for the text.
-void intlGUIEditBox::setOverrideColor(video::SColor color)
-{
-	OverrideColor = color;
-	OverrideColorEnabled = true;
-}
-
-video::SColor intlGUIEditBox::getOverrideColor() const
-{
-	return OverrideColor;
 }
 
 //! Turns the border on or off
@@ -175,25 +126,6 @@ void intlGUIEditBox::setDrawBackground(bool draw)
 {
 }
 
-//! Sets if the text should use the overide color or the color in the gui skin.
-void intlGUIEditBox::enableOverrideColor(bool enable)
-{
-	OverrideColorEnabled = enable;
-}
-
-bool intlGUIEditBox::isOverrideColorEnabled() const
-{
-	return OverrideColorEnabled;
-}
-
-//! Enables or disables word wrap
-void intlGUIEditBox::setWordWrap(bool enable)
-{
-	WordWrap = enable;
-	breakText();
-}
-
-
 void intlGUIEditBox::updateAbsolutePosition()
 {
     core::rect<s32> oldAbsoluteRect(AbsoluteRect);
@@ -203,28 +135,6 @@ void intlGUIEditBox::updateAbsolutePosition()
         breakText();
 	}
 }
-
-
-//! Checks if word wrap is enabled
-bool intlGUIEditBox::isWordWrapEnabled() const
-{
-	return WordWrap;
-}
-
-
-//! Enables or disables newlines.
-void intlGUIEditBox::setMultiLine(bool enable)
-{
-	MultiLine = enable;
-}
-
-
-//! Checks if multi line editing is enabled
-bool intlGUIEditBox::isMultiLineEnabled() const
-{
-	return MultiLine;
-}
-
 
 void intlGUIEditBox::setPasswordBox(bool passwordBox, wchar_t passwordChar)
 {
@@ -464,7 +374,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 	case KEY_END:
 		{
 			s32 p = Text.size();
-			if (WordWrap || MultiLine)
+			if (m_word_wrap || m_multiline)
 			{
 				p = getLineFromPos(CursorPos);
 				p = BrokenTextPositions[p] + (s32)BrokenText[p].size();
@@ -492,7 +402,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		{
 
 			s32 p = 0;
-			if (WordWrap || MultiLine)
+			if (m_word_wrap || m_multiline)
 			{
 				p = getLineFromPos(CursorPos);
 				p = BrokenTextPositions[p];
@@ -514,7 +424,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_RETURN:
-		if (MultiLine)
+		if (m_multiline)
 		{
 			inputChar(L'\n');
 			return true;
@@ -567,7 +477,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		BlinkStartTime = porting::getTimeMs();
 		break;
 	case KEY_UP:
-		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
+		if (m_multiline || (m_word_wrap && BrokenText.size() > 1) )
 		{
 			s32 lineNo = getLineFromPos(CursorPos);
 			s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin > MarkEnd ? MarkBegin : MarkEnd);
@@ -598,7 +508,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_DOWN:
-		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
+		if (m_multiline || (m_word_wrap && BrokenText.size() > 1) )
 		{
 			s32 lineNo = getLineFromPos(CursorPos);
 			s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin < MarkEnd ? MarkBegin : MarkEnd);
@@ -791,8 +701,8 @@ void intlGUIEditBox::draw()
 
 	// draw the text
 
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
+	IGUIFont* font = m_override_font;
+	if (!m_override_font)
 		font = skin->getFont();
 
 	s32 cursorLine = 0;
@@ -813,7 +723,7 @@ void intlGUIEditBox::draw()
 		core::stringw s, s2;
 
 		// get mark position
-		const bool ml = (!PasswordBox && (WordWrap || MultiLine));
+		const bool ml = (!PasswordBox && (m_word_wrap || m_multiline));
 		const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
 		const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 		const s32 hlineStart = ml ? getLineFromPos(realmbgn) : 0;
@@ -822,14 +732,14 @@ void intlGUIEditBox::draw()
 
 		// Save the override color information.
 		// Then, alter it if the edit box is disabled.
-		const bool prevOver = OverrideColorEnabled;
-		const video::SColor prevColor = OverrideColor;
+		const bool prevOver = m_override_color_enabled;
+		const video::SColor prevColor = m_override_color;
 
 		if (!Text.empty()) {
-			if (!IsEnabled && !OverrideColorEnabled)
+			if (!IsEnabled && !m_override_color_enabled)
 			{
-				OverrideColorEnabled = true;
-				OverrideColor = skin->getColor(EGDC_GRAY_TEXT);
+				m_override_color_enabled = true;
+				m_override_color = skin->getColor(EGDC_GRAY_TEXT);
 			}
 
 			for (s32 i=0; i < lineCount; ++i)
@@ -870,7 +780,7 @@ void intlGUIEditBox::draw()
 
 				// draw normal text
 				font->draw(txtLine->c_str(), CurrentTextRect,
-					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
+					m_override_color_enabled ? m_override_color : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 
 				// draw mark and marked text
@@ -914,20 +824,20 @@ void intlGUIEditBox::draw()
 
 					if (!s.empty())
 						font->draw(s.c_str(), CurrentTextRect,
-							OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
+							m_override_color_enabled ? m_override_color : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
 							false, true, &localClipRect);
 
 				}
 			}
 
 			// Return the override color information to its previous settings.
-			OverrideColorEnabled = prevOver;
-			OverrideColor = prevColor;
+			m_override_color_enabled = prevOver;
+			m_override_color = prevColor;
 		}
 
 		// draw cursor
 
-		if (WordWrap || MultiLine)
+		if (m_word_wrap || m_multiline)
 		{
 			cursorLine = getLineFromPos(CursorPos);
 			txtLine = &BrokenText[cursorLine];
@@ -943,7 +853,7 @@ void intlGUIEditBox::draw()
 				CurrentTextRect.UpperLeftCorner.X += charcursorpos;
 
 				font->draw(L"_", CurrentTextRect,
-					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
+					m_override_color_enabled ? m_override_color : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 			}
 		}
@@ -962,22 +872,6 @@ void intlGUIEditBox::setText(const wchar_t* text)
 		CursorPos = Text.size();
 	HScrollPos = 0;
 	breakText();
-}
-
-
-//! Enables or disables automatic scrolling with cursor position
-//! \param enable: If set to true, the text will move around with the cursor position
-void intlGUIEditBox::setAutoScroll(bool enable)
-{
-	AutoScroll = enable;
-}
-
-
-//! Checks to see if automatic scrolling is enabled
-//! \return true if automatic scrolling is enabled, false if not
-bool intlGUIEditBox::isAutoScrollEnabled() const
-{
-	return AutoScroll;
 }
 
 
@@ -1096,12 +990,12 @@ bool intlGUIEditBox::processMouse(const SEvent& event)
 
 s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 {
-	IGUIFont* font = OverrideFont;
+	IGUIFont* font = m_override_font;
 	IGUISkin* skin = Environment->getSkin();
-	if (!OverrideFont)
+	if (!m_override_font)
 		font = skin->getFont();
 
-	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
+	const u32 lineCount = (m_word_wrap || m_multiline) ? BrokenText.size() : 1;
 
 	core::stringw *txtLine = NULL;
 	s32 startPos = 0;
@@ -1118,8 +1012,8 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 		// is it inside this region?
 		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y) {
 			// we've found the clicked line
-			txtLine = (WordWrap || MultiLine) ? &BrokenText[curr_line_idx] : &Text;
-			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[curr_line_idx] : 0;
+			txtLine = (m_word_wrap || m_multiline) ? &BrokenText[curr_line_idx] : &Text;
+			startPos = (m_word_wrap || m_multiline) ? BrokenTextPositions[curr_line_idx] : 0;
 			break;
 		}
 	}
@@ -1144,14 +1038,14 @@ void intlGUIEditBox::breakText()
 {
 	IGUISkin* skin = Environment->getSkin();
 
-	if ((!WordWrap && !MultiLine) || !skin)
+	if ((!m_word_wrap && !m_multiline) || !skin)
 		return;
 
 	BrokenText.clear(); // need to reallocate :/
 	BrokenTextPositions.set_used(0);
 
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
+	IGUIFont* font = m_override_font;
+	if (!m_override_font)
 		font = skin->getFont();
 
 	if (!font)
@@ -1190,7 +1084,7 @@ void intlGUIEditBox::breakText()
 		}
 
 		// don't break if we're not a multi-line edit box
-		if (!MultiLine)
+		if (!m_multiline)
 			lineBreak = false;
 
 		if (c == L' ' || c == 0 || i == (size-1))
@@ -1201,7 +1095,7 @@ void intlGUIEditBox::breakText()
 				s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
 				s32 worldlgth = font->getDimension(word.c_str()).Width;
 
-				if (WordWrap && length + worldlgth + whitelgth > elWidth)
+				if (m_word_wrap && length + worldlgth + whitelgth > elWidth)
 				{
 					// break to next line
 					length = worldlgth;
@@ -1260,14 +1154,14 @@ void intlGUIEditBox::setTextRect(s32 line)
 	if (!skin)
 		return;
 
-	IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+	IGUIFont* font = m_override_font ? m_override_font : skin->getFont();
 
 	if (!font)
 		return;
 
 	// get text dimension
-	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
-	if (WordWrap || MultiLine)
+	const u32 lineCount = (m_word_wrap || m_multiline) ? BrokenText.size() : 1;
+	if (m_word_wrap || m_multiline)
 	{
 		d = font->getDimension(BrokenText[line].c_str());
 	}
@@ -1328,7 +1222,7 @@ void intlGUIEditBox::setTextRect(s32 line)
 
 s32 intlGUIEditBox::getLineFromPos(s32 pos)
 {
-	if (!WordWrap && !MultiLine)
+	if (!m_word_wrap && !m_multiline)
 		return 0;
 
 	s32 i=0;
@@ -1387,7 +1281,7 @@ void intlGUIEditBox::inputChar(wchar_t c)
 
 void intlGUIEditBox::calculateScrollPos()
 {
-	if (!AutoScroll)
+	if (!m_autoscroll)
 		return;
 
 	// calculate horizontal scroll position
@@ -1395,18 +1289,18 @@ void intlGUIEditBox::calculateScrollPos()
 	setTextRect(cursLine);
 
 	// don't do horizontal scrolling when wordwrap is enabled.
-	if (!WordWrap)
+	if (!m_word_wrap)
 	{
 		// get cursor position
 		IGUISkin* skin = Environment->getSkin();
 		if (!skin)
 			return;
-		IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+		IGUIFont* font = m_override_font ? m_override_font : skin->getFont();
 		if (!font)
 			return;
 
-		core::stringw *txtLine = MultiLine ? &BrokenText[cursLine] : &Text;
-		s32 cPos = MultiLine ? CursorPos - BrokenTextPositions[cursLine] : CursorPos;
+		core::stringw *txtLine = m_multiline ? &BrokenText[cursLine] : &Text;
+		s32 cPos = m_multiline ? CursorPos - BrokenTextPositions[cursLine] : CursorPos;
 
 		s32 cStart = CurrentTextRect.UpperLeftCorner.X + HScrollPos +
 			font->getDimension(txtLine->subString(0, cPos).c_str()).Width;
@@ -1423,7 +1317,7 @@ void intlGUIEditBox::calculateScrollPos()
 		// todo: adjust scrollbar
 	}
 
-	if (!WordWrap && !MultiLine)
+	if (!m_word_wrap && !m_multiline)
 		return;
 
 	// vertical scroll position
@@ -1468,8 +1362,8 @@ void intlGUIEditBox::createVScrollBar()
 {
 	s32 fontHeight = 1;
 
-	if (OverrideFont) {
-		fontHeight = OverrideFont->getDimension(L"").Height;
+	if (m_override_font) {
+		fontHeight = m_override_font->getDimension(L"").Height;
 	} else {
 		if (IGUISkin* skin = Environment->getSkin()) {
 			if (IGUIFont* font = skin->getFont()) {
@@ -1520,7 +1414,7 @@ void intlGUIEditBox::updateVScrollBar()
 			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 
-		if (!m_vscrollbar->isVisible() && MultiLine) {
+		if (!m_vscrollbar->isVisible() && m_multiline) {
 			AbsoluteRect.LowerRightCorner.X -= m_scrollbar_width;
 
 			m_vscrollbar->setVisible(true);
@@ -1548,20 +1442,20 @@ void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 {
 	// IGUIEditBox::serializeAttributes(out,options);
 
-	out->addBool  ("OverrideColorEnabled",OverrideColorEnabled );
-	out->addColor ("OverrideColor",       OverrideColor);
-	// out->addFont("OverrideFont",OverrideFont);
-	out->addInt   ("MaxChars",            Max);
-	out->addBool  ("WordWrap",            WordWrap);
-	out->addBool  ("MultiLine",           MultiLine);
-	out->addBool  ("AutoScroll",          AutoScroll);
-	out->addBool  ("PasswordBox",         PasswordBox);
+	out->addBool  ("OverrideColorEnabled", m_override_color_enabled );
+	out->addColor ("OverrideColor",        m_override_color);
+	// out->addFont("OverrideFont",m_override_font);
+	out->addInt   ("MaxChars",             Max);
+	out->addBool  ("WordWrap",             m_word_wrap);
+	out->addBool  ("MultiLine",            m_multiline);
+	out->addBool  ("AutoScroll",           m_autoscroll);
+	out->addBool  ("PasswordBox",          PasswordBox);
 	core::stringw ch = L" ";
 	ch[0] = PasswordChar;
-	out->addString("PasswordChar",        ch.c_str());
-	out->addEnum  ("HTextAlign",          HAlign, GUIAlignmentNames);
-	out->addEnum  ("VTextAlign",          VAlign, GUIAlignmentNames);
-	out->addBool  ("Writable",            m_writable);
+	out->addString("PasswordChar",         ch.c_str());
+	out->addEnum  ("HTextAlign",           HAlign, GUIAlignmentNames);
+	out->addEnum  ("VTextAlign",           VAlign, GUIAlignmentNames);
+	out->addBool  ("Writable",             m_writable);
 
 	IGUIEditBox::serializeAttributes(out,options);
 }
