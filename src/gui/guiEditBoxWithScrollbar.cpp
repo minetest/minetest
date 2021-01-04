@@ -22,16 +22,14 @@ optional? dragging selected text
 numerical
 */
 
-
 //! constructor
 GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool border,
 	IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 	const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
-	: IGUIEditBox(environment, parent, id, rectangle), m_mouse_marking(false),
-	m_border(border), m_background(true), m_override_color_enabled(false), m_mark_begin(0), m_mark_end(0),
-	m_override_color(video::SColor(101, 255, 255, 255)), m_override_font(0), m_last_break_font(0),
+	: GUIEditBox(environment, parent, id, rectangle), m_mouse_marking(false),
+	m_border(border), m_background(true), m_mark_begin(0), m_mark_end(0), m_last_break_font(0),
 	m_operator(0), m_blink_start_time(0), m_cursor_pos(0), m_hscroll_pos(0), m_vscroll_pos(0), m_max(0),
-	m_word_wrap(false), m_multiline(false), m_autoscroll(true), m_passwordbox(false),
+	m_passwordbox(false),
 	m_passwordchar(L'*'), m_halign(EGUIA_UPPERLEFT), m_valign(EGUIA_CENTER),
 	m_current_text_rect(0, 0, 1, 1), m_frame_rect(rectangle),
 	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable),
@@ -69,62 +67,11 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 //! destructor
 GUIEditBoxWithScrollBar::~GUIEditBoxWithScrollBar()
 {
-	if (m_override_font)
-		m_override_font->drop();
-
 	if (m_operator)
 		m_operator->drop();
 
 	if (m_vscrollbar)
 		m_vscrollbar->drop();
-}
-
-
-//! Sets another skin independent font.
-void GUIEditBoxWithScrollBar::setOverrideFont(IGUIFont* font)
-{
-	if (m_override_font == font)
-		return;
-
-	if (m_override_font)
-		m_override_font->drop();
-
-	m_override_font = font;
-
-	if (m_override_font)
-		m_override_font->grab();
-
-	breakText();
-}
-
-//! Gets the override font (if any)
-IGUIFont * GUIEditBoxWithScrollBar::getOverrideFont() const
-{
-	return m_override_font;
-}
-
-//! Get the font which is used right now for drawing
-IGUIFont* GUIEditBoxWithScrollBar::getActiveFont() const
-{
-	if (m_override_font)
-		return m_override_font;
-	IGUISkin* skin = Environment->getSkin();
-	if (skin)
-		return skin->getFont();
-	return 0;
-}
-
-//! Sets another color for the text.
-void GUIEditBoxWithScrollBar::setOverrideColor(video::SColor color)
-{
-	m_override_color = color;
-	m_override_color_enabled = true;
-}
-
-
-video::SColor GUIEditBoxWithScrollBar::getOverrideColor() const
-{
-	return m_override_color;
 }
 
 
@@ -140,24 +87,6 @@ void GUIEditBoxWithScrollBar::setDrawBackground(bool draw)
 	m_background = draw;
 }
 
-//! Sets if the text should use the overide color or the color in the gui skin.
-void GUIEditBoxWithScrollBar::enableOverrideColor(bool enable)
-{
-	m_override_color_enabled = enable;
-}
-
-bool GUIEditBoxWithScrollBar::isOverrideColorEnabled() const
-{
-	return m_override_color_enabled;
-}
-
-//! Enables or disables word wrap
-void GUIEditBoxWithScrollBar::setWordWrap(bool enable)
-{
-	m_word_wrap = enable;
-	breakText();
-}
-
 
 void GUIEditBoxWithScrollBar::updateAbsolutePosition()
 {
@@ -168,26 +97,6 @@ void GUIEditBoxWithScrollBar::updateAbsolutePosition()
 		breakText();
 		calculateScrollPos();
 	}
-}
-
-//! Checks if word wrap is enabled
-bool GUIEditBoxWithScrollBar::isWordWrapEnabled() const
-{
-	return m_word_wrap;
-}
-
-
-//! Enables or disables newlines.
-void GUIEditBoxWithScrollBar::setMultiLine(bool enable)
-{
-	m_multiline = enable;
-}
-
-
-//! Checks if multi line editing is enabled
-bool GUIEditBoxWithScrollBar::isMultiLineEnabled() const
-{
-	return m_multiline;
 }
 
 
@@ -847,22 +756,6 @@ void GUIEditBoxWithScrollBar::setText(const wchar_t* text)
 		m_cursor_pos = Text.size();
 	m_hscroll_pos = 0;
 	breakText();
-}
-
-
-//! Enables or disables automatic scrolling with cursor position
-//! \param enable: If set to true, the text will move around with the cursor position
-void GUIEditBoxWithScrollBar::setAutoScroll(bool enable)
-{
-	m_autoscroll = enable;
-}
-
-
-//! Checks to see if automatic scrolling is enabled
-//! \return true if automatic scrolling is enabled, false if not
-bool GUIEditBoxWithScrollBar::isAutoScrollEnabled() const
-{
-	return m_autoscroll;
 }
 
 
