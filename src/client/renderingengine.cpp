@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
 		!defined(SERVER) && !defined(__HAIKU__)
-#define XORG_USED
+//#define XORG_USED
 #endif
 #ifdef XORG_USED
 #include <X11/Xlib.h>
@@ -230,7 +230,7 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 	// the environment Minetest is running in.
 
 	/* Setting Xorg properties for the top level window */
-	setupTopLevelXorgWindow(name);
+	m_device->setWindowCaption(utf8_to_wide(name).c_str());
 
 	/* Setting general properties for the top level window */
 	verbosestream << "Client: Configuring general top level"
@@ -239,84 +239,6 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 	bool result = setWindowIcon();
 
 	return result;
-}
-
-void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
-{
-#ifdef XORG_USED
-	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
-
-	Display *x11_dpl = reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
-	if (x11_dpl == NULL) {
-		warningstream << "Client: Could not find X11 Display in ExposedVideoData"
-			<< std::endl;
-		return;
-	}
-
-	verbosestream << "Client: Configuring X11-specific top level"
-		<< " window properties"
-		<< std::endl;
-
-
-	Window x11_win = reinterpret_cast<Window>(exposedData.OpenGLLinux.X11Window);
-
-	// Set application name and class hints. For now name and class are the same.
-	XClassHint *classhint = XAllocClassHint();
-	classhint->res_name = const_cast<char *>(name.c_str());
-	classhint->res_class = const_cast<char *>(name.c_str());
-
-	XSetClassHint(x11_dpl, x11_win, classhint);
-	XFree(classhint);
-
-	// FIXME: In the future WMNormalHints should be set ... e.g see the
-	// gtk/gdk code (gdk/x11/gdksurface-x11.c) for the setup_top_level
-	// method. But for now (as it would require some significant changes)
-	// leave the code as is.
-
-	// The following is borrowed from the above gdk source for setting top
-	// level windows. The source indicates and the Xlib docs suggest that
-	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not
-	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is
-	// required by the Extended Window Manager Hints (EWMH) spec when setting
-	// the _NET_WM_PID (see further down) but running Minetest in an env
-	// where the window manager is on another machine from Minetest (therefore
-	// making the PID useless) is not expected to be a problem. Further
-	// more, using gtk/gdk as the model it would seem that not using a FQDN is
-	// not an issue for modern Xorg window managers.
-
-	verbosestream << "Client: Setting Xorg window manager Properties"
-		<< std::endl;
-
-	XSetWMProperties (x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
-
-	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID
-	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to
-	// force a shutdown of an application if it doesn't respond to the destroy
-	// window message.
-
-	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager property"
-		<< std::endl;
-
-	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
-
-	pid_t pid = getpid();
-
-	XChangeProperty(x11_dpl, x11_win, NET_WM_PID,
-			XA_CARDINAL, 32, PropModeReplace,
-			reinterpret_cast<unsigned char *>(&pid),1);
-
-	// Set the WM_CLIENT_LEADER window property here. Minetest has only one
-	// window and that window will always be the leader.
-
-	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property"
-		<< std::endl;
-
-	Atom WM_CLIENT_LEADER = XInternAtom(x11_dpl, "WM_CLIENT_LEADER", false);
-
-	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
-		XA_WINDOW, 32, PropModeReplace,
-		reinterpret_cast<unsigned char *>(&x11_win), 1);
-#endif
 }
 
 #ifdef _WIN32

@@ -334,6 +334,9 @@ else()
 
 endif()
 
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+
 check_include_files(endian.h HAVE_ENDIAN_H)
 
 configure_file(
@@ -542,6 +545,7 @@ if(BUILD_CLIENT)
 		${X11_LIBRARIES}
 		${SOUND_LIBRARIES}
 		${SQLITE3_LIBRARY}
+		${SDL2_LIBRARY}
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}

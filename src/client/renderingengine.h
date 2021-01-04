@@ -52,7 +52,6 @@ public:
 	static v2u32 getDisplaySize();
 
 	bool setupTopLevelWindow(const std::string &name);
-	void setupTopLevelXorgWindow(const std::string &name);
 	bool setWindowIcon();
 	bool setXorgWindowIconFromPath(const std::string &icon_file);
 	static bool print_video_modes();
