@@ -67,6 +67,8 @@ core.copy_dir(source,destination,keep_soure) (possible in async calls)
 ^ destination folder
 ^ keep_source DEFAULT true --> if set to false source is deleted after copying
 ^ returns true/false
+core.is_dir(path) (possible in async calls)
+^ returns true if path is a valid dir
 core.extract_zip(zipfile,destination) [unzip within path required]
 ^ zipfile to extract
 ^ destination folder to extract to

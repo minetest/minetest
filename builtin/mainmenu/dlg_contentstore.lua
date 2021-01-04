@@ -437,11 +437,52 @@ function install_dialog.create(package, raw_deps)
 	install_dialog.package = package
 	install_dialog.raw_deps = raw_deps
 	install_dialog.will_install_deps = true
-	return dialog_create("package_view",
+	return dialog_create("install_dialog",
 			install_dialog.get_formspec,
 			install_dialog.handle_submit,
 			nil)
 end
+
+
+local confirm_overwrite = {}
+function confirm_overwrite.get_formspec()
+	local package = confirm_overwrite.package
+
+	return "size[11.5,4.5,true]" ..
+			"label[2,2;" ..
+			fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name) .. "]"..
+			"style[install;bgcolor=red]" ..
+			"button[3.25,3.5;2.5,0.5;install;" .. fgettext("Overwrite") .. "]" ..
+			"button[5.75,3.5;2.5,0.5;cancel;" .. fgettext("Cancel") .. "]"
+end
+
+function confirm_overwrite.handle_submit(this, fields)
+	if fields.cancel then
+		this:delete()
+		return true
+	end
+
+	if fields.install then
+		this:delete()
+		confirm_overwrite.callback()
+		return true
+	end
+
+	return false
+end
+
+function confirm_overwrite.create(package, callback)
+	assert(type(package) == "table")
+	assert(type(callback) == "function")
+
+	confirm_overwrite.package = package
+	confirm_overwrite.callback = callback
+	return dialog_create("confirm_overwrite",
+		confirm_overwrite.get_formspec,
+		confirm_overwrite.handle_submit,
+		nil)
+end
+
 
 local function get_file_extension(path)
 	local parts = path:split(".")
@@ -858,14 +899,37 @@ function store.handle_submit(this, fields)
 		assert(package)
 
 		if fields["install_" .. i] then
-			local deps = get_raw_dependencies(package)
-			if deps and has_hard_deps(deps) then
-				local dlg = install_dialog.create(package, deps)
+			local install_parent
+			if package.type == "mod" then
+				install_parent = core.get_modpath()
+			elseif package.type == "game" then
+				install_parent = core.get_gamepath()
+			elseif package.type == "txp" then
+				install_parent = core.get_texturepath()
+			else
+				error("Unknown package type: " .. package.type)
+			end
+
+
+			local function on_confirm()
+				local deps = get_raw_dependencies(package)
+				if deps and has_hard_deps(deps) then
+					local dlg = install_dialog.create(package, deps)
+					dlg:set_parent(this)
+					this:hide()
+					dlg:show()
+				else
+					queue_download(package)
+				end
+			end
+
+			if not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+				local dlg = confirm_overwrite.create(package, on_confirm)
 				dlg:set_parent(this)
 				this:hide()
 				dlg:show()
 			else
-				queue_download(package)
+				on_confirm()
 			end
 
 			return true
