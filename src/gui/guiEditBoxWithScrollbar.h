@@ -17,7 +17,7 @@ public:
 		bool writable = true, bool has_vscrollbar = true);
 
 	//! destructor
-	virtual ~GUIEditBoxWithScrollBar();
+	virtual ~GUIEditBoxWithScrollBar() {}
 
 	//! Sets whether to draw the background
 	virtual void setDrawBackground(bool draw);
@@ -60,10 +60,6 @@ protected:
 	void calculateScrollPos();
 	//! calculated the FrameRect
 	void calculateFrameRect();
-	//! send some gui event to parent
-	void sendGuiEvent(EGUI_EVENT_TYPE type);
-	//! set text markers
-	void setTextMarkers(s32 begin, s32 end);
 	//! create a Vertical ScrollBar
 	void createVScrollBar();
 	//! update the vertical scrollBar (visibilty & position)
@@ -73,21 +69,7 @@ protected:
 	bool processMouse(const SEvent& event);
 	s32 getCursorPos(s32 x, s32 y);
 
-	bool m_mouse_marking;
 	bool m_background;
-
-	s32 m_mark_begin;
-	s32 m_mark_end;
-
-	gui::IGUIFont *m_last_break_font;
-	IOSOperator* m_operator;
-
-
-
-	core::rect<s32> m_frame_rect; // temporary values
-
-	u32 m_scrollbar_width;
-	GUIScrollBar *m_vscrollbar;
 
 	bool m_bg_color_used;
 	video::SColor m_bg_color;

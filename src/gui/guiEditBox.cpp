@@ -27,6 +27,12 @@ GUIEditBox::~GUIEditBox()
 {
 	if (m_override_font)
 		m_override_font->drop();
+
+	if (m_operator)
+		m_operator->drop();
+
+	if (m_vscrollbar)
+		m_vscrollbar->drop();
 }
 
 void GUIEditBox::setOverrideFont(IGUIFont *font)
@@ -160,4 +166,28 @@ void GUIEditBox::setDrawBorder(bool border)
 void GUIEditBox::setWritable(bool can_write_text)
 {
 	m_writable = can_write_text;
+}
+
+//! set text markers
+void GUIEditBox::setTextMarkers(s32 begin, s32 end)
+{
+	if (begin != m_mark_begin || end != m_mark_end) {
+		m_mark_begin = begin;
+		m_mark_end = end;
+		sendGuiEvent(EGET_EDITBOX_MARKING_CHANGED);
+	}
+}
+
+//! send some gui event to parent
+void GUIEditBox::sendGuiEvent(EGUI_EVENT_TYPE type)
+{
+	if (Parent) {
+		SEvent e;
+		e.EventType = EET_GUI_EVENT;
+		e.GUIEvent.Caller = this;
+		e.GUIEvent.Element = 0;
+		e.GUIEvent.EventType = type;
+
+		Parent->OnEvent(e);
+	}
 }

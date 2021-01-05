@@ -25,7 +25,7 @@ namespace gui
 			bool writable = true, bool has_vscrollbar = false);
 
 		//! destructor
-		virtual ~intlGUIEditBox();
+		virtual ~intlGUIEditBox() {}
 
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw);
@@ -66,10 +66,6 @@ namespace gui
 		void inputChar(wchar_t c);
 		//! calculates the current scroll position
 		void calculateScrollPos();
-		//! send some gui event to parent
-		void sendGuiEvent(EGUI_EVENT_TYPE type);
-		//! set text markers
-		void setTextMarkers(s32 begin, s32 end);
 
 		bool processKey(const SEvent& event);
 		bool processMouse(const SEvent& event);
@@ -80,17 +76,6 @@ namespace gui
 
 		//! Update the vertical scrollbar (visibilty & scroll position)
 		void updateVScrollBar();
-
-		bool MouseMarking = false;
-		s32 MarkBegin = 0;
-		s32 MarkEnd = 0;
-
-		gui::IGUIFont *LastBreakFont = nullptr;
-		IOSOperator *Operator = nullptr;
-
-		core::rect<s32> FrameRect; // temporary values
-		u32 m_scrollbar_width;
-		GUIScrollBar *m_vscrollbar;
 	};
 
 

@@ -33,7 +33,7 @@ public:
 	GUIEditBox(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 			core::rect<s32> rectangle, bool border, bool writable) :
 			IGUIEditBox(environment, parent, id, rectangle),
-			m_border(border), m_writable(writable)
+			m_border(border), m_writable(writable), m_frame_rect(rectangle)
 	{
 	}
 
@@ -132,6 +132,12 @@ protected:
 	//! sets the area of the given line
 	virtual void setTextRect(s32 line) = 0;
 
+	//! set text markers
+	void setTextMarkers(s32 begin, s32 end);
+
+	//! send some gui event to parent
+	void sendGuiEvent(EGUI_EVENT_TYPE type);
+
 	gui::IGUIFont *m_override_font = nullptr;
 
 	bool m_override_color_enabled = false;
@@ -161,4 +167,17 @@ protected:
 	core::rect<s32> m_current_text_rect = core::rect<s32>(0, 0, 1, 1);
 
 	bool m_writable;
+
+	bool m_mouse_marking = false;
+
+	s32 m_mark_begin = 0;
+	s32 m_mark_end = 0;
+
+	gui::IGUIFont *m_last_break_font = nullptr;
+	IOSOperator *m_operator = nullptr;
+
+	core::rect<s32> m_frame_rect; // temporary values
+
+	u32 m_scrollbar_width = 0;
+	GUIScrollBar *m_vscrollbar = nullptr;
 };

@@ -26,10 +26,8 @@ numerical
 GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool border,
 	IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 	const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
-	: GUIEditBox(environment, parent, id, rectangle, border, writable), m_mouse_marking(false),
-	m_background(true), m_mark_begin(0), m_mark_end(0), m_last_break_font(0),
-	m_operator(0), m_frame_rect(rectangle),
-	m_scrollbar_width(0), m_vscrollbar(NULL), m_bg_color_used(false)
+	: GUIEditBox(environment, parent, id, rectangle, border, writable),
+	m_background(true), m_bg_color_used(false)
 {
 #ifdef _DEBUG
 	setDebugName("GUIEditBoxWithScrollBar");
@@ -57,17 +55,6 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 
 	calculateScrollPos();
 	setWritable(writable);
-}
-
-
-//! destructor
-GUIEditBoxWithScrollBar::~GUIEditBoxWithScrollBar()
-{
-	if (m_operator)
-		m_operator->drop();
-
-	if (m_vscrollbar)
-		m_vscrollbar->drop();
 }
 
 //! Sets whether to draw the background
@@ -1171,30 +1158,6 @@ void GUIEditBoxWithScrollBar::calculateFrameRect()
 	}
 
 	updateVScrollBar();
-}
-
-//! set text markers
-void GUIEditBoxWithScrollBar::setTextMarkers(s32 begin, s32 end)
-{
-	if (begin != m_mark_begin || end != m_mark_end) {
-		m_mark_begin = begin;
-		m_mark_end = end;
-		sendGuiEvent(EGET_EDITBOX_MARKING_CHANGED);
-	}
-}
-
-//! send some gui event to parent
-void GUIEditBoxWithScrollBar::sendGuiEvent(EGUI_EVENT_TYPE type)
-{
-	if (Parent) {
-		SEvent e;
-		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = this;
-		e.GUIEvent.Element = 0;
-		e.GUIEvent.EventType = type;
-
-		Parent->OnEvent(e);
-	}
 }
 
 //! create a vertical scroll bar
