@@ -6,7 +6,6 @@
 #define GUIEDITBOXWITHSCROLLBAR_HEADER
 
 #include "guiEditBox.h"
-#include <vector>
 
 class GUIEditBoxWithScrollBar : public GUIEditBox
 {
@@ -32,34 +31,12 @@ public:
 	//! \return Returns the size in pixels of the text
 	virtual core::dimension2du getTextDimension();
 
-	//! Sets text justification
-	virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 	//! called if an event happened.
 	virtual bool OnEvent(const SEvent& event);
 
 	//! draws the element and its children
 	virtual void draw();
-
-	//! Sets the new caption of this element.
-	virtual void setText(const wchar_t* text);
-
-	//! Sets the maximum amount of characters which may be entered in the box.
-	//! \param max: Maximum amount of characters. If 0, the character amount is
-	//! infinity.
-	virtual void setMax(u32 max);
-
-	//! Returns maximum amount of characters, previously set by setMax();
-	virtual u32 getMax() const;
-
-	//! Sets whether the edit box is a password box. Setting this to true will
-	/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
-	\param passwordBox: true to enable password, false to disable
-	\param passwordChar: the character that is displayed instead of letters */
-	virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
-
-	//! Returns true if the edit box is currently a password box.
-	virtual bool isPasswordBox() const;
 
 	//! Updates the absolute position, splits text if required
 	virtual void updateAbsolutePosition();
@@ -118,17 +95,7 @@ protected:
 	gui::IGUIFont *m_last_break_font;
 	IOSOperator* m_operator;
 
-	u32 m_blink_start_time;
-	s32 m_cursor_pos;
-	s32 m_hscroll_pos, m_vscroll_pos; // scroll position in characters
-	u32 m_max;
 
-	bool m_passwordbox;
-	wchar_t m_passwordchar;
-	EGUI_ALIGNMENT m_halign, m_valign;
-
-	std::vector<core::stringw> m_broken_text;
-	std::vector<s32> m_broken_text_positions;
 
 	core::rect<s32> m_current_text_rect, m_frame_rect; // temporary values
 

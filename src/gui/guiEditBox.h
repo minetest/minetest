@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "IGUIEditBox.h"
 #include "IOSOperator.h"
 #include "guiScrollBar.h"
+#include <vector>
 
 using namespace irr;
 using namespace irr::gui;
@@ -89,6 +90,29 @@ public:
 	//! \return true if automatic scrolling is enabled, false if not
 	virtual bool isAutoScrollEnabled() const { return m_autoscroll; }
 
+	//! Sets whether the edit box is a password box. Setting this to true will
+	/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
+	\param passwordBox: true to enable password, false to disable
+	\param passwordChar: the character that is displayed instead of letters */
+	virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
+
+	//! Returns true if the edit box is currently a password box.
+	virtual bool isPasswordBox() const { return m_passwordbox; }
+
+	//! Sets text justification
+	virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
+
+	//! Sets the new caption of this element.
+	virtual void setText(const wchar_t* text);
+
+	//! Sets the maximum amount of characters which may be entered in the box.
+	//! \param max: Maximum amount of characters. If 0, the character amount is
+	//! infinity.
+	virtual void setMax(u32 max);
+	
+	//! Returns maximum amount of characters, previously set by setMax();
+	virtual u32 getMax() const { return m_max; }
+
 protected:
 	virtual void breakText() = 0;
 
@@ -98,6 +122,21 @@ protected:
 	bool m_word_wrap = false;
 	bool m_multiline = false;
 	bool m_autoscroll = true;
+
+	bool m_passwordbox = false;
+	wchar_t m_passwordchar = L'*';
+
+	std::vector<core::stringw> m_broken_text;
+	std::vector<s32> m_broken_text_positions;
+
+	EGUI_ALIGNMENT m_halign = EGUIA_UPPERLEFT;
+	EGUI_ALIGNMENT m_valign = EGUIA_CENTER;
+
+	u32 m_blink_start_time = 0;
+	s32 m_cursor_pos = 0;
+	s32 m_hscroll_pos = 0;
+	s32 m_vscroll_pos = 0; // scroll position in characters
+	u32 m_max = 0;
 
 	video::SColor m_override_color = video::SColor(101, 255, 255, 255);
 };

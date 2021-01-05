@@ -93,3 +93,42 @@ void GUIEditBox::setAutoScroll(bool enable)
 {
 	m_autoscroll = enable;
 }
+
+void GUIEditBox::setPasswordBox(bool password_box, wchar_t password_char)
+{
+	m_passwordbox = password_box;
+	if (m_passwordbox) {
+		m_passwordchar = password_char;
+		setMultiLine(false);
+		setWordWrap(false);
+		m_broken_text.clear();
+	}
+}
+
+//! Sets text justification
+void GUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
+{
+	m_halign = horizontal;
+	m_valign = vertical;
+}
+
+//! Sets the new caption of this element.
+void GUIEditBox::setText(const wchar_t* text)
+{
+	Text = text;
+	if (u32(m_cursor_pos) > Text.size())
+		m_cursor_pos = Text.size();
+	m_hscroll_pos = 0;
+	breakText();
+}
+
+//! Sets the maximum amount of characters which may be entered in the box.
+//! \param max: Maximum amount of characters. If 0, the character amount is
+//! infinity.
+void GUIEditBox::setMax(u32 max)
+{
+	m_max = max;
+
+	if (Text.size() > m_max && m_max != 0)
+		Text = Text.subString(0, m_max);
+}

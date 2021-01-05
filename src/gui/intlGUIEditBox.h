@@ -41,34 +41,11 @@ namespace gui
 		//! \return Returns the size in pixels of the text
 		virtual core::dimension2du getTextDimension();
 
-		//! Sets text justification
-		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
-
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
 
 		//! draws the element and its children
 		virtual void draw();
-
-		//! Sets the new caption of this element.
-		virtual void setText(const wchar_t* text);
-
-		//! Sets the maximum amount of characters which may be entered in the box.
-		//! \param max: Maximum amount of characters. If 0, the character amount is
-		//! infinity.
-		virtual void setMax(u32 max);
-
-		//! Returns maximum amount of characters, previously set by setMax();
-		virtual u32 getMax() const;
-
-		//! Sets whether the edit box is a password box. Setting this to true will
-		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
-		\param passwordBox: true to enable password, false to disable
-		\param passwordChar: the character that is displayed instead of letters */
-		virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
-
-		//! Returns true if the edit box is currently a password box.
-		virtual bool isPasswordBox() const;
 
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
@@ -123,20 +100,6 @@ namespace gui
 
 		gui::IGUIFont *LastBreakFont = nullptr;
 		IOSOperator *Operator = nullptr;
-
-		u64 BlinkStartTime = 0;
-		s32 CursorPos = 0;
-		s32 HScrollPos = 0;
-		s32 VScrollPos = 0; // scroll position in characters
-		u32 Max = 0;
-
-		bool PasswordBox = false;
-		wchar_t PasswordChar = L'*';
-		EGUI_ALIGNMENT HAlign = EGUIA_UPPERLEFT;
-		EGUI_ALIGNMENT VAlign = EGUIA_CENTER;
-
-		core::array<core::stringw> BrokenText;
-		core::array<s32> BrokenTextPositions;
 
 		core::rect<s32> CurrentTextRect = core::rect<s32>(0,0,1,1);
 		core::rect<s32> FrameRect; // temporary values

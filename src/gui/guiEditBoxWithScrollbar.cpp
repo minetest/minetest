@@ -28,9 +28,7 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 	const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
 	: GUIEditBox(environment, parent, id, rectangle), m_mouse_marking(false),
 	m_border(border), m_background(true), m_mark_begin(0), m_mark_end(0), m_last_break_font(0),
-	m_operator(0), m_blink_start_time(0), m_cursor_pos(0), m_hscroll_pos(0), m_vscroll_pos(0), m_max(0),
-	m_passwordbox(false),
-	m_passwordchar(L'*'), m_halign(EGUIA_UPPERLEFT), m_valign(EGUIA_CENTER),
+	m_operator(0),
 	m_current_text_rect(0, 0, 1, 1), m_frame_rect(rectangle),
 	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable),
 	m_bg_color_used(false)
@@ -97,32 +95,6 @@ void GUIEditBoxWithScrollBar::updateAbsolutePosition()
 		breakText();
 		calculateScrollPos();
 	}
-}
-
-
-void GUIEditBoxWithScrollBar::setPasswordBox(bool password_box, wchar_t password_char)
-{
-	m_passwordbox = password_box;
-	if (m_passwordbox) {
-		m_passwordchar = password_char;
-		setMultiLine(false);
-		setWordWrap(false);
-		m_broken_text.clear();
-	}
-}
-
-
-bool GUIEditBoxWithScrollBar::isPasswordBox() const
-{
-	return m_passwordbox;
-}
-
-
-//! Sets text justification
-void GUIEditBoxWithScrollBar::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
-{
-	m_halign = horizontal;
-	m_valign = vertical;
 }
 
 
@@ -748,17 +720,6 @@ void GUIEditBoxWithScrollBar::draw()
 }
 
 
-//! Sets the new caption of this element.
-void GUIEditBoxWithScrollBar::setText(const wchar_t* text)
-{
-	Text = text;
-	if (u32(m_cursor_pos) > Text.size())
-		m_cursor_pos = Text.size();
-	m_hscroll_pos = 0;
-	breakText();
-}
-
-
 //! Gets the area of the text in the edit box
 //! \return Returns the size in pixels of the text
 core::dimension2du GUIEditBoxWithScrollBar::getTextDimension()
@@ -775,25 +736,6 @@ core::dimension2du GUIEditBoxWithScrollBar::getTextDimension()
 	}
 
 	return core::dimension2du(ret.getSize());
-}
-
-
-//! Sets the maximum amount of characters which may be entered in the box.
-//! \param max: Maximum amount of characters. If 0, the character amount is
-//! infinity.
-void GUIEditBoxWithScrollBar::setMax(u32 max)
-{
-	m_max = max;
-
-	if (Text.size() > m_max && m_max != 0)
-		Text = Text.subString(0, m_max);
-}
-
-
-//! Returns maximum amount of characters, previously set by setMax();
-u32 GUIEditBoxWithScrollBar::getMax() const
-{
-	return m_max;
 }
 
 
