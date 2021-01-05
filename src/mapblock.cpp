@@ -412,7 +412,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 	*/
 	std::ostringstream oss(std::ios_base::binary);
 	m_node_metadata.serialize(oss, version, disk);
-	compressZlib(oss.str(), os, compression_level);
+	compress(oss.str(), os, version, compression_level);
 
 	/*
 		Data that goes to disk, but not the network
@@ -495,7 +495,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	// Ignore errors
 	try {
 		std::ostringstream oss(std::ios_base::binary);
-		decompressZlib(is, oss);
+		decompress(is, oss, version);
 		std::istringstream iss(oss.str(), std::ios_base::binary);
 		if (version >= 23)
 			m_node_metadata.deSerialize(iss, m_gamedef->idef());

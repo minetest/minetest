@@ -746,8 +746,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 		throw SerializationError("MapNode::serializeBulk: serialization to "
 				"version < 24 not possible");
 
-	size_t databuf_size = nodecount * (content_width + params_width);
-	u8 *databuf = new u8[databuf_size];
+	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
 
 	u32 start1 = content_width * nodecount;
 	u32 start2 = (content_width + 1) * nodecount;
@@ -763,9 +762,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 		Compress data to output stream
 	*/
 
-	compressZlib(databuf, databuf_size, os, compression_level);
-
-	delete [] databuf;
+	compress(databuf, os, version, compression_level);
 }
 
 // Deserialize bulk node data
@@ -784,7 +781,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	// Uncompress or read data
 	u32 len = nodecount * (content_width + params_width);
 	std::ostringstream os(std::ios_base::binary);
-	decompressZlib(is, os);
+	decompress(is, os, version);
 	std::string s = os.str();
 	if(s.size() != len)
 		throw SerializationError("deSerializeBulkNodes: "

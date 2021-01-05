@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 
 #include "zlib.h"
+#include "zstd.h"
 
 /* report a zlib or i/o error */
 void zerr(int ret)
@@ -197,11 +198,119 @@ void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
 	inflateEnd(&z);
 }
 
-void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version)
+struct ZSTD_Deleter {
+	void operator() (ZSTD_CStream* cstream) {
+		ZSTD_freeCStream(cstream);
+	}
+
+	void operator() (ZSTD_DStream* dstream) {
+		ZSTD_freeDStream(dstream);
+	}
+};
+
+void compressZstd(const u8 *data, size_t data_size, std::ostream &os, int level)
 {
+	// reusing the context is recommended for performance
+	// it will destroyed when the thread ends
+	thread_local std::unique_ptr<ZSTD_CStream, ZSTD_Deleter> stream(ZSTD_createCStream());
+
+	ZSTD_initCStream(stream.get(), level);
+
+	const size_t bufsize = ZSTD_CStreamOutSize();
+	char output_buffer[bufsize];
+
+	ZSTD_inBuffer input = { data, data_size, 0 };
+	ZSTD_outBuffer output = { output_buffer, bufsize, 0 };
+
+	while (input.pos < input.size) {
+		size_t ret = ZSTD_compressStream(stream.get(), &output, &input);
+		if (ZSTD_isError(ret)) {
+			dstream << ZSTD_getErrorName(ret) << std::endl;
+			throw SerializationError("compressZstd: failed");
+		}
+		if (output.pos) {
+			os.write(output_buffer, output.pos);
+			output.pos = 0;
+		}
+	}
+
+	size_t ret;
+	do {
+		ret = ZSTD_endStream(stream.get(), &output);
+		if (ZSTD_isError(ret)) {
+			dstream << ZSTD_getErrorName(ret) << std::endl;
+			throw SerializationError("compressZstd: failed");
+		}
+		if (output.pos) {
+			os.write(output_buffer, output.pos);
+			output.pos = 0;
+		}
+	} while (ret != 0);
+
+}
+
+void compressZstd(const std::string &data, std::ostream &os, int level)
+{
+	compressZstd((u8*)data.c_str(), data.size(), os, level);
+}
+
+void decompressZstd(std::istream &is, std::ostream &os)
+{
+	// reusing the context is recommended for performance
+	// it will destroyed when the thread ends
+	thread_local std::unique_ptr<ZSTD_DStream, ZSTD_Deleter> stream(ZSTD_createDStream());
+
+	ZSTD_initDStream(stream.get());
+
+	const size_t bufsize_out = ZSTD_DStreamOutSize();
+	const size_t bufsize_in = ZSTD_DStreamInSize();
+	char output_buffer[bufsize_out];
+	char input_buffer[bufsize_in];
+
+	ZSTD_outBuffer output = { output_buffer, bufsize_out, 0 };
+	ZSTD_inBuffer input = { input_buffer, 0, 0 };
+	size_t ret;
+	do
+	{
+		if (input.size == input.pos) {
+			is.read(input_buffer, bufsize_in);
+			input.size = is.gcount();
+			input.pos = 0;
+		}
+
+		ret = ZSTD_decompressStream(stream.get(), &output, &input);
+		if (ZSTD_isError(ret)) {
+			dstream << ZSTD_getErrorName(ret) << std::endl;
+			throw SerializationError("decompressZstd: failed");
+		}
+		if (output.pos) {
+			os.write(output_buffer, output.pos);
+			output.pos = 0;
+		}
+	} while (ret != 0);
+
+	// Unget all the data that inflate didn't take
+	is.clear(); // Just in case EOF is set
+	for (u32 i = 0; i < input.size - input.pos; i++) {
+		is.unget();
+		if (is.fail() || is.bad())
+			throw SerializationError("decompressZlib: unget failed");
+	}
+}
+
+void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int level)
+{
+	if(version >= 29)
+	{
+		// map the zlib levels [-1,9]
+		// the range 1-10 is good enough, 0 is the default (currently 3)
+		compressZstd(*data, data.getSize(), os, level + 1);
+		return;
+	}
+
 	if(version >= 11)
 	{
-		compressZlib(*data ,data.getSize(), os);
+		compressZlib(*data, data.getSize(), os, level);
 		return;
 	}
 
@@ -240,8 +349,20 @@ void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version)
 	os.write((char*)&current_byte, 1);
 }
 
+void compress(const std::string &data, std::ostream &os, u8 version, int level)
+{
+	SharedBuffer<u8> databuf((u8*)data.c_str(), data.size());
+	compress(databuf, os, version, level);
+}
+
 void decompress(std::istream &is, std::ostream &os, u8 version)
 {
+	if(version >= 29)
+	{
+		decompressZstd(is, os);
+		return;
+	}
+
 	if(version >= 11)
 	{
 		decompressZlib(is, os);
