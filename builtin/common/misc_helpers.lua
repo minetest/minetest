@@ -474,15 +474,29 @@ end
 test_string_to_area()
 
 --------------------------------------------------------------------------------
-function table.copy(t, seen)
-	local n = {}
-	seen = seen or {}
-	seen[t] = n
-	for k, v in pairs(t) do
-		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
-			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
+-- Separate from `table.copy` so no parameter can accidentally be provided for `seen`
+local function deepcopy(t, copy_meta, seen)
+	if type(t) == "table" then
+		if seen[t] then
+			return seen[t]
+		else
+			local copy = {}
+			seen[t] = copy
+			for k, v in pairs(t) do
+				copy[deepcopy(k, copy_meta, seen)] = deepcopy(v, copy_meta, seen)
+			end
+			if copy_meta then
+				setmetatable(copy, deepcopy(getmetatable(t), copy_meta, seen))
+			end
+			return copy
+		end
 	end
-	return n
+	return t
+end
+
+
+function table.copy(t, copy_meta)
+	return deepcopy(t, copy_meta, {})
 end
 
 
