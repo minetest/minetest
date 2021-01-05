@@ -113,7 +113,7 @@ void GUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vert
 }
 
 //! Sets the new caption of this element.
-void GUIEditBox::setText(const wchar_t* text)
+void GUIEditBox::setText(const wchar_t *text)
 {
 	Text = text;
 	if (u32(m_cursor_pos) > Text.size())
@@ -131,4 +131,33 @@ void GUIEditBox::setMax(u32 max)
 
 	if (Text.size() > m_max && m_max != 0)
 		Text = Text.subString(0, m_max);
+}
+
+//! Gets the area of the text in the edit box
+//! \return Returns the size in pixels of the text
+core::dimension2du GUIEditBox::getTextDimension()
+{
+	core::rect<s32> ret;
+
+	setTextRect(0);
+	ret = m_current_text_rect;
+
+	for (u32 i = 1; i < m_broken_text.size(); ++i) {
+		setTextRect(i);
+		ret.addInternalPoint(m_current_text_rect.UpperLeftCorner);
+		ret.addInternalPoint(m_current_text_rect.LowerRightCorner);
+	}
+
+	return core::dimension2du(ret.getSize());
+}
+
+//! Turns the border on or off
+void GUIEditBox::setDrawBorder(bool border)
+{
+	m_border = border;
+}
+
+void GUIEditBox::setWritable(bool can_write_text)
+{
+	m_writable = can_write_text;
 }

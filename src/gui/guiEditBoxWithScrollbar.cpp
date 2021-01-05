@@ -26,12 +26,10 @@ numerical
 GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool border,
 	IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 	const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
-	: GUIEditBox(environment, parent, id, rectangle), m_mouse_marking(false),
-	m_border(border), m_background(true), m_mark_begin(0), m_mark_end(0), m_last_break_font(0),
-	m_operator(0),
-	m_current_text_rect(0, 0, 1, 1), m_frame_rect(rectangle),
-	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable),
-	m_bg_color_used(false)
+	: GUIEditBox(environment, parent, id, rectangle, border, writable), m_mouse_marking(false),
+	m_background(true), m_mark_begin(0), m_mark_end(0), m_last_break_font(0),
+	m_operator(0), m_frame_rect(rectangle),
+	m_scrollbar_width(0), m_vscrollbar(NULL), m_bg_color_used(false)
 {
 #ifdef _DEBUG
 	setDebugName("GUIEditBoxWithScrollBar");
@@ -70,13 +68,6 @@ GUIEditBoxWithScrollBar::~GUIEditBoxWithScrollBar()
 
 	if (m_vscrollbar)
 		m_vscrollbar->drop();
-}
-
-
-//! Turns the border on or off
-void GUIEditBoxWithScrollBar::setDrawBorder(bool border)
-{
-	m_border = border;
 }
 
 //! Sets whether to draw the background
@@ -720,25 +711,6 @@ void GUIEditBoxWithScrollBar::draw()
 }
 
 
-//! Gets the area of the text in the edit box
-//! \return Returns the size in pixels of the text
-core::dimension2du GUIEditBoxWithScrollBar::getTextDimension()
-{
-	core::rect<s32> ret;
-
-	setTextRect(0);
-	ret = m_current_text_rect;
-
-	for (u32 i = 1; i < m_broken_text.size(); ++i) {
-		setTextRect(i);
-		ret.addInternalPoint(m_current_text_rect.UpperLeftCorner);
-		ret.addInternalPoint(m_current_text_rect.LowerRightCorner);
-	}
-
-	return core::dimension2du(ret.getSize());
-}
-
-
 bool GUIEditBoxWithScrollBar::processMouse(const SEvent& event)
 {
 	switch (event.MouseInput.Event)
@@ -1292,12 +1264,6 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 		}
 	}
 
-}
-
-//! set true if this editbox is writable
-void GUIEditBoxWithScrollBar::setWritable(bool writable)
-{
-	m_writable = writable;
 }
 
 //! Change the background color

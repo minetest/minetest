@@ -59,9 +59,8 @@ namespace gui
 intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 		const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
-	: GUIEditBox(environment, parent, id, rectangle),
-	Border(border), FrameRect(rectangle),
-	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable)
+	: GUIEditBox(environment, parent, id, rectangle, border, writable),
+	FrameRect(rectangle), m_scrollbar_width(0), m_vscrollbar(NULL)
 {
 	#ifdef _DEBUG
 	setDebugName("intlintlGUIEditBox");
@@ -82,7 +81,7 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 	IGUISkin *skin = 0;
 	if (Environment)
 		skin = Environment->getSkin();
-	if (Border && skin)
+	if (m_border && skin)
 	{
 		FrameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
 		FrameRect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y)+1;
@@ -113,12 +112,6 @@ intlGUIEditBox::~intlGUIEditBox()
 
 	if (m_vscrollbar)
 		m_vscrollbar->drop();
-}
-
-//! Turns the border on or off
-void intlGUIEditBox::setDrawBorder(bool border)
-{
-	Border = border;
 }
 
 //! Sets whether to draw the background
@@ -656,7 +649,7 @@ void intlGUIEditBox::draw()
 
 	// draw the border
 
-	if (Border)
+	if (m_border)
 	{
 		if (m_writable) {
 			skin->draw3DSunkenPane(this, skin->getColor(EGDC_WINDOW),
@@ -722,7 +715,7 @@ void intlGUIEditBox::draw()
 
 				// clipping test - don't draw anything outside the visible area
 				core::rect<s32> c = localClipRect;
-				c.clipAgainst(CurrentTextRect);
+				c.clipAgainst(m_current_text_rect);
 				if (!c.isValid())
 					continue;
 
@@ -753,7 +746,7 @@ void intlGUIEditBox::draw()
 
 
 				// draw normal text
-				font->draw(txtLine->c_str(), CurrentTextRect,
+				font->draw(txtLine->c_str(), m_current_text_rect,
 					m_override_color_enabled ? m_override_color : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 
@@ -787,17 +780,17 @@ void intlGUIEditBox::draw()
 					else
 						mend = font->getDimension(txtLine->c_str()).Width;
 
-					CurrentTextRect.UpperLeftCorner.X += mbegin;
-					CurrentTextRect.LowerRightCorner.X = CurrentTextRect.UpperLeftCorner.X + mend - mbegin;
+					m_current_text_rect.UpperLeftCorner.X += mbegin;
+					m_current_text_rect.LowerRightCorner.X = m_current_text_rect.UpperLeftCorner.X + mend - mbegin;
 
 					// draw mark
-					skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), CurrentTextRect, &localClipRect);
+					skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), m_current_text_rect, &localClipRect);
 
 					// draw marked text
 					s = txtLine->subString(lineStartPos, lineEndPos - lineStartPos);
 
 					if (!s.empty())
-						font->draw(s.c_str(), CurrentTextRect,
+						font->draw(s.c_str(), m_current_text_rect,
 							m_override_color_enabled ? m_override_color : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
 							false, true, &localClipRect);
 
@@ -824,9 +817,9 @@ void intlGUIEditBox::draw()
 		if (m_writable)	{
 			if (focus && (porting::getTimeMs() - m_blink_start_time) % 700 < 350) {
 				setTextRect(cursorLine);
-				CurrentTextRect.UpperLeftCorner.X += charcursorpos;
+				m_current_text_rect.UpperLeftCorner.X += charcursorpos;
 
-				font->draw(L"_", CurrentTextRect,
+				font->draw(L"_", m_current_text_rect,
 					m_override_color_enabled ? m_override_color : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 			}
@@ -837,25 +830,6 @@ void intlGUIEditBox::draw()
 	IGUIElement::draw();
 }
 
-
-//! Gets the area of the text in the edit box
-//! \return Returns the size in pixels of the text
-core::dimension2du intlGUIEditBox::getTextDimension()
-{
-	core::rect<s32> ret;
-
-	setTextRect(0);
-	ret = CurrentTextRect;
-
-	for (u32 i=1; i < m_broken_text.size(); ++i)
-	{
-		setTextRect(i);
-		ret.addInternalPoint(CurrentTextRect.UpperLeftCorner);
-		ret.addInternalPoint(CurrentTextRect.LowerRightCorner);
-	}
-
-	return core::dimension2du(ret.getSize());
-}
 
 
 bool intlGUIEditBox::processMouse(const SEvent& event)
@@ -948,13 +922,13 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	for (; curr_line_idx < lineCount; ++curr_line_idx) {
 		setTextRect(curr_line_idx);
-		if (curr_line_idx == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
-			y = CurrentTextRect.UpperLeftCorner.Y;
-		if (curr_line_idx == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y)
-			y = CurrentTextRect.LowerRightCorner.Y;
+		if (curr_line_idx == 0 && y < m_current_text_rect.UpperLeftCorner.Y)
+			y = m_current_text_rect.UpperLeftCorner.Y;
+		if (curr_line_idx == lineCount - 1 && y > m_current_text_rect.LowerRightCorner.Y)
+			y = m_current_text_rect.LowerRightCorner.Y;
 
 		// is it inside this region?
-		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y) {
+		if (y >= m_current_text_rect.UpperLeftCorner.Y && y <= m_current_text_rect.LowerRightCorner.Y) {
 			// we've found the clicked line
 			txtLine = (m_word_wrap || m_multiline) ? &m_broken_text[curr_line_idx] : &Text;
 			startPos = (m_word_wrap || m_multiline) ? m_broken_text_positions[curr_line_idx] : 0;
@@ -962,15 +936,15 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 		}
 	}
 
-	if (x < CurrentTextRect.UpperLeftCorner.X)
-		x = CurrentTextRect.UpperLeftCorner.X;
-	else if (x > CurrentTextRect.LowerRightCorner.X)
-		x = CurrentTextRect.LowerRightCorner.X;
+	if (x < m_current_text_rect.UpperLeftCorner.X)
+		x = m_current_text_rect.UpperLeftCorner.X;
+	else if (x > m_current_text_rect.LowerRightCorner.X)
+		x = m_current_text_rect.LowerRightCorner.X;
 
-	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - m_current_text_rect.UpperLeftCorner.X);
 	// Special handling for last line, if we are on limits, add 1 extra shift because idx
 	// will be the last char, not null char of the wstring
-	if (curr_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
+	if (curr_line_idx == lineCount - 1 && x == m_current_text_rect.LowerRightCorner.X)
 		idx++;
 
 	return rangelim(idx + startPos, 0, S32_MAX);
@@ -1121,18 +1095,18 @@ void intlGUIEditBox::setTextRect(s32 line)
 	{
 	case EGUIA_CENTER:
 		// align to h centre
-		CurrentTextRect.UpperLeftCorner.X = (FrameRect.getWidth()/2) - (d.Width/2);
-		CurrentTextRect.LowerRightCorner.X = (FrameRect.getWidth()/2) + (d.Width/2);
+		m_current_text_rect.UpperLeftCorner.X = (FrameRect.getWidth()/2) - (d.Width/2);
+		m_current_text_rect.LowerRightCorner.X = (FrameRect.getWidth()/2) + (d.Width/2);
 		break;
 	case EGUIA_LOWERRIGHT:
 		// align to right edge
-		CurrentTextRect.UpperLeftCorner.X = FrameRect.getWidth() - d.Width;
-		CurrentTextRect.LowerRightCorner.X = FrameRect.getWidth();
+		m_current_text_rect.UpperLeftCorner.X = FrameRect.getWidth() - d.Width;
+		m_current_text_rect.LowerRightCorner.X = FrameRect.getWidth();
 		break;
 	default:
 		// align to left edge
-		CurrentTextRect.UpperLeftCorner.X = 0;
-		CurrentTextRect.LowerRightCorner.X = d.Width;
+		m_current_text_rect.UpperLeftCorner.X = 0;
+		m_current_text_rect.LowerRightCorner.X = d.Width;
 
 	}
 
@@ -1140,26 +1114,26 @@ void intlGUIEditBox::setTextRect(s32 line)
 	{
 	case EGUIA_CENTER:
 		// align to v centre
-		CurrentTextRect.UpperLeftCorner.Y =
+		m_current_text_rect.UpperLeftCorner.Y =
 			(FrameRect.getHeight()/2) - (lineCount*d.Height)/2 + d.Height*line;
 		break;
 	case EGUIA_LOWERRIGHT:
 		// align to bottom edge
-		CurrentTextRect.UpperLeftCorner.Y =
+		m_current_text_rect.UpperLeftCorner.Y =
 			FrameRect.getHeight() - lineCount*d.Height + d.Height*line;
 		break;
 	default:
 		// align to top edge
-		CurrentTextRect.UpperLeftCorner.Y = d.Height*line;
+		m_current_text_rect.UpperLeftCorner.Y = d.Height*line;
 		break;
 	}
 
-	CurrentTextRect.UpperLeftCorner.X  -= m_hscroll_pos;
-	CurrentTextRect.LowerRightCorner.X -= m_hscroll_pos;
-	CurrentTextRect.UpperLeftCorner.Y  -= m_vscroll_pos;
-	CurrentTextRect.LowerRightCorner.Y = CurrentTextRect.UpperLeftCorner.Y + d.Height;
+	m_current_text_rect.UpperLeftCorner.X  -= m_hscroll_pos;
+	m_current_text_rect.LowerRightCorner.X -= m_hscroll_pos;
+	m_current_text_rect.UpperLeftCorner.Y  -= m_vscroll_pos;
+	m_current_text_rect.LowerRightCorner.Y = m_current_text_rect.UpperLeftCorner.Y + d.Height;
 
-	CurrentTextRect += FrameRect.UpperLeftCorner;
+	m_current_text_rect += FrameRect.UpperLeftCorner;
 
 }
 
@@ -1246,7 +1220,7 @@ void intlGUIEditBox::calculateScrollPos()
 		core::stringw *txtLine = m_multiline ? &m_broken_text[cursLine] : &Text;
 		s32 cPos = m_multiline ? m_cursor_pos - m_broken_text_positions[cursLine] : m_cursor_pos;
 
-		s32 cStart = CurrentTextRect.UpperLeftCorner.X + m_hscroll_pos +
+		s32 cStart = m_current_text_rect.UpperLeftCorner.X + m_hscroll_pos +
 			font->getDimension(txtLine->subString(0, cPos).c_str()).Width;
 
 		s32 cEnd = cStart + font->getDimension(L"_ ").Width;
@@ -1265,10 +1239,10 @@ void intlGUIEditBox::calculateScrollPos()
 		return;
 
 	// vertical scroll position
-	if (FrameRect.LowerRightCorner.Y < CurrentTextRect.LowerRightCorner.Y)
-		m_vscroll_pos += CurrentTextRect.LowerRightCorner.Y - FrameRect.LowerRightCorner.Y; // scrolling downwards
-	else if (FrameRect.UpperLeftCorner.Y > CurrentTextRect.UpperLeftCorner.Y)
-		m_vscroll_pos += CurrentTextRect.UpperLeftCorner.Y - FrameRect.UpperLeftCorner.Y; // scrolling upwards
+	if (FrameRect.LowerRightCorner.Y < m_current_text_rect.LowerRightCorner.Y)
+		m_vscroll_pos += m_current_text_rect.LowerRightCorner.Y - FrameRect.LowerRightCorner.Y; // scrolling downwards
+	else if (FrameRect.UpperLeftCorner.Y > m_current_text_rect.UpperLeftCorner.Y)
+		m_vscroll_pos += m_current_text_rect.UpperLeftCorner.Y - FrameRect.UpperLeftCorner.Y; // scrolling upwards
 
 	// todo: adjust scrollbar
 	if (m_vscrollbar)
@@ -1335,8 +1309,8 @@ void intlGUIEditBox::updateVScrollBar()
 	// OnScrollBarChanged(...)
 	if (m_vscrollbar->getPos() != m_vscroll_pos) {
 		s32 deltaScrollY = m_vscrollbar->getPos() - m_vscroll_pos;
-		CurrentTextRect.UpperLeftCorner.Y -= deltaScrollY;
-		CurrentTextRect.LowerRightCorner.Y -= deltaScrollY;
+		m_current_text_rect.UpperLeftCorner.Y -= deltaScrollY;
+		m_current_text_rect.LowerRightCorner.Y -= deltaScrollY;
 
 		s32 scrollymax = getTextDimension().Height - FrameRect.getHeight();
 		if (scrollymax != m_vscrollbar->getMax()) {
@@ -1374,11 +1348,6 @@ void intlGUIEditBox::updateVScrollBar()
 			m_vscrollbar->setVisible(false);
 		}
 	}
-}
-
-void intlGUIEditBox::setWritable(bool can_write_text)
-{
-	m_writable = can_write_text;
 }
 
 //! Writes attributes of the element.

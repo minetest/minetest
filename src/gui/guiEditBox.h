@@ -31,8 +31,9 @@ class GUIEditBox : public IGUIEditBox
 {
 public:
 	GUIEditBox(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
-			core::rect<s32> rectangle) :
-			IGUIEditBox(environment, parent, id, rectangle)
+			core::rect<s32> rectangle, bool border, bool writable) :
+			IGUIEditBox(environment, parent, id, rectangle),
+			m_border(border), m_writable(writable)
 	{
 	}
 
@@ -72,6 +73,11 @@ public:
 	//! \return true if word wrap is enabled, false otherwise
 	virtual bool isWordWrapEnabled() const { return m_word_wrap; }
 
+	//! Turns the border on or off
+	virtual void setDrawBorder(bool border);
+
+	virtual bool isDrawBorderEnabled() const { return m_border; }
+
 	//! Enables or disables newlines.
 	/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
 	instead a newline character will be inserted. */
@@ -103,18 +109,28 @@ public:
 	virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 	//! Sets the new caption of this element.
-	virtual void setText(const wchar_t* text);
+	virtual void setText(const wchar_t *text);
 
 	//! Sets the maximum amount of characters which may be entered in the box.
 	//! \param max: Maximum amount of characters. If 0, the character amount is
 	//! infinity.
 	virtual void setMax(u32 max);
-	
+
 	//! Returns maximum amount of characters, previously set by setMax();
 	virtual u32 getMax() const { return m_max; }
 
+	//! Gets the size area of the text in the edit box
+	//! \return Returns the size in pixels of the text
+	virtual core::dimension2du getTextDimension();
+
+	//! set true if this EditBox is writable
+	virtual void setWritable(bool can_write_text);
+
 protected:
 	virtual void breakText() = 0;
+
+	//! sets the area of the given line
+	virtual void setTextRect(s32 line) = 0;
 
 	gui::IGUIFont *m_override_font = nullptr;
 
@@ -122,6 +138,8 @@ protected:
 	bool m_word_wrap = false;
 	bool m_multiline = false;
 	bool m_autoscroll = true;
+
+	bool m_border;
 
 	bool m_passwordbox = false;
 	wchar_t m_passwordchar = L'*';
@@ -139,4 +157,8 @@ protected:
 	u32 m_max = 0;
 
 	video::SColor m_override_color = video::SColor(101, 255, 255, 255);
+
+	core::rect<s32> m_current_text_rect = core::rect<s32>(0, 0, 1, 1);
+
+	bool m_writable;
 };

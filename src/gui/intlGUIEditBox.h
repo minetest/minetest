@@ -32,15 +32,6 @@ namespace gui
 
 		virtual bool isDrawBackgroundEnabled() const { return true; }
 
-		//! Turns the border on or off
-		virtual void setDrawBorder(bool border);
-
-		virtual bool isDrawBorderEnabled() const { return Border; }
-
-		//! Gets the size area of the text in the edit box
-		//! \return Returns the size in pixels of the text
-		virtual core::dimension2du getTextDimension();
-
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
 
@@ -49,9 +40,6 @@ namespace gui
 
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
-
-		//! set true if this EditBox is writable
-		virtual void setWritable(bool can_write_text);
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
@@ -71,7 +59,7 @@ namespace gui
 		//! Breaks the single text line.
 		virtual void breakText();
 		//! sets the area of the given line
-		void setTextRect(s32 line);
+		virtual void setTextRect(s32 line);
 		//! returns the line number that the cursor is on
 		s32 getLineFromPos(s32 pos);
 		//! adds a letter to the edit box
@@ -94,19 +82,15 @@ namespace gui
 		void updateVScrollBar();
 
 		bool MouseMarking = false;
-		bool Border;
 		s32 MarkBegin = 0;
 		s32 MarkEnd = 0;
 
 		gui::IGUIFont *LastBreakFont = nullptr;
 		IOSOperator *Operator = nullptr;
 
-		core::rect<s32> CurrentTextRect = core::rect<s32>(0,0,1,1);
 		core::rect<s32> FrameRect; // temporary values
 		u32 m_scrollbar_width;
 		GUIScrollBar *m_vscrollbar;
-		bool m_writable;
-
 	};
 
 

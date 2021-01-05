@@ -22,16 +22,6 @@ public:
 	//! Sets whether to draw the background
 	virtual void setDrawBackground(bool draw);
 
-	//! Turns the border on or off
-	virtual void setDrawBorder(bool border);
-
-
-
-	//! Gets the size area of the text in the edit box
-	//! \return Returns the size in pixels of the text
-	virtual core::dimension2du getTextDimension();
-
-
 	//! called if an event happened.
 	virtual bool OnEvent(const SEvent& event);
 
@@ -40,8 +30,6 @@ public:
 
 	//! Updates the absolute position, splits text if required
 	virtual void updateAbsolutePosition();
-
-	virtual void setWritable(bool writable);
 
 	//! Change the background color
 	virtual void setBackgroundColor(const video::SColor &bg_color);
@@ -63,7 +51,7 @@ protected:
 	//! Breaks the single text line.
 	virtual void breakText();
 	//! sets the area of the given line
-	void setTextRect(s32 line);
+	virtual void setTextRect(s32 line);
 	//! returns the line number that the cursor is on
 	s32 getLineFromPos(s32 pos);
 	//! adds a letter to the edit box
@@ -86,7 +74,6 @@ protected:
 	s32 getCursorPos(s32 x, s32 y);
 
 	bool m_mouse_marking;
-	bool m_border;
 	bool m_background;
 
 	s32 m_mark_begin;
@@ -97,11 +84,10 @@ protected:
 
 
 
-	core::rect<s32> m_current_text_rect, m_frame_rect; // temporary values
+	core::rect<s32> m_frame_rect; // temporary values
 
 	u32 m_scrollbar_width;
 	GUIScrollBar *m_vscrollbar;
-	bool m_writable;
 
 	bool m_bg_color_used;
 	video::SColor m_bg_color;
