@@ -60,22 +60,16 @@ namespace gui
 		virtual void breakText();
 		//! sets the area of the given line
 		virtual void setTextRect(s32 line);
-		//! returns the line number that the cursor is on
-		s32 getLineFromPos(s32 pos);
 		//! adds a letter to the edit box
 		void inputChar(wchar_t c);
 		//! calculates the current scroll position
 		void calculateScrollPos();
 
 		bool processKey(const SEvent& event);
-		bool processMouse(const SEvent& event);
 		s32 getCursorPos(s32 x, s32 y);
 
 		//! Create a vertical scrollbar
 		void createVScrollBar();
-
-		//! Update the vertical scrollbar (visibilty & scroll position)
-		void updateVScrollBar();
 	};
 
 

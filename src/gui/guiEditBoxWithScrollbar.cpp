@@ -698,66 +698,6 @@ void GUIEditBoxWithScrollBar::draw()
 }
 
 
-bool GUIEditBoxWithScrollBar::processMouse(const SEvent& event)
-{
-	switch (event.MouseInput.Event)
-	{
-	case irr::EMIE_LMOUSE_LEFT_UP:
-		if (Environment->hasFocus(this)) {
-			m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-			if (m_mouse_marking) {
-				setTextMarkers(m_mark_begin, m_cursor_pos);
-			}
-			m_mouse_marking = false;
-			calculateScrollPos();
-			return true;
-		}
-		break;
-	case irr::EMIE_MOUSE_MOVED:
-	{
-		if (m_mouse_marking) {
-			m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-			setTextMarkers(m_mark_begin, m_cursor_pos);
-			calculateScrollPos();
-			return true;
-		}
-	}
-	break;
-	case EMIE_LMOUSE_PRESSED_DOWN:
-
-		if (!Environment->hasFocus(this)) {
-			m_blink_start_time = porting::getTimeMs();
-			m_mouse_marking = true;
-			m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-			setTextMarkers(m_cursor_pos, m_cursor_pos);
-			calculateScrollPos();
-			return true;
-		} else {
-			if (!AbsoluteClippingRect.isPointInside(
-				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))	{
-				return false;
-			} else {
-				// move cursor
-				m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-
-				s32 newMarkBegin = m_mark_begin;
-				if (!m_mouse_marking)
-					newMarkBegin = m_cursor_pos;
-
-				m_mouse_marking = true;
-				setTextMarkers(newMarkBegin, m_cursor_pos);
-				calculateScrollPos();
-				return true;
-			}
-		}
-	default:
-		break;
-	}
-
-	return false;
-}
-
-
 s32 GUIEditBoxWithScrollBar::getCursorPos(s32 x, s32 y)
 {
 	IGUIFont* font = getActiveFont();
@@ -976,21 +916,6 @@ void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 }
 
 
-s32 GUIEditBoxWithScrollBar::getLineFromPos(s32 pos)
-{
-	if (!m_word_wrap && !m_multiline)
-		return 0;
-
-	s32 i = 0;
-	while (i < (s32)m_broken_text_positions.size()) {
-		if (m_broken_text_positions[i] > pos)
-			return i - 1;
-		++i;
-	}
-	return (s32)m_broken_text_positions.size() - 1;
-}
-
-
 void GUIEditBoxWithScrollBar::inputChar(wchar_t c)
 {
 	if (!isEnabled())
@@ -1179,55 +1104,7 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 	m_vscrollbar->setLargeStep(1);
 }
 
-void GUIEditBoxWithScrollBar::updateVScrollBar()
-{
-	if (!m_vscrollbar) {
-		return;
-	}
 
-	// OnScrollBarChanged(...)
-	if (m_vscrollbar->getPos() != m_vscroll_pos) {
-		s32 deltaScrollY = m_vscrollbar->getPos() - m_vscroll_pos;
-		m_current_text_rect.UpperLeftCorner.Y -= deltaScrollY;
-		m_current_text_rect.LowerRightCorner.Y -= deltaScrollY;
-
-		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();
-		if (scrollymax != m_vscrollbar->getMax()) {
-			// manage a newline or a deleted line
-			m_vscrollbar->setMax(scrollymax);
-			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
-			calculateScrollPos();
-		} else {
-			// manage a newline or a deleted line
-			m_vscroll_pos = m_vscrollbar->getPos();
-		}
-	}
-
-	// check if a vertical scrollbar is needed ?
-	if (getTextDimension().Height > (u32) m_frame_rect.getHeight()) {
-		m_frame_rect.LowerRightCorner.X -= m_scrollbar_width;
-
-		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();
-		if (scrollymax != m_vscrollbar->getMax()) {
-			m_vscrollbar->setMax(scrollymax);
-			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
-		}
-
-		if (!m_vscrollbar->isVisible()) {
-			m_vscrollbar->setVisible(true);
-		}
-	} else {
-		if (m_vscrollbar->isVisible())
-		{
-			m_vscrollbar->setVisible(false);
-			m_vscroll_pos = 0;
-			m_vscrollbar->setPos(0);
-			m_vscrollbar->setMax(1);
-			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
-		}
-	}
-
-}
 
 //! Change the background color
 void GUIEditBoxWithScrollBar::setBackgroundColor(const video::SColor &bg_color)

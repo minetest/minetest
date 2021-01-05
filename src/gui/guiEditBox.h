@@ -126,6 +126,8 @@ public:
 	//! set true if this EditBox is writable
 	virtual void setWritable(bool can_write_text);
 
+	bool processMouse(const SEvent &event);
+
 protected:
 	virtual void breakText() = 0;
 
@@ -137,6 +139,17 @@ protected:
 
 	//! send some gui event to parent
 	void sendGuiEvent(EGUI_EVENT_TYPE type);
+
+	//! calculates the current scroll position
+	virtual void calculateScrollPos() = 0;
+
+	virtual s32 getCursorPos(s32 x, s32 y) = 0;
+
+	//! returns the line number that the cursor is on
+	s32 getLineFromPos(s32 pos);
+
+	//! update the vertical scrollBar (visibilty & position)
+	void updateVScrollBar();
 
 	gui::IGUIFont *m_override_font = nullptr;
 

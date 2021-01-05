@@ -713,7 +713,7 @@ void intlGUIEditBox::draw()
 					if (m_broken_text.size() != 1)
 					{
 						m_broken_text.clear();
-						m_broken_text.push_back(core::stringw());
+						m_broken_text.emplace_back();
 					}
 					if (m_broken_text[0].size() != Text.size())
 					{
@@ -816,81 +816,6 @@ void intlGUIEditBox::draw()
 
 	// draw children
 	IGUIElement::draw();
-}
-
-
-
-bool intlGUIEditBox::processMouse(const SEvent& event)
-{
-	switch(event.MouseInput.Event)
-	{
-	case irr::EMIE_LMOUSE_LEFT_UP:
-		if (Environment->hasFocus(this))
-		{
-			m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-			if (m_mouse_marking)
-			{
-			    setTextMarkers( m_mark_begin, m_cursor_pos );
-			}
-			m_mouse_marking = false;
-			calculateScrollPos();
-			return true;
-		}
-		break;
-	case irr::EMIE_MOUSE_MOVED:
-		{
-			if (m_mouse_marking)
-			{
-				m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-				setTextMarkers( m_mark_begin, m_cursor_pos );
-				calculateScrollPos();
-				return true;
-			}
-		}
-		break;
-	case EMIE_LMOUSE_PRESSED_DOWN:
-		if (!Environment->hasFocus(this))
-		{
-			m_blink_start_time = porting::getTimeMs();
-			m_mouse_marking = true;
-			m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-			setTextMarkers(m_cursor_pos, m_cursor_pos );
-			calculateScrollPos();
-			return true;
-		}
-		else
-		{
-			if (!AbsoluteClippingRect.isPointInside(
-				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
-				return false;
-			}
-
-
-			// move cursor
-			m_cursor_pos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-
-			s32 newMarkBegin = m_mark_begin;
-			if (!m_mouse_marking)
-				newMarkBegin = m_cursor_pos;
-
-			m_mouse_marking = true;
-			setTextMarkers( newMarkBegin, m_cursor_pos);
-			calculateScrollPos();
-			return true;
-		}
-		break;
-	case EMIE_MOUSE_WHEEL:
-		if (m_vscrollbar && m_vscrollbar->isVisible()) {
-			s32 pos = m_vscrollbar->getPos();
-			s32 step = m_vscrollbar->getSmallStep();
-			m_vscrollbar->setPos(pos - event.MouseInput.Wheel * step);
-		}
-		break;
-	default:
-		break;
-	}
-
-	return false;
 }
 
 
@@ -1125,26 +1050,9 @@ void intlGUIEditBox::setTextRect(s32 line)
 
 }
 
-
-s32 intlGUIEditBox::getLineFromPos(s32 pos)
-{
-	if (!m_word_wrap && !m_multiline)
-		return 0;
-
-	s32 i=0;
-	while (i < (s32)m_broken_text_positions.size())
-	{
-		if (m_broken_text_positions[i] > pos)
-			return i-1;
-		++i;
-	}
-	return (s32)m_broken_text_positions.size() - 1;
-}
-
-
 void intlGUIEditBox::inputChar(wchar_t c)
 {
-	if (!IsEnabled || !m_writable)
+	if (!isEnabled() || !m_writable)
 		return;
 
 	if (c != 0)
@@ -1263,55 +1171,6 @@ void intlGUIEditBox::createVScrollBar()
 	m_vscrollbar->setLargeStep(10 * fontHeight);
 }
 
-//! Update the vertical scrollbar (visibilty & scroll position)
-void intlGUIEditBox::updateVScrollBar()
-{
-	if (!m_vscrollbar)
-		return;
-
-	// OnScrollBarChanged(...)
-	if (m_vscrollbar->getPos() != m_vscroll_pos) {
-		s32 deltaScrollY = m_vscrollbar->getPos() - m_vscroll_pos;
-		m_current_text_rect.UpperLeftCorner.Y -= deltaScrollY;
-		m_current_text_rect.LowerRightCorner.Y -= deltaScrollY;
-
-		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();
-		if (scrollymax != m_vscrollbar->getMax()) {
-			// manage a newline or a deleted line
-			m_vscrollbar->setMax(scrollymax);
-			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
-			calculateScrollPos();
-		} else {
-			// manage a newline or a deleted line
-			m_vscroll_pos = m_vscrollbar->getPos();
-		}
-	}
-
-	// check if a vertical scrollbar is needed ?
-	if (getTextDimension().Height > (u32) m_frame_rect.getHeight()) {
-		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();
-		if (scrollymax != m_vscrollbar->getMax()) {
-			m_vscrollbar->setMax(scrollymax);
-			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
-		}
-
-		if (!m_vscrollbar->isVisible() && m_multiline) {
-			AbsoluteRect.LowerRightCorner.X -= m_scrollbar_width;
-
-			m_vscrollbar->setVisible(true);
-		}
-	} else {
-		if (m_vscrollbar->isVisible()) {
-			AbsoluteRect.LowerRightCorner.X += m_scrollbar_width;
-
-			m_vscroll_pos = 0;
-			m_vscrollbar->setPos(0);
-			m_vscrollbar->setMax(1);
-			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
-			m_vscrollbar->setVisible(false);
-		}
-	}
-}
 
 //! Writes attributes of the element.
 void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
