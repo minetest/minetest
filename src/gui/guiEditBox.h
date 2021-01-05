@@ -126,7 +126,8 @@ public:
 	//! set true if this EditBox is writable
 	virtual void setWritable(bool can_write_text);
 
-	bool processMouse(const SEvent &event);
+	//! called if an event happened.
+	virtual bool OnEvent(const SEvent &event);
 
 protected:
 	virtual void breakText() = 0;
@@ -144,6 +145,9 @@ protected:
 	virtual void calculateScrollPos() = 0;
 
 	virtual s32 getCursorPos(s32 x, s32 y) = 0;
+
+	bool processKey(const SEvent &event);
+	virtual void inputChar(wchar_t c) = 0;
 
 	//! returns the line number that the cursor is on
 	s32 getLineFromPos(s32 pos);
@@ -193,4 +197,7 @@ protected:
 
 	u32 m_scrollbar_width = 0;
 	GUIScrollBar *m_vscrollbar = nullptr;
+
+private:
+	bool processMouse(const SEvent &event);
 };

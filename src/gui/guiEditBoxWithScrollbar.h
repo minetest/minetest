@@ -22,9 +22,6 @@ public:
 	//! Sets whether to draw the background
 	virtual void setDrawBackground(bool draw);
 
-	//! called if an event happened.
-	virtual bool OnEvent(const SEvent& event);
-
 	//! draws the element and its children
 	virtual void draw();
 
@@ -53,7 +50,7 @@ protected:
 	//! sets the area of the given line
 	virtual void setTextRect(s32 line);
 	//! adds a letter to the edit box
-	void inputChar(wchar_t c);
+	virtual void inputChar(wchar_t c);
 	//! calculates the current scroll position
 	void calculateScrollPos();
 	//! calculated the FrameRect
@@ -61,7 +58,6 @@ protected:
 	//! create a Vertical ScrollBar
 	void createVScrollBar();
 
-	bool processKey(const SEvent& event);
 	s32 getCursorPos(s32 x, s32 y);
 
 	bool m_background;
