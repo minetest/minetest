@@ -203,4 +203,5 @@ private:
 
 	bool onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
 	bool onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
+	bool onKeyV(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
 };

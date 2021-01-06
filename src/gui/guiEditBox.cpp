@@ -320,64 +320,7 @@ bool GUIEditBox::processKey(const SEvent &event)
 			}
 			break;
 		case KEY_KEY_V:
-			if (!isEnabled())
-				break;
-
-			// paste from the clipboard
-			if (m_operator) {
-				const s32 realmbgn = m_mark_begin < m_mark_end
-								     ? m_mark_begin
-								     : m_mark_end;
-				const s32 realmend = m_mark_begin < m_mark_end
-								     ? m_mark_end
-								     : m_mark_begin;
-
-				// add new character
-				const c8 *p = m_operator->getTextFromClipboard();
-				if (p) {
-					if (m_mark_begin == m_mark_end) {
-						// insert text
-						core::stringw s = Text.subString(
-								0, m_cursor_pos);
-						s.append(p);
-						s.append(Text.subString(m_cursor_pos,
-								Text.size() - m_cursor_pos));
-
-						if (!m_max || s.size() <= m_max) // thx to
-										 // Fish
-										 // FH for
-										 // fix
-						{
-							Text = s;
-							s = p;
-							m_cursor_pos += s.size();
-						}
-					} else {
-						// replace text
-
-						core::stringw s = Text.subString(
-								0, realmbgn);
-						s.append(p);
-						s.append(Text.subString(realmend,
-								Text.size() - realmend));
-
-						if (!m_max || s.size() <= m_max) // thx to
-										 // Fish
-										 // FH for
-										 // fix
-						{
-							Text = s;
-							s = p;
-							m_cursor_pos = realmbgn +
-								       s.size();
-						}
-					}
-				}
-
-				new_mark_begin = 0;
-				new_mark_end = 0;
-				text_changed = true;
-			}
+			text_changed = onKeyV(event, new_mark_begin, new_mark_end);
 			break;
 		case KEY_HOME:
 			// move/highlight to start of text
@@ -672,6 +615,7 @@ bool GUIEditBox::onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark
 	// clang-format on
 	return false;
 }
+
 bool GUIEditBox::onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
 {
 	// clang-format off
@@ -702,6 +646,60 @@ bool GUIEditBox::onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_ma
 
 	// clang-format on
 	return false;
+}
+
+bool GUIEditBox::onKeyV(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+{
+	if (!isEnabled())
+		return false;
+
+	// paste from the clipboard
+	if (!m_operator)
+		return false;
+
+	const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+	const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
+
+	// add new character
+	if (const c8 *p = m_operator->getTextFromClipboard()) {
+		if (m_mark_begin == m_mark_end) {
+			// insert text
+			core::stringw s = Text.subString(0, m_cursor_pos);
+			s.append(p);
+			s.append(Text.subString(
+					m_cursor_pos, Text.size() - m_cursor_pos));
+
+			if (!m_max || s.size() <= m_max) // thx to
+							 // Fish
+							 // FH for
+							 // fix
+			{
+				Text = s;
+				s = p;
+				m_cursor_pos += s.size();
+			}
+		} else {
+			// replace text
+
+			core::stringw s = Text.subString(0, realmbgn);
+			s.append(p);
+			s.append(Text.subString(realmend, Text.size() - realmend));
+
+			if (!m_max || s.size() <= m_max) // thx to
+							 // Fish
+							 // FH for
+							 // fix
+			{
+				Text = s;
+				s = p;
+				m_cursor_pos = realmbgn + s.size();
+			}
+		}
+	}
+
+	new_mark_begin = 0;
+	new_mark_end = 0;
+	return true;
 }
 
 bool GUIEditBox::processMouse(const SEvent &event)
