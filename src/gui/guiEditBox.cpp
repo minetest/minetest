@@ -446,92 +446,11 @@ bool GUIEditBox::processKey(const SEvent &event)
 			}
 			break;
 		case KEY_BACK:
-			if (!isEnabled())
-				break;
-
-			if (Text.size()) {
-				core::stringw s;
-
-				if (m_mark_begin != m_mark_end) {
-					// delete marked text
-					const s32 realmbgn =
-							m_mark_begin < m_mark_end
-									? m_mark_begin
-									: m_mark_end;
-					const s32 realmend =
-							m_mark_begin < m_mark_end
-									? m_mark_end
-									: m_mark_begin;
-
-					s = Text.subString(0, realmbgn);
-					s.append(Text.subString(realmend,
-							Text.size() - realmend));
-					Text = s;
-
-					m_cursor_pos = realmbgn;
-				} else {
-					// delete text behind cursor
-					if (m_cursor_pos > 0)
-						s = Text.subString(0, m_cursor_pos - 1);
-					else
-						s = L"";
-					s.append(Text.subString(m_cursor_pos,
-							Text.size() - m_cursor_pos));
-					Text = s;
-					--m_cursor_pos;
-				}
-
-				if (m_cursor_pos < 0)
-					m_cursor_pos = 0;
-				m_blink_start_time = porting::
-						getTimeMs(); // os::Timer::getTime();
-				new_mark_begin = 0;
-				new_mark_end = 0;
-				text_changed = true;
-			}
+			text_changed = onKeyBack(event, new_mark_begin, new_mark_end);
 			break;
 
 		case KEY_DELETE:
-			if (!isEnabled())
-				break;
-
-			if (!Text.empty()) {
-				core::stringw s;
-
-				if (m_mark_begin != m_mark_end) {
-					// delete marked text
-					const s32 realmbgn =
-							m_mark_begin < m_mark_end
-									? m_mark_begin
-									: m_mark_end;
-					const s32 realmend =
-							m_mark_begin < m_mark_end
-									? m_mark_end
-									: m_mark_begin;
-
-					s = Text.subString(0, realmbgn);
-					s.append(Text.subString(realmend,
-							Text.size() - realmend));
-					Text = s;
-
-					m_cursor_pos = realmbgn;
-				} else {
-					// delete text before cursor
-					s = Text.subString(0, m_cursor_pos);
-					s.append(Text.subString(m_cursor_pos + 1,
-							Text.size() - m_cursor_pos - 1));
-					Text = s;
-				}
-
-				if (m_cursor_pos > (s32)Text.size())
-					m_cursor_pos = (s32)Text.size();
-
-				m_blink_start_time = porting::
-						getTimeMs(); // os::Timer::getTime();
-				new_mark_begin = 0;
-				new_mark_end = 0;
-				text_changed = true;
-			}
+			text_changed = onKeyDelete(event, new_mark_begin, new_mark_end);
 			break;
 
 		case KEY_ESCAPE:
@@ -697,6 +616,80 @@ bool GUIEditBox::onKeyV(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_
 		}
 	}
 
+	new_mark_begin = 0;
+	new_mark_end = 0;
+	return true;
+}
+
+bool GUIEditBox::onKeyBack(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+{
+	if (!isEnabled() || Text.empty())
+		return false;
+
+	core::stringw s;
+
+	if (m_mark_begin != m_mark_end) {
+		// delete marked text
+		const s32 realmbgn =
+				m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+		const s32 realmend =
+				m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
+
+		s = Text.subString(0, realmbgn);
+		s.append(Text.subString(realmend, Text.size() - realmend));
+		Text = s;
+
+		m_cursor_pos = realmbgn;
+	} else {
+		// delete text behind cursor
+		if (m_cursor_pos > 0)
+			s = Text.subString(0, m_cursor_pos - 1);
+		else
+			s = L"";
+		s.append(Text.subString(m_cursor_pos, Text.size() - m_cursor_pos));
+		Text = s;
+		--m_cursor_pos;
+	}
+
+	if (m_cursor_pos < 0)
+		m_cursor_pos = 0;
+	m_blink_start_time = porting::getTimeMs(); // os::Timer::getTime();
+	new_mark_begin = 0;
+	new_mark_end = 0;
+	return true;
+}
+
+bool GUIEditBox::onKeyDelete(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+{
+	if (!isEnabled() || Text.empty())
+		return false;
+
+	core::stringw s;
+
+	if (m_mark_begin != m_mark_end) {
+		// delete marked text
+		const s32 realmbgn =
+				m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+		const s32 realmend =
+				m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
+
+		s = Text.subString(0, realmbgn);
+		s.append(Text.subString(realmend, Text.size() - realmend));
+		Text = s;
+
+		m_cursor_pos = realmbgn;
+	} else {
+		// delete text before cursor
+		s = Text.subString(0, m_cursor_pos);
+		s.append(Text.subString(
+				m_cursor_pos + 1, Text.size() - m_cursor_pos - 1));
+		Text = s;
+	}
+
+	if (m_cursor_pos > (s32)Text.size())
+		m_cursor_pos = (s32)Text.size();
+
+	m_blink_start_time = porting::getTimeMs(); // os::Timer::getTime();
 	new_mark_begin = 0;
 	new_mark_end = 0;
 	return true;
