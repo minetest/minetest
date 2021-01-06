@@ -274,53 +274,13 @@ bool GUIEditBox::processKey(const SEvent &event)
 			new_mark_end = Text.size();
 			break;
 		case KEY_KEY_C:
-			// copy to clipboard
-			if (!m_passwordbox && m_operator && m_mark_begin != m_mark_end) {
-				const s32 realmbgn = m_mark_begin < m_mark_end
-								     ? m_mark_begin
-								     : m_mark_end;
-				const s32 realmend = m_mark_begin < m_mark_end
-								     ? m_mark_end
-								     : m_mark_begin;
-
-				core::stringc s;
-				s = Text.subString(realmbgn, realmend - realmbgn).c_str();
-				m_operator->copyToClipboard(s.c_str());
-			}
+			onKeyControlC(event);
 			break;
 		case KEY_KEY_X:
-			// cut to the clipboard
-			if (!m_passwordbox && m_operator && m_mark_begin != m_mark_end) {
-				const s32 realmbgn = m_mark_begin < m_mark_end
-								     ? m_mark_begin
-								     : m_mark_end;
-				const s32 realmend = m_mark_begin < m_mark_end
-								     ? m_mark_end
-								     : m_mark_begin;
-
-				// copy
-				core::stringc sc;
-				sc = Text.subString(realmbgn, realmend - realmbgn)
-						     .c_str();
-				m_operator->copyToClipboard(sc.c_str());
-
-				if (isEnabled()) {
-					// delete
-					core::stringw s;
-					s = Text.subString(0, realmbgn);
-					s.append(Text.subString(realmend,
-							Text.size() - realmend));
-					Text = s;
-
-					m_cursor_pos = realmbgn;
-					new_mark_begin = 0;
-					new_mark_end = 0;
-					text_changed = true;
-				}
-			}
+			text_changed = onKeyControlX(event, new_mark_begin, new_mark_end);
 			break;
 		case KEY_KEY_V:
-			text_changed = onKeyV(event, new_mark_begin, new_mark_end);
+			text_changed = onKeyControlV(event, new_mark_begin, new_mark_end);
 			break;
 		case KEY_HOME:
 			// move/highlight to start of text
@@ -567,7 +527,50 @@ bool GUIEditBox::onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_ma
 	return false;
 }
 
-bool GUIEditBox::onKeyV(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+void GUIEditBox::onKeyControlC(const SEvent &event)
+{
+	// copy to clipboard
+	if (m_passwordbox || !m_operator || m_mark_begin == m_mark_end)
+		return;
+
+	const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+	const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
+
+	core::stringc s;
+	s = Text.subString(realmbgn, realmend - realmbgn).c_str();
+	m_operator->copyToClipboard(s.c_str());
+}
+
+bool GUIEditBox::onKeyControlX(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+{
+	// First copy to clipboard
+	onKeyControlC(event);
+
+	if (m_passwordbox || !m_operator || m_mark_begin == m_mark_end)
+		return false;
+
+	const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+	const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
+
+	// Now remove from box if enabled
+	if (isEnabled()) {
+		// delete
+		core::stringw s;
+		s = Text.subString(0, realmbgn);
+		s.append(Text.subString(realmend, Text.size() - realmend));
+		Text = s;
+
+		m_cursor_pos = realmbgn;
+		new_mark_begin = 0;
+		new_mark_end = 0;
+		return true;
+	}
+
+	return false;
+}
+
+bool GUIEditBox::onKeyControlV(
+		const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
 {
 	if (!isEnabled())
 		return false;
