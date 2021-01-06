@@ -459,7 +459,6 @@ bool GUIEditBox::processKey(const SEvent &event)
 			}
 			return true;
 		case KEY_LEFT:
-
 			if (event.KeyInput.Shift) {
 				if (m_cursor_pos > 0) {
 					if (m_mark_begin == m_mark_end)
@@ -494,73 +493,12 @@ bool GUIEditBox::processKey(const SEvent &event)
 			m_blink_start_time = porting::getTimeMs();
 			break;
 		case KEY_UP:
-			if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
-				s32 lineNo = getLineFromPos(m_cursor_pos);
-				s32 mb = (m_mark_begin == m_mark_end)
-							 ? m_cursor_pos
-							 : (m_mark_begin > m_mark_end ? m_mark_begin
-										      : m_mark_end);
-				if (lineNo > 0) {
-					s32 cp = m_cursor_pos -
-						 m_broken_text_positions[lineNo];
-					if ((s32)m_broken_text[lineNo - 1].size() < cp)
-						m_cursor_pos = m_broken_text_positions
-									       [lineNo - 1] +
-							       core::max_((u32)1,
-									       m_broken_text[lineNo -
-											       1]
-											       .size()) -
-							       1;
-					else
-						m_cursor_pos = m_broken_text_positions
-									       [lineNo - 1] +
-							       cp;
-				}
-
-				if (event.KeyInput.Shift) {
-					new_mark_begin = mb;
-					new_mark_end = m_cursor_pos;
-				} else {
-					new_mark_begin = 0;
-					new_mark_end = 0;
-				}
-			} else {
+			if (!onKeyUp(event, new_mark_begin, new_mark_end)) {
 				return false;
 			}
 			break;
 		case KEY_DOWN:
-			if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
-				s32 lineNo = getLineFromPos(m_cursor_pos);
-				s32 mb = (m_mark_begin == m_mark_end)
-							 ? m_cursor_pos
-							 : (m_mark_begin < m_mark_end ? m_mark_begin
-										      : m_mark_end);
-				if (lineNo < (s32)m_broken_text.size() - 1) {
-					s32 cp = m_cursor_pos -
-						 m_broken_text_positions[lineNo];
-					if ((s32)m_broken_text[lineNo + 1].size() < cp)
-						m_cursor_pos = m_broken_text_positions
-									       [lineNo + 1] +
-							       core::max_((u32)1,
-									       m_broken_text[lineNo +
-											       1]
-											       .size()) -
-							       1;
-					else
-						m_cursor_pos = m_broken_text_positions
-									       [lineNo + 1] +
-							       cp;
-				}
-
-				if (event.KeyInput.Shift) {
-					new_mark_begin = mb;
-					new_mark_end = m_cursor_pos;
-				} else {
-					new_mark_begin = 0;
-					new_mark_end = 0;
-				}
-
-			} else {
+			if (!onKeyDown(event, new_mark_begin, new_mark_end)) {
 				return false;
 			}
 			break;
@@ -701,6 +639,69 @@ bool GUIEditBox::processKey(const SEvent &event)
 	calculateScrollPos();
 
 	return true;
+}
+
+bool GUIEditBox::onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+{
+	// clang-format off
+	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
+		s32 lineNo = getLineFromPos(m_cursor_pos);
+		s32 mb = (m_mark_begin == m_mark_end) ? m_cursor_pos :
+			(m_mark_begin > m_mark_end ? m_mark_begin : m_mark_end);
+		if (lineNo > 0) {
+			s32 cp = m_cursor_pos - m_broken_text_positions[lineNo];
+			if ((s32)m_broken_text[lineNo - 1].size() < cp) {
+				m_cursor_pos = m_broken_text_positions[lineNo - 1] +
+					core::max_((u32)1, m_broken_text[lineNo - 1].size()) - 1;
+			}
+			else
+				m_cursor_pos = m_broken_text_positions[lineNo - 1] + cp;
+		}
+
+		if (event.KeyInput.Shift) {
+			new_mark_begin = mb;
+			new_mark_end = m_cursor_pos;
+		} else {
+			new_mark_begin = 0;
+			new_mark_end = 0;
+		}
+
+		return true;
+	}
+
+	// clang-format on
+	return false;
+}
+bool GUIEditBox::onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+{
+	// clang-format off
+	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
+		s32 lineNo = getLineFromPos(m_cursor_pos);
+		s32 mb = (m_mark_begin == m_mark_end) ? m_cursor_pos :
+			(m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end);
+		if (lineNo < (s32)m_broken_text.size() - 1) {
+			s32 cp = m_cursor_pos - m_broken_text_positions[lineNo];
+			if ((s32)m_broken_text[lineNo + 1].size() < cp) {
+				m_cursor_pos = m_broken_text_positions[lineNo + 1] +
+					core::max_((u32)1, m_broken_text[lineNo + 1].size()) - 1;
+			}
+			else
+				m_cursor_pos = m_broken_text_positions[lineNo + 1] + cp;
+		}
+
+		if (event.KeyInput.Shift) {
+			new_mark_begin = mb;
+			new_mark_end = m_cursor_pos;
+		} else {
+			new_mark_begin = 0;
+			new_mark_end = 0;
+		}
+
+		return true;
+	}
+
+	// clang-format on
+	return false;
 }
 
 bool GUIEditBox::processMouse(const SEvent &event)

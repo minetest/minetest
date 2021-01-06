@@ -200,4 +200,7 @@ protected:
 
 private:
 	bool processMouse(const SEvent &event);
+
+	bool onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
+	bool onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
 };
