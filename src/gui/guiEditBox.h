@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "IGUIEditBox.h"
 #include "IOSOperator.h"
 #include "guiScrollBar.h"
+#include <vector>
 
 using namespace irr;
 using namespace irr::gui;
@@ -30,8 +31,9 @@ class GUIEditBox : public IGUIEditBox
 {
 public:
 	GUIEditBox(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
-			core::rect<s32> rectangle) :
-			IGUIEditBox(environment, parent, id, rectangle)
+			core::rect<s32> rectangle, bool border, bool writable) :
+			IGUIEditBox(environment, parent, id, rectangle),
+			m_border(border), m_writable(writable), m_frame_rect(rectangle)
 	{
 	}
 
@@ -71,6 +73,11 @@ public:
 	//! \return true if word wrap is enabled, false otherwise
 	virtual bool isWordWrapEnabled() const { return m_word_wrap; }
 
+	//! Turns the border on or off
+	virtual void setDrawBorder(bool border);
+
+	virtual bool isDrawBorderEnabled() const { return m_border; }
+
 	//! Enables or disables newlines.
 	/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
 	instead a newline character will be inserted. */
@@ -89,8 +96,64 @@ public:
 	//! \return true if automatic scrolling is enabled, false if not
 	virtual bool isAutoScrollEnabled() const { return m_autoscroll; }
 
+	//! Sets whether the edit box is a password box. Setting this to true will
+	/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
+	\param passwordBox: true to enable password, false to disable
+	\param passwordChar: the character that is displayed instead of letters */
+	virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
+
+	//! Returns true if the edit box is currently a password box.
+	virtual bool isPasswordBox() const { return m_passwordbox; }
+
+	//! Sets text justification
+	virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
+
+	//! Sets the new caption of this element.
+	virtual void setText(const wchar_t *text);
+
+	//! Sets the maximum amount of characters which may be entered in the box.
+	//! \param max: Maximum amount of characters. If 0, the character amount is
+	//! infinity.
+	virtual void setMax(u32 max);
+
+	//! Returns maximum amount of characters, previously set by setMax();
+	virtual u32 getMax() const { return m_max; }
+
+	//! Gets the size area of the text in the edit box
+	//! \return Returns the size in pixels of the text
+	virtual core::dimension2du getTextDimension();
+
+	//! set true if this EditBox is writable
+	virtual void setWritable(bool can_write_text);
+
+	//! called if an event happened.
+	virtual bool OnEvent(const SEvent &event);
+
 protected:
 	virtual void breakText() = 0;
+
+	//! sets the area of the given line
+	virtual void setTextRect(s32 line) = 0;
+
+	//! set text markers
+	void setTextMarkers(s32 begin, s32 end);
+
+	//! send some gui event to parent
+	void sendGuiEvent(EGUI_EVENT_TYPE type);
+
+	//! calculates the current scroll position
+	virtual void calculateScrollPos() = 0;
+
+	virtual s32 getCursorPos(s32 x, s32 y) = 0;
+
+	bool processKey(const SEvent &event);
+	virtual void inputChar(wchar_t c) = 0;
+
+	//! returns the line number that the cursor is on
+	s32 getLineFromPos(s32 pos);
+
+	//! update the vertical scrollBar (visibilty & position)
+	void updateVScrollBar();
 
 	gui::IGUIFont *m_override_font = nullptr;
 
@@ -99,5 +162,50 @@ protected:
 	bool m_multiline = false;
 	bool m_autoscroll = true;
 
+	bool m_border;
+
+	bool m_passwordbox = false;
+	wchar_t m_passwordchar = L'*';
+
+	std::vector<core::stringw> m_broken_text;
+	std::vector<s32> m_broken_text_positions;
+
+	EGUI_ALIGNMENT m_halign = EGUIA_UPPERLEFT;
+	EGUI_ALIGNMENT m_valign = EGUIA_CENTER;
+
+	u32 m_blink_start_time = 0;
+	s32 m_cursor_pos = 0;
+	s32 m_hscroll_pos = 0;
+	s32 m_vscroll_pos = 0; // scroll position in characters
+	u32 m_max = 0;
+
 	video::SColor m_override_color = video::SColor(101, 255, 255, 255);
+
+	core::rect<s32> m_current_text_rect = core::rect<s32>(0, 0, 1, 1);
+
+	bool m_writable;
+
+	bool m_mouse_marking = false;
+
+	s32 m_mark_begin = 0;
+	s32 m_mark_end = 0;
+
+	gui::IGUIFont *m_last_break_font = nullptr;
+	IOSOperator *m_operator = nullptr;
+
+	core::rect<s32> m_frame_rect; // temporary values
+
+	u32 m_scrollbar_width = 0;
+	GUIScrollBar *m_vscrollbar = nullptr;
+
+private:
+	bool processMouse(const SEvent &event);
+
+	bool onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	void onKeyControlC(const SEvent &event);
+	bool onKeyControlX(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyControlV(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyBack(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyDelete(const SEvent &event, s32 &mark_begin, s32 &mark_end);
 };
