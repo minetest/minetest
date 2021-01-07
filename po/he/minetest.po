@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hebrew (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-08-30 19:38+0000\n"
-"Last-Translator: Omeritzics Games <omeritzicschwartz@gmail.com>\n"
+"PO-Revision-Date: 2021-01-08 17:32+0000\n"
+"Last-Translator: Omer I.S. <omeritzicschwartz@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
 "he/>\n"
 "Language: he\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -41,7 +41,7 @@ msgstr "תפריט ראשי"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "התחבר מחדש"
+msgstr "התחברות מחדש"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -49,7 +49,7 @@ msgstr "השרת מבקש שתתחבר מחדש:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "טוען..."
+msgstr "כעת בטעינה..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -57,7 +57,7 @@ msgstr "שגיאה בגרסאות הפרוטוקול. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "השרת יפעיל את פרוטוקול גרסה $1. בכוח "
+msgstr "השרת מחייב שימוש בגרסת פרוטוקול $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -65,7 +65,7 @@ msgstr "השרת תומך בפרוטוקולים בין גרסה $1 וגרסה $
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr "נסה לצאת והכנס מחדש לרשימת השרתים ובדוק את חיבור האינטרנט שלך."
+msgstr "נא לנסות לצאת ולהיכנס מחדש לרשימת השרתים ולבדוק את החיבור שלך לאינטרנט."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -87,11 +87,11 @@ msgstr "ביטול"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "רכיבי תלות:"
+msgstr "תלויות:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "השבת הכל"
+msgstr "להשבית הכול"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -99,7 +99,7 @@ msgstr "השבתת ערכת המודים"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "אפשר הכל"
+msgstr "להפעיל הכול"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "מצא עוד מודים"
+msgstr "מציאת מודים נוספים"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -124,16 +124,15 @@ msgstr "מוד:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "אין רכיבי תלות (אופציונליים)"
+msgstr "אין תלויות (רשות)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "לא סופק תיאור משחק."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "תלוי ב:"
+msgstr "אין תלויות קשות"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -141,16 +140,16 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "אין רכיבי תלות אופציונליים"
+msgstr "אין תלויות רשות"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "רכיבי תלות אופציונליים:"
+msgstr "תלויות רשות:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr "שמור"
+msgstr "שמירה"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
@@ -166,7 +165,7 @@ msgstr "כל החבילות"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "חזור אל התפריט הראשי"
+msgstr "חזרה לתפריט הראשי"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -174,7 +173,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr "מוריד..."
+msgstr "כעת בהורדה..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -187,7 +186,7 @@ msgstr "משחקים"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr "החקן"
+msgstr "התקנה"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -205,7 +204,7 @@ msgstr "אין תוצאות"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "חפש"
+msgstr "חיפוש"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -214,19 +213,19 @@ msgstr "חבילות מרקם"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr "הסר התקנה"
+msgstr "הסרה"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr "עדכן"
+msgstr "עדכון"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "תצוגה"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "עולם בשם \"1$\" כבר קיים"
+msgstr "כבר קיים עולם בשם \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -258,7 +257,7 @@ msgstr "מערות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "ליצור"
+msgstr "יצירה"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -278,7 +277,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "עולם שטוח"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
@@ -422,13 +421,13 @@ msgstr "אין לך משחקים מותקנים."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "האם ברצונך למחוק את \"$1\"?"
+msgstr "האם אכן ברצונך למחוק את \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr "מחק"
+msgstr "מחיקה"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -440,11 +439,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "למחוק עולם \"$1\"?"
+msgstr "למחוק את העולם \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr "קבל"
+msgstr "הסכמה"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -478,7 +477,7 @@ msgstr "מושבת"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "ערוך"
+msgstr "עריכה"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -510,7 +509,7 @@ msgstr "נא להזין מספר תקין."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "איפוס לברירת המחדל"
+msgstr "שחזור לברירת המחדל"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -530,11 +529,11 @@ msgstr "הצגת שמות טכניים"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "הערך חייב להיות לפחות $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "הערך לא יכול להיות גדול מ־$1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -653,7 +652,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "אין תלויות."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
@@ -661,7 +660,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "שינוי שם"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -681,7 +680,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr "קרדיטים"
+msgstr "תודות"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -705,11 +704,11 @@ msgstr "קביעת תצורה"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
-msgstr "משחק יצירתי"
+msgstr "מצב יצירתי"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Enable Damage"
-msgstr "אפשר נזק"
+msgstr "לאפשר חבלה"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
@@ -717,9 +716,8 @@ msgid "Host Game"
 msgstr "הסתר משחק"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Server"
-msgstr "שרת"
+msgstr "אכסון שרת"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -765,15 +763,15 @@ msgstr "כתובת / פורט"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr "התחבר"
+msgstr "התחברות"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "מצב יצירתי"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr ""
+msgstr "החבלה מאופשרת"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
@@ -784,9 +782,8 @@ msgid "Favorite"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "הסתר משחק"
+msgstr "הצטרפות למשחק"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -799,7 +796,7 @@ msgstr ""
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "PvP אפשר"
+msgstr "לאפשר קרבות"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -818,9 +815,8 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "הגדרות"
+msgstr "כל ההגדרות"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1034,7 +1030,7 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "נא לבחור שם!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
@@ -1063,33 +1059,28 @@ msgid ""
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "כתובת / פורט"
+msgstr "- כתובת: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "משחק יצירתי"
+msgstr "- מצב יצירתי: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Damage: "
-msgstr "אפשר נזק"
+msgstr "- חבלה: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Port: "
-msgstr "פורט"
+msgstr "- פורט: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "ציבורי"
+msgstr "- ציבורי: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
@@ -1158,6 +1149,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"פקדים:\n"
+"- %s: כדי לזוז קדימה\n"
+"- %s: כדי לזוז אחורה\n"
+"- %s: כדי לזוז שמאלה\n"
+"- %s: כדי לזוז ימינה\n"
+"- %s: כדי לקפוץ או לטפס\n"
+"- %s: כדי להתכופף או לרדת למטה\n"
+"- %s: כדי לזרוק פריט\n"
+"- %s: כדי לפתוח את תיק החפצים\n"
+"- עכבר: כדי להסתובב או להסתכל\n"
+"- לחצן שמאלי בעכבר: כדי לחצוב או להרביץ\n"
+"- לחצן ימני בעכבר: כדי להניח או להשתמש\n"
+"- גלגלת העכבר: כדי לבחור פריט\n"
+"- %s: כדי לפתוח את הצ׳אט\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1209,7 +1214,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "יציאה למערכת ההפעלה"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
@@ -1228,9 +1233,8 @@ msgid "Fly mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "מופעל"
+msgstr "מצב התעופה הופעל"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
@@ -1250,9 +1254,8 @@ msgid "Game info:"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Game paused"
-msgstr "משחקים"
+msgstr "המשחק הושהה"
 
 #: src/client/game.cpp
 msgid "Hosting server"
@@ -1506,15 +1509,15 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "שמאלה"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "הלחצן השמאלי"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "מקש Control השמאלי"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
@@ -1522,11 +1525,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "מקש Shift השמאלי"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "מקש Windows השמאלי"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
@@ -1632,15 +1635,15 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "ימינה"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "הלחצן הימני"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "מקש Control הימני"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
@@ -1648,11 +1651,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "מקש Shift הימני"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "מקש Windows הימני"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
@@ -1731,11 +1734,11 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "קפיצה אוטומטית"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "אחורה"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -1763,7 +1766,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "לחיצה כפולה על \"קפיצה\" כדי לכבות או להדליק את מצב התעופה"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1771,7 +1774,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "קדימה"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
@@ -1787,7 +1790,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "קפיצה"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
@@ -2213,7 +2216,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr ""
+msgstr "מקש התזוזה אחורה"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2425,7 +2428,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
-msgstr "קלינט"
+msgstr "לקוח"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -2573,9 +2576,8 @@ msgid "Crash message"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Creative"
-msgstr "ליצור"
+msgstr "יצירתי"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2599,7 +2601,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "חבלה"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2784,7 +2786,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "הקשה כפולה על \"קפיצה\" לתעופה"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
@@ -2844,7 +2846,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "לאפשר חבלה ומוות של השחקנים."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3214,7 +3216,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr ""
+msgstr "מקש התזוזה קדימה"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3861,11 +3863,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr ""
+msgstr "מקש הקפיצה"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "מהירות הקפיצה"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4403,7 +4405,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr ""
+msgstr "מקש התזוזה שמאלה"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4538,9 +4540,8 @@ msgid "Main menu script"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu style"
-msgstr "תפריט ראשי"
+msgstr "סגנון התפריט הראשי"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5310,7 +5311,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
+msgstr "מקש התזוזה ימינה"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -5469,7 +5470,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
-msgstr "שרת"
+msgstr "שרת / שחקן יחיד"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -6236,7 +6237,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "האם לאפשר לשחקנים להרוג אחד־את־השני."
 
 #: src/settings_translation_file.cpp
 msgid ""
