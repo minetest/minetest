@@ -582,7 +582,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		bone = readParam<std::string>(L, 2);
 	BonePositionOverride *override = new BonePositionOverride();
 	if (lua_isnil(L, 3)) {
-		co->setBoneOverride(bone, override);
+		co->setBoneOverride(bone, nullptr);
 		return 0;
 	}
 	lua_getfield(L, 3, "position");
