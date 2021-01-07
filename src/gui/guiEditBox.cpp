@@ -463,7 +463,7 @@ bool GUIEditBox::processKey(const SEvent &event)
 	return true;
 }
 
-bool GUIEditBox::onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+bool GUIEditBox::onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
 	// clang-format off
 	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
@@ -481,11 +481,11 @@ bool GUIEditBox::onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark
 		}
 
 		if (event.KeyInput.Shift) {
-			new_mark_begin = mb;
-			new_mark_end = m_cursor_pos;
+			mark_begin = mb;
+			mark_end = m_cursor_pos;
 		} else {
-			new_mark_begin = 0;
-			new_mark_end = 0;
+			mark_begin = 0;
+			mark_end = 0;
 		}
 
 		return true;
@@ -495,7 +495,7 @@ bool GUIEditBox::onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark
 	return false;
 }
 
-bool GUIEditBox::onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+bool GUIEditBox::onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
 	// clang-format off
 	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
@@ -513,11 +513,11 @@ bool GUIEditBox::onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_ma
 		}
 
 		if (event.KeyInput.Shift) {
-			new_mark_begin = mb;
-			new_mark_end = m_cursor_pos;
+			mark_begin = mb;
+			mark_end = m_cursor_pos;
 		} else {
-			new_mark_begin = 0;
-			new_mark_end = 0;
+			mark_begin = 0;
+			mark_end = 0;
 		}
 
 		return true;
@@ -541,7 +541,7 @@ void GUIEditBox::onKeyControlC(const SEvent &event)
 	m_operator->copyToClipboard(s.c_str());
 }
 
-bool GUIEditBox::onKeyControlX(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+bool GUIEditBox::onKeyControlX(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
 	// First copy to clipboard
 	onKeyControlC(event);
@@ -561,16 +561,15 @@ bool GUIEditBox::onKeyControlX(const SEvent &event, s32 &new_mark_begin, s32 &ne
 		Text = s;
 
 		m_cursor_pos = realmbgn;
-		new_mark_begin = 0;
-		new_mark_end = 0;
+		mark_begin = 0;
+		mark_end = 0;
 		return true;
 	}
 
 	return false;
 }
 
-bool GUIEditBox::onKeyControlV(
-		const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+bool GUIEditBox::onKeyControlV(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
 	if (!isEnabled())
 		return false;
@@ -591,11 +590,7 @@ bool GUIEditBox::onKeyControlV(
 			s.append(Text.subString(
 					m_cursor_pos, Text.size() - m_cursor_pos));
 
-			if (!m_max || s.size() <= m_max) // thx to
-							 // Fish
-							 // FH for
-							 // fix
-			{
+			if (!m_max || s.size() <= m_max) {
 				Text = s;
 				s = p;
 				m_cursor_pos += s.size();
@@ -607,11 +602,7 @@ bool GUIEditBox::onKeyControlV(
 			s.append(p);
 			s.append(Text.subString(realmend, Text.size() - realmend));
 
-			if (!m_max || s.size() <= m_max) // thx to
-							 // Fish
-							 // FH for
-							 // fix
-			{
+			if (!m_max || s.size() <= m_max) {
 				Text = s;
 				s = p;
 				m_cursor_pos = realmbgn + s.size();
@@ -619,12 +610,12 @@ bool GUIEditBox::onKeyControlV(
 		}
 	}
 
-	new_mark_begin = 0;
-	new_mark_end = 0;
+	mark_begin = 0;
+	mark_end = 0;
 	return true;
 }
 
-bool GUIEditBox::onKeyBack(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+bool GUIEditBox::onKeyBack(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
 	if (!isEnabled() || Text.empty())
 		return false;
@@ -657,12 +648,12 @@ bool GUIEditBox::onKeyBack(const SEvent &event, s32 &new_mark_begin, s32 &new_ma
 	if (m_cursor_pos < 0)
 		m_cursor_pos = 0;
 	m_blink_start_time = porting::getTimeMs(); // os::Timer::getTime();
-	new_mark_begin = 0;
-	new_mark_end = 0;
+	mark_begin = 0;
+	mark_end = 0;
 	return true;
 }
 
-bool GUIEditBox::onKeyDelete(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end)
+bool GUIEditBox::onKeyDelete(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
 	if (!isEnabled() || Text.empty())
 		return false;
@@ -693,8 +684,8 @@ bool GUIEditBox::onKeyDelete(const SEvent &event, s32 &new_mark_begin, s32 &new_
 		m_cursor_pos = (s32)Text.size();
 
 	m_blink_start_time = porting::getTimeMs(); // os::Timer::getTime();
-	new_mark_begin = 0;
-	new_mark_end = 0;
+	mark_begin = 0;
+	mark_end = 0;
 	return true;
 }
 

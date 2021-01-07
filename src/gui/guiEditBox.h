@@ -201,11 +201,11 @@ protected:
 private:
 	bool processMouse(const SEvent &event);
 
-	bool onKeyUp(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
-	bool onKeyDown(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
+	bool onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end);
 	void onKeyControlC(const SEvent &event);
-	bool onKeyControlX(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
-	bool onKeyControlV(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
-	bool onKeyBack(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
-	bool onKeyDelete(const SEvent &event, s32 &new_mark_begin, s32 &new_mark_end);
+	bool onKeyControlX(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyControlV(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyBack(const SEvent &event, s32 &mark_begin, s32 &mark_end);
+	bool onKeyDelete(const SEvent &event, s32 &mark_begin, s32 &mark_end);
 };
