@@ -78,7 +78,10 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 void UnitSAO::setBoneOverride(const std::string &bone, BonePositionOverride *override)
 {
 	// store these so they can be updated to clients
-	m_bone_position[bone] = override;
+	if (override == nullptr)
+		m_bone_position.erase(bone);
+	else
+		m_bone_position[bone] = override;
 	m_bone_position_sent = false;
 }
 
