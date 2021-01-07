@@ -4590,7 +4590,7 @@ Call these functions only at load time!
 * `minetest.register_on_rightclickplayer(function(player, clicker))`
     * Called when a player is right-clicked
     * `player`: ObjectRef - Player that was right-clicked
-    * `clicker`: ObjectRef - Player that right-click
+    * `clicker`: ObjectRef - Object that right-clicked, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
