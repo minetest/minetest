@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-25 16:39+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2021-01-08 17:32+0000\n"
+"Last-Translator: Ferdinand Tampubolon <dnandz@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -5885,7 +5884,7 @@ msgstr "Media jarak jauh"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr "Porta server jarak jauh"
+msgstr "Port utk Kendali Jarak Jauh"
 
 #: src/settings_translation_file.cpp
 msgid ""
