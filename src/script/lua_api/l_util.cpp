@@ -312,19 +312,6 @@ int ModApiUtil::l_encode_base64(lua_State *L)
 	return 1;
 }
 
-// is_valid_base64(string)
-int ModApiUtil::l_is_valid_base64(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	size_t size;
-	const char *d = luaL_checklstring(L, 1, &size);
-	const std::string data = std::string(d, size);
-
-	lua_pushboolean(L, base64_is_valid(data));
-	return 1;
-}
-
 // decode_base64(string)
 int ModApiUtil::l_decode_base64(lua_State *L)
 {
@@ -520,7 +507,6 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(request_insecure_environment);
 
 	API_FCT(encode_base64);
-	API_FCT(is_valid_base64);
 	API_FCT(decode_base64);
 
 	API_FCT(get_version);
@@ -546,7 +532,6 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(encode_base64);
-	API_FCT(is_valid_base64);
 	API_FCT(decode_base64);
 
 	API_FCT(get_version);
@@ -573,7 +558,6 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_dir_list);
 
 	API_FCT(encode_base64);
-	API_FCT(is_valid_base64);
 	API_FCT(decode_base64);
 
 	API_FCT(get_version);
