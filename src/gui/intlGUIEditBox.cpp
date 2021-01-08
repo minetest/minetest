@@ -318,10 +318,7 @@ void intlGUIEditBox::draw()
 
 s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 {
-	IGUIFont* font = m_override_font;
-	IGUISkin* skin = Environment->getSkin();
-	if (!m_override_font)
-		font = skin->getFont();
+	IGUIFont* font = getActiveFont();
 
 	const u32 lineCount = (m_word_wrap || m_multiline) ? m_broken_text.size() : 1;
 
@@ -547,49 +544,6 @@ void intlGUIEditBox::setTextRect(s32 line)
 
 }
 
-void intlGUIEditBox::inputChar(wchar_t c)
-{
-	if (!isEnabled() || !m_writable)
-		return;
-
-	if (c != 0)
-	{
-		if (Text.size() < m_max || m_max == 0)
-		{
-			core::stringw s;
-
-			if (m_mark_begin != m_mark_end)
-			{
-				// replace marked text
-				const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
-				const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
-
-				s = Text.subString(0, realmbgn);
-				s.append(c);
-				s.append( Text.subString(realmend, Text.size()-realmend) );
-				Text = s;
-				m_cursor_pos = realmbgn+1;
-			}
-			else
-			{
-				// add new character
-				s = Text.subString(0, m_cursor_pos);
-				s.append(c);
-				s.append( Text.subString(m_cursor_pos, Text.size()-m_cursor_pos) );
-				Text = s;
-				++m_cursor_pos;
-			}
-
-			m_blink_start_time = porting::getTimeMs();
-			setTextMarkers(0, 0);
-		}
-	}
-	breakText();
-	sendGuiEvent(EGET_EDITBOX_CHANGED);
-	calculateScrollPos();
-}
-
-
 void intlGUIEditBox::calculateScrollPos()
 {
 	if (!m_autoscroll)
@@ -667,57 +621,6 @@ void intlGUIEditBox::createVScrollBar()
 	m_vscrollbar->setSmallStep(3 * fontHeight);
 	m_vscrollbar->setLargeStep(10 * fontHeight);
 }
-
-
-//! Writes attributes of the element.
-void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
-{
-	// IGUIEditBox::serializeAttributes(out,options);
-
-	out->addBool  ("OverrideColorEnabled", m_override_color_enabled );
-	out->addColor ("OverrideColor",        m_override_color);
-	// out->addFont("OverrideFont",m_override_font);
-	out->addInt   ("MaxChars",             m_max);
-	out->addBool  ("WordWrap",             m_word_wrap);
-	out->addBool  ("MultiLine",            m_multiline);
-	out->addBool  ("AutoScroll",           m_autoscroll);
-	out->addBool  ("PasswordBox",          m_passwordbox);
-	core::stringw ch = L" ";
-	ch[0] = m_passwordchar;
-	out->addString("PasswordChar",         ch.c_str());
-	out->addEnum  ("HTextAlign",           m_halign, GUIAlignmentNames);
-	out->addEnum  ("VTextAlign",           m_valign, GUIAlignmentNames);
-	out->addBool  ("Writable",             m_writable);
-
-	IGUIEditBox::serializeAttributes(out,options);
-}
-
-
-//! Reads attributes of the element
-void intlGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
-{
-	IGUIEditBox::deserializeAttributes(in,options);
-
-	setOverrideColor(in->getAttributeAsColor("OverrideColor"));
-	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
-	setMax(in->getAttributeAsInt("MaxChars"));
-	setWordWrap(in->getAttributeAsBool("WordWrap"));
-	setMultiLine(in->getAttributeAsBool("MultiLine"));
-	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
-	core::stringw ch = in->getAttributeAsStringW("PasswordChar");
-
-	if (ch.empty())
-		setPasswordBox(in->getAttributeAsBool("PasswordBox"));
-	else
-		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);
-
-	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
-
-	setWritable(in->getAttributeAsBool("Writable"));
-	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
-}
-
 
 } // end namespace gui
 } // end namespace irr

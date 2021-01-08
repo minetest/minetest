@@ -129,6 +129,14 @@ public:
 	//! called if an event happened.
 	virtual bool OnEvent(const SEvent &event);
 
+	//! Writes attributes of the element.
+	virtual void serializeAttributes(io::IAttributes *out,
+			io::SAttributeReadWriteOptions *options) const;
+
+	//! Reads attributes of the element
+	virtual void deserializeAttributes(
+			io::IAttributes *in, io::SAttributeReadWriteOptions *options);
+
 protected:
 	virtual void breakText() = 0;
 
@@ -147,7 +155,7 @@ protected:
 	virtual s32 getCursorPos(s32 x, s32 y) = 0;
 
 	bool processKey(const SEvent &event);
-	virtual void inputChar(wchar_t c) = 0;
+	virtual void inputChar(wchar_t c);
 
 	//! returns the line number that the cursor is on
 	s32 getLineFromPos(s32 pos);
