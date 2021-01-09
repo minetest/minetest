@@ -479,7 +479,7 @@ local function teleport_to_player(name, target_name)
 	local p = find_free_position_near(target:get_pos())
 	teleportee:set_pos(p)
 	return true, "Teleporting " .. name .. " to " .. target_name .. " at " ..
-		core.pos_to_string(p)
+		core.pos_to_string(p, 1)
 end
 
 core.register_chatcommand("teleport", {
