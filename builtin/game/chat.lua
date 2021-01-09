@@ -456,7 +456,7 @@ local function teleport_to_pos(name, p)
 			" is attached to an object!"
 	end
 	teleportee:set_pos(p)
-	return true, "Teleporting " .. name .. " to " .. core.pos_to_string(p, 1))
+	return true, "Teleporting " .. name .. " to " .. core.pos_to_string(p, 1)
 end
 
 -- Teleports player <name> next to player <target_name> if possible
