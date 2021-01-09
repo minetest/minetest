@@ -355,7 +355,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compression_level)
+void MapBlock::serialize(std::ostream &out, u8 version, bool disk, int compression_level)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -365,6 +365,8 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 
 	FATAL_ERROR_IF(version < SER_FMT_VER_LOWEST_WRITE, "Serialisation version error");
 
+	std::ostringstream oss(std::ios_base::binary);
+	std::ostream &os = version >= 29 ? oss : out;
 	// First byte
 	u8 flags = 0;
 	if(is_underground)
@@ -381,7 +383,12 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 	/*
 		Bulk node data
 	*/
+	u8 content_width = 2;
+	u8 params_width = 2;
+	writeU8(os, content_width);
+	writeU8(os, params_width);
 	NameIdMapping nimap;
+	SharedBuffer<u8> buf;
 	if(disk)
 	{
 		MapNode *tmp_nodes = new MapNode[nodecount];
@@ -389,30 +396,33 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 			tmp_nodes[i] = data[i];
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
 
-		u8 content_width = 2;
-		u8 params_width = 2;
-		writeU8(os, content_width);
-		writeU8(os, params_width);
-		MapNode::serializeBulk(os, version, tmp_nodes, nodecount,
-				content_width, params_width, compression_level);
+		buf = MapNode::serializeBulk(version, tmp_nodes, nodecount,
+				content_width, params_width);
 		delete[] tmp_nodes;
 	}
 	else
 	{
-		u8 content_width = 2;
-		u8 params_width = 2;
-		writeU8(os, content_width);
-		writeU8(os, params_width);
-		MapNode::serializeBulk(os, version, data, nodecount,
-				content_width, params_width, compression_level);
+		buf = MapNode::serializeBulk(version, data, nodecount,
+				content_width, params_width);
+	}
+	if(version >= 29) {
+		os.write((const char*) &buf[0], buf.getSize());
+	} else {
+		// prior to 29 node data was compressed individually
+		compress(buf, os, version, compression_level);
 	}
 
 	/*
 		Node metadata
 	*/
-	std::ostringstream oss(std::ios_base::binary);
-	m_node_metadata.serialize(oss, version, disk);
-	compress(oss.str(), os, version, compression_level);
+	if (version >= 29) {
+		m_node_metadata.serialize(os, version, disk);
+	} else {
+		// use oss from above to avoid allocating another stream object
+		m_node_metadata.serialize(oss, version, disk);
+		// prior to 29 node data was compressed individually
+		compress(oss.str(), os, version, compression_level);
+	}
 
 	/*
 		Data that goes to disk, but not the network
@@ -438,6 +448,11 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 			m_node_timers.serialize(os, version);
 		}
 	}
+
+	if(version >= 29) {
+		// now compress the whole thing
+		compress(oss.str(), out, version, compression_level);
+	}
 }
 
 void MapBlock::serializeNetworkSpecific(std::ostream &os)
@@ -449,7 +464,7 @@ void MapBlock::serializeNetworkSpecific(std::ostream &os)
 	writeU8(os, 2); // version
 }
 
-void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
+void MapBlock::deSerialize(std::istream &in, u8 version, bool disk)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -460,9 +475,16 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 
 	if(version <= 21)
 	{
-		deSerialize_pre22(is, version, disk);
+		deSerialize_pre22(in, version, disk);
 		return;
 	}
+
+	std::stringstream iss(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
+	if (version >= 29) {
+		// decompress the whole thing
+		decompress(in, iss, version);
+	}
+	std::istream &is = version >= 29 ? iss : in;
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
@@ -484,8 +506,16 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		throw SerializationError("MapBlock::deSerialize(): invalid content_width");
 	if(params_width != 2)
 		throw SerializationError("MapBlock::deSerialize(): invalid params_width");
-	MapNode::deSerializeBulk(is, version, data, nodecount,
+
+	if (version >= 29) {
+		MapNode::deSerializeBulk(is, version, data, nodecount,
 			content_width, params_width);
+	} else {
+		// use iss from above to avoid allocating another stream object
+		decompress(is, iss, version);
+		MapNode::deSerializeBulk(iss, version, data, nodecount,
+			content_width, params_width);
+	}
 
 	/*
 		NodeMetadata
@@ -494,15 +524,20 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 			<<": Node metadata"<<std::endl);
 	// Ignore errors
 	try {
-		std::ostringstream oss(std::ios_base::binary);
-		decompress(is, oss, version);
-		std::istringstream iss(oss.str(), std::ios_base::binary);
-		if (version >= 23)
-			m_node_metadata.deSerialize(iss, m_gamedef->idef());
-		else
-			content_nodemeta_deserialize_legacy(iss,
-				&m_node_metadata, &m_node_timers,
-				m_gamedef->idef());
+		if (version >= 29) {
+			m_node_metadata.deSerialize(is, m_gamedef->idef());
+		} else {
+			// resuse iss
+			iss.str(std::string());
+			iss.clear();
+			decompress(is, iss, version);
+			if (version >= 23)
+				m_node_metadata.deSerialize(iss, m_gamedef->idef());
+			else
+				content_nodemeta_deserialize_legacy(iss,
+					&m_node_metadata, &m_node_timers,
+					m_gamedef->idef());
+		}
 	} catch(SerializationError &e) {
 		warningstream<<"MapBlock::deSerialize(): Ignoring an error"
 				<<" while deserializing node metadata at ("

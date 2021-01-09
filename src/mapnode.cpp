@@ -730,9 +730,10 @@ void MapNode::deSerialize(u8 *source, u8 version)
 		}
 	}
 }
-void MapNode::serializeBulk(std::ostream &os, int version,
+
+SharedBuffer<u8> MapNode::serializeBulk(int version,
 		const MapNode *nodes, u32 nodecount,
-		u8 content_width, u8 params_width, int compression_level)
+		u8 content_width, u8 params_width)
 {
 	if (!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -757,12 +758,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 		writeU8(&databuf[start1 + i], nodes[i].param1);
 		writeU8(&databuf[start2 + i], nodes[i].param2);
 	}
-
-	/*
-		Compress data to output stream
-	*/
-
-	compress(databuf, os, version, compression_level);
+	return databuf;
 }
 
 // Deserialize bulk node data
@@ -778,15 +774,10 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 			|| params_width != 2)
 		FATAL_ERROR("Deserialize bulk node data error");
 
-	// Uncompress or read data
+	// read data
 	u32 len = nodecount * (content_width + params_width);
-	std::ostringstream os(std::ios_base::binary);
-	decompress(is, os, version);
-	std::string s = os.str();
-	if(s.size() != len)
-		throw SerializationError("deSerializeBulkNodes: "
-				"decompress resulted in invalid size");
-	const u8 *databuf = reinterpret_cast<const u8*>(s.c_str());
+	u8 databuf[len];
+	is.read(reinterpret_cast<char*>(&databuf[0]), len);
 
 	// Deserialize content
 	if(content_width == 1)

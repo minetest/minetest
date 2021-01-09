@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
+#include "util/pointer.h"
 #include "util/metricsbackend.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
