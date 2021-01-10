@@ -216,7 +216,7 @@ void compressZstd(const u8 *data, size_t data_size, std::ostream &os, int level)
 
 	ZSTD_initCStream(stream.get(), level);
 
-	const size_t bufsize = ZSTD_CStreamOutSize();
+	const size_t bufsize = 16384;
 	char output_buffer[bufsize];
 
 	ZSTD_inBuffer input = { data, data_size, 0 };
@@ -262,18 +262,17 @@ void decompressZstd(std::istream &is, std::ostream &os)
 
 	ZSTD_initDStream(stream.get());
 
-	const size_t bufsize_out = ZSTD_DStreamOutSize();
-	const size_t bufsize_in = ZSTD_DStreamInSize();
-	char output_buffer[bufsize_out];
-	char input_buffer[bufsize_in];
+	const size_t bufsize = 16384;
+	char output_buffer[bufsize];
+	char input_buffer[bufsize];
 
-	ZSTD_outBuffer output = { output_buffer, bufsize_out, 0 };
+	ZSTD_outBuffer output = { output_buffer, bufsize, 0 };
 	ZSTD_inBuffer input = { input_buffer, 0, 0 };
 	size_t ret;
 	do
 	{
 		if (input.size == input.pos) {
-			is.read(input_buffer, bufsize_in);
+			is.read(input_buffer, bufsize);
 			input.size = is.gcount();
 			input.pos = 0;
 		}

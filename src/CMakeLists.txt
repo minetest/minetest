@@ -272,7 +272,7 @@ if(WIN32)
 	find_library(ZLIB_LIBRARIES "zlib" DOC "Path to zlib library")
 
 	find_path(ZSTD_INCLUDE_DIR "zstd.h" DOC "Zstd include directory")
-	find_library(ZSTD_LIBRARIES "zstd" DOC "Path to zstd library")
+	find_library(ZSTD_LIBRARY "zstd" DOC "Path to zstd library")
 
 	# Dll's are automatically copied to the output directory by vcpkg when VCPKG_APPLOCAL_DEPS=ON
 	if(NOT VCPKG_APPLOCAL_DEPS)

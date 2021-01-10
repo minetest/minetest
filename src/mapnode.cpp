@@ -775,9 +775,9 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 		FATAL_ERROR("Deserialize bulk node data error");
 
 	// read data
-	u32 len = nodecount * (content_width + params_width);
-	u8 databuf[len];
-	is.read(reinterpret_cast<char*>(&databuf[0]), len);
+	const u32 len = nodecount * (content_width + params_width);
+	Buffer<u8> databuf(len);
+	is.read(reinterpret_cast<char*>(*databuf), len);
 
 	// Deserialize content
 	if(content_width == 1)
