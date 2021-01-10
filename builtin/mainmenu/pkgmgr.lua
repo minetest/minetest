@@ -74,7 +74,6 @@ end
 
 local function add_texture_packs_list(txtpath, retval)
   local list = core.get_dir_list(txtpath, true)
-
   local current_texture_path = core.settings:get("texture_path")
 
   for _, item in ipairs(list) do
