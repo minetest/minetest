@@ -140,7 +140,7 @@ function get_mods(path,retval,modpack)
 			toadd.type = "mod"
 
 			-- Check modpack.txt
-			--  Note: modpack.conf is already checked above
+			-- Note: modpack.conf is already checked above
 			local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
 			if modpackfile then
 				modpackfile:close()
@@ -168,6 +168,7 @@ function pkgmgr.get_texture_packs()
 	local retval = {}
 
 	add_texture_packs_list(txtpath, retval)
+	-- on portable versions these two paths coincide. It avoids loading the path twice
 	if txtpath ~= txtpath_system then
 		add_texture_packs_list(txtpath_system, retval)
 	end
