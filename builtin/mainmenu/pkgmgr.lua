@@ -72,6 +72,35 @@ local function cleanup_path(temppath)
 	return temppath
 end
 
+local function add_texture_packs_list(txtpath, retval)
+  local list = core.get_dir_list(txtpath, true)
+
+  local current_texture_path = core.settings:get("texture_path")
+
+  for _, item in ipairs(list) do
+		if item ~= "base" then
+			local name = item
+
+			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
+			if path == current_texture_path then
+				name = fgettext("$1 (Enabled)", name)
+			end
+
+			local conf = Settings(path .. "texture_pack.conf")
+
+			retval[#retval + 1] = {
+				name = item,
+				author = conf:get("author"),
+				release = tonumber(conf:get("release") or "0"),
+				list_name = name,
+				type = "txp",
+				path = path,
+				enabled = path == current_texture_path,
+			}
+		end
+	end
+end
+
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
 
@@ -136,32 +165,12 @@ pkgmgr = {}
 
 function pkgmgr.get_texture_packs()
 	local txtpath = core.get_texturepath()
-	local list = core.get_dir_list(txtpath, true)
+	local txtpath_system = core.get_texturepath_share()
 	local retval = {}
 
-	local current_texture_path = core.settings:get("texture_path")
-
-	for _, item in ipairs(list) do
-		if item ~= "base" then
-			local name = item
-
-			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
-			if path == current_texture_path then
-				name = fgettext("$1 (Enabled)", name)
-			end
-
-			local conf = Settings(path .. "texture_pack.conf")
-
-			retval[#retval + 1] = {
-				name = item,
-				author = conf:get("author"),
-				release = tonumber(conf:get("release") or "0"),
-				list_name = name,
-				type = "txp",
-				path = path,
-				enabled = path == current_texture_path,
-			}
-		end
+	add_texture_packs_list(txtpath, retval)
+	if txtpath ~= txtpath_system then
+		add_texture_packs_list(txtpath_system, retval)
 	end
 
 	table.sort(retval, function(a, b)
