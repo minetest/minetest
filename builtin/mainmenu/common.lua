@@ -87,7 +87,7 @@ function render_serverlist_row(spec, is_favorite)
 	if spec.name then
 		text = text .. core.formspec_escape(spec.name:trim())
 	elseif spec.address then
-		text = text .. spec.address:trim()
+		text = text .. core.formspec_escape(spec.address:trim())
 		if spec.port then
 			text = text .. ":" .. spec.port
 		end
