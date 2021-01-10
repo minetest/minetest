@@ -1,5 +1,6 @@
 BasedOnStyle: LLVM
-IndentWidth: 8
+IndentWidth: 4
+TabWidth: 4
 UseTab: Always
 BreakBeforeBraces: Custom
 Standard: Cpp11
@@ -16,8 +17,8 @@ BraceWrapping:
 FixNamespaceComments: false
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
-AccessModifierOffset: -8
-ColumnLimit: 90
+AccessModifierOffset: -4
+ColumnLimit: 105
 AllowShortFunctionsOnASingleLine: InlineOnly
 SortIncludes: false
 IncludeCategories:
@@ -26,6 +27,8 @@ IncludeCategories:
   - Regex:           '^<.*'
     Priority:        1
 AlignAfterOpenBracket: DontAlign
-ContinuationIndentWidth: 16
-ConstructorInitializerIndentWidth: 16
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+ContinuationIndentWidth: 8
+ConstructorInitializerIndentWidth: 8
 BreakConstructorInitializers: AfterColon

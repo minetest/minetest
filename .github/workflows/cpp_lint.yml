@@ -12,6 +12,7 @@ on:
       - 'cmake/Modules/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
+      - '.clang-*'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -22,6 +23,7 @@ on:
       - 'cmake/Modules/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
+      - '.clang-*'
 
 jobs:
   clang_format:
