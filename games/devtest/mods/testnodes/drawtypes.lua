@@ -352,7 +352,7 @@ minetest.register_node("testnodes:plantlike_rooted_degrotate", {
 -- Demonstrative liquid nodes, source and flowing form.
 -- DRAWTYPE ONLY, NO LIQUID PHYSICS!
 -- Liquid ranges 0 to 8
-for r=0, 8 do
+for r = 0, 8 do
 	minetest.register_node("testnodes:liquid_"..r, {
 		description = S("Source Liquid Drawtype Test Node, Range @1", r),
 		drawtype = "liquid",
