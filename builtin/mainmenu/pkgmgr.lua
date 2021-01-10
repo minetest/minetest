@@ -72,7 +72,7 @@ local function cleanup_path(temppath)
 	return temppath
 end
 
-local function add_texture_packs_list(txtpath, retval)
+local function load_texture_packs(txtpath, retval)
   local list = core.get_dir_list(txtpath, true)
   local current_texture_path = core.settings:get("texture_path")
 
@@ -167,10 +167,10 @@ function pkgmgr.get_texture_packs()
 	local txtpath_system = core.get_texturepath_share()
 	local retval = {}
 
-	add_texture_packs_list(txtpath, retval)
+	load_texture_packs(txtpath, retval)
 	-- on portable versions these two paths coincide. It avoids loading the path twice
 	if txtpath ~= txtpath_system then
-		add_texture_packs_list(txtpath_system, retval)
+		load_texture_packs(txtpath_system, retval)
 	end
 
 	table.sort(retval, function(a, b)
