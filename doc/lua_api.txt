@@ -6938,7 +6938,11 @@ Player properties need to be saved manually.
         -- in mods.
 
         nametag = "",
-        -- By default empty, for players their name is shown if empty
+        -- The name to display on the head of the object. By default empty.
+        -- If the object is a player, a nil or empty nametag is replaced by the player's name.
+        -- For all other objects, a nil or empty string removes the nametag.
+        -- To hide a nametag, set its color alpha to zero. That will disable it entirely.
+
 
         nametag_color = <ColorSpec>,
         -- Sets color of nametag
