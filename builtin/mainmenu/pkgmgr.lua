@@ -73,10 +73,10 @@ local function cleanup_path(temppath)
 end
 
 local function load_texture_packs(txtpath, retval)
-  local list = core.get_dir_list(txtpath, true)
-  local current_texture_path = core.settings:get("texture_path")
+	local list = core.get_dir_list(txtpath, true)
+	local current_texture_path = core.settings:get("texture_path")
 
-  for _, item in ipairs(list) do
+	for _, item in ipairs(list) do
 		if item ~= "base" then
 			local name = item
 
