@@ -435,6 +435,13 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 		return;
 	}
 
+	v2f32 scale(
+			(f32) screensize.X / sourcesize.X,
+			(f32) screensize.Y / sourcesize.Y);
+	if (scale.X < scale.Y)
+		screensize.X = (int) (scale.Y * sourcesize.X);
+	else
+		screensize.Y = (int) (scale.X * sourcesize.Y);
 	/* Draw background texture */
 	draw2DImageFilterScaled(driver, texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
