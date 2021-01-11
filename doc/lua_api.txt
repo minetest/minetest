@@ -2113,7 +2113,7 @@ Examples
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
-   
+
 Version History
 ---------------
 
@@ -4587,6 +4587,10 @@ Call these functions only at load time!
       the puncher to the punched.
     * `damage`: Number that represents the damage calculated by the engine
     * should return `true` to prevent the default damage mechanism
+* `minetest.register_on_rightclickplayer(function(player, clicker))`
+    * Called when a player is right-clicked
+    * `player`: ObjectRef - Player that was right-clicked
+    * `clicker`: ObjectRef - Object that right-clicked, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
@@ -7641,12 +7645,12 @@ Used by `minetest.register_node`.
         -- intensity: 1.0 = mid range of regular TNT.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
-        
+
         mod_origin = "modname",
         -- stores which mod actually registered a node
         -- if it can not find a source, returns "??"
         -- useful for getting what mod truly registered something
-        -- example: if a node is registered as ":othermodname:nodename", 
+        -- example: if a node is registered as ":othermodname:nodename",
         -- nodename will show "othermodname", but mod_orgin will say "modname"
     }
 
