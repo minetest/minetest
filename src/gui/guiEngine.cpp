@@ -435,6 +435,7 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 		return;
 	}
 
+	v2u32 screensize_orig = screensize;
 	v2f32 scale(
 			(f32) screensize.X / sourcesize.X,
 			(f32) screensize.Y / sourcesize.Y);
@@ -442,9 +443,13 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 		screensize.X = (int) (scale.Y * sourcesize.X);
 	else
 		screensize.Y = (int) (scale.X * sourcesize.Y);
+	v2s32 offset = v2s32(
+		(s32) screensize_orig.X - (s32) screensize.X,
+		(s32) screensize_orig.Y - (s32) screensize.Y
+	) / 2;
 	/* Draw background texture */
 	draw2DImageFilterScaled(driver, texture,
-		core::rect<s32>(0, 0, screensize.X, screensize.Y),
+		core::rect<s32>(offset.X, offset.Y, screensize.X + offset.X, screensize.Y + offset.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
 }
