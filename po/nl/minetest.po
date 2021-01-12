@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-12-24 05:29+0000\n"
-"Last-Translator: zjeffer <vanhouttetuur@gmail.com>\n"
+"PO-Revision-Date: 2021-01-13 18:32+0000\n"
+"Last-Translator: Edgar <Edgar@anotherfoxguy.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -285,7 +285,7 @@ msgstr "Kerker ruis"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Vlak terrein"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -307,7 +307,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Heuvels"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -315,16 +315,19 @@ msgid "Humid rivers"
 msgstr "Video driver"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Verhoogt de luchtvochtigheid rond rivieren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Meren"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Lage luchtvochtigheid en hoge hitte zorgen voor ondiepe of droge rivieren"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -346,11 +349,11 @@ msgstr "Bergen ruis"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Modderstroom"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Netwerk van tunnels en grotten"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -361,8 +364,9 @@ msgid "Reduces heat with altitude"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Vermindert de luchtvochtigheid met hoogte"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -371,7 +375,7 @@ msgstr "Grootte van rivieren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Rivieren op zeeniveau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -394,15 +398,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Gematigd, Woestijn"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Gematigd, Woestijn, Oerwoud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Gematigd, Woestijn, Oerwoud, Toendra, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -410,8 +414,9 @@ msgid "Terrain surface erosion"
 msgstr "Terrein hoogte"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Bomen en oerwoudgras"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -419,8 +424,9 @@ msgid "Vary river depth"
 msgstr "Diepte van rivieren"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Zeer grote grotten diep in de ondergrond"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
