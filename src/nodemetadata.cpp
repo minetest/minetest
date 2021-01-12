@@ -194,7 +194,7 @@ void NodeMetadataList::deSerialize(std::istream &is,
 
 		NodeMetadata *data = new NodeMetadata(item_def_mgr);
 		data->deSerialize(is, version);
-		if (!data->isEmpty())
+		if (!data->empty())
 			m_data[p] = data;
 	}
 }
@@ -236,7 +236,7 @@ void NodeMetadataList::remove(v3s16 p)
 void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 {
 	remove(p);
-	if (!d->isEmpty())
+	if (!d->empty())
 		m_data.insert(std::make_pair(p, d));
 }
 
