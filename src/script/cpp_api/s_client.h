@@ -51,6 +51,8 @@ public:
 	void on_hp_modification(int32_t newhp);
 	void on_death();
 	void environment_step(float dtime);
+	void on_draw(float dtime);
+	void on_predraw(float dtime);
 	void on_formspec_input(const std::string &formname, const StringMap &fields);
 
 	bool on_dignode(v3s16 p, MapNode node);

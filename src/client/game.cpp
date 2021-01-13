@@ -3874,6 +3874,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	TimeTaker tt_draw("Draw scene");
 	driver->beginScene(true, true, skycolor);
 
+	if (client->modsLoaded())
+		client->getScript()->on_predraw(dtime);
+
 	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
 			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
 			(camera->getCameraMode() == CAMERA_MODE_FIRST));
@@ -3888,6 +3891,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 #endif
 	RenderingEngine::draw_scene(skycolor, m_game_ui->m_flags.show_hud,
 			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
+
+	if (client->modsLoaded())
+		client->getScript()->on_draw(dtime);
 
 	/*
 		Profiler graph

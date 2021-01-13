@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "s_item.h"
+#include "script/lua_api/l_renderer.h"
 
 void ScriptApiClient::on_mods_loaded()
 {
@@ -123,6 +124,44 @@ void ScriptApiClient::environment_step(float dtime)
 		getClient()->setFatalError(std::string("Client environment_step: ") + e.what() + "\n"
 				+ script_get_backtrace(L));
 	}
+}
+
+void ScriptApiClient::on_draw(float dtime)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_draw");
+
+	lua_pushnumber(L, dtime);
+
+	ModApiRenderer::start_callback();
+	try {
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client on_draw: ") + e.what() + "\n" +
+			script_get_backtrace(L));
+	}
+	ModApiRenderer::end_callback();
+}
+
+void ScriptApiClient::on_predraw(float dtime)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_predraw");
+
+	lua_pushnumber(L, dtime);
+
+	ModApiRenderer::start_callback();
+	try {
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client on_predraw: ") + e.what() + "\n" +
+			script_get_backtrace(L));
+	}
+	ModApiRenderer::end_callback();
 }
 
 void ScriptApiClient::on_formspec_input(const std::string &formname,

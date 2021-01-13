@@ -357,6 +357,74 @@ bool is_color_table(lua_State *L, int index)
 	return is_color_table;
 }
 
+core::recti read_rel_rect(lua_State *L, int index, const core::vector2di &parent_size)
+{
+	CHECK_TYPE(index, "rectangle", LUA_TTABLE);
+	core::recti r;
+
+	lua_getfield(L, index, "w");
+	lua_getfield(L, index, "x");
+	lua_getfield(L, index, "nx");
+	if (lua_isnumber(L, -3)) {
+		s32 width = lua_tonumber(L, -3);
+		if (lua_isnumber(L, -2)) {
+			r.UpperLeftCorner.X = lua_tonumber(L, -2);
+			r.LowerRightCorner.X = r.UpperLeftCorner.X + width;
+		} else {
+			r.LowerRightCorner.X = parent_size.X - lua_tonumber(L, -1);
+			r.UpperLeftCorner.X = r.LowerRightCorner.X - width;
+		}
+	} else {
+		r.UpperLeftCorner.X = lua_tonumber(L, -2);
+		r.LowerRightCorner.X = parent_size.X - lua_tonumber(L, -1);
+	}
+	lua_pop(L, 3);
+
+	lua_getfield(L, index, "h");
+	lua_getfield(L, index, "y");
+	lua_getfield(L, index, "ny");
+	if (lua_isnumber(L, -3)) {
+		s32 height = lua_tonumber(L, -3);
+		if (lua_isnumber(L, -2)) {
+			r.UpperLeftCorner.Y = lua_tonumber(L, -2);
+			r.LowerRightCorner.Y = r.UpperLeftCorner.Y + height;
+		} else {
+			r.LowerRightCorner.Y = parent_size.Y - lua_tonumber(L, -1);
+			r.UpperLeftCorner.Y = r.LowerRightCorner.Y - height;
+		}
+	} else {
+		r.UpperLeftCorner.Y = lua_tonumber(L, -2);
+		r.LowerRightCorner.Y = parent_size.Y - lua_tonumber(L, -1);
+	}
+	lua_pop(L, 3);
+
+	return r;
+}
+
+core::vector2di read_rel_pos(lua_State *L, int index, const core::vector2di &parent_size)
+{
+	CHECK_TYPE(index, "position", LUA_TTABLE);
+	core::vector2di p;
+
+	lua_getfield(L, index, "x");
+	lua_getfield(L, index, "nx");
+	if (lua_isnumber(L, -1))
+		p.X = parent_size.X - lua_tonumber(L, -1);
+	else
+		p.X = lua_tonumber(L, -2);
+	lua_pop(L, 2);
+
+	lua_getfield(L, index, "y");
+	lua_getfield(L, index, "ny");
+	if (lua_isnumber(L, -1))
+		p.Y = parent_size.Y - lua_tonumber(L, -1);
+	else
+		p.Y = lua_tonumber(L, -2);
+	lua_pop(L, 2);
+
+	return p;
+}
+
 aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 {
 	aabb3f box;

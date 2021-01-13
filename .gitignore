@@ -54,6 +54,7 @@ build/.cmake/
 /world/
 /clientmods/*
 !/clientmods/preview/
+!/clientmods/devtest_csm/
 /client/mod_storage/
 
 ## Configuration/log files

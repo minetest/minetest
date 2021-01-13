@@ -313,11 +313,11 @@ void GUIButton::draw()
 
 		// PATCH
 		video::ITexture* texture = ButtonImages[(u32)imageState].Texture;
-		video::SColor image_colors[] = { BgColor, BgColor, BgColor, BgColor };
+		core::recti destrect = ScaleImage ? AbsoluteRect :
+			core::recti(pos, sourceRect.getSize());
+		video::SColor image_colors[] = {BgColor, BgColor, BgColor, BgColor};
 		if (BgMiddle.getArea() == 0) {
-			driver->draw2DImage(texture,
-					ScaleImage? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
-					sourceRect, &AbsoluteClippingRect,
+			driver->draw2DImage(texture, destrect, sourceRect, &AbsoluteClippingRect,
 					image_colors, UseAlphaChannel);
 		} else {
 			core::rect<s32> middle = BgMiddle;
@@ -326,9 +326,8 @@ void GUIButton::draw()
 				middle.LowerRightCorner.X += texture->getOriginalSize().Width;
 			if (middle.LowerRightCorner.Y < 0)
 				middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
-			draw2DImage9Slice(driver, texture,
-					ScaleImage ? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
-					middle, &AbsoluteClippingRect, image_colors);
+			draw2DImage9Slice(driver, texture, destrect, sourceRect, middle,
+					&AbsoluteClippingRect, image_colors, UseAlphaChannel);
 		}
 		// END PATCH
 	}

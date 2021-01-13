@@ -999,12 +999,14 @@ void drawItemStack(
 		matrix.makeIdentity();
 
 		if (enable_animations) {
-			float timer_f = (float) delta / 5000.f;
+			float timer_f = (float)delta / 5000.f;
 			matrix.setRotationDegrees(v3f(
 				angle.X + rotation_speed.X * 3.60f * timer_f,
 				angle.Y + rotation_speed.Y * 3.60f * timer_f,
 				angle.Z + rotation_speed.Z * 3.60f * timer_f)
 			);
+		} else {
+			matrix.setRotationDegrees(v3f(angle.X, angle.Y, angle.Z));
 		}
 
 		driver->setTransform(video::ETS_WORLD, matrix);

@@ -42,19 +42,19 @@ void GUIBackgroundImage::draw()
 		return;
 	}
 
-	core::rect<s32> rect = AbsoluteRect;
+	core::recti destrect = AbsoluteRect;
 	if (m_autoclip)
-		rect.LowerRightCorner += Parent->getAbsolutePosition().getSize();
+		destrect.LowerRightCorner += Parent->getAbsolutePosition().getSize();
+	core::recti srcrect(core::position2di(0, 0),
+		core::dimension2di(texture->getOriginalSize()));
+
+	const video::SColor color(255, 255, 255, 255);
+	const video::SColor colors[] = {color, color, color, color};
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
 	if (m_middle.getArea() == 0) {
-		const video::SColor color(255, 255, 255, 255);
-		const video::SColor colors[] = {color, color, color, color};
-		draw2DImageFilterScaled(driver, texture, rect,
-				core::rect<s32>(core::position2d<s32>(0, 0),
-						core::dimension2di(texture->getOriginalSize())),
-				nullptr, colors, true);
+		draw2DImageFilterScaled(driver, texture, destrect, srcrect, nullptr, colors, true);
 	} else {
 		core::rect<s32> middle = m_middle;
 		// `-x` is interpreted as `w - x`
@@ -62,7 +62,7 @@ void GUIBackgroundImage::draw()
 			middle.LowerRightCorner.X += texture->getOriginalSize().Width;
 		if (middle.LowerRightCorner.Y < 0)
 			middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
-		draw2DImage9Slice(driver, texture, rect, middle);
+		draw2DImage9Slice(driver, texture, destrect, srcrect, middle, nullptr, colors, true);
 	}
 
 	IGUIElement::draw();
