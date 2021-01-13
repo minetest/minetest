@@ -481,44 +481,6 @@ void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 	m_current_text_rect += m_frame_rect.UpperLeftCorner;
 }
 
-
-void GUIEditBoxWithScrollBar::inputChar(wchar_t c)
-{
-	if (!isEnabled())
-		return;
-
-	if (c != 0)	{
-		if (Text.size() < m_max || m_max == 0) {
-			core::stringw s;
-
-			if (m_mark_begin != m_mark_end) {
-				// replace marked text
-				const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
-				const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
-
-				s = Text.subString(0, realmbgn);
-				s.append(c);
-				s.append(Text.subString(realmend, Text.size() - realmend));
-				Text = s;
-				m_cursor_pos = realmbgn + 1;
-			} else {
-				// add new character
-				s = Text.subString(0, m_cursor_pos);
-				s.append(c);
-				s.append(Text.subString(m_cursor_pos, Text.size() - m_cursor_pos));
-				Text = s;
-				++m_cursor_pos;
-			}
-
-			m_blink_start_time = porting::getTimeMs();
-			setTextMarkers(0, 0);
-		}
-	}
-	breakText();
-	calculateScrollPos();
-	sendGuiEvent(EGET_EDITBOX_CHANGED);
-}
-
 // calculate autoscroll
 void GUIEditBoxWithScrollBar::calculateScrollPos()
 {
@@ -682,54 +644,21 @@ void GUIEditBoxWithScrollBar::setBackgroundColor(const video::SColor &bg_color)
 //! Writes attributes of the element.
 void GUIEditBoxWithScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options = 0) const
 {
-	// IGUIEditBox::serializeAttributes(out,options);
-
 	out->addBool("Border", m_border);
 	out->addBool("Background", m_background);
-	out->addBool("OverrideColorEnabled", m_override_color_enabled);
-	out->addColor("OverrideColor", m_override_color);
 	// out->addFont("OverrideFont", OverrideFont);
-	out->addInt("MaxChars", m_max);
-	out->addBool("WordWrap", m_word_wrap);
-	out->addBool("MultiLine", m_multiline);
-	out->addBool("AutoScroll", m_autoscroll);
-	out->addBool("PasswordBox", m_passwordbox);
-	core::stringw ch = L" ";
-	ch[0] = m_passwordchar;
-	out->addString("PasswordChar", ch.c_str());
-	out->addEnum("HTextAlign", m_halign, GUIAlignmentNames);
-	out->addEnum("VTextAlign", m_valign, GUIAlignmentNames);
-	out->addBool("Writable", m_writable);
 
-	IGUIEditBox::serializeAttributes(out, options);
+	GUIEditBox::serializeAttributes(out, options);
 }
 
 
 //! Reads attributes of the element
 void GUIEditBoxWithScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options = 0)
 {
-	IGUIEditBox::deserializeAttributes(in, options);
+	GUIEditBox::deserializeAttributes(in, options);
 
 	setDrawBorder(in->getAttributeAsBool("Border"));
 	setDrawBackground(in->getAttributeAsBool("Background"));
-	setOverrideColor(in->getAttributeAsColor("OverrideColor"));
-	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
-	setMax(in->getAttributeAsInt("MaxChars"));
-	setWordWrap(in->getAttributeAsBool("WordWrap"));
-	setMultiLine(in->getAttributeAsBool("MultiLine"));
-	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
-	core::stringw ch = in->getAttributeAsStringW("PasswordChar");
-
-	if (!ch.size())
-		setPasswordBox(in->getAttributeAsBool("PasswordBox"));
-	else
-		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);
-
-	setTextAlignment((EGUI_ALIGNMENT)in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-		(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
-
-	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
-	setWritable(in->getAttributeAsBool("Writable"));
 }
 
 bool GUIEditBoxWithScrollBar::isDrawBackgroundEnabled() const { return false; }

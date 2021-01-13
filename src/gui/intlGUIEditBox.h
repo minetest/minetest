@@ -38,12 +38,6 @@ namespace gui
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
 
-		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
-
-		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
-
 		virtual void setCursorChar(const wchar_t cursorChar) {}
 
 		virtual wchar_t getCursorChar() const { return L'|'; }
@@ -57,8 +51,7 @@ namespace gui
 		virtual void breakText();
 		//! sets the area of the given line
 		virtual void setTextRect(s32 line);
-		//! adds a letter to the edit box
-		virtual void inputChar(wchar_t c);
+
 		//! calculates the current scroll position
 		void calculateScrollPos();
 

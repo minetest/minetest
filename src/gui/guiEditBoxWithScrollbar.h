@@ -49,8 +49,6 @@ protected:
 	virtual void breakText();
 	//! sets the area of the given line
 	virtual void setTextRect(s32 line);
-	//! adds a letter to the edit box
-	virtual void inputChar(wchar_t c);
 	//! calculates the current scroll position
 	void calculateScrollPos();
 	//! calculated the FrameRect
