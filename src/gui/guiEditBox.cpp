@@ -699,20 +699,17 @@ void GUIEditBox::inputChar(wchar_t c)
 			core::stringw s;
 
 			if (m_mark_begin != m_mark_end) {
+				// clang-format off
 				// replace marked text
-				const s32 realmbgn = m_mark_begin < m_mark_end
-								     ? m_mark_begin
-								     : m_mark_end;
-				const s32 realmend = m_mark_begin < m_mark_end
-								     ? m_mark_end
-								     : m_mark_begin;
+				s32 real_begin = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+				s32 real_end = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
 
-				s = Text.subString(0, realmbgn);
+				s = Text.subString(0, real_begin);
 				s.append(c);
-				s.append(Text.subString(
-						realmend, Text.size() - realmend));
+				s.append(Text.subString(real_end, Text.size() - real_end));
 				Text = s;
-				m_cursor_pos = realmbgn + 1;
+				m_cursor_pos = real_begin + 1;
+				// clang-format on
 			} else {
 				// add new character
 				s = Text.subString(0, m_cursor_pos);
