@@ -255,6 +255,10 @@ video::SColor StaticText::getOverrideColor() const
 	return ColoredText.getDefaultColor();
 }
 
+video::SColor StaticText::getActiveColor() const
+{
+	return ColoredText.getDefaultColor();
+}
 
 //! Sets if the static text should use the overide color or the
 //! color in the gui skin.

@@ -506,6 +506,16 @@ video::SColor GUIButton::getOverrideColor() const
 	return OverrideColor;
 }
 
+video::SColor GUIButton::getActiveColor() const
+{
+	if (OverrideColorEnabled)
+		return OverrideColor;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT);
+	return OverrideColor;
+}
+
 void GUIButton::enableOverrideColor(bool enable)
 {
 	OverrideColorEnabled = enable;

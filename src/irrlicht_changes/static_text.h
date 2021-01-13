@@ -140,6 +140,8 @@ namespace gui
 		virtual video::SColor getOverrideColor() const;
 		#endif
 
+		video::SColor getActiveColor() const; // IrrLicht 1.9; doesn't hurt in 1.8
+
 		//! Sets if the static text should use the overide color or the
 		//! color in the gui skin.
 		virtual void enableOverrideColor(bool enable);

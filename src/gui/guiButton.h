@@ -102,6 +102,8 @@ public:
 	//! Gets the override color
 	virtual video::SColor getOverrideColor(void) const;
 
+	video::SColor getActiveColor() const; // IrrLicht 1.9; doesn't hurt in 1.8
+
 	//! Sets if the button text should use the override color or the color in the gui skin.
 	virtual void enableOverrideColor(bool enable);
 

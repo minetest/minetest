@@ -44,7 +44,7 @@ static video::SMaterial baseMaterial()
 #else
 	mat.ZBuffer = video::ECFN_NEVER;
 #endif
-	mat.ZWriteEnable = false;
+	mat.setFlag(video::EMF_ZWRITE_ENABLE, false); // ZWriteEnable is bool on early 1.9 but E_ZWRITE on later 1.9
 	mat.AntiAliasing = 0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
