@@ -2113,7 +2113,7 @@ Examples
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
-   
+
 Version History
 ---------------
 
@@ -3147,6 +3147,7 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns a vector, each dimension rounded down.
 * `vector.round(v)`:
     * Returns a vector, each dimension rounded to nearest integer.
+    * At a multiple of 0.5, rounds away from zero.
 * `vector.apply(v, func)`:
     * Returns a vector where the function `func` has been applied to each
       component.
@@ -3221,6 +3222,8 @@ Helper functions
     * If the absolute value of `x` is within the `tolerance` or `x` is NaN,
       `0` is returned.
 * `math.factorial(x)`: returns the factorial of `x`
+* `math.round(x)`: Returns `x` rounded to the nearest integer.
+    * At a multiple of 0.5, rounds away from zero.
 * `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
     * `separator`: string, default: `","`
     * `include_empty`: boolean, default: `false`
@@ -7641,12 +7644,12 @@ Used by `minetest.register_node`.
         -- intensity: 1.0 = mid range of regular TNT.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
-        
+
         mod_origin = "modname",
         -- stores which mod actually registered a node
         -- if it can not find a source, returns "??"
         -- useful for getting what mod truly registered something
-        -- example: if a node is registered as ":othermodname:nodename", 
+        -- example: if a node is registered as ":othermodname:nodename",
         -- nodename will show "othermodname", but mod_orgin will say "modname"
     }
 

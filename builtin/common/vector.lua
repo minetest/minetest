@@ -41,9 +41,9 @@ end
 
 function vector.round(v)
 	return {
-		x = math.floor(v.x + 0.5),
-		y = math.floor(v.y + 0.5),
-		z = math.floor(v.z + 0.5)
+		x = math.round(v.x),
+		y = math.round(v.y),
+		z = math.round(v.z)
 	}
 end
 
