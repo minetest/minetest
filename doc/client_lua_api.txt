@@ -1031,7 +1031,7 @@ Methods:
 * `is_in_liquid_stable()`
     * returns true if player is in a stable liquid (This is more stable and defines the maximum speed of the player)
 * `get_liquid_viscosity()`
-    * deprecated; same as `get_move_resistance`
+    * returns liquid viscosity (liquid flow speed)
 * `get_move_resistance()`
     * returns move resistance of current node, the higher, the slower the player moves
 * `is_climbing()`

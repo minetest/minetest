@@ -136,10 +136,12 @@ int LuaLocalPlayer::l_get_move_resistance(lua_State *L)
 	return 1;
 }
 
-// LEGACY: alias for 'get_move_resistance'
 int LuaLocalPlayer::l_get_liquid_viscosity(lua_State *L)
 {
-	return l_get_move_resistance(L);
+	LocalPlayer *player = getobject(L, 1);
+
+	lua_pushinteger(L, player->liquid_viscosity);
+	return 1;
 }
 
 int LuaLocalPlayer::l_is_climbing(lua_State *L)
