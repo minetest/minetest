@@ -216,6 +216,23 @@ for i=1, 5 do
 	})
 end
 
+-- Move resistance nodes (various resistance levels)
+for r=1, 7 do
+	minetest.register_node("testnodes:move_resistance"..r, {
+		description = S("Move-resistant Node (@1)", r),
+		walkable = false,
+		move_resistance = r,
+
+		drawtype = "glasslike",
+		paramtype = "light",
+		sunlight_propagates = true,
+		tiles = { "testnodes_move_resistance.png" },
+		is_ground_content = false,
+		groups = { dig_immediate = 3 },
+		color = { b = 0, g = 255, r = math.floor((r/7)*255), a = 255 },
+	})
+end
+
 -- By placing something on the node, the node itself will be replaced
 minetest.register_node("testnodes:buildable_to", {
 	description = S("Replacable Node"),
