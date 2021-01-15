@@ -159,37 +159,37 @@ irr_ptr<ReferenceCounted> grab(ReferenceCounted *object) noexcept
 }
 
 template <typename ReferenceCounted>
-bool operator==(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b)
+bool operator==(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b) noexcept
 {
 	return a.get() == b.get();
 }
 
 template <typename ReferenceCounted>
-bool operator==(const irr_ptr<ReferenceCounted> &a, const ReferenceCounted *b)
+bool operator==(const irr_ptr<ReferenceCounted> &a, const ReferenceCounted *b) noexcept
 {
 	return a.get() == b;
 }
 
 template <typename ReferenceCounted>
-bool operator==(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b)
+bool operator==(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b) noexcept
 {
 	return a == b.get();
 }
 
 template <typename ReferenceCounted>
-bool operator!=(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b)
+bool operator!=(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b) noexcept
 {
 	return a.get() != b.get();
 }
 
 template <typename ReferenceCounted>
-bool operator!=(const irr_ptr<ReferenceCounted> &a, const ReferenceCounted *b)
+bool operator!=(const irr_ptr<ReferenceCounted> &a, const ReferenceCounted *b) noexcept
 {
 	return a.get() != b;
 }
 
 template <typename ReferenceCounted>
-bool operator!=(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b)
+bool operator!=(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b) noexcept
 {
 	return a != b.get();
 }
