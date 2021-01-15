@@ -27,9 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * It should only be used for user-managed objects, i.e. those created with
  * the @c new operator or @c create* functions, like:
  * `irr_ptr<scene::IMeshBuffer> buf{new scene::SMeshBuffer()};`
+ * The reference counting is *not* balanced as new objects have reference
+ * count set to one, and the @c irr_ptr constructor (and @c reset) assumes
+ * ownership of that reference.
  *
- * It should *never* be used for engine-managed objects, including
- * those created with @c addTexture and similar methods.
+ * It shouldn’t be used for engine-managed objects, including those created
+ * with @c addTexture and similar methods. Constructing @c irr_ptr directly
+ * from such object is a bug and may lead to a crash. Indirect construction
+ * is possible though; see the @c grab free function for details and use cases.
  */
 template <class ReferenceCounted,
 		class = typename std::enable_if<std::is_base_of<IReferenceCounted,
@@ -61,8 +66,10 @@ public:
 		reset(b.release());
 	}
 
-	/** Constructs a shared pointer out of a plain one
+	/** Constructs a shared pointer out of a plain one to control object lifetime.
+	 * @param object The object, usually returned by some @c create* function.
 	 * @note Move semantics: reference counter is *not* increased.
+	 * @warning Never wrap any @c add* function with this!
 	 */
 	explicit irr_ptr(ReferenceCounted *object) noexcept { reset(object); }
 
@@ -136,6 +143,13 @@ public:
 	}
 };
 
+/** Constructs a shared pointer as a *secondary* reference to an object
+ *
+ * This function is intended to make a temporary reference to an object which
+ * is owned elsewhere so that it is not destroyed too early. To acheive that
+ * it does balanced reference counting, i.e. reference count is increased
+ * in this function and decreased when the returned pointer is destroyed.
+ */
 template <class ReferenceCounted>
 irr_ptr<ReferenceCounted> grab(ReferenceCounted *object) noexcept
 {
