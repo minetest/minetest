@@ -580,7 +580,7 @@ function store.update_paths()
 	local mod_hash = {}
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
-		if mod.author then
+		if mod.author and mod.release > 0 then
 			mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
 		end
 	end
@@ -588,14 +588,14 @@ function store.update_paths()
 	local game_hash = {}
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
-		if game.author ~= "" then
+		if game.author ~= "" and game.release > 0 then
 			game_hash[game.author:lower() .. "/" .. game.id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
-		if txp.author then
+		if txp.author and txp.release > 0 then
 			txp_hash[txp.author:lower() .. "/" .. txp.name] = txp
 		end
 	end
