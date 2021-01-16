@@ -194,6 +194,7 @@ void NodeMetadataList::deSerialize(std::istream &is,
 
 		NodeMetadata *data = new NodeMetadata(item_def_mgr);
 		data->deSerialize(is, version);
+		// Previously Minetest would happily serialize empty nodemeta, so drop them here
 		if (!data->empty())
 			m_data[p] = data;
 	}
@@ -237,7 +238,7 @@ void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 {
 	remove(p);
 	if (!d->empty())
-		m_data.insert(std::make_pair(p, d));
+		m_data.emplace(p, d);
 }
 
 void NodeMetadataList::clear()
