@@ -618,7 +618,10 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	}
 	lua_pop(L, 1);
 
-	f.alpha = getintfield_default(L, index, "alpha", 255);
+	warn_if_field_exists(L, index, "alpha",
+		"Obsolete, only limited compatibility provided");
+	if (getintfield_default(L, index, "alpha", 255) != 255)
+		f.alpha = 0;
 
 	bool usealpha = getboolfield_default(L, index,
 			"use_texture_alpha", false);
