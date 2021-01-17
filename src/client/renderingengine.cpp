@@ -128,7 +128,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
 	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
-	params.ZBufferBits = 24;
+	params.ZBufferBits = 16;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
@@ -225,6 +225,7 @@ bool RenderingEngine::print_video_modes()
 
 bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 {
+	return true;
 	// FIXME: It would make more sense for there to be a switch of some
 	// sort here that would call the correct toplevel setup methods for
 	// the environment Minetest is running in.
