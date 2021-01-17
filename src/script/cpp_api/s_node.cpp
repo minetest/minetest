@@ -93,6 +93,14 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{0, NULL},
 	};
 
+struct EnumString ScriptApiNode::es_TextureAlphaMode[] =
+	{
+		{ALPHAMODE_OPAQUE, "opaque"},
+		{ALPHAMODE_CLIP, "clip"},
+		{ALPHAMODE_BLEND, "blend"},
+		{0, NULL},
+	};
+
 bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 		ServerActiveObject *puncher, const PointedThing &pointed)
 {
