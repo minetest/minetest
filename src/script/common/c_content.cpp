@@ -618,24 +618,38 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	}
 	lua_pop(L, 1);
 
+	/* alpha & use_texture_alpha */
+	// This is a bit complicated due to compatibility
+
+	f.setDefaultAlphaMode();
+
 	warn_if_field_exists(L, index, "alpha",
-		"Obsolete, only limited compatibility provided");
+		"Obsolete, only limited compatibility provided; "
+		"replaced by \"use_texture_alpha\"");
 	if (getintfield_default(L, index, "alpha", 255) != 255)
-		f.alpha = 0;
+		f.alpha = ALPHAMODE_BLEND;
 
-	bool usealpha = getboolfield_default(L, index,
-			"use_texture_alpha", false);
-	if (usealpha)
-		f.alpha = 0;
+	lua_getfield(L, index, "use_texture_alpha");
+	if (lua_isboolean(L, -1)) {
+		warn_if_field_exists(L, index, "use_texture_alpha",
+			"Boolean values are deprecated; use the new choices");
+		if (lua_toboolean(L, -1))
+			f.alpha = (f.drawtype == NDT_NORMAL) ? ALPHAMODE_CLIP : ALPHAMODE_BLEND;
+	} else if (check_field_or_nil(L, -1, LUA_TSTRING, "use_texture_alpha")) {
+		int result = f.alpha;
+		string_to_enum(ScriptApiNode::es_TextureAlphaMode, result,
+				std::string(lua_tostring(L, -1)));
+		f.alpha = static_cast<enum AlphaMode>(result);
+	}
+	lua_pop(L, 1);
 
-	// Read node color.
+	/* Other stuff */
+
 	lua_getfield(L, index, "color");
 	read_color(L, -1, &f.color);
 	lua_pop(L, 1);
 
 	getstringfield(L, index, "palette", f.palette_name);
-
-	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
 	read_color(L, -1, &f.post_effect_color);
