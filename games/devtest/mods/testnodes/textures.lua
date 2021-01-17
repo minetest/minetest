@@ -46,7 +46,7 @@ for a=1,#alphas do
 		tiles = {
 			"testnodes_alpha"..alpha..".png",
 		},
-		use_texture_alpha = true,
+		use_texture_alpha = "blend",
 
 		groups = { dig_immediate = 3 },
 	})
@@ -59,7 +59,7 @@ for a=1,#alphas do
 		tiles = {
 			"testnodes_alpha.png^[opacity:" .. alpha,
 		},
-		use_texture_alpha = true,
+		use_texture_alpha = "blend",
 
 		groups = { dig_immediate = 3 },
 	})
