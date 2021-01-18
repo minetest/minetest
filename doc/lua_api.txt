@@ -2113,7 +2113,7 @@ Examples
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
-   
+
 Version History
 ---------------
 
@@ -3259,8 +3259,9 @@ Helper functions
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
     * This value might overflow on certain 32-bit systems!
-* `table.copy(table)`: returns a table
-    * returns a deep copy of `table`
+* `table.copy(table)`: Returns a deep copy of `table`.
+    * Metatables are ignored. If the tables have metatables that should be
+      preserved or the table contains Lua classes, `class.copy` may be better.
 * `table.indexof(list, val)`: returns the smallest numerical index containing
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have
@@ -3299,6 +3300,176 @@ Helper functions
     * `groups`: Damage groups of the object
     * `tool_capabilities`: Tool capabilities table of the item
     * `time_from_last_punch`: time in seconds since last punch action
+
+
+
+
+Metatable Classes
+=================
+
+Lua doesn't have a built-in OOP class implementation, but it is possible to create such an
+implementation through the usage of metatables, such as <http://www.lua.org/pil/16.html>.
+The following functions make a consistent interface for metatable-based classes. Basic
+knowledge of metatable-based classes and OOP is assumed.
+
+To make a class, use `class.new`. The first argument is a string name, while the next
+arguments (if present) are the classes to inherit from. It returns the metatable of the
+classes, called the "prototype":
+
+    local MyClass = class.new("MyClass")
+
+Methods, operator overloads, constructors, and predefined values can be added directly to the
+prototype, like so (detailed more later on):
+
+    -- Constructor
+    function MyClass:__init(val)
+        self.value = val
+    end
+
+    -- Plain method
+    function MyClass:set_value(val)
+        self.value = val
+    end
+
+    -- Metamethod for operator `+`
+    function MyClass:__add(other)
+        return MyClass(self.value + other.value)
+    end
+
+    -- Default value
+    MyClass.value = 0
+
+Classes can be instantiated by calling the prototype like a function, or less commonly,
+by using `class.init` or `class.copy`. Here, `obj` is a table with `MyClass` as its
+metatable, i.e. an "instance" or "object" of `MyClass`.
+
+    local obj = MyClass(5)
+    assert(obj.value == 5)
+
+    obj:set_value(7)
+    assert(obj.value == 7)
+    assert((obj + MyClass(10)).value == 17)
+
+    obj:set_value(nil) -- `obj.value` is actually nil...
+    assert(obj.value == 0) -- ... but uses the class's default value of 0.
+
+When a class is instantiated, it calls the class's constructor. For `class.init` or most
+calls to the prototype, this calls the metamethod `__init`, which should set up the class.
+
+Alternatively, when using `class.copy`, `class.copy_into`, or calling the prototype with one
+parameter of the same type as the class being instantiated, the instance is being copied from
+another. Normally, it suffices to let this class library do the copying automatically, but
+sometimes more advanced behavior is necessary.
+
+The behavior of copying an instance changes depending on the value of the `__copy` metafield.
+If `__copy` is not present, the object is simply deep copied with `class.copy`. If it is set
+to the string "ref", the object will not be copied and will return a reference to the original
+table. If it is a function, that function is called, which should copy the table by itself.
+
+    local copy = MyClass(obj)
+    assert(copy.value == obj.value)
+
+    -- If `__copy = "ref`:
+    print(copy == obj) -- Outputs `true`
+    -- Otherwise:
+    print(copy == obj) -- Outputs `false`
+
+    -- Example of `__copy` function.
+    -- This has essentially the same behavior as the defaultly provided deep copy behavior
+    function MyClass:__copy(other)
+        self.value = class.copy(other.value)
+    end
+
+Some Lua metamethods (like the previously seen `__add`) may be set on the prototype. Others
+are restricted because they would mess up class usage. The allowed metamethods are arithmetic
+and comparison operators, `__tostring`, `__call`, and `__newindex`. `__index` may be used if
+it is a function and returns the class prototype after the special cases:
+
+    function MyClass:__index(k)
+        if k == "value" then
+            return "None of your business!"
+        end
+        return MyClass -- Without this, method calls and default values will not work
+    end
+
+Finally, (multiple) inheritance is also possible. Constructors of base classes will not be
+called automatically, so they must be called manually in the derived class's constructor.
+
+    local DerivedClass = class.new("DerivedClass", MyClass)
+    function DerivedClass:__init(val, special_val)
+        MyClass.__init(self, val)
+        self.special_value = special_val
+    end
+
+    function DerivedClass:set_special_value(val)
+        self.special_value = val
+    end
+
+    local d = DerivedClass(10, 5)
+
+    assert(d.value == 10)
+    assert(d.special_value == 5)
+
+    d:set_special_value(3)
+    assert(d.special_value == 3)
+
+Functions:
+
+The argument `cls` denotes a class prototype returned by `class.new`. The argument `obj` means
+an instantiation of a class. `cls_or_obj` means either can be provided.
+
+* `class.new(name[, ...])`: Returns a new class prototype ready for population with methods.
+    * `name`: The name of the class. This should usually match the return variable name.
+      For instance, if the class `Class` is in the global table `mymod` (i.e. `mymod.Class`),
+      then the name should be "mymod.Class".
+    * `...` (optional): Class prototype(s) to inherit from. Methods and default values will be
+      copied into the new class. If there are conflicting methods or default values, the ones
+      in the classes put earlier in the list will overwrite the ones put later in the list.
+    * The resulting table has a `__call` metamethod for class instantiation. If one argument
+      is provided of the same type as or is derived from this class, `class.copy` will be used
+      to instantiate the class. Otherwise, `class.init` will be used.
+* `class.init(cls[, ...])`: Instantiates and returns an object, calling the normal constructor.
+    * `cls`: The class to construct an instance of.
+    * `...` (optional)`: Arguments to provide to the class's `__init` constructor.
+    * It is usually preferred to use the class's `__call` metamethod to instantiate the class,
+      but this can be used if the copy constructor should not be called.
+* `class.copy(obj[, bypass_ctor])`: Returns a deep copy of the provided class or value.
+    * `obj`: The object or value to make a deep copy of.
+        * While this is usually used on a class instance, it can be any value, like a plain
+          table, string, or number.
+        * All values are deep copied with a few exceptions that are left as references:
+          functions, coroutines, and userdata (which can't be copied), metatables, and tables
+          with the metafield `__copy` set to "ref".
+        * If a class has the metafield `__copy` set to a function, that copy constructor is
+          called instead of making a deep copy.
+    * `bypass_ctor` (optional): If true and `obj` has the `__copy` metafield set to a function,
+      it will not be called. This should be used if `table.copy` is called on an object from
+      inside it's own copy constructor to prevent infinite recursion.
+* `class.copy_into(obj, into[, bypass_ctor])`: Makes a deep copy of `obj`, placing all copied
+  keys into `into` instead of returning a new table.
+    * The same stipulations as `class.copy` apply, although `obj` and `into` must be tables
+      or objects since other types do not have keys.
+    * `obj`: The table or object to copy from.
+    * `into`: The table or object to copy into.
+* `class.instantiate(cls)`: Instantiates and returns a class without calling any constructors.
+    * This function should rarely be used. Calling with constructors is almost always better.
+    * `cls`: The class to construct an instance of.
+* `class.name(cls_or_obj)`: Returns the name of the class set with `class.new`.
+    * `cls_or_obj`: The class or object to get the name of.
+* `class.prototype(cls_or_obj)`: Returns the class prototype of an instance.
+    * `cls_or_obj`: The object or class to get the prototype of. If a prototype is passed, it
+      returns itself. `nil` is returned if it is neither.
+    * To check if an object is an instantiation of a specific class, use `class.is` to
+      properly account for inheritance.
+* `class.is(cls_or_obj, cls)`: Returns whether a class or object is an instance of or
+  inherited from another class.
+    * `cls_or_obj`: The class or object to check instantiation or inheritance of.
+    * `cls`: The class to compare against.
+* `class.cast(obj, cls)`: Casts an object in place from one prototype to another.
+    * No constructors are called, and members are left untouched. This function is best for
+      casting an object up or down the inheritance tree when methods differ.
+    * `obj`: The object to cast.
+    * `cls`: The prototype to cast the object to.
 
 
 
@@ -7641,12 +7812,12 @@ Used by `minetest.register_node`.
         -- intensity: 1.0 = mid range of regular TNT.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
-        
+
         mod_origin = "modname",
         -- stores which mod actually registered a node
         -- if it can not find a source, returns "??"
         -- useful for getting what mod truly registered something
-        -- example: if a node is registered as ":othermodname:nodename", 
+        -- example: if a node is registered as ":othermodname:nodename",
         -- nodename will show "othermodname", but mod_orgin will say "modname"
     }
 
