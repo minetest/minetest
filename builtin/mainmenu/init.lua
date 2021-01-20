@@ -43,6 +43,7 @@ dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_content.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_confirm_exit.lua")
 
 local tabs = {}
 
@@ -55,7 +56,10 @@ tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
 	if event == "MenuQuit" then
-		core.close()
+		local dlg = create_confirm_exit_dlg()
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
 	end
 	return true
 end
