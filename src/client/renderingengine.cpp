@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <IrrlichtDevice.h>
 #include <irrlicht.h>
+#include <algorithm>
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
@@ -78,6 +79,34 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 	skin->setSpriteBank(bank);
 
 	return skin;
+}
+
+
+static IrrlichtDevice *TryFindWorkingDevice(SIrrlichtCreationParameters &params)
+{
+	std::vector<video::E_DRIVER_TYPE> driver_detect;
+	if (params.DriverType != video::EDT_OPENGL)
+		driver_detect.push_back(video::EDT_OPENGL);
+#if ENABLE_GLES
+	if (params.DriverType != video::EDT_OGLES1)
+		driver_detect.push_back(video::EDT_OGLES1);
+	if (params.DriverType != video::EDT_OGLES2)
+		driver_detect.push_back(video::EDT_OGLES2);
+#endif
+	for (int k = 1; k < video::EDT_COUNT; k++) {
+		auto driverType = static_cast<video::E_DRIVER_TYPE>(k);
+		if (std::find(driver_detect.begin(), driver_detect.end(), driverType) == driver_detect.end())
+			driver_detect.push_back(driverType);
+	}
+	for (auto driverType: driver_detect) {
+		params.DriverType = driverType;
+		infostream << "Trying the " << RenderingEngine::getVideoDriverName(driverType) << " video driver" << std::endl;
+		if (auto device = createDeviceEx(params)) {
+			infostream << "Found a working video driver: " << RenderingEngine::getVideoDriverName(driverType) << std::endl;
+			return device;
+		}
+	}
+	throw std::runtime_error("Can't initialize Irrlicht");
 }
 
 
@@ -140,6 +169,10 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #endif
 
 	m_device = createDeviceEx(params);
+	if (!m_device) {
+		errorstream << "Can't initialize Irrlicht with the " << RenderingEngine::getVideoDriverName(driverType) << " video driver" << std::endl;
+		m_device = TryFindWorkingDevice(params);
+	}
 	driver = m_device->getVideoDriver();
 
 	s_singleton = this;
