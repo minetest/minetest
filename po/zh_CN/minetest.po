@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2021-01-20 15:48+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"Last-Translator: AISS <cretaceous@mail.ee>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6919,7 +6919,7 @@ msgid ""
 msgstr ""
 "当gui_scaling_filter为 true 时，所有 GUI 映像都需要\n"
 "在软件中过滤，但一些图像是直接生成的\n"
-"硬件（例如，库存中节点的渲染到纹理）。"
+"硬件（例如，库存中材质的渲染到纹理）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6945,6 +6945,17 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
+"531 / 5000\n"
+"Translation results\n"
+"使用双线性/三线性/各向异性滤镜时，低分辨率纹理\n"
+"可以被模糊化，因此可以使用最近的邻居自动对其进行放大\n"
+"插值以保留清晰像素。 设置最小纹理大小\n"
+"用于高档纹理； 较高的值看起来更锐利，但需要更多\n"
+"记忆。 建议使用2的幂。 将此值设置为大于1可能不会\n"
+"除非双线性/三线性/各向异性过滤是\n"
+"已启用。\n"
+"这也用作与世界对齐的基本材质纹理大小\n"
+"纹理自动缩放。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7005,9 +7016,8 @@ msgid "Width component of the initial window size."
 msgstr "初始窗口大小的宽度。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width of the selection box lines around nodes."
-msgstr "结点周围的选择框的线宽。"
+msgstr "节点周围的选择框线的宽度。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7015,6 +7025,8 @@ msgid ""
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
+"仅适用于 Windows 系统：在命令行中窗口中启动 Minetest。\n"
+"与 debug.txt（默认名称）文件包含相同的调试信息。"
 
 #: src/settings_translation_file.cpp
 msgid ""
