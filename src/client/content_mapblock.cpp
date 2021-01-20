@@ -513,10 +513,10 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 			count++;
 		} else if (content == CONTENT_AIR) {
 			air_count++;
-			if (air_count >= 2)
-				return -0.5 * BS + 0.2;
 		}
 	}
+	if (air_count >= 2)
+		return -0.5 * BS + 0.2;
 	if (count > 0)
 		return sum / count;
 	return 0;

@@ -788,14 +788,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		solidness = 0;
 		break;
 	case NDT_LIQUID:
-		assert(liquid_type == LIQUID_SOURCE);
 		if (tsettings.opaque_water)
 			alpha = 255;
 		solidness = 1;
 		is_liquid = true;
 		break;
 	case NDT_FLOWINGLIQUID:
-		assert(liquid_type == LIQUID_FLOWING);
 		solidness = 0;
 		if (tsettings.opaque_water)
 			alpha = 255;
@@ -1596,7 +1594,7 @@ static void removeDupes(std::vector<content_t> &list)
 void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
-		if (f.liquid_type != LIQUID_NONE) {
+		if (f.liquid_type != LIQUID_NONE || f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
 			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
 			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
 			continue;
