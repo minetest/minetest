@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2021-01-20 15:10+0000\n"
-"Last-Translator: AISS <cretaceous@mail.ee>\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6719,11 +6719,11 @@ msgstr "主菜单背景使用云动画。"
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr ""
+msgstr "从某个角度查看纹理时使用各向异性过滤。"
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
-msgstr ""
+msgstr "缩放纹理时使用双线性过滤。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6734,7 +6734,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
-msgstr ""
+msgstr "缩放纹理时使用三线过滤。"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
