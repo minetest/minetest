@@ -590,6 +590,8 @@ bool Settings::exists(const std::string &name) const
 
 std::vector<std::string> Settings::getNames() const
 {
+	MutexAutoLock lock(m_mutex);
+
 	std::vector<std::string> names;
 	for (const auto &settings_it : m_settings) {
 		names.push_back(settings_it.first);
