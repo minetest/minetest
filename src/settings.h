@@ -239,6 +239,8 @@ private:
 
 	// Allow TestSettings to run sanity checks using private functions.
 	friend class TestSettings;
+	// For sane mutex locking when iterating
+	friend class LuaSettings;
 
 	void updateNoLock(const Settings &other);
 	void clearNoLock();

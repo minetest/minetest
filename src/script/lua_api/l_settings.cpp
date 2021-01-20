@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_settings.h"
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_security.h"
+#include "threading/mutex_auto_lock.h"
 #include "util/string.h" // FlagDesc
 #include "settings.h"
 #include "noise.h"
@@ -253,20 +254,36 @@ int LuaSettings::l_write(lua_State* L)
 	return 1;
 }
 
+static void push_settings_table(lua_State *L, const Settings *settings)
+{
+	std::vector<std::string> keys = settings->getNames();
+	lua_newtable(L);
+	for (const std::string &key : keys) {
+		std::string value;
+		Settings *group = nullptr;
+
+		if (settings->getNoEx(key, value)) {
+			lua_pushstring(L, value.c_str());
+		} else if (settings->getGroupNoEx(key, group)) {
+			// Recursively push tables
+			push_settings_table(L, group);
+		} else {
+			// Impossible case (multithreading) due to MutexAutoLock
+			continue;
+		}
+
+		lua_setfield(L, -2, key.c_str());
+	}
+}
+
 // to_table(self) -> {[key1]=value1,...}
 int LuaSettings::l_to_table(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
 
-	std::vector<std::string> keys = o->m_settings->getNames();
-
-	lua_newtable(L);
-	for (const std::string &key : keys) {
-		lua_pushstring(L, o->m_settings->get(key).c_str());
-		lua_setfield(L, -2, key.c_str());
-	}
-
+	MutexAutoLock(o->m_settings->m_mutex);
+	push_settings_table(L, o->m_settings);
 	return 1;
 }
 
