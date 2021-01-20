@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2021-01-20 16:39+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"PO-Revision-Date: 2021-01-24 16:19+0000\n"
+"Last-Translator: AISS <cretaceous@mail.ee>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2159,10 +2159,10 @@ msgid ""
 "to be sure) creates a solid floatland layer."
 msgstr ""
 "调整悬空岛层的密度。\n"
-"增加值以增加密度。可以是正值或负值。\n"
-"Value = 0.0： 容积的50%是floatland。\n"
-"Value = 2.0 （可以更高，取决于 'mgv7_np_floatland' ，始终测试以确定）：\n"
-"创建一个坚实的悬空岛层。"
+"增大数值可增加密度，可以是正值或负值。\n"
+"值=0.0：50% o的体积是平原。\n"
+"值 = 2.0 (可以更高，取决于'mgv7_np_floatland'。\n"
+"总是测试以确保，创建一个坚实的悬空岛层。"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -3116,9 +3116,10 @@ msgid ""
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
 "悬空岛锥度的指数，更改锥度的行为。\n"
-"值等于1.0，创建一个统一的，线性锥度。\n"
-"值大于1.0，创建一个平滑的、合适的锥度，默认分隔的悬空岛。\n"
-"值小于1.0，（例如0.25）创建一个带有平坦低地的更加轮廓分明的表面级别，\n"
+"值等于1.0 ，创建一个统一的，线性锥度。\n"
+"值大于1.0 ，创建一个平滑的、合适的锥度，\n"
+"默认分隔的悬空岛。\n"
+"值小于1.0，（例如0.25）创建一个带有平坦低地的更加轮廓分明的表面级别。\n"
 "适用于固体悬空岛层。"
 
 #: src/settings_translation_file.cpp
@@ -3878,8 +3879,8 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
-"如果客户端mod方块范围限制启用，限制get_node至玩家\n"
-"到方块的距离"
+"如果客户端mod方块范围限制启用，限制get_node至玩家。\n"
+"到方块的距离。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6427,7 +6428,6 @@ msgid "Texture path"
 msgstr "材质路径"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Textures on a node may be aligned either to the node or to the world.\n"
 "The former mode suits better things like machines, furniture, etc., while\n"
@@ -6436,49 +6436,39 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
-"节点上的纹理可以与节点或世界对齐。\n"
-"\n"
-"前一种模式更适合机器、家具等，而\n"
-"\n"
-"后者使楼梯和微型砌块更适合周围环境。\n"
-"\n"
-"但是，由于这种可能性是新的，因此可能不会被较旧的服务器使用，\n"
-"\n"
-"此选项允许对某些节点类型强制执行它。注意，尽管\n"
-"\n"
-"这被认为是实验性的，可能无法正常工作。"
+"节点上的纹理可以与该节点对齐，也可以与世界对齐。\n"
+"前一种模式适合机器，家具等更好的东西，而\n"
+"后者使楼梯和微区块更适合周围环境。\n"
+"但是，由于这种可能性是新的，因此较旧的服务器可能不会使用，\n"
+"此选项允许对某些节点类型强制实施。 注意尽管\n"
+"被认为是实验性的，可能无法正常工作。"
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
 msgstr "内容存储库的 URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
 "保存配置文件的默认格式，\n"
-"\n"
 "调用`/profiler save[format]`时不带格式。"
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
-msgstr "泥土深度或其他生物群系过滤节点"
+msgstr "泥土深度或其他生物群系过滤节点。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
-msgstr "（配置文件将保存到）您的世界路径的文件路径。"
+msgstr "配置文件将保存到，您的世界路径的文件路径。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The identifier of the joystick to use"
 msgstr "要使用的操纵杆的标识符"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The length in pixels it takes for touch screen interaction to start."
 msgstr "开始触摸屏交互所需的长度（以像素为单位）。"
 
@@ -6509,7 +6499,6 @@ msgstr ""
 "在游戏中查看/privs以获得完整列表和mod配置。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6519,15 +6508,11 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
-"每一个受限制的玩家周围方块体积的半径\n"
-"\n"
-"活动块，用mapblocks（16个节点）表示。\n"
-"\n"
-"在活动块中，加载对象并运行ABMs。\n"
-"\n"
-"这也是保持活动对象（mob）的最小范围。\n"
-"\n"
-"这应该与活动的\\对象\\发送\\范围\\块一起配置。"
+"每个玩家周围的方块体积的半径受制于\n"
+"活动块内容，以mapblock（16个节点）表示。\n"
+"在活动块中，将加载对象并运行ABM。\n"
+"这也是保持活动对象（生物）的最小范围。\n"
+"这应该与active_object_send_range_blocks一起配置。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6538,17 +6523,19 @@ msgid ""
 "On other platforms, OpenGL is recommended, and it’s the only driver with\n"
 "shader support currently."
 msgstr ""
-"Irrlicht的渲染后端,\n"
-"更改此设置后需要重新启动,\n"
-"注意：在Android上，如果不确定，请坚持使用OGLES1！ 应用可能无法启动，否则,\n"
-"在其他平台上，建议使用OpenGL，它是唯一具有以下功能的驱动程序,\n"
-"目前支持着色器,"
+"Irrlicht的渲染后端。\n"
+"更改此设置后需要重新启动。\n"
+"注意：在Android上，如果不确定，请坚持使用OGLES1！ 应用可能无法启动，否则。\n"
+"在其他平台上，建议使用OpenGL，它是唯一具有以下功能的驱动程序。\n"
+"目前支持着色器。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "ingame view frustum around."
 msgstr ""
+"操纵杆轴的灵敏度，用于移动\n"
+"在游戏中查看周围 frustum。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6568,6 +6555,9 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"液体波动可能增长超过处理能力的时间(以秒为单位)。\n"
+"尝试通过旧液体波动项来减少其大小。\n"
+"数值为0将禁用该功能。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6601,9 +6591,8 @@ msgstr ""
 "已启用“ altitude_dry”。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Third of 4 2D noises that together define hill/mountain range height."
-msgstr "定义tunnels的最初2个3D噪音。"
+msgstr "四种2D波状定义了,频率，幅度，噪声，颜色。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6630,7 +6619,6 @@ msgid "Timeout for client to remove unused map data from memory."
 msgstr "客户端从内存中移除未用地图数据的超时。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "To reduce lag, block transfers are slowed down when a player is building "
 "something.\n"
@@ -6638,7 +6626,7 @@ msgid ""
 "node."
 msgstr ""
 "为了减少延迟，当一个玩家正在构建某个东西时，阻塞传输会减慢。\n"
-"这决定了放置或删除节点后它们的速度减慢的时间"
+"这决定了放置或删除节点后它们的速度减慢的时间。"
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -6679,12 +6667,10 @@ msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "显示在“多人游戏”选项卡中的服务器列表的URL。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Undersampling"
 msgstr "采集"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6695,7 +6681,7 @@ msgstr ""
 "采集类似于使用较低的屏幕分辨率，但是它适用\n"
 "仅限于游戏世界，保持GUI完整。\n"
 "它应该以不那么详细的图像为代价显着提高性能。\n"
-"较高的值会导致图像不太清晰"
+"较高的值会导致图像不太清晰。"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6735,6 +6721,9 @@ msgid ""
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
+"使用mip映射缩放纹理。可能会稍微提高性能，\n"
+"尤其是使用高分辨率纹理包时。\n"
+"不支持Gamma校正缩小。"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6753,9 +6742,8 @@ msgid "Valley depth"
 msgstr "山谷深度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley fill"
-msgstr "山谷堆积"
+msgstr "山谷填塞"
 
 #: src/settings_translation_file.cpp
 msgid "Valley profile"
@@ -6794,6 +6782,8 @@ msgid ""
 "Varies roughness of terrain.\n"
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
+"改变地形的粗糙度。\n"
+"定义 terrain_base和terrain_alt光影的“持久性”值。"
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
@@ -6882,9 +6872,8 @@ msgid "Water level"
 msgstr "水位"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Water surface level of the world."
-msgstr "世界水平面级别。"
+msgstr "地表水面高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
@@ -6948,16 +6937,14 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"531 / 5000\n"
-"Translation results\n"
-"使用双线性/三线性/各向异性滤镜时，低分辨率纹理\n"
-"可以被模糊化，因此可以使用最近的邻居自动对其进行放大\n"
-"插值以保留清晰像素。 设置最小纹理大小\n"
-"用于高档纹理； 较高的值看起来更锐利，但需要更多\n"
-"记忆。 建议使用2的幂。 将此值设置为大于1可能不会\n"
-"除非双线性/三线性/各向异性过滤是\n"
+"使用双线性/三线性/各向异性滤镜时，低分辨率纹理。\n"
+"可以被模糊化，因此可以使用最近的邻居自动对其进行放大。\n"
+"插值以保留清晰像素。 设置最小纹理大小。\n"
+"用于高档纹理； 较高的值看起来更锐利，但需要更多。\n"
+"记忆。 建议使用2的幂。 将此值设置为大于1可能不会。\n"
+"除非双线性/三线性/各向异性过滤是。\n"
 "已启用。\n"
-"这也用作与世界对齐的基本材质纹理大小\n"
+"这也用作与世界对齐的基本材质纹理大小。\n"
 "纹理自动缩放。"
 
 #: src/settings_translation_file.cpp
@@ -7052,12 +7039,12 @@ msgid ""
 "See also texture_min_size.\n"
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
-"世界对齐纹理可以缩放为跨越多个节点。然而\n"
-"服务器可能不会发送您想要的比例，特别是如果您使用\n"
-"专门设计的纹理包;使用此选项，客户端尝试\n"
+"世界对齐的纹理可以缩放以跨越多个节点。 然而，\n"
+"服务器可能不会同意您想要的请求，特别是如果您使用\n"
+"专门设计的纹理包； 使用此选项，客户端尝试\n"
 "根据纹理大小自动确定比例。\n"
-"另请参阅texture_min_size。\n"
-"警告： 此选项是实验性的！"
+"另请参见texture_min_size。\n"
+"警告：此选项是实验性的！"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
@@ -7074,9 +7061,8 @@ msgid ""
 msgstr "Y的山地密度梯度为零。用于垂直移动山脉。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y of upper limit of large caves."
-msgstr "大型随机洞穴的Y轴最大值。"
+msgstr "大型随机洞穴的Y坐标最大值。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
@@ -7096,7 +7082,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
-msgstr ""
+msgstr "地表平均Y坐标。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of cavern upper limit."
