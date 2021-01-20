@@ -5,9 +5,6 @@
 #ifndef __GUI_SKIN_H_INCLUDED__
 #define __GUI_SKIN_H_INCLUDED__
 
-#include "IrrCompileConfig.h"
-#ifdef _IRR_COMPILE_WITH_GUI_
-
 #include "IGUISkin.h"
 #include "irrString.h"
 #include <string>
@@ -369,8 +366,5 @@ inline void setShading(video::SColor &color,f32 s) // :PATCH:
 	}
 }
 } // end namespace irr
-
-
-#endif // _IRR_COMPILE_WITH_GUI_
 
 #endif
