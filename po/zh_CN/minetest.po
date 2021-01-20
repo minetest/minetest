@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2021-01-20 15:48+0000\n"
-"Last-Translator: Deleted User <noreply+13544@weblate.org>\n"
+"PO-Revision-Date: 2021-01-20 16:39+0000\n"
+"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2160,8 +2160,8 @@ msgid ""
 msgstr ""
 "调整悬空岛层的密度。\n"
 "增加值以增加密度。可以是正值或负值。\n"
-"值等于0.0， 容积的50%是floatland。\n"
-"值等于2.0  ，（可以更高，取决于 'mgv7_np_floatland' ，始终测试以确定）\n"
+"Value = 0.0： 容积的50%是floatland。\n"
+"Value = 2.0 （可以更高，取决于 'mgv7_np_floatland' ，始终测试以确定）：\n"
 "创建一个坚实的悬空岛层。"
 
 #: src/settings_translation_file.cpp
@@ -6557,6 +6557,10 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"节点环境遮挡阴影的强度（暗度）。\n"
+"越低越暗，越高越亮。该值的有效范围是\n"
+"0.25至4.0（含）。如果该值超出范围，则为\n"
+"设置为最接近的有效值。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6797,7 +6801,7 @@ msgstr "控制山丘的坡度/高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "垂直爬升速度，以节点/秒表示。"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6808,7 +6812,6 @@ msgid "Video driver"
 msgstr "视频驱动程序"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "View bobbing factor"
 msgstr "范围摇动"
 
@@ -7058,7 +7061,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
-msgstr ""
+msgstr "世界对齐纹理模式"
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
@@ -7068,7 +7071,7 @@ msgstr "平地的 Y。"
 msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
-msgstr ""
+msgstr "Y的山地密度梯度为零。用于垂直移动山脉。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7077,7 +7080,7 @@ msgstr "大型随机洞穴的Y轴最大值。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
-msgstr ""
+msgstr "洞穴扩大到最大尺寸的Y轴距离。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7086,6 +7089,10 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"悬空岛从最大密度到无密度区域的Y 轴距离。\n"
+"锥形从 Y 轴界限开始。\n"
+"对于实心浮地图层，这控制山/山的高度。\n"
+"必须小于或等于 Y 限制之间一半的距离。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
@@ -7093,11 +7100,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of cavern upper limit."
-msgstr ""
+msgstr "洞穴上限的Y坐标。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of higher terrain that creates cliffs."
-msgstr ""
+msgstr "形成悬崖的更高地形的Y坐标。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
