@@ -3,8 +3,8 @@ apply plugin: 'de.undercouch.download'
 
 android {
 	compileSdkVersion 29
-	buildToolsVersion '30.0.2'
-	ndkVersion '21.3.6528147'
+	buildToolsVersion '30.0.3'
+	ndkVersion '22.0.7026061'
 	defaultConfig {
 		minSdkVersion 16
 		targetSdkVersion 29
@@ -71,7 +71,7 @@ task getDeps(dependsOn: downloadDeps, type: Copy) {
 }
 
 // get sqlite
-def sqlite_ver = '3320200'
+def sqlite_ver = '3340000'
 task downloadSqlite(dependsOn: getDeps, type: Download) {
 	src 'https://www.sqlite.org/2020/sqlite-amalgamation-' + sqlite_ver + '.zip'
 	dest new File(buildDir, 'sqlite.zip')
