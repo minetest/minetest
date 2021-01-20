@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-12-08 10:29+0000\n"
-"Last-Translator: IFRFSX <1079092922@qq.com>\n"
+"PO-Revision-Date: 2021-01-20 15:10+0000\n"
+"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -6550,6 +6550,9 @@ msgid ""
 "enabled. Also the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
+"如果'altitude_chill'开启，则热量下降20的垂直距离\n"
+"已启用。如果湿度下降的垂直距离也是10\n"
+"已启用“ altitude_dry”。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6561,10 +6564,12 @@ msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
+"项目实体（删除的项目）生存的时间（以秒为单位）。\n"
+"将其设置为 -1 将禁用该功能。"
 
 #: src/settings_translation_file.cpp
 msgid "Time of day when a new world is started, in millihours (0-23999)."
-msgstr ""
+msgstr "一天中开始一个新世界的时间，以毫小时为单位（0-23999）。"
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -6600,7 +6605,7 @@ msgstr "触屏阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
-msgstr ""
+msgstr "树木噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
@@ -6621,7 +6626,6 @@ msgid "Trusted mods"
 msgstr "可信 mod"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "显示在“多人游戏”选项卡中的服务器列表的URL。"
 
@@ -6688,12 +6692,10 @@ msgid "VBO"
 msgstr "VBO"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "VSync"
 msgstr "垂直同步"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley depth"
 msgstr "山谷深度"
 
@@ -6703,26 +6705,24 @@ msgid "Valley fill"
 msgstr "山谷弥漫"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley profile"
 msgstr "山谷轮廓"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley slope"
 msgstr "山谷坡度"
 
 #: src/settings_translation_file.cpp
 msgid "Variation of biome filler depth."
-msgstr ""
+msgstr "生物群落填充物深度的变化。"
 
 #: src/settings_translation_file.cpp
 msgid "Variation of maximum mountain height (in nodes)."
-msgstr ""
+msgstr "最大山体高度的变化（以节点为单位）。"
 
 #: src/settings_translation_file.cpp
 msgid "Variation of number of caves."
-msgstr ""
+msgstr "洞口数量的变化。"
 
 #: src/settings_translation_file.cpp
 msgid ""
