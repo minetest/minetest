@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2021-01-20 15:24+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"Last-Translator: AISS <cretaceous@mail.ee>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6771,17 +6771,19 @@ msgstr "最大山体高度的变化（以节点为单位）。"
 
 #: src/settings_translation_file.cpp
 msgid "Variation of number of caves."
-msgstr "洞口数量的变化。"
+msgstr "洞穴数量的变化。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Variation of terrain vertical scale.\n"
 "When noise is < -0.55 terrain is near-flat."
 msgstr ""
+"地形垂直比例的变化。\n"
+"当比例< -0.55 地形接近平坦。"
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
-msgstr ""
+msgstr "改变生物群落表面方块的深度。"
 
 #: src/settings_translation_file.cpp
 msgid ""
