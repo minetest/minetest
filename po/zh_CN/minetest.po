@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2021-01-20 15:10+0000\n"
-"Last-Translator: IFRFSX <1079092922@qq.com>\n"
+"PO-Revision-Date: 2021-01-20 15:24+0000\n"
+"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6790,7 +6790,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Varies steepness of cliffs."
 msgstr "控制山丘的坡度/高度。"
 
@@ -6833,14 +6832,13 @@ msgstr "可视范围"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers aux button"
-msgstr ""
+msgstr "虚拟操纵手柄触发辅助按钮"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
 msgstr "音量"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
@@ -6856,6 +6854,11 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"生成的 4D 分形 3D 切片的 W 坐标。\n"
+"确定生成的 4D 形状的 3D 切片。\n"
+"更改分形的形状。\n"
+"对 3D 分形没有影响。\n"
+"范围大约 -2 到 2。"
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
@@ -6912,6 +6915,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"当gui_scaling_filter为 true 时，所有 GUI 映像都需要\n"
+"在软件中过滤，但一些图像是直接生成的\n"
+"硬件（例如，库存中节点的渲染到纹理）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
