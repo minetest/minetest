@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2021-01-20 15:10+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"Last-Translator: AISS <cretaceous@mail.ee>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6427,6 +6427,7 @@ msgid "Texture path"
 msgstr "材质路径"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Textures on a node may be aligned either to the node or to the world.\n"
 "The former mode suits better things like machines, furniture, etc., while\n"
@@ -6435,34 +6436,51 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
+"节点上的纹理可以与节点或世界对齐。\n"
+"\n"
+"前一种模式更适合机器、家具等，而\n"
+"\n"
+"后者使楼梯和微型砌块更适合周围环境。\n"
+"\n"
+"但是，由于这种可能性是新的，因此可能不会被较旧的服务器使用，\n"
+"\n"
+"此选项允许对某些节点类型强制执行它。注意，尽管\n"
+"\n"
+"这被认为是实验性的，可能无法正常工作。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The URL for the content repository"
 msgstr "内容存储库的 URL"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"保存配置文件的默认格式，\n"
+"\n"
+"调用`/profiler save[format]`时不带格式。"
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
 msgstr "泥土深度或其他生物群系过滤节点"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
-msgstr ""
+msgstr "（配置文件将保存到）您的世界路径的文件路径。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "The identifier of the joystick to use"
-msgstr ""
+msgstr "要使用的操纵杆的标识符"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
+msgstr "开始触摸屏交互所需的长度（以像素为单位）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6472,6 +6490,11 @@ msgid ""
 "Default is 1.0 (1/2 node).\n"
 "Requires waving liquids to be enabled."
 msgstr ""
+"波浪状液体表面的最大高度。\n"
+"4.0 =波高是两个节点。\n"
+"0.0 =波形完全不移动。\n"
+"默认值为1.0（1/2节点）。\n"
+"需要启用波状液体。"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6486,6 +6509,7 @@ msgstr ""
 "在游戏中查看/privs以获得完整列表和mod配置。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6495,6 +6519,15 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
+"每一个受限制的玩家周围方块体积的半径\n"
+"\n"
+"活动块，用mapblocks（16个节点）表示。\n"
+"\n"
+"在活动块中，加载对象并运行ABMs。\n"
+"\n"
+"这也是保持活动对象（mob）的最小范围。\n"
+"\n"
+"这应该与活动的\\对象\\发送\\范围\\块一起配置。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6505,6 +6538,11 @@ msgid ""
 "On other platforms, OpenGL is recommended, and it’s the only driver with\n"
 "shader support currently."
 msgstr ""
+"Irrlicht的渲染后端,\n"
+"更改此设置后需要重新启动,\n"
+"注意：在Android上，如果不确定，请坚持使用OGLES1！ 应用可能无法启动，否则,\n"
+"在其他平台上，建议使用OpenGL，它是唯一具有以下功能的驱动程序,\n"
+"目前支持着色器,"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6532,6 +6570,8 @@ msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
+"按住操纵手柄按钮组合时，\n"
+"重复事件之间的时间（以秒为单位）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6539,10 +6579,12 @@ msgid ""
 "right\n"
 "mouse button."
 msgstr ""
+"按住鼠标右键时两次重复单击之间所花费的时间（以秒为单位）\n"
+"鼠标按钮。"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
-msgstr ""
+msgstr "手柄类型"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6584,12 +6626,15 @@ msgid "Timeout for client to remove unused map data from memory."
 msgstr "客户端从内存中移除未用地图数据的超时。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "To reduce lag, block transfers are slowed down when a player is building "
 "something.\n"
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"为了减少延迟，当一个玩家正在构建某个东西时，阻塞传输会减慢。\n"
+"这决定了放置或删除节点后它们的速度减慢的时间"
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -6632,9 +6677,10 @@ msgstr "显示在“多人游戏”选项卡中的服务器列表的URL。"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Undersampling"
-msgstr "欠采样"
+msgstr "采集"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6642,6 +6688,10 @@ msgid ""
 "image.\n"
 "Higher values result in a less detailed image."
 msgstr ""
+"采集类似于使用较低的屏幕分辨率，但是它适用\n"
+"仅限于游戏世界，保持GUI完整。\n"
+"它应该以不那么详细的图像为代价显着提高性能。\n"
+"较高的值会导致图像不太清晰"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6664,7 +6714,6 @@ msgid "Use 3D cloud look instead of flat."
 msgstr "使用 3D 云彩，而不是看起来是平面的。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use a cloud animation for the main menu background."
 msgstr "主菜单背景使用云动画。"
 
@@ -6702,7 +6751,7 @@ msgstr "山谷深度"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Valley fill"
-msgstr "山谷弥漫"
+msgstr "山谷堆积"
 
 #: src/settings_translation_file.cpp
 msgid "Valley profile"
