@@ -449,7 +449,6 @@ TextureSource::TextureSource()
 	// for these settings to take effect
 	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
 	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
-	g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()
