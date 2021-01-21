@@ -83,9 +83,6 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
-	warn_if_field_exists(L, index, "tool_digging_properties",
-			"Obsolete; use tool_capabilities");
-
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
 		def.tool_capabilities = new ToolCapabilities(
@@ -652,20 +649,6 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
-
-	// Warn about some obsolete fields
-	warn_if_field_exists(L, index, "wall_mounted",
-			"Obsolete; use paramtype2 = 'wallmounted'");
-	warn_if_field_exists(L, index, "light_propagates",
-			"Obsolete; determined from paramtype");
-	warn_if_field_exists(L, index, "dug_item",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item_rarity",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "metadata_name",
-			"Obsolete; use on_add and metadata callbacks");
 
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);

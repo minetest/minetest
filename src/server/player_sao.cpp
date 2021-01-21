@@ -148,7 +148,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 void PlayerSAO::getStaticData(std::string * result) const
 {
-	FATAL_ERROR("Obsolete function");
+	FATAL_ERROR("This function shall not be called for PlayerSAO");
 }
 
 void PlayerSAO::step(float dtime, bool send_recommended)

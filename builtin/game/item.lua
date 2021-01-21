@@ -705,10 +705,6 @@ core.nodedef_default = {
 
 	on_receive_fields = nil,
 
-	on_metadata_inventory_move = core.node_metadata_inventory_move_allow_all,
-	on_metadata_inventory_offer = core.node_metadata_inventory_offer_allow_all,
-	on_metadata_inventory_take = core.node_metadata_inventory_take_allow_all,
-
 	-- Node properties
 	drawtype = "normal",
 	visual_scale = 1.0,
