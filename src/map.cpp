@@ -1383,8 +1383,6 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	v3s16 bpmin = data->blockpos_min;
 	v3s16 bpmax = data->blockpos_max;
 
-	v3s16 extra_borders(1, 1, 1);
-
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 	EMERGE_DBG_OUT("finishBlockMake(): " PP(bpmin) " - " PP(bpmax));
 

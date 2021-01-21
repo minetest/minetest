@@ -3505,8 +3505,6 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 
 GUIInventoryList::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
-	core::rect<s32> imgrect(0, 0, imgsize.X, imgsize.Y);
-
 	for (const GUIInventoryList *e : m_inventorylists) {
 		s32 item_index = e->getItemIndexAtPos(p);
 		if (item_index != -1)
@@ -3837,7 +3835,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
+void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 {
 	if(m_text_dst)
 	{
