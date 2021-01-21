@@ -162,8 +162,6 @@ public:
 	{}
 	virtual const ItemGroupList &getArmorGroups() const
 	{ static ItemGroupList rv; return rv; }
-	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
-	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
 	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
@@ -206,7 +204,6 @@ public:
 	}
 
 	std::string generateUpdateInfantCommand(u16 infant_id, u16 protocol_version);
-	std::string generateUpdateNametagAttributesCommand(const video::SColor &color) const;
 
 	void dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue);
 

@@ -190,14 +190,6 @@ enum ClearObjectsMode {
 		CLEAR_OBJECTS_MODE_QUICK,
 };
 
-/*
-	The server-side environment.
-
-	This is not thread-safe. Server uses an environment mutex.
-*/
-
-typedef std::unordered_map<u16, ServerActiveObject *> ServerActiveObjectMap;
-
 class ServerEnvironment : public Environment
 {
 public:
@@ -331,7 +323,7 @@ public:
 	{
 		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
 	}
-	
+
 	// Find all active objects inside a box
 	void getObjectsInArea(std::vector<ServerActiveObject *> &objects, const aabb3f &box,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb)

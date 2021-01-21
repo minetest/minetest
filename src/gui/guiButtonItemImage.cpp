@@ -39,7 +39,6 @@ GUIButtonItemImage::GUIButtonItemImage(gui::IGUIEnvironment *environment,
 			item, getActiveFont(), client);
 	sendToBack(m_image);
 
-	m_item_name = item;
 	m_client = client;
 }
 

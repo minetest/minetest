@@ -216,12 +216,6 @@ void Client::loadMods()
 		m_script->on_minimap_ready(m_minimap);
 }
 
-bool Client::checkBuiltinIntegrity()
-{
-	// TODO
-	return true;
-}
-
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 			std::string mod_subpath)
 {
