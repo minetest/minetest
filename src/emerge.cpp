@@ -396,7 +396,7 @@ int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 // TODO(hmmmm): Move this to ServerMap
 bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 {
-	// Use a simple heuristic; the above method is wildly inaccurate anyway.
+	// Use a simple heuristic
 	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= mgparams->water_level;
 }
 
