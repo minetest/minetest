@@ -11,12 +11,11 @@
 #include <IVideoDriver.h>
 #include <rect.h>
 #include <SColor.h>
+#include "util/WordWrapper.h"
 
 #if USE_FREETYPE
 	#include "CGUITTFont.h"
 #endif
-
-#include "util/string.h"
 
 namespace irr
 {
@@ -75,64 +74,65 @@ void StaticText::draw()
 	{
 		skin->draw3DSunkenPane(this, 0, true, false, frameRect, &AbsoluteClippingRect);
 		frameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
+		frameRect.LowerRightCorner.X -= skin->getSize(EGDS_TEXT_DISTANCE_X);
 	}
 
 	// draw the text
 	IGUIFont *font = getActiveFont();
-	if (font && BrokenText.size()) {
-		if (font != LastBreakFont)
-			updateText();
-
-		core::rect<s32> r = frameRect;
-		s32 height_line = font->getDimension(L"A").Height + font->getKerningHeight();
-		s32 height_total = height_line * BrokenText.size();
-		if (VAlign == EGUIA_CENTER && WordWrap)
-		{
-			r.UpperLeftCorner.Y = r.getCenter().Y - (height_total / 2);
-		}
-		else if (VAlign == EGUIA_LOWERRIGHT)
-		{
-			r.UpperLeftCorner.Y = r.LowerRightCorner.Y - height_total;
-		}
-		if (HAlign == EGUIA_LOWERRIGHT)
-		{
-			r.UpperLeftCorner.X = r.LowerRightCorner.X -
-				getTextWidth();
-		}
-
-		irr::video::SColor previous_color(255, 255, 255, 255);
-		for (const EnrichedString &str : BrokenText) {
-			if (HAlign == EGUIA_LOWERRIGHT)
-			{
-				r.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
-					font->getDimension(str.c_str()).Width;
-			}
-
-#if USE_FREETYPE
-			if (font->getType() == irr::gui::EGFT_CUSTOM) {
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-				tmp->draw(str,
-					r, HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
-					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
-			} else
-#endif
-			{
-				// Draw non-colored text
-				font->draw(str.c_str(),
-					r, str.getDefaultColor(), // TODO: Implement colorization
-					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
-					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
-			}
-
-
-			r.LowerRightCorner.Y += height_line;
-			r.UpperLeftCorner.Y += height_line;
-		}
+	if (!font || BrokenText.empty()) {
+		// Draw children
+		IGUIElement::draw();
+		return;
 	}
 
+	if (font != LastBreakFont)
+		updateText();
+
+	s32 height_line = font->getDimension(L"Ay").Height + font->getKerningHeight();
+
+	core::rect<s32> lineRect = frameRect;
+
+	s32 height_total = height_line * BrokenText.size();
+	if (VAlign == EGUIA_CENTER)
+		lineRect.UpperLeftCorner.Y = lineRect.getCenter().Y - (height_total/2);
+	else if (VAlign == EGUIA_LOWERRIGHT)
+		lineRect.UpperLeftCorner.Y = lineRect.LowerRightCorner.Y - height_total;
+
+	if (HAlign == EGUIA_LOWERRIGHT)
+		lineRect.UpperLeftCorner.X = lineRect.LowerRightCorner.X -
+			getTextWidth();
+
+	lineRect.LowerRightCorner.Y = lineRect.UpperLeftCorner.Y + height_line;
+
+	irr::video::SColor previous_color(255, 255, 255, 255);
+	for (const auto &str : BrokenText) {
+		if (HAlign == EGUIA_LOWERRIGHT)
+			lineRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
+				font->getDimension(str.c_str()).Width;
+
+#if USE_FREETYPE
+		if (font->getType() == irr::gui::EGFT_CUSTOM) {
+			irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+			tmp->draw(str,
+					  lineRect, HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+					  (RestrainTextInside ? &AbsoluteClippingRect : NULL));
+		} else
+#endif
+		{
+			// Draw non-colored text
+			font->draw(str.c_str(),
+					   lineRect, str.getDefaultColor(), // TODO: Implement colorization
+					   HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+					   (RestrainTextInside ? &AbsoluteClippingRect : NULL));
+		}
+
+		lineRect.LowerRightCorner.Y += height_line;
+		lineRect.UpperLeftCorner.Y += height_line;
+	}
+
+	// Draw children
 	IGUIElement::draw();
 }
-
 
 //! Sets another skin independent font.
 void StaticText::setOverrideFont(IGUIFont* font)
@@ -324,214 +324,18 @@ void StaticText::updateText()
 
 	LastBreakFont = font;
 
-	EnrichedString line;
-	EnrichedString word;
-	EnrichedString whitespace;
-	s32 size = cText.size();
-	s32 length = 0;
-	s32 elWidth = RelativeRect.getWidth();
-	if (Border)
-		elWidth -= 2*skin->getSize(EGDS_TEXT_DISTANCE_X);
-	wchar_t c;
-
-	//std::vector<irr::video::SColor> colors;
-
-	// We have to deal with right-to-left and left-to-right differently
-	// However, most parts of the following code is the same, it's just
-	// some order and boundaries which change.
-	if (!RightToLeft)
-	{
-		// regular (left-to-right)
-		for (s32 i=0; i<size; ++i)
-		{
-			c = cText.getString()[i];
-			bool lineBreak = false;
-
-			if (c == L'\r') // Mac or Windows breaks
-			{
-				lineBreak = true;
-				//if (Text[i+1] == L'\n') // Windows breaks
-				//{
-				//	Text.erase(i+1);
-				//	--size;
-				//}
-				c = '\0';
-			}
-			else if (c == L'\n') // Unix breaks
-			{
-				lineBreak = true;
-				c = '\0';
-			}
-
-			bool isWhitespace = (c == L' ' || c == 0);
-			if ( !isWhitespace )
-			{
-				// part of a word
-				//word += c;
-				word.addChar(cText, i);
-			}
-
-			if ( isWhitespace || i == (size-1))
-			{
-				if (word.size())
-				{
-					// here comes the next whitespace, look if
-					// we must break the last word to the next line.
-					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-					//const std::wstring sanitized = removeEscapes(word.c_str());
-					const s32 wordlgth = font->getDimension(word.c_str()).Width;
-
-					if (wordlgth > elWidth)
-					{
-						// This word is too long to fit in the available space, look for
-						// the Unicode Soft HYphen (SHY / 00AD) character for a place to
-						// break the word at
-						int where = core::stringw(word.c_str()).findFirst( wchar_t(0x00AD) );
-						if (where != -1)
-						{
-							EnrichedString first = word.substr(0, where);
-							EnrichedString second = word.substr(where, word.size() - where);
-							first.addCharNoColor(L'-');
-							BrokenText.push_back(line + first);
-							const s32 secondLength = font->getDimension(second.c_str()).Width;
-
-							length = secondLength;
-							line = second;
-						}
-						else
-						{
-							// No soft hyphen found, so there's nothing more we can do
-							// break to next line
-							if (length)
-								BrokenText.push_back(line);
-							length = wordlgth;
-							line = word;
-						}
-					}
-					else if (length && (length + wordlgth + whitelgth > elWidth))
-					{
-						// break to next line
-						BrokenText.push_back(line);
-						length = wordlgth;
-						line = word;
-					}
-					else
-					{
-						// add word to line
-						line += whitespace;
-						line += word;
-						length += whitelgth + wordlgth;
-					}
-
-					word.clear();
-					whitespace.clear();
-				}
-
-				if ( isWhitespace && c != 0)
-				{
-					whitespace.addChar(cText, i);
-				}
-
-				// compute line break
-				if (lineBreak)
-				{
-					line += whitespace;
-					line += word;
-					BrokenText.push_back(line);
-					line.clear();
-					word.clear();
-					whitespace.clear();
-					length = 0;
-				}
-			}
-		}
-
-		line += whitespace;
-		line += word;
-		BrokenText.push_back(line);
+	core::rect<s32> bounds = { core::position2d<s32>(), RelativeRect.getSize() };
+	if (Border) {
+		bounds.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
+		bounds.LowerRightCorner.X -= skin->getSize(EGDS_TEXT_DISTANCE_X);
 	}
-	else
-	{
-		// right-to-left
-		for (s32 i=size; i>=0; --i)
-		{
-			c = cText.getString()[i];
-			bool lineBreak = false;
 
-			if (c == L'\r') // Mac or Windows breaks
-			{
-				lineBreak = true;
-				//if ((i>0) && Text[i-1] == L'\n') // Windows breaks
-				//{
-				//	Text.erase(i-1);
-				//	--size;
-				//}
-				c = '\0';
-			}
-			else if (c == L'\n') // Unix breaks
-			{
-				lineBreak = true;
-				c = '\0';
-			}
-
-			if (c==L' ' || c==0 || i==0)
-			{
-				if (word.size())
-				{
-					// here comes the next whitespace, look if
-					// we must break the last word to the next line.
-					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-					const s32 wordlgth = font->getDimension(word.c_str()).Width;
-
-					if (length && (length + wordlgth + whitelgth > elWidth))
-					{
-						// break to next line
-						BrokenText.push_back(line);
-						length = wordlgth;
-						line = word;
-					}
-					else
-					{
-						// add word to line
-						line = whitespace + line;
-						line = word + line;
-						length += whitelgth + wordlgth;
-					}
-
-					word.clear();
-					whitespace.clear();
-				}
-
-				if (c != 0)
-				//	whitespace = core::stringw(&c, 1) + whitespace;
-				whitespace = cText.substr(i, 1) + whitespace;
-
-				// compute line break
-				if (lineBreak)
-				{
-					line = whitespace + line;
-					line = word + line;
-					BrokenText.push_back(line);
-					line.clear();
-					word.clear();
-					whitespace.clear();
-					length = 0;
-				}
-			}
-			else
-			{
-				// yippee this is a word..
-				//word = core::stringw(&c, 1) + word;
-				word = cText.substr(i, 1) + word;
-			}
-		}
-
-		line = whitespace + line;
-		line = word + line;
-		BrokenText.push_back(line);
-	}
+	s32 height_line = font->getDimension(L"A").Height + font->getKerningHeight();
+	WordWrapper wrapper([&](const std::wstring &str) {
+		return font->getDimension(str.c_str()).Width;
+	});
+	wrapper.wrap(BrokenText, nullptr, cText, bounds, height_line);
 }
-
 
 //! Sets the new caption of this element.
 void StaticText::setText(const wchar_t* text)
@@ -627,7 +431,7 @@ void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 		ColoredText.setBackground(in->getAttributeAsColor("BGColor"));
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-                      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
+		      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
 
 	// OverrideFont = in->getAttributeAsFont("OverrideFont");
 }

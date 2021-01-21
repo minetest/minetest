@@ -141,7 +141,7 @@ public:
 	virtual bool acceptsIME() { return isEnabled() && m_writable; };
 
 protected:
-	virtual void breakText() = 0;
+	void breakText();
 
 	//! sets the area of the given line
 	virtual void setTextRect(s32 line) = 0;

@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <util/WordWrapper.h>
 #include "guiEditBox.h"
 
 #include "IrrCompileConfig.h"
@@ -169,6 +170,52 @@ void GUIEditBox::setDrawBorder(bool border)
 void GUIEditBox::setWritable(bool can_write_text)
 {
 	m_writable = can_write_text;
+}
+
+//! Breaks the single text line.
+void GUIEditBox::breakText()
+{
+	IGUISkin *skin = Environment->getSkin();
+
+	if ((!m_word_wrap && !m_multiline) || !skin)
+		return;
+
+	m_broken_text.clear(); // need to reallocate :/
+	m_broken_text_positions.clear();
+
+	IGUIFont *font = m_override_font;
+	if (!m_override_font)
+		font = skin->getFont();
+
+	if (!font)
+		return;
+
+	m_last_break_font = font;
+
+	s32 elWidth = RelativeRect.getWidth() - m_scrollbar_width - 10;
+	core::rect<s32> bounds = {{}, core::dimension2d<s32>(elWidth, S32_MAX)};
+
+	s32 height_line = font->getDimension(L"Ay").Height + font->getKerningHeight();
+
+	WordWrapper wrapper([&](const std::wstring &str) {
+		return font->getDimension(str.c_str()).Width;
+	});
+	std::vector<EnrichedString> brokenText;
+	wrapper.wrap(brokenText, &m_broken_text_positions,
+			EnrichedString(Text.c_str(), Text.size()), bounds, height_line,
+			m_multiline);
+
+	// EditBox expects at least one row
+	if (brokenText.empty()) {
+		m_broken_text.resize(1);
+		m_broken_text_positions.resize(1);
+	} else {
+		m_broken_text.resize(brokenText.size());
+		for (size_t i = 0; i < brokenText.size(); i++) {
+			const auto &line = brokenText[i];
+			m_broken_text[i] = core::stringw(line.c_str(), line.size());
+		}
+	}
 }
 
 //! set text markers

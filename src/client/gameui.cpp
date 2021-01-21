@@ -63,7 +63,6 @@ void GameUI::init()
 
 	// Chat text
 	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
-		//false, false); // Disable word wrap as of now
 		false, true, guiroot);
 	u16 chat_font_size = g_settings->getU16("chat_font_size");
 	if (chat_font_size != 0) {
@@ -71,13 +70,16 @@ void GameUI::init()
 			chat_font_size, FM_Unspecified));
 	}
 
-	// At the middle of the screen
-	// Object infos are shown in this
+	// Infotext of nodes and objects.
+	// If in debug mode, object debug infos shown here, too.
+	// Located on the left on the screen, below chat.
+	const int INFOTEXT_LINES = 6;
 	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
+	u16 info_offset = chat_font_height *
+		(g_settings->getU16("recent_chat_messages") + 3);
 	m_guitext_info = gui::StaticText::add(guienv, L"",
-		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
-			v2s32(100, chat_font_height *
-			(g_settings->getU16("recent_chat_messages") + 3)),
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * INFOTEXT_LINES)
+			+ v2s32(100, info_offset),
 			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)

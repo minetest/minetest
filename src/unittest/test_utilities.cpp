@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include <cmath>
+#include <util/WordWrapper.h>
 #include "util/enriched_string.h"
 #include "util/numeric.h"
 #include "util/string.h"
@@ -58,6 +59,7 @@ public:
 	void testStringJoin();
 	void testEulerConversion();
 	void testBase64();
+	void testWordWrapper();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +92,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
 	TEST(testBase64);
+	TEST(testWordWrapper);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -629,4 +632,110 @@ void TestUtilities::testBase64()
 	UASSERT(base64_is_valid("AAA=A") == false);
 	UASSERT(base64_is_valid("AAAA=A") == false);
 	UASSERT(base64_is_valid("AAAAA=A") == false);
+}
+
+
+void TestUtilities::testWordWrapper()
+{
+	// To make testing easier, this assumes that fonts are 1 pixel monospace.
+	const WordWrapper wrapper([](const std::wstring &str) {
+		return str.size();
+	});
+
+	const core::rect<s32> bounds{ {}, core::dimension2d<s32>(20, 5) };
+	std::vector<EnrichedString> result;
+	std::vector<s32> line_starts;
+
+	#define CHECK_LINE_STARTS()                                         \
+		for (size_t line = 0; line < line_starts.size(); line++ ) {     \
+			size_t line_start = line_starts[line];                      \
+			const wchar_t actual = testString.getString()[line_start];  \
+			UASSERTEQ(auto, actual, result[line].getString()[0]);       \
+		}
+
+	// Test wraps to nearest space
+	EnrichedString testString = L"one two three four five six seven eight nine ten";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERTEQ(auto, result.size(), 3);
+	UASSERT(result[0].getString() == L"one two three four ");
+	UASSERT(result[1].getString() == L"five six seven eight ");
+	UASSERT(result[2].getString() == L"nine ten");
+	UASSERTEQ(auto, line_starts.size(), 3);
+	UASSERTEQ(auto, line_starts[0], 0);
+	UASSERTEQ(auto, line_starts[1], 19);
+	UASSERTEQ(auto, line_starts[2], 40);
+	CHECK_LINE_STARTS()
+
+	// Test \n \r support
+	result.clear();
+	line_starts.clear();
+	testString = L"one\ntwo this is quite long\r\nthree four five six seven";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERT(result.size() == 5);
+	UASSERT(result[0].getString() == L"one");
+	UASSERT(result[1].getString() == L"two this is quite ");
+	UASSERT(result[2].getString() == L"long");
+	UASSERT(result[3].getString() == L"three four five six ");
+	UASSERT(result[4].getString() == L"seven");
+	CHECK_LINE_STARTS()
+
+	// Test ellipsis simple
+	result.clear();
+	line_starts.clear();
+	testString = L"one\ntwo\rthree\nfour\nfive\nsix\nseven";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERT(result.size() == 5);
+	UASSERT(result[0].getString() == L"one");
+	UASSERT(result[1].getString() == L"two");
+	UASSERT(result[2].getString() == L"three");
+	UASSERT(result[3].getString() == L"four");
+	UASSERT(result[4].getString() == L"five…");
+	CHECK_LINE_STARTS()
+
+	// Test ellipsis wrapping
+	result.clear();
+	line_starts.clear();
+	testString = L"one\ntwo\rthree\nfour\nthis is too long for this line";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERT(result.size() == 5);
+	UASSERT(result[0].getString() == L"one");
+	UASSERT(result[1].getString() == L"two");
+	UASSERT(result[2].getString() == L"three");
+	UASSERT(result[3].getString() == L"four");
+	UASSERT(result[4].getString() == L"this is too long…");
+	CHECK_LINE_STARTS()
+
+	// Test support for unicode soft hyphen
+	result.clear();
+	line_starts.clear();
+	testString = L"Hello AReallyLong\u00ADWord";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERT(result.size() == 2);
+	UASSERT(result[0].getString() == L"Hello AReallyLong-");
+	UASSERT(result[1].getString() == L"Word");
+	CHECK_LINE_STARTS()
+
+	// Test word breaking
+	result.clear();
+	line_starts.clear();
+	testString = L"one\nthisistoolongforthisline";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERT(result.size() == 3);
+	UASSERT(result[0].getString() == L"one");
+	UASSERT(result[1].getString() == L"thisistoolongforthi-");
+	UASSERT(result[2].getString() == L"sline");
+	CHECK_LINE_STARTS()
+
+	// Test word breaking at end
+	result.clear();
+	line_starts.clear();
+	testString = L"one\ntwo\rthree\nfour thisistoolongforthisline";
+	wrapper.wrap(result, &line_starts, testString, bounds, 1);
+	UASSERT(result.size() == 5);
+	UASSERT(result[0].getString() == L"one");
+	UASSERT(result[1].getString() == L"two");
+	UASSERT(result[2].getString() == L"three");
+	UASSERT(result[3].getString() == L"four ");
+	UASSERT(result[4].getString() == L"thisistoolongforthi-");
+	CHECK_LINE_STARTS()
 }

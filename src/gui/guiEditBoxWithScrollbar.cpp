@@ -307,108 +307,6 @@ s32 GUIEditBoxWithScrollBar::getCursorPos(s32 x, s32 y)
 }
 
 
-//! Breaks the single text line.
-void GUIEditBoxWithScrollBar::breakText()
-{
-	if ((!m_word_wrap && !m_multiline))
-		return;
-
-	m_broken_text.clear(); // need to reallocate :/
-	m_broken_text_positions.clear();
-
-	IGUIFont* font = getActiveFont();
-	if (!font)
-		return;
-
-	m_last_break_font = font;
-
-	core::stringw line;
-	core::stringw word;
-	core::stringw whitespace;
-	s32 last_line_start = 0;
-	s32 size = Text.size();
-	s32 length = 0;
-	s32 el_width = RelativeRect.getWidth() - m_scrollbar_width - 10;
-	wchar_t c;
-
-	for (s32 i = 0; i < size; ++i) {
-		c = Text[i];
-		bool line_break = false;
-
-		if (c == L'\r') { // Mac or Windows breaks
-
-			line_break = true;
-			c = 0;
-			if (Text[i + 1] == L'\n') { // Windows breaks
-				// TODO: I (Michael) think that we shouldn't change the text given by the user for whatever reason.
-				// Instead rework the cursor positioning to be able to handle this (but not in stable release
-				// branch as users might already expect this behavior).
-				Text.erase(i + 1);
-				--size;
-				if (m_cursor_pos > i)
-					--m_cursor_pos;
-			}
-		} else if (c == L'\n') { // Unix breaks
-			line_break = true;
-			c = 0;
-		}
-
-		// don't break if we're not a multi-line edit box
-		if (!m_multiline)
-			line_break = false;
-
-		if (c == L' ' || c == 0 || i == (size - 1)) {
-			// here comes the next whitespace, look if
-			// we can break the last word to the next line
-			// We also break whitespace, otherwise cursor would vanish beside the right border.
-			s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-			s32 worldlgth = font->getDimension(word.c_str()).Width;
-
-			if (m_word_wrap && length + worldlgth + whitelgth > el_width && line.size() > 0) {
-				// break to next line
-				length = worldlgth;
-				m_broken_text.push_back(line);
-				m_broken_text_positions.push_back(last_line_start);
-				last_line_start = i - (s32)word.size();
-				line = word;
-			} else {
-				// add word to line
-				line += whitespace;
-				line += word;
-				length += whitelgth + worldlgth;
-			}
-
-			word = L"";
-			whitespace = L"";
-
-
-			if (c)
-				whitespace += c;
-
-			// compute line break
-			if (line_break) {
-				line += whitespace;
-				line += word;
-				m_broken_text.push_back(line);
-				m_broken_text_positions.push_back(last_line_start);
-				last_line_start = i + 1;
-				line = L"";
-				word = L"";
-				whitespace = L"";
-				length = 0;
-			}
-		} else {
-			// yippee this is a word..
-			word += c;
-		}
-	}
-
-	line += whitespace;
-	line += word;
-	m_broken_text.push_back(line);
-	m_broken_text_positions.push_back(last_line_start);
-}
-
 // TODO: that function does interpret VAlign according to line-index (indexed
 // line is placed on top-center-bottom) but HAlign according to line-width
 // (pixels) and not by row.
@@ -540,7 +438,7 @@ void GUIEditBoxWithScrollBar::calculateScrollPos()
 
 	// calculate vertical scrolling
 	if (has_broken_text) {
-		irr::u32 line_height = font->getDimension(L"A").Height + font->getKerningHeight();
+		irr::u32 line_height = font->getDimension(L"Ay").Height + font->getKerningHeight();
 		// only up to 1 line fits?
 		if (line_height >= (irr::u32)m_frame_rect.getHeight()) {
 			m_vscroll_pos = 0;

@@ -39,6 +39,7 @@ public:
 	void clear();
 
 	void addAtEnd(const std::wstring &s, video::SColor color);
+	void addAtEndNoColor(const std::wstring &s);
 
 	// Adds the character source[i] at the end.
 	// An EnrichedString should always be able to be copied

@@ -2030,7 +2030,8 @@ Node metadata contains two things:
 Some of the values in the key-value store are handled specially:
 
 * `formspec`: Defines a right-click inventory menu. See [Formspec].
-* `infotext`: Text shown on the screen when the node is pointed at
+* `infotext`: Text shown on the screen when the node is pointed at.
+              It will word wrap, and truncate with an ellipsis after 6 lines.
 
 Example:
 
@@ -7092,7 +7093,7 @@ Player properties need to be saved manually.
         -- Default: false
 
         infotext = "",
-        -- By default empty, text to be shown when pointed at object
+        -- Same as infotext for nodes. Empty by default
 
         static_save = true,
         -- If false, never save this object statically. It will simply be

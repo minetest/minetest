@@ -45,8 +45,6 @@ public:
 	virtual irr::u32 getCursorBlinkTime() const;
 
 protected:
-	//! Breaks the single text line.
-	virtual void breakText();
 	//! sets the area of the given line
 	virtual void setTextRect(s32 line);
 	//! calculates the current scroll position
