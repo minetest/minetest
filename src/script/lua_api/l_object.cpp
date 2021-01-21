@@ -399,7 +399,7 @@ int ObjectRef::l_get_animation(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v2f frames = v2f(1,1);
+	v2f frames = v2f(1, 1);
 	float frame_speed = 15;
 	float frame_blend = 0;
 	bool frame_loop = true;
@@ -463,8 +463,8 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v3f offset_first = read_v3f(L, 2);
-	v3f offset_third = read_v3f(L, 3);
+	v3f offset_first = readParam<v3f>(L, 2, v3f(0, 0, 0));
+	v3f offset_third = readParam<v3f>(L, 3, v3f(0, 0, 0));
 
 	// Prevent abuse of offset values (keep player always visible)
 	offset_third.X = rangelim(offset_third.X,-10,10);
@@ -537,9 +537,9 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2);
-	v3f position = check_v3f(L, 3);
-	v3f rotation = check_v3f(L, 4);
+	std::string bone = readParam<std::string>(L, 2, "");
+	v3f position = readParam<v3f>(L, 3, v3f(0, 0, 0));
+	v3f rotation = readParam<v3f>(L, 4, v3f(0, 0, 0));
 
 	sao->setBonePosition(bone, position, rotation);
 	return 0;
@@ -554,7 +554,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2);
+	std::string bone = readParam<std::string>(L, 2, "");
 
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
@@ -578,10 +578,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	if (sao == parent)
 		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
 
-	int parent_id = 0;
+	int parent_id;
 	std::string bone;
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
+	v3f position;
+	v3f rotation;
 	bool force_visible;
 
 	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
@@ -590,9 +590,9 @@ int ObjectRef::l_set_attach(lua_State *L)
 		old_parent->removeAttachmentChild(sao->getId());
 	}
 
-	bone      = readParam<std::string>(L, 3, "");
-	position  = read_v3f(L, 4);
-	rotation  = read_v3f(L, 5);
+	bone          = readParam<std::string>(L, 3, "");
+	position      = readParam<v3f>(L, 4, v3f(0, 0, 0));
+	rotation      = readParam<v3f>(L, 5, v3f(0, 0, 0));
 	force_visible = readParam<bool>(L, 6, false);
 
 	sao->setAttachment(parent->getId(), bone, position, rotation, force_visible);
@@ -609,10 +609,10 @@ int ObjectRef::l_get_attach(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	int parent_id = 0;
+	int parent_id;
 	std::string bone;
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
+	v3f position;
+	v3f rotation;
 	bool force_visible;
 
 	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
@@ -891,9 +891,6 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
-
-	if (isNaN(L, 2))
-		throw LuaError("ObjectRef::set_yaw: NaN value is not allowed.");
 
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
@@ -2199,7 +2196,7 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 
 	luaL_checktype(L, 2, LUA_TTABLE);
 	std::vector<MinimapMode> modes;
-	s16 selected_mode = luaL_checkint(L, 3);
+	s16 selected_mode = readParam<s16>(L, 3);
 
 	lua_pushnil(L);
 	while (lua_next(L, 2) != 0) {
