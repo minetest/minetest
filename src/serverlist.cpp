@@ -17,181 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
-#include <algorithm>
-
 #include "version.h"
 #include "settings.h"
 #include "serverlist.h"
 #include "filesys.h"
-#include "porting.h"
 #include "log.h"
 #include "network/networkprotocol.h"
 #include <json/json.h>
 #include "convert_json.h"
 #include "httpfetch.h"
-#include "util/string.h"
 
 namespace ServerList
 {
-
-std::string getFilePath()
-{
-	std::string serverlist_file = g_settings->get("serverlist_file");
-
-	std::string dir_path = "client" DIR_DELIM "serverlist" DIR_DELIM;
-	fs::CreateDir(porting::path_user + DIR_DELIM  "client");
-	fs::CreateDir(porting::path_user + DIR_DELIM + dir_path);
-	return porting::path_user + DIR_DELIM + dir_path + serverlist_file;
-}
-
-
-std::vector<ServerListSpec> getLocal()
-{
-	std::string path = ServerList::getFilePath();
-	std::string liststring;
-	fs::ReadFile(path, liststring);
-
-	return deSerialize(liststring);
-}
-
-
-std::vector<ServerListSpec> getOnline()
-{
-	std::ostringstream geturl;
-
-	u16 proto_version_min = CLIENT_PROTOCOL_VERSION_MIN;
-
-	geturl << g_settings->get("serverlist_url") <<
-		"/list?proto_version_min=" << proto_version_min <<
-		"&proto_version_max=" << CLIENT_PROTOCOL_VERSION_MAX;
-	Json::Value root = fetchJsonValue(geturl.str(), NULL);
-
-	std::vector<ServerListSpec> server_list;
-
-	if (!root.isObject()) {
-		return server_list;
-	}
-
-	root = root["list"];
-	if (!root.isArray()) {
-		return server_list;
-	}
-
-	for (const Json::Value &i : root) {
-		if (i.isObject()) {
-			server_list.push_back(i);
-		}
-	}
-
-	return server_list;
-}
-
-
-// Delete a server from the local favorites list
-bool deleteEntry(const ServerListSpec &server)
-{
-	std::vector<ServerListSpec> serverlist = ServerList::getLocal();
-	for (std::vector<ServerListSpec>::iterator it = serverlist.begin();
-			it != serverlist.end();) {
-		if ((*it)["address"] == server["address"] &&
-				(*it)["port"] == server["port"]) {
-			it = serverlist.erase(it);
-		} else {
-			++it;
-		}
-	}
-
-	std::string path = ServerList::getFilePath();
-	std::ostringstream ss(std::ios_base::binary);
-	ss << ServerList::serialize(serverlist);
-	if (!fs::safeWriteToFile(path, ss.str()))
-		return false;
-	return true;
-}
-
-// Insert a server to the local favorites list
-bool insert(const ServerListSpec &server)
-{
-	// Remove duplicates
-	ServerList::deleteEntry(server);
-
-	std::vector<ServerListSpec> serverlist = ServerList::getLocal();
-
-	// Insert new server at the top of the list
-	serverlist.insert(serverlist.begin(), server);
-
-	std::string path = ServerList::getFilePath();
-	std::ostringstream ss(std::ios_base::binary);
-	ss << ServerList::serialize(serverlist);
-	if (!fs::safeWriteToFile(path, ss.str()))
-		return false;
-
-	return true;
-}
-
-std::vector<ServerListSpec> deSerialize(const std::string &liststring)
-{
-	std::vector<ServerListSpec> serverlist;
-	std::istringstream stream(liststring);
-	std::string line, tmp;
-	while (std::getline(stream, line)) {
-		std::transform(line.begin(), line.end(), line.begin(), ::toupper);
-		if (line == "[SERVER]") {
-			ServerListSpec server;
-			std::getline(stream, tmp);
-			server["name"] = tmp;
-			std::getline(stream, tmp);
-			server["address"] = tmp;
-			std::getline(stream, tmp);
-			server["port"] = tmp;
-			bool unique = true;
-			for (const ServerListSpec &added : serverlist) {
-				if (server["name"] == added["name"]
-						&& server["port"] == added["port"]) {
-					unique = false;
-					break;
-				}
-			}
-			if (!unique)
-				continue;
-			std::getline(stream, tmp);
-			server["description"] = tmp;
-			serverlist.push_back(server);
-		}
-	}
-	return serverlist;
-}
-
-const std::string serialize(const std::vector<ServerListSpec> &serverlist)
-{
-	std::string liststring;
-	for (const ServerListSpec &it : serverlist) {
-		liststring += "[server]\n";
-		liststring += it["name"].asString() + '\n';
-		liststring += it["address"].asString() + '\n';
-		liststring += it["port"].asString() + '\n';
-		liststring += it["description"].asString() + '\n';
-		liststring += '\n';
-	}
-	return liststring;
-}
-
-const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
-{
-	Json::Value root;
-	Json::Value list(Json::arrayValue);
-	for (const ServerListSpec &it : serverlist) {
-		list.append(it);
-	}
-	root["list"] = list;
-
-	return fastWriteJson(root);
-}
-
-
 #if USE_CURL
 void sendAnnounce(AnnounceAction action,
 		const u16 port,

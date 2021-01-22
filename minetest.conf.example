@@ -1160,7 +1160,7 @@
 #    File in client/serverlist/ that contains your favorite servers displayed in the
 #    Multiplayer Tab.
 #    type: string
-# serverlist_file = favoriteservers.txt
+# serverlist_file = favoriteservers.json
 
 #    Maximum size of the out chat queue.
 #    0 to disable queueing and -1 to make the queue size unlimited.

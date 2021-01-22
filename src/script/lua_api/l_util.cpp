@@ -250,6 +250,17 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 	return 1;
 }
 
+// get_user_path()
+int ModApiUtil::l_get_user_path(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string path = porting::path_user;
+	lua_pushstring(L, path.c_str());
+
+	return 1;
+}
+
 // compress(data, method, level)
 int ModApiUtil::l_compress(lua_State *L)
 {
@@ -486,6 +497,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(is_yes);
 
 	API_FCT(get_builtin_path);
+	API_FCT(get_user_path);
 
 	API_FCT(compress);
 	API_FCT(decompress);
@@ -539,6 +551,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(is_yes);
 
 	API_FCT(get_builtin_path);
+	API_FCT(get_user_path);
 
 	API_FCT(compress);
 	API_FCT(decompress);

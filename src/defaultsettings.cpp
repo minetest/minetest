@@ -283,7 +283,7 @@ void set_default_settings(Settings *settings)
 
 	// Main menu
 	settings->setDefault("main_menu_path", "");
-	settings->setDefault("serverlist_file", "favoriteservers.txt");
+	settings->setDefault("serverlist_file", "favoriteservers.json");
 
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
