@@ -2,7 +2,7 @@ Minetest Texture Pack Reference
 ===============================
 
 Texture packs allow you to replace textures provided by a mod with your own
-textures.
+textures. See lua_api.txt for texture load path.
 
 Texture pack directory structure
 --------------------------------

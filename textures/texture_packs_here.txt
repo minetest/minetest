@@ -1,1 +1,2 @@
-Put your texture pack folders in this folder. Textures in the "server" pack will be used by the server.
+Put your texture pack folders in this folder. See texture_packs.txt for details.
+Textures in the "server" pack will be used by the server. See [Textures] in lua_api.txt for details.

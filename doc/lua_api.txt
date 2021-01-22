@@ -89,9 +89,6 @@ The game directory can contain the following files:
   In the same format as the one in builtin.
   This settingtypes.txt will be parsed by the menu and the settings will be
   displayed in the "Games" category in the advanced settings tab.
-* If the game contains a folder called `textures` the server will load it as a
-  texturepack, overriding mod textures.
-  Any server texturepack will override mod textures and the game texturepack.
 
 Menu images
 -----------
@@ -400,6 +397,21 @@ stripping out the file extension:
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
 
+Texture Load Path
+-----------------
+
+Paths are relative to the directories listed in the [Paths] section above. Each
+location overrides those under it.
+
+### On singleplayer or server
+* Path defined in the texture_path setting
+* `textures/server`
+* `games/<gameid>/textures`
+* Mod Textures
+
+### On client
+* Path defined in the texture_path setting
+* Server populated data path
 
 Texture modifiers
 -----------------
