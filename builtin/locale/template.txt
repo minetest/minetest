@@ -177,7 +177,6 @@ You are already dead.=
 @1 is already dead.=
 @1 has been killed.=
 Kill player or yourself=
-Issued command: @1=
 Available commands: @1=
 Use '@1help <cmd>' to get more information, or '@2help all' to list everything.=
 Available commands:=

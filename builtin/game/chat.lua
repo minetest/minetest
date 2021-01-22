@@ -90,7 +90,7 @@ core.register_on_chat_message(function(name, message)
 		core.chat_send_player(name,
 				S("You don't have permission to run this command "
 				.. "(missing privileges: @1).",
-				table.concat(missing_privs, ", ") .. ")"))
+				table.concat(missing_privs, ", ")))
 	end
 	return true  -- Handled chat message
 end)

@@ -1,17 +1,13 @@
 -- Minetest: builtin/client/chatcommands.lua
 
-local S = minetest.get_translator("__builtin")
-
 core.register_on_sending_chat_message(function(message)
 	if message:sub(1,2) == ".." then
 		return false
 	end
 
 	local first_char = message:sub(1,1)
-	if first_char == "." then
+	if first_char == "/" or first_char == "." then
 		core.display_chat_message(core.gettext("Issued command: ") .. message)
-	elseif first_char == "/" then
-		core.display_chat_message(S("Issued command: @1", message))
 	end
 
 	if first_char ~= "." then
