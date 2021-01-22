@@ -157,9 +157,8 @@ public:
 
 	ArrayGridNodeContainer(Pathfinder *pathf, v3s16 dimensions);
 	virtual PathGridnode &access(v3s16 p);
-private:
-	v3s16 m_dimensions;
 
+private:
 	int m_x_stride;
 	int m_y_stride;
 	std::vector<PathGridnode> m_nodes_array;
@@ -306,8 +305,6 @@ private:
 	int m_max_index_y = 0;            /**< max index of search area in y direction  */
 	int m_max_index_z = 0;            /**< max index of search area in z direction  */
 
-
-	int m_searchdistance = 0;         /**< max distance to search in each direction */
 	int m_maxdrop = 0;                /**< maximum number of blocks a path may drop */
 	int m_maxjump = 0;                /**< maximum number of blocks a path may jump */
 	int m_min_target_distance = 0;    /**< current smalest path to target           */
@@ -619,7 +616,6 @@ std::vector<v3s16> Pathfinder::getPath(v3s16 source,
 	std::vector<v3s16> retval;
 
 	//initialization
-	m_searchdistance = searchdistance;
 	m_maxjump = max_jump;
 	m_maxdrop = max_drop;
 	m_start       = source;

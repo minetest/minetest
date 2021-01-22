@@ -138,7 +138,6 @@ public:
 	size_t getMaxModeIndex() const { return m_modes.size() - 1; };
 	void nextMode();
 
-	void setModesFromString(std::string modes_string);
 	MinimapModeDef getModeDef() const { return data->mode; }
 
 	video::ITexture *getMinimapTexture();

@@ -415,11 +415,6 @@ public:
 		return m_csm_restriction_flags & flag;
 	}
 
-	u32 getCSMNodeRangeLimit() const
-	{
-		return m_csm_restriction_noderange;
-	}
-
 	inline std::unordered_map<u32, u32> &getHUDTranslationMap()
 	{
 		return m_hud_server_to_client;
@@ -437,7 +432,6 @@ public:
 	}
 private:
 	void loadMods();
-	bool checkBuiltinIntegrity();
 
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer) override;
@@ -587,7 +581,6 @@ private:
 
 	// Client modding
 	ClientScripting *m_script = nullptr;
-	bool m_modding_enabled;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;

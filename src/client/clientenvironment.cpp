@@ -334,13 +334,6 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 	return NULL;
 }
 
-bool isFreeClientActiveObjectId(const u16 id,
-	ClientActiveObjectMap &objects)
-{
-	return id != 0 && objects.find(id) == objects.end();
-
-}
-
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 {
 	// Register object. If failed return zero id

@@ -401,21 +401,6 @@ void GetRecursiveSubPaths(const std::string &path,
 	}
 }
 
-bool DeletePaths(const std::vector<std::string> &paths)
-{
-	bool success = true;
-	// Go backwards to succesfully delete the output of GetRecursiveSubPaths
-	for(int i=paths.size()-1; i>=0; i--){
-		const std::string &path = paths[i];
-		bool did = DeleteSingleFileOrEmptyDirectory(path);
-		if(!did){
-			errorstream<<"Failed to delete "<<path<<std::endl;
-			success = false;
-		}
-	}
-	return success;
-}
-
 bool RecursiveDeleteContent(const std::string &path)
 {
 	infostream<<"Removing content of \""<<path<<"\""<<std::endl;

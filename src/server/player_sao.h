@@ -114,7 +114,6 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	void setHPRaw(u16 hp) { m_hp = hp; }
-	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
 

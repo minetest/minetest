@@ -564,9 +564,6 @@ private:
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
 
-	// Event manager
-	EventManager *m_event;
-
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
 

@@ -253,7 +253,7 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput(FormspecQuitMode quitmode);
+	void acceptInput(FormspecQuitMode quitmode=quit_mode_no);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
 	bool doPause;

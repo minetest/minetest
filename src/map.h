@@ -417,13 +417,7 @@ private:
 	bool m_map_saving_enabled;
 
 	int m_map_compression_level;
-#if 0
-	// Chunk size in MapSectors
-	// If 0, chunks are disabled.
-	s16 m_chunksize;
-	// Chunks
-	core::map<v2s16, MapChunk*> m_chunks;
-#endif
+
 	std::set<v3s16> m_chunks_in_progress;
 
 	/*

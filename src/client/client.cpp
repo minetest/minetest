@@ -159,20 +159,6 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
-	// TODO Uncomment when server-sent CSM and verifying of builtin are complete
-	/*
-	// Don't load client-provided mods if disabled by server
-	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
-		warningstream << "Client-provided mod loading is disabled by server." <<
-			std::endl;
-		// If builtin integrity is wrong, disconnect user
-		if (!checkBuiltinIntegrity()) {
-			// TODO disconnect user
-		}
-		return;
-	}
-	*/
-
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	m_mods = modconf.getMods();
 	// complain about mods with unsatisfied dependencies
@@ -214,12 +200,6 @@ void Client::loadMods()
 		m_script->on_camera_ready(m_camera);
 	if (m_minimap)
 		m_script->on_minimap_ready(m_minimap);
-}
-
-bool Client::checkBuiltinIntegrity()
-{
-	// TODO
-	return true;
 }
 
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,

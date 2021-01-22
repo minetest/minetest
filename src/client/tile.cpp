@@ -429,7 +429,6 @@ private:
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
 	bool m_setting_bilinear_filter;
-	bool m_setting_anisotropic_filter;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -450,7 +449,6 @@ TextureSource::TextureSource()
 	// for these settings to take effect
 	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
 	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()

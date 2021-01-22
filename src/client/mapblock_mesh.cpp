@@ -1176,13 +1176,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		}
 
 		if (m_mesh[layer]) {
-#if 0
-			// Usually 1-700 faces and 1-7 materials
-			std::cout << "Updated MapBlock has " << fastfaces_new.size()
-					<< " faces and uses " << m_mesh[layer]->getMeshBufferCount()
-					<< " materials (meshbuffers)" << std::endl;
-#endif
-
 			// Use VBO for mesh (this just would set this for ever buffer)
 			if (m_enable_vbo)
 				m_mesh[layer]->setHardwareMappingHint(scene::EHM_STATIC);

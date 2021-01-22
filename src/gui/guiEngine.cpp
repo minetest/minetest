@@ -486,8 +486,6 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
 				((free_space/2)-splashsize.Y/2)+10);
 
-	video::SColor bgcolor(255,50,50,50);
-
 	draw2DImageFilterScaled(driver, texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),
 		core::dimension2di(texture->getOriginalSize())),
