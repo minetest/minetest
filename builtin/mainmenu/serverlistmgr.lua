@@ -89,6 +89,7 @@ end
 --------------------------------------------------------------------------------
 local function save_favorites(favorites)
 	local filename = core.settings:get("serverlist_file")
+	-- If setting specifies legacy format change the filename to the new one
 	if filename:sub(#filename - 3):lower() == ".txt" then
 		core.settings:set("serverlist_file", filename:sub(1, #filename - 4) .. ".json")
 	end
@@ -161,6 +162,7 @@ end
 local function read_favorites()
 	local path = get_favorites_path()
 
+	-- If new format configured fall back to reading the legacy file
 	if path:sub(#path - 4):lower() == ".json" then
 		local file = io.open(path, "r")
 		if file then
