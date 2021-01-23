@@ -2226,7 +2226,8 @@ Elements
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
-  slots is one-fourth the size of an inventory slot.
+  slots is one-fourth the size of an inventory slot by default. Also see
+  [Styling Formspecs] for changing the size of slots and spacing.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
@@ -2809,6 +2810,7 @@ Some types may inherit styles from parent types.
 * image_button
 * item_image_button
 * label
+* list
 * model
 * pwdfield, inherits from field
 * scrollbar
@@ -2896,6 +2898,10 @@ Some types may inherit styles from parent types.
     * font - Sets font type. See button `font` property for more information.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* list
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * size - 2d vector, sets the size of inventory slots in coordinates.
+    * spacing - 2d vector, sets the space between inventory slots in coordinates.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.

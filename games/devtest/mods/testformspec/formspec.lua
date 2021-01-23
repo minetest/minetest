@@ -33,6 +33,15 @@ local tabheaders_fs = [[
 	tabheader[8,6;10,1.5;tabs_size2;Height=1.5;1;false;false]
 ]]
 
+local inv_style_fs = [[
+	style_type[list;noclip=true]
+	list[current_player;main;-1.125,-1.125;2,2]
+	style_type[list;spacing=.25,.125;size=.75,.875]
+	list[current_player;main;3,.5;3,3]
+	style_type[list;spacing=0;size=1]
+	list[current_player;main;.5,4;8,4]
+]]
+
 local hypertext_basic = [[
 <bigger>Normal test</bigger>
 This is a normal text.
@@ -310,6 +319,10 @@ local pages = {
 		"size[12,13]real_coordinates[true]" ..
 		"container[0.5,1.5]" .. tabheaders_fs .. "container_end[]",
 
+		-- Inv
+		"size[12,13]real_coordinates[true]" ..
+		"container[0.5,1.5]" .. inv_style_fs .. "container_end[]",
+
 	-- Animation
 		[[
 			formspec_version[3]
@@ -341,7 +354,7 @@ Number]
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Anim,ScrollC;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Anim,ScrollC;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
