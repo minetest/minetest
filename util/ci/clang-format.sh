@@ -1,6 +1,6 @@
 #! /bin/bash
-function perform_lint() {
-	echo "Performing LINT..."
+
+function setup_for_format() {
 	if [ -z "${CLANG_FORMAT}" ]; then
 		CLANG_FORMAT=clang-format
 	fi
@@ -8,6 +8,12 @@ function perform_lint() {
 	CLANG_FORMAT_WHITELIST="util/ci/clang-format-whitelist.txt"
 
 	files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h')"
+}
+
+function check_format() {
+	echo "Checking format..."
+
+	setup_for_format
 
 	local errorcount=0
 	local fail=0
@@ -41,3 +47,18 @@ function perform_lint() {
 	echo "LINT OK"
 }
 
+
+
+function fix_format() {
+	echo "Fixing format..."
+
+	setup_for_format
+
+	for f in ${files_to_lint}; do
+		whitelisted=$(awk '$1 == "'$f'" { print 1 }' "$CLANG_FORMAT_WHITELIST")
+		if [ -z "${whitelisted}" ]; then
+			echo "$f"
+			$CLANG_FORMAT -i "$f"
+		fi
+	done
+}
