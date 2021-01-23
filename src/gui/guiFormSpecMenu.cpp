@@ -507,10 +507,13 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 
 		v2f32 slot_spacing = style.getVector2f(StyleSpec::SPACING, v2f32(-1, -1));
 		if (data->real_coordinates) {
-			slot_spacing.X = slot_spacing.X < 0 ? imgsize.X * 1.25f :
-					slot_spacing.X * imgsize.X + imgsize.X;
-			slot_spacing.Y = slot_spacing.Y < 0 ? imgsize.Y * 1.25f :
-					slot_spacing.Y * imgsize.Y + imgsize.Y;
+			slot_spacing.X = slot_spacing.X < 0 ? imgsize.X * 0.25f :
+					imgsize.X * slot_spacing.X;
+			slot_spacing.Y = slot_spacing.Y < 0 ? imgsize.Y * 0.25f :
+					imgsize.Y * slot_spacing.Y;
+
+			slot_spacing.X += slot_size.X;
+			slot_spacing.Y += slot_size.Y;
 		} else {
 			slot_spacing.X = slot_spacing.X < 0 ? spacing.X :
 					slot_spacing.X * spacing.X;
