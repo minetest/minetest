@@ -787,6 +787,7 @@ bool GUIEditBox::processMouse(const SEvent &event)
 			s32 pos = m_vscrollbar->getPos();
 			s32 step = m_vscrollbar->getSmallStep();
 			m_vscrollbar->setPos(pos - event.MouseInput.Wheel * step);
+			return true;
 		}
 		break;
 	default:

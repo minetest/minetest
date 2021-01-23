@@ -220,6 +220,8 @@ local scroll_fs =
 		"tooltip[0,11;3,2;Buz;#f00;#000]"..
 		"box[0,11;3,2;#00ff00]"..
 		"hypertext[3,13;3,3;;" .. hypertext_basic .. "]" ..
+		"hypertext[3,17;3,3;;Hypertext with no scrollbar\\; the scroll container should scroll.]" ..
+		"textarea[3,21;3,1;textarea;;More scroll within scroll]" ..
 		"container[0,18]"..
 			"box[1,2;3,2;#0a0a]"..
 			"scroll_container[1,2;3,2;scrbar2;horizontal;0.06]"..
