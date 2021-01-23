@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
+cmake_policy(SET CMP0025 OLD)
+
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
