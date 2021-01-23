@@ -805,13 +805,13 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 
 	core::rect<s32> middle;
 	if (parts.size() >= 4)
-		parseRect(parts[3], &middle);
+		parseMiddleRect(parts[3], &middle);
 
 	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
 		spec.fid, rect);
 
-	e->setImage(m_tsrc->getTexture(name));
-	e->setImageMiddle(middle);
+	e->setTexture(m_tsrc->getTexture(name));
+	e->setMiddleRect(middle);
 
 	auto style = getDefaultStyleForElement("image", spec.fname);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
@@ -867,13 +867,13 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	core::rect<s32> middle;
 	if (parts.size() >= 8)
-		parseRect(parts[7], &middle);
+		parseMiddleRect(parts[7], &middle);
 
 	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
 		spec.fid, rect);
 
-	e->setImage(m_tsrc->getTexture(texture_name));
-	e->setImageMiddle(middle);
+	e->setTexture(m_tsrc->getTexture(texture_name));
+	e->setMiddleRect(middle);
 	e->setFrameDuration(frame_duration);
 	e->setFrameCount(frame_count);
 	if (parts.size() >= 7)
@@ -1000,7 +1000,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 	m_fields.push_back(spec);
 }
 
-bool GUIFormSpecMenu::parseRect(const std::string &value, core::rect<s32> *parsed_rect)
+bool GUIFormSpecMenu::parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect)
 {
 	core::rect<s32> rect;
 	std::vector<std::string> v_rect = split(value, ',');
