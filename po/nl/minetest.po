@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2021-01-24 16:19+0000\n"
-"Last-Translator: Joshua De Clercq <joshua.de.clercq@gmail.com>\n"
+"Last-Translator: zjeffer <vanhouttetuur@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -229,16 +229,15 @@ msgstr "Een wereld met de naam \"$1\" bestaat al"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Extra terrein"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
 msgstr "Temperatuurdaling vanwege hoogte"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Temperatuurverschil vanwege hoogte"
+msgstr "Vochtigheidsverschil vanwege hoogte"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -253,9 +252,8 @@ msgid "Caverns"
 msgstr "Grotten"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Octaven"
+msgstr "Grotten"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
