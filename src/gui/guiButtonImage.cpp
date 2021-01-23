@@ -52,8 +52,8 @@ void GUIButtonImage::setForegroundImage(video::ITexture *image,
 		m_foreground_image->drop();
 
 	m_foreground_image = image;
-	m_image->setImage(image);
-	m_image->setImageMiddle(middle);
+	m_image->setTexture(image);
+	m_image->setMiddleRect(middle);
 }
 
 //! Set element properties from a StyleSpec
@@ -69,7 +69,7 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style)
 
 		setForegroundImage(guiScalingImageButton(driver, texture,
 				AbsoluteRect.getWidth(), AbsoluteRect.getHeight()),
-				style.getRect(StyleSpec::FGIMG_MIDDLE, m_image->getImageMiddle()));
+				style.getRect(StyleSpec::FGIMG_MIDDLE, m_image->getMiddleRect()));
 	} else {
 		setForegroundImage();
 	}

@@ -13,11 +13,11 @@ public:
 
 	virtual void draw() override;
 
-	void setImage(video::ITexture *texture) { m_texture = texture; };
-	video::ITexture *getImage() const { return m_texture; };
+	void setTexture(video::ITexture *texture) { m_texture = texture; };
+	video::ITexture *getTexture() const { return m_texture; };
 
-	void setImageMiddle(const core::rect<s32> &middle) { m_middle = middle; };
-	core::rect<s32> getImageMiddle() const { return m_middle; };
+	void setMiddleRect(const core::rect<s32> &middle) { m_middle = middle; };
+	core::rect<s32> getMiddleRect() const { return m_middle; };
 
 	void setFrameDuration(u64 duration) { m_frame_duration = duration; };
 	u64 getFrameDuration() const { return m_frame_duration; };
