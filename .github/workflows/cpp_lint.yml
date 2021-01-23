@@ -24,20 +24,21 @@ on:
       - '.github/workflows/**.yml'
 
 jobs:
-  clang_format:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install clang-format
-        run: |
-          sudo apt-get install clang-format-9 -qyy
 
-      - name: Run clang-format
-        run: |
-          source ./util/ci/lint.sh
-          perform_lint
-        env:
-          CLANG_FORMAT: clang-format-9
+#  clang_format:
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Install clang-format
+#        run: |
+#          sudo apt-get install clang-format-9 -qyy
+#
+#      - name: Run clang-format
+#        run: |
+#          source ./util/ci/clang-format.sh
+#          check_format
+#        env:
+#          CLANG_FORMAT: clang-format-9
 
   clang_tidy:
     runs-on: ubuntu-18.04
