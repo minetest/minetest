@@ -1130,7 +1130,7 @@ enable_rollback_recording (Rollback recording) bool false
 
 #    Format of player chat messages. The following strings are valid placeholders:
 #    @name, @message, @timestamp (optional)
-chat_message_format (Chat message format) string <@name> @message
+chat_message_format (Chat message format) string @color<@name>@clear @message
 
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.

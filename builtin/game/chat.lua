@@ -15,11 +15,30 @@ end
 -- Chat message formatter
 --
 
+function core.get_name_color(name)
+	-- Written by SmallJoker/Krock, license: MIT
+	local hash = core.sha1(name, true)
+	local r = hash:byte( 1) % 0x10
+	local g = hash:byte(10) % 0x10
+	local b = hash:byte(20) % 0x10
+	if r + g + b < 24 then
+		r = 15 - r
+		g = 15 - g
+		b = 15 - b
+	end
+	return ("#%X%X%X"):format(r, g, b)
+end
+
 -- Implemented in Lua to allow redefinition
 function core.format_chat_message(name, message)
 	local error_str = "Invalid chat message format - missing %s"
 	local str = core.settings:get("chat_message_format")
 	local replaced
+
+	-- Colors
+	local user_color = core.get_name_color(name)
+	str = safe_gsub(str, "@color", core.get_color_escape_sequence(user_color))
+	str = safe_gsub(str, "@clear", core.get_color_escape_sequence("#ffffff"))
 
 	-- Name
 	str, replaced = safe_gsub(str, "@name", name)
@@ -128,7 +147,8 @@ core.register_chatcommand("me", {
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
-		core.chat_send_all("* " .. name .. " " .. param)
+		local color = core.get_name_color(name)
+		core.chat_send_all("* " .. core.colorize(color, name) .. " " .. param)
 		return true
 	end,
 })

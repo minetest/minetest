@@ -42,13 +42,15 @@ end
 
 function core.send_join_message(player_name)
 	if not core.is_singleplayer() then
-		core.chat_send_all("*** " .. player_name .. " joined the game.")
+		local color = core.get_name_color(player_name)
+		core.chat_send_all("*** " .. core.colorize(color, player_name) .. " joined the game.")
 	end
 end
 
 
 function core.send_leave_message(player_name, timed_out)
-	local announcement = "*** " ..  player_name .. " left the game."
+	local color = core.get_name_color(player_name)
+	local announcement = "*** " .. core.colorize(color, player_name) .. " left the game."
 	if timed_out then
 		announcement = announcement .. " (timed out)"
 	end
