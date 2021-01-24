@@ -143,6 +143,9 @@ public:
 	}
 };
 
+// clang-format off
+// ^ dislikes long lines
+
 /** Constructs a shared pointer as a *secondary* reference to an object
  *
  * This function is intended to make a temporary reference to an object which
@@ -193,3 +196,5 @@ bool operator!=(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b) n
 {
 	return a != b.get();
 }
+
+// clang-format on
