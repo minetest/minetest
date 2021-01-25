@@ -467,7 +467,7 @@ function pkgmgr.enable_mod(this, toset)
 		if mod2.type == "mod" and not mod2.is_modpack then
 			mod_ids[mod2.name] = id
 		end
-	end	
+	end
 
 	-- to_enable is used as a DFS stack with sp as stack pointer
 	local to_enable = {}
