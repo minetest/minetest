@@ -873,7 +873,7 @@ end
 -- TOCLIENT_HP
 
 do
-	local f_hp = ProtoField.uint16("minetest.server.hp", "Hitpoints", base.DEC)
+	local f_hp = ProtoField.uint16("minetest.server.hp", "Health points", base.DEC)
 
 	minetest_server_commands[0x33] = {
 		"HP", 4,
