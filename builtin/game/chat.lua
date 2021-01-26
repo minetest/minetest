@@ -984,14 +984,17 @@ core.register_chatcommand("ban", {
 			end
 		end
 		if not core.get_player_by_name(param) then
-			return false, "Player is not online."
+			return false,
+minetest.colorize("#e32110",  "Player is not online.")
 		end
 		if not core.ban_player(param) then
-			return false, "Failed to ban player."
+			return false,
+minetest.colorize("#e32110",  "Failed to ban player.")
 		end
 		local desc = core.get_ban_description(param)
 		core.log("action", name .. " bans " .. desc .. ".")
-		return true, "Banned " .. desc .. "."
+		return true,
+minetest.colorize("#02fa44", "Banned " .. desc .. ".")
 	end,
 })
 
@@ -1001,10 +1004,12 @@ core.register_chatcommand("unban", {
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
-			return false, "Failed to unban player/IP."
+			return false,
+minetest.colorize("#e32110", "Failed to unban player/IP.")
 		end
 		core.log("action", name .. " unbans " .. param)
-		return true, "Unbanned " .. param
+		return true,
+minetest.colorize("#02fa44", "Unbanned " .. param)
 	end,
 })
 
@@ -1016,14 +1021,16 @@ core.register_chatcommand("kick", {
 		local tokick, reason = param:match("([^ ]+) (.+)")
 		tokick = tokick or param
 		if not core.kick_player(tokick, reason) then
-			return false, "Failed to kick player " .. tokick
+			return false,
+minetest.colorize("#e32110", "Failed to kick player " .. tokick)
 		end
 		local log_reason = ""
 		if reason then
 			log_reason = " with reason \"" .. reason .. "\""
 		end
 		core.log("action", name .. " kicks " .. tokick .. log_reason)
-		return true, "Kicked " .. tokick
+		return true,
+minetest.colorize("#02fa44", "Kicked " .. tokick)
 	end,
 })
 
@@ -1063,14 +1070,16 @@ core.register_chatcommand("msg", {
 			return false, "Invalid usage, see /help msg."
 		end
 		if not core.get_player_by_name(sendto) then
-			return false, "The player " .. sendto
-					.. " is not online."
+			return false, 
+minetest.colorize("#e32110", "The player " .. sendto
+					.. " is not online.")
 		end
 		core.log("action", "DM from " .. name .. " to " .. sendto
 				.. ": " .. message)
-		core.chat_send_player(sendto, "DM from " .. name .. ": "
-				.. message)
-		return true, "Message sent."
+		core.chat_send_player(sendto,
+minetest.colorize("#02fa44", "DM from " .. name .. ": "
+				.. message))
+		return true, minetest.colorize("#02fa44", "Message sent.")
 	end,
 })
 
