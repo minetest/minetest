@@ -1070,7 +1070,7 @@ core.register_chatcommand("msg", {
 			return false, "Invalid usage, see /help msg."
 		end
 		if not core.get_player_by_name(sendto) then
-			return false, 
+			return false,
 minetest.colorize("#e32110", "The player " .. sendto
 					.. " is not online.")
 		end
