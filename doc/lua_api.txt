@@ -6221,8 +6221,8 @@ object you are working with still exists.
     * `time_from_last_punch` = time since last punch action of the puncher
     * `direction`: can be `nil`
 * `right_click(clicker)`; `clicker` is another `ObjectRef`
-* `get_hp()`: returns number of hitpoints (2 * number of hearts)
-* `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
+* `get_hp()`: returns number of health points
+* `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
     * Is limited to the range of 0 ... 65535 (2^16 - 1)
     * For players: HP are also limited by `hp_max` specified in the player's
