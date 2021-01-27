@@ -23,6 +23,8 @@ if not minetest.get_http_api then
 	return
 end
 
+-- Unordered preserves the original order of the ContentDB API, 
+-- before the package list is ordered based on installed state.
 local store = { packages = {}, packages_full = {}, packages_full_unordered = {} }
 
 local http = minetest.get_http_api()
