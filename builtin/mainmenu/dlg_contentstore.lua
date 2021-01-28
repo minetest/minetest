@@ -58,23 +58,34 @@ local filter_types_type = {
 }
 
 
+local function get_download_url(package, reason)
+	local base_url = core.settings:get("contentdb_url")
+	local ret = base_url .. ("/packages/%s/%s/releases/%d/download/"):format(package.author, package.name, package.release)
+	if reason then
+		ret = ret .. "?reason=" .. reason
+	end
+	return ret
+end
+
+
 local function download_package(param)
-	if core.download_file(param.package.url, param.filename) then
+	if core.download_file(param.url, param.filename) then
 		return {
 			filename = param.filename,
 			successful = true,
 		}
 	else
-		core.log("error", "downloading " .. dump(param.package.url) .. " failed")
+		core.log("error", "downloading " .. dump(param.url) .. " failed")
 		return {
 			successful = false,
 		}
 	end
 end
 
-local function start_install(package)
+local function start_install(package, reason)
 	local params = {
 		package = package,
+		url = get_download_url(package, reason),
 		filename = os.tempfolder() .. "_MODNAME_" .. package.name .. ".zip",
 	}
 
@@ -135,7 +146,7 @@ local function start_install(package)
 		if next then
 			table.remove(download_queue, 1)
 
-			start_install(next)
+			start_install(next.package, next.reason)
 		end
 
 		ui.update()
@@ -151,12 +162,12 @@ local function start_install(package)
 	end
 end
 
-local function queue_download(package)
+local function queue_download(package, reason)
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
 	if number_downloading < max_concurrent_downloads then
-		start_install(package)
+		start_install(package, reason)
 	else
-		table.insert(download_queue, package)
+		table.insert(download_queue, { package = package, reason = reason })
 		package.queued = true
 	end
 end
@@ -407,12 +418,12 @@ function install_dialog.handle_submit(this, fields)
 	end
 
 	if fields.install_all then
-		queue_download(install_dialog.package)
+		queue_download(install_dialog.package, "new")
 
 		if install_dialog.will_install_deps then
 			for _, dep in pairs(install_dialog.dependencies) do
 				if not dep.is_optional and not dep.installed and dep.package then
-					queue_download(dep.package)
+					queue_download(dep.package, "dep")
 				end
 			end
 		end
@@ -562,10 +573,6 @@ function store.load()
 	store.packages_full = core.parse_json(response.data) or {}
 
 	for _, package in pairs(store.packages_full) do
-		package.url = base_url .. "/packages/" ..
-				package.author .. "/" .. package.name ..
-				"/releases/" .. package.release .. "/download/"
-
 		local name_len = #package.name
 		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
 			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
@@ -915,7 +922,7 @@ function store.handle_submit(this, fields)
 			local package = store.packages_full[i]
 			if package.path and package.installed_release < package.release and
 					not (package.downloading or package.queued) then
-				queue_download(package)
+				queue_download(package, "update")
 			end
 		end
 		return true
@@ -948,7 +955,7 @@ function store.handle_submit(this, fields)
 					this:hide()
 					dlg:show()
 				else
-					queue_download(package)
+					queue_download(package, package.path and "update" or "new")
 				end
 			end
 
