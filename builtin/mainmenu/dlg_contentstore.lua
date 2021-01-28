@@ -23,7 +23,9 @@ if not minetest.get_http_api then
 	return
 end
 
-local store = { packages = {}, packages_full = {} }
+-- Unordered preserves the original order of the ContentDB API,
+-- before the package list is ordered based on installed state.
+local store = { packages = {}, packages_full = {}, packages_full_unordered = {} }
 
 local http = minetest.get_http_api()
 
@@ -572,6 +574,7 @@ function store.load()
 		end
 	end
 
+	store.packages_full_unordered = store.packages_full
 	store.packages = store.packages_full
 	store.loaded = true
 end
@@ -619,6 +622,33 @@ function store.update_paths()
 	end
 end
 
+function store.sort_packages()
+	local ret = {}
+
+	-- Add installed content
+	for i=1, #store.packages_full_unordered do
+		local package = store.packages_full_unordered[i]
+		if package.path then
+			ret[#ret + 1] = package
+		end
+	end
+
+	-- Sort installed content by title
+	table.sort(ret, function(a, b)
+		return a.title < b.title
+	end)
+
+	-- Add uninstalled content
+	for i=1, #store.packages_full_unordered do
+		local package = store.packages_full_unordered[i]
+		if not package.path then
+			ret[#ret + 1] = package
+		end
+	end
+
+	store.packages_full = ret
+end
+
 function store.filter_packages(query)
 	if query == "" and filter_type == 1 then
 		store.packages = store.packages_full
@@ -652,7 +682,6 @@ function store.filter_packages(query)
 			store.packages[#store.packages + 1] = package
 		end
 	end
-
 end
 
 function store.get_formspec(dlgdata)
@@ -959,6 +988,9 @@ function create_store_dlg(type)
 	if not store.loaded or #store.packages_full == 0 then
 		store.load()
 	end
+
+	store.update_paths()
+	store.sort_packages()
 
 	search_string = ""
 	cur_page = 1
