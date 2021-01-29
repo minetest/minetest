@@ -121,9 +121,9 @@ void PlayerDatabaseFiles::serialize(RemotePlayer *p, std::ostream &os)
 	args.setS32("version", 1);
 	args.set("name", p->m_name);
 
-	// This should not happen
 	PlayerSAO *sao = p->getPlayerSAO();
-	assert(sao);
+	// This should not happen
+	sanity_check(sao);
 	args.setU16("hp", sao->getHP());
 	args.setV3F("position", sao->getBasePosition());
 	args.setFloat("pitch", sao->getLookPitch());
@@ -189,7 +189,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 
 	// Open and serialize file
 	std::ostringstream ss(std::ios_base::binary);
-	serialize(&testplayer, ss);
+	serialize(player, ss);
 	if (!fs::safeWriteToFile(path, ss.str())) {
 		infostream << "Failed to write " << path << std::endl;
 	}
