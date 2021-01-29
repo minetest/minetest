@@ -247,8 +247,8 @@ void TestUtilities::testStartsWith()
 
 void TestUtilities::testStrEqual()
 {
-	UASSERT(str_equal(narrow_to_wide("abc"), narrow_to_wide("abc")));
-	UASSERT(str_equal(narrow_to_wide("ABC"), narrow_to_wide("abc"), true));
+	UASSERT(str_equal(utf8_to_wide("abc"), utf8_to_wide("abc")));
+	UASSERT(str_equal(utf8_to_wide("ABC"), utf8_to_wide("abc"), true));
 }
 
 

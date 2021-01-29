@@ -192,8 +192,7 @@ void GUIConfirmRegistration::acceptInput()
 
 bool GUIConfirmRegistration::processInput()
 {
-	std::wstring m_password_ws = narrow_to_wide(m_password);
-	if (m_password_ws != m_pass_confirm) {
+	if (utf8_to_wide(m_password) != m_pass_confirm) {
 		gui::IGUIElement *e = getElementFromId(ID_message);
 		if (e)
 			e->setVisible(true);

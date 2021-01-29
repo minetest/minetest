@@ -2955,7 +2955,7 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 	}
 }
 
-std::wstring Server::handleChat(const std::string &name, const std::wstring &wname,
+std::wstring Server::handleChat(const std::string &name,
 	std::wstring wmessage, bool check_shout_priv, RemotePlayer *player)
 {
 	// If something goes wrong, this player is to blame
@@ -2993,7 +2993,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 
 	auto message = trim(wide_to_utf8(wmessage));
 	if (message.find_first_of("\n\r") != std::wstring::npos) {
-		return L"New lines are not permitted in chat messages";
+		return L"Newlines are not permitted in chat messages";
 	}
 
 	// Run script hook, exit if script ate the chat message
@@ -3014,10 +3014,10 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 			the Cyrillic alphabet and some characters on older Android devices
 		*/
 #ifdef __ANDROID__
-		line += L"<" + wname + L"> " + wmessage;
+		line += L"<" + utf8_to_wide(name) + L"> " + wmessage;
 #else
-		line += narrow_to_wide(m_script->formatChatMessage(name,
-				wide_to_narrow(wmessage)));
+		line += utf8_to_wide(m_script->formatChatMessage(name,
+				wide_to_utf8(wmessage)));
 #endif
 	}
 
@@ -3030,35 +3030,23 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	/*
 		Send the message to others
 	*/
-	actionstream << "CHAT: " << wide_to_narrow(unescape_enriched(line)) << std::endl;
+	actionstream << "CHAT: " << wide_to_utf8(unescape_enriched(line)) << std::endl;
+
+	ChatMessage chatmsg(line);
 
 	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (u16 cid : clients)
+		SendChatMessage(cid, chatmsg);
 
-	/*
-		Send the message back to the inital sender
-		if they are using protocol version >= 29
-	*/
-
-	session_t peer_id_to_avoid_sending =
-		(player ? player->getPeerId() : PEER_ID_INEXISTENT);
-
-	if (player && player->protocol_version >= 29)
-		peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
-
-	for (u16 cid : clients) {
-		if (cid != peer_id_to_avoid_sending)
-			SendChatMessage(cid, ChatMessage(line));
-	}
 	return L"";
 }
 
 void Server::handleAdminChat(const ChatEventChat *evt)
 {
 	std::string name = evt->nick;
-	std::wstring wname = utf8_to_wide(name);
 	std::wstring wmessage = evt->evt_msg;
 
-	std::wstring answer = handleChat(name, wname, wmessage);
+	std::wstring answer = handleChat(name, wmessage);
 
 	// If asked to send answer to sender
 	if (!answer.empty()) {
@@ -3095,46 +3083,43 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 	return player->getPlayerSAO();
 }
 
-std::wstring Server::getStatusString()
+std::string Server::getStatusString()
 {
-	std::wostringstream os(std::ios_base::binary);
-	os << L"# Server: ";
+	std::ostringstream os(std::ios_base::binary);
+	os << "# Server: ";
 	// Version
-	os << L"version=" << narrow_to_wide(g_version_string);
+	os << "version=" << g_version_string;
 	// Uptime
-	os << L", uptime=" << m_uptime_counter->get();
+	os << ", uptime=" << m_uptime_counter->get();
 	// Max lag estimate
-	os << L", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
+	os << ", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
 
 	// Information about clients
 	bool first = true;
-	os << L", clients={";
+	os << ", clients={";
 	if (m_env) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 		for (session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 
 			// Get name of player
-			std::wstring name = L"unknown";
-			if (player)
-				name = narrow_to_wide(player->getName());
+			const char *name = player ? player->getName() : "<unknown>";
 
 			// Add name to information string
 			if (!first)
-				os << L", ";
+				os << ", ";
 			else
 				first = false;
-
 			os << name;
 		}
 	}
-	os << L"}";
+	os << "}";
 
 	if (m_env && !((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
-		os << std::endl << L"# Server: " << " WARNING: Map saving is disabled.";
+		os << std::endl << "# Server: " << " WARNING: Map saving is disabled.";
 
 	if (!g_settings->get("motd").empty())
-		os << std::endl << L"# Server: " << narrow_to_wide(g_settings->get("motd"));
+		os << std::endl << "# Server: " << g_settings->get("motd");
 
 	return os.str();
 }

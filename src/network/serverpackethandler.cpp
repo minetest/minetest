@@ -778,15 +778,13 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		return;
 	}
 
-	// Get player name of this client
 	std::string name = player->getName();
-	std::wstring wname = narrow_to_wide(name);
 
-	std::wstring answer_to_sender = handleChat(name, wname, message, true, player);
+	std::wstring answer_to_sender = handleChat(name, message, true, player);
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
-		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_NORMAL,
-			answer_to_sender, wname));
+		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+			answer_to_sender));
 	}
 }
 

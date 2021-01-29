@@ -219,7 +219,7 @@ public:
 	void onMapEditEvent(const MapEditEvent &event);
 
 	// Connection must be locked when called
-	std::wstring getStatusString();
+	std::string getStatusString();
 	inline double getUptime() const { return m_uptime_counter->get(); }
 
 	// read shutdown state
@@ -495,10 +495,8 @@ private:
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
-	std::wstring handleChat(const std::string &name, const std::wstring &wname,
-		std::wstring wmessage_input,
-		bool check_shout_priv = false,
-		RemotePlayer *player = NULL);
+	std::wstring handleChat(const std::string &name, std::wstring wmessage_input,
+		bool check_shout_priv = false, RemotePlayer *player = nullptr);
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked

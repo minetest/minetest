@@ -73,16 +73,6 @@ std::string wide_to_utf8(const std::wstring &input);
 // The returned string is allocated using new[]
 wchar_t *utf8_to_wide_c(const char *str);
 
-// NEVER use those two functions unless you have a VERY GOOD reason to
-// they just convert between wide and multibyte encoding
-// multibyte encoding depends on current locale, this is no good, especially on Windows
-
-// You must free the returned string!
-// The returned string is allocated using new
-wchar_t *narrow_to_wide_c(const char *str);
-std::wstring narrow_to_wide(const std::string &mbs);
-std::string wide_to_narrow(const std::wstring &wcs);
-
 std::string urlencode(const std::string &str);
 std::string urldecode(const std::string &str);
 u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask);
@@ -355,11 +345,6 @@ inline s32 mystoi(const std::string &str, s32 min, s32 max)
 	return i;
 }
 
-
-// MSVC2010 includes it's own versions of these
-//#if !defined(_MSC_VER) || _MSC_VER < 1600
-
-
 /**
  * Returns a 32-bit value reprensented by the string \p str (decimal).
  * @see atoi(3) for further limitations
@@ -369,17 +354,6 @@ inline s32 mystoi(const std::string &str)
 	return atoi(str.c_str());
 }
 
-
-/**
- * Returns s 32-bit value represented by the wide string \p str (decimal).
- * @see atoi(3) for further limitations
- */
-inline s32 mystoi(const std::wstring &str)
-{
-	return mystoi(wide_to_narrow(str));
-}
-
-
 /**
  * Returns a float reprensented by the string \p str (decimal).
  * @see atof(3)
@@ -388,8 +362,6 @@ inline float mystof(const std::string &str)
 {
 	return atof(str.c_str());
 }
-
-//#endif
 
 #define stoi mystoi
 #define stof mystof

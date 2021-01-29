@@ -175,62 +175,6 @@ wchar_t *utf8_to_wide_c(const char *str)
 	return ret_c;
 }
 
-// You must free the returned string!
-// The returned string is allocated using new
-wchar_t *narrow_to_wide_c(const char *str)
-{
-	wchar_t *nstr = nullptr;
-#if defined(_WIN32)
-	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, 0, 0);
-	if (nResult == 0) {
-		errorstream<<"gettext: MultiByteToWideChar returned null"<<std::endl;
-	} else {
-		nstr = new wchar_t[nResult];
-		MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, (WCHAR *) nstr, nResult);
-	}
-#else
-	size_t len = strlen(str);
-	nstr = new wchar_t[len + 1];
-
-	std::wstring intermediate = narrow_to_wide(str);
-	memset(nstr, 0, (len + 1) * sizeof(wchar_t));
-	memcpy(nstr, intermediate.c_str(), len * sizeof(wchar_t));
-#endif
-
-	return nstr;
-}
-
-std::wstring narrow_to_wide(const std::string &mbs) {
-#ifdef __ANDROID__
-	return utf8_to_wide(mbs);
-#else
-	size_t wcl = mbs.size();
-	Buffer<wchar_t> wcs(wcl + 1);
-	size_t len = mbstowcs(*wcs, mbs.c_str(), wcl);
-	if (len == (size_t)(-1))
-		return L"<invalid multibyte string>";
-	wcs[len] = 0;
-	return *wcs;
-#endif
-}
-
-
-std::string wide_to_narrow(const std::wstring &wcs)
-{
-#ifdef __ANDROID__
-	return wide_to_utf8(wcs);
-#else
-	size_t mbl = wcs.size() * 4;
-	SharedBuffer<char> mbs(mbl+1);
-	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
-	if (len == (size_t)(-1))
-		return "Character conversion failed!";
-
-	mbs[len] = 0;
-	return *mbs;
-#endif
-}
-
 
 std::string urlencode(const std::string &str)
 {
@@ -757,7 +701,8 @@ void translate_string(const std::wstring &s, Translations *translations,
 		} else {
 			// This is an escape sequence *inside* the template string to translate itself.
 			// This should not happen, show an error message.
-			errorstream << "Ignoring escape sequence '" << wide_to_narrow(escape_sequence) << "' in translation" << std::endl;
+			errorstream << "Ignoring escape sequence '"
+				<< wide_to_utf8(escape_sequence) << "' in translation" << std::endl;
 		}
 	}
 
