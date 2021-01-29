@@ -3275,7 +3275,8 @@ Helper functions
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
-    * If multiple keys in `t` map to the same value, the result is undefined.
+    * If multiple keys in `t` map to the same value, it is unspecified which
+      value maps to that key.
 * `table.shuffle(table, [from], [to], [random_func])`:
     * Shuffles elements `from` to `to` in `table` in place
     * `from` defaults to `1`
