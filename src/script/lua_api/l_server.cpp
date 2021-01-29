@@ -44,7 +44,7 @@ int ModApiServer::l_request_shutdown(lua_State *L)
 int ModApiServer::l_get_server_status(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_pushstring(L, wide_to_narrow(getServer(L)->getStatusString()).c_str());
+	lua_pushstring(L, getServer(L)->getStatusString().c_str());
 	return 1;
 }
 
