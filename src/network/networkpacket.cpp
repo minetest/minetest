@@ -50,7 +50,7 @@ void NetworkPacket::checkReadOffset(u32 from_offset, u32 field_size)
 	}
 }
 
-void NetworkPacket::putRawPacket(u8 *data, u32 datasize, session_t peer_id)
+void NetworkPacket::putRawPacket(const u8 *data, u32 datasize, session_t peer_id)
 {
 	// If a m_command is already set, we are rewriting on same packet
 	// This is not permitted
@@ -145,6 +145,8 @@ void NetworkPacket::putLongString(const std::string &src)
 	putRawString(src.c_str(), msgsize);
 }
 
+static constexpr bool NEED_SURROGATE_CODING = sizeof(wchar_t) > 2;
+
 NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 {
 	checkReadOffset(m_read_offset, 2);
@@ -160,9 +162,16 @@ NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 	checkReadOffset(m_read_offset, strLen * 2);
 
 	dst.reserve(strLen);
-	for(u16 i=0; i<strLen; i++) {
-		wchar_t c16 = readU16(&m_data[m_read_offset]);
-		dst.append(&c16, 1);
+	for (u16 i = 0; i < strLen; i++) {
+		wchar_t c = readU16(&m_data[m_read_offset]);
+		if (NEED_SURROGATE_CODING && c >= 0xD800 && c < 0xDC00 && i+1 < strLen) {
+			i++;
+			m_read_offset += sizeof(u16);
+
+			wchar_t c2 = readU16(&m_data[m_read_offset]);
+			c = 0x10000 + ( ((c & 0x3ff) << 10) | (c2 & 0x3ff) );
+		}
+		dst.push_back(c);
 		m_read_offset += sizeof(u16);
 	}
 
@@ -175,14 +184,36 @@ NetworkPacket& NetworkPacket::operator<<(const std::wstring &src)
 		throw PacketError("String too long");
 	}
 
-	u16 msgsize = src.size();
+	if (!NEED_SURROGATE_CODING || src.size() == 0) {
+		*this << static_cast<u16>(src.size());
+		for (u16 i = 0; i < src.size(); i++)
+			*this << static_cast<u16>(src[i]);
 
-	*this << msgsize;
-
-	// Write string
-	for (u16 i=0; i<msgsize; i++) {
-		*this << (u16) src[i];
+		return *this;
 	}
+
+	// write dummy value, to be overwritten later
+	const u32 len_offset = m_read_offset;
+	u32 written = 0;
+	*this << static_cast<u16>(0xfff0);
+
+	for (u16 i = 0; i < src.size(); i++) {
+		wchar_t c = src[i];
+		if (c > 0xffff) {
+			// Encode high code-points as surrogate pairs
+			u32 n = c - 0x10000;
+			*this << static_cast<u16>(0xD800 | (n >> 10))
+				<< static_cast<u16>(0xDC00 | (n & 0x3ff));
+			written += 2;
+		} else {
+			*this << static_cast<u16>(c);
+			written++;
+		}
+	}
+
+	if (written > WIDE_STRING_MAX_LEN)
+		throw PacketError("String too long");
+	writeU16(&m_data[len_offset], written);
 
 	return *this;
 }
