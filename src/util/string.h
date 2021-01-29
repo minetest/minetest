@@ -64,11 +64,13 @@ struct FlagDesc {
 	u32 flag;
 };
 
-// try not to convert between wide/utf8 encodings; this can result in data loss
-// try to only convert between them when you need to input/output stuff via Irrlicht
+// Try to avoid converting between wide and UTF-8 unless you need to
+// input/output stuff via Irrlicht
 std::wstring utf8_to_wide(const std::string &input);
 std::string wide_to_utf8(const std::wstring &input);
 
+// You must free the returned string!
+// The returned string is allocated using new[]
 wchar_t *utf8_to_wide_c(const char *str);
 
 // NEVER use those two functions unless you have a VERY GOOD reason to
