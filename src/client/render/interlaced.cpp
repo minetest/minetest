@@ -38,6 +38,8 @@ void RenderingCoreInterlaced::initMaterial()
 	mat.ZWriteEnable = false;
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	mat.MaterialType = s->getShaderInfo(shader).material;
+	
+#	pragma omp for
 	for (int k = 0; k < 3; ++k) {
 		mat.TextureLayer[k].AnisotropicFilter = false;
 		mat.TextureLayer[k].BilinearFilter = false;

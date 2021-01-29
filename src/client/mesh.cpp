@@ -182,13 +182,16 @@ void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color)
 	const u32 stride = getVertexPitchFromType(buf->getVertexType());
 	u32 vertex_count = buf->getVertexCount();
 	u8 *vertices = (u8 *) buf->getVertices();
+#	pragma omp for
 	for (u32 i = 0; i < vertex_count; i++)
 		((video::S3DVertex *) (vertices + i * stride))->Color = color;
 }
 
 void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SColor &color)
 {
-	for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+	u32 material_count = node->getMaterialCount();
+#	pragma omp for
+	for (u32 i = 0; i < material_count; ++i) {
 		node->getMaterial(i).EmissiveColor = color;
 	}
 }
@@ -199,6 +202,7 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		return;
 
 	u32 mc = mesh->getMeshBufferCount();
+#	pragma omp for
 	for (u32 j = 0; j < mc; j++)
 		setMeshBufferColor(mesh->getMeshBuffer(j), color);
 }
@@ -208,6 +212,7 @@ void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 coun
 	const u32 stride = getVertexPitchFromType(buf->getVertexType());
 	assert(buf->getVertexCount() >= count);
 	u8 *vertices = (u8 *) buf->getVertices();
+#	pragma omp for
 	for (u32 i = 0; i < count; i++)
 		((video::S3DVertex*) (vertices + i * stride))->TCoords = uv[i];
 }
@@ -216,6 +221,7 @@ template <typename F>
 static void applyToMesh(scene::IMesh *mesh, const F &fn)
 {
 	u16 mc = mesh->getMeshBufferCount();
+#	pragma omp for
 	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
@@ -231,6 +237,7 @@ void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolo
 	const u32 stride = getVertexPitchFromType(buf->getVertexType());
 	u32 vertex_count = buf->getVertexCount();
 	u8 *vertices = (u8 *) buf->getVertices();
+#	pragma omp for
 	for (u32 i = 0; i < vertex_count; i++) {
 		video::S3DVertex *vertex = (video::S3DVertex *) (vertices + i * stride);
 		video::SColor *vc = &(vertex->Color);
@@ -340,7 +347,7 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 bool checkMeshNormals(scene::IMesh *mesh)
 {
 	u32 buffer_count = mesh->getMeshBufferCount();
-
+	
 	for (u32 i = 0; i < buffer_count; i++) {
 		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
 
@@ -641,6 +648,7 @@ public:
 					break;
 
 				const u16 trisize = vc[i].tris.size();
+#				pragma omp for
 				for (u16 t = 0; t < trisize; t++)
 				{
 					tcache *tri = &tc[vc[i].tris[t]];
@@ -707,6 +715,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		f_lru lru(vc, tc);
 
 		// init
+#		pragma omp parallel
 		for (u16 i = 0; i < vcount; i++)
 		{
 			vc[i].score = 0;
@@ -715,6 +724,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		}
 
 		// First pass: count how many times a vert is used
+#		pragma omp for
 		for (u32 i = 0; i < icount; i += 3)
 		{
 			vc[ind[i]].NumActiveTris++;
@@ -728,6 +738,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		}
 
 		// Second pass: list of each triangle
+#		pragma omp for
 		for (u32 i = 0; i < tcount; i++)
 		{
 			vc[tc[i].ind[0]].tris.push_back(i);
@@ -738,10 +749,12 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		}
 
 		// Give initial scores
+#		pragma omp parallel
 		for (u16 i = 0; i < vcount; i++)
 		{
 			vc[i].score = FindVertexScore(&vc[i]);
 		}
+#		pragma omp parallel
 		for (u32 i = 0; i < tcount; i++)
 		{
 			tc[i].score =
@@ -774,6 +787,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 					{
 						bool found = false;
 						float hiscore = 0;
+#						pragma omp for
 						for (u32 t = 0; t < tcount; t++)
 						{
 							if (!tc[t].drawn)
@@ -885,6 +899,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 					{
 						bool found = false;
 						float hiscore = 0;
+#						pragma omp for
 						for (u32 t = 0; t < tcount; t++)
 						{
 							if (!tc[t].drawn)

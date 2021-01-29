@@ -131,6 +131,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	m_queue.push_back(q);
 
 	// This queue entry is a new reference to the cached blocks
+#	pragma omp parallel
 	for (CachedMapBlockData *cached_block : cached_blocks) {
 		cached_block->refcount_from_queue++;
 	}

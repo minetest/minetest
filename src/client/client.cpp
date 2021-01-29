@@ -284,6 +284,7 @@ Client::~Client()
 
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
+	
 	while (!m_mesh_update_thread.m_queue_out.empty()) {
 		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
 		delete r.mesh;

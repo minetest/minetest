@@ -464,6 +464,7 @@ TextureSource::~TextureSource()
 	}
 	m_textureinfo_cache.clear();
 
+#	pragma omp for
 	for (auto t : m_texture_trash) {
 		//cleanup trashed texture
 		driver->removeTexture(t);

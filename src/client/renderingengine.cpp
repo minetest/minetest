@@ -427,6 +427,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	icon_buffer[0] = width;
 	icon_buffer[1] = height;
 
+#	pragma omp for
 	for (u32 x = 0; x < width; x++) {
 		for (u32 y = 0; y < height; y++) {
 			video::SColor col = img->getPixel(x, y);
