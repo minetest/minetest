@@ -1349,7 +1349,7 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason 
 		return;
 
 	session_t peer_id = playersao->getPeerID();
-	bool is_alive = playersao->getHP() > 0;
+	bool is_alive = !playersao->isDead();
 
 	if (is_alive)
 		SendPlayerHP(peer_id);

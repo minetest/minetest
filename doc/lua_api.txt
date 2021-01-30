@@ -1745,8 +1745,9 @@ to games.
 ### `ObjectRef` groups
 
 * `immortal`: Skips all damage and breath handling for an object. This group
-  will also hide the integrated HUD status bars for players, and is
-  automatically set to all players when damage is disabled on the server.
+  will also hide the integrated HUD status bars for players. It is
+  automatically set to all players when damage is disabled on the server and
+  cannot be reset (subject to change).
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
