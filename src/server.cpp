@@ -3465,7 +3465,8 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(const std::string &filepath)
+bool Server::dynamicAddMedia(const std::string &filepath,
+	std::vector<RemotePlayer*> &sent_to)
 {
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	if (m_media.find(filename) != m_media.end()) {
@@ -3485,9 +3486,17 @@ bool Server::dynamicAddMedia(const std::string &filepath)
 	pkt << raw_hash << filename << (bool) true;
 	pkt.putLongString(filedata);
 
-	auto client_ids = m_clients.getClientIDs(CS_DefinitionsSent);
-	for (session_t client_id : client_ids) {
+	m_clients.lock();
+	for (auto &pair : m_clients.getClientList()) {
+		if (pair.second->getState() < CS_DefinitionsSent)
+			continue;
+		if (pair.second->net_proto_version < 39)
+			continue;
+
+		if (auto player = m_env->getPlayer(pair.second->peer_id))
+			sent_to.emplace_back(player);
 		/*
+			FIXME: this is a very awful hack
 			The network layer only guarantees ordered delivery inside a channel.
 			Since the very next packet could be one that uses the media, we have
 			to push the media over ALL channels to ensure it is processed before
@@ -3496,9 +3505,10 @@ bool Server::dynamicAddMedia(const std::string &filepath)
 			- channel 1 (HUD)
 			- channel 0 (everything else: e.g. play_sound, object messages)
 		*/
-		m_clients.send(client_id, 1, &pkt, true);
-		m_clients.send(client_id, 0, &pkt, true);
+		m_clients.send(pair.second->peer_id, 1, &pkt, true);
+		m_clients.send(pair.second->peer_id, 0, &pkt, true);
 	}
+	m_clients.unlock();
 
 	return true;
 }
