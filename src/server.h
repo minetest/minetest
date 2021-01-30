@@ -126,6 +126,17 @@ struct MinimapMode {
 	u16 scale = 1;
 };
 
+// structure for everything getClientInfo returns, for convenience
+struct ClientInfo {
+	ClientState state;
+	Address addr;
+	u32 uptime;
+	u8 ser_vers;
+	u16 prot_vers;
+	u8 major, minor, patch;
+	std::string vers_string, lang_code;
+};
+
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public IGameDef
 {
@@ -326,9 +337,7 @@ public:
 	void DenyAccess_Legacy(session_t peer_id, const std::wstring &reason);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
-	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
-			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string, std::string* lang_code);
+	bool getClientInfo(session_t peer_id, ClientInfo &ret);
 
 	void printToConsoleOnly(const std::string &text);
 
