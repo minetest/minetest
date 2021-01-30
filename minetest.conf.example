@@ -75,10 +75,10 @@
 #    type: bool
 # always_fly_fast = true
 
-#    The time in seconds it takes between repeated right clicks when holding the right
-#    mouse button.
+#    The time in seconds it takes between repeated node placements when holding
+#    the place button.
 #    type: float min: 0.001
-# repeat_rightclick_time = 0.25
+# repeat_place_time = 0.25
 
 #    Automatically jump up single-node obstacles.
 #    type: bool
@@ -130,6 +130,7 @@
 # repeat_joystick_button_time = 0.17
 
 #    The deadzone of the joystick
+#    type: int
 # joystick_deadzone = 2048
 
 #    The sensitivity of the joystick axes for moving the
@@ -168,6 +169,16 @@
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_sneak = KEY_LSHIFT
+
+#    Key for digging.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_dig = KEY_LBUTTON
+
+#    Key for placing.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_place = KEY_RBUTTON
 
 #    Key for opening the inventory.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -572,8 +583,13 @@
 #    type: int
 # texture_min_size = 64
 
-#    Experimental option, might cause visible spaces between blocks
-#    when set to higher number than 0.
+#    Use multi-sample antialiasing (MSAA) to smooth out block edges.
+#    This algorithm smooths out the 3D viewport while keeping the image sharp,
+#    but it doesn't affect the insides of textures
+#    (which is especially noticeable with transparent textures).
+#    Visible spaces appear between nodes when shaders are disabled.
+#    If set to 0, MSAA is disabled.
+#    A restart is required after changing this option.
 #    type: enum values: 0, 1, 2, 4, 8, 16
 # fsaa = 0
 
@@ -604,37 +620,6 @@
 #    enhanced, highlights and shadows are gradually compressed.
 #    type: bool
 # tone_mapping = false
-
-#### Bumpmapping
-
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.
-#    Requires shaders to be enabled.
-#    type: bool
-# enable_bumpmapping = false
-
-#### Parallax Occlusion
-
-#    Enables parallax occlusion mapping.
-#    Requires shaders to be enabled.
-#    type: bool
-# enable_parallax_occlusion = false
-
-#    0 = parallax occlusion with slope information (faster).
-#    1 = relief mapping (slower, more accurate).
-#    type: int min: 0 max: 1
-# parallax_occlusion_mode = 1
-
-#    Number of parallax occlusion iterations.
-#    type: int
-# parallax_occlusion_iterations = 4
-
-#    Overall scale of parallax occlusion effect.
-#    type: float
-# parallax_occlusion_scale = 0.08
-
-#    Overall bias of parallax occlusion effect, usually scale/2.
-#    type: float
-# parallax_occlusion_bias = 0.04
 
 #### Waving Nodes
 
@@ -684,9 +669,9 @@
 #    type: int min: 1
 # fps_max = 60
 
-#    Maximum FPS when game is paused.
+#    Maximum FPS when the window is not focused, or when the game is paused.
 #    type: int min: 1
-# pause_fps_max = 20
+# fps_max_unfocused = 20
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
@@ -695,7 +680,7 @@
 
 #    View distance in nodes.
 #    type: int min: 20 max: 4000
-# viewing_range = 100
+# viewing_range = 190
 
 #    Camera 'near clipping plane' distance in nodes, between 0 and 0.25
 #    Only works on GLES platforms. Most users will not need to change this.
@@ -774,8 +759,8 @@
 #    The rendering back-end for Irrlicht.
 #    A restart is required after changing this.
 #    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended, and it’s the only driver with
-#    shader support currently.
+#    On other platforms, OpenGL is recommended.
+#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
 #    type: enum values: null, software, burningsvideo, direct3d8, direct3d9, opengl, ogles1, ogles2
 # video_driver = opengl
 
@@ -848,10 +833,12 @@
 # selectionbox_width = 2
 
 #    Crosshair color (R,G,B).
+#    Also controls the object crosshair color
 #    type: string
 # crosshair_color = (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
+#    Also controls the object crosshair color
 #    type: int min: 0 max: 255
 # crosshair_alpha = 255
 
@@ -1181,7 +1168,7 @@
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
 #    type: int
-# client_mapblock_limit = 5000
+# client_mapblock_limit = 7500
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 #    type: bool
@@ -1268,6 +1255,14 @@
 #    client number.
 #    type: int
 # max_packets_per_iteration = 1024
+
+#    ZLib compression level to use when sending mapblocks to the client.
+#    -1 - Zlib's default compression level
+#    0 - no compresson, fastest
+#    9 - best compression, slowest
+#    (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
+#    type: int min: -1 max: 9
+# map_compression_level_net = -1
 
 ## Game
 
@@ -1383,7 +1378,7 @@
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
 #    type: int
-# active_object_send_range_blocks = 4
+# active_object_send_range_blocks = 8
 
 #    The radius of the volume of blocks around every player that is subject to the
 #    active block stuff, stated in mapblocks (16 nodes).
@@ -1391,11 +1386,11 @@
 #    This is also the minimum range in which active objects (mobs) are maintained.
 #    This should be configured together with active_object_send_range_blocks.
 #    type: int
-# active_block_range = 3
+# active_block_range = 4
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 #    type: int
-# max_block_send_distance = 10
+# max_block_send_distance = 12
 
 #    Maximum number of forceloaded mapblocks.
 #    type: int
@@ -1488,11 +1483,11 @@
 ### Advanced
 
 #    Handling for deprecated Lua API calls:
-#    -    legacy: (try to) mimic old behaviour (default for release).
-#    -    log: mimic and log backtrace of deprecated call (default for debug).
+#    -    none: Do not log deprecated calls
+#    -    log: mimic and log backtrace of deprecated call (default).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
-#    type: enum values: legacy, log, error
-# deprecated_lua_api_handling = legacy
+#    type: enum values: none, log, error
+# deprecated_lua_api_handling = log
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
@@ -1513,6 +1508,14 @@
 #    type: enum values: 0, 1, 2
 # sqlite_synchronous = 2
 
+#    ZLib compression level to use when saving mapblocks to disk.
+#    -1 - Zlib's default compression level
+#    0 - no compresson, fastest
+#    9 - best compression, slowest
+#    (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
+#    type: int min: -1 max: 9
+# map_compression_level_disk = 3
+
 #    Length of a server tick and the interval at which objects are generally updated over
 #    network.
 #    type: float
@@ -1525,6 +1528,11 @@
 #    Length of time between Active Block Modifier (ABM) execution cycles
 #    type: float
 # abm_interval = 1.0
+
+#    The time budget allowed for ABMs to execute on each step
+#    (as a fraction of the ABM Interval)
+#    type: float min: 0.1 max: 0.9
+# abm_time_budget = 0.2
 
 #    Length of time between NodeTimer execution cycles
 #    type: float
@@ -1722,13 +1730,6 @@
 #    type: bool
 # high_precision_fpu = true
 
-#    Changes the main menu UI:
-#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
-#    necessary for smaller screens.
-#    type: enum values: full, simple
-# main_menu_style = full
-
 #    Replaces the default main menu with a custom one.
 #    type: string
 # main_menu_script =
@@ -1755,7 +1756,7 @@
 
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
 #    type: int
-# max_block_generate_distance = 8
+# max_block_generate_distance = 10
 
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
@@ -1766,8 +1767,8 @@
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    type: flags possible values: caves, dungeons, light, decorations, biomes, nocaves, nodungeons, nolight, nodecorations, nobiomes
-# mg_flags = caves,dungeons,light,decorations,biomes
+#    type: flags possible values: caves, dungeons, light, decorations, biomes, ores, nocaves, nodungeons, nolight, nodecorations, nobiomes, noores
+# mg_flags = caves,dungeons,light,decorations,biomes,ores
 
 ## Biome API temperature and humidity noise parameters
 
@@ -2753,8 +2754,8 @@
 
 #    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    type: flags possible values: lakes, hills, nolakes, nohills
-# mgflat_spflags = nolakes,nohills
+#    type: flags possible values: lakes, hills, caverns, nolakes, nohills, nocaverns
+# mgflat_spflags = nolakes,nohills,nocaverns
 
 #    Y of flat ground.
 #    type: int
@@ -2809,6 +2810,18 @@
 #    Controls steepness/height of hills.
 #    type: float
 # mgflat_hill_steepness = 64.0
+
+#    Y-level of cavern upper limit.
+#    type: int
+# mgflat_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgflat_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgflat_cavern_threshold = 0.7
 
 #    Lower Y limit of dungeons.
 #    type: int
@@ -2868,6 +2881,19 @@
 #    seed        = 10325,
 #    octaves     = 3,
 #    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = 
+# }
+
+#    3D noise defining giant caverns.
+#    type: noise_params_3d
+# mgflat_np_cavern = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (384, 128, 384),
+#    seed        = 723,
+#    octaves     = 5,
+#    persistence = 0.63,
 #    lacunarity  = 2.0,
 #    flags       = 
 # }
@@ -3322,17 +3348,17 @@
 
 #    Maximum number of blocks that can be queued for loading.
 #    type: int
-# emergequeue_limit_total = 512
+# emergequeue_limit_total = 1024
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
 #    type: int
-# emergequeue_limit_diskonly = 64
+# emergequeue_limit_diskonly = 128
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
 #    type: int
-# emergequeue_limit_generate = 64
+# emergequeue_limit_generate = 128
 
 #    Number of emerge threads to use.
 #    Value 0:
@@ -3363,3 +3389,9 @@
 #    so see a full list at https://content.minetest.net/help/content_flags/
 #    type: string
 # contentdb_flag_blacklist = nonfree, desktop_default
+
+#    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+#    This should be lower than curl_parallel_limit.
+#    type: int
+# contentdb_max_concurrent_downloads = 3
+
