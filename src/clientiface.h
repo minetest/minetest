@@ -189,7 +189,6 @@ enum ClientStateEvent
 {
 	CSE_Hello,
 	CSE_AuthAccept,
-	CSE_InitLegacy,
 	CSE_GotInit2,
 	CSE_SetDenied,
 	CSE_SetDefinitionsSent,
