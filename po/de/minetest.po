@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2021-02-01 05:52+0000\n"
-"Last-Translator: Bernd Ritter <comrad@posteo.de>\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -52,11 +52,11 @@ msgstr "Protokollversion stimmt nicht überein. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Server erfordert Protokollversion $1. "
+msgstr "Der Server erfordert Protokollversion $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Server unterstützt Protokollversionen zwischen $1 und $2. "
+msgstr "Der Server unterstützt die Protokollversionen von $1 bis $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -103,8 +103,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Fehler beim Aktivieren der Mod „$1“, da sie unerlaubte Zeichen enthält. Nur "
-"die folgenden Zeichen sind erlaubt: [a-z0-9_]."
+"Die Modifikation „$1“ konnte nicht aktiviert werden, da sie unzulässige "
+"Zeichen enthält. Nur die folgenden Zeichen sind erlaubt: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -124,7 +124,7 @@ msgstr "Keine Spielbeschreibung verfügbar."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "Keine harten Abhängigkeiten"
+msgstr "Keine notwendigen Abhängigkeiten"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -145,7 +145,7 @@ msgstr "Speichern"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr "Welt:"
+msgstr "Weltname:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
@@ -153,52 +153,51 @@ msgstr "Aktiviert"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "„$1“ existiert bereits. Wollen Sie es überschreiben?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "$1 und $2 Abhängigkeiten werden installiert."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 von $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 laden herunter,\n"
+"$2 warten"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Herunterladen …"
+msgstr "$1 laden herunter…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 benötigte Abhängigkeiten konnten nicht gefunden werden."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 wird installiert und $2 Abhängigkeiten werden übersprungen."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Alle Pakete"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Taste bereits in Benutzung"
+msgstr "Bereits installiert"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Zurück zum Hauptmenü"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Spiel hosten"
+msgstr "Basis-Spiel:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -223,14 +222,12 @@ msgid "Install"
 msgstr "Installieren"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installieren"
+msgstr "$1 installieren"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Optionale Abhängigkeiten:"
+msgstr "Fehlende Abhängigkeiten installieren"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -239,33 +236,31 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "Es konnten keine Pakete empfangen werden"
+msgstr "Es konnten keine Pakete abgerufen werden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "Keine Treffer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Aktualisieren"
+msgstr "Keine Updates"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Ton verstummen"
+msgstr "Nicht gefunden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Überschreiben"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Bitte prüfen Sie ob das Basis-Spiel richtig ist."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Eingereiht"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -281,11 +276,11 @@ msgstr "Aktualisieren"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Alle aktualisieren [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Mehr Informationen im Webbrowser anschauen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -378,7 +373,7 @@ msgstr "Seen"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
-"Niedrige Luftfeuchtigkeit und hohe Hitze erzeugen seichte oder "
+"Niedrige Luftfeuchtigkeit und große Wärme erzeugen seichte oder "
 "ausgetrocknete Flüsse"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
@@ -399,7 +394,7 @@ msgstr "Berge"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr "Schlammfließen"
+msgstr "Erosion"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
@@ -411,11 +406,11 @@ msgstr "Kein Spiel ausgewählt"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr "Reduziert Hitze mit der Höhe"
+msgstr "Reduziert die Wärme mit der Höhe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr "Reduziert Luftfeuchte mit der Höhe"
+msgstr "Reduziert Luftfeuchtigkeit mit der Höhe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
@@ -423,12 +418,12 @@ msgstr "Flüsse"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr "Flüsse am Meeresspiegel"
+msgstr "Flüsse auf Meeresspiegelhöhe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "Seed"
+msgstr "Startwert (Seed)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -439,13 +434,13 @@ msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
-"Gebäude, die auf dem Gelände auftauchen (keine Wirkung auf von v6 erzeugte "
-"Bäume u. Dschungelgras)"
+"Strukturen, die auf dem Gelände auftauchen (keine Wirkung auf von v6 "
+"erzeugte Bäume u. Dschungelgras)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
 msgstr ""
-"Gebäude, die auf dem Gelände auftauchen, üblicherweise Bäume und Pflanzen"
+"Strukturen, die auf dem Gelände auftauchen, üblicherweise Bäume und Pflanzen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -489,7 +484,7 @@ msgstr "Es sind keine Spiele installiert."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Sind Sie sich sicher, dass Sie „$1“ löschen wollen?"
+msgstr "Sind Sie sicher, dass „$1“ gelöscht werden soll?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -499,7 +494,7 @@ msgstr "Entfernen"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "pkgmgr: Fehler beim Löschen von „$1“"
+msgstr "pkgmgr: Fehler beim Entfernen von „$1“"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
@@ -507,7 +502,7 @@ msgstr "pkgmgr: Ungültiger Pfad „$1“"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Welt „$1“ löschen?"
+msgstr "Die Welt „$1“ löschen?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -547,7 +542,7 @@ msgstr "Deaktiviert"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Ändern"
+msgstr "Bearbeiten"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -599,7 +594,7 @@ msgstr "Datei auswählen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr "Technische Namen zeigen"
+msgstr "Techn. Bezeichnung zeigen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
@@ -670,12 +665,12 @@ msgstr "Fehler bei der Installation von $1 nach $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Mod installieren: Echter Modname für $1 konnte nicht gefunden werden"
+msgstr "Modinstallation: Richtiger Modname für $1 konnte nicht gefunden werden"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Mod installieren: Geeigneter Verzeichnisname für Modpack $1 konnte nicht "
+"Modinstallation: Geeigneter Verzeichnisname für Modpack $1 konnte nicht "
 "gefunden werden"
 
 #: builtin/mainmenu/pkgmgr.lua
@@ -693,19 +688,19 @@ msgstr "Keine gültige Mod oder Modpack gefunden"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Fehler bei der Installation von $1 als Texturenpaket"
+msgstr "Fehler bei der Texturenpaket-Installation von $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr "Fehler bei der Installation eines Spiels als $1"
+msgstr "Fehler bei der Spiel-Installation von $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr "Fehler bei der Installation einer Mod als $1"
+msgstr "Fehler bei der Mod-Installation von $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr "Fehler bei der Installation eines Modpacks als $1"
+msgstr "Fehler bei der Modpack-Installation von $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -714,12 +709,12 @@ msgstr "Lädt …"
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Versuchen Sie, die öffentliche Serverliste neu zu laden und prüfen Sie Ihre "
+"Versuchen Sie die öffentliche Serverliste neu zu laden und prüfen Sie Ihre "
 "Internetverbindung."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr "Online-Inhalte durchsuchen"
+msgstr "Onlineinhalte durchsuchen"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
@@ -770,15 +765,16 @@ msgid "Credits"
 msgstr "Mitwirkende"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Verzeichnis auswählen"
+msgstr "Benutzerdatenverzeichnis öffnen"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Öffnet das Verzeichnis, welches die Welten, Spiele, Mods und\n"
+"Texturenpakete des Benutzers enthält im Datei-Manager."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -790,7 +786,7 @@ msgstr "Ehemalige Hauptentwickler"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr "Server ankündigen"
+msgstr "Server veröffentlichen"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -814,11 +810,11 @@ msgstr "Server hosten"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr "Spiele von ContentDB installieren"
+msgstr "Spiele aus ContentDB installieren"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -829,9 +825,8 @@ msgid "No world created or selected!"
 msgstr "Keine Welt angegeben oder ausgewählt!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Neues Passwort"
+msgstr "Passwort"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -842,9 +837,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Welt wählen:"
+msgstr "Mods auswählen"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -925,7 +919,7 @@ msgstr "Kantenglättung:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr "Monitorgröße automatisch merken"
+msgstr "Fenstergröße merken"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -933,7 +927,7 @@ msgstr "Bilinearer Filter"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr "Tasten ändern"
+msgstr "Tastenbelegung"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
@@ -957,11 +951,11 @@ msgstr "Kein Filter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr "Keine Mipmap"
+msgstr "Kein Mipmapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Blöcke leuchten"
+msgstr "Blöcke aufhellen"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
@@ -996,9 +990,8 @@ msgid "Shaders"
 msgstr "Shader"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Schwebeländer (experimentell)"
+msgstr "Shader (experimentell)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1018,11 +1011,11 @@ msgstr "Texturierung:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Um Shader zu benutzen, muss der OpenGL-Treiber benutzt werden."
+msgstr "Um Shader zu aktivieren, muss der OpenGL-Treiber genutzt werden."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr "Tone-Mapping"
+msgstr "Dynamikkompression"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
@@ -1078,7 +1071,7 @@ msgstr "Spiel konnte nicht gefunden oder geladen werden: \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr "Ungültige Spielspezif."
+msgstr "Ungültige Spielspezifikationen"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1090,7 +1083,7 @@ msgstr "Keine Welt ausgewählt und keine Adresse angegeben. Nichts zu tun."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "Spielername zu lang."
+msgstr "Der Spielername ist zu lang."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1098,7 +1091,7 @@ msgstr "Bitte wählen Sie einen Namen!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr "Fehler beim öffnen der ausgewählten Passwort-Datei: "
+msgstr "Fehler beim Öffnen der angegebenen Passwortdatei: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -1122,7 +1115,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Siehe debug.txt für Details."
+"Für mehr Details siehe debug.txt."
 
 #: src/client/game.cpp
 msgid "- Address: "
@@ -1198,7 +1191,7 @@ msgid "Continue"
 msgstr "Weiter"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1221,12 +1214,12 @@ msgstr ""
 "- %s: Nach links\n"
 "- %s: Nach rechts\n"
 "- %s: Springen/klettern\n"
+"- %s: Graben/Schlagen\n"
+"- %s: Bauen/Benutzen\n"
 "- %s: Kriechen/runter\n"
 "- %s: Gegenstand wegwerfen\n"
 "- %s: Inventar\n"
 "- Maus: Drehen/Umschauen\n"
-"- Maus links: Graben/Schlagen\n"
-"- Maus rechts: Bauen/Benutzen\n"
 "- Mausrad: Gegenstand wählen\n"
 "- %s: Chat\n"
 
@@ -1248,7 +1241,7 @@ msgstr "Debug-Infos angezeigt"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr "Debug-Infos, Profiler-Graph und Drahtmodell verborgen"
+msgstr "Debug-Infos, Profiler und Drahtgitter deaktiviert"
 
 #: src/client/game.cpp
 msgid ""
@@ -1288,7 +1281,7 @@ msgstr "Unbegrenzte Sichtweite aktiviert"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr "Hauptmenü"
+msgstr "Zum Hauptmenü"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
@@ -1340,7 +1333,7 @@ msgstr "Gehosteter Server"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr "Gegenstands-Definitionen …"
+msgstr "Gegenstandsdefinitionen …"
 
 #: src/client/game.cpp
 msgid "KiB/s"
@@ -1416,7 +1409,7 @@ msgstr "Tonlautstärke"
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr "Ton verstummt"
+msgstr "Ton stummgeschaltet"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
@@ -1428,7 +1421,7 @@ msgstr "Tonsystem ist in diesem Build nicht unterstützt"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
-msgstr "Ton nicht mehr verstummt"
+msgstr "Ton nicht mehr stumm"
 
 #: src/client/game.cpp
 #, c-format
@@ -1452,7 +1445,7 @@ msgstr "Lautstärke auf %d%% gesetzt"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr "Drahtmodell angezeigt"
+msgstr "Drahtmodell aktiv"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -1755,19 +1748,18 @@ msgid "Minimap hidden"
 msgstr "Übersichtskarte verborgen"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Übersichtskarte im Radarmodus, Zoom ×1"
+msgstr "Übersichtskarte im Radarmodus, Zoom ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Übersichtskarte im Bodenmodus, Zoom ×1"
+msgstr "Übersichtskarte im Bodenmodus, Zoom ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Minimale Texturengröße"
+msgstr "Übersichtskarte im Texturmodus"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1873,8 +1865,8 @@ msgstr "Taste bereits in Benutzung"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Steuerung (Falls dieses Menü defekt ist, entfernen Sie Zeugs aus minetest."
-"conf)"
+"Steuerung (Falls dieses Menü nicht richtig funktioniert, versuchen sie die "
+"minetest.conf manuell zu bearbeiten)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2188,7 +2180,7 @@ msgstr "ABM-Intervall"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "ABM-Zeitbudget"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2699,7 +2691,7 @@ msgstr "ContentDB: Schwarze Liste"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "ContentDB Max. gleichzeitige Downloads"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2768,11 +2760,12 @@ msgid "Crosshair alpha"
 msgstr "Fadenkreuzundurchsichtigkeit"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Fadenkreuzundurchsichtigkeit (Wert zwischen 0 und 255)."
+msgstr ""
+"Fadenkreuzundurchsichtigkeit (Wert zwischen 0 und 255).\n"
+"Gilt auch für das Objektfadenkreuz"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2783,6 +2776,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Fadenkreuzfarbe (R,G,B).\n"
+"Gilt auch für das Objektfadenkreuz"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2972,7 +2967,7 @@ msgstr "Blockanimationen desynchronisieren"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Dig key"
-msgstr "Rechtstaste"
+msgstr "Grabetaste"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3204,9 +3199,10 @@ msgstr ""
 "geeignet."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Maximale Bildwiederholrate, während das Spiel pausiert ist."
+msgstr ""
+"Maximale Bildwiederholrate, während das Spiel pausiert oder nicht fokussiert "
+"ist"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3604,7 +3600,6 @@ msgid "HUD toggle key"
 msgstr "Taste zum Umschalten des HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -3612,12 +3607,12 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Handhabung für veraltete Lua-API-Aufrufe:\n"
-"- legacy: Versuchen, altes Verhalten zu imitieren (Standard für Release).\n"
-"- log: Imitieren, und den Backtrace des veralteten Funktionsaufrufs "
+"- none: Veraltete Aufrufe nicht protokollieren.\n"
+"- log: Imitieren und den Backtrace des veralteten Funktionsaufrufs "
 "protokollieren\n"
-"  (Standard für Debug).\n"
+"  (Standard).\n"
 "- error: Bei Verwendung eines veralteten Funktionsaufrufs abbrechen\n"
-"  (empfohlen für Mod- Entwickler)."
+"  (empfohlen für Mod-Entwickler)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4161,7 +4156,7 @@ msgstr "Joystick-Button-Wiederholungsrate"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Joystick deadzone"
-msgstr "Joystick-Typ"
+msgstr "Joystick-Totbereich"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4266,13 +4261,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste zum Springen.\n"
+"Taste zum Graben.\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4419,13 +4413,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste zum Springen.\n"
+"Taste zum Bauen.\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5201,11 +5194,11 @@ msgstr "Macht alle Flüssigkeiten undurchsichtig"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Kartenkompressionsstufe für Festspeicher"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Kartenkompressionsstufe für Netzwerkverkehr"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5392,9 +5385,10 @@ msgid "Maximum FPS"
 msgstr "Maximale Bildwiederholrate"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "Maximale Bildwiederholrate, während das Spiel pausiert ist."
+msgstr ""
+"Maximale Bildwiederholrate, während das Fenster nicht fokussiert oder das "
+"Spiel pausiert ist."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5458,6 +5452,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Maximale Anzahl an gleichzeitigen Downloads. Weitere werden in einer "
+"Warteschlange eingereiht.\n"
+"Dies sollte niedriger als das curl_parallel_limit sein."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5889,12 +5886,11 @@ msgstr "Nick-Bewegungsmodus"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Place key"
-msgstr "Flugtaste"
+msgstr "Bauentaste"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Rechtsklick-Wiederholungsrate"
+msgstr "Bauen-Wiederholungsrate"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6125,7 +6121,7 @@ msgstr "Runde Übersichtskarte"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr "Sicheres graben und bauen"
+msgstr "Sicheres Graben und Bauen"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
@@ -6383,12 +6379,11 @@ msgid "Show entity selection boxes"
 msgstr "Entity-Auswahlboxen zeigen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Setzt die Sprache. Leer lassen, um Systemsprache zu verwenden.\n"
+"Entityauswahlboxen zeigen\n"
 "Nach Änderung ist ein Neustart erforderlich."
 
 #: src/settings_translation_file.cpp
@@ -6675,7 +6670,7 @@ msgstr "Die URL für den Inhaltespeicher"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "Die Kennung des zu verwendeten Joysticks"
+msgstr "Der Totbereich des Joysticks"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6751,7 +6746,6 @@ msgstr ""
 "konfiguriert werden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6764,10 +6758,10 @@ msgstr ""
 "Ein Neustart ist erforderlich, wenn dies geändert wird.\n"
 "Anmerkung: Auf Android belassen Sie dies bei OGLES1, wenn Sie sich unsicher "
 "sind.\n"
-"Die App könnte sonst unfähig sein, zu starten.\n"
-"Auf anderen Plattformen wird OpelGL empfohlen, dies ist momentan der "
-"einzige\n"
-"Treiber mit Shader-Unterstützung."
+"Die App könnte sonst nicht mehr starten.\n"
+"Auf anderen Plattformen wird OpenGL empfohlen.\n"
+"Shader werden unter OpenGL (nur Desktop) und OGLES2 (experimentell) "
+"unterstützt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6807,6 +6801,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Das erlaubte Zeitbudget für ABM-Ausführung jeden Schritt\n"
+"(als Bruchteil des ABM-Intervalls)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6822,9 +6818,8 @@ msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Die Zeit in Sekunden, in dem Rechtsklicks wiederholt werden, wenn die "
-"rechte\n"
-"Maustaste gedrückt gehalten wird."
+"Die Zeit in Sekunden, in dem Blockplatzierung wiederholt werden, wenn\n"
+"die Bauentaste gedrückt gehalten wird."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -7419,6 +7414,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"ZLib-Kompressionsniveau für Kartenblöcke im Festspeicher.\n"
+"-1 - zlib Standard-Kompressionsniveau\n"
+"0 - keine Kompression, am schnellsten\n"
+"9 - beste Kompression, am langsamsten\n"
+"(Niveau 1-3 verwenden zlibs \"schnelles\" Verfahren, 4-9 das normale "
+"Verfahren)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7428,6 +7429,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"ZLib-Kompressionsniveau für Kartenblöcke, die zu Clients gesendet werden.\n"
+"-1 - zlib Standard-Kompressionsniveau\n"
+"0 - keine Kompression, am schnellsten\n"
+"9 - beste Kompression, am langsamsten\n"
+"(Niveau 1-3 verwenden zlibs \"schnelles\" Verfahren, 4-9 das normale "
+"Verfahren)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
