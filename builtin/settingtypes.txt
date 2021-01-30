@@ -1085,7 +1085,7 @@ default_stack_max (Default stack size) int 99
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
-#    Enable creative mode for new created maps.
+#    Enable creative mode for all players
 creative_mode (Creative) bool false
 
 #    A chosen map seed for a new map, leave empty for random.

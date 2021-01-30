@@ -355,6 +355,15 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	ItemGroupList groups;
 
 	read_groups(L, 2, groups);
+	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		if (!g_settings->getBool("enable_damage") && !itemgroup_get(groups, "immortal")) {
+			warningstream << "Mod tried to enable damage for a player, but it's "
+				"disabled globally. Ignoring." << std::endl;
+			infostream << script_get_backtrace(L) << std::endl;
+			groups["immortal"] = 1;
+		}
+	}
+
 	sao->setArmorGroups(groups);
 	return 0;
 }
