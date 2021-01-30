@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-01-25 20:32+0000\n"
+"PO-Revision-Date: 2021-02-01 05:52+0000\n"
 "Last-Translator: eol <joshua.de.clercq@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
@@ -153,52 +153,52 @@ msgstr "aangeschakeld"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" bestaat al. Wilt u het overschrijven ?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Afhankelijkheden $1 en $2 zullen geïnstalleerd worden."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 door $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 is aan het downloaden,\n"
+"$2 is ingepland"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Downloaden..."
+msgstr "$1 is aan het downloaden..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 benodigde afhankelijkheden werden niet gevonden."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr ""
+"$1 zal worden geïnstalleerd, en $2 afhankelijkheden worden overgeslagen."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Alle pakketten"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Toets is al in gebruik"
+msgstr "Reeds geïnstalleerd"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Terug naar hoofdmenu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Spel Hosten"
+msgstr "Basis Spel:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -223,14 +223,12 @@ msgid "Install"
 msgstr "Installeren"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installeren"
+msgstr "Installeer $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Optionele afhankelijkheden:"
+msgstr "Installeer ontbrekende afhankelijkheden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -246,26 +244,24 @@ msgid "No results"
 msgstr "Geen resultaten"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Update"
+msgstr "Geen updates"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Geluid dempen"
+msgstr "Niet gevonden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Overschrijven"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Controleer of het basis spel correct is, aub."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Ingepland"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -281,11 +277,11 @@ msgstr "Update"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Allemaal bijwerken [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Bekijk meer informatie in een webbrowser"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -768,15 +764,16 @@ msgid "Credits"
 msgstr "Credits"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Selecteer map"
+msgstr "Open de gebruikersdatamap"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Open de map die de door de gebruiker aangeleverde werelden, spellen, mods\n"
+"en textuur pakketten bevat in een bestandsbeheer toepassing / verkenner."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -816,7 +813,7 @@ msgstr "Installeer spellen van ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -827,9 +824,8 @@ msgid "No world created or selected!"
 msgstr "Geen wereldnaam opgegeven of geen wereld aangemaakt!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nieuw wachtwoord"
+msgstr "Wachtwoord"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -840,9 +836,8 @@ msgid "Port"
 msgstr "Poort"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Selecteer Wereld:"
+msgstr "Selecteer Mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -994,9 +989,8 @@ msgid "Shaders"
 msgstr "Shaders"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Zwevende eilanden (experimenteel)"
+msgstr "Shaders (experimenteel)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1196,7 +1190,7 @@ msgid "Continue"
 msgstr "Verder spelen"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1219,12 +1213,12 @@ msgstr ""
 "-%s: ga naar links \n"
 "-%s: ga naar rechts \n"
 "-%s: springen / klimmen \n"
+"-%s: graaf/duw\n"
+"-%s: plaats/gebruik \n"
 "-%s: sluip / ga naar beneden \n"
 "-%s: drop item \n"
 "-%s: inventaris \n"
 "- Muis: draaien / kijken \n"
-"- Muis links: graven / stoten \n"
-"- Muis rechts: plaats / gebruik \n"
 "- Muiswiel: item selecteren \n"
 "-%s: chat\n"
 
@@ -1753,19 +1747,18 @@ msgid "Minimap hidden"
 msgstr "Mini-kaart verborgen"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Mini-kaart in radar modus, Zoom x1"
+msgstr "Mini-kaart in radar modus, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Minimap in oppervlaktemodus, Zoom x1"
+msgstr "Minimap in oppervlaktemodus, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Minimale textuur-grootte"
+msgstr "Minimap textuur modus"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2176,7 +2169,7 @@ msgstr "Interval voor ABM's"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "ABM tijd budget"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2688,7 +2681,7 @@ msgstr "ContentDB optie: verborgen pakketten lijst"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "ContentDB Maximum Gelijktijdige Downloads"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2759,11 +2752,12 @@ msgid "Crosshair alpha"
 msgstr "Draadkruis-alphawaarde"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Draadkruis-alphawaarde. (ondoorzichtigheid; tussen 0 en 255)."
+msgstr ""
+"Draadkruis-alphawaarde (ondoorzichtigheid; tussen 0 en 255).\n"
+"Controleert ook het object draadkruis kleur"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2774,6 +2768,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Draadkruis kleur (R,G,B).\n"
+"Controleert ook het object draadkruis kleur"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2956,9 +2952,8 @@ msgid "Desynchronize block animation"
 msgstr "Textuur-animaties niet synchroniseren"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Toets voor rechts"
+msgstr "Toets voor graven"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3186,9 +3181,8 @@ msgstr ""
 "platte laaglanden, geschikt voor een solide zwevende eilanden laag."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Maximum FPS als het spel gepauzeerd is."
+msgstr "FPS als het spel gepauzeerd of niet gefocussed is"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3583,20 +3577,18 @@ msgid "HUD toggle key"
 msgstr "HUD aan/uitschakelen toets"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
 "-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"Behandeling van verouderde lua api aanroepen:\n"
-"-    legacy: (probeer) het oude gedrag na te bootsen\n"
-"     (standaard voor een 'release' versie).\n"
-"-    log: boots het oude gedrag na, en log een backtrace van de aanroep\n"
-"     (standaard voor een 'debug' versie).\n"
-"-    error: stop de server bij gebruik van een verouderde aanroep\n"
-"     (aanbevolen voor mod ontwikkelaars)."
+"Behandeling van verouderde Lua API aanroepen:\n"
+"-    none: log geen verouderde aanroepen\n"
+"-    log: boots het oude gedrag na, en log een backtrace van de aanroep ("
+"standaard voor een 'debug' versie).\n"
+"-    error: stop de server bij gebruik van een verouderde aanroep ("
+"aanbevolen voor mod ontwikkelaars)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4131,9 +4123,8 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick-knop herhalingsinterval"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Joystick type"
+msgstr "Joystick dode zone"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4238,13 +4229,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Toets voor springen.\n"
+"Toets voor graven.\n"
 "Zie http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4391,13 +4381,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Toets voor springen.\n"
+"Toets voor plaatsen.\n"
 "Zie http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5171,11 +5160,11 @@ msgstr "Maak alle vloeistoffen ondoorzichtig"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Map compressie niveau voor het bewaren op de harde schijf"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Map compressie niveau voor netwerk transfert"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5363,9 +5352,10 @@ msgid "Maximum FPS"
 msgstr "Maximum FPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "Maximum FPS als het spel gepauzeerd is."
+msgstr ""
+"Maximum FPS als het venster niet gefocussed is, of wanneer het spel "
+"gepauzeerd is."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5429,6 +5419,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Maximaal aantal gelijktijdige downloads. Downloads die deze limiet "
+"overschrijden zullen in de wachtrij geplaats worden.\n"
+"Deze instelling zou lager moeten zijn dan curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5867,14 +5860,12 @@ msgid "Pitch move mode"
 msgstr "Pitch beweeg modus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Vliegen toets"
+msgstr "Plaats toets"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Rechts-klik herhalingsinterval"
+msgstr "Plaats (Rechts-klik) herhalingsinterval"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6357,13 +6348,12 @@ msgid "Show entity selection boxes"
 msgstr "Toon selectie-box voor objecten"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Stel de taal in. De systeem-taal wordt gebruikt indien leeg.\n"
-"Een herstart is noodzakelijk om de nieuwe taal te activeren."
+"Toon selectievakjes voor entiteiten\n"
+"Een herstart is noodzakelijk om de wijziging te activeren."
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6649,9 +6639,8 @@ msgid "The URL for the content repository"
 msgstr "De URL voor de inhoudsrepository"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "De identificatie van de stuurknuppel die u gebruikt"
+msgstr "De dode zone van de stuurknuppel die u gebruikt"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6727,7 +6716,6 @@ msgstr ""
 "Dit moet samen met active_object_send_range_blocks worden geconfigureerd."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6740,8 +6728,9 @@ msgstr ""
 "Na het wijzigen hiervan is een herstart vereist. \n"
 "Opmerking: op Android, blijf bij OGLES1 als je het niet zeker weet! Anders "
 "start de app mogelijk niet. \n"
-"Op andere platforms wordt OpenGL aanbevolen en het is de enige driver met \n"
-"shader-ondersteuning momenteel."
+"Op andere platformen wordt OpenGL aanbevolen.\n"
+"OpenGL (alleen op desktop pc) en OGLES2 (experimenteel), zijn de enige "
+"drivers met shader-ondersteuning momenteel"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6779,6 +6768,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Het tijdsbudget dat toegestaan wordt aan ABM's om elke stap uit te voeren\n"
+"(als een deel van het ABM interval)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6789,12 +6780,12 @@ msgstr ""
 " ingedrukt gehouden wordt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"De tijd in seconden tussen herhaalde rechts-klikken als de rechter muisknop\n"
+"De tijd in seconden tussen herhaalde rechts-klikken als de plaats knop ("
+"rechter muisknop)\n"
 "ingedrukt gehouden wordt."
 
 #: src/settings_translation_file.cpp
@@ -6968,6 +6959,14 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Gebruik multi-sample anti-aliasing (MSAA) om de randen van de blokken glad "
+"te maken.\n"
+"Dit algoritme maakt de 3D viewport glad en houdt intussen het beeld scherp,\n"
+"zonder de binnenkant van de texturen te wijzigen\n"
+"(wat erg opvalt bij transparante texturen)\n"
+"Zichtbare ruimtes verschijnen tussen nodes als de shaders uitgezet zijn.\n"
+"Als de waarde op 0 staat, is MSAA uitgeschakeld.\n"
+"Een herstart is nodig om deze wijziging te laten functioneren."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7377,6 +7376,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Zlib compressie niveau om mapblokken op de harde schijf te bewaren.\n"
+"-1: Zlib's standaard compressie niveau\n"
+"0: geen compressie, snelst\n"
+"9: maximale compressie, traagst\n"
+"(niveau's 1 tot 3 gebruiken Zlib's snelle methode, 4 tot 9 gebruiken de "
+"normale methode)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7386,6 +7391,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Zlib compressie niveau om mapblokken te versturen naar de client.\n"
+"-1: Zlib's standaard compressie niveau\n"
+"0: geen compressie, snelst\n"
+"9: maximale compressie, traagst\n"
+"(niveau's 1 tot 3 gebruiken Zlib's snelle methode, 4 tot 9 gebruiken de "
+"normale methode)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
