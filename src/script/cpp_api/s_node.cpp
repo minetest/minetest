@@ -142,8 +142,12 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, digger);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+
+	// nil is treated as true for backwards compat
 	bool result = lua_isnil(L, -1) || lua_toboolean(L, -1);
+
 	lua_pop(L, 2);  // Pop error handler and result
+
 	return result;
 }
 
