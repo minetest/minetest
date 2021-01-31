@@ -7628,6 +7628,7 @@ Used by `minetest.register_node`.
         on_dig = function(pos, node, digger),
         -- default: minetest.node_dig
         -- By default checks privileges, wears out tool and removes node.
+        -- return true if the node was dug successfully.
 
         on_timer = function(pos, elapsed),
         -- default: nil

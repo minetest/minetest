@@ -557,7 +557,7 @@ function core.node_dig(pos, node, digger)
 		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))
-		return
+		return false
 	end
 
 	if core.is_protected(pos, diggername) then
@@ -566,7 +566,7 @@ function core.node_dig(pos, node, digger)
 				.. " at protected position "
 				.. core.pos_to_string(pos))
 		core.record_protection_violation(pos, diggername)
-		return
+		return false
 	end
 
 	log('action', diggername .. " digs "
@@ -649,6 +649,8 @@ function core.node_dig(pos, node, digger)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		callback(pos_copy, node_copy, digger)
 	end
+
+	return true
 end
 
 function core.itemstring_with_palette(item, palette_index)
