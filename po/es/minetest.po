@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-12-24 05:29+0000\n"
-"Last-Translator: cypMon <randalchem@protonmail.com>\n"
+"PO-Revision-Date: 2021-02-05 09:40+0000\n"
+"Last-Translator: apo <i.said@slmail.me>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -153,52 +153,51 @@ msgstr "activado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" ya existe. Quieres remplazarlo?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Las dependencias $1 y $2 serán instaladas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 por $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 descargando,\n"
+"$2 en espera"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Descargando..."
+msgstr "$1 descargando..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 dependencias requeridas no se encuentran."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 serán instalados, y $2 dependencias serán ignoradas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Todos los paquetes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "La tecla ya se está utilizando"
+msgstr "Ya está instalado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Volver al menú principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Hospedar juego"
+msgstr "Juego Base:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -223,14 +222,12 @@ msgid "Install"
 msgstr "Instalar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Instalar"
+msgstr "Instalar $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dependencias opcionales:"
+msgstr "Instalar dependencias faltantes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -246,26 +243,24 @@ msgid "No results"
 msgstr "Sin resultados"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Actualizar"
+msgstr "No hay actualizaciones"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Silenciar sonido"
+msgstr "No encontrado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Sobreescribir"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Por favor verifica que el juego base está bien."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "En cola"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -281,11 +276,11 @@ msgstr "Actualizar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Actualizar Todo [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Ver más información en un navegador web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -769,15 +764,16 @@ msgid "Credits"
 msgstr "Créditos"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Seleccionar carpeta"
+msgstr "Abrir Directorio de Datos de Usuario"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Abre el directorio que contiene los mundos, juegos, mods, y paquetes de\n"
+"textura, del usuario, en un gestor / explorador de archivos."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -817,7 +813,7 @@ msgstr "Instalar juegos desde ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -828,9 +824,8 @@ msgid "No world created or selected!"
 msgstr "¡No se ha dado un nombre al mundo o no se ha seleccionado uno!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Contraseña nueva"
+msgstr "Contraseña"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -841,9 +836,8 @@ msgid "Port"
 msgstr "Puerto"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Selecciona un mundo:"
+msgstr "Selecciona Mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -995,9 +989,8 @@ msgid "Shaders"
 msgstr "Sombreadores"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Tierras flotantes (experimental)"
+msgstr "Sombreadores (experimental)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1199,7 +1192,7 @@ msgid "Continue"
 msgstr "Continuar"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1222,12 +1215,12 @@ msgstr ""
 "- %s: moverse a la izquierda\n"
 "- %s: moverse a la derecha\n"
 "- %s: saltar/escalar\n"
-"- %s: agacharse/bajar\n"
+"- %s: excavar/golpear\n"
+"- %s: colocar/usar\n"
+"- %s: a hurtadillas/bajar\n"
 "- %s: soltar objeto\n"
 "- %s: inventario\n"
 "- Ratón: girar/mirar\n"
-"- Ratón izq.: cavar/golpear\n"
-"- Ratón der.: colocar/usar\n"
 "- Rueda del ratón: elegir objeto\n"
 "- %s: chat\n"
 
@@ -1756,19 +1749,18 @@ msgid "Minimap hidden"
 msgstr "Minimapa oculto"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Minimapa en modo radar, Zoom x1"
+msgstr "Minimapa en modo radar, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Minimapa en modo superficie, Zoom x1"
+msgstr "Minimapa en modo superficie, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Minimapa en modo superficie, Zoom x1"
+msgstr "Minimapa en modo textura"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2182,7 +2174,7 @@ msgstr "Intervalo ABM"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Límite de tiempo para MBA"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2694,7 +2686,7 @@ msgstr "Lista negra de banderas de ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Descargas máximas simultáneas para ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2764,11 +2756,12 @@ msgid "Crosshair alpha"
 msgstr "Opacidad del punto de mira"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Alfa del punto de mira (opacidad, entre 0 y 255)."
+msgstr ""
+"Alfa del punto de mira (opacidad, entre 0 y 255).\n"
+"También controla el color del objeto punto de mira."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2779,6 +2772,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Color del punto de mira (R,G,B).\n"
+"También controla el color del objeto punto de mira"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2963,9 +2958,8 @@ msgid "Desynchronize block animation"
 msgstr "Desincronizar la animación de los bloques"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Tecla derecha"
+msgstr "Tecla Excavar"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
