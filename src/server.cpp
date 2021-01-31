@@ -1242,20 +1242,8 @@ bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float*
 	return *retval != -1;
 }
 
-bool Server::getClientInfo(
-		session_t    peer_id,
-		ClientState* state,
-		u32*         uptime,
-		u8*          ser_vers,
-		u16*         prot_vers,
-		u8*          major,
-		u8*          minor,
-		u8*          patch,
-		std::string* vers_string,
-		std::string* lang_code
-	)
+bool Server::getClientInfo(session_t peer_id, ClientInfo &ret)
 {
-	*state = m_clients.getClientState(peer_id);
 	m_clients.lock();
 	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
 
@@ -1264,15 +1252,18 @@ bool Server::getClientInfo(
 		return false;
 	}
 
-	*uptime = client->uptime();
-	*ser_vers = client->serialization_version;
-	*prot_vers = client->net_proto_version;
+	ret.state = client->getState();
+	ret.addr = client->getAddress();
+	ret.uptime = client->uptime();
+	ret.ser_vers = client->serialization_version;
+	ret.prot_vers = client->net_proto_version;
 
-	*major = client->getMajor();
-	*minor = client->getMinor();
-	*patch = client->getPatch();
-	*vers_string = client->getFull();
-	*lang_code = client->getLangCode();
+	ret.major = client->getMajor();
+	ret.minor = client->getMinor();
+	ret.patch = client->getPatch();
+	ret.vers_string = client->getFullVer();
+
+	ret.lang_code = client->getLangCode();
 
 	m_clients.unlock();
 
@@ -3339,7 +3330,8 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &
 
 Address Server::getPeerAddress(session_t peer_id)
 {
-	return m_con->GetPeerAddress(peer_id);
+	// Note that this is only set after Init was received in Server::handleCommand_Init
+	return getClient(peer_id, CS_Invalid)->getAddress();
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,

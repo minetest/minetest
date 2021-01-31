@@ -56,12 +56,12 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Created);
 
+	Address addr;
 	std::string addr_s;
 	try {
-		Address address = getPeerAddress(peer_id);
-		addr_s = address.serializeString();
-	}
-	catch (con::PeerNotFoundException &e) {
+		addr = m_con->GetPeerAddress(peer_id);
+		addr_s = addr.serializeString();
+	} catch (con::PeerNotFoundException &e) {
 		/*
 		 * no peer for this packet found
 		 * most common reason is peer timeout, e.g. peer didn't
@@ -73,12 +73,13 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	// If net_proto_version is set, this client has already been handled
 	if (client->getState() > CS_Created) {
 		verbosestream << "Server: Ignoring multiple TOSERVER_INITs from " <<
 			addr_s << " (peer_id=" << peer_id << ")" << std::endl;
 		return;
 	}
+
+	client->setCachedAddress(addr);
 
 	verbosestream << "Server: Got TOSERVER_INIT from " << addr_s <<
 		" (peer_id=" << peer_id << ")" << std::endl;
