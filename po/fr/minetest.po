@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-10-25 19:26+0000\n"
-"Last-Translator: William Desportes <williamdes@wdes.fr>\n"
+"PO-Revision-Date: 2021-02-01 05:52+0000\n"
+"Last-Translator: cafou <weblate@ptitux.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -177,11 +177,11 @@ msgstr "Chargement..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "Les dépendances nécessaires à 1 $ n'ont pas pu être trouvées."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 sera installé, et les dépendances de $2 seront ignorées."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -257,7 +257,7 @@ msgstr "Couper le son"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Écraser"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -265,7 +265,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "En file d'attente"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -285,7 +285,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Voir plus d'informations dans un navigateur web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -780,6 +780,9 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Ouvre le répertoire qui contient les mondes fournis par les utilisateurs, "
+"les jeux, les mods,\n"
+"et des paquets de textures dans un gestionnaire de fichiers."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -819,7 +822,7 @@ msgstr "Installer à partir de ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -2689,7 +2692,7 @@ msgstr "Drapeaux ContentDB en liste noire"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Maximum de téléchargement en parallèle pour ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
