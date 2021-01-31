@@ -299,6 +299,21 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_dir_offset = 0.0;
 	}
 	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "synchronize_cbox_rotation_with_dir");
+	
+	if (lua_isnumber(L, -1) || lua_isboolean(L, -1))
+		prop->synchronize_cbox_rotation_with_dir = lua_toboolean(L, -1);
+	
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "synchronize_sbox_rotation_with_dir");
+	
+	if (lua_isnumber(L, -1) || lua_isboolean(L, -1))
+		prop->synchronize_sbox_rotation_with_dir = lua_toboolean(L, -1);
+	
+	lua_pop(L, 1);
+	
 	getboolfield(L, -1, "backface_culling", prop->backface_culling);
 	getintfield(L, -1, "glow", prop->glow);
 

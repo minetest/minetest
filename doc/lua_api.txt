@@ -6798,6 +6798,14 @@ Player properties need to be saved manually.
 
         shaded = true,
         -- Setting this to 'false' disables diffuse lighting of entity
+        
+        synchronize_cbox_rotation_with_dir = false,
+        -- If true, implements automatic rotation of the entity`s collisionbox on each changing its rotation (on each set_rotation() call).
+        -- It resolves a problem when e.g. the entity mesh looks like conformed with its box at original rotation (facing to +Z), but after some rotations that may "outstep" its box because the box stays static.
+        -- Defaults to false.
+        
+        synchronize_sbox_rotation_with_dir = false,
+        -- It does the same as 'synchronize_cbox_rotation_with_dir', only it applies to selectionbox.
     }
 
 Entity definition

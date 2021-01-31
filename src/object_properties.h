@@ -46,6 +46,8 @@ struct ObjectProperties
 	bool is_visible = true;
 	bool makes_footstep_sound = false;
 	f32 stepheight = 0.0f;
+	bool synchronize_cbox_rotation_with_dir = false;
+	bool synchronize_sbox_rotation_with_dir = false;
 	float automatic_rotate = 0.0f;
 	bool automatic_face_movement_dir = false;
 	f32 automatic_face_movement_dir_offset = 0.0f;

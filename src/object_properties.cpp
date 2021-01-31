@@ -70,6 +70,8 @@ std::string ObjectProperties::dump()
 	os << ", use_texture_alpha=" << use_texture_alpha;
 	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	os << ", shaded=" << shaded;
+	os << ", synchronize_cbox_rotation_with_dir=" << synchronize_cbox_rotation_with_dir;
+	os << ", synchronize_sbox_rotation_with_dir=" << synchronize_sbox_rotation_with_dir;
 	return os.str();
 }
 
@@ -118,6 +120,8 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, use_texture_alpha);
 	os << serializeString(damage_texture_modifier);
 	writeU8(os, shaded);
+	writeU8(os, synchronize_cbox_rotation_with_dir);
+	writeU8(os, synchronize_sbox_rotation_with_dir);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -177,4 +181,6 @@ void ObjectProperties::deSerialize(std::istream &is)
 			throw SerializationError("");
 		shaded = tmp;
 	} catch (SerializationError &e) {}
+	synchronize_cbox_rotation_with_dir = readU8(is);
+	synchronize_sbox_rotation_with_dir = readU8(is);
 }
