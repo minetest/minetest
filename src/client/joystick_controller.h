@@ -144,7 +144,10 @@ public:
 		return m_axes_vals[axis];
 	}
 
-	s16 getAxisWithoutDead(JoystickAxis axis);
+	float getAxisWithoutDead(JoystickAxis axis);
+
+	float getMovementDirection();
+	float getMovementSpeed();
 
 	f32 doubling_dtime;
 

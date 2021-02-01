@@ -566,23 +566,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	if (control.up)
-		speedH += v3f(0.0f, 0.0f, 1.0f);
-
-	if (control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f);
-
-	if (!control.up && !control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis / 32767.f);
-
-	if (control.left)
-		speedH += v3f(-1.0f, 0.0f, 0.0f);
-
-	if (control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f);
-
-	if (!control.left && !control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis / 32767.f);
+	speedH = v3f(sin(control.movement_direction), 0.0f, cos(control.movement_direction));
 
 	if (m_autojump) {
 		// release autojump after a given time
@@ -638,6 +622,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		speedH = speedH.normalize() * movement_speed_crouch;
 	else
 		speedH = speedH.normalize() * movement_speed_walk;
+
+	speedH *= control.movement_speed; /* Apply analog input */
 
 	// Acceleration increase
 	f32 incH = 0.0f; // Horizontal (X, Z)
@@ -1106,9 +1092,7 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (m_autojump)
 		return;
 
-	bool control_forward = control.up ||
-		(!control.up && !control.down &&
-		control.forw_move_joystick_axis < -0.05f);
+	bool control_forward = keyPressed & (1 << 0);
 
 	bool could_autojump =
 		m_can_jump && !control.jump && !control.sneak && control_forward;
