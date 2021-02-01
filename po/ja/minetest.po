@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-06-15 22:41+0000\n"
+"PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.1\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -80,7 +80,7 @@ msgstr "キャンセル"
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "依存関係:"
+msgstr "依存Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -116,7 +116,7 @@ msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "(任意)依存関係なし"
+msgstr "（任意）依存Modなし"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -124,7 +124,7 @@ msgstr "ゲームの説明がありません。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "依存関係なし"
+msgstr "必須依存Modなし"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -132,11 +132,11 @@ msgstr "Modパックの説明がありません。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "任意依存関係なし"
+msgstr "任意依存Modなし"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "任意:"
+msgstr "任意依存Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -153,52 +153,51 @@ msgstr "有効"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "「$1」はすでに存在します。上書きしますか？"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "$1 と依存Mod $2 がインストールされます。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 by $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 ダウンロード中、\n"
+"$2 ダウンロード待機中"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "ダウンロード中..."
+msgstr "$1 ダウンロード中..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 つの必要な依存Modが見つかりませんでした。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 がインストールされ、依存Mod $2 はスキップされます。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "すべて"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "キーが重複しています"
+msgstr "インストール済み"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "メインメニューへ戻る"
+msgstr "メインメニューへ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "ゲームホスト"
+msgstr "基盤ゲーム："
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -222,14 +221,12 @@ msgid "Install"
 msgstr "入手"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "入手"
+msgstr "$1 のインストール"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "任意:"
+msgstr "不足依存Modインストール"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -245,26 +242,24 @@ msgid "No results"
 msgstr "何も見つかりませんでした"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "更新"
+msgstr "更新なし"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "消音"
+msgstr "見つかりません"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "上書き"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "基盤となるゲームが正しいかどうか確認してください。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "待機中"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -280,15 +275,15 @@ msgstr "更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "すべて更新 [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Webブラウザで詳細を見る"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "ワールド名「$1」は既に存在します"
+msgstr "ワールド名「$1」はすでに存在します"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -729,7 +724,7 @@ msgstr "インストール済みのパッケージ:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "依存なし。"
+msgstr "依存Modなし。"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
@@ -760,15 +755,16 @@ msgid "Credits"
 msgstr "クレジット"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "ディレクトリの選択"
+msgstr "ディレクトリを開く"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"ファイルマネージャー/エクスプローラーで、ワールド、ゲーム、Mod、\n"
+"およびテクスチャパックを含むディレクトリを開きます。"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -788,7 +784,7 @@ msgstr "バインドアドレス"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr "クリエイティブモード"
+msgstr "クリエイティブ"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
@@ -808,7 +804,7 @@ msgstr "コンテンツDBからゲームをインストール"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -819,9 +815,8 @@ msgid "No world created or selected!"
 msgstr "ワールドが作成または選択されていません！"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "新しいパスワード"
+msgstr "パスワード"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -832,9 +827,8 @@ msgid "Port"
 msgstr "ポート"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "ワールドを選択:"
+msgstr "Modを選択"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -915,7 +909,7 @@ msgstr "アンチエイリアス:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr "画面の大きさを自動保存"
+msgstr "大きさを自動保存"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -986,9 +980,8 @@ msgid "Shaders"
 msgstr "シェーダー"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "浮遊大陸（実験的）"
+msgstr "シェーダー（実験的）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1188,7 +1181,7 @@ msgid "Continue"
 msgstr "再開"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1205,19 +1198,19 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"操作:\n"
+"操作方法:\n"
 "- %s: 前進\n"
 "- %s: 後退\n"
 "- %s: 左移動\n"
 "- %s: 右移動\n"
 "- %s: ジャンプ/登る\n"
+"- %s: 掘削/パンチ\n"
+"- %s: 設置/使用\n"
 "- %s: スニーク/降りる\n"
 "- %s: アイテムを落とす\n"
 "- %s: インベントリ\n"
 "- マウス: 見回す\n"
-"- 左クリック: 掘削/パンチ\n"
-"- 右クリック: 設置/使用\n"
-"- ホイール: アイテム選択\n"
+"- マウスホイール: アイテム選択\n"
 "- %s: チャット\n"
 
 #: src/client/game.cpp
@@ -1745,19 +1738,18 @@ msgid "Minimap hidden"
 msgstr "ミニマップ 非表示"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "ミニマップ レーダーモード、ズーム x1"
+msgstr "ミニマップ レーダーモード、ズーム x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "ミニマップ 表面モード、ズーム x1"
+msgstr "ミニマップ 表面モード、ズーム x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "最小テクスチャサイズ"
+msgstr "ミニマップ テクスチャモード"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1829,7 +1821,7 @@ msgstr "音量を下げる"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "\"ジャンプ\"二度押しで飛行モード切替"
+msgstr "\"ジャンプ\"２回で飛行モード切替"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1861,9 +1853,7 @@ msgstr "キーが重複しています"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
-"キー設定です。 (このメニューで失敗する場合は、minetest.confから該当する設定を"
-"削除してください)"
+msgstr "キー設定です。 (このメニューで失敗する場合は minetest.conf から該当する設定を削除してください)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2155,7 +2145,7 @@ msgstr "ABMの間隔"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "ABMの時間予算"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2656,7 +2646,7 @@ msgstr "コンテンツDBフラグのブラックリスト"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "コンテンツDBの最大同時ダウンロード数"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2720,24 +2710,27 @@ msgstr "クリエイティブ"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr "照準線の透過度"
+msgstr "十字カーソルの透過度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "照準線の透過 (不透明、0～255の間)。"
+msgstr ""
+"十字カーソルの透過度（不透明、0～255の間）。\n"
+"オブジェクト十字カーソルの色も制御"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr "照準線の色"
+msgstr "十字カーソルの色"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"十字カーソルの色（R,G,B）。\n"
+"オブジェクト十字カーソルの色も制御"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2881,7 +2874,7 @@ msgstr "ツールチップを表示するまでの遅延、ミリ秒で定めま
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr "廃止予定のLua APIの処理"
+msgstr "非推奨の Lua API の処理"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
@@ -2914,9 +2907,8 @@ msgid "Desynchronize block animation"
 msgstr "ブロックのアニメーションの非同期化"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "右キー"
+msgstr "掘削キー"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3138,9 +3130,8 @@ msgstr ""
 "作成し、密な浮遊大陸層に適しています。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "ポーズメニューでの最大FPS。"
+msgstr "非アクティブまたはポーズメニュー表示中のFPS"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3524,18 +3515,16 @@ msgid "HUD toggle key"
 msgstr "HUD表示切り替えキー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
 "-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"廃止予定のLua API呼び出しの処理:\n"
-"-    legacy: 古い振る舞いを模倣する(試みる) (リリース版の既定値)。\n"
-"-    log: 廃止予定の呼び出しを模倣してバックトレースを記録 (デバッグ版の既定"
-"値)。\n"
-"-    error: 廃止予定の呼び出しの使用を中止する (Mod開発者向けに推奨)。"
+"非推奨の Lua API 呼び出しの処理：\n"
+"-    none: 非推奨の呼び出しを記録しない\n"
+"-    log: 非推奨の呼び出しのバックトレースを模倣して記録します（既定値）。\n"
+"-    error: 非推奨の呼び出しの使用を中止します（Mod開発者に推奨）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4057,9 +4046,8 @@ msgid "Joystick button repetition interval"
 msgstr "ジョイスティックボタンの繰り返し間隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "ジョイスティックの種類"
+msgstr "ジョイスティックのデッドゾーン"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4164,13 +4152,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"ジャンプするキーです。\n"
+"掘削するキーです。\n"
 "参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4317,13 +4304,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"ジャンプするキーです。\n"
+"設置するキーです。\n"
 "参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5085,11 +5071,11 @@ msgstr "すべての液体を不透明にする"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "ディスクストレージのマップ圧縮レベル"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "ネットワーク転送のためのマップ圧縮レベル"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5274,9 +5260,8 @@ msgid "Maximum FPS"
 msgstr "最大FPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "ポーズメニューでの最大FPS。"
+msgstr "ウィンドウにフォーカスが合っていないとき、またはポーズメニュー表示中の最大FPS。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5336,6 +5321,8 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"同時ダウンロードの最大数です。この制限を超えるダウンロードはキューに入れられます。\n"
+"これは curl_parallel_limit よりも低い値でなければなりません。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5744,14 +5731,12 @@ msgid "Pitch move mode"
 msgstr "ピッチ移動モード"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "飛行キー"
+msgstr "設置キー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "右クリック繰り返しの間隔"
+msgstr "設置の繰り返し間隔"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6227,15 +6212,14 @@ msgstr "デバッグ情報を表示"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr "エンティティの選択ボックスを表示"
+msgstr "エンティティの選択ボックス表示"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"言語を設定してください。システム言語を使用するには空のままにします。\n"
+"エンティティの選択ボックスを表示\n"
 "変更後は再起動が必要です。"
 
 #: src/settings_translation_file.cpp
@@ -6509,9 +6493,8 @@ msgid "The URL for the content repository"
 msgstr "コンテンツリポジトリのURL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "使用するジョイスティックの識別子"
+msgstr "ジョイスティックのデッドゾーン"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6582,7 +6565,6 @@ msgstr ""
 "これは active_object_send_range_blocks と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6593,10 +6575,10 @@ msgid ""
 msgstr ""
 "Irrlichtのレンダリングバックエンド。\n"
 "変更後は再起動が必要です。\n"
-"メモ: Androidでは、不明な場合は OGLES1 を使用してください！ \n"
-"それ以外の場合アプリは起動に失敗することがあります。\n"
-"他のプラットフォームでは、OpenGL が推奨されており、現在それが\n"
-"シェーダーをサポートする唯一のドライバです。"
+"注意：Android の場合、よくわからない場合は OGLES1 を使用してください！\n"
+"そうしないとアプリの起動に失敗することがあります。\n"
+"その他のプラットフォームでは、OpenGL が推奨されています。\n"
+"シェーダーは OpenGL（デスクトップのみ）と OGLES2（実験的）でサポート"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6629,6 +6611,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"ABM が各ステップで実行できる時間予算\n"
+"（ABM間隔の一部として）"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6639,11 +6623,10 @@ msgstr ""
 "繰り返されるイベントの秒単位の間隔。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
-msgstr "マウスの右ボタンを押したまま右クリックを繰り返す秒単位の間隔。"
+msgstr "設置ボタンを押したままノードの設置を繰り返す秒単位の間隔。"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6807,6 +6790,13 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"マルチサンプルアンチエイリアス（MSAA）を使用して、ブロックエッジを滑らかにします。\n"
+"このアルゴリズムは、画像を鮮明に保ちながら3Dビューポートを滑らかにします。\n"
+"しかし、それはテクスチャの内部には影響しません\n"
+"（これは、透明なテクスチャで特に目立ちます）。\n"
+"シェーダーを無効にすると、ノード間に可視スペースが表示されます。\n"
+"0 に設定すると、MSAAは無効になります。\n"
+"このオプションを変更した場合、再起動が必要です。"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7055,7 +7045,7 @@ msgid ""
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
 "プレイヤーが範囲制限なしでクライアントに表示されるかどうかです。\n"
-"廃止予定、代わりに設定 player_transfer_distance を使用してください。"
+"非推奨。代わりに設定 player_transfer_distance を使用してください。"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
@@ -7205,6 +7195,11 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"マップブロックをディスクに保存するときに使用する ZLib圧縮レベル。\n"
+"-1 - Zlib の規定の圧縮レベル\n"
+"0 - 圧縮なし、最速\n"
+"9 - 最高の圧縮、最も遅い\n"
+"（レベル 1〜3 はZlibの「高速」方式を使用し、4〜9 は通常方式を使用）"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7214,6 +7209,11 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"マップブロックをクライアントに送信するときに使用する ZLib圧縮レベル。\n"
+"-1 - Zlib の規定の圧縮レベル\n"
+"0 - 圧縮なし、最速\n"
+"9 - 最高の圧縮、最も遅い\n"
+"（レベル 1〜3 はZlibの「高速」方式を使用し、4〜9 は通常方式を使用）"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
