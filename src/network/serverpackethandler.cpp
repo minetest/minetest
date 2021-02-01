@@ -510,10 +510,6 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setWantedRange(wanted_range);
 
 	player->keyPressed = keyPressed;
-	player->control.up    = (keyPressed & (0x1 << 0));
-	player->control.down  = (keyPressed & (0x1 << 1));
-	player->control.left  = (keyPressed & (0x1 << 2));
-	player->control.right = (keyPressed & (0x1 << 3));
 	player->control.jump  = (keyPressed & (0x1 << 4));
 	player->control.aux1  = (keyPressed & (0x1 << 5));
 	player->control.sneak = (keyPressed & (0x1 << 6));

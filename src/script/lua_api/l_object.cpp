@@ -1390,14 +1390,6 @@ int ObjectRef::l_get_player_control(lua_State *L)
 
 	const PlayerControl &control = player->getPlayerControl();
 	lua_newtable(L);
-	lua_pushboolean(L, control.up);
-	lua_setfield(L, -2, "up");
-	lua_pushboolean(L, control.down);
-	lua_setfield(L, -2, "down");
-	lua_pushboolean(L, control.left);
-	lua_setfield(L, -2, "left");
-	lua_pushboolean(L, control.right);
-	lua_setfield(L, -2, "right");
 	lua_pushboolean(L, control.jump);
 	lua_setfield(L, -2, "jump");
 	lua_pushboolean(L, control.aux1);
@@ -1415,6 +1407,14 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "RMB");
 	lua_pushboolean(L, control.zoom);
 	lua_setfield(L, -2, "zoom");
+	lua_pushboolean(L, player->keyPressed & (1 << 0));
+	lua_setfield(L, -2, "up");
+	lua_pushboolean(L, player->keyPressed & (1 << 1));
+	lua_setfield(L, -2, "down");
+	lua_pushboolean(L, player->keyPressed & (1 << 2));
+	lua_setfield(L, -2, "left");
+	lua_pushboolean(L, player->keyPressed & (1 << 3));
+	lua_setfield(L, -2, "right");
 	return 1;
 }
 
