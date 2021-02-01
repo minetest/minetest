@@ -151,6 +151,13 @@ os.tempfolder = function()
 end
 
 --------------------------------------------------------------------------------
+os.tmpname = function()
+	local path = os.tempfolder()
+	io.open(path, "w"):close()
+	return path
+end
+
+--------------------------------------------------------------------------------
 function menu_render_worldlist()
 	local retval = ""
 	local current_worldlist = menudata.worldlist:get_list()
