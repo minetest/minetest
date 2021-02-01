@@ -529,6 +529,7 @@ int ModApiMainMenu::l_get_texturepath(lua_State *L)
 	return 1;
 }
 
+/******************************************************************************/
 int ModApiMainMenu::l_get_texturepath_share(lua_State *L)
 {
 	std::string gamepath = fs::RemoveRelativePathComponents(
@@ -537,9 +538,17 @@ int ModApiMainMenu::l_get_texturepath_share(lua_State *L)
 	return 1;
 }
 
+/******************************************************************************/
 int ModApiMainMenu::l_get_cache_path(lua_State *L)
 {
 	lua_pushstring(L, fs::RemoveRelativePathComponents(porting::path_cache).c_str());
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_temp_path(lua_State *L)
+{
+	lua_pushstring(L, fs::TempPath().c_str());
 	return 1;
 }
 
@@ -942,6 +951,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
 	API_FCT(get_cache_path);
+	API_FCT(get_temp_path);
 	API_FCT(create_dir);
 	API_FCT(delete_dir);
 	API_FCT(copy_dir);
@@ -975,6 +985,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
 	API_FCT(get_cache_path);
+	API_FCT(get_temp_path);
 	API_FCT(create_dir);
 	API_FCT(delete_dir);
 	API_FCT(copy_dir);

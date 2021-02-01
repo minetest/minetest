@@ -461,7 +461,6 @@ void set_default_settings()
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
