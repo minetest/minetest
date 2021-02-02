@@ -35,11 +35,30 @@ local tabheaders_fs = [[
 
 local inv_style_fs = [[
 	style_type[list;noclip=true]
-	list[current_player;main;-1.125,-1.125;2,2]
+	list[current_player;main;-0.75,0.75;2,2]
+
+	real_coordinates[false]
+	list[current_player;main;1.5,0;3,2]
+	real_coordinates[true]
+
+	real_coordinates[false]
+	style_type[list;size=1.1;spacing=0.1]
+	list[current_player;main;5,0;3,2]
+	real_coordinates[true]
+
+	style_type[list;size=.001;spacing=0]
+	list[current_player;main;7,3.5;8,4]
+
+	box[3,3.5;1,1;#000000]
+	box[5,3.5;1,1;#000000]
+	box[4,4.5;1,1;#000000]
+	box[3,5.5;1,1;#000000]
+	box[5,5.5;1,1;#000000]
 	style_type[list;spacing=.25,.125;size=.75,.875]
-	list[current_player;main;3,.5;3,3]
-	style_type[list;spacing=0;size=1]
-	list[current_player;main;.5,4;8,4]
+	list[current_player;main;3,3.5;3,3]
+
+	style_type[list;spacing=0;size=1.1]
+	list[current_player;main;.5,7;8,4]
 ]]
 
 local hypertext_basic = [[
@@ -322,8 +341,7 @@ local pages = {
 		"container[0.5,1.5]" .. tabheaders_fs .. "container_end[]",
 
 		-- Inv
-		"size[12,13]real_coordinates[true]" ..
-		"container[0.5,1.5]" .. inv_style_fs .. "container_end[]",
+		"size[12,13]real_coordinates[true]" .. inv_style_fs,
 
 	-- Animation
 		[[

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include <iterator>
 #include <limits>
@@ -500,37 +501,34 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 		auto style = getDefaultStyleForElement("list", spec.fname);
 
 		v2f32 slot_scale = style.getVector2f(StyleSpec::SIZE, v2f32(0, 0));
-		v2s32 slot_size(
-			slot_scale.X <= 0 ? imgsize.X : slot_scale.X * imgsize.X,
-			slot_scale.Y <= 0 ? imgsize.Y : slot_scale.Y * imgsize.Y
+		v2f32 slot_size(
+			slot_scale.X <= 0 ? imgsize.X : std::max<f32>(slot_scale.X * imgsize.X, 1),
+			slot_scale.Y <= 0 ? imgsize.Y : std::max<f32>(slot_scale.Y * imgsize.Y, 1)
 		);
 
 		v2f32 slot_spacing = style.getVector2f(StyleSpec::SPACING, v2f32(-1, -1));
-		if (data->real_coordinates) {
-			slot_spacing.X = slot_spacing.X < 0 ? imgsize.X * 0.25f :
-					imgsize.X * slot_spacing.X;
-			slot_spacing.Y = slot_spacing.Y < 0 ? imgsize.Y * 0.25f :
-					imgsize.Y * slot_spacing.Y;
+		v2f32 default_spacing = data->real_coordinates ?
+				v2f32(imgsize.X * 0.25f, imgsize.Y * 0.25f) :
+				v2f32(spacing.X - imgsize.X, spacing.Y - imgsize.Y);
 
-			slot_spacing.X += slot_size.X;
-			slot_spacing.Y += slot_size.Y;
-		} else {
-			slot_spacing.X = slot_spacing.X < 0 ? spacing.X :
-					slot_spacing.X * spacing.X;
-			slot_spacing.Y = slot_spacing.Y < 0 ? spacing.Y :
-					slot_spacing.Y * spacing.Y;
-		}
+		slot_spacing.X = slot_spacing.X < 0 ? default_spacing.X :
+				imgsize.X * slot_spacing.X;
+		slot_spacing.Y = slot_spacing.Y < 0 ? default_spacing.Y :
+				imgsize.Y * slot_spacing.Y;
+
+		slot_spacing += slot_size;
 
 		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos) :
 				getElementBasePos(&v_pos);
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + (geom.X - 1) * slot_spacing.X + imgsize.X,
-				pos.Y + (geom.Y - 1) * slot_spacing.Y + imgsize.Y);
+				pos.X + (geom.X - 1) * slot_spacing.X + slot_size.X,
+				pos.Y + (geom.Y - 1) * slot_spacing.Y + slot_size.Y);
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
-				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, slot_size,
-				slot_spacing, this, data->inventorylist_options, m_font);
+				spec.fid, rect, m_invmgr, loc, listname, geom, start_i,
+				v2s32(slot_size.X, slot_size.Y), slot_spacing, this,
+				data->inventorylist_options, m_font);
 
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
