@@ -438,18 +438,20 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 	u8 count;
 	*pkt >> count;
 
-	RemoteClient *client = getClient(pkt->getPeerId());
-
 	if ((s16)pkt->getSize() < 1 + (int)count * 6) {
 		throw con::InvalidIncomingDataException
 				("GOTBLOCKS length is too short");
 	}
+
+	m_clients.lock();
+	RemoteClient *client = m_clients.lockedGetClientNoEx(pkt->getPeerId());
 
 	for (u16 i = 0; i < count; i++) {
 		v3s16 p;
 		*pkt >> p;
 		client->GotBlock(p);
 	}
+	m_clients.unlock();
 }
 
 void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
