@@ -344,6 +344,8 @@ public:
 
 	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; };
 
+	bool isBlockActive(v3s16 blockpos) { return m_active_blocks.contains(blockpos); };
+
 	// Sets the static object status all the active objects in the specified block
 	// This is only really needed for deleting blocks from the map
 	void setStaticForActiveObjectsInBlock(v3s16 blockpos,

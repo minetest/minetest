@@ -1400,6 +1400,20 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
+// is_block_active(nodepos)
+// blockpos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_is_block_active(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 nodepos = read_v3s16(L, 1);
+	v3s16 blockpos = getNodeBlockPos(nodepos);
+	bool active = env->isBlockActive(blockpos);
+
+	lua_pushboolean(L, active);
+	return 1;
+}
+
 // get_translated_string(lang_code, string)
 int ModApiEnvMod::l_get_translated_string(lua_State * L)
 {
@@ -1462,6 +1476,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(is_block_active);
 	API_FCT(get_translated_string);
 }
 

@@ -5794,16 +5794,20 @@ Misc.
       change knockback behaviour.
 
 * `minetest.forceload_block(pos[, transient])`
-    * forceloads the position `pos`.
+    * forceloads the block that contains node position `pos`.
     * returns `true` if area could be forceloaded
     * If `transient` is `false` or absent, the forceload will be persistent
       (saved between server runs). If `true`, the forceload will be transient
       (not saved between server runs).
 
 * `minetest.forceload_free_block(pos[, transient])`
-    * stops forceloading the position `pos`
+    * stops forceloading the block that contains node position `pos`
     * If `transient` is `false` or absent, frees a persistent forceload.
       If `true`, frees a transient forceload.
+
+* `minetest.is_block_active(pos)`
+    * Returns true if the block containing the node pos is currently "active",
+      that is, ABMs are running and ActiveObjects are loaded.
 
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the

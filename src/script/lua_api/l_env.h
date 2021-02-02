@@ -195,6 +195,10 @@ private:
 	// stops forceloading a position
 	static int l_forceload_free_block(lua_State *L);
 
+	// is_block_active(nodepos)
+	// nodepos = {x=num, y=num, z=num}
+	static int l_is_block_active(lua_State *L);
+
 	// Get a string translated server side
 	static int l_get_translated_string(lua_State * L);
 
