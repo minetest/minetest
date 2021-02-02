@@ -75,8 +75,6 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (name.empty())
 		return NULL;
 
-	m_to_delete.insert(name);
-
 #if ENABLE_GLES
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
@@ -88,6 +86,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	image = Align2Npot2(image, m_driver);
 	retval = m_driver->addTexture(name.c_str(), image);
+	m_to_delete.insert(name);
 	image->drop();
 	return retval;
 #else
