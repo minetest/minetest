@@ -94,3 +94,64 @@ minetest.register_entity("testentities:upright_animated", {
 		self.object:set_sprite({x=0, y=0}, 4, 1.0, false)
 	end,
 })
+
+-- An entity and arrows for testing automatic collision/selection boxes rotation
+minetest.register_entity("testentities:3d_dungeon_master", {
+	visual = "mesh",
+	mesh = "testentities_3d_dungeon_master.b3d",
+	textures = {"testentities_3d_dungeon_master.png"},
+	collisionbox = {-1.0, -1, -0.4, 1.0, 1.6, 0.7},
+	synchronize_cbox_rotation_with_dir = true,
+	synchronize_sbox_rotation_with_dir = true,
+	get_staticdata = function(self)
+		return minetest.write_json({rotation_info=self.rot_info})
+	end,
+	on_activate = function(self, staticdata, dtime_s)
+		if staticdata ~= "" and staticdata ~= nil then
+			self.rot_info = minetest.parse_json(staticdata).rotation_info
+		else
+			self.rot_info = {x=false, y=false, z=false}
+		end
+	end,
+	on_rightclick = function(self, clicker)
+		local witem = clicker:get_wielded_item()
+		
+		if witem:get_name() == "testentities:rotation_x" then
+			self.rot_info.x = not self.rot_info.x
+		elseif witem:get_name() == "testentities:rotation_y" then
+			self.rot_info.y = not self.rot_info.y
+		elseif witem:get_name() == "testentities:rotation_z" then
+			self.rot_info.z = not self.rot_info.z
+		end
+	end,
+	on_step = function(self, dtime)
+		local target_rot = self.object:get_rotation()
+		
+		if self.rot_info.x then
+			target_rot.x = target_rot.x + math.rad(3)
+		end
+		if self.rot_info.y then
+			target_rot.y = target_rot.y + math.rad(3)
+		end
+		if self.rot_info.z then
+			target_rot.z = target_rot.z + math.rad(3)
+		end
+                                                           
+		self.object:set_rotation(target_rot)
+	end
+})
+
+minetest.register_craftitem("testentities:rotation_x", {
+	description = "X Arrow (force the dungeon master to rotate around X axis)",
+	inventory_image = "testentities_rotation_x.png"
+})
+
+minetest.register_craftitem("testentities:rotation_y", {
+	description = "Y Arrow (force the dungeon master to rotate around Y axis)",
+	inventory_image = "testentities_rotation_y.png"
+})
+
+minetest.register_craftitem("testentities:rotation_z", {
+	description = "Z Arrow (force the dungeon master to rotate around Z axis)",
+	inventory_image = "testentities_rotation_z.png"
+})
