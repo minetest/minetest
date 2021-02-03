@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-02-01 05:52+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2021-02-13 08:50+0000\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -103,8 +103,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Die Modifikation „$1“ konnte nicht aktiviert werden, da sie unzulässige "
-"Zeichen enthält. Nur die folgenden Zeichen sind erlaubt: [a-z0-9_]."
+"Die Mod „$1“ konnte nicht aktiviert werden, da sie unzulässige Zeichen "
+"enthält. Nur die folgenden Zeichen sind erlaubt: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -256,7 +256,7 @@ msgstr "Überschreiben"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr "Bitte prüfen Sie ob das Basis-Spiel richtig ist."
+msgstr "Bitte prüfen Sie, ob das Basis-Spiel korrekt ist."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -774,7 +774,7 @@ msgid ""
 "and texture packs in a file manager / explorer."
 msgstr ""
 "Öffnet das Verzeichnis, welches die Welten, Spiele, Mods und\n"
-"Texturenpakete des Benutzers enthält im Datei-Manager."
+"Texturenpakete des Benutzers enthält, im Datei-Manager."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -1393,7 +1393,7 @@ msgstr "Entfernter Server"
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr "Löse Adresse auf …"
+msgstr "Adressauflösung …"
 
 #: src/client/game.cpp
 msgid "Shutting down..."
@@ -1865,8 +1865,8 @@ msgstr "Taste bereits in Benutzung"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Steuerung (Falls dieses Menü nicht richtig funktioniert, versuchen sie die "
-"minetest.conf manuell zu bearbeiten)"
+"Steuerung (Falls dieses Menü defekt ist, entfernen Sie Zeugs aus minetest."
+"conf)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2079,7 +2079,7 @@ msgstr "3-Dimensionaler-Modus"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
-msgstr "3D-Modus-Parallaxstärke"
+msgstr "3-D-Modus-Parallaxstärke"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2101,7 +2101,7 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
-"3D-Rauschen, das die Form von Schwebeländern definiert.\n"
+"3-D-Rauschen, das die Form von Schwebeländern definiert.\n"
 "Falls vom Standardwert verschieden, müsste der Rauschwert „Skalierung“\n"
 "(standardmäßig 0.7) evtl. angepasst werden, da die Schwebeland-\n"
 "zuspitzung am Besten funktioniert, wenn dieses Rauschen\n"
@@ -2965,7 +2965,6 @@ msgid "Desynchronize block animation"
 msgstr "Blockanimationen desynchronisieren"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
 msgstr "Grabetaste"
 
@@ -3142,7 +3141,7 @@ msgid ""
 "appearance of high dynamic range images. Mid-range contrast is slightly\n"
 "enhanced, highlights and shadows are gradually compressed."
 msgstr ""
-"Aktiviert filmisches Tone-Mapping wie in Hables „Uncharted 2“.\n"
+"Aktiviert filmische Dynamikkompression wie in Hables „Uncharted 2“.\n"
 "Simuliert die Tonkurve von fotografischem Film und wie dies das Aussehen\n"
 "von „High Dynamic Range“-Bildern annähert. Mittlerer Kontrast wird leicht\n"
 "verstärkt, aufleuchtende Bereiche und Schatten werden graduell komprimiert."
@@ -3283,7 +3282,7 @@ msgstr "Fülltiefenrauschen"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr "Filmisches Tone-Mapping"
+msgstr "Filmische Dynamikkompression"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4154,7 +4153,6 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick-Button-Wiederholungsrate"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
 msgstr "Joystick-Totbereich"
 
@@ -5884,9 +5882,8 @@ msgid "Pitch move mode"
 msgstr "Nick-Bewegungsmodus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Bauentaste"
+msgstr "Bautaste"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6542,7 +6539,7 @@ msgstr "Stufenbergsausbreitungsrauschen"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of 3D mode parallax."
-msgstr "Stärke von 3D-Modus-Parallax."
+msgstr "Stärke von 3-D-Modus-Parallax."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6668,7 +6665,6 @@ msgid "The URL for the content repository"
 msgstr "Die URL für den Inhaltespeicher"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
 msgstr "Der Totbereich des Joysticks"
 
@@ -6813,13 +6809,12 @@ msgstr ""
 "wenn eine Joystick-Tastenkombination gedrückt gehalten wird."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Die Zeit in Sekunden, in dem Blockplatzierung wiederholt werden, wenn\n"
-"die Bauentaste gedrückt gehalten wird."
+"Die Zeit in Sekunden, in dem die Blockplatzierung wiederholt wird, wenn\n"
+"die Bautaste gedrückt gehalten wird."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6996,14 +6991,15 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
-"Benutze multi-sample antialiasing (MSAA) um Blockecken zu glätten.\n"
-"Dieser Algorithmus glättet das 3D-Sichtfeld während das Bild scharf bleibt,\n"
+"Multi-Sample-Antialiasing (MSAA) benutzen, um Blockecken zu glätten.\n"
+"Dieser Algorithmus glättet das 3-D-Sichtfeld während das Bild scharf bleibt,"
+"\n"
 "beeinträchtigt jedoch nicht die Textureninnenflächen\n"
 "(was sich insbesondere bei transparenten Texturen bemerkbar macht).\n"
-"Sichtbare Lücken erscheinen zwischen Blöcken wenn Shader ausgeschaltet sind.."
+"Sichtbare Lücken erscheinen zwischen Blöcken, wenn Shader ausgeschaltet sind."
 "\n"
-"Wenn der Wert auf 0 steht, ist MSAA deaktiviert..\n"
-"Ein Neustart ist erforderlich, nachdem diese Option geändert worden ist.."
+"Wenn der Wert auf 0 steht, ist MSAA deaktiviert.\n"
+"Ein Neustart ist erforderlich, nachdem diese Option geändert worden ist."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7415,10 +7411,10 @@ msgid ""
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
 "ZLib-Kompressionsniveau für Kartenblöcke im Festspeicher.\n"
-"-1 - zlib Standard-Kompressionsniveau\n"
+"-1 - Zlib-Standard-Kompressionsniveau\n"
 "0 - keine Kompression, am schnellsten\n"
 "9 - beste Kompression, am langsamsten\n"
-"(Niveau 1-3 verwenden zlibs \"schnelles\" Verfahren, 4-9 das normale "
+"(Niveaus 1-3 verwenden Zlibs „schnelles“ Verfahren, 4-9 das normale "
 "Verfahren)"
 
 #: src/settings_translation_file.cpp
@@ -7430,10 +7426,10 @@ msgid ""
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
 "ZLib-Kompressionsniveau für Kartenblöcke, die zu Clients gesendet werden.\n"
-"-1 - zlib Standard-Kompressionsniveau\n"
+"-1 - Zlib-Standard-Kompressionsniveau\n"
 "0 - keine Kompression, am schnellsten\n"
 "9 - beste Kompression, am langsamsten\n"
-"(Niveau 1-3 verwenden zlibs \"schnelles\" Verfahren, 4-9 das normale "
+"(Niveaus 1-3 verwenden Zlibs „schnelles“ Verfahren, 4-9 das normale "
 "Verfahren)"
 
 #: src/settings_translation_file.cpp
