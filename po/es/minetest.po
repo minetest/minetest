@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2021-02-05 09:40+0000\n"
-"Last-Translator: apo <i.said@slmail.me>\n"
+"Last-Translator: j45 minetest <j45minetest@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5391,12 +5391,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr "FPS máximos"
+msgstr "FPS máximo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "FPS máximos cuando el juego está pausado."
+msgstr "FPS máximo cuando el juego está pausado."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5994,7 +5993,7 @@ msgstr "Ruido de río"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
-msgstr ""
+msgstr "Tamaño del río"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
