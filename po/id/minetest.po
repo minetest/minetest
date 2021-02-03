@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-01-08 17:32+0000\n"
-"Last-Translator: Ferdinand Tampubolon <dnandz@gmail.com>\n"
+"PO-Revision-Date: 2021-02-03 15:42+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -153,52 +154,51 @@ msgstr "dinyalakan"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" telah ada. Apakah Anda mau menimpanya?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Dependensi $1 dan $2 akan dipasang."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 oleh $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 sedang diunduh,\n"
+"$2 dalam antrean"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Mengunduh..."
+msgstr "$1 mengunduh..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 membutuhkan dependensi yang tidak bisa ditemukan."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 akan dipasang dan $2 dependensi akan dilewati."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Semua paket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Tombol telah terpakai"
+msgstr "Telah terpasang"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Kembali ke menu utama"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Host Permainan"
+msgstr "Permainan Dasar:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -222,14 +222,12 @@ msgid "Install"
 msgstr "Pasang"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Pasang"
+msgstr "Pasang $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dependensi opsional:"
+msgstr "Pasang dependensi yang belum ada"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -245,26 +243,24 @@ msgid "No results"
 msgstr "Tiada hasil"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Perbarui"
+msgstr "Tiada pembaruan"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Bisukan suara"
+msgstr "Tidak ditemukan"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Timpa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Harap pastikan bahwa permainan dasar telah sesuai."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Diantrekan"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -280,11 +276,11 @@ msgstr "Perbarui"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Perbarui Semua [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Lihat informasi lebih lanjut di peramban web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -348,7 +344,7 @@ msgstr "Tanah mengambang di langit"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Floatland (uji coba)"
+msgstr "Floatland (tahap percobaan)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -764,7 +760,6 @@ msgid "Credits"
 msgstr "Penghargaan"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
 msgstr "Pilih direktori"
 
@@ -773,6 +768,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Membuka direktori yang berisi dunia, permainan, mod, dan paket tekstur\n"
+"dari pengguna dalam pengelola/penjelajah berkas."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -812,7 +809,7 @@ msgstr "Pasang permainan dari ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -823,9 +820,8 @@ msgid "No world created or selected!"
 msgstr "Tiada dunia yang dibuat atau dipilih!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Kata sandi baru"
+msgstr "Kata sandi"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -836,9 +832,8 @@ msgid "Port"
 msgstr "Porta"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Pilih Dunia:"
+msgstr "Pilih Mod"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -990,9 +985,8 @@ msgid "Shaders"
 msgstr "Shader"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Floatland (uji coba)"
+msgstr "Shader (tahap percobaan)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1192,7 +1186,7 @@ msgid "Continue"
 msgstr "Lanjutkan"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1215,12 +1209,12 @@ msgstr ""
 "- %s: geser kiri\n"
 "- %s: geser kanan\n"
 "- %s: lompat/panjat\n"
+"- %s: gali/pukul\n"
+"- %s: taruh/pakai\n"
 "- %s: menyelinap/turun\n"
 "- %s: jatuhkan barang\n"
 "- %s: inventaris\n"
 "- Tetikus: belok/lihat\n"
-"- Klik kiri: gali/pukul\n"
-"- Klik kanan: taruh/pakai\n"
 "- Roda tetikus: pilih barang\n"
 "- %s: obrolan\n"
 
@@ -1749,19 +1743,18 @@ msgid "Minimap hidden"
 msgstr "Peta mini disembunyikan"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Peta mini mode radar, perbesaran 1x"
+msgstr "Peta mini mode radar, perbesaran %dx"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Peta mini mode permukaan, perbesaran 1x"
+msgstr "Peta mini mode permukaan, perbesaran %dx"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Ukuran tekstur minimum"
+msgstr "Peta mini mode tekstur"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2161,7 +2154,7 @@ msgstr "Selang waktu ABM"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Anggaran waktu ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2664,7 +2657,7 @@ msgstr "Daftar Hitam Flag ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Jumlah Maks Pengunduhan ContentDB Bersamaan"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2732,11 +2725,12 @@ msgid "Crosshair alpha"
 msgstr "Keburaman crosshair"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Keburaman crosshair (keopakan, dari 0 sampai 255)."
+msgstr ""
+"Keburaman crosshair (keopakan, dari 0 sampai 255).\n"
+"Juga mengatur warna crosshair objek"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2747,6 +2741,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Warna crosshair (R,G,B),\n"
+"sekaligus mengatur warna crosshair objek"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2928,9 +2924,8 @@ msgid "Desynchronize block animation"
 msgstr "Putuskan sinkronasi animasi blok"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Tombol kanan"
+msgstr "Tombol gali"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3151,9 +3146,8 @@ msgstr ""
 "yang rata dan cocok untuk lapisan floatland padat (penuh)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "FPS (bingkai per detik) maksimum saat permainan dijeda."
+msgstr "FPS (bingkai per detik) saat dijeda atau tidak difokuskan"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3484,7 +3478,7 @@ msgid ""
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Atribut pembuatan peta global.\n"
-"Dalam pembuat peta v6, flag \"decorations\" mengatur semua hiasan kecuali\n"
+"Dalam pembuat peta v6, flag \"decorations\" mengatur semua hiasan, kecuali\n"
 "pohon dan rumput rimba. Dalam pembuat peta lain, flag ini mengatur\n"
 "semua dekorasi."
 
@@ -3533,7 +3527,6 @@ msgid "HUD toggle key"
 msgstr "Tombol beralih HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -3541,7 +3534,7 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Penanganan panggilan Lua API usang:\n"
-"-    legacy: (mencoba untuk) menyerupai aturan lawas (bawaan untuk rilis).\n"
+"-    none: jangan catat panggilan usang\n"
 "-    log: menyerupai dan mencatat asal-usul panggilan usang (bawaan untuk "
 "awakutu).\n"
 "-    error: batalkan penggunaan panggilan usang (disarankan untuk pengembang "
@@ -3824,9 +3817,8 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Jika FPS (bingkai per detik) lebih tinggi dari ini, akan\n"
-"dibatasi dengan jeda agar tidak menghabiskan tenaga\n"
-"CPU dengan percuma."
+"Jika FPS (bingkai per detik) lebih tinggi daripada ini, akan dibatasi\n"
+"dengan jeda agar tidak membuang tenaga CPU dengan percuma."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3988,8 +3980,7 @@ msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
-"Melengkapi fungsi panggil balik (callback) global saat didaftarkan,\n"
-"dengan perkakas.\n"
+"Melengkapi fungsi panggil balik (callback) global saat didaftarkan.\n"
 "(semua yang dimasukkan ke fungsi minetest.register_*())"
 
 #: src/settings_translation_file.cpp
@@ -4064,8 +4055,7 @@ msgstr ""
 "Perulangan fungsi rekursif.\n"
 "Menaikkan nilai ini menaikkan detail, tetapi juga menambah\n"
 "beban pemrosesan.\n"
-"Saat perulangan = 20, pembuat peta ini memiliki beban yang\n"
-"mirip dengan pembuat peta v7."
+"Saat perulangan = 20, beban pembuat peta ini mirip dengan v7."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
@@ -4076,9 +4066,8 @@ msgid "Joystick button repetition interval"
 msgstr "Jarak penekanan tombol joystick terus-menerus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Jenis joystick"
+msgstr "Zona mati joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4183,13 +4172,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk lompat.\n"
+"Tombol untuk gali.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4336,13 +4324,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk lompat.\n"
+"Tombol untuk taruh.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5111,11 +5098,11 @@ msgstr "Buat semua cairan buram"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Tingkat Kompresi Peta untuk Penyimpanan Diska"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Tingkat Kompresi Peta untuk Transfer Jaringan"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5300,9 +5287,10 @@ msgid "Maximum FPS"
 msgstr "FPS (bingkai per detik) maksimum"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "FPS (bingkai per detik) maksimum saat permainan dijeda."
+msgstr ""
+"FPS (bingkai per detik) maksimum saat permainan dijeda atau saat jendela "
+"tidak difokuskan."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5364,6 +5352,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Jumlah maksimum pengunduhan bersamaan. Pengunduhan yang melebihi batas ini "
+"akan\n"
+"diantrekan. Nilai ini harus lebih rendah daripada curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5765,14 +5756,12 @@ msgid "Pitch move mode"
 msgstr "Mode gerak sesuai pandang"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Tombol terbang"
+msgstr "Tombol taruh"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Jarak klik kanan berulang"
+msgstr "Jeda waktu taruh berulang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5842,7 +5831,7 @@ msgstr "Profiling"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "Alamat pendengar Prometheus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5851,6 +5840,10 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetch on http://127.0.0.1:30000/metrics"
 msgstr ""
+"Alamat pendengar Prometheus.\n"
+"Jika Minetest dikompilasi dengan pilihan ENABLE_PROMETHEUS dinyalakan,\n"
+"ini menyalakan pendengar metrik untuk Prometheus pada alamat itu.\n"
+"Metrik dapat diambil pada http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6251,12 +6244,11 @@ msgid "Show entity selection boxes"
 msgstr "Tampilkan kotak pilihan benda"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Atur bahasa. Biarkan kosong untuk menggunakan bahasa sistem.\n"
+"Tampilkan kotak pilihan entitas\n"
 "Dibutuhkan mulai ulang setelah mengganti ini."
 
 #: src/settings_translation_file.cpp
@@ -6442,6 +6434,16 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"Tingkat permukaan peletakan air pada lapisan floatland padat.\n"
+"Air tidak ditaruh secara bawaan dan akan ditaruh jika nilai ini diatur ke\n"
+"atas 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (mulai dari\n"
+"penirusan atas).\n"
+"***PERINGATAN, POTENSI BAHAYA TERHADAP DUNIA DAN KINERJA SERVER***\n"
+"Ketika penaruhan air dinyalakan, floatland wajib diatur dan diuji agar\n"
+"berupa lapisan padat dengan mengatur 'mgv7_floatland_density' ke 2.0\n"
+"(atau nilai wajib lainnya sesuai 'mgv7_np_floatland') untuk menghindari\n"
+"aliran air ekstrem yang membebani server dan menghindari banjir\n"
+"bandang di permukaan dunia bawah."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6520,9 +6522,8 @@ msgid "The URL for the content repository"
 msgstr "URL dari gudang konten"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "Identitas dari joystick yang digunakan"
+msgstr "Zona mati joystick yang digunakan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6580,7 +6581,6 @@ msgstr ""
 "server Anda."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6590,14 +6590,13 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
-"Jari-jari ruang di sekitar pemain yang menjadi blok aktif, dalam blok peta\n"
-"(16 nodus).\n"
+"Jari-jari volume blok di sekitar pemain yang menjadi blok aktif, dalam\n"
+"blok peta (16 nodus).\n"
 "Dalam blok aktif, objek dimuat dan ABM berjalan.\n"
 "Ini juga jangkauan minimum pengelolaan objek aktif (makhluk).\n"
 "Ini harus diatur bersama dengan active_object_range."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6609,8 +6608,8 @@ msgstr ""
 "Penggambar untuk Irrlicht.\n"
 "Mulai ulang dibutuhkan setelah mengganti ini.\n"
 "Catatan: Pada Android, gunakan OGLES1 jika tidak yakin! Apl mungkin gagal\n"
-"berjalan pada lainnya. Pada platform lain, OpenGL disarankan yang menjadi\n"
-"satu-satunya pengandar yang mendukung shader untuk saat ini."
+"berjalan untuk pilihan lainnya. Pada platform lain, OpenGL disarankan.\n"
+"Shader didukung oleh OpenGL (khusus desktop) dan OGLES2 (tahap percobaan)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6648,6 +6647,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Anggaran waktu yang dibolehkan untuk ABM dalam menjalankan\n"
+"tiap langkah (dalam pecahan dari jarak ABM)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6658,12 +6659,10 @@ msgstr ""
 "menekan terus-menerus kombinasi tombol joystick."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
-msgstr ""
-"Jeda dalam detik antarklik kanan berulang saat menekan tombol kanan tetikus."
+msgstr "Jeda dalam detik antar-penaruhan berulang saat menekan tombol taruh."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6815,9 +6814,8 @@ msgid ""
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
-"Gunakan mip mapping untuk penyekalaan tekstur. Dapat sedikit\n"
-"meningkatkan kinerja, terutama saat menggunakan paket tekstur\n"
-"beresolusi tinggi.\n"
+"Pakai mip mapping untuk penyekalaan tekstur. Bisa sedikit menaikkan\n"
+"kinerja, terutama pada saat memakai paket tekstur beresolusi tinggi.\n"
 "Pengecilan dengan tepat gamma tidak didukung."
 
 #: src/settings_translation_file.cpp
@@ -6830,6 +6828,13 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Pakai antialias multisampel (MSAA) untuk memperhalus tepian blok.\n"
+"Algoritme ini memperhalus tampilan 3D sambil menjaga ketajaman gambar,\n"
+"tetapi tidak memengaruhi tekstur bagian dalam (yang terlihat khususnya\n"
+"dengan tekstur transparan).\n"
+"Muncul spasi tampak di antara nodus ketika shader dimatikan.\n"
+"Jika diatur 0, MSAA dimatikan.\n"
+"Dibutuhkan mulai ulang setelah penggantian pengaturan ini."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7017,10 +7022,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
-"Saat gui_scaling_filter diatur ke true, semua gambar GUI harus\n"
-"difilter dalam perangkat lunak, tetapi beberapa gambar dibuat\n"
-"langsung ke perangkat keras (misal. render ke tekstur untuk nodus\n"
-"dalam inventaris)."
+"Saat gui_scaling_filter diatur ke true, semua gambar GUI harus difilter\n"
+"dalam perangkat lunak, tetapi beberapa gambar dibuat langsung ke\n"
+"perangkat keras (misal. render ke tekstur untuk nodus dalam inventaris)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7029,11 +7033,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
-"Saat gui_scaling_filter_txr2img dibolehkan, salin gambar-gambar\n"
-"tersebut dari perangkat keras ke perangkat lunak untuk perbesar/\n"
-"perkecil.  Saat tidak dibolehkan, kembali ke cara lama, untuk\n"
-"pengandar video yang tidak mendukung pengunduhan tekstur dari\n"
-"perangkat keras."
+"Saat gui_scaling_filter_txr2img dibolehkan, salin gambar-gambar tersebut\n"
+"dari perangkat keras ke perangkat lunak untuk perbesar/perkecil. Saat tidak\n"
+"dibolehkan, kembali ke cara lama, untuk pengandar video yang tidak\n"
+"mendukung pengunduhan tekstur dari perangkat keras."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7189,6 +7192,10 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"Jarak Y penirusan floatland dari padat sampai kosong.\n"
+"Penirusan dimulai dari jarak ini sampai batas Y.\n"
+"Untuk lapisan floatland padat, nilai ini mengatur tinggi bukit/gunung.\n"
+"Nilai ini harus kurang dari atau sama dengan setengah jarak antarbatas Y."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
@@ -7218,6 +7225,11 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Tingkat kompresi ZLib saat pengiriman blok peta kepada klien.\n"
+"-1 - tingkat kompresi Zlib bawaan\n"
+"0 - tanpa kompresi, tercepat\n"
+"9 - kompresi terbaik, terlambat\n"
+"(tingkat 1-3 pakai metode \"cepat\" Zlib, 4-9 pakai metode normal)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7227,6 +7239,11 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Tingkat kompresi ZLib saat penyimpanan blok peta kepada klien.\n"
+"-1 - tingkat kompresi Zlib bawaan\n"
+"0 - tanpa kompresi, tercepat\n"
+"9 - kompresi terbaik, terlambat\n"
+"(tingkat 1-3 pakai metode \"cepat\" Zlib, 4-9 pakai metode normal)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
