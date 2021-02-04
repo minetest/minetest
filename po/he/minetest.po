@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hebrew (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-01-08 17:32+0000\n"
-"Last-Translator: Omer I.S. <omeritzicschwartz@gmail.com>\n"
+"PO-Revision-Date: 2021-02-09 15:34+0000\n"
+"Last-Translator: Yossi Cohen <cohenyossi81@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
 "he/>\n"
 "Language: he\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -126,11 +126,11 @@ msgstr "לא סופק תיאור משחק."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "אין תלויות קשות"
+msgstr "אין תלויות מחייבות"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "לא סופק תיאור לחבילת המוד."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -155,34 +155,35 @@ msgstr "מופעל"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" כבר קיים. האם תרצה להחליף אותו?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "התלויות $1 ו $2 יותקנו."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 ליד $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 מוריד,\n"
+"$2 ממתין"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "כעת בהורדה..."
+msgstr "$1 כעת בהורדה..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "לא ניתן למצוא תלות חובה של $1."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 יותקן ו $2 תלויות שידולגו."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -190,20 +191,19 @@ msgstr "כל החבילות"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr ""
+msgstr "כבר מותקן"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "חזרה לתפריט הראשי"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "הסתר משחק"
+msgstr "משחק בסיסי:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "בסיס נתוני התוכן לא זמין כאשר מיינטסט מקומפל בלי cUrl"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -223,14 +223,12 @@ msgid "Install"
 msgstr "התקנה"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "התקנה"
+msgstr "התקנת $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "תלויות רשות:"
+msgstr "מתקין תלויות חסרות"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -239,37 +237,35 @@ msgstr "מודים"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "לא ניתן להביא את החבילות"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "אין תוצאות"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "עדכון"
+msgstr "אין עדכונים"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "לא נמצא"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "דרוס"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "אנא בדוק שמשחק הבסיס תקין."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "נכנס לתור"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Texture packs"
-msgstr "חבילות מרקם"
+msgstr "חבילות טקסטורה (מרקם)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -281,11 +277,11 @@ msgstr "עדכון"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "עדכן הכל [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "צפה במידע נוסף בדפדפן האינטרנט"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -293,31 +289,31 @@ msgstr "כבר קיים עולם בשם \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "שטח נוסף"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "קור בגבהים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "יובש בגבהים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "מיזוג ביומים (אקולוגי)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr "ביומות"
+msgstr "ביומים (צמחיה אקולוגית)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "מערות (טבעיות בחלקן מוארות)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr "מערות"
+msgstr "מערות (ללא אור שמש)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -325,7 +321,7 @@ msgstr "יצירה"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "קישוטים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -337,7 +333,7 @@ msgstr "הורד אחד מאתר minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "מבוכים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
@@ -345,11 +341,11 @@ msgstr "עולם שטוח"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "גושי אדמה צפים בשמים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "אדמה צפה (נסיוני)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -357,19 +353,19 @@ msgstr "משחק"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "צור שטח לא פרקטלי: אוקיינוסים ותת קרקעי"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "גבעות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "נהרות לחים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "הגברת הלחות בסביבת נהרות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -377,20 +373,19 @@ msgstr "אגמים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "לחות נמוכה וחום גבוה גורמים לנהרות רדודים או יבשים"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "מנוע מפות"
+msgstr "מנוע (מחולל) מפות"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "אפשרויות מנוע מפות"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "מנוע מפות"
+msgstr "אפשרויות ספציפיות למנוע מפות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -398,11 +393,11 @@ msgstr "הרים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "זרימת בוץ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "רשת מערות ומחילות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -410,11 +405,11 @@ msgstr "לא נבחר משחק"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "הפחתה בחום בגובה רב"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "הפחתת הלחות בגובה רב"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
@@ -422,7 +417,7 @@ msgstr "נהרות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "נהרות בגובה פני הים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -431,33 +426,33 @@ msgstr "זרע"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "מעבר חלק בין אזורי אקלים שונים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
-msgstr ""
+msgstr "מבנים המופיעים בשטח (אין השפעה על עצים ועשבי ג'ונגל שנוצרו על ידי v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "מבנים המופיעים בשטח, בדרך כלל עצים וצמחים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "ממוזג, מדברי"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "ממוזג, מדברי, ג'ונגל"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "ממוזג, מדברי, ג'ונגל, טונדרה, טייגה"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "סחף פני השטח"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -465,11 +460,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "עומק נהרות משתנה"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "מערות גדולות מאוד עמוק מתחת לאדמה"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
@@ -499,7 +494,7 @@ msgstr "pkgmgr: מחיקת \"$1\" נכשלה"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: נתיב לא חוקי \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -518,6 +513,8 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"ל- modpack (חבילת תוספות) זה יש שם מפורש שניתן ב modpack.conf שלו אשר יעקוף "
+"כל שינוי-שם כאן."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -525,7 +522,7 @@ msgstr "(לא נוסף תיאור להגדרה)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "רעש דו-מיימדי"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -549,19 +546,19 @@ msgstr "מופעל"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "מרווחיות"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "אוקטבות"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "היסט"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "התמדה"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -6124,37 +6121,39 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
-msgstr ""
+msgstr "טווח ראיה בקוביות."
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr ""
+msgstr "מקש הקטנת טווח ראיה"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr ""
+msgstr "מקש הגדלת טוחח ראיה"
 
 #: src/settings_translation_file.cpp
 msgid "View zoom key"
-msgstr ""
+msgstr "מקש זום (משקפת)"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
-msgstr ""
+msgstr "טווח ראיה"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers aux button"
-msgstr ""
+msgstr "מקש הפעלת ג'ויסטיק וירטואלי"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "ווליום"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
+"עוצמת הקול של כל הצלילים.\n"
+"דורש הפעלת מערכת הקול."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6171,19 +6170,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "מהירות הליכה"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
-msgstr ""
+msgstr "מהירות הליכה, טיסה וטיפוס במצב מהיר, בקוביות לשנייה."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "מפלס המים"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "מפלס פני המים בעולם."
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
@@ -6203,15 +6202,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wave speed"
-msgstr ""
+msgstr "מהירות גל של נוזלים עם גלים"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wavelength"
-msgstr ""
+msgstr "אורך גל של נוזלים עם גלים"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "צמחים מתנופפים"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6287,7 +6286,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
-msgstr ""
+msgstr "רכיב רוחב של גודל החלון הראשוני."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -6323,25 +6322,25 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
-msgstr ""
+msgstr "מצב טקסטורות מיושרות לעולם"
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
-msgstr ""
+msgstr "Y לקרקע שטוחה."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
-msgstr ""
+msgstr "Y של צפיפות הרים שיפוע רמת אפס. משמש להעברת הרים אנכית."
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
-msgstr ""
+msgstr "Y של הגבול העליון של מערות גדולות."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
-msgstr ""
+msgstr "מרחק Y שעליו מתרחבות מערות לגודל מלא."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6391,15 +6390,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
-msgstr ""
+msgstr "(cURL) זמן להורדה נגמר"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
-msgstr ""
+msgstr "(cURL) מגבלה לפעולות במקביל"
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr ""
+msgstr "(cURL) מגבלת זמן"
 
 #~ msgid "Configure"
 #~ msgstr "קביעת תצורה"
