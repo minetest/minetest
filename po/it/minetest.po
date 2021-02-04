@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-12-07 09:22+0000\n"
+"PO-Revision-Date: 2021-02-05 09:40+0000\n"
 "Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -153,52 +153,51 @@ msgstr "abilitato"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" già esiste. Vuoi sovrascriverlo?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Le dipendenze $1 e $2 verranno installate."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 di $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 in scaricamento,\n"
+"$2 in coda"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Scaricamento..."
+msgstr "Scaricando $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "Le dipendeze richieste per $1 non sono state trovate."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 verrà installato, e $2 dipendenze verranno ignorate."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Tutti i pacchetti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Tasto già usato"
+msgstr "Già installato"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Torna al Menu Principale"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Ospita un gioco"
+msgstr "Gioco base:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -222,14 +221,12 @@ msgid "Install"
 msgstr "Installa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installa"
+msgstr "Installa $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dipendenze facoltative:"
+msgstr "Installa le dipendenze mancanti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -245,26 +242,24 @@ msgid "No results"
 msgstr "Nessun risultato"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Aggiorna"
+msgstr "Nessun aggiornamento"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Silenzia audio"
+msgstr "Non trovato"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Sovrascrivi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Per favore, controlla che il gioco base sia corretto."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "In coda"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -280,11 +275,11 @@ msgstr "Aggiorna"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Aggiornat tutti [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Visualizza ulteriori informazioni in un browser web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -766,15 +761,16 @@ msgid "Credits"
 msgstr "Riconoscimenti"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Scegli la cartella"
+msgstr "Apri la cartella dei dati utente"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Apre la cartella che contiene mondi, giochi, mod e pacchetti texture forniti "
+"dall'utente in un gestore di file / explorer."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -814,7 +810,7 @@ msgstr "Installa giochi da ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -825,9 +821,8 @@ msgid "No world created or selected!"
 msgstr "Nessun mondo creato o selezionato!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nuova password"
+msgstr "Password"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -838,9 +833,8 @@ msgid "Port"
 msgstr "Porta"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Seleziona mondo:"
+msgstr "Seleziona mod"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -992,9 +986,8 @@ msgid "Shaders"
 msgstr "Shaders"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Terre fluttuanti (sperimentale)"
+msgstr "Shader (sperimentali)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1194,7 +1187,7 @@ msgid "Continue"
 msgstr "Continua"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1216,13 +1209,13 @@ msgstr ""
 "- %s: arretra\n"
 "- %s: sinistra\n"
 "- %s: destra\n"
-"- %s: salta/arrampica\n"
+"- %s: salta/arrampicati\n"
+"- %s: scava/colpisci\n"
+"- %s: piazza/usa\n"
 "- %s: furtivo/scendi\n"
-"- %s: butta oggetto\n"
+"- %s: lascia oggetto\n"
 "- %s: inventario\n"
 "- Mouse: gira/guarda\n"
-"- Mouse sx: scava/colpisci\n"
-"- Mouse dx: piazza/usa\n"
 "- Rotella mouse: scegli oggetto\n"
 "- %s: chat\n"
 
@@ -1751,19 +1744,18 @@ msgid "Minimap hidden"
 msgstr "Minimappa nascosta"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Minimappa in modalità radar, ingrandimento x1"
+msgstr "Minimappa in modalità radar, ingrandimento x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Minimappa in modalità superficie, ingrandimento x1"
+msgstr "Minimappa in modalità superficie, ingrandimento x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Dimensione minima della texture"
+msgstr "Minimappa in modalità texture"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2173,7 +2165,7 @@ msgstr "Intervallo ABM"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Budget di tempo ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2684,7 +2676,7 @@ msgstr "Contenuti esclusi da ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Massimi download contemporanei di ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2754,11 +2746,12 @@ msgid "Crosshair alpha"
 msgstr "Trasparenza del mirino"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Trasparenza del mirino (opacità, tra 0 e 255)."
+msgstr ""
+"Trasparenza del mirino (opacità, tra 0 e 255).\n"
+"Controlla anche il colore del mirino dell'oggetto"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2769,6 +2762,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Colore del mirino (R,G,B).\n"
+"Controlla anche il colore del mirino dell'oggetto"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2953,9 +2948,8 @@ msgid "Desynchronize block animation"
 msgstr "De-sincronizza l'animazione del blocco"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Tasto des."
+msgstr "Tasto scava"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3187,9 +3181,8 @@ msgstr ""
 "pianure più piatte, adatti a uno strato solido di terre fluttuanti."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "FPS massimi quando il gioco è in pausa."
+msgstr "FPS quando il gioco è in pausa o in secondo piano."
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3583,20 +3576,18 @@ msgid "HUD toggle key"
 msgstr "Tasto di (dis)attivazione dell'HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
 "-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"Gestione delle chiamate deprecate alle API Lua:\n"
-"-   legacy (ereditaria): (prova a) simulare il vecchio comportamento "
-"(predefinito per i rilasci).\n"
-"-   log (registro): simula e registra la traccia della chiamata deprecata "
-"(predefinito per il debug).\n"
-"-   error (errore): interrompere all'uso della chiamata deprecata (suggerito "
-"per lo sviluppo di moduli)."
+"Gestione delle chiamate API Lua deprecate:\n"
+"- none (nessuno): non registra le chiamate obsolete\n"
+"- log (registro): imita e registra il backtrace di una chiamata obsoleta ("
+"impostazione predefinita).\n"
+"- error (errore): interrompe l'utilizzo della chiamata deprecata ("
+"consigliata per gli sviluppatori di mod)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4130,9 +4121,8 @@ msgid "Joystick button repetition interval"
 msgstr "Intervallo di ripetizione del pulsante del joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Tipo di joystick"
+msgstr "Deadzone joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4237,14 +4227,13 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tasto per saltare.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"Tasto per scavare.\n"
+"Vedi http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
@@ -4390,14 +4379,13 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tasto per saltare.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"Tasto per piazzare.\n"
+"Vedi http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
@@ -5172,11 +5160,11 @@ msgstr "Rende opachi tutti i liquidi"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Livello di compressione della mappa per l'archiviazione su disco"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Livello di compressione della mappa per il trasferimento in rete"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5367,9 +5355,10 @@ msgid "Maximum FPS"
 msgstr "FPS massimi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "FPS massimi quando il gioco è in pausa."
+msgstr ""
+"FPS massimi quando la finestra è in secondo piano o quando il gioco è in "
+"pausa."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5433,6 +5422,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Numero massimo di download simultanei. I download che superano questo limite "
+"verranno messi in coda.\n"
+"Dovrebbe essere inferiore a curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5859,14 +5851,12 @@ msgid "Pitch move mode"
 msgstr "Modalità inclinazione movimento"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Tasto volo"
+msgstr "Tasto piazza"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Intervallo di ripetizione del click destro"
+msgstr "Intervallo di ripetizione per il piazzamento"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6361,13 +6351,12 @@ msgid "Show entity selection boxes"
 msgstr "Mostrare le aree di selezione delle entità"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Imposta la Lingua. Lascia vuoto per usare la Lingua di sistema.\n"
-"Dopo avere modificato questa impostazione è necessario il riavvio."
+"Mostra la casella di selezione delle entità\n"
+"È necessario riavviare dopo aver cambiato questo."
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6653,9 +6642,8 @@ msgid "The URL for the content repository"
 msgstr "L'URL per il deposito dei contenuti"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "L'identificatore del joystick da usare"
+msgstr "La deadzone del joystick"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6730,7 +6718,6 @@ msgstr ""
 "active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6739,12 +6726,12 @@ msgid ""
 "On other platforms, OpenGL is recommended.\n"
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
-"Il motore di resa per Irrlicht.\n"
+"Il back-end di rendering per Irrlicht.\n"
 "Dopo averlo cambiato è necessario un riavvio.\n"
-"Nota: su Android, si resti con OGLES1 se incerti! Altrimenti l'app potrebbe "
+"Nota: su Android, restare con OGLES1 se incerti! Altrimenti l'app potrebbe "
 "non partire.\n"
-"Su altre piattaforme, si raccomanda OpenGL, ed è attualmente l'unico driver\n"
-"con supporto degli shader."
+"Su altre piattaforme, si raccomanda OpenGL\n"
+"Le shader sono supportate da OpenGL (solo su desktop) e OGLES2 (sperimentale)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6786,6 +6773,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Il budget di tempo ha consentito agli ABM per eseguire ogni passaggio\n"
+"(come frazione dell'intervallo ABM)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6796,13 +6785,13 @@ msgstr ""
 "si tiene premuta una combinazione di pulsanti del joystick."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Il tempo in secondi richiesto tra click destri ripetuti quando\n"
-"si tiene premuto il tasto destro del mouse."
+"Il tempo in secondi che intercorre tra il piazzamento dei nodi quando si "
+"tiene\n"
+"premuto il pulsante piazza."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6977,6 +6966,15 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Utilizzare l'antialiasing multi-campione (MSAA) per smussare i bordi del "
+"blocco.\n"
+"Questo algoritmo uniforma la visualizzazione 3D mantenendo l'immagine nitida,"
+"\n"
+"ma non influenza l'interno delle texture\n"
+"(che è particolarmente evidente con trame trasparenti).\n"
+"Gli spazi visibili appaiono tra i nodi quando gli shader sono disabilitati.\n"
+"Se impostato a 0, MSAA è disabilitato.\n"
+"È necessario riavviare dopo aver modificato questa opzione."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7386,6 +7384,13 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Livello di compressione ZLib da utilizzare quando si salvano i blocchi mappa "
+"su disco.\n"
+"-1 - Livello di compressione predefinito di Zlib\n"
+"0 - nessuna compressione, più veloce\n"
+"9 - migliore compressione, più lenta\n"
+"(i livelli 1-3 usano il metodo \"veloce\" di Zlib, 4-9 usano il metodo "
+"normale)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7395,6 +7400,13 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Livello di compressione ZLib da utilizzare quando si inviano i blocchi mappa "
+"al client.\n"
+"-1 - Livello di compressione predefinito di Zlib\n"
+"0 - nessuna compressione, più veloce\n"
+"9 - migliore compressione, più lenta\n"
+"(i livelli 1-3 usano il metodo \"veloce\" di Zlib, 4-9 usano il metodo "
+"normale)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
