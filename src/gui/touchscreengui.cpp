@@ -881,8 +881,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			s32 dyj = event.TouchInput.Y - m_screensize.Y + button_size * 5.0f / 2.0f;
 			bool inside_joystick = (dxj * dxj + dyj * dyj <= button_size * button_size * 1.5 * 1.5);
 
-			if (m_joystick_has_really_moved ||
-					(!m_joystick_has_really_moved && inside_joystick) ||
+			if (m_joystick_has_really_moved || inside_joystick ||
 					(!m_fixed_joystick &&
 					distance_sq > m_touchscreen_threshold * m_touchscreen_threshold)) {
 				m_joystick_has_really_moved = true;

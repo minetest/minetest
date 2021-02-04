@@ -190,14 +190,6 @@ enum ClearObjectsMode {
 		CLEAR_OBJECTS_MODE_QUICK,
 };
 
-/*
-	The server-side environment.
-
-	This is not thread-safe. Server uses an environment mutex.
-*/
-
-typedef std::unordered_map<u16, ServerActiveObject *> ServerActiveObjectMap;
-
 class ServerEnvironment : public Environment
 {
 public:
@@ -322,11 +314,21 @@ public:
 	bool removeNode(v3s16 p);
 	bool swapNode(v3s16 p, const MapNode &n);
 
+	// Find the daylight value at pos with a Depth First Search
+	u8 findSunlight(v3s16 pos) const;
+
 	// Find all active objects inside a radius around a point
 	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 	{
 		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
+	}
+
+	// Find all active objects inside a box
+	void getObjectsInArea(std::vector<ServerActiveObject *> &objects, const aabb3f &box,
+			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
+	{
+		return m_ao_manager.getObjectsInArea(box, objects, include_obj_cb);
 	}
 
 	// Clear objects, loading and going through every MapBlock

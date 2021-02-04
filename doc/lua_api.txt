@@ -62,12 +62,12 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, human readable name  e.g. `name = Minetest`
+    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
-      Mapgens not in this list are removed from the list of mapgens for
-      the game.
+      Mapgens not in this list are removed from the list of mapgens for the
+      game.
       If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
@@ -79,6 +79,10 @@ The game directory can contain the following files:
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These settings are hidden for this game in the world creation
       dialog and game start menu.
+    * `author`: The author of the game. It only appears when downloaded from
+                ContentDB.
+    * `release`: Ignore this: Should only ever be set by ContentDB, as it is
+                 an internal ID used to track versions.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -134,9 +138,15 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
-* `name`: The modpack name.
+* `name`: The modpack name. Allows Minetest to determine the modpack name even
+          if the folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
+* `author`: The author of the modpack. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the modpack.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -181,6 +191,11 @@ A `Settings` file that provides meta information about the mod.
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
+* `author`: The author of the mod. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the mod.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
@@ -386,40 +401,13 @@ stripping out the file extension:
 * e.g. `foomod_foothing`
 
 
-Normalmap Textures
-------------------
-
-If shaders and bumpmapping or parallax occlusion is enabled, Minetest tries
-to load normalmaps.
-Those image files have to end with `_normal.png` and start with the same name
-as their corresponding texture.
-For example a normalmap for `foomod_foothing.png` has to be called
-`foomod_foothing_normal.png`.
-
-The sRGB R, G and B colour values of a normalmap pixel are each directly
-mapped from `{0, ..., 255}` to `[-1, 1]` and, taken together,
-define the normal vector.
-The alpha channel defines the heightmap for parallax occlusion.
-To be safe, the alpha values should always be bigger than zero
-because the colour values, which define the normal vector,
-may be undefined for image formats where colour is discarded in fully
-transparent pixels.
-
-Bumpmapping and parallax occlusion are currently experimental features:
-
-* Bumpmapping in Minetest happens in an obscure way; there are no light sources
-  defined in the shaders except the sunlight direction.
-* Parallax occlusion with relief-mapping mode does not yet work correctly
-  together with Minetest's Fastfaces.
-* The normalmap files must end with `.png`, so other image files are not
-  supported.
-
-
 Texture modifiers
 -----------------
 
 There are various texture modifiers that can be used
-to generate textures on-the-fly.
+to let the client generate textures on-the-fly.
+The modifiers are applied directly in sRGB colorspace,
+i.e. without gamma-correction.
 
 ### Texture overlaying
 
@@ -817,7 +805,7 @@ Example (colored grass block):
         -- Overlay tiles: define them in the same style
         -- The top and bottom tile does not have overlay
         overlay_tiles = {"", "",
-            {name = "default_grass_side.png", tileable_vertical = false}},
+            {name = "default_grass_side.png"}},
         -- Global color, used in inventory
         color = "green",
         -- Palette in the world
@@ -1026,7 +1014,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
 * `paramtype2 = "flowingliquid"`
     * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
     * The liquid level and a flag of the liquid are stored in `param2`
-    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node;
+      see `minetest.get_node_level`, `minetest.set_node_level` and `minetest.add_node_level`
+      to access/manipulate the content of this field
     * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
     * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
@@ -1187,7 +1177,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       base cube without affecting them.
     * The base cube texture tiles are defined as normal, the `plantlike`
       extension uses the defined special tile, for example:
-      `special_tiles = {{name = "default_papyrus.png", tileable_vertical = true}},`
+      `special_tiles = {{name = "default_papyrus.png"}},`
 
 `*_optional` drawtypes need less rendering time if deactivated
 (always client-side).
@@ -1257,6 +1247,9 @@ A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
+To avoid collision issues, keep each value within the range of +/- 1.45.
+This also applies to leveled nodeboxes, where the final height shall not
+exceed this soft limit.
 
 
 
@@ -1468,6 +1461,15 @@ Displays an image oriented or translated according to current heading direction.
   * 3 - Translate in reverse direction
 
 If translation is chosen, texture is repeated horizontally to fill the whole element.
+
+### `minimap`
+
+Displays a minimap on the HUD.
+
+* `size`: Size of the minimap to display. Minimap should be a square to avoid
+  distortion.
+* `alignment`: The alignment of the minimap.
+* `offset`: offset in pixels from position.
 
 Representations of simple things
 ================================
@@ -1743,8 +1745,9 @@ to games.
 ### `ObjectRef` groups
 
 * `immortal`: Skips all damage and breath handling for an object. This group
-  will also hide the integrated HUD status bars for players, and is
-  automatically set to all players when damage is disabled on the server.
+  will also hide the integrated HUD status bars for players. It is
+  automatically set to all players when damage is disabled on the server and
+  cannot be reset (subject to change).
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
@@ -2026,8 +2029,10 @@ Item metadata only contains a key-value store.
 
 Some of the values in the key-value store are handled specially:
 
-* `description`: Set the item stack's description. Defaults to
-  `idef.description`.
+* `description`: Set the item stack's description.
+  See also: `get_description` in [`ItemStack`]
+* `short_description`: Set the item stack's short description.
+  See also: `get_short_description` in [`ItemStack`]
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
@@ -2110,6 +2115,22 @@ Examples
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
 
+Version History
+---------------
+
+* FORMSPEC VERSION 1:
+  * (too much)
+* FORMSPEC VERSION 2:
+  * Forced real coordinates
+  * background9[]: 9-slice scaling parameters
+* FORMSPEC VERSION 3:
+  * Formspec elements are drawn in the order of definition
+  * bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
+  * box[] and image[] elements enable clipping by default
+  * new element: scroll_container[]
+* FORMSPEC VERSION 4:
+  * Allow dropdown indexing events
+
 Elements
 --------
 
@@ -2121,6 +2142,7 @@ Elements
 * Clients older than this version can neither show newer elements nor display
   elements with new arguments correctly.
 * Available since feature `formspec_version_element`.
+* See also: [Version History]
 
 ### `size[<W>,<H>,<fixed_size>]`
 
@@ -2205,7 +2227,8 @@ Elements
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
-  slots is one-fourth the size of an inventory slot.
+  slots is one-fourth the size of an inventory slot by default. Also see
+  [Styling Formspecs] for changing the size of slots and spacing.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
@@ -2272,6 +2295,21 @@ Elements
 * `frame count`: The number of frames animating the image.
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
 * `frame start` (Optional): The index of the frame to start on. Default `1`.
+
+### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>]`
+
+* Show a mesh model.
+* `name`: Element name that can be used for styling
+* `mesh`: The mesh model to use.
+* `textures`: The mesh textures to use according to the mesh materials.
+   Texture names must be separated by commas.
+* `rotation {X,Y}` (Optional): Initial rotation of the camera.
+  The axes are euler angles in degrees.
+* `continuous` (Optional): Whether the rotation is continuous. Default `false`.
+* `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
+* `frame loop range` (Optional): Range of the animation frames.
+    * Defaults to the full range of all available frames.
+    * Syntax: `<begin>,<end>`
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
@@ -2773,6 +2811,8 @@ Some types may inherit styles from parent types.
 * image_button
 * item_image_button
 * label
+* list
+* model
 * pwdfield, inherits from field
 * scrollbar
 * tabheader
@@ -2832,17 +2872,24 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * padding - rect, adds space between the edges of the button and the content. This value is
                 relative to bgimg_middle.
+    * sound - a sound to be played when triggered.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * sound - a sound to be played when triggered.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * sound - a sound to be played when the entry is changed.
 * field, pwdfield, textarea
     * border - set to false to hide the textbox background and border. Default true.
     * font - Sets font type. See button `font` property for more information.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* model
+    * bgcolor - color, sets background color.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Default to false in formspec_version version 3 or higher
 * image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
@@ -2852,6 +2899,10 @@ Some types may inherit styles from parent types.
     * font - Sets font type. See button `font` property for more information.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* list
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * size - 2d vector, sets the size of inventory slots in coordinates.
+    * spacing - 2d vector, sets the space between inventory slots in coordinates.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
@@ -2859,10 +2910,12 @@ Some types may inherit styles from parent types.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
+    * sound - a sound to be played when triggered.
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * sound - a sound to be played when a different tab is selected.
     * textcolor - color. Default white.
 * table, textlist
     * font - Sets font type. See button `font` property for more information.
@@ -3212,6 +3265,7 @@ Helper functions
     * returns true when the passed number represents NaN.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
+    * This value might overflow on certain 32-bit systems!
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 * `table.indexof(list, val)`: returns the smallest numerical index containing
@@ -3222,7 +3276,8 @@ Helper functions
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
-    * If multiple keys in `t` map to the same value, the result is undefined.
+    * If multiple keys in `t` map to the same value, it is unspecified which
+      value maps to that key.
 * `table.shuffle(table, [from], [to], [random_func])`:
     * Shuffles elements `from` to `to` in `table` in place
     * `from` defaults to `1`
@@ -4160,6 +4215,8 @@ Callbacks:
     * Called when the object is instantiated.
     * `dtime_s` is the time passed since the object was unloaded, which can be
       used for updating the entity state.
+* `on_deactivate(self)
+    * Called when the object is about to get removed or unloaded.
 * `on_step(self, dtime)`
     * Called on every server tick, after movement and collision processing.
       `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
@@ -4280,11 +4337,14 @@ Utilities
 
 * `minetest.get_current_modname()`: returns the currently loading mod's name,
   when loading a mod.
-* `minetest.get_modpath(modname)`: returns e.g.
-  `"/home/user/.minetest/usermods/modname"`.
-    * Useful for loading additional `.lua` modules or static data from mod
-* `minetest.get_modnames()`: returns a list of installed mods
-    * Return a list of installed mods, sorted alphabetically
+* `minetest.get_modpath(modname)`: returns the directory path for a mod,
+  e.g. `"/home/user/.minetest/usermods/modname"`.
+    * Returns nil if the mod is not enabled or does not exist (not installed).
+    * Works regardless of whether the mod has been loaded yet.
+    * Useful for loading additional `.lua` modules or static data from a mod,
+  or checking if a mod is enabled.
+* `minetest.get_modnames()`: returns a list of enabled mods, sorted alphabetically.
+    * Does not include disabled mods, even if they are installed.
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
 * `minetest.is_singleplayer()`
@@ -4325,6 +4385,10 @@ Utilities
           pathfinder_works = true,
           -- Whether Collision info is available to an objects' on_step (5.3.0)
           object_step_has_moveresult = true,
+          -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
+          direct_velocity_on_players = true,
+          -- nodedef's use_texture_alpha accepts new string modes (5.4.0)
+          use_texture_alpha_string_modes = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4533,6 +4597,10 @@ Call these functions only at load time!
       the puncher to the punched.
     * `damage`: Number that represents the damage calculated by the engine
     * should return `true` to prevent the default damage mechanism
+* `minetest.register_on_rightclickplayer(function(player, clicker))`
+    * Called when a player is right-clicked
+    * `player`: ObjectRef - Player that was right-clicked
+    * `clicker`: ObjectRef - Object that right-clicked, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
@@ -4591,6 +4659,11 @@ Call these functions only at load time!
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
+* `minetest.register_on_chatcommand(function(name, command, params))`
+    * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
+      is checked to see if the command exists, but after the input is parsed.
+    * Return `true` to mark the command as handled, which means that the default
+      handlers will be prevented.
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
     * Called when the server received input from `player` in a formspec with
       the given `formname`. Specifically, this is called on any of the
@@ -4793,6 +4866,22 @@ Environment access
     * `pos`: The position where to measure the light.
     * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
     * Returns a number between `0` and `15` or `nil`
+    * `nil` is returned e.g. when the map isn't loaded at `pos`
+* `minetest.get_natural_light(pos[, timeofday])`
+    * Figures out the sunlight (or moonlight) value at pos at the given time of
+      day.
+    * `pos`: The position of the node
+    * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
+    * Returns a number between `0` and `15` or `nil`
+    * This function tests 203 nodes in the worst case, which happens very
+      unlikely
+* `minetest.get_artificial_light(param1)`
+    * Calculates the artificial light (light from e.g. torches) value from the
+      `param1` value.
+    * `param1`: The param1 value of a `paramtype = "light"` node.
+    * Returns a number between `0` and `15`
+    * Currently it's the same as `math.floor(param1 / 16)`, except that it
+      ensures compatibility.
 * `minetest.place_node(pos, node)`
     * Place node with the same effects that a player would cause
 * `minetest.dig_node(pos)`
@@ -4821,6 +4910,9 @@ Environment access
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
     * `radius`: using an euclidean metric
+* `minetest.get_objects_in_area(pos1, pos2)`: returns a list of
+  ObjectRefs.
+     * `pos1` and `pos2` are the min and max positions of the area to search.
 * `minetest.set_timeofday(val)`
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
@@ -5321,9 +5413,12 @@ Sounds
 Timing
 ------
 
-* `minetest.after(time, func, ...)`
+* `minetest.after(time, func, ...)` : returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+
+* `job:cancel()`
+    * Cancels the job function from being called
 
 Server
 ------
@@ -5351,20 +5446,22 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
-* `minetest.dynamic_add_media(filepath)`
-    * Adds the file at the given path to the media sent to clients by the server
-      on startup and also pushes this file to already connected clients.
+* `minetest.dynamic_add_media(filepath, callback)`
+    * `filepath`: path to a media file on the filesystem
+    * `callback`: function with arguments `name`, where name is a player name
+      (previously there was no callback argument; omitting it is deprecated)
+    * Adds the file to the media sent to clients by the server on startup
+      and also pushes this file to already connected clients.
       The file must be a supported image, sound or model format. It must not be
       modified, deleted, moved or renamed after calling this function.
       The list of dynamically added media is not persisted.
-    * Returns boolean indicating success (duplicate files count as error)
-    * The media will be ready to use (in e.g. entity textures, sound_play)
-      immediately after calling this function.
+    * Returns false on error, true if the request was accepted
+    * The given callback will be called for every player as soon as the
+      media is available on the client.
       Old clients that lack support for this feature will not see the media
-      unless they reconnect to the server.
-    * Since media transferred this way does not use client caching or HTTP
-      transfers, dynamic media should not be used with big files or performance
-      will suffer.
+      unless they reconnect to the server. (callback won't be called)
+    * Since media transferred this way currently does not use client caching
+       or HTTP transfers, dynamic media should not be used with big files.
 
 Bans
 ----
@@ -5744,6 +5841,9 @@ Global tables
     * Map of registered tool definitions, indexed by name
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
+    * Values in this table may be modified directly.
+      Note: changes to initial properties will only affect entities spawned afterwards,
+      as they are only read when spawning.
 * `minetest.object_refs`
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
@@ -5774,6 +5874,7 @@ Global tables
     * Map of registered chat command definitions, indexed by name
 * `minetest.registered_privileges`
     * Map of registered privilege definitions, indexed by name
+    * Registered privileges can be modified directly in this table.
 
 ### Registered callback tables
 
@@ -5888,6 +5989,31 @@ An `InvRef` is a reference to an inventory.
   `minetest.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
 
+### Callbacks
+
+Detached & nodemeta inventories provide the following callbacks for move actions:
+
+#### Before
+
+The `allow_*` callbacks return how many items can be moved.
+
+* `allow_move`/`allow_metadata_inventory_move`: Moving items in the inventory
+* `allow_take`/`allow_metadata_inventory_take`: Taking items from the inventory
+* `allow_put`/`allow_metadata_inventory_put`: Putting items to the inventory
+
+#### After
+
+The `on_*` callbacks are called after the items have been placed in the inventories.
+
+* `on_move`/`on_metadata_inventory_move`: Moving items in the inventory
+* `on_take`/`on_metadata_inventory_take`: Taking items from the inventory
+* `on_put`/`on_metadata_inventory_put`: Putting items to the inventory
+
+#### Swapping
+
+When a player tries to put an item to a place where another item is, the items are *swapped*.
+This means that all callbacks will be called twice (once for each action).
+
 `ItemStack`
 -----------
 
@@ -5913,6 +6039,18 @@ an itemstring, a table or `nil`.
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `get_description()`: returns the description shown in inventory list tooltips.
+    * The engine uses the same as this function for item descriptions.
+    * Fields for finding the description, in order:
+        * `description` in item metadata (See [Item Metadata].)
+        * `description` in item definition
+        * item name
+* `get_short_description()`: returns the short description.
+    * Unlike the description, this does not include new lines.
+    * The engine uses the same as this function for short item descriptions.
+    * Fields for finding the short description, in order:
+        * `short_description` in item metadata (See [Item Metadata].)
+        * `short_description` in item definition
+        * first line of the description (See `get_description()`.)
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -6066,6 +6204,19 @@ object you are working with still exists.
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `get_velocity()`: returns the velocity, a vector.
+* `add_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+    * In comparison to using get_velocity, adding the velocity and then using
+      set_velocity, add_velocity is supposed to avoid synchronization problems.
+      Additionally, players also do not support set_velocity.
+    * If a player:
+        * Does not apply during free_move.
+        * Note that since the player speed is normalized at each move step,
+          increasing e.g. Y velocity beyond what would usually be achieved
+          (see: physics overrides) will cause existing X/Z velocity to be reduced.
+        * Example: `add_velocity({x=0, y=6.5, z=0})` is equivalent to
+          pressing the jump key (assuming default settings)
 * `move_to(pos, continuous=false)`
     * Does an interpolated move for Lua entities for visually smooth transitions.
     * If `continuous` is true, the Lua entity will not be moved to the current
@@ -6076,8 +6227,8 @@ object you are working with still exists.
     * `time_from_last_punch` = time since last punch action of the puncher
     * `direction`: can be `nil`
 * `right_click(clicker)`; `clicker` is another `ObjectRef`
-* `get_hp()`: returns number of hitpoints (2 * number of hearts)
-* `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
+* `get_hp()`: returns number of health points
+* `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
     * Is limited to the range of 0 ... 65535 (2^16 - 1)
     * For players: HP are also limited by `hp_max` specified in the player's
@@ -6100,17 +6251,22 @@ object you are working with still exists.
   `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
-* `set_attach(parent, bone, position, rotation)`
-    * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
-* `get_attach()`: returns parent, bone, position, rotation or nil if it isn't
-  attached.
+* `set_attach(parent[, bone, position, rotation, forced_visible])`
+    * `bone`: string. Default is `""`, the root bone
+    * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
+    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
+      Default `{x=0, y=0, z=0}`
+    * `forced_visible`: Boolean to control whether the attached entity
+       should appear in first person. Default `false`.
+* `get_attach()`: returns parent, bone, position, rotation, forced_visible,
+    or nil if it isn't attached.
+* `get_children()`: returns a list of ObjectRefs that are attached to the
+    object.
 * `set_detach()`
-* `set_bone_position(bone, position, rotation)`
-    * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+* `set_bone_position([bone, position, rotation])`
+    * `bone`: string. Default is `""`, the root bone
+    * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
+    * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
@@ -6137,11 +6293,6 @@ object you are working with still exists.
       no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-* `add_velocity(vel)`
-    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-* `get_velocity()`: returns the velocity, a vector
 * `set_acceleration(acc)`
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
@@ -6149,18 +6300,18 @@ object you are working with still exists.
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
 * `get_rotation()`: returns the rotation, a vector (radians)
-* `set_yaw(radians)`: sets the yaw (heading).
+* `set_yaw(yaw)`: sets the yaw in radians (heading).
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
     * Set a texture modifier to the base texture, for sprites and meshes.
     * When calling `set_texture_mod` again, the previous one is discarded.
     * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_x_by_camera)`
+* `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
     * Animations iterate along the frame `y` position.
-    * `p`: {x=column number, y=row number}, the coordinate of the first frame
-      default: `{x=0, y=0}`
+    * `start_frame`: {x=column number, y=row number}, the coordinate of the
+      first frame, default: `{x=0, y=0}`
     * `num_frames`: Total frames in the texture, default: `1`
     * `framelength`: Time per animated frame in seconds, default: `0.2`
     * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
@@ -6177,16 +6328,9 @@ object you are working with still exists.
 #### Player only (no-op for other objects)
 
 * `get_player_name()`: returns `""` if is not a player
-* `get_player_velocity()`: returns `nil` if is not a player, otherwise a
+* `get_player_velocity()`: **DEPRECATED**, use get_velocity() instead.
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
-* `add_player_velocity(vel)`
-    * Adds to player velocity, this happens client-side and only once.
-    * Does not apply during free_move.
-    * Note that since the player speed is normalized at each move step,
-      increasing e.g. Y velocity beyond what would usually be achieved
-      (see: physics overrides) will cause existing X/Z velocity to be reduced.
-    * Example: `add_player_velocity({x=0, y=6.5, z=0})` is equivalent to
-      pressing the jump key (assuming default settings)
+* `add_player_velocity(vel)`: **DEPRECATED**, use add_velocity(vel) instead.
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down
@@ -6309,8 +6453,31 @@ object you are working with still exists.
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_sky(parameters)`
-    * `parameters` is a table with the following optional fields:
+* `set_minimap_modes({mode, mode, ...}, selected_mode)`
+    * Overrides the available minimap modes (and toggle order), and changes the
+    selected mode.
+    * `mode` is a table consisting of up to four fields:
+        * `type`: Available type:
+            * `off`: Minimap off
+            * `surface`: Minimap in surface mode
+            * `radar`: Minimap in radar mode
+            * `texture`: Texture to be displayed instead of terrain map
+              (texture is centered around 0,0 and can be scaled).
+              Texture size is limited to 512 x 512 pixel.
+        * `label`: Optional label to display on minimap mode toggle
+          The translation must be handled within the mod.
+        * `size`: Sidelength or diameter, in number of nodes, of the terrain
+          displayed in minimap
+        * `texture`: Only for texture type, name of the texture to display
+        * `scale`: Only for texture type, scale of the texture map in nodes per
+          pixel (for example a `scale` of 2 means each pixel represents a 2x2
+          nodes square)
+    * `selected_mode` is the mode index to be selected after modes have been changed
+    (0 is the first mode).
+* `set_sky(sky_parameters)`
+    * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
+      whether `set_sky` accepts this format. Check the legacy format otherwise.
+    * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
@@ -6351,11 +6518,20 @@ object you are working with still exists.
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
+* `set_sky(base_color, type, {texture names}, clouds)`
+    * Deprecated. Use `set_sky(sky_parameters)`
+    * `base_color`: ColorSpec, defaults to white
+    * `type`: Available types:
+        * `"regular"`: Uses 0 textures, `bgcolor` ignored
+        * `"skybox"`: Uses 6 textures, `bgcolor` used
+        * `"plain"`: Uses 0 textures, `bgcolor` used
+    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
+      `"plain"` custom skyboxes (default: `true`)
 * `get_sky()`: returns base_color, type, table of textures, clouds.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
-* `set_sun(parameters)`:
-    * `parameters` is a table with the following optional fields:
+* `set_sun(sun_parameters)`:
+    * `sun_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the sun is visible.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
@@ -6369,8 +6545,8 @@ object you are working with still exists.
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
 * `get_sun()`: returns a table with the current sun parameters as in
     `set_sun`.
-* `set_moon(parameters)`:
-    * `parameters` is a table with the following optional fields:
+* `set_moon(moon_parameters)`:
+    * `moon_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the moon is visible.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
@@ -6380,8 +6556,8 @@ object you are working with still exists.
         * `scale`: Float controlling the overall size of the moon (default: `1`)
 * `get_moon()`: returns a table with the current moon parameters as in
     `set_moon`.
-* `set_stars(parameters)`:
-    * `parameters` is a table with the following optional fields:
+* `set_stars(star_parameters)`:
+    * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
         * `count`: Integer number to set the number of stars in
@@ -6393,8 +6569,8 @@ object you are working with still exists.
         * `scale`: Float controlling the overall size of the stars (default: `1`)
 * `get_stars()`: returns a table with the current stars parameters as in
     `set_stars`.
-* `set_clouds(parameters)`: set cloud parameters
-    * `parameters` is a table with the following optional fields:
+* `set_clouds(cloud_parameters)`: set cloud parameters
+    * `cloud_parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
         * `color`: basic cloud color with alpha channel, ColorSpec
           (default `#fff0f0e5`).
@@ -6412,21 +6588,17 @@ object you are working with still exists.
       amount.
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
-* `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`:
-  set animation for player model in third person view
-
-      set_local_animation({x=0, y=79},  -- stand/idle animation key frames
-          {x=168, y=187},  -- walk animation key frames
-          {x=189, y=198},  -- dig animation key frames
-          {x=200, y=219},  -- walk+dig animation key frames
-          frame_speed=30)  -- animation frame speed
-* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and
+* `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
+  set animation for player model in third person view.
+    * Every animation equals to a `{x=starting frame, y=ending frame}` table.
+    * `frame_speed` sets the animations frame speed. Default is 30.
+* `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for
-  camera per player.
+* `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
+  camera per player. An argument defaults to `{x=0, y=0, z=0}` if unspecified.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns `offset_first` and `offset_third`
+* `get_eye_offset()`: returns first and third person offsets.
 * `send_mapblock(blockpos)`:
     * Sends a server-side loaded mapblock to the player.
     * Returns `false` if failed.
@@ -6779,7 +6951,11 @@ Player properties need to be saved manually.
         -- in mods.
 
         nametag = "",
-        -- By default empty, for players their name is shown if empty
+        -- The name to display on the head of the object. By default empty.
+        -- If the object is a player, a nil or empty nametag is replaced by the player's name.
+        -- For all other objects, a nil or empty string removes the nametag.
+        -- To hide a nametag, set its color alpha to zero. That will disable it entirely.
+
 
         nametag_color = <ColorSpec>,
         -- Sets color of nametag
@@ -6806,6 +6982,10 @@ Player properties need to be saved manually.
         
         synchronize_sbox_rotation_with_dir = false,
         -- It does the same as 'synchronize_cbox_rotation_with_dir', only it applies to selectionbox.
+
+        show_on_minimap = false,
+        -- Defaults to true for players, false for other entities.
+        -- If set to true the entity will show as a marker on the minimap.
     }
 
 Entity definition
@@ -6940,13 +7120,8 @@ Tile definition
 
 * `"image.png"`
 * `{name="image.png", animation={Tile Animation definition}}`
-* `{name="image.png", backface_culling=bool, tileable_vertical=bool,
-  tileable_horizontal=bool, align_style="node"/"world"/"user", scale=int}`
+* `{name="image.png", backface_culling=bool, align_style="node"/"world"/"user", scale=int}`
     * backface culling enabled by default for most nodes
-    * tileable flags are info for shaders, how they should treat texture
-      when displacement mapping is used.
-      Directions are from the point of view of the tile texture,
-      not the node it's on.
     * align style determines whether the texture will be rotated with the node
       or kept aligned with its surroundings. "user" means that client
       setting will be used, similar to `glasslike_framed_optional`.
@@ -6999,6 +7174,13 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
     {
         description = "Steel Axe",
+        -- Can contain new lines. "\n" has to be used as new line character.
+        -- See also: `get_description` in [`ItemStack`]
+
+        short_description = "Steel Axe",
+        -- Must not contain new lines.
+        -- Defaults to the first line of description.
+        -- See also: `get_short_description` in [`ItemStack`]
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.
@@ -7171,10 +7353,18 @@ Used by `minetest.register_node`.
         -- If the node has a palette, then this setting only has an effect in
         -- the inventory and on the wield item.
 
-        use_texture_alpha = false,
-        -- Use texture's alpha channel
-        -- If this is set to false, the node will be rendered fully opaque
-        -- regardless of any texture transparency.
+        use_texture_alpha = ...,
+        -- Specifies how the texture's alpha channel will be used for rendering.
+        -- possible values:
+        -- * "opaque": Node is rendered opaque regardless of alpha channel
+        -- * "clip": A given pixel is either fully see-through or opaque
+        --           depending on the alpha channel being below/above 50% in value
+        -- * "blend": The alpha channel specifies how transparent a given pixel
+        --            of the rendered node is
+        -- The default is "opaque" for drawtypes normal, liquid and flowingliquid;
+        -- "clip" otherwise.
+        -- If set to a boolean value (deprecated): true either sets it to blend
+        -- or clip, false sets it to clip or opaque mode depending on the drawtype.
 
         palette = "palette.png",
         -- The node's `param2` is used to select a pixel from the image.
@@ -7237,6 +7427,7 @@ Used by `minetest.register_node`.
         leveled_max = 127,
         -- Maximum value for `leveled` (0-127), enforced in
         -- `minetest.set_node_level` and `minetest.add_node_level`.
+		-- Values above 124 might causes collision detection issues.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 
@@ -7264,6 +7455,7 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom selection box definition. Multiple boxes can be defined.
@@ -7274,13 +7466,12 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom collision box definition. Multiple boxes can be defined.
         -- If "nodebox" drawtype is used and collision_box is nil, then node_box
         -- definition is used for the collision box.
-        -- Both of the boxes above are defined as:
-        -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
 
         -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
@@ -7448,6 +7639,8 @@ Used by `minetest.register_node`.
         on_dig = function(pos, node, digger),
         -- default: minetest.node_dig
         -- By default checks privileges, wears out tool and removes node.
+        -- return true if the node was dug successfully, false otherwise.
+        -- Deprecated: returning nil is the same as returning true.
 
         on_timer = function(pos, elapsed),
         -- default: nil
@@ -7487,6 +7680,13 @@ Used by `minetest.register_node`.
         -- intensity: 1.0 = mid range of regular TNT.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
+
+        mod_origin = "modname",
+        -- stores which mod actually registered a node
+        -- if it can not find a source, returns "??"
+        -- useful for getting what mod truly registered something
+        -- example: if a node is registered as ":othermodname:nodename",
+        -- nodename will show "othermodname", but mod_orgin will say "modname"
     }
 
 Crafting recipes
@@ -7914,6 +8114,8 @@ Used by `minetest.register_chatcommand`.
 
         func = function(name, param),
         -- Called when command is run. Returns boolean success and text output.
+        -- Special case: The help message is shown to the player if `func`
+        -- returns false without a text output.
     }
 
 Note that in params, use of symbols is as follows:
@@ -7996,7 +8198,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", "inventory" or "compass"
+        -- Type of element, can be "image", "text", "statbar", "inventory",
+        -- "compass" or "minimap"
 
         position = {x=0.5, y=0.5},
         -- Left corner position of element

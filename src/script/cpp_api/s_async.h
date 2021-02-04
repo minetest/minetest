@@ -98,12 +98,6 @@ public:
 	 */
 	void step(lua_State *L);
 
-	/**
-	 * Push a list of finished jobs onto the stack
-	 * @param L The Lua stack
-	 */
-	void pushFinishedJobs(lua_State *L);
-
 protected:
 	/**
 	 * Get a Job from queue to be processed

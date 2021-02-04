@@ -632,7 +632,7 @@ void ServerEnvironment::saveMeta()
 	// Open file and serialize
 	std::ostringstream ss(std::ios_base::binary);
 
-	Settings args;
+	Settings args("EnvArgsEnd");
 	args.setU64("game_time", m_game_time);
 	args.setU64("time_of_day", getTimeOfDay());
 	args.setU64("last_clear_objects_time", m_last_clear_objects_time);
@@ -641,7 +641,6 @@ void ServerEnvironment::saveMeta()
 		m_lbm_mgr.createIntroductionTimesString());
 	args.setU64("day_count", m_day_count);
 	args.writeLines(ss);
-	ss<<"EnvArgsEnd\n";
 
 	if(!fs::safeWriteToFile(path, ss.str()))
 	{
@@ -676,9 +675,9 @@ void ServerEnvironment::loadMeta()
 		throw SerializationError("Couldn't load env meta");
 	}
 
-	Settings args;
+	Settings args("EnvArgsEnd");
 
-	if (!args.parseConfigLines(is, "EnvArgsEnd")) {
+	if (!args.parseConfigLines(is)) {
 		throw SerializationError("ServerEnvironment::loadMeta(): "
 			"EnvArgsEnd not found!");
 	}
@@ -1066,6 +1065,91 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
+u8 ServerEnvironment::findSunlight(v3s16 pos) const
+{
+	// Directions for neighbouring nodes with specified order
+	static const v3s16 dirs[] = {
+		v3s16(-1, 0, 0), v3s16(1, 0, 0), v3s16(0, 0, -1), v3s16(0, 0, 1),
+		v3s16(0, -1, 0), v3s16(0, 1, 0)
+	};
+
+	const NodeDefManager *ndef = m_server->ndef();
+
+	// found_light remembers the highest known sunlight value at pos
+	u8 found_light = 0;
+
+	struct stack_entry {
+		v3s16 pos;
+		s16 dist;
+	};
+	std::stack<stack_entry> stack;
+	stack.push({pos, 0});
+
+	std::unordered_map<s64, s8> dists;
+	dists[MapDatabase::getBlockAsInteger(pos)] = 0;
+
+	while (!stack.empty()) {
+		struct stack_entry e = stack.top();
+		stack.pop();
+
+		v3s16 currentPos = e.pos;
+		s8 dist = e.dist + 1;
+
+		for (const v3s16& off : dirs) {
+			v3s16 neighborPos = currentPos + off;
+			s64 neighborHash = MapDatabase::getBlockAsInteger(neighborPos);
+
+			// Do not walk neighborPos multiple times unless the distance to the start
+			// position is shorter
+			auto it = dists.find(neighborHash);
+			if (it != dists.end() && dist >= it->second)
+				continue;
+
+			// Position to walk
+			bool is_position_ok;
+			MapNode node = m_map->getNode(neighborPos, &is_position_ok);
+			if (!is_position_ok) {
+				// This happens very rarely because the map at currentPos is loaded
+				m_map->emergeBlock(neighborPos, false);
+				node = m_map->getNode(neighborPos, &is_position_ok);
+				if (!is_position_ok)
+					continue;  // not generated
+			}
+
+			const ContentFeatures &def = ndef->get(node);
+			if (!def.sunlight_propagates) {
+				// Do not test propagation here again
+				dists[neighborHash] = -1;
+				continue;
+			}
+
+			// Sunlight could have come from here
+			dists[neighborHash] = dist;
+			u8 daylight = node.param1 & 0x0f;
+
+			// In the special case where sunlight shines from above and thus
+			// does not decrease with upwards distance, daylight is always
+			// bigger than nightlight, which never reaches 15
+			int possible_finlight = daylight - dist;
+			if (possible_finlight <= found_light) {
+				// Light from here cannot make a brighter light at currentPos than
+				// found_light
+				continue;
+			}
+
+			u8 nightlight = node.param1 >> 4;
+			if (daylight > nightlight) {
+				// Found a valid daylight
+				found_light = possible_finlight;
+			} else {
+				// Sunlight may be darker, so walk the neighbours
+				stack.push({neighborPos, dist});
+			}
+		}
+	}
+	return found_light;
+}
+
 void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 {
 	infostream << "ServerEnvironment::clearObjects(): "
@@ -1079,7 +1163,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 		// If known by some client, don't delete immediately
 		if (obj->m_known_by_count > 0) {
-			obj->m_pending_removal = true;
+			obj->markForRemoval();
 			return false;
 		}
 
@@ -1707,7 +1791,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Delete static data from block if removed
 		*/
-		if (obj->m_pending_removal)
+		if (obj->isPendingRemoval())
 			deleteStaticFromBlock(obj, id, MOD_REASON_REMOVE_OBJECTS_REMOVE, false);
 
 		// If still known by clients, don't actually remove. On some future
@@ -1718,7 +1802,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Move static data from active to stored if deactivated
 		*/
-		if (!obj->m_pending_removal && obj->m_static_exists) {
+		if (!obj->isPendingRemoval() && obj->m_static_exists) {
 			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if (block) {
 				const auto i = block->m_static_objects.m_active.find(id);
@@ -1887,8 +1971,8 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
-		// Do not deactivate if static data creation not allowed
-		if (!force_delete && !obj->isStaticAllowed())
+		// Do not deactivate if disallowed
+		if (!force_delete && !obj->shouldUnload())
 			return false;
 
 		// removeRemovedObjects() is responsible for these
@@ -1906,6 +1990,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		if (!force_delete && obj->m_static_exists &&
 		   !m_active_blocks.contains(obj->m_static_block) &&
 		   m_active_blocks.contains(blockpos_o)) {
+
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 
@@ -1917,7 +2002,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		}
 
 		// If block is still active, don't remove
-		if (!force_delete && m_active_blocks.contains(blockpos_o))
+		bool still_active = obj->isStaticAllowed() ?
+			m_active_blocks.contains(blockpos_o) :
+			getMap().getBlockNoCreateNoEx(blockpos_o) != nullptr;
+		if (!force_delete && still_active)
 			return false;
 
 		verbosestream << "ServerEnvironment::deactivateFarObjects(): "
@@ -1980,6 +2068,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				force_delete = true;
 		}
 
+		// Regardless of what happens to the object at this point, deactivate it first.
+		// This ensures that LuaEntity on_deactivate is always called.
+		obj->markForDeactivation();
+
 		/*
 			If known by some client, set pending deactivation.
 			Otherwise delete it immediately.
@@ -1989,7 +2081,6 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 						  << "object id=" << id << " is known by clients"
 						  << "; not deleting yet" << std::endl;
 
-			obj->m_pending_deactivation = true;
 			return false;
 		}
 

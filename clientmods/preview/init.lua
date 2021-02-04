@@ -109,6 +109,10 @@ core.register_on_sending_chat_message(function(message)
 	return false
 end)
 
+core.register_on_chatcommand(function(command, params)
+	print("[PREVIEW] caught command '"..command.."'. Parameters: '"..params.."'")
+end)
+
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_hp_modification(function(hp)
 	print("[PREVIEW] HP modified " .. hp)

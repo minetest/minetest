@@ -70,6 +70,10 @@ public:
 	virtual bool environmentDeletes() const
 	{ return true; }
 
+	// Safely mark the object for removal or deactivation
+	void markForRemoval();
+	void markForDeactivation();
+
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(ActiveObjectType type,
 			ServerEnvironment *env, u16 id, v3f pos,
@@ -125,12 +129,21 @@ public:
 		assert(isStaticAllowed());
 		*result = "";
 	}
+
 	/*
 		Return false in here to never save and instead remove object
 		on unload. getStaticData() will not be called in that case.
 	*/
 	virtual bool isStaticAllowed() const
 	{return true;}
+
+	/*
+		Return false here to never unload the object.
+		isStaticAllowed && shouldUnload -> unload when out of active block range
+		!isStaticAllowed && shouldUnload -> unload when block is unloaded
+	*/
+	virtual bool shouldUnload() const
+	{ return true; }
 
 	// Returns tool wear
 	virtual u16 punch(v3f dir,
@@ -149,8 +162,6 @@ public:
 	{}
 	virtual const ItemGroupList &getArmorGroups() const
 	{ static ItemGroupList rv; return rv; }
-	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
-	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
 	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
@@ -193,7 +204,6 @@ public:
 	}
 
 	std::string generateUpdateInfantCommand(u16 infant_id, u16 protocol_version);
-	std::string generateUpdateNametagAttributesCommand(const video::SColor &color) const;
 
 	void dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue);
 
@@ -205,30 +215,14 @@ public:
 	u16 m_known_by_count = 0;
 
 	/*
-		- Whether this object is to be removed when nobody knows about
-		  it anymore.
-		- Removal is delayed to preserve the id for the time during which
-		  it could be confused to some other object by some client.
-		- This is usually set to true by the step() method when the object wants
-		  to be deleted but can be set by anything else too.
-	*/
-	bool m_pending_removal = false;
-
-	/*
-		Same purpose as m_pending_removal but for deactivation.
-		deactvation = save static data in block, remove active object
-
-		If this is set alongside with m_pending_removal, removal takes
-		priority.
-	*/
-	bool m_pending_deactivation = false;
-
-	/*
 		A getter that unifies the above to answer the question:
 		"Can the environment still interact with this object?"
 	*/
 	inline bool isGone() const
 	{ return m_pending_removal || m_pending_deactivation; }
+
+	inline bool isPendingRemoval() const
+	{ return m_pending_removal; }
 
 	/*
 		Whether the object's static data has been stored to a block
@@ -241,12 +235,36 @@ public:
 	v3s16 m_static_block = v3s16(1337,1337,1337);
 
 protected:
+	virtual void onMarkedForDeactivation() {}
+	virtual void onMarkedForRemoval() {}
+
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
+
+	/*
+		Same purpose as m_pending_removal but for deactivation.
+		deactvation = save static data in block, remove active object
+
+		If this is set alongside with m_pending_removal, removal takes
+		priority.
+		Note: Do not assign this directly, use markForDeactivation() instead.
+	*/
+	bool m_pending_deactivation = false;
+
+	/*
+		- Whether this object is to be removed when nobody knows about
+		  it anymore.
+		- Removal is delayed to preserve the id for the time during which
+		  it could be confused to some other object by some client.
+		- This is usually set to true by the step() method when the object wants
+		  to be deleted but can be set by anything else too.
+		Note: Do not assign this directly, use markForRemoval() instead.
+	*/
+	bool m_pending_removal = false;
 
 	/*
 		Queue of messages to be sent to the client

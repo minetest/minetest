@@ -1088,7 +1088,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 		if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
 			checkHover(event.MouseInput.X, event.MouseInput.Y);
 
-		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
+		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL && m_vscrollbar->isVisible()) {
 			m_vscrollbar->setPos(m_vscrollbar->getPos() -
 					event.MouseInput.Wheel * m_vscrollbar->getSmallStep());
 			m_text_scrollpos.Y = -m_vscrollbar->getPos();

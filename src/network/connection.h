@@ -809,6 +809,11 @@ protected:
 	void putEvent(ConnectionEvent &e);
 
 	void TriggerSend();
+	
+	bool ConnectedToServer() 
+	{
+		return getPeerNoEx(PEER_ID_SERVER) != nullptr;
+	}
 private:
 	MutexedQueue<ConnectionEvent> m_event_queue;
 

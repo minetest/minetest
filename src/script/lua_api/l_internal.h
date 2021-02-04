@@ -29,7 +29,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_internal.h"
 
 #define luamethod(class, name) {#name, class::l_##name}
-#define luamethod_aliased(class, name, alias) {#name, class::l_##name}, {#alias, class::l_##name}
+
+#define luamethod_dep(class, good, bad)                                     \
+		{#bad, [](lua_State *L) -> int {                                    \
+			return l_deprecated_function(L, #good, #bad, &class::l_##good); \
+		}}
+
+#define luamethod_aliased(class, good, bad) \
+		luamethod(class, good),               \
+		luamethod_dep(class, good, bad)
+
 #define API_FCT(name) registerFunction(L, #name, l_##name, top)
 
 // For future use

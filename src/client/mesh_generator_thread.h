@@ -40,7 +40,6 @@ struct QueuedMeshUpdate
 {
 	v3s16 p = v3s16(-1337, -1337, -1337);
 	bool ack_block_to_server = false;
-	bool urgent = false;
 	int crack_level = -1;
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
@@ -88,7 +87,6 @@ private:
 
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_enable_shaders;
-	bool m_cache_use_tangent_vertices;
 	bool m_cache_smooth_lighting;
 	int m_meshgen_block_cache_size;
 

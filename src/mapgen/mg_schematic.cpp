@@ -314,7 +314,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	//// Read node names
 	u16 nidmapcount = readU16(ss);
 	for (int i = 0; i != nidmapcount; i++) {
-		std::string name = deSerializeString(ss);
+		std::string name = deSerializeString16(ss);
 
 		// Instances of "ignore" from v1 are converted to air (and instances
 		// are fixed to have MTSCHEM_PROB_NEVER later on).
@@ -334,7 +334,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	schemdata = new MapNode[nodecount];
 
 	MapNode::deSerializeBulk(ss, SER_FMT_VER_HIGHEST_READ, schemdata,
-		nodecount, 2, 2, true);
+		nodecount, 2, 2);
 
 	// Fix probability values for nodes that were ignore; removed in v2
 	if (version < 2) {
@@ -372,11 +372,11 @@ bool Schematic::serializeToMts(std::ostream *os,
 
 	writeU16(ss, names.size()); // name count
 	for (size_t i = 0; i != names.size(); i++)
-		ss << serializeString(names[i]); // node names
+		ss << serializeString16(names[i]); // node names
 
 	// compressed bulk node data
 	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE,
-		schemdata, size.X * size.Y * size.Z, 2, 2, true);
+		schemdata, size.X * size.Y * size.Z, 2, 2, -1);
 
 	return true;
 }

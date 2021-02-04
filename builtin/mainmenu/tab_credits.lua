@@ -100,9 +100,10 @@ return {
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
-		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
-			"label[0.5,2.8;" .. version.project .. " " .. version.string .. "]" ..
-			"button[0.5,3;2,2;homepage;minetest.net]" ..
+		local fs = "image[0.75,0.5;2.2,2.2;" .. core.formspec_escape(logofile) .. "]" ..
+			"style[label_button;border=false]" ..
+			"button[0.5,2;2.5,2;label_button;" .. version.project .. " " .. version.string .. "]" ..
+			"button[0.75,2.75;2,2;homepage;minetest.net]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
@@ -115,10 +116,23 @@ return {
 			"#FFFF00," .. fgettext("Previous Contributors") .. ",," ..
 			buildCreditList(previous_contributors) .. "," ..
 			";1]"
+
+		if PLATFORM ~= "Android" then
+			fs = fs .. "tooltip[userdata;" ..
+					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
+							"and texture packs in a file manager / explorer.") .. "]"
+			fs = fs .. "button[0,4.75;3.5,1;userdata;" .. fgettext("Open User Data Directory") .. "]"
+		end
+
+		return fs
 	end,
 	cbf_button_handler = function(this, fields, name, tabdata)
 		if fields.homepage then
 			core.open_url("https://www.minetest.net")
+		end
+
+		if fields.userdata then
+			core.open_dir(core.get_user_path())
 		end
 	end,
 }

@@ -98,7 +98,7 @@ local function create_world_formspec(dialogdata)
 	-- Error out when no games found
 	if #pkgmgr.games == 0 then
 		return "size[12.25,3,true]" ..
-			"box[0,0;12,2;#ff8800]" ..
+			"box[0,0;12,2;" .. mt_color_orange .. "]" ..
 			"textarea[0.3,0;11.7,2;;;"..
 			fgettext("You have no games installed.") .. "\n" ..
 			fgettext("Download one from minetest.net") .. "]" ..
@@ -363,10 +363,18 @@ local function create_world_buttonhandler(this, fields)
 		local gameindex = core.get_textlist_index("games")
 
 		if gameindex ~= nil then
+			-- For unnamed worlds use the generated name 'world<number>',
+			-- where the number increments: it is set to 1 larger than the largest
+			-- generated name number found.
 			if worldname == "" then
-				local random_number = math.random(10000, 99999)
-				local random_world_name = "Unnamed" .. random_number
-				worldname = random_world_name
+				local worldnum_max = 0
+				for _, world in ipairs(menudata.worldlist:get_list()) do
+					if world.name:match("^world%d+$") then
+						local worldnum = tonumber(world.name:sub(6))
+						worldnum_max = math.max(worldnum_max, worldnum)
+					end
+				end
+				worldname = "world" .. worldnum_max + 1
 			end
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])

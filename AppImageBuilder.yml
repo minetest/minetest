@@ -1,0 +1,51 @@
+version: 1
+
+AppDir:
+  path: ./AppDir
+
+  app_info:
+    id: minetest
+    name: Minetest
+    icon: minetest
+    version: !ENV ${VERSION}
+    exec: usr/bin/minetest
+    exec_args: $@
+  runtime:
+    env:
+      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu
+
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic main universe
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-updates main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-backports main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-security main universe
+
+    include:
+      - libirrlicht1.8
+      - libxxf86vm1
+      - libgl1-mesa-glx
+      - libsqlite3-0
+      - libogg0
+      - libvorbis0a
+      - libopenal1
+      - libcurl3-gnutls
+      - libfreetype6
+      - zlib1g
+      - libgmp10
+      - libjsoncpp1
+
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
+
+AppImage:
+  update-information: None
+  sign-key: None
+  arch: x86_64

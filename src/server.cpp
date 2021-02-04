@@ -351,6 +351,7 @@ Server::~Server()
 	// Deinitialize scripting
 	infostream << "Server: Deinitializing scripting" << std::endl;
 	delete m_script;
+	delete m_game_settings;
 
 	while (!m_unsent_map_edit_queue.empty()) {
 		delete m_unsent_map_edit_queue.front();
@@ -367,6 +368,8 @@ void Server::init()
 		infostream << std::endl;
 	infostream << "- world:  " << m_path_world << std::endl;
 	infostream << "- game:   " << m_gamespec.path << std::endl;
+
+	m_game_settings = Settings::createLayer(SL_GAME);
 
 	// Create world if it doesn't exist
 	try {
@@ -653,7 +656,12 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 	m_clients.step(dtime);
 
-	m_lag_gauge->increment((m_lag_gauge->get() > dtime ? -1 : 1) * dtime/100);
+	// increase/decrease lag gauge gradually
+	if (m_lag_gauge->get() > dtime) {
+		m_lag_gauge->decrement(dtime/100);
+	} else {
+		m_lag_gauge->increment(dtime/100);
+	}
 #if USE_CURL
 	// send masterserver announce
 	{
@@ -797,7 +805,7 @@ void Server::AsyncRunStep(bool initial_step)
 					// u16 id
 					// std::string data
 					buffer.append(idbuf, sizeof(idbuf));
-					buffer.append(serializeString(aom.datastring));
+					buffer.append(serializeString16(aom.datastring));
 				}
 			}
 			/*
@@ -1234,20 +1242,8 @@ bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float*
 	return *retval != -1;
 }
 
-bool Server::getClientInfo(
-		session_t    peer_id,
-		ClientState* state,
-		u32*         uptime,
-		u8*          ser_vers,
-		u16*         prot_vers,
-		u8*          major,
-		u8*          minor,
-		u8*          patch,
-		std::string* vers_string,
-		std::string* lang_code
-	)
+bool Server::getClientInfo(session_t peer_id, ClientInfo &ret)
 {
-	*state = m_clients.getClientState(peer_id);
 	m_clients.lock();
 	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
 
@@ -1256,15 +1252,18 @@ bool Server::getClientInfo(
 		return false;
 	}
 
-	*uptime = client->uptime();
-	*ser_vers = client->serialization_version;
-	*prot_vers = client->net_proto_version;
+	ret.state = client->getState();
+	ret.addr = client->getAddress();
+	ret.uptime = client->uptime();
+	ret.ser_vers = client->serialization_version;
+	ret.prot_vers = client->net_proto_version;
 
-	*major = client->getMajor();
-	*minor = client->getMinor();
-	*patch = client->getPatch();
-	*vers_string = client->getFull();
-	*lang_code = client->getLangCode();
+	ret.major = client->getMajor();
+	ret.minor = client->getMinor();
+	ret.patch = client->getPatch();
+	ret.vers_string = client->getFullVer();
+
+	ret.lang_code = client->getLangCode();
 
 	m_clients.unlock();
 
@@ -1350,7 +1349,7 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason 
 		return;
 
 	session_t peer_id = playersao->getPeerID();
-	bool is_alive = playersao->getHP() > 0;
+	bool is_alive = !playersao->isDead();
 
 	if (is_alive)
 		SendPlayerHP(peer_id);
@@ -1483,7 +1482,8 @@ void Server::SendChatMessage(session_t peer_id, const ChatMessage &message)
 	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
 	u8 version = 1;
 	u8 type = message.type;
-	pkt << version << type << std::wstring(L"") << message.message << (u64)message.timestamp;
+	pkt << version << type << message.sender << message.message
+		<< static_cast<u64>(message.timestamp);
 
 	if (peer_id != PEER_ID_INEXISTENT) {
 		RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -1988,7 +1988,7 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		writeU8((u8*)buf, type);
 		data.append(buf, 1);
 
-		data.append(serializeLongString(
+		data.append(serializeString32(
 			obj->getClientInitializationData(client->net_proto_version)));
 
 		// Add to known objects
@@ -2327,13 +2327,13 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 	/*
 		Create a packet with the block in the right format
 	*/
-
+	thread_local const int net_compression_level = rangelim(g_settings->getS16("map_compression_level_net"), -1, 9);
 	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false);
+	block->serialize(os, ver, false, net_compression_level);
 	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
-	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + s.size(), peer_id);
 
 	pkt << block->getPos();
 	pkt.putRawString(s.c_str(), s.size());
@@ -2451,31 +2451,14 @@ bool Server::addMediaFile(const std::string &filename,
 	// Ok, attempt to load the file and add to cache
 
 	// Read data
-	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-	if (!fis.good()) {
-		errorstream << "Server::addMediaFile(): Could not open \""
-				<< filename << "\" for reading" << std::endl;
-		return false;
-	}
 	std::string filedata;
-	bool bad = false;
-	for (;;) {
-		char buf[1024];
-		fis.read(buf, sizeof(buf));
-		std::streamsize len = fis.gcount();
-		filedata.append(buf, len);
-		if (fis.eof())
-			break;
-		if (!fis.good()) {
-			bad = true;
-			break;
-		}
-	}
-	if (bad) {
-		errorstream << "Server::addMediaFile(): Failed to read \""
-				<< filename << "\"" << std::endl;
+	if (!fs::ReadFile(filepath, filedata)) {
+		errorstream << "Server::addMediaFile(): Failed to open \""
+					<< filename << "\" for reading" << std::endl;
 		return false;
-	} else if (filedata.empty()) {
+	}
+
+	if (filedata.empty()) {
 		errorstream << "Server::addMediaFile(): Empty file \""
 				<< filepath << "\"" << std::endl;
 		return false;
@@ -2672,6 +2655,23 @@ void Server::sendRequestedMedia(session_t peer_id,
 				<< " size="  << pkt.getSize() << std::endl;
 		Send(&pkt);
 	}
+}
+
+void Server::SendMinimapModes(session_t peer_id,
+		std::vector<MinimapMode> &modes, size_t wanted_mode)
+{
+	RemotePlayer *player = m_env->getPlayer(peer_id);
+	assert(player);
+	if (player->getPeerId() == PEER_ID_INEXISTENT)
+		return;
+
+	NetworkPacket pkt(TOCLIENT_MINIMAP_MODES, 0, peer_id);
+	pkt << (u16)modes.size() << (u16)wanted_mode;
+
+	for (auto &mode : modes)
+		pkt << (u16)mode.type << mode.label << mode.size << mode.texture << mode.scale;
+
+	Send(&pkt);
 }
 
 void Server::sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id)
@@ -2956,7 +2956,7 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 	}
 }
 
-std::wstring Server::handleChat(const std::string &name, const std::wstring &wname,
+std::wstring Server::handleChat(const std::string &name,
 	std::wstring wmessage, bool check_shout_priv, RemotePlayer *player)
 {
 	// If something goes wrong, this player is to blame
@@ -2994,7 +2994,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 
 	auto message = trim(wide_to_utf8(wmessage));
 	if (message.find_first_of("\n\r") != std::wstring::npos) {
-		return L"New lines are not permitted in chat messages";
+		return L"Newlines are not permitted in chat messages";
 	}
 
 	// Run script hook, exit if script ate the chat message
@@ -3015,10 +3015,10 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 			the Cyrillic alphabet and some characters on older Android devices
 		*/
 #ifdef __ANDROID__
-		line += L"<" + wname + L"> " + wmessage;
+		line += L"<" + utf8_to_wide(name) + L"> " + wmessage;
 #else
-		line += narrow_to_wide(m_script->formatChatMessage(name,
-				wide_to_narrow(wmessage)));
+		line += utf8_to_wide(m_script->formatChatMessage(name,
+				wide_to_utf8(wmessage)));
 #endif
 	}
 
@@ -3031,35 +3031,23 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	/*
 		Send the message to others
 	*/
-	actionstream << "CHAT: " << wide_to_narrow(unescape_enriched(line)) << std::endl;
+	actionstream << "CHAT: " << wide_to_utf8(unescape_enriched(line)) << std::endl;
+
+	ChatMessage chatmsg(line);
 
 	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (u16 cid : clients)
+		SendChatMessage(cid, chatmsg);
 
-	/*
-		Send the message back to the inital sender
-		if they are using protocol version >= 29
-	*/
-
-	session_t peer_id_to_avoid_sending =
-		(player ? player->getPeerId() : PEER_ID_INEXISTENT);
-
-	if (player && player->protocol_version >= 29)
-		peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
-
-	for (u16 cid : clients) {
-		if (cid != peer_id_to_avoid_sending)
-			SendChatMessage(cid, ChatMessage(line));
-	}
 	return L"";
 }
 
 void Server::handleAdminChat(const ChatEventChat *evt)
 {
 	std::string name = evt->nick;
-	std::wstring wname = utf8_to_wide(name);
 	std::wstring wmessage = evt->evt_msg;
 
-	std::wstring answer = handleChat(name, wname, wmessage);
+	std::wstring answer = handleChat(name, wmessage);
 
 	// If asked to send answer to sender
 	if (!answer.empty()) {
@@ -3096,46 +3084,43 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 	return player->getPlayerSAO();
 }
 
-std::wstring Server::getStatusString()
+std::string Server::getStatusString()
 {
-	std::wostringstream os(std::ios_base::binary);
-	os << L"# Server: ";
+	std::ostringstream os(std::ios_base::binary);
+	os << "# Server: ";
 	// Version
-	os << L"version=" << narrow_to_wide(g_version_string);
+	os << "version=" << g_version_string;
 	// Uptime
-	os << L", uptime=" << m_uptime_counter->get();
+	os << ", uptime=" << m_uptime_counter->get();
 	// Max lag estimate
-	os << L", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
+	os << ", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
 
 	// Information about clients
 	bool first = true;
-	os << L", clients={";
+	os << ", clients={";
 	if (m_env) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 		for (session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 
 			// Get name of player
-			std::wstring name = L"unknown";
-			if (player)
-				name = narrow_to_wide(player->getName());
+			const char *name = player ? player->getName() : "<unknown>";
 
 			// Add name to information string
 			if (!first)
-				os << L", ";
+				os << ", ";
 			else
 				first = false;
-
 			os << name;
 		}
 	}
-	os << L"}";
+	os << "}";
 
 	if (m_env && !((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
-		os << std::endl << L"# Server: " << " WARNING: Map saving is disabled.";
+		os << std::endl << "# Server: " << " WARNING: Map saving is disabled.";
 
 	if (!g_settings->get("motd").empty())
-		os << std::endl << L"# Server: " << narrow_to_wide(g_settings->get("motd"));
+		os << std::endl << "# Server: " << g_settings->get("motd");
 
 	return os.str();
 }
@@ -3331,7 +3316,8 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &
 
 Address Server::getPeerAddress(session_t peer_id)
 {
-	return m_con->GetPeerAddress(peer_id);
+	// Note that this is only set after Init was received in Server::handleCommand_Init
+	return getClient(peer_id, CS_Invalid)->getAddress();
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,
@@ -3465,7 +3451,8 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(const std::string &filepath)
+bool Server::dynamicAddMedia(const std::string &filepath,
+	std::vector<RemotePlayer*> &sent_to)
 {
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	if (m_media.find(filename) != m_media.end()) {
@@ -3485,9 +3472,17 @@ bool Server::dynamicAddMedia(const std::string &filepath)
 	pkt << raw_hash << filename << (bool) true;
 	pkt.putLongString(filedata);
 
-	auto client_ids = m_clients.getClientIDs(CS_DefinitionsSent);
-	for (session_t client_id : client_ids) {
+	m_clients.lock();
+	for (auto &pair : m_clients.getClientList()) {
+		if (pair.second->getState() < CS_DefinitionsSent)
+			continue;
+		if (pair.second->net_proto_version < 39)
+			continue;
+
+		if (auto player = m_env->getPlayer(pair.second->peer_id))
+			sent_to.emplace_back(player);
 		/*
+			FIXME: this is a very awful hack
 			The network layer only guarantees ordered delivery inside a channel.
 			Since the very next packet could be one that uses the media, we have
 			to push the media over ALL channels to ensure it is processed before
@@ -3496,9 +3491,10 @@ bool Server::dynamicAddMedia(const std::string &filepath)
 			- channel 1 (HUD)
 			- channel 0 (everything else: e.g. play_sound, object messages)
 		*/
-		m_clients.send(client_id, 1, &pkt, true);
-		m_clients.send(client_id, 0, &pkt, true);
+		m_clients.send(pair.second->peer_id, 1, &pkt, true);
+		m_clients.send(pair.second->peer_id, 0, &pkt, true);
 	}
+	m_clients.unlock();
 
 	return true;
 }
@@ -3890,19 +3886,27 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 }
 
-void Server::loadTranslationLanguage(const std::string &lang_code)
+Translations *Server::getTranslationLanguage(const std::string &lang_code)
 {
-	if (g_server_translations->count(lang_code))
-		return; // Already loaded
+	if (lang_code.empty())
+		return nullptr;
+
+	auto it = server_translations.find(lang_code);
+	if (it != server_translations.end())
+		return &it->second; // Already loaded
+
+	// [] will create an entry
+	auto *translations = &server_translations[lang_code];
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
-			std::ifstream t(i.second.path);
-			std::string data((std::istreambuf_iterator<char>(t)),
-			std::istreambuf_iterator<char>());
-
-			(*g_server_translations)[lang_code].loadTranslation(data);
+			std::string data;
+			if (fs::ReadFile(i.second.path, data)) {
+				translations->loadTranslation(data);
+			}
 		}
 	}
+
+	return translations;
 }

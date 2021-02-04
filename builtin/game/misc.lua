@@ -151,6 +151,12 @@ function core.setting_get_pos(name)
 end
 
 
+-- See l_env.cpp for the other functions
+function core.get_artificial_light(param1)
+	return math.floor(param1 / 16)
+end
+
+
 -- To be overriden by protection mods
 
 function core.is_protected(pos, name)
@@ -259,4 +265,27 @@ end
 
 function core.cancel_shutdown_requests()
 	core.request_shutdown("", false, -1)
+end
+
+
+-- Callback handling for dynamic_add_media
+
+local dynamic_add_media_raw = core.dynamic_add_media_raw
+core.dynamic_add_media_raw = nil
+function core.dynamic_add_media(filepath, callback)
+	local ret = dynamic_add_media_raw(filepath)
+	if ret == false then
+		return ret
+	end
+	if callback == nil then
+		core.log("deprecated", "Calling minetest.dynamic_add_media without "..
+			"a callback is deprecated and will stop working in future versions.")
+	else
+		-- At the moment async loading is not actually implemented, so we
+		-- immediately call the callback ourselves
+		for _, name in ipairs(ret) do
+			callback(name)
+		end
+	end
+	return true
 end

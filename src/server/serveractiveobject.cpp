@@ -61,7 +61,7 @@ std::string ServerActiveObject::generateUpdateInfantCommand(u16 infant_id, u16 p
 		// Clients since 4aa9a66 so no longer need this data
 		// Version 38 is the first bump after that commit.
 		// See also: ClientEnvironment::addActiveObject
-		os << serializeLongString(getClientInitializationData(protocol_version));
+		os << serializeString32(getClientInitializationData(protocol_version));
 	}
 	return os.str();
 }
@@ -71,5 +71,21 @@ void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &
 	while (!m_messages_out.empty()) {
 		queue.push(std::move(m_messages_out.front()));
 		m_messages_out.pop();
+	}
+}
+
+void ServerActiveObject::markForRemoval()
+{
+	if (!m_pending_removal) {
+		onMarkedForRemoval();
+		m_pending_removal = true;
+	}
+}
+
+void ServerActiveObject::markForDeactivation()
+{
+	if (!m_pending_deactivation) {
+		onMarkedForDeactivation();
+		m_pending_deactivation = true;
 	}
 }

@@ -1,15 +1,11 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 
-if(${CMAKE_VERSION} STREQUAL "2.8.2")
-	# Bug http://vtk.org/Bug/view.php?id=11020
-	message(WARNING "CMake/CPack version 2.8.2 will not create working .deb packages!")
-endif()
+cmake_policy(SET CMP0025 OLD)
 
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
-# Works only for cmake 3.1 and greater
 set(CMAKE_CXX_STANDARD 11)
 set(GCC_MINIMUM_VERSION "4.8")
 set(CLANG_MINIMUM_VERSION "3.4")
@@ -165,7 +161,7 @@ if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/" 
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/"
 	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHAREDIR}/games/"
 	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
@@ -249,15 +245,15 @@ cpack_add_component(Docs
 
 cpack_add_component(SUBGAME_MINETEST_GAME
 	DISPLAY_NAME "Minetest Game"
-	DESCRIPTION "The official subgame for the Minetest engine, that can easily extended by mods."
-	GROUP "Subgames"
+	DESCRIPTION "The default game bundled in the Minetest engine. Mainly used as a modding base."
+	GROUP "Games"
 )
 
 cpack_add_component(SUBGAME_MINIMAL
 	DISPLAY_NAME "Development Test"
-	DESCRIPTION "A minimal test game helping to develop the engine."
+	DESCRIPTION "A basic testing environment used for engine development and sometimes for testing mods."
 	DISABLED #DISABLED does not mean it is disabled, and is just not selected by default.
-	GROUP "Subgames"
+	GROUP "Games"
 )
 
 cpack_add_component_group(Subgames
@@ -278,19 +274,20 @@ if(WIN32)
 		set(CPACK_GENERATOR ZIP)
 
 	else()
-		set(CPACK_GENERATOR WIX ZIP)
+		set(CPACK_GENERATOR WIX)
 		set(CPACK_PACKAGE_NAME "${PROJECT_NAME_CAPITALIZED}")
-		set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME_CAPITALIZED}")
+		set(CPACK_PACKAGE_INSTALL_DIRECTORY ".")
 		set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "${PROJECT_NAME_CAPITALIZED}")
 		set(CPACK_CREATE_DESKTOP_LINKS ${PROJECT_NAME})
+		set(CPACK_PACKAGING_INSTALL_PREFIX "/${PROJECT_NAME_CAPITALIZED}")
 
 		set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/misc/minetest-icon.ico")
-		# Supported languages can be found at 
+		# Supported languages can be found at
 		# http://wixtoolset.org/documentation/manual/v3/wixui/wixui_localization.html
 		#set(CPACK_WIX_CULTURES "ar-SA,bg-BG,ca-ES,hr-HR,cs-CZ,da-DK,nl-NL,en-US,et-EE,fi-FI,fr-FR,de-DE")
 		set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/misc/CPACK_WIX_UI_BANNER.BMP")
 		set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/misc/CPACK_WIX_UI_DIALOG.BMP")
-		
+
 		set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/doc/lgpl-2.1.txt")
 
 		# The correct way would be to include both x32 and x64 into one installer

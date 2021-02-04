@@ -406,7 +406,8 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 					v3f(position.X, position.Y, position.Z - 1),
 					tree_definition
 				);
-			} if (!stack_orientation.empty()) {
+			}
+			if (!stack_orientation.empty()) {
 				s16 size = 1;
 				for (x = -size; x <= size; x++)
 				for (y = -size; y <= size; y++)
@@ -524,19 +525,6 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	}
 
 	return SUCCESS;
-}
-
-
-void tree_node_placement(MMVManip &vmanip, v3f p0, MapNode node)
-{
-	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (!vmanip.m_area.contains(p1))
-		return;
-	u32 vi = vmanip.m_area.index(p1);
-	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
-			&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
-		return;
-	vmanip.m_data[vmanip.m_area.index(p1)] = node;
 }
 
 

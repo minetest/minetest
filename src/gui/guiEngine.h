@@ -29,22 +29,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 
 /******************************************************************************/
-/* Typedefs and macros                                                        */
+/* Structs and macros                                                         */
 /******************************************************************************/
 /** texture layer ids */
-typedef enum {
+enum texture_layer {
 	TEX_LAYER_BACKGROUND = 0,
 	TEX_LAYER_OVERLAY,
 	TEX_LAYER_HEADER,
 	TEX_LAYER_FOOTER,
 	TEX_LAYER_MAX
-} texture_layer;
+};
 
-typedef struct {
+struct image_definition {
 	video::ITexture *texture = nullptr;
 	bool             tile;
 	unsigned int     minsize;
-} image_definition;
+};
 
 /******************************************************************************/
 /* forward declarations                                                       */
@@ -277,7 +277,7 @@ private:
 	/** do preprocessing for cloud subsystem */
 	void cloudPreProcess();
 	/** do postprocessing for cloud subsystem */
-	void cloudPostProcess();
+	void cloudPostProcess(u32 frametime_min, IrrlichtDevice *device);
 
 	/** internam data required for drawing clouds */
 	struct clouddata {

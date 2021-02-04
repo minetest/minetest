@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
+"POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2020-06-15 22:41+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -46,10 +46,6 @@ msgstr "再接続"
 msgid "The server has requested a reconnect:"
 msgstr "サーバが再接続を要求しました:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "読み込み中..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "プロトコルのバージョンが一致していません。 "
@@ -63,10 +59,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "サーバは$1から$2までのプロトコルのバージョンをサポートしています。 "
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr "インターネット接続を確認し、公開サーバ一覧を再有効化してください。"
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "プロトコルはバージョン$1のみをサポートしています。"
 
@@ -74,7 +66,8 @@ msgstr "プロトコルはバージョン$1のみをサポートしています�
 msgid "We support protocol versions between version $1 and $2."
 msgstr "バージョン$1から$2までのプロトコルをサポートしています。"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -84,7 +77,8 @@ msgstr "バージョン$1から$2までのプロトコルをサポートして�
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "依存関係:"
 
@@ -158,12 +152,53 @@ msgid "enabled"
 msgstr "有効"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "ダウンロード中..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "すべて"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Already installed"
+msgstr "キーが重複しています"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "メインメニューへ戻る"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "ゲームホスト"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -187,6 +222,16 @@ msgid "Install"
 msgstr "入手"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "入手"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "任意:"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Mod"
@@ -200,9 +245,26 @@ msgid "No results"
 msgstr "何も見つかりませんでした"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "検索"
+#, fuzzy
+msgid "No updates"
+msgstr "更新"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Not found"
+msgstr "消音"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -217,8 +279,12 @@ msgid "Update"
 msgstr "更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr "見る"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -369,7 +435,8 @@ msgstr "バイオーム間の円滑な移行"
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
-msgstr "地形上に現れる構造物（v6によって生成された木やジャングルの草に影響なし）"
+msgstr ""
+"地形上に現れる構造物（v6によって生成された木やジャングルの草に影響なし）"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
@@ -514,6 +581,10 @@ msgid "Scale"
 msgstr "スケール"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "検索"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
 msgstr "ディレクトリの選択"
 
@@ -628,6 +699,14 @@ msgstr "Modを$1としてインストールすることができません"
 msgid "Unable to install a modpack as a $1"
 msgstr "Modパックを$1としてインストールすることができません"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "読み込み中..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr "インターネット接続を確認し、公開サーバ一覧を再有効化してください。"
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr "オンラインコンテンツ参照"
@@ -681,6 +760,17 @@ msgid "Credits"
 msgstr "クレジット"
 
 #: builtin/mainmenu/tab_credits.lua
+#, fuzzy
+msgid "Open User Data Directory"
+msgstr "ディレクトリの選択"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "以前の貢献者"
 
@@ -697,14 +787,10 @@ msgid "Bind Address"
 msgstr "バインドアドレス"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "設定"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "クリエイティブモード"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "ダメージ有効"
 
@@ -721,8 +807,8 @@ msgid "Install games from ContentDB"
 msgstr "コンテンツDBからゲームをインストール"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "名前 / パスワード"
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -733,12 +819,22 @@ msgid "No world created or selected!"
 msgstr "ワールドが作成または選択されていません！"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Password"
+msgstr "新しいパスワード"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
 msgstr "ゲームプレイ"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "ポート"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Select Mods"
+msgstr "ワールドを選択:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -756,23 +852,23 @@ msgstr "ゲームスタート"
 msgid "Address / Port"
 msgstr "アドレス / ポート"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "接続"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "クリエイティブモード"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "ダメージ有効"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "お気に入り削除"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr "お気に入り"
 
@@ -780,16 +876,16 @@ msgstr "お気に入り"
 msgid "Join Game"
 msgstr "ゲームに参加"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr "名前 / パスワード"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "応答速度"
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP有効"
 
@@ -818,20 +914,12 @@ msgid "Antialiasing:"
 msgstr "アンチエイリアス:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "シングルプレイヤーのワールドをリセットしてよろしいですか？"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr "画面の大きさを自動保存"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "バイリニアフィルタ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "バンプマッピング"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -846,20 +934,12 @@ msgid "Fancy Leaves"
 msgstr "綺麗な葉"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr "法線マップの生成"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr "ミップマップ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "ミップマップと異方性フィルタ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "いいえ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -889,17 +969,9 @@ msgstr "不透明な葉"
 msgid "Opaque Water"
 msgstr "不透明な水"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "視差遮蔽"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "パーティクル"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "ワールドをリセット"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -912,6 +984,11 @@ msgstr "設定"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "シェーダー"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Shaders (experimental)"
+msgstr "浮遊大陸（実験的）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -956,22 +1033,6 @@ msgstr "揺れる液体"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "揺れる草花"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "はい"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Mod設定"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "メイン"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "シングルプレイスタート"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1127,20 +1188,20 @@ msgid "Continue"
 msgstr "再開"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1286,34 +1347,6 @@ msgstr "MiB/秒"
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
 msgstr "ミニマップは現在ゲームまたはModにより無効"
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr "ミニマップ 非表示"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr "ミニマップ レーダーモード、ズーム x1"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr "ミニマップ レーダーモード、ズーム x2"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr "ミニマップ レーダーモード、ズーム x4"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr "ミニマップ 表面モード、ズーム x1"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr "ミニマップ 表面モード、ズーム x2"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
-msgstr "ミニマップ 表面モード、ズーム x4"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1707,6 +1740,25 @@ msgstr "Xボタン2"
 msgid "Zoom"
 msgstr "ズーム"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr "ミニマップ 非表示"
+
+#: src/client/minimap.cpp
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr "ミニマップ レーダーモード、ズーム x1"
+
+#: src/client/minimap.cpp
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr "ミニマップ 表面モード、ズーム x1"
+
+#: src/client/minimap.cpp
+#, fuzzy
+msgid "Minimap in texture mode"
+msgstr "最小テクスチャサイズ"
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "パスワードが一致しません！"
@@ -1978,14 +2030,6 @@ msgstr ""
 "加工していないの形状のためには3つの数字をすべて等しく設定します。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-"0 = 斜面情報付きの視差遮蔽マッピング(高速)。\n"
-"1 = リリーフマッピング(正確だが低速)。"
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr "尾根の形状/大きさを制御する2Dノイズ。"
 
@@ -2108,6 +2152,10 @@ msgstr "サーバ終了時に全てのクライアントへ表示するメッセ
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
 msgstr "ABMの間隔"
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2367,10 +2415,6 @@ msgid "Builtin"
 msgstr "ビルトイン"
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr "バンプマッピング"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2446,21 +2490,6 @@ msgid ""
 msgstr ""
 "光度曲線ブースト範囲の中心。\n"
 "0.0は最小光レベル、1.0は最大光レベルです。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
-msgstr ""
-"メインメニューUIを変更:\n"
-"-   Full:  複数のシングルプレイヤーのワールド、ゲームの選択、\n"
-"テクスチャパックの選択、その他。\n"
-"-   Simple: 1つのシングルプレイヤーのワールド、ゲームや\n"
-"テクスチャパックの選択はありません。小さな画面で必要かもしれません。"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2626,6 +2655,10 @@ msgid "ContentDB Flag Blacklist"
 msgstr "コンテンツDBフラグのブラックリスト"
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "ContentDB URL"
 msgstr "コンテンツDBのURL"
 
@@ -2690,7 +2723,10 @@ msgid "Crosshair alpha"
 msgstr "照準線の透過度"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+#, fuzzy
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr "照準線の透過 (不透明、0～255の間)。"
 
 #: src/settings_translation_file.cpp
@@ -2698,8 +2734,10 @@ msgid "Crosshair color"
 msgstr "照準線の色"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
-msgstr "照準線の色 (R,G,B)。"
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2802,14 +2840,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "オプションの丘と湖の場所と地形を定義します。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-"テクスチャのサンプリング手順を定義します。\n"
-"値が大きいほど、法線マップが滑らかになります。"
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr "基準地上レベルを定義します。"
 
@@ -2882,6 +2912,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
 msgstr "ブロックのアニメーションの非同期化"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dig key"
+msgstr "右キー"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3059,39 +3094,12 @@ msgid "Enables animation of inventory items."
 msgstr "インベントリのアイテムのアニメーションを有効にします。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"テクスチャのバンプマッピングを有効にします。法線マップは\n"
-"テクスチャパックによって提供されるかまたは自動生成される必要があります。\n"
-"シェーダーが有効である必要があります。"
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "facedir回転メッシュのキャッシングを有効にします。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
 msgstr "ミニマップを有効にする。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-"法線マップ生成を臨機応変に有効にします(エンボス効果)。\n"
-"バンプマッピングが有効である必要があります。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"視差遮蔽マッピングを有効にします。\n"
-"シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3115,14 +3123,6 @@ msgstr "エンティティメソッド"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-"実験的なオプションで、0 より大きい数値に設定すると、ブロック間に\n"
-"目に見えるスペースが生じる可能性があります。"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3138,8 +3138,9 @@ msgstr ""
 "作成し、密な浮遊大陸層に適しています。"
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
-msgstr "ポーズメニューでのFPS"
+#, fuzzy
+msgid "FPS when unfocused or paused"
+msgstr "ポーズメニューでの最大FPS。"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3464,10 +3465,6 @@ msgid "GUI scaling filter txr2img"
 msgstr "GUI拡大縮小フィルタ txr2img"
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr "法線マップの生成"
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "グローバルコールバック"
 
@@ -3527,10 +3524,11 @@ msgid "HUD toggle key"
 msgstr "HUD表示切り替えキー"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "廃止予定のLua API呼び出しの処理:\n"
@@ -4059,6 +4057,11 @@ msgid "Joystick button repetition interval"
 msgstr "ジョイスティックボタンの繰り返し間隔"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Joystick deadzone"
+msgstr "ジョイスティックの種類"
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr "ジョイスティック視錐台感度"
 
@@ -4157,6 +4160,17 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "音量を下げるキーです。\n"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for digging.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"ジャンプするキーです。\n"
 "参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4299,6 +4313,17 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "インベントリを開くキーです。\n"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for placing.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"ジャンプするキーです。\n"
 "参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5046,10 +5071,6 @@ msgid "Main menu script"
 msgstr "メインメニュースクリプト"
 
 #: src/settings_translation_file.cpp
-msgid "Main menu style"
-msgstr "メインメニューのスタイル"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr "霧と空の色を日中(夜明け/日没)と視線方向に依存させます。"
@@ -5061,6 +5082,14 @@ msgstr "DirectX を LuaJIT と連携させます。問題がある場合は無�
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
 msgstr "すべての液体を不透明にする"
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5245,7 +5274,8 @@ msgid "Maximum FPS"
 msgstr "最大FPS"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+#, fuzzy
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr "ポーズメニューでの最大FPS。"
 
 #: src/settings_translation_file.cpp
@@ -5299,6 +5329,13 @@ msgid ""
 msgstr ""
 "ファイルから読み込まれてキューに入れられる最大ブロック数。\n"
 "この制限はプレイヤーごとに適用されます。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5551,14 +5588,6 @@ msgid "Noises"
 msgstr "ノイズ"
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr "法線マップのサンプリング"
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr "法線マップの強さ"
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr "出現するスレッド数"
 
@@ -5598,10 +5627,6 @@ msgstr ""
 "トレードオフです (経験則として、4096 = 100MB)。"
 
 #: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr "視差遮蔽反復の回数です。"
-
-#: src/settings_translation_file.cpp
 msgid "Online Content Repository"
 msgstr "オンラインコンテンツリポジトリ"
 
@@ -5627,34 +5652,6 @@ msgid ""
 msgstr ""
 "ウィンドウのフォーカスが失われたときにポーズメニューを開きます。\n"
 "フォームスペックが開かれているときはポーズメニューを開きません。"
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr "視差遮蔽効果の全体的バイアス、通常 スケール/2 です。"
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr "視差遮蔽効果の全体的なスケールです。"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr "視差遮蔽"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr "視差遮蔽バイアス"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr "視差遮蔽反復"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr "視差遮蔽モード"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion scale"
-msgstr "視差遮蔽スケール"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5747,6 +5744,16 @@ msgid "Pitch move mode"
 msgstr "ピッチ移動モード"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place key"
+msgstr "飛行キー"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place repetition interval"
+msgstr "右クリック繰り返しの間隔"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
@@ -5822,7 +5829,8 @@ msgid ""
 "Metrics can be fetch on http://127.0.0.1:30000/metrics"
 msgstr ""
 "プロメテウスリスナーのアドレス。\n"
-"minetest が ENABLE_PROMETHEUS オプションを有効にしてコンパイルされている場合、\n"
+"minetest が ENABLE_PROMETHEUS オプションを有効にしてコンパイルされている場"
+"合、\n"
 "そのアドレスのプロメテウスのメトリックスリスナーを有効にします。\n"
 "メトリックは http://127.0.0.1:30000/metrics で取得可能"
 
@@ -5927,10 +5935,6 @@ msgstr "尾根の大きさノイズ"
 #: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "右キー"
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
-msgstr "右クリック繰り返しの間隔"
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
@@ -6226,6 +6230,15 @@ msgid "Show entity selection boxes"
 msgstr "エンティティの選択ボックスを表示"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+"言語を設定してください。システム言語を使用するには空のままにします。\n"
+"変更後は再起動が必要です。"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "サーバ終了時のメッセージ"
 
@@ -6377,10 +6390,6 @@ msgid "Strength of 3D mode parallax."
 msgstr "3Dモード視差の強さです。"
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr "生成された法線マップの強さです。"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -6412,11 +6421,13 @@ msgid ""
 "world surface below."
 msgstr ""
 "密な浮遊大陸層に配置されるオプションの水の表面レベル。\n"
-"水は規定で無効になっており、この値が 'mgv7_floatland_ymax' - 'mgv7_floatland_taper'\n"
+"水は規定で無効になっており、この値が 'mgv7_floatland_ymax' - "
+"'mgv7_floatland_taper'\n"
 "（上部の先細り開始点）より上に設定されている場合にのみ配置されます。\n"
 "***警告、サーバーのパフォーマンスへの潜在的な危険性***：\n"
 "水の配置を有効にする場合、浮遊大陸を密な層にするために\n"
-"'mgv7_floatland_density' を2.0（または 'mgv7_np_floatland' に応じて他の必要な値）に\n"
+"'mgv7_floatland_density' を2.0（または 'mgv7_np_floatland' に応じて他の必要な"
+"値）に\n"
 "設定して、サーバーに集中する極端な水の流れを避け、下の世界表面への大規模な\n"
 "洪水を避けるようにテストする必要があります。"
 
@@ -6498,6 +6509,11 @@ msgid "The URL for the content repository"
 msgstr "コンテンツリポジトリのURL"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "The deadzone of the joystick"
+msgstr "使用するジョイスティックの識別子"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -6566,13 +6582,14 @@ msgstr ""
 "これは active_object_send_range_blocks と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 "Irrlichtのレンダリングバックエンド。\n"
 "変更後は再起動が必要です。\n"
@@ -6609,6 +6626,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
@@ -6616,10 +6639,10 @@ msgstr ""
 "繰り返されるイベントの秒単位の間隔。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr "マウスの右ボタンを押したまま右クリックを繰り返す秒単位の間隔。"
 
 #: src/settings_translation_file.cpp
@@ -6773,6 +6796,17 @@ msgstr ""
 "テクスチャパックを使用する場合は、パフォーマンスがわずかに向上する\n"
 "可能性があります。\n"
 "ガンマ補正縮小はサポートされていません。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7164,6 +7198,24 @@ msgid "Y-level of seabed."
 msgstr "海底のYレベル。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "cURLファイルダウンロードタイムアウト"
 
@@ -7175,78 +7227,88 @@ msgstr "cURL並行処理制限"
 msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "映画風モード切替"
-
-#~ msgid "Select Package File:"
-#~ msgstr "パッケージファイルを選択:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "大きな洞窟内の溶岩のY高さ上限。"
-
-#~ msgid "Waving Water"
-#~ msgstr "揺れる水"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "ダンジョンが時折地形から突出するかどうか。"
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "突出するダンジョン"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "浮遊大陸の影が広がるYレベル。"
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "浮遊大陸の中間点と湖面のYレベル。"
-
-#~ msgid "Waving water"
-#~ msgstr "揺れる水"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr "浮遊大陸の滑らかな地形における丘の高さと湖の深さの変動。"
+#~ msgid ""
+#~ "0 = parallax occlusion with slope information (faster).\n"
+#~ "1 = relief mapping (slower, more accurate)."
+#~ msgstr ""
+#~ "0 = 斜面情報付きの視差遮蔽マッピング(高速)。\n"
+#~ "1 = リリーフマッピング(正確だが低速)。"
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr "浮遊大陸の山の中間点の上と下の典型的な最大高さ。"
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
+#~ msgstr ""
+#~ "ライトテーブルのガンマ補正を調整します。数値が大きいほど明るくなります。\n"
+#~ "この設定はクライアント専用であり、サーバでは無視されます。"
 
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "このフォントは特定の言語で使用されます。"
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr "山型浮遊大陸が中間点の上下でどのように先細くなるかを変更します。"
 
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "光度曲線ミッドブーストの強さ。"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "シングルプレイヤーのワールドをリセットしてよろしいですか？"
 
-#~ msgid "Shadow limit"
-#~ msgstr "影の制限"
+#~ msgid "Back"
+#~ msgstr "戻る"
 
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "TrueTypeフォントまたはビットマップへのパス。"
+#~ msgid "Bump Mapping"
+#~ msgstr "バンプマッピング"
 
-#~ msgid "Lightness sharpness"
-#~ msgstr "明るさの鋭さ"
+#~ msgid "Bumpmapping"
+#~ msgstr "バンプマッピング"
 
-#~ msgid "Lava depth"
-#~ msgstr "溶岩の深さ"
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "光度曲線ミッドブーストの中心。"
 
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 サポート。"
+#~ msgid ""
+#~ "Changes the main menu UI:\n"
+#~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
+#~ "chooser, etc.\n"
+#~ "-   Simple: One singleplayer world, no game or texture pack choosers. May "
+#~ "be\n"
+#~ "necessary for smaller screens."
+#~ msgstr ""
+#~ "メインメニューUIを変更:\n"
+#~ "-   Full:  複数のシングルプレイヤーのワールド、ゲームの選択、\n"
+#~ "テクスチャパックの選択、その他。\n"
+#~ "-   Simple: 1つのシングルプレイヤーのワールド、ゲームや\n"
+#~ "テクスチャパックの選択はありません。小さな画面で必要かもしれません。"
 
-#~ msgid "Gamma"
-#~ msgstr "ガンマ"
+#~ msgid "Config mods"
+#~ msgstr "Mod設定"
 
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "フォントの影の透過 (不透明、0～255の間)。"
+#~ msgid "Configure"
+#~ msgstr "設定"
 
-#~ msgid "Floatland mountain height"
-#~ msgstr "浮遊大陸の山の高さ"
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "山型浮遊大陸の密度を制御します。\n"
+#~ "ノイズのオフセットは、'mgv7_np_mountain' ノイズ値に追加されます。"
 
-#~ msgid "Floatland base height noise"
-#~ msgstr "浮遊大陸の基準高さノイズ"
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
 
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "フィルム調トーンマッピング有効にする"
+#~ msgid "Crosshair color (R,G,B)."
+#~ msgstr "照準線の色 (R,G,B)。"
 
-#~ msgid "Enable VBO"
-#~ msgstr "VBOを有効化"
+#~ msgid "Darkness sharpness"
+#~ msgstr "暗さの鋭さ"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "浮遊大陸の滑らかな地形の地域を定義します。\n"
+#~ "ノイズが 0 より大きいとき、滑らかな浮遊大陸になります。"
+
+#~ msgid ""
+#~ "Defines sampling step of texture.\n"
+#~ "A higher value results in smoother normal maps."
+#~ msgstr ""
+#~ "テクスチャのサンプリング手順を定義します。\n"
+#~ "値が大きいほど、法線マップが滑らかになります。"
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -7257,54 +7319,202 @@ msgstr "cURLタイムアウト"
 #~ "す。\n"
 #~ "大きな洞窟内の溶岩のY高さ上限。"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "浮遊大陸の滑らかな地形の地域を定義します。\n"
-#~ "ノイズが 0 より大きいとき、滑らかな浮遊大陸になります。"
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "$1をインストールしています、お待ちください..."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "暗さの鋭さ"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
+#~ msgid "Enable VBO"
+#~ msgstr "VBOを有効化"
 
 #~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
+#~ "texture pack\n"
+#~ "or need to be auto-generated.\n"
+#~ "Requires shaders to be enabled."
 #~ msgstr ""
-#~ "山型浮遊大陸の密度を制御します。\n"
-#~ "ノイズのオフセットは、'mgv7_np_mountain' ノイズ値に追加されます。"
+#~ "テクスチャのバンプマッピングを有効にします。法線マップは\n"
+#~ "テクスチャパックによって提供されるかまたは自動生成される必要があります。\n"
+#~ "シェーダーが有効である必要があります。"
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "光度曲線ミッドブーストの中心。"
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr "山型浮遊大陸が中間点の上下でどのように先細くなるかを変更します。"
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "フィルム調トーンマッピング有効にする"
 
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Enables on the fly normalmap generation (Emboss effect).\n"
+#~ "Requires bumpmapping to be enabled."
 #~ msgstr ""
-#~ "ライトテーブルのガンマ補正を調整します。数値が大きいほど明るくなります。\n"
-#~ "この設定はクライアント専用であり、サーバでは無視されます。"
+#~ "法線マップ生成を臨機応変に有効にします(エンボス効果)。\n"
+#~ "バンプマッピングが有効である必要があります。"
 
-#~ msgid "Path to save screenshots at."
-#~ msgstr "スクリーンショットを保存するパス。"
+#~ msgid ""
+#~ "Enables parallax occlusion mapping.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "視差遮蔽マッピングを有効にします。\n"
+#~ "シェーダーが有効である必要があります。"
 
-#~ msgid "Parallax occlusion strength"
-#~ msgstr "視差遮蔽強度"
+#~ msgid ""
+#~ "Experimental option, might cause visible spaces between blocks\n"
+#~ "when set to higher number than 0."
+#~ msgstr ""
+#~ "実験的なオプションで、0 より大きい数値に設定すると、ブロック間に\n"
+#~ "目に見えるスペースが生じる可能性があります。"
+
+#~ msgid "FPS in pause menu"
+#~ msgstr "ポーズメニューでのFPS"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "浮遊大陸の基準高さノイズ"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "浮遊大陸の山の高さ"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "フォントの影の透過 (不透明、0～255の間)。"
+
+#~ msgid "Gamma"
+#~ msgstr "ガンマ"
+
+#~ msgid "Generate Normal Maps"
+#~ msgstr "法線マップの生成"
+
+#~ msgid "Generate normalmaps"
+#~ msgstr "法線マップの生成"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 サポート。"
+
+#~ msgid "Lava depth"
+#~ msgstr "溶岩の深さ"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "明るさの鋭さ"
 
 #~ msgid "Limit of emerge queues on disk"
 #~ msgstr "ディスク上に出現するキューの制限"
 
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "$1をインストールしています、お待ちください..."
+#~ msgid "Main"
+#~ msgstr "メイン"
 
-#~ msgid "Back"
-#~ msgstr "戻る"
+#~ msgid "Main menu style"
+#~ msgstr "メインメニューのスタイル"
+
+#~ msgid "Minimap in radar mode, Zoom x2"
+#~ msgstr "ミニマップ レーダーモード、ズーム x2"
+
+#~ msgid "Minimap in radar mode, Zoom x4"
+#~ msgstr "ミニマップ レーダーモード、ズーム x4"
+
+#~ msgid "Minimap in surface mode, Zoom x2"
+#~ msgstr "ミニマップ 表面モード、ズーム x2"
+
+#~ msgid "Minimap in surface mode, Zoom x4"
+#~ msgstr "ミニマップ 表面モード、ズーム x4"
+
+#~ msgid "Name/Password"
+#~ msgstr "名前 / パスワード"
+
+#~ msgid "No"
+#~ msgstr "いいえ"
+
+#~ msgid "Normalmaps sampling"
+#~ msgstr "法線マップのサンプリング"
+
+#~ msgid "Normalmaps strength"
+#~ msgstr "法線マップの強さ"
+
+#~ msgid "Number of parallax occlusion iterations."
+#~ msgstr "視差遮蔽反復の回数です。"
 
 #~ msgid "Ok"
 #~ msgstr "決定"
+
+#~ msgid "Overall bias of parallax occlusion effect, usually scale/2."
+#~ msgstr "視差遮蔽効果の全体的バイアス、通常 スケール/2 です。"
+
+#~ msgid "Overall scale of parallax occlusion effect."
+#~ msgstr "視差遮蔽効果の全体的なスケールです。"
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "視差遮蔽"
+
+#~ msgid "Parallax occlusion"
+#~ msgstr "視差遮蔽"
+
+#~ msgid "Parallax occlusion bias"
+#~ msgstr "視差遮蔽バイアス"
+
+#~ msgid "Parallax occlusion iterations"
+#~ msgstr "視差遮蔽反復"
+
+#~ msgid "Parallax occlusion mode"
+#~ msgstr "視差遮蔽モード"
+
+#~ msgid "Parallax occlusion scale"
+#~ msgstr "視差遮蔽スケール"
+
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "視差遮蔽強度"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "TrueTypeフォントまたはビットマップへのパス。"
+
+#~ msgid "Path to save screenshots at."
+#~ msgstr "スクリーンショットを保存するパス。"
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "突出するダンジョン"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "ワールドをリセット"
+
+#~ msgid "Select Package File:"
+#~ msgstr "パッケージファイルを選択:"
+
+#~ msgid "Shadow limit"
+#~ msgstr "影の制限"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "シングルプレイスタート"
+
+#~ msgid "Strength of generated normalmaps."
+#~ msgstr "生成された法線マップの強さです。"
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "光度曲線ミッドブーストの強さ。"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "このフォントは特定の言語で使用されます。"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "映画風モード切替"
+
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr "浮遊大陸の山の中間点の上と下の典型的な最大高さ。"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr "浮遊大陸の滑らかな地形における丘の高さと湖の深さの変動。"
+
+#~ msgid "View"
+#~ msgstr "見る"
+
+#~ msgid "Waving Water"
+#~ msgstr "揺れる水"
+
+#~ msgid "Waving water"
+#~ msgstr "揺れる水"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "ダンジョンが時折地形から突出するかどうか。"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "大きな洞窟内の溶岩のY高さ上限。"
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "浮遊大陸の中間点と湖面のYレベル。"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "浮遊大陸の影が広がるYレベル。"
+
+#~ msgid "Yes"
+#~ msgstr "はい"

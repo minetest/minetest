@@ -175,7 +175,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		}
 	}
 #endif
-	g_fontengine = new FontEngine(g_settings, guienv);
+	g_fontengine = new FontEngine(guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
@@ -487,14 +487,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		start_data.socket_port = myrand_range(49152, 65535);
 	} else {
 		g_settings->set("name", start_data.name);
-		if (!start_data.address.empty()) {
-			ServerListSpec server;
-			server["name"]        = server_name;
-			server["address"]     = start_data.address;
-			server["port"]        = itos(start_data.socket_port);
-			server["description"] = server_description;
-			ServerList::insert(server);
-		}
 	}
 
 	if (start_data.name.length() > PLAYERNAME_SIZE - 1) {

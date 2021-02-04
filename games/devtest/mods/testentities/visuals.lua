@@ -155,3 +155,32 @@ minetest.register_craftitem("testentities:rotation_z", {
 	description = "Z Arrow (force the dungeon master to rotate around Z axis)",
 	inventory_image = "testentities_rotation_z.png"
 })
+
+minetest.register_entity("testentities:nametag", {
+	initial_properties = {
+		visual = "sprite",
+		textures = { "testentities_sprite.png" },
+	},
+
+	on_activate = function(self, staticdata)
+		if staticdata ~= "" then
+			self.color = minetest.deserialize(staticdata).color
+		else
+			self.color = {
+				r = math.random(0, 255),
+				g = math.random(0, 255),
+				b = math.random(0, 255),
+			}
+		end
+
+		assert(self.color)
+		self.object:set_properties({
+			nametag = tostring(math.random(1000, 10000)),
+			nametag_color = self.color,
+		})
+	end,
+
+	get_staticdata = function(self)
+		return minetest.serialize({ color = self.color })
+	end,
+})

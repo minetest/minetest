@@ -94,10 +94,10 @@ public:
 	float baseTerrainLevelFromMap(int index);
 	bool getMountainTerrainAtPoint(s16 x, s16 y, s16 z);
 	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y);
+	bool getRiverChannelFromMap(int idx_xyz, int idx_xz, s16 y);
 	bool getFloatlandTerrainFromMap(int idx_xyz, float float_offset);
 
 	int generateTerrain();
-	void generateRidgeTerrain();
 
 private:
 	s16 mount_zero_level;

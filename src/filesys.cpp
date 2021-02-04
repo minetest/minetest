@@ -295,31 +295,26 @@ bool RecursiveDelete(const std::string &path)
 
 	infostream<<"Removing \""<<path<<"\""<<std::endl;
 
-	//return false;
-
 	pid_t child_pid = fork();
 
 	if(child_pid == 0)
 	{
 		// Child
-		char argv_data[3][10000];
+		const char *argv[4] = {
 #ifdef __ANDROID__
-		strcpy(argv_data[0], "/system/bin/rm");
+			"/system/bin/rm",
 #else
-		strcpy(argv_data[0], "/bin/rm");
+			"/bin/rm",
 #endif
-		strcpy(argv_data[1], "-rf");
-		strncpy(argv_data[2], path.c_str(), sizeof(argv_data[2]) - 1);
-		char *argv[4];
-		argv[0] = argv_data[0];
-		argv[1] = argv_data[1];
-		argv[2] = argv_data[2];
-		argv[3] = NULL;
+			"-rf",
+			path.c_str(),
+			NULL
+		};
 
 		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
 				<<argv[2]<<"'"<<std::endl;
 
-		execv(argv[0], argv);
+		execv(argv[0], const_cast<char**>(argv));
 
 		// Execv shouldn't return. Failed.
 		_exit(1);
@@ -331,7 +326,6 @@ bool RecursiveDelete(const std::string &path)
 		pid_t tpid;
 		do{
 			tpid = wait(&child_status);
-			//if(tpid != child_pid) process_terminated(tpid);
 		}while(tpid != child_pid);
 		return (child_status == 0);
 	}
@@ -405,21 +399,6 @@ void GetRecursiveSubPaths(const std::string &path,
 		if (n.dir)
 			GetRecursiveSubPaths(fullpath, dst, list_files, ignore);
 	}
-}
-
-bool DeletePaths(const std::vector<std::string> &paths)
-{
-	bool success = true;
-	// Go backwards to succesfully delete the output of GetRecursiveSubPaths
-	for(int i=paths.size()-1; i>=0; i--){
-		const std::string &path = paths[i];
-		bool did = DeleteSingleFileOrEmptyDirectory(path);
-		if(!did){
-			errorstream<<"Failed to delete "<<path<<std::endl;
-			success = false;
-		}
-	}
-	return success;
 }
 
 bool RecursiveDeleteContent(const std::string &path)
@@ -746,6 +725,21 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 		remove(tmp_file.c_str());
 		return false;
 	}
+
+	return true;
+}
+
+bool ReadFile(const std::string &path, std::string &out)
+{
+	std::ifstream is(path, std::ios::binary | std::ios::ate);
+	if (!is.good()) {
+		return false;
+	}
+
+	auto size = is.tellg();
+	out.resize(size);
+	is.seekg(0);
+	is.read(&out[0], size);
 
 	return true;
 }

@@ -123,14 +123,14 @@ void ChatBuffer::deleteByAge(f32 maxAge)
 	deleteOldest(count);
 }
 
-u32 ChatBuffer::getColumns() const
-{
-	return m_cols;
-}
-
 u32 ChatBuffer::getRows() const
 {
 	return m_rows;
+}
+
+void ChatBuffer::scrollTop()
+{
+	m_scroll = getTopScrollPos();
 }
 
 void ChatBuffer::reformat(u32 cols, u32 rows)
@@ -218,11 +218,6 @@ void ChatBuffer::scrollAbsolute(s32 scroll)
 void ChatBuffer::scrollBottom()
 {
 	m_scroll = getBottomScrollPos();
-}
-
-void ChatBuffer::scrollTop()
-{
-	m_scroll = getTopScrollPos();
 }
 
 u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
@@ -490,8 +485,8 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
 	for (const std::string &name : names) {
-		if (str_starts_with(narrow_to_wide(name), prefix, true)) {
-			std::wstring completion = narrow_to_wide(name);
+		std::wstring completion = utf8_to_wide(name);
+		if (str_starts_with(completion, prefix, true)) {
 			if (prefix_start == 0)
 				completion += L": ";
 			completions.push_back(completion);

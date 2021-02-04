@@ -429,7 +429,6 @@ private:
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
 	bool m_setting_bilinear_filter;
-	bool m_setting_anisotropic_filter;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -450,7 +449,6 @@ TextureSource::TextureSource()
 	// for these settings to take effect
 	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
 	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()
@@ -1632,6 +1630,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		{
 			/* IMPORTANT: When changing this, getTextureForMesh() needs to be
 			 * updated too. */
+
+			if (!baseimg) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
 
 			// Apply the "clean transparent" filter, if configured.
 			if (g_settings->getBool("texture_clean_transparent"))

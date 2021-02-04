@@ -34,10 +34,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The maximum number of identical world names allowed
 #define MAX_WORLD_NAMES 100
 
+namespace
+{
+
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
 	return conf.readConfigFile(conf_path.c_str());
+}
+
 }
 
 struct GameFindPath
@@ -324,15 +329,16 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		}
 	}
 
-	// Override defaults with those provided by the game.
-	// We clear and reload the defaults because the defaults
-	// might have been overridden by other subgame config
-	// files that were loaded before.
-	g_settings->clearDefaults();
-	set_default_settings(g_settings);
-	Settings game_defaults;
-	getGameMinetestConfig(gamespec.path, game_defaults);
-	g_settings->overrideDefaults(&game_defaults);
+	Settings *game_settings = Settings::getLayer(SL_GAME);
+	const bool new_game_settings = (game_settings == nullptr);
+	if (new_game_settings) {
+		// Called by main-menu without a Server instance running
+		// -> create and free manually
+		game_settings = Settings::createLayer(SL_GAME);
+	}
+
+	getGameMinetestConfig(gamespec.path, *game_settings);
+	game_settings->removeSecureSettings();
 
 	infostream << "Initializing world at " << final_path << std::endl;
 
@@ -373,4 +379,8 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 
 		fs::safeWriteToFile(map_meta_path, oss.str());
 	}
+
+	// The Settings object is no longer needed for created worlds
+	if (new_game_settings)
+		delete game_settings;
 }

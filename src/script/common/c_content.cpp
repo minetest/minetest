@@ -56,6 +56,7 @@ void read_item_definition(lua_State* L, int index,
 			es_ItemType, ITEM_NONE);
 	getstringfield(L, index, "name", def.name);
 	getstringfield(L, index, "description", def.description);
+	getstringfield(L, index, "short_description", def.short_description);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
 	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
@@ -81,9 +82,6 @@ void read_item_definition(lua_State* L, int index,
 	lua_pop(L, 1);
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
-
-	warn_if_field_exists(L, index, "tool_digging_properties",
-			"Obsolete; use tool_capabilities");
 
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
@@ -142,6 +140,8 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
+	lua_pushstring(L, i.short_description.c_str());
+	lua_setfield(L, -2, "short_description");
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
@@ -343,6 +343,7 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
 	getboolfield(L, -1, "shaded", prop->shaded);
+	getboolfield(L, -1, "show_on_minimap", prop->show_on_minimap);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
@@ -431,6 +432,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "shaded");
 	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
 	lua_setfield(L, -2, "damage_texture_modifier");
+	lua_pushboolean(L, prop->show_on_minimap);
+	lua_setfield(L, -2, "show_on_minimap");
 }
 
 /******************************************************************************/
@@ -503,12 +506,10 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 }
 
 /******************************************************************************/
-ContentFeatures read_content_features(lua_State *L, int index)
+void read_content_features(lua_State *L, ContentFeatures &f, int index)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-
-	ContentFeatures f;
 
 	/* Cache existence of some callbacks */
 	lua_getfield(L, index, "on_construct");
@@ -632,21 +633,38 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	}
 	lua_pop(L, 1);
 
-	f.alpha = getintfield_default(L, index, "alpha", 255);
+	/* alpha & use_texture_alpha */
+	// This is a bit complicated due to compatibility
 
-	bool usealpha = getboolfield_default(L, index,
-			"use_texture_alpha", false);
-	if (usealpha)
-		f.alpha = 0;
+	f.setDefaultAlphaMode();
 
-	// Read node color.
+	warn_if_field_exists(L, index, "alpha",
+		"Obsolete, only limited compatibility provided; "
+		"replaced by \"use_texture_alpha\"");
+	if (getintfield_default(L, index, "alpha", 255) != 255)
+		f.alpha = ALPHAMODE_BLEND;
+
+	lua_getfield(L, index, "use_texture_alpha");
+	if (lua_isboolean(L, -1)) {
+		warn_if_field_exists(L, index, "use_texture_alpha",
+			"Boolean values are deprecated; use the new choices");
+		if (lua_toboolean(L, -1))
+			f.alpha = (f.drawtype == NDT_NORMAL) ? ALPHAMODE_CLIP : ALPHAMODE_BLEND;
+	} else if (check_field_or_nil(L, -1, LUA_TSTRING, "use_texture_alpha")) {
+		int result = f.alpha;
+		string_to_enum(ScriptApiNode::es_TextureAlphaMode, result,
+				std::string(lua_tostring(L, -1)));
+		f.alpha = static_cast<enum AlphaMode>(result);
+	}
+	lua_pop(L, 1);
+
+	/* Other stuff */
+
 	lua_getfield(L, index, "color");
 	read_color(L, -1, &f.color);
 	lua_pop(L, 1);
 
 	getstringfield(L, index, "palette", f.palette_name);
-
-	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
 	read_color(L, -1, &f.post_effect_color);
@@ -663,20 +681,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
-
-	// Warn about some obsolete fields
-	warn_if_field_exists(L, index, "wall_mounted",
-			"Obsolete; use paramtype2 = 'wallmounted'");
-	warn_if_field_exists(L, index, "light_propagates",
-			"Obsolete; determined from paramtype");
-	warn_if_field_exists(L, index, "dug_item",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item_rarity",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "metadata_name",
-			"Obsolete; use on_add and metadata callbacks");
 
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
@@ -812,7 +816,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	getstringfield(L, index, "node_dig_prediction",
 		f.node_dig_prediction);
 
-	return f;
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)

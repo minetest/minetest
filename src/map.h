@@ -123,7 +123,7 @@ class Map /*: public NodeContainer*/
 {
 public:
 
-	Map(std::ostream &dout, IGameDef *gamedef);
+	Map(IGameDef *gamedef);
 	virtual ~Map();
 	DISABLE_CLASS_COPY(Map);
 
@@ -149,8 +149,6 @@ public:
 	MapSector * getSectorNoGenerateNoLock(v2s16 p2d);
 	// Same as the above (there exists no lock anymore)
 	MapSector * getSectorNoGenerate(v2s16 p2d);
-	// Gets an existing sector or creates an empty one
-	//MapSector * getSectorCreate(v2s16 p2d);
 
 	/*
 		This is overloaded by ClientMap and ServerMap to allow
@@ -269,11 +267,6 @@ public:
 	void removeNodeTimer(v3s16 p);
 
 	/*
-		Misc.
-	*/
-	std::map<v2s16, MapSector*> *getSectorsPtr(){return &m_sectors;}
-
-	/*
 		Variables
 	*/
 
@@ -282,8 +275,6 @@ public:
 	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
 protected:
 	friend class LuaVoxelManip;
-
-	std::ostream &m_dout; // A bit deprecated, could be removed
 
 	IGameDef *m_gamedef;
 
@@ -374,15 +365,6 @@ public:
 	*/
 	MapBlock *getBlockOrEmerge(v3s16 p3d);
 
-	// Helper for placing objects on ground level
-	s16 findGroundLevel(v2s16 p2d);
-
-	/*
-		Misc. helper functions for fiddling with directory and file
-		names when saving
-	*/
-	void createDirs(const std::string &path);
-
 	/*
 		Database functions
 	*/
@@ -399,7 +381,7 @@ public:
 	MapgenParams *getMapgenParams();
 
 	bool saveBlock(MapBlock *block);
-	static bool saveBlock(MapBlock *block, MapDatabase *db);
+	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
@@ -414,7 +396,6 @@ public:
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
 
 	u64 getSeed();
-	s16 getWaterLevel();
 
 	/*!
 	 * Fixes lighting in one map block.
@@ -435,13 +416,9 @@ private:
 	std::string m_savedir;
 	bool m_map_saving_enabled;
 
-#if 0
-	// Chunk size in MapSectors
-	// If 0, chunks are disabled.
-	s16 m_chunksize;
-	// Chunks
-	core::map<v2s16, MapChunk*> m_chunks;
-#endif
+	int m_map_compression_level;
+
+	std::set<v3s16> m_chunks_in_progress;
 
 	/*
 		Metadata is re-written on disk only if this is true.

@@ -56,12 +56,12 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Created);
 
+	Address addr;
 	std::string addr_s;
 	try {
-		Address address = getPeerAddress(peer_id);
-		addr_s = address.serializeString();
-	}
-	catch (con::PeerNotFoundException &e) {
+		addr = m_con->GetPeerAddress(peer_id);
+		addr_s = addr.serializeString();
+	} catch (con::PeerNotFoundException &e) {
 		/*
 		 * no peer for this packet found
 		 * most common reason is peer timeout, e.g. peer didn't
@@ -73,12 +73,13 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	// If net_proto_version is set, this client has already been handled
 	if (client->getState() > CS_Created) {
 		verbosestream << "Server: Ignoring multiple TOSERVER_INITs from " <<
 			addr_s << " (peer_id=" << peer_id << ")" << std::endl;
 		return;
 	}
+
+	client->setCachedAddress(addr);
 
 	verbosestream << "Server: Got TOSERVER_INIT from " << addr_s <<
 		" (peer_id=" << peer_id << ")" << std::endl;
@@ -316,7 +317,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send active objects
 	{
 		PlayerSAO *sao = getPlayerSAO(peer_id);
-		if (client && sao)
+		if (sao)
 			SendActiveObjectRemoveAdd(client, sao);
 	}
 
@@ -437,18 +438,20 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 	u8 count;
 	*pkt >> count;
 
-	RemoteClient *client = getClient(pkt->getPeerId());
-
 	if ((s16)pkt->getSize() < 1 + (int)count * 6) {
 		throw con::InvalidIncomingDataException
 				("GOTBLOCKS length is too short");
 	}
+
+	m_clients.lock();
+	RemoteClient *client = m_clients.lockedGetClientNoEx(pkt->getPeerId());
 
 	for (u16 i = 0; i < count; i++) {
 		v3s16 p;
 		*pkt >> p;
 		client->GotBlock(p);
 	}
+	m_clients.unlock();
 }
 
 void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
@@ -600,7 +603,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		<< std::endl;
 	std::istringstream is(datastring, std::ios_base::binary);
 	// Create an action
-	InventoryAction *a = InventoryAction::deSerialize(is);
+	std::unique_ptr<InventoryAction> a(InventoryAction::deSerialize(is));
 	if (!a) {
 		infostream << "TOSERVER_INVENTORY_ACTION: "
 				<< "InventoryAction::deSerialize() returned NULL"
@@ -617,11 +620,30 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		where the client made a bad prediction.
 	*/
 
+	const bool player_has_interact = checkPriv(player->getName(), "interact");
+
+	auto check_inv_access = [player, player_has_interact] (
+			const InventoryLocation &loc) -> bool {
+		if (loc.type == InventoryLocation::CURRENT_PLAYER)
+			return false; // Only used internally on the client, never sent
+		if (loc.type == InventoryLocation::PLAYER) {
+			// Allow access to own inventory in all cases
+			return loc.name == player->getName();
+		}
+
+		if (!player_has_interact) {
+			infostream << "Cannot modify foreign inventory: "
+					<< "No interact privilege" << std::endl;
+			return false;
+		}
+		return true;
+	};
+
 	/*
 		Handle restrictions and special cases of the move action
 	*/
 	if (a->getType() == IAction::Move) {
-		IMoveAction *ma = (IMoveAction*)a;
+		IMoveAction *ma = (IMoveAction*)a.get();
 
 		ma->from_inv.applyCurrentPlayer(player->getName());
 		ma->to_inv.applyCurrentPlayer(player->getName());
@@ -630,21 +652,11 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		if (ma->from_inv != ma->to_inv)
 			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
-		bool from_inv_is_current_player = false;
-		if (ma->from_inv.type == InventoryLocation::PLAYER) {
-			if (ma->from_inv.name != player->getName())
-				return;
-			from_inv_is_current_player = true;
-		}
-		
-		bool to_inv_is_current_player = false;
-		if (ma->to_inv.type == InventoryLocation::PLAYER) {
-			if (ma->to_inv.name != player->getName())
-				return;
-			to_inv_is_current_player = true;
-		}
+		if (!check_inv_access(ma->from_inv) ||
+				!check_inv_access(ma->to_inv))
+			return;
 
-		InventoryLocation *remote = from_inv_is_current_player ?
+		InventoryLocation *remote = ma->from_inv.type == InventoryLocation::PLAYER ?
 			&ma->to_inv : &ma->from_inv;
 
 		// Check for out-of-range interaction
@@ -664,7 +676,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
 					<< " because src is " << ma->from_list << std::endl;
-			delete a;
 			return;
 		}
 
@@ -676,18 +687,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
 					<< " because dst is " << ma->to_list << std::endl;
-			delete a;
-			return;
-		}
-
-		// Disallow moving items in elsewhere than player's inventory
-		// if not allowed to interact
-		if (!checkPriv(player->getName(), "interact") &&
-				(!from_inv_is_current_player ||
-				!to_inv_is_current_player)) {
-			infostream << "Cannot move outside of player's inventory: "
-					<< "No interact privilege" << std::endl;
-			delete a;
 			return;
 		}
 	}
@@ -695,7 +694,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the drop action
 	*/
 	else if (a->getType() == IAction::Drop) {
-		IDropAction *da = (IDropAction*)a;
+		IDropAction *da = (IDropAction*)a.get();
 
 		da->from_inv.applyCurrentPlayer(player->getName());
 
@@ -708,22 +707,18 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			infostream << "Ignoring IDropAction from "
 					<< (da->from_inv.dump()) << ":" << da->from_list
 					<< " because src is " << da->from_list << std::endl;
-			delete a;
 			return;
 		}
 
 		// Disallow dropping items if not allowed to interact
-		if (!checkPriv(player->getName(), "interact")) {
-			delete a;
+		if (!player_has_interact || !check_inv_access(da->from_inv))
 			return;
-		}
 
 		// Disallow dropping items if dead
 		if (playersao->isDead()) {
 			infostream << "Ignoring IDropAction from "
 					<< (da->from_inv.dump()) << ":" << da->from_list
 					<< " because player is dead." << std::endl;
-			delete a;
 			return;
 		}
 	}
@@ -731,48 +726,34 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the craft action
 	*/
 	else if (a->getType() == IAction::Craft) {
-		ICraftAction *ca = (ICraftAction*)a;
+		ICraftAction *ca = (ICraftAction*)a.get();
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
 		m_inventory_mgr->setInventoryModified(ca->craft_inv);
 
-		//bool craft_inv_is_current_player =
-		//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
-		//	(ca->craft_inv.name == player->getName());
-
 		// Disallow crafting if not allowed to interact
-		if (!checkPriv(player->getName(), "interact")) {
+		if (!player_has_interact) {
 			infostream << "Cannot craft: "
 					<< "No interact privilege" << std::endl;
-			delete a;
 			return;
 		}
+
+		if (!check_inv_access(ca->craft_inv))
+			return;
+	} else {
+		// Unknown action. Ignored.
+		return;
 	}
 
 	// Do the action
 	a->apply(m_inventory_mgr.get(), playersao, this);
-	// Eat the action
-	delete a;
 }
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 {
-	/*
-		u16 command
-		u16 length
-		wstring message
-	*/
-	u16 len;
-	*pkt >> len;
-
 	std::wstring message;
-	for (u16 i = 0; i < len; i++) {
-		u16 tmp_wchar;
-		*pkt >> tmp_wchar;
-
-		message += (wchar_t)tmp_wchar;
-	}
+	*pkt >> message;
 
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -784,15 +765,13 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		return;
 	}
 
-	// Get player name of this client
 	std::string name = player->getName();
-	std::wstring wname = narrow_to_wide(name);
 
-	std::wstring answer_to_sender = handleChat(name, wname, message, true, player);
+	std::wstring answer_to_sender = handleChat(name, message, true, player);
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
-		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_NORMAL,
-			answer_to_sender, wname));
+		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+			answer_to_sender));
 	}
 }
 
@@ -868,6 +847,15 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	u16 item;
 
 	*pkt >> item;
+
+	if (item >= player->getHotbarItemcount()) {
+		actionstream << "Player: " << player->getName()
+			<< " tried to access item=" << item
+			<< " out of hotbar_itemcount="
+			<< player->getHotbarItemcount()
+			<< "; ignoring." << std::endl;
+		return;
+	}
 
 	playersao->getPlayer()->setWieldIndex(item);
 }
@@ -984,6 +972,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	v3f player_pos = playersao->getLastGoodPosition();
 
 	// Update wielded item
+
+	if (item_i >= player->getHotbarItemcount()) {
+		actionstream << "Player: " << player->getName()
+			<< " tried to access item=" << item_i
+			<< " out of hotbar_itemcount="
+			<< player->getHotbarItemcount()
+			<< "; ignoring." << std::endl;
+		return;
+	}
+
 	playersao->getPlayer()->setWieldIndex(item_i);
 
 	// Get pointed to object (NULL if not POINTEDTYPE_OBJECT)
@@ -1040,12 +1038,13 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
-		if (!checkInteractDistance(player, d, pointed.dump())
-				&& pointed.type == POINTEDTHING_NODE) {
-			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(peer_id);
-			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
-			client->SetBlockNotSent(blockpos);
+		if (!checkInteractDistance(player, d, pointed.dump())) {
+			if (pointed.type == POINTEDTHING_NODE) {
+				// Re-send block to revert change on client-side
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+				client->SetBlockNotSent(blockpos);
+			}
 			return;
 		}
 	}
@@ -1646,19 +1645,18 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	bool wantSudo = (cstate == CS_Active);
 
-	verbosestream << "Server: Received TOCLIENT_SRP_BYTES_M." << std::endl;
+	verbosestream << "Server: Received TOSERVER_SRP_BYTES_M." << std::endl;
 
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
-		actionstream << "Server: got SRP _M packet in wrong state "
-			<< cstate << " from " << addr_s
-			<< ". Ignoring." << std::endl;
+		warningstream << "Server: got SRP_M packet in wrong state "
+			<< cstate << " from " << addr_s << ". Ignoring." << std::endl;
 		return;
 	}
 
 	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
-		actionstream << "Server: got SRP _M packet, while auth"
-			<< "is going on with mech " << client->chosen_mech << " from "
+		warningstream << "Server: got SRP_M packet, while auth "
+			"is going on with mech " << client->chosen_mech << " from "
 			<< addr_s << " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
@@ -1706,7 +1704,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 		std::string checkpwd; // not used, but needed for passing something
 		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
-			actionstream << "Server: " << playername <<
+			errorstream << "Server: " << playername <<
 				" cannot be authenticated (auth handler does not work?)" <<
 				std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);

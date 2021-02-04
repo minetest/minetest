@@ -60,11 +60,13 @@ minetest.register_node("soundstuff:footstep_liquid", {
 	description = "Liquid Footstep Sound Node",
 	drawtype = "liquid",
 	tiles = {
-		"soundstuff_node_sound.png^[colorize:#0000FF:127",
+		"soundstuff_node_sound.png^[colorize:#0000FF:127^[opacity:190",
 	},
 	special_tiles = {
-		{name = "soundstuff_node_sound.png^[colorize:#0000FF:127", backface_culling = false},
-		{name = "soundstuff_node_sound.png^[colorize:#0000FF:127", backface_culling = true},
+		{name = "soundstuff_node_sound.png^[colorize:#0000FF:127^[opacity:190",
+			backface_culling = false},
+		{name = "soundstuff_node_sound.png^[colorize:#0000FF:127^[opacity:190",
+			backface_culling = true},
 	},
 	liquids_pointable = true,
 	liquidtype = "source",
@@ -73,7 +75,7 @@ minetest.register_node("soundstuff:footstep_liquid", {
 	liquid_renewable = false,
 	liquid_range = 0,
 	liquid_viscosity = 0,
-	alpha = 190,
+	use_texture_alpha = "blend",
 	paramtype = "light",
 	walkable = false,
 	pointable = false,
@@ -92,7 +94,6 @@ minetest.register_node("soundstuff:footstep_climbable", {
 	tiles = {
 		"soundstuff_node_climbable.png",
 	},
-	alpha = 120,
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
@@ -107,7 +108,8 @@ minetest.register_node("soundstuff:footstep_climbable", {
 
 
 minetest.register_craftitem("soundstuff:eat", {
-	description = "Eat Sound Item",
+	description = "Eat Sound Item".."\n"..
+		"Makes a sound when 'eaten' (with punch key)",
 	inventory_image = "soundstuff_eat.png",
 	on_use = minetest.item_eat(0),
 	sound = {
@@ -116,7 +118,9 @@ minetest.register_craftitem("soundstuff:eat", {
 })
 
 minetest.register_tool("soundstuff:breaks", {
-	description = "Break Sound Tool",
+	description = "Break Sound Tool".."\n"..
+		"Digs cracky=3 and more".."\n"..
+		"Makes a sound when it breaks",
 	inventory_image = "soundstuff_node_dug.png",
 	sound = {
 		breaks = { name = "soundstuff_mono", gain = 1.0 },

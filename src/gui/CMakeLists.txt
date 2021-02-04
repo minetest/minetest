@@ -7,6 +7,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiButtonItemImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiChatConsole.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiConfirmRegistration.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/guiEditBox.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiEditBoxWithScrollbar.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiEngine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiFormSpecMenu.cpp
@@ -15,6 +16,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiKeyChangeMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPasswordChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPathSelectMenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/guiScene.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiScrollBar.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiScrollContainer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiSkin.cpp

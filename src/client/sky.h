@@ -17,10 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "irrlichttypes_extrabloated.h"
 #include <ISceneNode.h>
 #include <array>
 #include "camera.h"
-#include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
+#include "shader.h"
 #include "skyparams.h"
 
 #pragma once
@@ -34,7 +36,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(s32 id, ITextureSource *tsrc);
+	Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc);
 
 	virtual void OnRegisterSceneNode();
 
@@ -77,7 +79,7 @@ public:
 	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
 	void setStarCount(u16 star_count, bool force_update);
 	void setStarColor(video::SColor star_color) { m_star_params.starcolor = star_color; }
-	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; }
+	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; updateStars(); }
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
@@ -101,6 +103,8 @@ public:
 	void clearSkyboxTextures() { m_sky_params.textures.clear(); }
 	void addTextureToSkybox(std::string texture, int material_id,
 		ITextureSource *tsrc);
+	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
+
 private:
 	aabb3f m_box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
@@ -154,6 +158,7 @@ private:
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
+	bool m_enable_shaders = false;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -178,12 +183,16 @@ private:
 
 	bool m_default_tint = true;
 
-	std::vector<v3f> m_stars;
+	u64 m_seed = 0;
+	irr_ptr<scene::SMeshBuffer> m_stars;
+	video::SColorf m_star_color;
 
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+
+	void updateStars();
 
 	void draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
 		const video::SColor &suncolor2, float wicked_time_of_day);

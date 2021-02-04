@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kannada (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"PO-Revision-Date: 2021-01-02 07:29+0000\n"
+"Last-Translator: Tejaswi Hegde <tejaswihegde1@gmail.com>\n"
 "Language-Team: Kannada <https://hosted.weblate.org/projects/minetest/"
 "minetest/kn/>\n"
 "Language: kn\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,17 +24,15 @@ msgstr "ನೀನು ಸತ್ತುಹೋದೆ"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "ಸರಿ"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "ಒಂದು ಲುವಾ ಸ್ಕ್ರಿಪ್ಟ್ ನಲ್ಲಿ ತಪ್ಪಾಗಿದೆ, ಉದಾಹರಣೆ ಮಾಡ್‍ನಲ್ಲಿ"
+msgstr "ಒಂದು ಲುವಾ ಸ್ಕ್ರಿಪ್ಟ್ ನಲ್ಲಿ ತಪ್ಪಾಗಿದೆ:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "ಒಂದು ತಪ್ಪಾಗಿದೆ:"
+msgstr "ದೋಷ ವೊಂದು ಸಂಭವಿಸಿದೆ:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -48,10 +46,6 @@ msgstr "ಮರುಸಂಪರ್ಕಿಸು"
 msgid "The server has requested a reconnect:"
 msgstr "ಸರ್ವರ್ ಮರುಸಂಪರ್ಕ ಮಾಡಲು ಕೇಳಿದೆ:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "ಪ್ರೋಟೋಕಾಲ್ ಆವೃತ್ತಿ ಹೊಂದಿಕೆಯಾಗಿಲ್ಲ. "
@@ -61,17 +55,8 @@ msgid "Server enforces protocol version $1. "
 msgstr "ಸರ್ವರ್ ಪ್ರೋಟೋಕಾಲ್ ಆವೃತ್ತಿ $1 ಅನ್ನು ಜಾರಿಗೊಳಿಸುತ್ತದೆ. "
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
-"ಸರ್ವರ್ $1 ಮತ್ತು $2 ನಡುವೆಯ ಪ್ರೋಟೋಕಾಲ್ \n"
-"ಅವೃತ್ತಿಗಳನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. "
-
-#: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"ಪಬ್ಲಿಕ್ ಸರ್ವರ್ಲಿಸ್ಟ್ಅನ್ನು ರಿಎನೆಬಲ್ ಮಾಡಿ ಮತ್ತು ಅಂತರ್ಜಾಲ ಸಂಪರ್ಕ \n"
-"ಪರಿಶೀಲಿಸಿ."
+msgstr "ಸರ್ವರ್ $1 ಮತ್ತು $2 ನಡುವೆಯ ಪ್ರೋಟೋಕಾಲ್ ಅವೃತ್ತಿಗಳನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -81,7 +66,8 @@ msgstr "ನಾವು $ 1 ಪ್ರೋಟೋಕಾಲ್ ಆವೃತ್ತಿಯ
 msgid "We support protocol versions between version $1 and $2."
 msgstr "ಆವೃತ್ತಿ $1 ಮತ್ತು $2 ನಡುವಿನ ಪ್ರೋಟೋಕಾಲ್ ಆವೃತ್ತಿಯನ್ನು ನಾವು ಬೆಂಬಲಿಸುತ್ತೇವೆ."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -91,7 +77,8 @@ msgstr "ಆವೃತ್ತಿ $1 ಮತ್ತು $2 ನಡುವಿನ ಪ್ರ
 msgid "Cancel"
 msgstr "ರದ್ದುಮಾಡಿ"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "ಅವಲಂಬನೆಗಳು:"
 
@@ -101,7 +88,7 @@ msgstr "ಎಲ್ಲವನ್ನೂ ನಿಷ್ಕ್ರಿಯೆಗೊಳ�
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "ಮಾಡ್ ಪ್ಯಾಕ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -109,47 +96,43 @@ msgstr "ಎಲ್ಲವನ್ನೂ ಸಕ್ರಿಯಗೊಳಿಸಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "ಮಾಡ್ ಪ್ಯಾಕ್ ಕ್ರಿಯಾತ್ಮಕಗೊಳಿಸಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"\"$1\" ಮಾಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ಅನುಮತಿಸದ ಅಕ್ಷರಗಳನ್ನು ಒಳಗೊಂಡಿದೆ. "
-"ಮಾತ್ರ chararacters [a-z0-9_] ಅನುಮತಿಸಲಾಗಿದೆ."
+"ಅನುಮತಿಸದೇ ಇರುವ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರುವ ುದರಿಂದ mod \"$1\" ಅನ್ನು ಕ್ರಿಯಾತ್ಮಕಗೊಳಿಸಲು "
+"ವಿಫಲವಾಗಿದೆ. ಕೇವಲ ಅಕ್ಷರಗಳನ್ನು [a-z0-9_] ಗೆ ಮಾತ್ರ ಅನುಮತಿಸಲಾಗುತ್ತದೆ."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "ಇನ್ನಷ್ಟು ಮಾಡ್ ಗಳನ್ನು ಹುಡುಕಿ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "ಮಾಡ್:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+msgstr "(ಐಚ್ಛಿಕ) ಅವಲಂಬನೆಗಳು ಇಲ್ಲ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "ಯಾವುದೇ ಆಟದ ವಿವರಣೆ ಒದಗಿಸಿಲ್ಲ."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+msgstr "ಯಾವುದೇ ಗಟ್ಟಿ ಅವಲಂಬನೆಗಳಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "ಯಾವುದೇ ಮಾಡ್ಪ್ಯಾಕ್ ವಿವರಣೆ ಕೊಟ್ಟಿಲ್ಲ."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+msgstr "ಯಾವುದೇ ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -169,21 +152,59 @@ msgid "enabled"
 msgstr "ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "ಡೌನ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "ಎಲ್ಲಾ ಪ್ಯಾಕೇಜುಗಳು"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Already installed"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "ಮುಖ್ಯ ಮೆನುಗೆ ಹಿಂತಿರುಗಿ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgid "Base Game:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "cURL ಇಲ್ಲದೆ ಮೈನ್ ಟೆಸ್ಟ್ ಅನ್ನು ಕಂಪೈಲ್ ಮಾಡಿದಾಗ ContentDB ಲಭ್ಯವಿಲ್ಲ"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr "ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
+msgstr "ಡೌನ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -199,22 +220,48 @@ msgid "Install"
 msgstr "ಇನ್ಸ್ಟಾಲ್"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "ಇನ್ಸ್ಟಾಲ್"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "ಐಚ್ಛಿಕ ಅವಲಂಬನೆಗಳು:"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "ಮಾಡ್‍ಗಳು"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "ಯಾವುದೇ ಪ್ಯಾಕೇಜ್ ಗಳನ್ನು ಪಡೆಯಲಾಗಲಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "ಫಲಿತಾಂಶಗಳಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "ಹುಡುಕು"
+#, fuzzy
+msgid "No updates"
+msgstr "ನವೀಕರಿಸಿ"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -229,16 +276,20 @@ msgid "Update"
 msgstr "ನವೀಕರಿಸಿ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "\"$1\" ಹೆಸರಿನ ಒಂದು ಪ್ರಪಂಚವು ಈಗಾಗಲೇ ಇದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "ಹೆಚ್ಚುವರಿ ಭೂಪ್ರದೇಶ"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -249,133 +300,149 @@ msgid "Altitude dry"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Biome blending"
-msgstr ""
+msgstr "ಪ್ರದೇಶ ಮಿಶ್ರಣ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Biomes"
-msgstr ""
+msgstr "ಪ್ರದೇಶಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Caverns"
-msgstr ""
+msgstr "ಗುಹೆಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Caves"
-msgstr ""
+msgstr "ಗುಹೆಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Create"
-msgstr ""
+msgstr "ರಚಿಸು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "ಅಲಂಕಾರಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "minetest.net ನಿಂದ ಮೈನ್ಟೆಸ್ಟ್ ಗೇಮ್ ನಂತಹ ಆಟವನ್ನು ಡೌನ್ ಲೋಡ್ ಮಾಡಿ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "minetest.net ಇಂದ ಒಂದನ್ನು ಡೌನ್ ಲೋಡ್ ಮಾಡಿ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Dungeons"
-msgstr ""
+msgstr "ಡಂಗೆನ್ಸ್"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "ಸಮತಟ್ಟಾದ ಭೂಪ್ರದೇಶ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "ಆಕಾಶದಲ್ಲಿ ತೇಲುತ್ತಿರುವ ಭೂಭಾಗಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "ತೇಲುವ ಭೂಮಿಗಳು (ಪ್ರಾಯೋಗಿಕ)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "ಆಟ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "ಫ್ರಾಕ್ಟಲ್ ಅಲ್ಲದ ಭೂಪ್ರದೇಶ ಸೃಷ್ಟಿಸಿ: ಸಾಗರಗಳು ಮತ್ತು ಭೂಗರ್ಭ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "ಬೆಟ್ಟಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Humid rivers"
-msgstr ""
+msgstr "ಆರ್ದ್ರ ನದಿಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "ನದಿಗಳ ಸುತ್ತ ತೇವಾಂಶ ವನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "ಕೆರೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "ಕಡಿಮೆ ಆರ್ದ್ರತೆ ಮತ್ತು ಅಧಿಕ ಶಾಖವು ಆಳವಿಲ್ಲದ ಅಥವಾ ಶುಷ್ಕ ನದಿಗಳನ್ನು ಉಂಟುಮಾಡುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen"
-msgstr ""
+msgstr "ಮ್ಯಾಪ್ಜೆನ್"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen flags"
-msgstr ""
+msgstr "ಮ್ಯಾಪ್ಜೆನ್ ಧ್ವಜಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "ಮ್ಯಾಪ್ಜೆನ್-ನಿರ್ದಿಷ್ಟ ಧ್ವಜಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "ಪರ್ವತಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Mud flow"
-msgstr ""
+msgstr "ಮಣ್ಣಿನ ಹರಿವು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "ಸುರಂಗಗಳು ಮತ್ತು ಗುಹೆಗಳ ಜಾಲ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "ಯಾವುದೇ ಆಟ ಆಯ್ಕೆಯಾಗಿಲ್ಲ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "ಎತ್ತರದಲ್ಲಿ ಶಾಖವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "ಎತ್ತರದಲ್ಲಿ ತೇವಾಂಶವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "ನದಿಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "ಸಮುದ್ರ ಮಟ್ಟದಲ್ಲಿರುವ ನದಿಗಳು"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "ಬೀಜ"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "ಪ್ರದೇಶಗಳ ನಡುವೆ ಸುಗಮವಾದ ಸ್ಥಿತ್ಯಂತರ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -524,6 +591,10 @@ msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "ಹುಡುಕು"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
 msgstr ""
 
@@ -638,6 +709,14 @@ msgstr ""
 msgid "Unable to install a modpack as a $1"
 msgstr ""
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr "ಪಬ್ಲಿಕ್ ಸರ್ವರ್ಲಿಸ್ಟ್ಅನ್ನು ರಿಎನೆಬಲ್ ಮಾಡಿ ಮತ್ತು ಅಂತರ್ಜಾಲ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr ""
@@ -691,6 +770,16 @@ msgid "Credits"
 msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
+msgid "Open User Data Directory"
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr ""
 
@@ -707,14 +796,10 @@ msgid "Bind Address"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr ""
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr ""
 
@@ -731,7 +816,7 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
+msgid "Name"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
@@ -743,11 +828,19 @@ msgid "No world created or selected!"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Password"
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Select Mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
@@ -766,23 +859,23 @@ msgstr ""
 msgid "Address / Port"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr ""
 
@@ -790,16 +883,16 @@ msgstr ""
 msgid "Join Game"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr ""
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr ""
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr ""
 
@@ -828,19 +921,11 @@ msgid "Antialiasing:"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
@@ -856,19 +941,11 @@ msgid "Fancy Leaves"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -899,16 +976,8 @@ msgstr ""
 msgid "Opaque Water"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr ""
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -922,6 +991,11 @@ msgstr ""
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Shaders (experimental)"
+msgstr "ತೇಲುವ ಭೂಮಿಗಳು (ಪ್ರಾಯೋಗಿಕ)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -965,22 +1039,6 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr ""
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr ""
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr ""
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
 msgstr ""
 
 #: src/client/client.cpp
@@ -1142,13 +1200,13 @@ msgid ""
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1267,34 +1325,6 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1689,6 +1719,24 @@ msgstr ""
 msgid "Zoom"
 msgstr ""
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+msgid "Minimap in texture mode"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr ""
@@ -1933,12 +1981,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr ""
 
@@ -2042,6 +2084,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2278,10 +2324,6 @@ msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2349,16 +2391,6 @@ msgstr ""
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2513,6 +2545,10 @@ msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "ContentDB URL"
 msgstr ""
 
@@ -2569,7 +2605,9 @@ msgid "Crosshair alpha"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2577,7 +2615,9 @@ msgid "Crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2677,12 +2717,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr ""
 
@@ -2750,6 +2784,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Dig key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2901,31 +2939,11 @@ msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2946,12 +2964,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -2961,7 +2973,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
+msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3263,10 +3275,6 @@ msgid "GUI scaling filter txr2img"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr ""
 
@@ -3320,8 +3328,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 
@@ -3788,6 +3796,10 @@ msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr ""
 
@@ -3862,6 +3874,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for decreasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3961,6 +3980,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the inventory.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4523,10 +4549,6 @@ msgid "Main menu script"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Main menu style"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -4537,6 +4559,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4703,7 +4733,7 @@ msgid "Maximum FPS"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4749,6 +4779,13 @@ msgstr ""
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4981,14 +5018,6 @@ msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr ""
 
@@ -5014,10 +5043,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Online Content Repository"
 msgstr ""
 
@@ -5040,34 +5065,6 @@ msgid ""
 "Open the pause menu when the window's focus is lost. Does not pause if a "
 "formspec is\n"
 "open."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5133,6 +5130,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Place key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Place repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5288,10 +5293,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5546,6 +5547,12 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5675,10 +5682,6 @@ msgid "Strength of 3D mode parallax."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -5772,6 +5775,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -5830,8 +5837,8 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5857,15 +5864,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5998,6 +6010,17 @@ msgid ""
 "Use mip mapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6325,6 +6348,24 @@ msgid "Y-level of seabed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr ""
 
@@ -6336,11 +6377,15 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "$1 ಡೌನ್ಲೋಡ್ ಮತ್ತು ಇನ್ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ..."
-
 #~ msgid "Back"
 #~ msgstr "ಹಿಂದೆ"
 
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "$1 ಡೌನ್ಲೋಡ್ ಮತ್ತು ಇನ್ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ..."
+
 #~ msgid "Ok"
 #~ msgstr "ಸರಿ"
+
+#, fuzzy
+#~ msgid "View"
+#~ msgstr "ತೋರಿಸು"

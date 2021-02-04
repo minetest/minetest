@@ -46,28 +46,22 @@ for a=1,#alphas do
 		tiles = {
 			"testnodes_alpha"..alpha..".png",
 		},
-		use_texture_alpha = true,
+		use_texture_alpha = "blend",
 
 		groups = { dig_immediate = 3 },
 	})
 
-	-- Transparency set via "alpha" parameter
+	-- Transparency set via texture modifier
 	minetest.register_node("testnodes:alpha_"..alpha, {
 		description = S("Alpha Test Node (@1)", alpha),
-		-- It seems that only the liquid drawtype supports the alpha parameter
-		drawtype = "liquid",
+		drawtype = "glasslike",
 		paramtype = "light",
 		tiles = {
-			"testnodes_alpha.png",
+			"testnodes_alpha.png^[opacity:" .. alpha,
 		},
-		alpha = alpha,
+		use_texture_alpha = "blend",
 
-
-		liquidtype = "source",
-		liquid_range = 0,
-		liquid_viscosity = 0,
-		liquid_alternative_source = "testnodes:alpha_"..alpha,
-		liquid_alternative_flowing = "testnodes:alpha_"..alpha,
 		groups = { dig_immediate = 3 },
 	})
 end
+

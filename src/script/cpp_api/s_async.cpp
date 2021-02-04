@@ -158,35 +158,6 @@ void AsyncEngine::step(lua_State *L)
 }
 
 /******************************************************************************/
-void AsyncEngine::pushFinishedJobs(lua_State* L) {
-	// Result Table
-	MutexAutoLock l(resultQueueMutex);
-
-	unsigned int index = 1;
-	lua_createtable(L, resultQueue.size(), 0);
-	int top = lua_gettop(L);
-
-	while (!resultQueue.empty()) {
-		LuaJobInfo jobDone = resultQueue.front();
-		resultQueue.pop_front();
-
-		lua_createtable(L, 0, 2);  // Pre-allocate space for two map fields
-		int top_lvl2 = lua_gettop(L);
-
-		lua_pushstring(L, "jobid");
-		lua_pushnumber(L, jobDone.id);
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L, "retval");
-		lua_pushlstring(L, jobDone.serializedResult.data(),
-			jobDone.serializedResult.size());
-		lua_settable(L, top_lvl2);
-
-		lua_rawseti(L, top, index++);
-	}
-}
-
-/******************************************************************************/
 void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 {
 	for (StateInitializer &stateInitializer : stateInitializers) {

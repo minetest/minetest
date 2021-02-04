@@ -197,7 +197,7 @@ int LuaSettings::l_set_np_group(lua_State *L)
 
 	SET_SECURITY_CHECK(L, key);
 
-	o->m_settings->setNoiseParams(key, value, false);
+	o->m_settings->setNoiseParams(key, value);
 
 	return 0;
 }

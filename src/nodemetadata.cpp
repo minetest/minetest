@@ -49,8 +49,8 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk) const
 		if (!disk && priv)
 			continue;
 
-		os << serializeString(sv.first);
-		os << serializeLongString(sv.second);
+		os << serializeString16(sv.first);
+		os << serializeString32(sv.second);
 		if (version >= 2)
 			writeU8(os, (priv) ? 1 : 0);
 	}
@@ -63,8 +63,8 @@ void NodeMetadata::deSerialize(std::istream &is, u8 version)
 	clear();
 	int num_vars = readU32(is);
 	for(int i=0; i<num_vars; i++){
-		std::string name = deSerializeString(is);
-		std::string var = deSerializeLongString(is);
+		std::string name = deSerializeString16(is);
+		std::string var = deSerializeString32(is);
 		m_stringvars[name] = var;
 		if (version >= 2) {
 			if (readU8(is) == 1)

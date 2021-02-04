@@ -41,7 +41,6 @@ class Environment;
 class ServerInventoryManager;
 
 class ModApiBase : protected LuaHelper {
-
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
@@ -75,10 +74,18 @@ public:
 			lua_CFunction func,
 			int top);
 
-	static int l_deprecated_function(lua_State *L);
-	static void markAliasDeprecated(luaL_Reg *reg);
-private:
-	// <old_name> = { <new_name>, <new_function> }
-	static std::unordered_map<std::string, luaL_Reg> m_deprecated_wrappers;
-	static bool m_error_deprecated_calls;
+	/**
+	 * A wrapper for deprecated functions.
+	 *
+	 * When called, handles the deprecation according to user settings and then calls `func`.
+	 *
+	 * @throws Lua Error if required by the user settings.
+	 *
+	 * @param L Lua state
+	 * @param good Name of good function/method
+	 * @param bad Name of deprecated function/method
+	 * @param func Actual implementation of function
+	 * @return value from `func`
+	 */
+	static int l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func);
 };

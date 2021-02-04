@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
+"POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -48,10 +48,6 @@ msgstr "Unganisha upya"
 msgid "The server has requested a reconnect:"
 msgstr "Seva imeomba na Unganisha upya:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Inapakia..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Itifaki ya toleo haifanani."
@@ -65,10 +61,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Seva inasaidia matoleo ya itifaki kati ya $1 na $2."
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr "Jaribu reenabling serverlist umma na Kagua muunganisho wako wa tovuti."
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Sisi tu mkono itifaki toleo la $1."
 
@@ -76,7 +68,8 @@ msgstr "Sisi tu mkono itifaki toleo la $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Tunaunga mkono matoleo ya itifaki kati ya toleo la $1 na $2."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -86,7 +79,8 @@ msgstr "Tunaunga mkono matoleo ya itifaki kati ya toleo la $1 na $2."
 msgid "Cancel"
 msgstr "Katisha"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Mategemezi:"
 
@@ -165,13 +159,54 @@ msgid "enabled"
 msgstr "kuwezeshwa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
+msgid "Already installed"
+msgstr "Muhimu tayari katika matumizi"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "Back to Main Menu"
 msgstr "Menyu kuu"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "Ficha mchezo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -197,6 +232,16 @@ msgid "Install"
 msgstr "Sakinisha"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "Inaanzilisha fundo"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Mods"
@@ -210,9 +255,24 @@ msgid "No results"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Utafutaji"
+msgid "No updates"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -229,7 +289,11 @@ msgid "Update"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -548,6 +612,10 @@ msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "Utafutaji"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "Select directory"
 msgstr "Orodha ya ramani"
@@ -682,6 +750,14 @@ msgstr "Imeshindwa kusakinisha $1 hadi $2"
 msgid "Unable to install a modpack as a $1"
 msgstr "Imeshindwa kusakinisha $1 hadi $2"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr "Jaribu reenabling serverlist umma na Kagua muunganisho wako wa tovuti."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr ""
@@ -742,6 +818,17 @@ msgid "Credits"
 msgstr "Mikopo"
 
 #: builtin/mainmenu/tab_credits.lua
+#, fuzzy
+msgid "Open User Data Directory"
+msgstr "Orodha ya ramani"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "Wachangiaji wa awali"
 
@@ -759,14 +846,10 @@ msgid "Bind Address"
 msgstr "Kumfunga anwani"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Sanidi"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Hali ya ubunifu"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Wezesha uharibifu"
 
@@ -785,8 +868,8 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Jina/nenosiri"
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -798,12 +881,22 @@ msgstr "Duniani hakuna kuundwa au kuteuliwa!"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
+msgid "Password"
+msgstr "Nywila mpya"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
 msgid "Play Game"
 msgstr "Jina la mchezaji"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "Bandari"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Select Mods"
+msgstr "Teua ulimwengu:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -822,23 +915,23 @@ msgstr "Ficha mchezo"
 msgid "Address / Port"
 msgstr "Kushughulikia / bandari"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Kuunganisha"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Hali ya ubunifu"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "Uharibifu kuwezeshwa"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Del. kipendwa"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr "Kipendwa"
 
@@ -847,16 +940,16 @@ msgstr "Kipendwa"
 msgid "Join Game"
 msgstr "Ficha mchezo"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr "Jina / nenosiri"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr ""
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP kuwezeshwa"
 
@@ -886,20 +979,12 @@ msgid "Antialiasing:"
 msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "Je, una hakika upya ulimwengu wako singleplayer?"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "Kichujio bilinear"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "Mapema ramani"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -914,21 +999,12 @@ msgid "Fancy Leaves"
 msgstr "Majani ya dhana"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Generate Normal Maps"
-msgstr "Kuzalisha normalmaps"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmap + Aniso. Kichujio"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "La"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -958,17 +1034,9 @@ msgstr "Majani opaque"
 msgid "Opaque Water"
 msgstr "Maji opaque"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "Chembe"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "Weka upya singleplayer ulimwengu"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -982,6 +1050,11 @@ msgstr "Vipimo vya"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Shaders"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Shaders (experimental)"
+msgstr "Kiwango cha maji"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1028,22 +1101,6 @@ msgstr "Waving fundo"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Waving mimea"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Ndio"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Mods Now"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Kuu"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Kuanza Singleplayer"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1219,13 +1276,13 @@ msgid ""
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1374,35 +1431,6 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
-
-#: src/client/game.cpp
-#, fuzzy
-msgid "Minimap hidden"
-msgstr "Ufunguo wa minimap"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1811,6 +1839,26 @@ msgstr "X kitufe 2"
 msgid "Zoom"
 msgstr "Kuza"
 
+#: src/client/minimap.cpp
+#, fuzzy
+msgid "Minimap hidden"
+msgstr "Ufunguo wa minimap"
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, fuzzy
+msgid "Minimap in texture mode"
+msgstr "Unamu wa kima cha chini cha ukubwa wa Vichujio"
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "MaNenotambulishi hayaoani!"
@@ -2077,14 +2125,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-"0 = parallax occlusion na taarifa ya mteremko (haraka).\n"
-"1 = ramani ya misaada (polepole, sahihi zaidi)."
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr ""
 
@@ -2202,6 +2242,10 @@ msgstr "Ujumbe kuonyeshwa kwa wateja wote wakati seva huzima."
 #, fuzzy
 msgid "ABM interval"
 msgstr "Ramani hifadhi muda"
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2459,10 +2503,6 @@ msgid "Builtin"
 msgstr "Pamoja"
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr "Bumpmapping"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2537,16 +2577,6 @@ msgstr "Pango upana"
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2713,6 +2743,10 @@ msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "ContentDB URL"
 msgstr "Kuendelea"
@@ -2775,7 +2809,10 @@ msgid "Crosshair alpha"
 msgstr "Crosshair Alfa"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+#, fuzzy
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr "Crosshair Alfa (opaqueness kati ya 0 na 255)."
 
 #: src/settings_translation_file.cpp
@@ -2783,8 +2820,10 @@ msgid "Crosshair color"
 msgstr "Rangi ya crosshair"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
-msgstr "Rangi ya crosshair (R, G, B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2891,14 +2930,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-"Inafasili hatua ya sampuli ya unamu.\n"
-"Thamani ya juu zaidi matokeo katika ramani ya laini ya kawaida."
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr ""
 
@@ -2971,6 +3002,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
 msgstr "Desynchronize umbo la uhuishaji"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dig key"
+msgstr "Ufunguo sahihi"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3142,39 +3178,12 @@ msgid "Enables animation of inventory items."
 msgstr "Huwezesha uhuishaji wa vitu inventering."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"Inawezesha bumpmapping kwa ajili ya unamu. Normalmaps haja iwekwe kwa pakiti "
-"ya unamu au haja ya kuwa yaliyozalishwa na otomatiki.\n"
-"Inahitaji shaders kwa kuwezeshwa."
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "Huwezesha uwekaji kache kwa facedir Iliyozungushwa meshes."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
 msgstr "Inawezesha minimap."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-"Huwezesha kwenye kizazi cha normalmap kuruka (Emboss athari).\n"
-"Inahitaji bumpmapping kwa kuwezeshwa."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"Huwezesha parallax occlusion uramanishi.\n"
-"Inahitaji shaders kwa kuwezeshwa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3194,14 +3203,6 @@ msgstr "Mbinu ya chombo"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-"Chaguo majaribio, inaweza kusababisha nafasi inayoonekana kati ya vitalu "
-"wakati kuweka namba ya juu zaidi kuliko 0."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3211,8 +3212,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
-msgstr "Ramprogrammen katika Menyu ya mapumziko"
+#, fuzzy
+msgid "FPS when unfocused or paused"
+msgstr "Ramprogrammen juu wakati mchezo umesitishwa."
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3546,10 +3548,6 @@ msgid "GUI scaling filter txr2img"
 msgstr "GUI kipimo Kichujio txr2img"
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr "Kuzalisha normalmaps"
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "Callbacks ya kimataifa"
 
@@ -3615,8 +3613,8 @@ msgstr "HUD kibonye"
 #, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Utunzaji kwa deprecated lua ya API: - Rithi: (jaribu kwa) mimic zamani tabia "
@@ -4139,6 +4137,10 @@ msgid "Joystick button repetition interval"
 msgstr "Kifimbocheza kitufe marudio nafasi"
 
 #: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr "Kifimbocheza frustum unyeti"
 
@@ -4234,6 +4236,17 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Muhimu kwa ajili ya kupunguza kiwango cha kuonyesha.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for digging.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kuruka.\n"
 "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4379,6 +4392,17 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Muhimu kwa ajili ya kufungua hesabu.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for placing.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kuruka.\n"
 "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5168,11 +5192,6 @@ msgid "Main menu script"
 msgstr "Hati ya Menyu kuu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Main menu style"
-msgstr "Hati ya Menyu kuu"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -5185,6 +5204,14 @@ msgstr "Hufanya DirectX kazi na LuaJIT. Lemaza ikiwa husababisha matatizo."
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5391,7 +5418,8 @@ msgid "Maximum FPS"
 msgstr "Ramprogrammen juu"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+#, fuzzy
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr "Ramprogrammen juu wakati mchezo umesitishwa."
 
 #: src/settings_translation_file.cpp
@@ -5446,6 +5474,13 @@ msgstr ""
 "Namba ya juu ya vitalu kwa kuwa kwenye foleni kwamba ni kupakiwa kutoka "
 "faili.\n"
 "Seti kwa wazi kwa kiasi sahihi ili uweze kuchaguliwa moja kwa moja."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5702,14 +5737,6 @@ msgid "Noises"
 msgstr "Kila"
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr "Sampuli ya Normalmaps"
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr "Nguvu ya Normalmaps"
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr "Idadi ya nyuzi emerge"
 
@@ -5738,10 +5765,6 @@ msgstr ""
 "(4096 = 100 MB, kama kanuni ya thumb)."
 
 #: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr "Idadi ya parallax occlusion Marudiorudio."
-
-#: src/settings_translation_file.cpp
 msgid "Online Content Repository"
 msgstr ""
 
@@ -5765,35 +5788,6 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr "Upendeleo wa jumla wa parallax occlusion athari, kawaida kipimo/2."
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr "Kipimo cha jumla ya parallax occlusion athari."
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr "Parallax occlusion"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr "Parallax occlusion upendeleo"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr "Parallax occlusion Marudiorudio"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr "Parallax occlusion hali"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Parallax occlusion scale"
-msgstr "Parallax occlusion wadogo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5861,6 +5855,16 @@ msgstr "Kuruka ufunguo"
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place key"
+msgstr "Kuruka ufunguo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place repetition interval"
+msgstr "Bofya kulia marudio nafasi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6032,10 +6036,6 @@ msgstr "Mwandishi ramani v7 mlima urefu kelele vigezo"
 #: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "Ufunguo sahihi"
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
-msgstr "Bofya kulia marudio nafasi"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6344,6 +6344,15 @@ msgid "Show entity selection boxes"
 msgstr "Onyesha chombo masanduku ya uteuzi"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+"Seti lugha. Acha tupu kwa kutumia lugha ya mfumo.\n"
+"Kuanza upya inahitajika baada ya kubadilisha hii."
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Uzimaji ujumbe"
 
@@ -6488,10 +6497,6 @@ msgid "Strength of 3D mode parallax."
 msgstr "Nguvu ya parallax."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr "Nguvu ya normalmaps inayozalishwa."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -6596,6 +6601,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -6662,8 +6671,8 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6696,6 +6705,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
@@ -6705,9 +6720,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 "Wakati katika sekunde inachukua kati ya vibonyezo mara kwa mara sahihi "
 "wakati wa kufanya kitufe cha kulia."
@@ -6855,6 +6869,17 @@ msgid ""
 "Use mip mapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7232,6 +7257,24 @@ msgid "Y-level of seabed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "cURL muda wa upakuzi wa faili"
 
@@ -7243,59 +7286,12 @@ msgstr "cURL kikomo sambamba"
 msgid "cURL timeout"
 msgstr "muda wa kuisha wa cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Togoa Cinematic"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Teua faili ya Moduli:"
-
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y ya upper kikomo ya kubwa pseudorandom cellars."
-
-#~ msgid "Waving Water"
-#~ msgstr "Waving maji"
-
-#~ msgid "Waving water"
-#~ msgstr "Waving maji"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Fonti hii itatumika kwa lugha fulani."
-
-#, fuzzy
-#~ msgid "Shadow limit"
-#~ msgstr "Kikomo cha Mapblock"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Njia ya TrueTypeFont au vitone michoro."
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Kina ya pango kubwa"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 msaada."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Fonti kivuli Alfa (opaqueness kati ya 0 na 255)."
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Huwezesha toni filmic ramani"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Wezesha VBO"
-
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "Mwandishi ramani ziwa gorofa mwinuko"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgid ""
+#~ "0 = parallax occlusion with slope information (faster).\n"
+#~ "1 = relief mapping (slower, more accurate)."
 #~ msgstr ""
-#~ "Vidhibiti vya upana wa vichuguu, thamani ndogo huunda vichuguu pana."
+#~ "0 = parallax occlusion na taarifa ya mteremko (haraka).\n"
+#~ "1 = ramani ya misaada (polepole, sahihi zaidi)."
 
 #, fuzzy
 #~ msgid ""
@@ -7306,21 +7302,200 @@ msgstr "muda wa kuisha wa cURL"
 #~ "Rekebisha simbiko gamma kwa majedwali mwanga. Idadi ya chini ni mkali.\n"
 #~ "Kipimo hiki ni kwa ajili ya mteja tu na ni kupuuzwa na seva."
 
-#~ msgid "Path to save screenshots at."
-#~ msgstr "Njia ya kuokoa viwambo katika."
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Je, una hakika upya ulimwengu wako singleplayer?"
 
-#~ msgid "Parallax occlusion strength"
-#~ msgstr "Parallax occlusion nguvu"
+#~ msgid "Back"
+#~ msgstr "Nyuma"
 
-#~ msgid "Limit of emerge queues on disk"
-#~ msgstr "Kikomo ya foleni emerge kwenye diski"
+#~ msgid "Bump Mapping"
+#~ msgstr "Mapema ramani"
+
+#~ msgid "Bumpmapping"
+#~ msgstr "Bumpmapping"
+
+#~ msgid "Config mods"
+#~ msgstr "Mods Now"
+
+#~ msgid "Configure"
+#~ msgstr "Sanidi"
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Vidhibiti vya upana wa vichuguu, thamani ndogo huunda vichuguu pana."
+
+#~ msgid "Crosshair color (R,G,B)."
+#~ msgstr "Rangi ya crosshair (R, G, B)."
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "Mwandishi ramani ziwa gorofa mwinuko"
+
+#~ msgid ""
+#~ "Defines sampling step of texture.\n"
+#~ "A higher value results in smoother normal maps."
+#~ msgstr ""
+#~ "Inafasili hatua ya sampuli ya unamu.\n"
+#~ "Thamani ya juu zaidi matokeo katika ramani ya laini ya kawaida."
 
 #, fuzzy
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Inapakua $1, Tafadhali subiri..."
 
-#~ msgid "Back"
-#~ msgstr "Nyuma"
+#~ msgid "Enable VBO"
+#~ msgstr "Wezesha VBO"
+
+#~ msgid ""
+#~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
+#~ "texture pack\n"
+#~ "or need to be auto-generated.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "Inawezesha bumpmapping kwa ajili ya unamu. Normalmaps haja iwekwe kwa "
+#~ "pakiti ya unamu au haja ya kuwa yaliyozalishwa na otomatiki.\n"
+#~ "Inahitaji shaders kwa kuwezeshwa."
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Huwezesha toni filmic ramani"
+
+#~ msgid ""
+#~ "Enables on the fly normalmap generation (Emboss effect).\n"
+#~ "Requires bumpmapping to be enabled."
+#~ msgstr ""
+#~ "Huwezesha kwenye kizazi cha normalmap kuruka (Emboss athari).\n"
+#~ "Inahitaji bumpmapping kwa kuwezeshwa."
+
+#~ msgid ""
+#~ "Enables parallax occlusion mapping.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "Huwezesha parallax occlusion uramanishi.\n"
+#~ "Inahitaji shaders kwa kuwezeshwa."
+
+#~ msgid ""
+#~ "Experimental option, might cause visible spaces between blocks\n"
+#~ "when set to higher number than 0."
+#~ msgstr ""
+#~ "Chaguo majaribio, inaweza kusababisha nafasi inayoonekana kati ya vitalu "
+#~ "wakati kuweka namba ya juu zaidi kuliko 0."
+
+#~ msgid "FPS in pause menu"
+#~ msgstr "Ramprogrammen katika Menyu ya mapumziko"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Fonti kivuli Alfa (opaqueness kati ya 0 na 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#, fuzzy
+#~ msgid "Generate Normal Maps"
+#~ msgstr "Kuzalisha normalmaps"
+
+#~ msgid "Generate normalmaps"
+#~ msgstr "Kuzalisha normalmaps"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 msaada."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Kina ya pango kubwa"
+
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Kikomo ya foleni emerge kwenye diski"
+
+#~ msgid "Main"
+#~ msgstr "Kuu"
+
+#, fuzzy
+#~ msgid "Main menu style"
+#~ msgstr "Hati ya Menyu kuu"
+
+#~ msgid "Name/Password"
+#~ msgstr "Jina/nenosiri"
+
+#~ msgid "No"
+#~ msgstr "La"
+
+#~ msgid "Normalmaps sampling"
+#~ msgstr "Sampuli ya Normalmaps"
+
+#~ msgid "Normalmaps strength"
+#~ msgstr "Nguvu ya Normalmaps"
+
+#~ msgid "Number of parallax occlusion iterations."
+#~ msgstr "Idadi ya parallax occlusion Marudiorudio."
 
 #~ msgid "Ok"
 #~ msgstr "Sawa kabisa"
+
+#~ msgid "Overall bias of parallax occlusion effect, usually scale/2."
+#~ msgstr "Upendeleo wa jumla wa parallax occlusion athari, kawaida kipimo/2."
+
+#~ msgid "Overall scale of parallax occlusion effect."
+#~ msgstr "Kipimo cha jumla ya parallax occlusion athari."
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Parallax Occlusion"
+
+#~ msgid "Parallax occlusion"
+#~ msgstr "Parallax occlusion"
+
+#~ msgid "Parallax occlusion bias"
+#~ msgstr "Parallax occlusion upendeleo"
+
+#~ msgid "Parallax occlusion iterations"
+#~ msgstr "Parallax occlusion Marudiorudio"
+
+#~ msgid "Parallax occlusion mode"
+#~ msgstr "Parallax occlusion hali"
+
+#, fuzzy
+#~ msgid "Parallax occlusion scale"
+#~ msgstr "Parallax occlusion wadogo"
+
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Parallax occlusion nguvu"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Njia ya TrueTypeFont au vitone michoro."
+
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Njia ya kuokoa viwambo katika."
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Weka upya singleplayer ulimwengu"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Teua faili ya Moduli:"
+
+#, fuzzy
+#~ msgid "Shadow limit"
+#~ msgstr "Kikomo cha Mapblock"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Kuanza Singleplayer"
+
+#~ msgid "Strength of generated normalmaps."
+#~ msgstr "Nguvu ya normalmaps inayozalishwa."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Fonti hii itatumika kwa lugha fulani."
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Togoa Cinematic"
+
+#~ msgid "Waving Water"
+#~ msgstr "Waving maji"
+
+#~ msgid "Waving water"
+#~ msgstr "Waving maji"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y ya upper kikomo ya kubwa pseudorandom cellars."
+
+#~ msgid "Yes"
+#~ msgstr "Ndio"

@@ -56,6 +56,11 @@ private:
 	// timeofday: nil = current time, 0 = night, 0.5 = day
 	static int l_get_node_light(lua_State *L);
 
+	// get_natural_light(pos, timeofday)
+	// pos = {x=num, y=num, z=num}
+	// timeofday: nil = current time, 0 = night, 0.5 = day
+	static int l_get_natural_light(lua_State *L);
+
 	// place_node(pos, node)
 	// pos = {x=num, y=num, z=num}
 	static int l_place_node(lua_State *L);
@@ -109,6 +114,9 @@ private:
 
 	// get_objects_inside_radius(pos, radius)
 	static int l_get_objects_inside_radius(lua_State *L);
+	
+	// get_objects_in_area(pos, minp, maxp)
+	static int l_get_objects_in_area(lua_State *L);
 
 	// set_timeofday(val)
 	// val = 0...1

@@ -145,8 +145,8 @@ void PlayerDatabaseLevelDB::savePlayer(RemotePlayer *player)
 	StringMap stringvars = sao->getMeta().getStrings();
 	writeU32(os, stringvars.size());
 	for (const auto &it : stringvars) {
-		os << serializeString(it.first);
-		os << serializeLongString(it.second);
+		os << serializeString16(it.first);
+		os << serializeString32(it.second);
 	}
 
 	player->inventory.serialize(os);
@@ -183,8 +183,8 @@ bool PlayerDatabaseLevelDB::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 	u32 attribute_count = readU32(is);
 	for (u32 i = 0; i < attribute_count; i++) {
-		std::string name = deSerializeString(is);
-		std::string value = deSerializeLongString(is);
+		std::string name = deSerializeString16(is);
+		std::string value = deSerializeString32(is);
 		sao->getMeta().setString(name, value);
 	}
 	sao->getMeta().setModified(false);
@@ -247,13 +247,13 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 
 	res.id = 1;
 	res.name = name;
-	res.password = deSerializeString(is);
+	res.password = deSerializeString16(is);
 
 	u16 privilege_count = readU16(is);
 	res.privileges.clear();
 	res.privileges.reserve(privilege_count);
 	for (u16 i = 0; i < privilege_count; i++) {
-		res.privileges.push_back(deSerializeString(is));
+		res.privileges.push_back(deSerializeString16(is));
 	}
 
 	res.last_login = readS64(is);
@@ -264,14 +264,14 @@ bool AuthDatabaseLevelDB::saveAuth(const AuthEntry &authEntry)
 {
 	std::ostringstream os;
 	writeU8(os, 1);
-	os << serializeString(authEntry.password);
+	os << serializeString16(authEntry.password);
 
 	size_t privilege_count = authEntry.privileges.size();
 	FATAL_ERROR_IF(privilege_count > U16_MAX,
 		"Unsupported number of privileges");
 	writeU16(os, privilege_count);
 	for (const std::string &privilege : authEntry.privileges) {
-		os << serializeString(privilege);
+		os << serializeString16(privilege);
 	}
 
 	writeS64(os, authEntry.last_login);

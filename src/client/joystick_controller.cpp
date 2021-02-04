@@ -37,7 +37,7 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 {
 	s16 ax_val = ev.Axis[axis_to_compare];
 
-	return (ax_val * direction < 0) && (thresh * direction > ax_val * direction);
+	return (ax_val * direction < -thresh);
 }
 
 // spares many characters
@@ -48,7 +48,7 @@ JoystickLayout create_default_layout()
 {
 	JoystickLayout jlo;
 
-	jlo.axes_dead_border = 1024;
+	jlo.axes_deadzone = g_settings->getU16("joystick_deadzone");
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
 		{0, 1}, // JA_SIDEWARD_MOVE
@@ -74,8 +74,8 @@ JoystickLayout create_default_layout()
 
 	// Accessible without four modifier button pressed
 	// regardless whether start is pressed or not
-	JLO_B_PB(KeyType::MOUSE_L,    fb | 1 << 4, 1 << 4);
-	JLO_B_PB(KeyType::MOUSE_R,    fb | 1 << 5, 1 << 5);
+	JLO_B_PB(KeyType::DIG,        fb | 1 << 4, 1 << 4);
+	JLO_B_PB(KeyType::PLACE,      fb | 1 << 5, 1 << 5);
 
 	// Accessible without any modifier pressed
 	JLO_B_PB(KeyType::JUMP,       bm | 1 << 0, 1 << 0);
@@ -83,9 +83,9 @@ JoystickLayout create_default_layout()
 
 	// Accessible with start button not pressed, but four pressed
 	// TODO find usage for button 0
-	JLO_B_PB(KeyType::DROP,       bm | 1 << 1, fb | 1 << 1);
-	JLO_B_PB(KeyType::SCROLL_UP,  bm | 1 << 4, fb | 1 << 4);
-	JLO_B_PB(KeyType::SCROLL_DOWN,bm | 1 << 5, fb | 1 << 5);
+	JLO_B_PB(KeyType::DROP,        bm | 1 << 1, fb | 1 << 1);
+	JLO_B_PB(KeyType::HOTBAR_PREV, bm | 1 << 4, fb | 1 << 4);
+	JLO_B_PB(KeyType::HOTBAR_NEXT, bm | 1 << 5, fb | 1 << 5);
 
 	// Accessible with start button and four pressed
 	// TODO find usage for buttons 0, 1 and 4, 5
@@ -93,14 +93,14 @@ JoystickLayout create_default_layout()
 	// Now about the buttons simulated by the axes
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
-	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
-	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_deadzone);
 
 	// Scroll buttons
-	JLO_A_PB(KeyType::SCROLL_UP,   2, -1, 1024);
-	JLO_A_PB(KeyType::SCROLL_DOWN, 5, -1, 1024);
+	JLO_A_PB(KeyType::HOTBAR_PREV, 2, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_deadzone);
 
 	return jlo;
 }
@@ -109,7 +109,7 @@ JoystickLayout create_xbox_layout()
 {
 	JoystickLayout jlo;
 
-	jlo.axes_dead_border = 7000;
+	jlo.axes_deadzone = 7000;
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
 		{0, 1}, // JA_SIDEWARD_MOVE
@@ -134,10 +134,10 @@ JoystickLayout create_xbox_layout()
 	JLO_B_PB(KeyType::SNEAK,       1 << 12, 1 << 12); // right
 
 	// Triggers
-	JLO_B_PB(KeyType::MOUSE_L,     1 << 6,  1 << 6); // lt
-	JLO_B_PB(KeyType::MOUSE_R,     1 << 7,  1 << 7); // rt
-	JLO_B_PB(KeyType::SCROLL_UP,   1 << 4,  1 << 4); // lb
-	JLO_B_PB(KeyType::SCROLL_DOWN, 1 << 5,  1 << 5); // rb
+	JLO_B_PB(KeyType::DIG,         1 << 6,  1 << 6); // lt
+	JLO_B_PB(KeyType::PLACE,       1 << 7,  1 << 7); // rt
+	JLO_B_PB(KeyType::HOTBAR_PREV, 1 << 4,  1 << 4); // lb
+	JLO_B_PB(KeyType::HOTBAR_NEXT, 1 << 5,  1 << 5); // rb
 
 	// D-PAD
 	JLO_B_PB(KeyType::ZOOM,        1 << 15, 1 << 15); // up
@@ -146,10 +146,10 @@ JoystickLayout create_xbox_layout()
 	JLO_B_PB(KeyType::FREEMOVE,    1 << 16, 1 << 16); // down
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
-	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
-	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_deadzone);
 
 	return jlo;
 }
@@ -219,16 +219,19 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 
 	for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
 		if (keys_pressed[i]) {
-			if (!m_past_pressed_keys[i] &&
+			if (!m_past_keys_pressed[i] &&
 					m_past_pressed_time[i] < m_internal_time - doubling_dtime) {
-				m_past_pressed_keys[i] = true;
+				m_past_keys_pressed[i] = true;
 				m_past_pressed_time[i] = m_internal_time;
 			}
-		} else if (m_pressed_keys[i]) {
-			m_past_released_keys[i] = true;
+		} else if (m_keys_down[i]) {
+			m_keys_released[i] = true;
 		}
 
-		m_pressed_keys[i] = keys_pressed[i];
+		if (keys_pressed[i] && !(m_keys_down[i]))
+			m_keys_pressed[i] = true;
+
+		m_keys_down[i] = keys_pressed[i];
 	}
 
 	for (size_t i = 0; i < JA_COUNT; i++) {
@@ -236,23 +239,22 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 		m_axes_vals[i] = ax_la.invert * ev.Axis[ax_la.axis_id];
 	}
 
-
 	return true;
 }
 
 void JoystickController::clear()
 {
-	m_pressed_keys.reset();
-	m_past_pressed_keys.reset();
-	m_past_released_keys.reset();
+	m_keys_pressed.reset();
+	m_keys_down.reset();
+	m_past_keys_pressed.reset();
+	m_keys_released.reset();
 	memset(m_axes_vals, 0, sizeof(m_axes_vals));
 }
 
 s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
-	if (((v > 0) && (v < m_layout.axes_dead_border)) ||
-			((v < 0) && (v > -m_layout.axes_dead_border)))
+	if (abs(v) < m_layout.axes_deadzone)
 		return 0;
 	return v;
 }

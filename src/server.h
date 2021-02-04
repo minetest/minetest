@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
+#include "translation.h"
 #include <string>
 #include <list>
 #include <map>
@@ -115,6 +116,25 @@ struct ServerPlayingSound
 	ServerSoundParams params;
 	SimpleSoundSpec spec;
 	std::unordered_set<session_t> clients; // peer ids
+};
+
+struct MinimapMode {
+	MinimapType type = MINIMAP_TYPE_OFF;
+	std::string label;
+	u16 size = 0;
+	std::string texture;
+	u16 scale = 1;
+};
+
+// structure for everything getClientInfo returns, for convenience
+struct ClientInfo {
+	ClientState state;
+	Address addr;
+	u32 uptime;
+	u8 ser_vers;
+	u16 prot_vers;
+	u8 major, minor, patch;
+	std::string vers_string, lang_code;
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -199,7 +219,7 @@ public:
 	void onMapEditEvent(const MapEditEvent &event);
 
 	// Connection must be locked when called
-	std::wstring getStatusString();
+	std::string getStatusString();
 	inline double getUptime() const { return m_uptime_counter->get(); }
 
 	// read shutdown state
@@ -237,7 +257,7 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMedia(const std::string &filepath);
+	bool dynamicAddMedia(const std::string &filepath, std::vector<RemotePlayer*> &sent_to);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -317,9 +337,7 @@ public:
 	void DenyAccess_Legacy(session_t peer_id, const std::wstring &reason);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
-	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
-			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string, std::string* lang_code);
+	bool getClientInfo(session_t peer_id, ClientInfo &ret);
 
 	void printToConsoleOnly(const std::string &text);
 
@@ -329,6 +347,10 @@ public:
 	void SendMovePlayer(session_t peer_id);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
+
+	void SendMinimapModes(session_t peer_id,
+			std::vector<MinimapMode> &modes,
+			size_t wanted_mode);
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
@@ -343,8 +365,8 @@ public:
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
-	// Load translations for a language
-	void loadTranslationLanguage(const std::string &lang_code);
+	// Get or load translations for a language
+	Translations *getTranslationLanguage(const std::string &lang_code);
 
 	// Bind address
 	Address m_bind_addr;
@@ -473,10 +495,8 @@ private:
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
-	std::wstring handleChat(const std::string &name, const std::wstring &wname,
-		std::wstring wmessage_input,
-		bool check_shout_priv = false,
-		RemotePlayer *player = NULL);
+	std::wstring handleChat(const std::string &name, std::wstring wmessage_input,
+		bool check_shout_priv = false, RemotePlayer *player = nullptr);
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked
@@ -511,6 +531,7 @@ private:
 	u16 m_max_chatmessage_length;
 	// For "dedicated" server list flag
 	bool m_dedicated;
+	Settings *m_game_settings = nullptr;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
@@ -551,11 +572,10 @@ private:
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
 
-	// Event manager
-	EventManager *m_event;
-
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
+
+	std::unordered_map<std::string, Translations> server_translations;
 
 	/*
 		Threads

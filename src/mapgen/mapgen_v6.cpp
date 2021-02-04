@@ -341,12 +341,6 @@ float MapgenV6::baseTerrainLevelFromMap(int index)
 }
 
 
-s16 MapgenV6::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
-{
-	return baseTerrainLevelFromNoise(p2d) + MGV6_AVERAGE_MUD_AMOUNT;
-}
-
-
 int MapgenV6::getGroundLevelAtPoint(v2s16 p)
 {
 	return baseTerrainLevelFromNoise(p) + MGV6_AVERAGE_MUD_AMOUNT;
@@ -518,12 +512,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
 	this->vm   = data->vmanip;
@@ -652,7 +640,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)
@@ -803,7 +792,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 		v3s16(0, 0, -1), // Front
 		v3s16(-1, 0, 0), // Left
 	};
-	
+
 	// Iterate twice
 	for (s16 k = 0; k < 2; k++) {
 		for (s16 z = mudflow_minpos; z <= mudflow_maxpos; z++)
@@ -1066,7 +1055,6 @@ void MapgenV6::growGrass() // Add surface nodes
 	MapNode n_dirt_with_grass(c_dirt_with_grass);
 	MapNode n_dirt_with_snow(c_dirt_with_snow);
 	MapNode n_snowblock(c_snowblock);
-	MapNode n_snow(c_snow);
 	const v3s16 &em = vm->m_area.getExtent();
 
 	u32 index = 0;
