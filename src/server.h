@@ -547,6 +547,10 @@ private:
 	// Environment
 	ServerEnvironment *m_env = nullptr;
 
+	// Reference to the server map until ServerEnvironment is initialized
+	// after that this variable must be a nullptr
+	ServerMap *m_startup_server_map = nullptr;
+
 	// server connection
 	std::shared_ptr<con::Connection> m_con;
 

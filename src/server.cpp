@@ -351,6 +351,7 @@ Server::~Server()
 	// Deinitialize scripting
 	infostream << "Server: Deinitializing scripting" << std::endl;
 	delete m_script;
+	delete m_startup_server_map; // if available
 	delete m_game_settings;
 
 	while (!m_unsent_map_edit_queue.empty()) {
@@ -399,6 +400,7 @@ void Server::init()
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
 	ServerMap *servermap = new ServerMap(m_path_world, this, m_emerge, m_metrics_backend.get());
+	m_startup_server_map = servermap;
 
 	// Initialize scripting
 	infostream << "Server: Initializing Lua" << std::endl;
@@ -440,6 +442,7 @@ void Server::init()
 	m_craftdef->initHashes(this);
 
 	// Initialize Environment
+	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
 	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
 
 	m_inventory_mgr->setEnv(m_env);

@@ -116,7 +116,8 @@ bool MapSettingsManager::saveMapMeta()
 {
 	// If mapgen params haven't been created yet; abort
 	if (!mapgen_params) {
-		errorstream << "saveMapMeta: mapgen_params not present!" << std::endl;
+		infostream << "saveMapMeta: mapgen_params not present! "
+			<< "Server startup was probably interrupted." << std::endl;
 		return false;
 	}
 
