@@ -90,6 +90,13 @@ Usage:
 * Place: Increase move distance
 * Sneak+place: Decrease move distance
 
+## Children Getter
+Shows list of objects that are attached to an object (aka "children") in chat.
+
+Usage:
+* Punch object: Show children of punched object
+* Punch air: Show your own children
+
 ## Entity Visual Scaler
 Change visual size of entities
 
@@ -97,3 +104,10 @@ Usage:
 
 * Punch entity to increase visual size
 * Sneak+punch entity to decrease visual size
+
+## Light Tool
+Show light level of node.
+
+Usage:
+* Punch: Show light info of node in front of the punched node's side
+* Place: Show light info of the node that you touched

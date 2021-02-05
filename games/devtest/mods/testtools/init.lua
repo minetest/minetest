@@ -634,6 +634,56 @@ minetest.register_tool("testtools:object_attacher", {
 	end,
 })
 
+minetest.register_tool("testtools:children_getter", {
+	description = S("Children Getter") .."\n"..
+		S("Shows list of objects attached to object") .."\n"..
+		S("Punch object to show its 'children'") .."\n"..
+		S("Punch air to show your own 'children'"),
+	inventory_image = "testtools_children_getter.png",
+	groups = { testtool = 1, disable_repair = 1 },
+	on_use = function(itemstack, user, pointed_thing)
+		if user and user:is_player() then
+			local name = user:get_player_name()
+			local selected_object
+			local self_name
+			if pointed_thing.type == "object" then
+				selected_object = pointed_thing.ref
+			elseif pointed_thing.type == "nothing" then
+				selected_object = user
+			else
+				return
+			end
+			if selected_object:is_player() then
+				self_name = "player '"..selected_object:get_player_name().."'"
+			elseif selected_object:get_luaentity() then
+				self_name = "LuaEntity '"..selected_object:get_entity_name().."'"
+			else
+				self_name = "object"
+			end
+			local children = selected_object:get_children()
+			local ret = ""
+			for c=1, #children do
+				if children[c]:get_luaentity() then
+					ret = ret .. "* "..S("LuaEntity '@1'", children[c]:get_entity_name())
+				elseif children[c]:is_player() then
+					ret = ret .. "* "..S("player '@1'", children[c]:get_player_name())
+				else
+					ret = ret .. "* "..S("object")
+				end
+				if c < #children then
+					ret = ret .. "\n"
+				end
+			end
+			if ret == "" then
+				ret = S("No children attached to @1.", self_name)
+			else
+				ret = S("Children of @1:", self_name) .. "\n" .. ret
+			end
+			minetest.chat_send_player(user:get_player_name(), ret)
+		end
+	end,
+})
+
 -- Use loadstring to parse param as a Lua value
 local function use_loadstring(param, player)
 	-- For security reasons, require 'server' priv, just in case
