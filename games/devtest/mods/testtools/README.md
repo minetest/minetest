@@ -33,6 +33,13 @@ Usage:
 * Punch node: Make it fall
 * Place: Try to teleport up to 2 units upwards, then make it fall
 
+## Node Meta Editor
+Edit and view metadata of nodes.
+
+Usage:
+
+* Punch: Open node metadata editor
+
 ## Entity Rotator
 Changes the entity rotation (with `set_rotation`).
 

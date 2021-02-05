@@ -3,8 +3,6 @@ local F = minetest.formspec_escape
 
 dofile(minetest.get_modpath("testtools") .. "/light.lua")
 
--- TODO: Add a Node Metadata tool
-
 minetest.register_tool("testtools:param2tool", {
 	description = S("Param2 Tool") .."\n"..
 		S("Modify param2 value of nodes") .."\n"..
@@ -110,25 +108,6 @@ minetest.register_tool("testtools:node_setter", {
 		minetest.set_node(pos, node)
 	end,
 })
-
-minetest.register_on_player_receive_fields(function(player, formname, fields)
-	if formname == "testtools:node_setter" then
-		local playername = player:get_player_name()
-		local witem = player:get_wielded_item()
-		if witem:get_name() == "testtools:node_setter" then
-			if fields.nodename and fields.param2 then
-				local param2 = tonumber(fields.param2)
-				if not param2 then
-					return
-				end
-				local meta = witem:get_meta()
-				meta:set_string("node", fields.nodename)
-				meta:set_int("node_param2", param2)
-				player:set_wielded_item(witem)
-			end
-		end
-	end
-end)
 
 minetest.register_tool("testtools:remover", {
 	description = S("Remover") .."\n"..
@@ -716,6 +695,63 @@ local function use_loadstring(param, player)
 	return true, errOrResult
 end
 
+-- Node Meta Editor
+local node_meta_posses = {}
+local node_meta_latest_keylist = {}
+
+local function show_node_meta_formspec(user, pos, key, value, keylist)
+	local textlist
+	if keylist then
+		textlist = "textlist[0,0.5;2.5,6.5;keylist;"..keylist.."]"
+	else
+		textlist = ""
+	end
+	minetest.show_formspec(user:get_player_name(),
+		"testtools:node_meta_editor",
+		"size[15,9]"..
+		"label[0,0;"..F(S("Current keys:")).."]"..
+		textlist..
+		"field[3,0.5;12,1;key;"..F(S("Key"))..";"..F(key).."]"..
+		"textarea[3,1.5;12,6;value;"..F(S("Value"))..";"..F(value).."]"..
+		"button[0,8;3,1;get;"..F(S("Get value")).."]"..
+		"button[4,8;3,1;set;"..F(S("Set value")).."]"..
+		"label[0,7.2;"..F(S("pos = @1", minetest.pos_to_string(pos))).."]")
+end
+
+local function get_node_meta_keylist(meta, playername)
+	local keys = {}
+	local mtable = meta:to_table()
+	for k,_ in pairs(mtable.fields) do
+		table.insert(keys, k)
+	end
+	if playername then
+		node_meta_latest_keylist[playername] = keys
+	end
+	local keylist = table.concat(keys, ",")
+	return keylist
+end
+
+minetest.register_tool("testtools:node_meta_editor", {
+	description = S("Node Meta Editor") .. "\n" ..
+		S("Place: Edit node metadata"),
+	inventory_image = "testtools_node_meta_editor.png",
+	groups = { testtool = 1, disable_repair = 1 },
+	on_place = function(itemstack, user, pointed_thing)
+		if pointed_thing.type ~= "node" then
+			return itemstack
+		end
+		if not user:is_player() then
+			return itemstack
+		end
+		local pos = pointed_thing.under
+		node_meta_posses[user:get_player_name()] = pos
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		show_node_meta_formspec(user, pos, "", "", get_node_meta_keylist(meta, user:get_player_name()))
+		return itemstack
+	end,
+})
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not (player and player:is_player()) then
 		return
@@ -778,5 +814,66 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			editor_formspec(name, selected_objects[name], prop_to_string(props[key]), sel)
 			return
 		end
+	elseif formname == "testtools:node_setter" then
+		local playername = player:get_player_name()
+		local witem = player:get_wielded_item()
+		if witem:get_name() == "testtools:node_setter" then
+			if fields.nodename and fields.param2 then
+				local param2 = tonumber(fields.param2)
+				if not param2 then
+					return
+				end
+				local meta = witem:get_meta()
+				meta:set_string("node", fields.nodename)
+				meta:set_int("node_param2", param2)
+				player:set_wielded_item(witem)
+			end
+		end
+	elseif formname == "testtools:node_meta_editor" then
+		local name = player:get_player_name()
+		local pos = node_meta_posses[name]
+		if fields.keylist then
+			local evnt = minetest.explode_textlist_event(fields.keylist)
+			if evnt.type == "DCL" or evnt.type == "CHG" then
+				local keylist_table = node_meta_latest_keylist[name]
+				if not pos then
+					return
+				end
+				local meta = minetest.get_meta(pos)
+				if not keylist_table then
+					return
+				end
+				if #keylist_table == 0 then
+					return
+				end
+				local key = keylist_table[evnt.index]
+				local value = meta:get_string(key)
+				local keylist = table.concat(keylist_table, ",")
+				show_node_meta_formspec(player, pos, key, value, keylist)
+				return
+			end
+		elseif fields.key and fields.key ~= "" and fields.value then
+			if not pos then
+				return
+			end
+			local meta = minetest.get_meta(pos)
+			if fields.get then
+				local value = meta:get_string(fields.key)
+				show_node_meta_formspec(player, pos, fields.key, value,
+						get_node_meta_keylist(meta, name))
+				return
+			elseif fields.set then
+				meta:set_string(fields.key, fields.value)
+				show_node_meta_formspec(player, pos, fields.key, fields.value,
+						get_node_meta_keylist(meta, name))
+				return
+			end
+		end
 	end
+end)
+
+minetest.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	node_meta_latest_keylist[name] = nil
+	node_meta_posses[name] = nil
 end)
