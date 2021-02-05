@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2021-02-11 19:34+0000\n"
-"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
+"Last-Translator: Adnan1091 <adnan.utku@ogr.dpu.edu.tr>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -153,21 +153,23 @@ msgstr "etkin"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" zaten var.Değiştirilsin mi?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "$ 1 ve $ 2 destek dosyaları yüklenecek."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 'e $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 indiriliyor,\n"
+"$2 sırada"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
@@ -175,11 +177,11 @@ msgstr "$1 indiriliyor..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 için destek dosyaları bulanamadı."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 indirilecek, ve $2 destek dosyaları atlanacak."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -194,9 +196,8 @@ msgid "Back to Main Menu"
 msgstr "Ana Menüye Dön"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Oyun Barındır"
+msgstr "Yerel oyun:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -250,15 +251,15 @@ msgstr "Bulunamadı"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Üzerine yaz"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Lütfen asıl oyunun doğru olup olmadığını gözden geçirin."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Sıraya alındı"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -274,11 +275,11 @@ msgstr "Güncelle"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Hepsini güncelle [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Tarayıcı'da daha fazla bilgi edinin"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -765,6 +766,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Dosya yöneticisiyle dünya,oyun,modlar ve doku paketleri olan kullanıcı "
+"dayalı dosyayı açar."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -804,7 +807,7 @@ msgstr "ContentDB'den oyunlar yükle"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Ad"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -827,9 +830,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Dünya Seç:"
+msgstr "Mod seçin"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -981,9 +983,8 @@ msgid "Shaders"
 msgstr "Gölgelemeler"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Yüzenkaralar (deneysel)"
+msgstr "Gölgelendirme (deneysel)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -2149,7 +2150,7 @@ msgstr "ABM aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "ABM zаman gideri"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2654,7 +2655,7 @@ msgstr "ContentDB: Kara Liste"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "ContentDB aşırı eşzamanlı indirmeler"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2739,6 +2740,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Artı rengi (R,G,B).\n"
+"Ayrıca nesne artı rengini de değiştirir"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -5098,11 +5101,11 @@ msgstr "Tüm sıvıları opak yapar"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Hafıza deposu için harita sıkıştırma düzeyi"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Ağ aktarma hızı için harita sıkıştırma düzeyi"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5351,6 +5354,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"En yüksek eşzamanlı indirme sayısı.Bu sınırı aşan indirmeler sıraya "
+"alınacaktır.\n"
+"Bu curl_parallel_limit den daha az olmalıdır."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -6651,6 +6657,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"ABM'lerin her adımda yürütülmesi için izin verilen zaman gideri\n"
+"(ABM aralığının bir parçası olarak)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6835,6 +6843,14 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Öbek/Küme kenarlarını düzeltmek için çok örnekli düzgünleştirmeyi(anti-"
+"aliasing) kullanın.\n"
+"Bu işlem görüntüyü keskinleştirirken 3 boyutlu görüş alanını düzeltir.\n"
+"ama doku(texture) içindeki görüntüyü etkilemez.\n"
+"(Saydam dokularda etkisi daha belirgindir)\n"
+"Gölgelendirme kapalı ise düğüm arası(nod) boşluk görülür.\n"
+"0'da ise düzgünleştirme kapalıdır.\n"
+"Ayarları değiştirdikten sonra yenileme gereklidir."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7237,6 +7253,11 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Harita kütlerini diske kaydederken kullanılacak ZLib sıkıştırma düzeyi.\n"
+"-1 - Zlib'in varsayılan sıkıştırma düzeyi\n"
+"0 - hiçbir sıkıştırma yok, en hızlı\n"
+"9 - en iyi sıkıştırma, en yavaş\n"
+"(seviye 1-3, Zlib'in \"hızlı\" , 4-9 sıradan yöntemi kullanır)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7246,6 +7267,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Harita kütlerini istemciye(client) gönderirken kullanılacak ZLib sıkıştırma "
+"düzeyi.\n"
+"-1 - Zlib'in varsayılan sıkıştırma düzeyi\n"
+"0 - hiçbir sıkıştırma yok, en hızlı\n"
+"9 - en iyi sıkıştırma, en yavaş\n"
+"(seviye 1-3, Zlib'in \"hızlı\" , 4-9 sıradan yöntemi kullanır)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
