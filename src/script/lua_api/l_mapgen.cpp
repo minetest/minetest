@@ -1337,7 +1337,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		ore->flags |= OREFLAG_USE_NOISE;
 	} else if (ore->needs_noise) {
 		log_deprecated(L,
-				"register_ore: ore type requires 'noise_params' but it is not specified");
+			"register_ore: ore type requires 'noise_params' but it is not specified, falling back to defaults");
 	}
 	lua_pop(L, 1);
 
