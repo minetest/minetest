@@ -1336,10 +1336,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	if (read_noiseparams(L, -1, &ore->np)) {
 		ore->flags |= OREFLAG_USE_NOISE;
 	} else if (ore->needs_noise) {
-		errorstream << "register_ore: specified ore type requires valid "
-			"'noise_params' parameter" << std::endl;
-		delete ore;
-		return 0;
+		log_deprecated(L,
+			"register_ore: ore type requires 'noise_params' but it is not specified, falling back to defaults");
 	}
 	lua_pop(L, 1);
 
