@@ -42,7 +42,7 @@ void UnitSAO::setRotation(v3f rotation)
 {
 	ObjectProperties *props = accessObjectProperties();
 
-	// If any of those two properties is set as 'true', the corresponding box 
+	// If any of those two properties is set as 'true', the corresponding box
 	// will rotate automatically on each rotation change of the entity
 
 	if (props->synchronize_cbox_rotation_with_dir) {
@@ -63,14 +63,13 @@ void UnitSAO::setBoxRotation(v3f rotation, const std::string &box_type)
 	ObjectProperties *props = accessObjectProperties();
 
 	aabb3f *box = box_type == "collision" 
-					? &props->collisionbox 
-					: (box_type == "selection" ? &props->selectionbox 
-					   				: nullptr);
+				      ? &props->collisionbox 
+				      : (box_type == "selection" ? &props->selectionbox 
+					   			 : nullptr);
 
 	if (!box)
 		return;
 
-	infostream << "target rotation Y: " << rotation.Y << std::endl;
 	v3f cur_rot = getRotation();
 	v3f new_min_edge{box->MinEdge};
 	v3f new_max_edge{box->MaxEdge};
@@ -95,7 +94,7 @@ void UnitSAO::setBoxRotation(v3f rotation, const std::string &box_type)
 	new_max_edge.rotateXZBy(rot_y);
 	new_max_edge.rotateYZBy(rot_x);
 
-	// Gets a number of steps of rotation around a specific axis (one step is equal to 
+	// Gets a number of steps of rotation around a specific axis (one step is equal to
 	// 90 degrees, as any box can be rotated only under the right angle, otherwise it
 	// would be distorted)
 	u16 x_trot_steps_n = std::round(std::fabs(rotation.X / 90));
