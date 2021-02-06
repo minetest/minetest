@@ -378,7 +378,6 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 	}
 
 	// Store our face.
-	sguitt_face = face;
 	tt_face = face->face;
 
 	// Store font metrics.
@@ -437,9 +436,6 @@ CGUITTFont::~CGUITTFont()
 	// Drop our driver now.
 	if (Driver)
 		Driver->drop();
-
-	// Destroy sguitt_face after clearing c_faces
-	delete sguitt_face;
 }
 
 void CGUITTFont::reset_images()

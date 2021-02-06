@@ -375,7 +375,6 @@ namespace gui
 			gui::IGUIEnvironment* Environment;
 			video::IVideoDriver* Driver;
 			io::path filename;
-			SGUITTFace* sguitt_face = nullptr;
 			FT_Face tt_face;
 			FT_Size_Metrics font_metrics;
 			FT_Int32 load_flags;
