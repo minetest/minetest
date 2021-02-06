@@ -31,10 +31,10 @@ Table of Contents
 
 Further documentation
 ----------------------
-- Website: http://minetest.net/
-- Wiki: http://wiki.minetest.net/
-- Developer wiki: http://dev.minetest.net/
-- Forum: http://forum.minetest.net/
+- Website: https://minetest.net/
+- Wiki: https://wiki.minetest.net/
+- Developer wiki: https://dev.minetest.net/
+- Forum: https://forum.minetest.net/
 - GitHub: https://github.com/minetest/minetest/
 - [doc/](doc/) directory of source distribution
 
