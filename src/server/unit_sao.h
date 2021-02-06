@@ -106,10 +106,10 @@ protected:
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
 
 	int m_attachment_parent_id = 0;
-	
+
 	// Collision/Selection boxes automatic rotation
-	void setBoxRotation(v3f rotation, const std::string& box_type = "");
-	
+	void setBoxRotation(v3f rotation, const std::string &box_type = "");
+
 private:
 	void onAttach(int parent_id);
 	void onDetach(int parent_id);
