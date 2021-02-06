@@ -62,10 +62,10 @@ void UnitSAO::setBoxRotation(v3f rotation, const std::string &box_type)
 {
 	ObjectProperties *props = accessObjectProperties();
 
-	aabb3f *box = box_type == "collision" 
-				      ? &props->collisionbox 
-				      : (box_type == "selection" ? &props->selectionbox 
-					   			 : nullptr);
+	aabb3f *box = box_type == "collision"
+					? &props->collisionbox
+					: (box_type == "selection" ? &props->selectionbox 
+					   				: nullptr);
 
 	if (!box)
 		return;
