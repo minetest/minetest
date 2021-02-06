@@ -40,82 +40,87 @@ ServerActiveObject *UnitSAO::getParent() const
 
 void UnitSAO::setRotation(v3f rotation)
 {
-	ObjectProperties* props = accessObjectProperties();
-	
-	// If any of those two properties is set as 'true', the corresponding box will rotate automatically on each rotation change of the entity
-	if (props->synchronize_cbox_rotation_with_dir)
-	{
+	ObjectProperties *props = accessObjectProperties();
+
+	// If any of those two properties is set as 'true', the corresponding box 
+	// will rotate automatically on each rotation change of the entity
+
+	if (props->synchronize_cbox_rotation_with_dir) {
 		infostream << "rotating collisionbox" << std::endl;
 		setBoxRotation(rotation, "collision");
 	}
-	if (props->synchronize_sbox_rotation_with_dir)
-	{
+
+	if (props->synchronize_sbox_rotation_with_dir) {
 		infostream << "rotating selectionbox" << std::endl;
 		setBoxRotation(rotation, "selection");
 	}
-	
+
 	m_rotation = rotation;
 }
 
-void UnitSAO::setBoxRotation(v3f rotation, const std::string& box_type)
+void UnitSAO::setBoxRotation(v3f rotation, const std::string &box_type)
 {
-	ObjectProperties* props = accessObjectProperties();
-	
-	aabb3f* box = box_type == "collision" ? &props->collisionbox : (box_type == "selection" ? &props->selectionbox : nullptr);
-	
+	ObjectProperties *props = accessObjectProperties();
+
+	aabb3f *box = box_type == "collision" 
+					? &props->collisionbox 
+					: (box_type == "selection" ? &props->selectionbox 
+					   				: nullptr);
+
 	if (!box)
 		return;
-	
+
 	infostream << "target rotation Y: " << rotation.Y << std::endl;
 	v3f cur_rot = getRotation();
 	v3f new_min_edge{box->MinEdge};
 	v3f new_max_edge{box->MaxEdge};
-	
-	// Gets a number of steps of rotation around a specific axis to get back the box in the original position
+
+	// Gets a number of steps of rotation around a specific axis to get back the box
+	// in the original position
 	u16 x_rot_steps_n = std::round(std::fabs(cur_rot.X / 90));
 	u16 y_rot_steps_n = std::round(std::fabs(cur_rot.Y / 90));
 	u16 z_rot_steps_n = std::round(std::fabs(cur_rot.Z / 90));
-	
+
 	// Gets signs of each rotation around a specific axis
-	s16 rot_x = 90.0*x_rot_steps_n*((cur_rot.X < 0) - (cur_rot.X > 0));
-	s16 rot_y = 90.0*y_rot_steps_n*((cur_rot.Y < 0) - (cur_rot.Y > 0));
-	s16 rot_z = 90.0*z_rot_steps_n*((cur_rot.Z < 0) - (cur_rot.Z > 0));
-	
+	s16 rot_x = 90.0 * x_rot_steps_n * ((cur_rot.X < 0) - (cur_rot.X > 0));
+	s16 rot_y = 90.0 * y_rot_steps_n * ((cur_rot.Y < 0) - (cur_rot.Y > 0));
+	s16 rot_z = 90.0 * z_rot_steps_n * ((cur_rot.Z < 0) - (cur_rot.Z > 0));
+
 	// Turns the box to the original position (as it was set in the entity def)
 	new_min_edge.rotateXYBy(rot_z);
 	new_min_edge.rotateXZBy(rot_y);
 	new_min_edge.rotateYZBy(rot_x);
-	
+
 	new_max_edge.rotateXYBy(rot_z);
 	new_max_edge.rotateXZBy(rot_y);
 	new_max_edge.rotateYZBy(rot_x);
-	
-	infostream << "original box edges: " << new_min_edge.X << ", " << new_min_edge.Y << ", " << new_min_edge.Z << ", " << new_max_edge.X << ", " << new_max_edge.Y << ", " << new_max_edge.Z << std::endl;
-	// Gets a number of steps of rotation around a specific axis (one step is equal to 90 degrees, as any box can be rotated only under the right angle, otherwise it would be distorted)
+
+	// Gets a number of steps of rotation around a specific axis (one step is equal to 
+	// 90 degrees, as any box can be rotated only under the right angle, otherwise it
+	// would be distorted)
 	u16 x_trot_steps_n = std::round(std::fabs(rotation.X / 90));
 	u16 y_trot_steps_n = std::round(std::fabs(rotation.Y / 90));
 	u16 z_trot_steps_n = std::round(std::fabs(rotation.Z / 90));
-	
+
 	// Gets signs of each rotation around each axis
-	s16 trot_x = 90.0*x_trot_steps_n*((rotation.X > 0) - (rotation.X < 0));
-	s16 trot_y = 90.0*y_trot_steps_n*((rotation.Y > 0) - (rotation.Y < 0));
-	s16 trot_z = 90.0*z_trot_steps_n*((rotation.Z > 0) - (rotation.Z < 0));
-	
-	infostream << "y_rot_steps_n: " << x_rot_steps_n << std::endl;
+	s16 trot_x = 90.0 * x_trot_steps_n * ((rotation.X > 0) - (rotation.X < 0));
+	s16 trot_y = 90.0 * y_trot_steps_n * ((rotation.Y > 0) - (rotation.Y < 0));
+	s16 trot_z = 90.0 * z_trot_steps_n * ((rotation.Z > 0) - (rotation.Z < 0));
+
 	// Sets the target rotation 'rotation' for the box
 	new_min_edge.rotateYZBy(trot_x);
 	new_min_edge.rotateXZBy(trot_y);
 	new_min_edge.rotateXYBy(trot_z);
-	
+
 	new_max_edge.rotateYZBy(trot_x);
 	new_max_edge.rotateXZBy(trot_y);
 	new_max_edge.rotateXYBy(trot_z);
-	
+
 	box->MinEdge = new_min_edge;
 	box->MaxEdge = new_max_edge;
-	
+
 	box->repair();
-	
+
 	notifyObjectPropertiesModified();
 }
 
