@@ -1505,8 +1505,8 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 	return 0;
 }
 
-// delete_physics_modifier(self, key)
-int ObjectRef::l_delete_physics_modifier(lua_State *L)
+// remove_physics_modifier(self, key)
+int ObjectRef::l_remove_physics_modifier(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1519,7 +1519,7 @@ int ObjectRef::l_delete_physics_modifier(lua_State *L)
 	playersao->deletePhysicsModifier(key);
 
 	if (playersao->m_physics_override_set) {
-		warningstream << "delete_physics_modifier will have no effect because ";
+		warningstream << "remove_physics_modifier will have no effect because ";
 		warningstream << "set_physics_override was previously called" << std::endl;
 		warningstream << script_get_backtrace(L);
 	}
@@ -2549,7 +2549,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_player_control_bits),
 	luamethod(ObjectRef, get_effective_physics),
 	luamethod(ObjectRef, set_physics_modifier),
-	luamethod(ObjectRef, delete_physics_modifier),
+	luamethod(ObjectRef, remove_physics_modifier),
 	luamethod(ObjectRef, set_physics_flags),
 	luamethod(ObjectRef, get_physics_flags),
 	luamethod(ObjectRef, set_physics_override),

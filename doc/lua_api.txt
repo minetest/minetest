@@ -6562,7 +6562,7 @@ object you are working with still exists.
      "modname:modifier_name".
    * `modifier_table`: a table with the same fields as `get_effective_physics`. Plus:
        * `type` - `multiply` or `add`. Default: `multiply`.
-* `delete_physics_modifier(key_string)`: Removes the physics modifier with the key `key_string`.
+* `remove_physics_modifier(key_string)`: Removes the physics modifier with the key `key_string`.
 * `set_physics_flags(flags)`:
     * `sneak`: whether player can sneak (default: `true`)
     * `sneak_glitch`: whether player can use the new move code replications

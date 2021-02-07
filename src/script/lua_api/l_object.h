@@ -116,8 +116,8 @@ private:
 	// set_physics_modifier(self, key, modifier_table)
 	static int l_set_physics_modifier(lua_State *L);
 
-	// delete_physics_modifier(self, key)
-	static int l_delete_physics_modifier(lua_State *L);
+	// remove_physics_modifier(self, key)
+	static int l_remove_physics_modifier(lua_State *L);
 
 	// set_physics_flags(self, override_table)
 	static int l_set_physics_flags(lua_State *L);
