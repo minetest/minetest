@@ -25,46 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object_properties.h"
 #include "itemgroup.h"
 #include "constants.h"
+#include "util/smoothtranslator.h"
 #include <cassert>
 
 class Camera;
 class Client;
 struct Nametag;
 struct MinimapMarker;
-
-/*
-	SmoothTranslator
-*/
-
-template<typename T>
-struct SmoothTranslator
-{
-	T val_old;
-	T val_current;
-	T val_target;
-	f32 anim_time = 0;
-	f32 anim_time_counter = 0;
-	bool aim_is_end = true;
-
-	SmoothTranslator() = default;
-
-	void init(T current);
-
-	void update(T new_target, bool is_end_position = false,
-		float update_interval = -1);
-
-	void translate(f32 dtime);
-};
-
-struct SmoothTranslatorWrapped : SmoothTranslator<f32>
-{
-	void translate(f32 dtime);
-};
-
-struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
-{
-	void translate(f32 dtime);
-};
 
 class GenericCAO : public ClientActiveObject
 {
