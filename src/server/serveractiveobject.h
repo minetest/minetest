@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "itemgroup.h"
 #include "util/container.h"
+#include "util/smoothtranslator.h"
 
 /*
 
@@ -82,8 +83,8 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition() const { return m_base_position; }
-	void setBasePosition(v3f pos){ m_base_position = pos; }
+	v3f getBasePosition() const { return m_base_position.val_current; }
+	void setBasePosition(v3f pos){ m_base_position.init(pos); }
 	ServerEnvironment* getEnv(){ return m_env; }
 
 	/*
@@ -242,7 +243,7 @@ protected:
 	virtual void onDetach(int parent_id) {}
 
 	ServerEnvironment *m_env;
-	v3f m_base_position;
+	SmoothTranslator<v3f> m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
 
 	/*

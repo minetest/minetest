@@ -146,10 +146,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
-	if(isAttached())
+	if (auto *sao = getParent())
 	{
-		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
-		m_base_position = pos;
+		setBasePosition(sao->getBasePosition());
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
 	}
@@ -160,24 +159,29 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
 			f32 pos_max_d = BS*0.25; // Distance per iteration
-			v3f p_pos = m_base_position;
+			v3f p_pos = m_base_position.val_current;
 			v3f p_velocity = m_velocity;
-			v3f p_acceleration = m_acceleration;
 			moveresult = collisionMoveSimple(m_env, m_env->getGameDef(),
 					pos_max_d, box, m_prop.stepheight, dtime,
-					&p_pos, &p_velocity, p_acceleration,
+					&p_pos, &p_velocity, m_acceleration,
 					this, m_prop.collideWithObjects);
 			moveresult_p = &moveresult;
 
 			// Apply results
-			m_base_position = p_pos;
+			m_base_position.val_target = p_pos;
 			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
+	
+			bool is_end_position = moveresult.collides;
+			m_base_position.update(p_pos, is_end_position, dtime);
 		} else {
-			m_base_position += dtime * m_velocity + 0.5 * dtime
+			m_base_position.val_target += dtime * m_velocity + 0.5 * dtime
 					* dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
+
+			m_base_position.update(m_base_position.val_target,
+					m_base_position.aim_is_end, m_base_position.anim_time);
 		}
+		m_base_position.translate(dtime);
 
 		if (m_prop.automatic_face_movement_dir &&
 				(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)) {
@@ -213,7 +217,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		} else if(m_last_sent_position_timer > 0.2){
 			minchange = 0.05*BS;
 		}
-		float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
+		float move_d = m_base_position.val_current.getDistanceFrom(m_last_sent_position);
 		move_d += m_last_sent_move_precision;
 		float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
 		if (move_d > minchange || vel_d > minchange ||
@@ -237,7 +241,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString16(""); // name
 	writeU8(os, 0); // is_player
 	writeU16(os, getId()); //id
-	writeV3F32(os, m_base_position);
+	writeV3F32(os, m_base_position.val_current);
 	writeV3F32(os, m_rotation);
 	writeU16(os, m_hp);
 
@@ -369,16 +373,25 @@ void LuaEntitySAO::setPos(const v3f &pos)
 {
 	if(isAttached())
 		return;
-	m_base_position = pos;
+
+	setBasePosition(pos);
 	sendPosition(false, true);
 }
 
 void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 {
-	if(isAttached())
+	// Same as GenericCAO::processMessage() -> AO_CMD_UPDATE_POSITION
+	if (isAttached())
 		return;
-	m_base_position = pos;
-	if(!continuous)
+
+	if (!m_prop.physical)
+		m_base_position.update(pos, continuous, m_env->getSendRecommendedInterval());
+	else 
+		m_base_position.val_target = pos;
+
+	// Force position update for continuous == false
+	// otherwise the client will interpolate to "pos"
+	if (!continuous)
 		sendPosition(true, true);
 }
 
@@ -391,7 +404,7 @@ std::string LuaEntitySAO::getDescription()
 {
 	std::ostringstream oss;
 	oss << "LuaEntitySAO \"" << m_init_name << "\" ";
-	auto pos = floatToInt(m_base_position, BS);
+	auto pos = floatToInt(m_base_position.val_current, BS);
 	oss << "at " << PP(pos);
 	return oss.str();
 }
@@ -492,18 +505,19 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	if(isAttached())
 		return;
 
-	m_last_sent_move_precision = m_base_position.getDistanceFrom(
+	m_last_sent_move_precision = m_base_position.val_current.getDistanceFrom(
 			m_last_sent_position);
 	m_last_sent_position_timer = 0;
-	m_last_sent_position = m_base_position;
+	m_last_sent_position = m_base_position.val_current;
 	m_last_sent_velocity = m_velocity;
 	//m_last_sent_acceleration = m_acceleration;
 	m_last_sent_rotation = m_rotation;
 
 	float update_interval = m_env->getSendRecommendedInterval();
 
+	// Send the destination position. The client will interpolate on its own
 	std::string str = generateUpdatePositionCommand(
-		m_base_position,
+		m_base_position.val_target,
 		m_velocity,
 		m_acceleration,
 		m_rotation,
@@ -523,8 +537,8 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
 		toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
 		toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
 
-		toset->MinEdge += m_base_position;
-		toset->MaxEdge += m_base_position;
+		toset->MinEdge += m_base_position.val_current;
+		toset->MaxEdge += m_base_position.val_current;
 
 		return true;
 	}

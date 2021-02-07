@@ -86,10 +86,10 @@ std::string PlayerSAO::getDescription()
 void PlayerSAO::addedToEnvironment(u32 dtime_s)
 {
 	ServerActiveObject::addedToEnvironment(dtime_s);
-	ServerActiveObject::setBasePosition(m_base_position);
+	ServerActiveObject::setBasePosition(m_base_position.val_current);
 	m_player->setPlayerSAO(this);
 	m_player->setPeerId(m_peer_id);
-	m_last_good_position = m_base_position;
+	m_last_good_position = m_base_position.val_current;
 }
 
 // Called before removing from environment
@@ -113,7 +113,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString16(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
-	writeV3F32(os, m_base_position);
+	writeV3F32(os, m_base_position.val_current);
 	writeV3F32(os, m_rotation);
 	writeU16(os, getHP());
 
@@ -192,7 +192,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// Sequence of damage points, starting 0.1 above feet and progressing
 		// upwards in 1 node intervals, stopping below top damage point.
 		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
-			v3s16 p = floatToInt(m_base_position +
+			v3s16 p = floatToInt(m_base_position.val_current +
 				v3f(0.0f, dam_height * BS, 0.0f), BS);
 			MapNode n = m_env->getMap().getNode(p);
 			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
@@ -203,7 +203,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 
 		// Top damage point
-		v3s16 ptop = floatToInt(m_base_position +
+		v3s16 ptop = floatToInt(m_base_position.val_current +
 			v3f(0.0f, dam_top * BS, 0.0f), BS);
 		MapNode ntop = m_env->getMap().getNode(ptop);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
@@ -260,10 +260,12 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	// otherwise it's calculated normally.
 	// If the object gets detached this comes into effect automatically from
 	// the last known origin.
-	if (isAttached()) {
-		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
+	if (auto *sao = getParent()) {
+		const v3f &pos = sao->getBasePosition();
 		m_last_good_position = pos;
 		setBasePosition(pos);
+	} else {
+		m_base_position.translate(dtime);
 	}
 
 	if (!send_recommended)
@@ -278,7 +280,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		if (isAttached())
 			pos = m_last_good_position;
 		else
-			pos = m_base_position;
+			pos = m_base_position.val_current;
 
 		std::string str = generateUpdatePositionCommand(
 			pos,
@@ -320,7 +322,7 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 
 void PlayerSAO::setBasePosition(const v3f &position)
 {
-	if (m_player && position != m_base_position)
+	if (m_player && position != m_base_position.val_current)
 		m_player->setDirty(true);
 
 	// This needs to be ran for attachments too
@@ -571,7 +573,7 @@ bool PlayerSAO::checkMovementCheat()
 {
 	if (m_is_singleplayer ||
 			g_settings->getBool("disable_anticheat")) {
-		m_last_good_position = m_base_position;
+		m_last_good_position = m_base_position.val_current;
 		return false;
 	}
 	if (UnitSAO *parent = dynamic_cast<UnitSAO *>(getParent())) {
@@ -585,7 +587,8 @@ bool PlayerSAO::checkMovementCheat()
 		}
 
 		v3f parent_pos = parent->getBasePosition();
-		f32 diff = m_base_position.getDistanceFromSQ(parent_pos) - attachment_pos.getLengthSQ();
+		f32 diff = m_base_position.val_current.getDistanceFromSQ(parent_pos) -
+				attachment_pos.getLengthSQ();
 		const f32 maxdiff = 4.0f * BS; // fair trade-off value for various latencies
 
 		if (diff > maxdiff * maxdiff) {
@@ -640,7 +643,7 @@ bool PlayerSAO::checkMovementCheat()
 	if (player_max_jump < 0.0001f)
 		player_max_jump = 0.0001f;
 
-	v3f diff = (m_base_position - m_last_good_position);
+	v3f diff = (m_base_position.val_current - m_last_good_position);
 	float d_vert = diff.Y;
 	diff.Y = 0;
 	float d_horiz = diff.getLength();
@@ -655,7 +658,7 @@ bool PlayerSAO::checkMovementCheat()
 	}
 
 	if (m_move_pool.grab(required_time)) {
-		m_last_good_position = m_base_position;
+		m_last_good_position = m_base_position.val_current;
 	} else {
 		const float LAG_POOL_MIN = 5.0;
 		float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
@@ -677,8 +680,8 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 	toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
 	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
 
-	toset->MinEdge += m_base_position;
-	toset->MaxEdge += m_base_position;
+	toset->MinEdge += m_base_position.val_current;
+	toset->MaxEdge += m_base_position.val_current;
 	return true;
 }
 

@@ -25,9 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
-	m_env(env),
-	m_base_position(pos)
+	m_env(env)
 {
+	m_base_position.init(pos);
 }
 
 float ServerActiveObject::getMinimumSavedMovement()
