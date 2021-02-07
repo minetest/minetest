@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
 #include "util/string.h"
 
 class GUIModalMenu;
@@ -100,4 +101,12 @@ private:
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
 	bool m_allow_focus_removal = false;
+
+#ifdef __ANDROID__
+	irr_ptr<gui::IGUIElement> m_hovered;
+
+	bool simulateMouseEvent(gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event);
+	void enter(gui::IGUIElement *element);
+	void leave();
+#endif
 };
