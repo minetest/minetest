@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-12-05 15:29+0000\n"
+"PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -168,6 +168,8 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 letöltése,\n"
+"$2 sorba állítva"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -256,7 +258,7 @@ msgstr "Hang némítása"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Felülírás"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -264,7 +266,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Sorbaállítva"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -280,11 +282,11 @@ msgstr "Frissítés"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Összes frissítése [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "További információ megnyitása a böngészőben"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -778,6 +780,9 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Megnyitja a fájlkezelőben / intézőben azt a könyvtárat, amely a felhasználó "
+"világait,\n"
+"játékait, modjait, és textúráit tartalmazza."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -817,7 +822,7 @@ msgstr "Játékok telepítése ContentDB-ről"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
