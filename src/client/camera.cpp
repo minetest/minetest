@@ -452,7 +452,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f abs_cam_up;
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
 
-	// Seperate camera position for calculation
+	// Separate camera position for calculation
 	v3f my_cp = m_camera_position;
 
 	// Reposition the camera for third person view
