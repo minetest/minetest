@@ -227,6 +227,7 @@ local scroll_fs =
 	"box[1,1;8,6;#00aa]"..
 	"scroll_container[1,1;8,6;scrbar;vertical]"..
 		"button[0,1;1,1;lorem;Lorem]"..
+		"animated_image[0,1;4.5,1;clip_animated_image;testformspec_animation.png;4;100]" ..
 		"button[0,10;1,1;ipsum;Ipsum]"..
 		"pwdfield[2,2;1,1;lorem2;Lorem]"..
 		"list[current_player;main;4,4;1,5;]"..

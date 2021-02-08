@@ -928,7 +928,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent, spec.fid,
 		rect, texture_name, frame_count, frame_duration, m_tsrc);
 
 	if (parts.size() >= 7)
