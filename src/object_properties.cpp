@@ -62,6 +62,13 @@ std::string ObjectProperties::dump()
 	os << ", nametag=" << nametag;
 	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
+
+	if (nametag_bgcolor)
+		os << ", nametag_bgcolor=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
+		   << "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
+	else
+		os << ", nametag_bgcolor=null ";
+
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
 	os << ", pointable=" << pointable;
 	os << ", static_save=" << static_save;
@@ -120,6 +127,13 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os << serializeString16(damage_texture_modifier);
 	writeU8(os, shaded);
 	writeU8(os, show_on_minimap);
+	if (nametag_bgcolor) {
+		writeU8(os, 1);
+		writeARGB8(os, nametag_bgcolor.value());
+	} else {
+		writeU8(os, 0);
+		writeARGB8(os, {});
+	}
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -182,5 +196,12 @@ void ObjectProperties::deSerialize(std::istream &is)
 		if (is.eof())
 			return;
 		show_on_minimap = tmp;
+
+		auto has_bgcolor = readU8(is);
+		auto bgcolor = readARGB8(is);
+		if (has_bgcolor)
+			nametag_bgcolor = bgcolor;
+		else
+			nametag_bgcolor = nullopt;
 	} catch (SerializationError &e) {}
 }

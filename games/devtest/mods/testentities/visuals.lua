@@ -103,23 +103,35 @@ minetest.register_entity("testentities:nametag", {
 
 	on_activate = function(self, staticdata)
 		if staticdata ~= "" then
-			self.color = minetest.deserialize(staticdata).color
+			local data = minetest.deserialize(staticdata)
+			self.color = data.color
+			self.bgcolor = data.bgcolor
 		else
 			self.color = {
 				r = math.random(0, 255),
 				g = math.random(0, 255),
 				b = math.random(0, 255),
 			}
+
+			if math.random(0, 10) > 5 then
+				self.bgcolor = {
+					r = math.random(0, 255),
+					g = math.random(0, 255),
+					b = math.random(0, 255),
+					a = math.random(0, 255),
+				}
+			end
 		end
 
 		assert(self.color)
 		self.object:set_properties({
 			nametag = tostring(math.random(1000, 10000)),
 			nametag_color = self.color,
+			nametag_bgcolor = self.bgcolor,
 		})
 	end,
 
 	get_staticdata = function(self)
-		return minetest.serialize({ color = self.color })
+		return minetest.serialize({ color = self.color, bgcolor = self.bgcolor })
 	end,
 })

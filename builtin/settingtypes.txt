@@ -451,6 +451,10 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 
 [**Basic]
 
+#    Whether nametag backgrounds should be shown by default.
+#    Mods may still set a background.
+show_nametag_backgrounds (Show nametag backgrounds by default) bool true
+
 #    Enable vertex buffer objects.
 #    This should greatly improve graphics performance.
 enable_vbo (VBO) bool true

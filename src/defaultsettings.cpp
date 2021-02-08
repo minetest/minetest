@@ -240,6 +240,7 @@ void set_default_settings()
 #endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
+	settings->setDefault("show_nametag_backgrounds", "true");
 
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
