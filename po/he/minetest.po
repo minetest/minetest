@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2021-02-09 15:34+0000\n"
-"Last-Translator: Yossi Cohen <cohenyossi81@gmail.com>\n"
+"Last-Translator: Omer I.S. <omeritzicschwartz@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
 "he/>\n"
 "Language: he\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "לקום לתחייה"
+msgstr "קימה לתחייה"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -45,7 +45,7 @@ msgstr "התחברות מחדש"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "השרת מבקש שתתחבר מחדש:"
+msgstr "השרת מבקש התחברות מחדש:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -100,13 +100,12 @@ msgid "Enable modpack"
 msgstr "הפעלת ערכת המודים"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"טעינת המוד \"1$\" נכשלה מכיוון שהוא מכיל תווים לא חוקיים. רק התווים [a-"
-"z0-9_] מותרים."
+"הפעלת המוד \"1$\" נכשלה מכיוון שהוא מכיל תווים לא חוקיים. רק התווים [a-z0-9_]"
+" מותרים."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -456,7 +455,7 @@ msgstr "סחף פני השטח"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "עצים ודשא של ג׳ונגל"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
@@ -562,7 +561,7 @@ msgstr "התמדה"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "נא להזין מספר שלם תקין."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
@@ -602,7 +601,7 @@ msgstr "הערך לא יכול להיות גדול מ־$1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -610,7 +609,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -618,7 +617,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -673,7 +672,7 @@ msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "התקנה: מקובץ: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -706,11 +705,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "עיון בתוכן מקוון"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "תוכן"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -718,11 +717,11 @@ msgstr "השבתת חבילת המרקם"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "מידע:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "חבילות מותקנות:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -730,7 +729,7 @@ msgstr "אין תלויות."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "אין תיאור חבילה זמין"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
@@ -738,7 +737,7 @@ msgstr "שינוי שם"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "הסרת החבילה"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -746,11 +745,11 @@ msgstr "שימוש בחבילת המרקם"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "תורמים פעילים"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "מפתחים עיקריים"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
@@ -769,15 +768,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "תורמים קודמים"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "מפתחים עיקריים קודמים"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "הכרזה על השרת"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -792,9 +791,8 @@ msgid "Enable Damage"
 msgstr "לאפשר חבלה"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "הסתר משחק"
+msgstr "אירוח משחק"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
@@ -817,23 +815,20 @@ msgid "No world created or selected!"
 msgstr "אין עולם שנוצר או נבחר!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "שם/סיסמה"
+msgstr "סיסמה"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Play Game"
-msgstr "התחל משחק"
+msgstr "להתחיל לשחק"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "פורט"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "נא לבחור עולם:"
+msgstr "בחירת מודים"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -844,9 +839,8 @@ msgid "Server Port"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "הסתר משחק"
+msgstr "התחלת המשחק"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
@@ -1186,7 +1180,7 @@ msgid "Continue"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1208,13 +1202,13 @@ msgstr ""
 "- %s: כדי לזוז אחורה\n"
 "- %s: כדי לזוז שמאלה\n"
 "- %s: כדי לזוז ימינה\n"
-"- %s: כדי לקפוץ או לטפס\n"
-"- %s: כדי להתכופף או לרדת למטה\n"
+"- %s: כדי לקפוץ או לטפס למעלה\n"
+"- %s: כדי לחפור או לחבוט\n"
+"- %s: כדי להניח או להשתמש\n"
+"- %s: כדי להתכופף או לטפס למטה\n"
 "- %s: כדי לזרוק פריט\n"
 "- %s: כדי לפתוח את תיק החפצים\n"
 "- עכבר: כדי להסתובב או להסתכל\n"
-"- לחצן שמאלי בעכבר: כדי לחצוב או להרביץ\n"
-"- לחצן ימני בעכבר: כדי להניח או להשתמש\n"
 "- גלגלת העכבר: כדי לבחור פריט\n"
 "- %s: כדי לפתוח את הצ׳אט\n"
 
