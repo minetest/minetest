@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include <sstream>
 
+static const video::SColor NULL_BGCOLOR{0, 1, 1, 1};
+
 ObjectProperties::ObjectProperties()
 {
 	textures.emplace_back("unknown_object.png");
@@ -127,13 +129,13 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os << serializeString16(damage_texture_modifier);
 	writeU8(os, shaded);
 	writeU8(os, show_on_minimap);
-	if (nametag_bgcolor) {
-		writeU8(os, 1);
+
+	if (!nametag_bgcolor)
+		writeARGB8(os, NULL_BGCOLOR);
+	else if (nametag_bgcolor.value().getAlpha() == 0)
+		writeARGB8(os, video::SColor(0, 0, 0, 0));
+	else
 		writeARGB8(os, nametag_bgcolor.value());
-	} else {
-		writeU8(os, 0);
-		writeARGB8(os, {});
-	}
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -197,9 +199,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 			return;
 		show_on_minimap = tmp;
 
-		auto has_bgcolor = readU8(is);
 		auto bgcolor = readARGB8(is);
-		if (has_bgcolor)
+		if (bgcolor != NULL_BGCOLOR)
 			nametag_bgcolor = bgcolor;
 		else
 			nametag_bgcolor = nullopt;

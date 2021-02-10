@@ -35,23 +35,23 @@ constexpr nullopt_t nullopt{};
  * @tparam T The type to be stored
  */
 template <typename T>
-class optional
+class Optional
 {
 	bool m_has_value = false;
 	T m_value;
 
 public:
-	optional() noexcept {}
-	optional(nullopt_t) noexcept {}
-	optional(const T &value) noexcept : m_has_value(true), m_value(value) {}
-	optional(const optional<T> &other) noexcept :
+	Optional() noexcept {}
+	Optional(nullopt_t) noexcept {}
+	Optional(const T &value) noexcept : m_has_value(true), m_value(value) {}
+	Optional(const Optional<T> &other) noexcept :
 			m_has_value(other.m_has_value), m_value(other.m_value)
 	{
 	}
 
 	void operator=(nullopt_t) noexcept { m_has_value = false; }
 
-	void operator=(const optional<T> &other) noexcept
+	void operator=(const Optional<T> &other) noexcept
 	{
 		m_has_value = other.m_has_value;
 		m_value = other.m_value;
@@ -71,11 +71,7 @@ public:
 
 	const T &value_or(const T &def) const
 	{
-		if (m_has_value) {
-			return m_value;
-		} else {
-			return def;
-		}
+		return m_has_value ? m_value : def;
 	}
 
 	bool has_value() const noexcept { return m_has_value; }

@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
-#include "util/optional.h"
+#include "util/Optional.h"
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -37,13 +37,13 @@ struct Nametag
 	scene::ISceneNode *parent_node;
 	std::string text;
 	video::SColor textcolor;
-	optional<video::SColor> bgcolor;
+	Optional<video::SColor> bgcolor;
 	v3f pos;
 
 	Nametag(scene::ISceneNode *a_parent_node,
 			const std::string &text,
 			const video::SColor &textcolor,
-			const optional<video::SColor> &bgcolor,
+			const Optional<video::SColor> &bgcolor,
 			const v3f &pos):
 		parent_node(a_parent_node),
 		text(text),
@@ -185,7 +185,7 @@ public:
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
 		const std::string &text, video::SColor textcolor,
-		optional<video::SColor> bgcolor, const v3f &pos);
+		Optional<video::SColor> bgcolor, const v3f &pos);
 
 	void removeNametag(Nametag *nametag);
 
