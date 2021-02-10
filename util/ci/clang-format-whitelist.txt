@@ -485,6 +485,8 @@ src/util/quicktune.cpp
 src/util/serialize.cpp
 src/util/serialize.h
 src/util/sha1.cpp
+src/util/smoothtranslator.cpp
+src/util/smoothtranslator.h
 src/util/srp.cpp
 src/util/srp.h
 src/util/strfnd.h

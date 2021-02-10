@@ -460,6 +460,10 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (pkt->getRemainingBytes() < 12 + 12 + 4 + 4 + 4 + 1 + 1)
 		return;
 
+	// Player position is defined by parent
+	if (playersao->isAttached())
+		return;
+
 	v3s32 ps, ss;
 	s32 f32pitch, f32yaw;
 	u8 f32fov;
@@ -893,6 +897,24 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	player->getWieldedItem(&selected_item, &hand_item);
 	f32 max_d = BS * getToolRange(selected_item.getDefinition(m_itemdef),
 			hand_item.getDefinition(m_itemdef));
+
+	PlayerSAO *sao = player->getPlayerSAO();
+	if (sao) {
+		v3f attachment_pos;
+		int parent_id;
+		{
+			std::string bone;
+			v3f attachment_rot;
+			bool force_visible;
+			sao->getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot, &force_visible);
+		}
+		 if (parent_id) {
+			 // When attached, add the attachment radius to the allowed interaction range
+			 max_d += attachment_pos.getLength();
+			 // Additional safety range for various latencies
+			 max_d += 2.0f * BS;
+		 }
+	}
 
 	// Cube diagonal * 1.5 for maximal supported node extents:
 	// sqrt(3) * 1.5 ≅ 2.6

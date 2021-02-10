@@ -576,29 +576,8 @@ bool PlayerSAO::checkMovementCheat()
 		m_last_good_position = m_base_position.val_current;
 		return false;
 	}
-	if (UnitSAO *parent = dynamic_cast<UnitSAO *>(getParent())) {
-		v3f attachment_pos;
-		{
-			int parent_id;
-			std::string bone;
-			v3f attachment_rot;
-			bool force_visible;
-			getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot, &force_visible);
-		}
-
-		v3f parent_pos = parent->getBasePosition();
-		f32 diff = m_base_position.val_current.getDistanceFromSQ(parent_pos) -
-				attachment_pos.getLengthSQ();
-		const f32 maxdiff = 4.0f * BS; // fair trade-off value for various latencies
-
-		if (diff > maxdiff * maxdiff) {
-			setBasePosition(parent_pos);
-			actionstream << "Server: " << m_player->getName()
-					<< " moved away from parent; diff=" << sqrtf(diff) / BS
-					<< " resetting position." << std::endl;
-			return true;
-		}
-		// Player movement is locked to the entity. Skip further checks
+	if (getParent()) {
+		// Player movement is locked by parent. Position updates are ignored.
 		return false;
 	}
 
