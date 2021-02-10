@@ -115,7 +115,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return
 	end
 
-	local event = minetest.explode_table_event(fields.list)
+	local event = core.explode_table_event(fields.list)
 	if event.type ~= "INV" then
 		local name = player:get_player_name()
 		core.show_formspec(name, "__builtin:help_cmds",

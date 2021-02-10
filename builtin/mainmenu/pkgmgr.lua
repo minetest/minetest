@@ -459,7 +459,7 @@ function pkgmgr.enable_mod(this, toset)
 	if not toset then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
-		minetest.log("info", "Following mods were disabled: " ..
+		core.log("info", "Following mods were disabled: " ..
 			table.concat(toggled_mods, ", "))
 		return
 	end
@@ -496,7 +496,7 @@ function pkgmgr.enable_mod(this, toset)
 			enabled_mods[name] = true
 			local mod_to_enable = list[mod_ids[name]]
 			if not mod_to_enable then
-				minetest.log("warning", "Mod dependency \"" .. name ..
+				core.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
 				if mod_to_enable.enabled == false then
@@ -517,7 +517,7 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Log the list of enabled mods
 	table.sort(toggled_mods)
-	minetest.log("info", "Following mods were enabled: " ..
+	core.log("info", "Following mods were enabled: " ..
 		table.concat(toggled_mods, ", "))
 end
 

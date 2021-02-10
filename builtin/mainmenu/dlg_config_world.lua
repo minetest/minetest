@@ -74,7 +74,7 @@ local function get_formspec(data)
 		"label[1.75,0;" .. data.worldspec.name .. "]"
 
 	if mod.is_modpack or mod.type == "game" then
-		local info = minetest.formspec_escape(
+		local info = core.formspec_escape(
 			core.get_content_info(mod.path).description)
 		if info == "" then
 			if mod.is_modpack then

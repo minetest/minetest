@@ -15,7 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-if not minetest.get_http_api then
+if not core.get_http_api then
 	function create_store_dlg()
 		return messagebox("store",
 				fgettext("ContentDB is not available when Minetest was compiled without cURL"))
@@ -27,7 +27,7 @@ end
 -- before the package list is ordered based on installed state.
 local store = { packages = {}, packages_full = {}, packages_full_unordered = {} }
 
-local http = minetest.get_http_api()
+local http = core.get_http_api()
 
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
@@ -152,7 +152,7 @@ local function start_install(package)
 end
 
 local function queue_download(package)
-	local max_concurrent_downloads = tonumber(minetest.settings:get("contentdb_max_concurrent_downloads"))
+	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
 	if number_downloading < max_concurrent_downloads then
 		start_install(package)
 	else
@@ -320,7 +320,7 @@ function install_dialog.get_formspec()
 			selected_game_idx = i
 		end
 
-		games[i] = minetest.formspec_escape(games[i].name)
+		games[i] = core.formspec_escape(games[i].name)
 	end
 
 	local selected_game = pkgmgr.games[selected_game_idx]
@@ -331,7 +331,7 @@ function install_dialog.get_formspec()
 	local formatted_deps = {}
 	for _, dep in pairs(install_dialog.dependencies) do
 		formatted_deps[#formatted_deps + 1] = "#fff"
-		formatted_deps[#formatted_deps + 1] = minetest.formspec_escape(dep.name)
+		formatted_deps[#formatted_deps + 1] = core.formspec_escape(dep.name)
 		if dep.installed then
 			formatted_deps[#formatted_deps + 1] = "#ccf"
 			formatted_deps[#formatted_deps + 1] = fgettext("Already installed")
@@ -402,7 +402,7 @@ function install_dialog.handle_submit(this, fields)
 	end
 
 	if fields.will_install_deps ~= nil then
-		install_dialog.will_install_deps = minetest.is_yes(fields.will_install_deps)
+		install_dialog.will_install_deps = core.is_yes(fields.will_install_deps)
 		return true
 	end
 
@@ -553,7 +553,7 @@ function store.load()
 		end
 	end
 
-	local timeout = tonumber(minetest.settings:get("curl_file_download_timeout"))
+	local timeout = tonumber(core.settings:get("curl_file_download_timeout"))
 	local response = http.fetch_sync({ url = url, timeout = timeout })
 	if not response.succeeded then
 		return
@@ -793,8 +793,8 @@ function store.get_formspec(dlgdata)
 		-- title
 		formspec[#formspec + 1] = "label[1.875,0.1;"
 		formspec[#formspec + 1] = core.formspec_escape(
-				minetest.colorize(mt_color_green, package.title) ..
-				minetest.colorize("#BFBFBF", " by " .. package.author))
+				core.colorize(mt_color_green, package.title) ..
+				core.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
 		-- buttons

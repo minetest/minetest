@@ -678,7 +678,7 @@ end
 -- Item definition defaults
 --
 
-local default_stack_max = tonumber(minetest.settings:get("default_stack_max")) or 99
+local default_stack_max = tonumber(core.settings:get("default_stack_max")) or 99
 
 core.nodedef_default = {
 	-- Item properties
