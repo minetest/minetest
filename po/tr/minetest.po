@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-06-15 22:41+0000\n"
-"Last-Translator: monolifed <monolifed@protonmail.com>\n"
+"PO-Revision-Date: 2021-02-11 19:34+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -170,9 +170,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "İndiriliyor..."
+msgstr "$1 indiriliyor..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -187,9 +186,8 @@ msgid "All packages"
 msgstr "Tüm paketler"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Tuş zaten kullanımda"
+msgstr "Zaten kuruldu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -222,14 +220,12 @@ msgid "Install"
 msgstr "Kur"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Kur"
+msgstr "$1 kur"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "İsteğe bağlı bağımlılıklar:"
+msgstr "Eksik bağımlılıkları kur"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -245,14 +241,12 @@ msgid "No results"
 msgstr "Sonuç yok"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Güncelle"
+msgstr "Güncelleme yok"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Sesi kapat"
+msgstr "Bulunamadı"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
@@ -763,9 +757,8 @@ msgid "Credits"
 msgstr "Hakkında"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Dizin seç"
+msgstr "Kullanıcı Veri Dizinini Aç"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
@@ -822,9 +815,8 @@ msgid "No world created or selected!"
 msgstr "Dünya seçilmedi ya da yaratılmadı!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Yeni Şifre"
+msgstr "Parola"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -881,7 +873,7 @@ msgstr "Oyuna Katıl"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
-msgstr "Ad / Şifre"
+msgstr "Ad / Parola"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1091,7 +1083,7 @@ msgstr "Lütfen bir ad seçin!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr "Sağlanan şifre dosyası açılamadı: "
+msgstr "Sağlanan parola dosyası açılamadı: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -1168,7 +1160,7 @@ msgstr "Kamera güncelleme etkin"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Şifre değiştir"
+msgstr "Parola değiştir"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1191,7 +1183,7 @@ msgid "Continue"
 msgstr "Devam et"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1214,12 +1206,12 @@ msgstr ""
 "- %s: sola hareket\n"
 "- %s: sağa hareket\n"
 "- %s: zıpla/tırman\n"
+"- %s: kaz/vur\n"
+"- %s: yerleştir/kullan\n"
 "- %s: sız/aşağı in\n"
 "- %s: ögeyi at\n"
 "- %s: envanter\n"
 "- Fare: dön/bak\n"
-"- Sol fare: kaz/vur\n"
-"- Sağ fare: yerleştir/kullan\n"
 "- Fare tekerleği: öge seç\n"
 "- %s: sohbet\n"
 
@@ -1748,23 +1740,22 @@ msgid "Minimap hidden"
 msgstr "Mini harita gizli"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Radar kipinde mini harita, Yakınlaştırma x1"
+msgstr "Radar kipinde mini harita, Yakınlaştırma x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Yüzey kipinde mini harita, Yakınlaştırma x1"
+msgstr "Yüzey kipinde mini harita, Yakınlaştırma x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Minimum doku boyutu"
+msgstr "Doku kipinde mini harita"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "Şifreler aynı değil!"
+msgstr "Parolalar eşleşmiyor!"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
@@ -1782,7 +1773,7 @@ msgstr ""
 "Bu sunucuya \"%s\" adıyla ilk kez katılmak üzeresiniz.\n"
 "Devam ederseniz, kimlik bilgilerinizi kullanarak yeni bir hesap bu sunucuda "
 "oluşturulur.\n"
-"Lütfen şifrenizi tekrar yazın ve hesap oluşturmayı onaylamak için 'Kayıt Ol "
+"Lütfen parolanızı tekrar yazın ve hesap oluşturmayı onaylamak için 'Kayıt Ol "
 "ve Katıl' düğmesini tıklayın veya iptal etmek için 'İptal'i tıklayın."
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1939,15 +1930,15 @@ msgstr "Değiştir"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr "Şifreyi Doğrulayın"
+msgstr "Parolayı Doğrula"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr "Yeni Şifre"
+msgstr "Yeni Parola"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr "Eski Şifre"
+msgstr "Eski Parola"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
@@ -2732,11 +2723,12 @@ msgid "Crosshair alpha"
 msgstr "Artı saydamlığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Artı saydamlığı (solukluk, 0 ile 255 arasında)."
+msgstr ""
+"Artı saydamlığı (solukluk, 0 ile 255 arasında).\n"
+"Ayrıca nesne artı rengini de denetler"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2798,7 +2790,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr "Öntanımlı şifre"
+msgstr "Öntanımlı parola"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
@@ -2931,9 +2923,8 @@ msgid "Desynchronize block animation"
 msgstr "Blok animasyonlarını eşzamansız yap"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Sağ tuş"
+msgstr "Kazma tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -2945,7 +2936,7 @@ msgstr "Hile önleme devre dışı"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr "Boş şifrelere izin verme"
+msgstr "Boş parolalara izin verme"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3155,9 +3146,8 @@ msgstr ""
 "seviyesi oluşturur: katı bir yüzenkara katmanı için uygundur."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Oyun duraklatıldığında maksimum FPS."
+msgstr "Odaklanmadığında veya duraklatıldığında FPS"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3543,18 +3533,17 @@ msgid "HUD toggle key"
 msgstr "HUD açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
 "-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"Kullanım dışı lua API çağrılarının ele alınması:\n"
-"-    legacy: (eski) Eski davranış taklit etmeye çalışır (öntanımlı).\n"
-"-    log: (günlük) kullanım dışı çağrıları taklit eder ve günlükler (hata "
-"ayıklama için öntanımlı).\n"
-"-    error: (hata) kullanım dışı çağrıların kullanımını iptal eder (mod "
+"Kullanım dışı Lua API çağrılarının ele alınması:\n"
+"-    none: (yok) kullanım dışı çağrıları günlüğe kaydetmez.\n"
+"-    log: (günlük) kullanım dışı çağrıları taklit eder ve geri izlemesini "
+"günlüğe kaydeder (öntanımlı).\n"
+"-    error: (hata) kullanım dışı çağrılar kullanıldığında iptal eder (mod "
 "geliştiricileri için önerilen)."
 
 #: src/settings_translation_file.cpp
@@ -3910,7 +3899,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr "Etkinleştirilirse, yeni oyuncular boş bir şifre ile katılamaz."
+msgstr "Etkinleştirilirse, yeni oyuncular boş bir parola ile katılamaz."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4078,9 +4067,8 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick düğmesi tekrarlama aralığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Joystick türü"
+msgstr "Joystick ölü bölgesi"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4185,13 +4173,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Zıplama tuşu.\n"
+"Kazma tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4338,13 +4325,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Zıplama tuşu.\n"
+"Yerleştirme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5302,9 +5288,8 @@ msgid "Maximum FPS"
 msgstr "Maksimum FPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "Oyun duraklatıldığında maksimum FPS."
+msgstr "Pencere odaklanmadığında veya oyun duraklatıldığında en yüksek FPS."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5598,7 +5583,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr "Yeni kullanıcıların bu şifreyi girmesi gerekir."
+msgstr "Yeni kullanıcıların bu parolayı girmesi gerekir."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
@@ -5772,14 +5757,12 @@ msgid "Pitch move mode"
 msgstr "Eğim hareket kipi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Uçma tuşu"
+msgstr "Yerleştirme tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Sağ tık tekrarlama aralığı"
+msgstr "Yerleştirme tekrarlama aralığı"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6261,13 +6244,12 @@ msgid "Show entity selection boxes"
 msgstr "Varlık seçim kutularını göster"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Dili ayarlayın. Sistem dilini kullanmak için boş bırakın.\n"
-"Bunu değiştirdikten sonra yeniden başlatmak gerekir."
+"Varlık seçim kutularını göster.\n"
+"Bunu değiştirdikten sonra yeniden başlatma gerekir."
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6541,9 +6523,8 @@ msgid "The URL for the content repository"
 msgstr "İçerik deposu için URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "Kullanılacak joystick'in tanımlayıcısı"
+msgstr "Joystick ölü bölgesi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6617,7 +6598,6 @@ msgstr ""
 "Bu active_object_send_range_blocks ile birlikte ayarlanmalıdır."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6627,10 +6607,12 @@ msgid ""
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 "Irrlicht için işleme arka ucu.\n"
-"Bunu değiştirdikten sonra tekrar başlatma gerekir.\n"
-"Not: Android'de, emin değilseniz OGLES1 kullanın! Başka türlü, uygulama\n"
-"başlayamayabilir. Diğer platformlarda, OpenGL önerilir ve şu anda gölgeleme\n"
-"desteği olan tek sürücüdür."
+"Bunu değiştirdikten sonra yeniden başlatma gerekir.\n"
+"Not: Android'de, emin değilseniz OGLES1 kullanın! Başka türlü, uygulama "
+"başlayamayabilir.\n"
+"Diğer platformlarda, OpenGL önerilir.\n"
+"Gölgelendiriciler OpenGL (yalnızca masaüstü) ve OGLES2 (deneysel) tarafından "
+"desteklenmektedir"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6679,14 +6661,13 @@ msgstr ""
 "cinsinden tekrar eden olaylar arasında geçen süre."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Sağ fare tuşuna basılı tutarken tekrar eden sağ tıklar arasında saniye "
-"cinsinden\n"
-"geçen süre."
+"Yerleştirme tuşuna basılı tutarken tekrarlanan düğüm yerleşimleri arasında "
+"geçen\n"
+"saniye cinsinden süre."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
