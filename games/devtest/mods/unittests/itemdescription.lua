@@ -28,13 +28,16 @@ minetest.register_chatcommand("item_description", {
 function unittests.test_short_desc()
 	local stack = ItemStack("unittests:colorful_pick")
 	assert(stack:get_short_description() == "Colorful Pickaxe")
-	assert(stack:get_short_description() == minetest.registered_items["unittests:colorful_pick"].short_description)
+	assert(minetest.get_short_description("unittests:colorful_pick") == "Colorful Pickaxe")
+	assert(minetest.registered_items["unittests:colorful_pick"].short_description == nil)
 	assert(stack:get_description() == full_description)
 	assert(stack:get_description() == minetest.registered_items["unittests:colorful_pick"].description)
 
 	stack:get_meta():set_string("description", "Hello World")
-	assert(stack:get_short_description() == "Colorful Pickaxe")
+	assert(stack:get_short_description() == "Hello World")
 	assert(stack:get_description() == "Hello World")
+	assert(minetest.get_short_description(stack) == "Hello World")
+	assert(minetest.get_short_description("unittests:colorful_pick") == "Colorful Pickaxe")
 
 	stack:get_meta():set_string("short_description", "Foo Bar")
 	assert(stack:get_short_description() == "Foo Bar")

@@ -5335,6 +5335,17 @@ Item handling
     * `item`: the item stack which becomes colored. Can be in string,
       table and native form.
     * `colorstring`: the new color of the item stack
+* `minetest.get_short_description(item)`: returns the short description or nil
+    * Unlike the description, this does not include new lines.
+    * This is equivalent to `ItemStack(item):get_short_description()`.
+    * Fields for finding the short description, in order:
+        * `short_description` in item metadata (See [Item Metadata].)
+        * `short_description` in item definition
+        * first line of `description` in item metadata
+        * first line of `description` in item definition
+        * Returns nil if none of the above are set
+    * `item`: the item to get the short description for.
+              Can be an item name, string, table, or stack.
 
 Rollback
 --------
@@ -6039,18 +6050,18 @@ an itemstring, a table or `nil`.
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `get_description()`: returns the description shown in inventory list tooltips.
-    * The engine uses the same as this function for item descriptions.
+    * The engine uses the same as this function for item descriptions, shown in tooltips.
     * Fields for finding the description, in order:
         * `description` in item metadata (See [Item Metadata].)
         * `description` in item definition
         * item name
-* `get_short_description()`: returns the short description.
+* `get_short_description()`: returns the short description or nil.
     * Unlike the description, this does not include new lines.
-    * The engine uses the same as this function for short item descriptions.
     * Fields for finding the short description, in order:
         * `short_description` in item metadata (See [Item Metadata].)
         * `short_description` in item definition
-        * first line of the description (See `get_description()`.)
+        * first line of the description (From item meta or def, see `get_description()`.)
+        * Returns nil if none of the above are set
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -7171,8 +7182,9 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         short_description = "Steel Axe",
         -- Must not contain new lines.
-        -- Defaults to the first line of description.
-        -- See also: `get_short_description` in [`ItemStack`]
+        -- Defaults to nil.
+        -- See also: `minetest.get_short_description()` and
+        --    `get_short_description` in [`ItemStack`]
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.

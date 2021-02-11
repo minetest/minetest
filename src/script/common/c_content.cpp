@@ -140,8 +140,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
-	lua_pushstring(L, i.short_description.c_str());
-	lua_setfield(L, -2, "short_description");
+	if (!i.short_description.empty()) {
+		lua_pushstring(L, i.short_description.c_str());
+		lua_setfield(L, -2, "short_description");
+	}
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
