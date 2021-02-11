@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-11-17 08:28+0000\n"
+"PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -158,52 +158,51 @@ msgstr "aktívne"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" už exituje. Chcel by si ho prepísať?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Závislosti $1 a $2 budú nainštalované."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 od $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 sťahujem,\n"
+"$2 čaká v rade"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Sťahujem..."
+msgstr "$1 sťahujem..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 požadované závislosti nie je možné nájsť."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 bude nainštalovaný, a $2 závislosti budú preskočené."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Všetky balíčky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Klávesa sa už používa"
+msgstr "Už je nainštalované"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Naspäť do hlavného menu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Hosťuj hru"
+msgstr "Základná hra:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -227,14 +226,12 @@ msgid "Install"
 msgstr "Inštaluj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Inštaluj"
+msgstr "Inštaluj $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Voliteľné závislosti:"
+msgstr "Nainštaluj chýbajúce závislosti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -250,26 +247,24 @@ msgid "No results"
 msgstr "Bez výsledku"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Aktualizuj"
+msgstr "Bez aktualizácií"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Stíš hlasitosť"
+msgstr "Nenájdené"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Prepíš"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Prosím skontroluj či je základná hra v poriadku."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Čaká v rade"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -285,11 +280,11 @@ msgstr "Aktualizuj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Aktualizuj všetky [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Pozri si viac informácií vo webovom prehliadači"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -773,15 +768,16 @@ msgid "Credits"
 msgstr "Poďakovanie"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Zvoľ adresár"
+msgstr "Otvor adresár s užívateľskými dátami"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Otvor adresár, ktorý obsahuje svety, hry, mody a textúry\n"
+"od užívateľov v správcovi/prieskumníkovi súborov."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -821,7 +817,7 @@ msgstr "Inštaluj hry z ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Meno"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -832,9 +828,8 @@ msgid "No world created or selected!"
 msgstr "Nie je vytvorený ani zvolený svet!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Staré heslo"
+msgstr "Heslo"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -845,9 +840,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Zvoľ si svet:"
+msgstr "Zvoľ mody"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -999,9 +993,8 @@ msgid "Shaders"
 msgstr "Shadery"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Lietajúce krajiny (experimentálne)"
+msgstr "Shadery (experimentálne)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1201,7 +1194,7 @@ msgid "Continue"
 msgstr "Pokračuj"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1224,12 +1217,12 @@ msgstr ""
 "- %s: pohyb doľava\n"
 "- %s: pohyb doprava\n"
 "- %s: skoč/vylez\n"
+"- %s: kop/udri\n"
+"- %s: polož/použi\n"
 "- %s: zakrádaj sa/choď dole\n"
-"- %s: polož vec\n"
+"- %s: odhoď vec\n"
 "- %s: inventár\n"
 "- Myš: otoč sa/obzeraj sa\n"
-"- Myš, ľavé tlačítko: kopaj/udri\n"
-"- Myš, pravé tlačítko: polož/použi\n"
 "- Myš koliesko: zvoľ si vec\n"
 "- %s: komunikácia\n"
 
@@ -1759,19 +1752,18 @@ msgid "Minimap hidden"
 msgstr "Minimapa je skrytá"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Minimapa v radarovom režime, priblíženie x1"
+msgstr "Minimapa v radarovom režime, priblíženie x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Minimapa v povrchovom režime, priblíženie x1"
+msgstr "Minimapa v povrchovom režime, priblíženie x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Minimálna veľkosť textúry"
+msgstr "Minimapa v móde textúry"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2171,7 +2163,7 @@ msgstr "ABM interval"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Vyhradená doba ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2674,7 +2666,7 @@ msgstr "Čierna listina príznakov z ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "ContentDB Maximum súbežných sťahovaní"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2742,11 +2734,12 @@ msgid "Crosshair alpha"
 msgstr "Priehľadnosť zameriavača"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Priehľadnosť zameriavača (nepriehľadnosť, medzi 0 a 255)."
+msgstr ""
+"Priehľadnosť zameriavača (nepriehľadnosť, medzi 0 a 255).\n"
+"Tiež nastavuje farbu objektu zameriavača"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2757,6 +2750,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Farba zameriavača (R,G,B).\n"
+"Nastavuje farbu objektu zameriavača"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2937,9 +2932,8 @@ msgid "Desynchronize block animation"
 msgstr "Nesynchronizuj animáciu blokov"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Tlačidlo Vpravo"
+msgstr "Tlačidlo Kopanie"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3161,9 +3155,8 @@ msgstr ""
 "rovnejšími nížinami, vhodné ako pevná základná vrstva lietajúcej pevniny."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Maximálne FPS, ak je hra pozastavená."
+msgstr "FPS ak je hra nezameraná, alebo pozastavená"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3554,7 +3547,6 @@ msgid "HUD toggle key"
 msgstr "Tlačidlo Prepínanie HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -3562,9 +3554,8 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Spracovanie zastaralých Lua API volaní:\n"
-"-    legacy: (skús to) napodobni staré správanie (štandard pre release).\n"
-"-    log: napodobni log backtrace zastaralého volania  (štandard pre "
-"debug).\n"
+"-    none: Zastarané funkcie neukladaj do logu\n"
+"-    log: napodobni log backtrace zastaralého volania  (štandardne).\n"
 "-    error: preruš spracovanie zastaralého volania (odporúčané pre vývojárov "
 "rozšírení)."
 
@@ -4086,9 +4077,8 @@ msgid "Joystick button repetition interval"
 msgstr "Interval opakovania tlačidla joysticku"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Typ joysticku"
+msgstr "Mŕtva zóna joysticku"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4193,13 +4183,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tlačidlo pre skákanie.\n"
+"Tlačidlo pre kopanie.\n"
 "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4346,13 +4335,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tlačidlo pre skákanie.\n"
+"Tlačidlo pre pokladanie.\n"
 "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5124,11 +5112,11 @@ msgstr "Všetky tekutiny budú nepriehľadné"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Úroveň kompresie mapy pre diskové úložisko"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Úroveň kompresie mapy pre sieťový prenos"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5313,9 +5301,8 @@ msgid "Maximum FPS"
 msgstr "Maximálne FPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "Maximálne FPS, ak je hra pozastavená."
+msgstr "Maximálne FPS, ak je hra nie je v aktuálnom okne, alebo je pozastavená."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5379,6 +5366,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Maximálny počet súčasných sťahovaní. Sťahovania presahujúce tento limit budú "
+"čakať v rade.\n"
+"Mal by byť nižší ako curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5786,14 +5776,12 @@ msgid "Pitch move mode"
 msgstr "Režim pohybu podľa sklonu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Tlačidlo Lietanie"
+msgstr "Tlačidlo na pokladanie"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Interval opakovania pravého kliknutia"
+msgstr "Interval opakovania pokladania"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6273,12 +6261,11 @@ msgid "Show entity selection boxes"
 msgstr "Zobraz obrys bytosti"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Nastav jazyk. Ponechaj prázdne pre systémové nastavenie.\n"
+"Zobraz obrysy bytosti\n"
 "Po zmene je požadovaný reštart."
 
 #: src/settings_translation_file.cpp
@@ -6555,9 +6542,8 @@ msgid "The URL for the content repository"
 msgstr "Webová adresa (URL) k úložisku doplnkov"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "Identifikátor joysticku na použitie"
+msgstr "Mŕtva zóna joysticku"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6631,7 +6617,6 @@ msgstr ""
 "Malo by to byť konfigurované spolu s active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6642,10 +6627,10 @@ msgid ""
 msgstr ""
 "Renderovací back-end pre Irrlicht.\n"
 "Po zmene je vyžadovaný reštart.\n"
-"Poznámka: Na Androidw, ak si nie si istý, ponechaj OGLES1! Aplikácia by "
+"Poznámka: Na Androide, ak si nie si istý, ponechaj OGLES1! Aplikácia by "
 "nemusela naštartovať.\n"
-"Na iných platformách, sa odporúča OpenGL, a je to aktuálne jediný ovládač\n"
-"s podporou shaderov."
+"Na iných platformách, sa odporúča OpenGL.\n"
+"Shadery sú podporované v OpenGL (len pre desktop) a v OGLES2 (experimentálne)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6682,6 +6667,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Vyhradená doba pre ABM na vykonanie v každom kroku\n"
+"(ako zlomok ABM imtervalu)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6692,13 +6679,12 @@ msgstr ""
 "pri stlačenej kombinácií tlačidiel na joysticku."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Čas v sekundách pre zopakovanie pravého kliknutia v prípade\n"
-"držania pravého tlačítka myši."
+"Čas v sekundách pre opakované položenie kocky\n"
+"ak je držané tlačítko pokladania."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6862,6 +6848,13 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Použi multi-sample antialiasing (MSAA) pre zjemnenie hrán blokov.\n"
+"Tento algoritmus zjemní 3D vzhľad zatiaľ čo zachová ostrosť obrazu,\n"
+"ale neovplyvní vnútro textúr\n"
+"(čo je obzvlášť viditeľné pri priesvitných textúrach).\n"
+"Ak sú shadery zakázané, objavia sa viditeľné medzery medzi kockami.\n"
+"Ak sú nastavené na 0, MSAA je zakázané.\n"
+"Po zmene tohto nastavenia je požadovaný reštart."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7253,6 +7246,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Úroveň kompresie ZLib používaný pri ukladaní blokov mapy na disk.\n"
+"-1 - predvolená úroveň kompresie Zlib\n"
+"0 - bez kompresie, najrýchlejšie\n"
+"9 - najlepšia kompresia, najpomalšie\n"
+"(pre úrovne 1-3 používa Zlib \"rýchlu\" metódu, pre 4-9 používa normálnu "
+"metódu)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7262,6 +7261,12 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Úroveň kompresie ZLib používaný pri posielaní blokov mapy klientom.\n"
+"-1 - predvolená úroveň kompresie Zlib\n"
+"0 - bez kompresie, najrýchlejšie\n"
+"9 - najlepšia kompresia, najpomalšie\n"
+"(pre úrovne 1-3 používa Zlib \"rýchlu\" metódu, pre 4-9 používa normálnu "
+"metódu)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
