@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-02-05 09:40+0000\n"
-"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
+"PO-Revision-Date: 2021-02-13 08:50+0000\n"
+"Last-Translator: Jacques Lagrange <Jacques.Reads@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -769,8 +769,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
-"Apre la cartella che contiene mondi, giochi, mod e pacchetti texture forniti "
-"dall'utente in un gestore di file / explorer."
+"Apre la cartella che contiene mondi, giochi, mod e pacchetti \n"
+"texture forniti dall'utente in un gestore di file / explorer."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -3182,7 +3182,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
-msgstr "FPS quando il gioco è in pausa o in secondo piano."
+msgstr "FPS quando il gioco è in pausa o in secondo piano"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
