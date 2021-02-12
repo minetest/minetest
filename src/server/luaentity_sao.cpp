@@ -492,6 +492,9 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	if(isAttached())
 		return;
 
+	// Send attachment updates instantly to the client prior updating position
+	sendOutdatedData();
+
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(
 			m_last_sent_position);
 	m_last_sent_position_timer = 0;

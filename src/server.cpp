@@ -1821,6 +1821,9 @@ void Server::SendMovePlayer(session_t peer_id)
 	PlayerSAO *sao = player->getPlayerSAO();
 	assert(sao);
 
+	// Send attachment updates instantly to the client prior updating position
+	sao->sendOutdatedData();
+
 	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
