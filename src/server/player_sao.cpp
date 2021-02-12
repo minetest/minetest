@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "serverenvironment.h"
 
+#include "luaentity_sao.h"
+
 PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 		bool is_singleplayer):
 	UnitSAO(env_, v3f(0,0,0)),
@@ -586,7 +588,11 @@ bool PlayerSAO::checkMovementCheat()
 
 		v3f parent_pos = parent->getBasePosition();
 		f32 diff = m_base_position.getDistanceFromSQ(parent_pos) - attachment_pos.getLengthSQ();
-		const f32 maxdiff = 4.0f * BS; // fair trade-off value for various latencies
+		f32 maxdiff = 4.0f * BS; // fair trade-off value for various latencies
+
+		if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+			maxdiff += ((LuaEntitySAO*) parent)->m_movement_inaccuracy;
+		}
 
 		if (diff > maxdiff * maxdiff) {
 			setBasePosition(parent_pos);

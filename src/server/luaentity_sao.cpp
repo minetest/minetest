@@ -142,6 +142,12 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	m_last_sent_position_timer += dtime;
 
+	m_movement_inaccuracy_dtime -= dtime;
+	if (m_movement_inaccuracy_dtime <= 0.0f) {
+		m_movement_inaccuracy_dtime = 0.0f;
+		m_movement_inaccuracy = 0.0f;
+	}
+
 	collisionMoveResult moveresult, *moveresult_p = nullptr;
 
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
@@ -377,6 +383,14 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 {
 	if(isAttached())
 		return;
+
+	// Since we don't interpolate movement server-side, do some very rough
+	// tracking of how much the position might be off. (better solution pending)
+	const float max_time = m_env->getSendRecommendedInterval() + 0.6f;
+	m_movement_inaccuracy *= m_movement_inaccuracy_dtime / max_time;
+	m_movement_inaccuracy += m_base_position.getDistanceFrom(pos);
+	m_movement_inaccuracy_dtime = max_time;
+
 	m_base_position = pos;
 	if(!continuous)
 		sendPosition(true, true);

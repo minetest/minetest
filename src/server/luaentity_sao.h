@@ -71,6 +71,9 @@ public:
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
 
+	float m_movement_inaccuracy = 0.0f;
+	float m_movement_inaccuracy_dtime = 0.0f;
+
 protected:
 	void dispatchScriptDeactivate();
 	virtual void onMarkedForDeactivation() { dispatchScriptDeactivate(); }
