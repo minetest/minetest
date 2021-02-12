@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-02-05 09:40+0000\n"
-"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
+"PO-Revision-Date: 2021-02-13 08:50+0000\n"
+"Last-Translator: Ertu (Er2, Err) <er2official@outlook.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -255,7 +255,6 @@ msgid "Overwrite"
 msgstr "Перезаписать"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Please check that the base game is correct."
 msgstr "Пожалуйста, убедитесь, что базовая игра верна."
 
@@ -1757,7 +1756,6 @@ msgid "Minimap in surface mode, Zoom x%d"
 msgstr "Миникарта в поверхностном режиме, увеличение x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
 msgstr "Минимальный размер текстуры"
 
@@ -2944,9 +2942,8 @@ msgid "Desynchronize block animation"
 msgstr "Рассинхронизация анимации блоков"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Правая клавиша меню"
+msgstr "Кнопка копать"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3170,7 +3167,6 @@ msgstr ""
 "с более плоскими низинами, подходит для массивного уровня парящих островов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
 msgstr "Максимум кадровой частоты при паузе."
 
@@ -4187,13 +4183,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша прыжка.\n"
+"Клавиша копания.\n"
 "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
