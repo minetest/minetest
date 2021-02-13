@@ -665,10 +665,6 @@ function core.itemstring_with_color(item, colorstring)
 	return stack:to_string()
 end
 
-function core.get_short_description(item)
-	return ItemStack(item):get_short_description()
-end
-
 -- This is used to allow mods to redefine core.item_place and so on
 -- NOTE: This is not the preferred way. Preferred way is to provide enough
 --       callbacks to not require redefining global functions. -celeron55

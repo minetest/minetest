@@ -5335,17 +5335,6 @@ Item handling
     * `item`: the item stack which becomes colored. Can be in string,
       table and native form.
     * `colorstring`: the new color of the item stack
-* `minetest.get_short_description(item)`: returns the short description or nil
-    * Unlike the description, this does not include new lines.
-    * This is equivalent to `ItemStack(item):get_short_description()`.
-    * Fields for finding the short description, in order:
-        * `short_description` in item metadata (See [Item Metadata].)
-        * `short_description` in item definition
-        * first line of `description` in item metadata
-        * first line of `description` in item definition
-        * Returns nil if none of the above are set
-    * `item`: the item to get the short description for.
-              Can be an item name, string, table, or stack.
 
 Rollback
 --------
@@ -7183,8 +7172,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         short_description = "Steel Axe",
         -- Must not contain new lines.
         -- Defaults to nil.
-        -- See also: `minetest.get_short_description()` and
-        --    `get_short_description` in [`ItemStack`]
+        -- Use an [`ItemStack`] to get the short description, eg:
+        --   ItemStack(itemname):get_short_description()
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.
