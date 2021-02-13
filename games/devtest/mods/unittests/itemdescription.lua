@@ -33,7 +33,7 @@ function unittests.test_short_desc()
 	local stack = ItemStack("unittests:colorful_pick")
 	assert(stack:get_short_description() == "Colorful Pickaxe")
 	assert(get_short_description("unittests:colorful_pick") == "Colorful Pickaxe")
-	assert(registered_items["unittests:colorful_pick"].short_description == nil)
+	assert(minetest.registered_items["unittests:colorful_pick"].short_description == nil)
 	assert(stack:get_description() == full_description)
 	assert(stack:get_description() == minetest.registered_items["unittests:colorful_pick"].description)
 
