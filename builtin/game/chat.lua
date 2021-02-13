@@ -662,10 +662,10 @@ core.register_chatcommand("deleteblocks", {
 core.register_chatcommand("fixlight", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Resets lighting in the area from "
-		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
-		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
-		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
-		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
+		.. core.colorize(core.COLOR_PARAM, "<pos1>") .. " to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>") .. " "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>") .. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>") .. " must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
