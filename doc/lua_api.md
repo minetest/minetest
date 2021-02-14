@@ -594,6 +594,19 @@ Example:
 Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 `dirt.png^grass_side.png` textures
 
+#### `[rect:<w>x<h>:<color>`
+
+* `<w>`: width
+* `<h>`: height
+* `<color>`: a `ColorString`.
+
+Creates a texture of the given size and color, optionally with alpha specified
+in the colorstring.
+
+Example:
+
+    [rect:16x16:#20F02080
+
 #### `[lowpart:<percent>:<file>`
 
 Blit the lower `<percent>`% part of `<file>` on the texture.

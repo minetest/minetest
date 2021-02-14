@@ -1352,6 +1352,50 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 		}
 		/*
+			[rect:WxH:color
+			Creates a texture of the given size and color, optionally with alpha
+			specified in the colorstring
+		*/
+		else if (str_starts_with(part_of_name, "[rect"))
+		{
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 width  = stoi(sf.next("x"));
+			u32 height = stoi(sf.next(":"));
+			std::string color_str = sf.next(":");
+
+			video::SColor color;
+			if (!parseColorString(color_str, color, false))
+				return false;
+			
+			if (baseimg != NULL) {
+				// Even though ^[combine hasn't conformed to this, the
+				// expected ^ overlay behavior is the lower resolution
+				// texture is automatically upscaled to the higher
+				// resolution texture.
+				core::dimension2d<u32> base_dim = baseimg->getDimension();
+				if (width * height <= base_dim.Width * base_dim.Height) {
+					// As this texture is one color, we can scale dim here
+					// and then upscaleImagesToMatchLargest() doesn't have
+					// to do any work.
+					width  = base_dim.Width;
+					height = base_dim.Height;
+				}
+			}
+			core::dimension2d<u32> dim(width, height);
+
+			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
+			img->fill(color);
+
+			if (baseimg == NULL) {
+				baseimg = img;
+			} else {
+				upscaleImagesToMatchLargest(baseimg, img);
+				blit_with_alpha(img, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
+				img->drop();
+			}
+		}
+		/*
 			[brighten
 		*/
 		else if (str_starts_with(part_of_name, "[brighten"))
