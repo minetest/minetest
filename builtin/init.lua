@@ -43,8 +43,8 @@ elseif INIT == "mainmenu" then
 	if mm_script and mm_script ~= "" then
 		local testfile = io.open(mm_script, "r")
 		if testfile then
-			dofile(mm_script)
 			testfile:close()
+			dofile(mm_script)
 			custom_loaded = true
 			core.log("info", "Loaded custom main menu script: "..mm_script)
 		else
