@@ -49,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "clientmap.h"
 #include "clientmedia.h"
+#include "content_cao.h" // for getParent()
 #include "version.h"
 #include "database/database-sqlite3.h"
 #include "serialization.h"
@@ -1266,6 +1267,10 @@ void Client::sendPlayerPos()
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
 	if (!player)
+		return;
+
+	// Position defined by parent and attachment information
+	if (player->getCAO() && player->getCAO()->getParent())
 		return;
 
 	ClientMap &map = m_env.getClientMap();

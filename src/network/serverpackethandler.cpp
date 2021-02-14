@@ -460,6 +460,10 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (pkt->getRemainingBytes() < 12 + 12 + 4 + 4 + 4 + 1 + 1)
 		return;
 
+	// Player position is defined by parent
+	if (playersao->isAttached())
+		return;
+
 	v3s32 ps, ss;
 	s32 f32pitch, f32yaw;
 	u8 f32fov;
