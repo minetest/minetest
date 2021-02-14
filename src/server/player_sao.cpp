@@ -264,6 +264,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		v3f pos = parent->getBasePosition();
 		m_last_good_position = pos;
 		setBasePosition(pos);
+
+		if (m_player)
+			m_player->setSpeed(v3f());
 	}
 
 	if (!send_recommended)
