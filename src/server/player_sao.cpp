@@ -570,13 +570,9 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 bool PlayerSAO::checkMovementCheat()
 {
 	if (m_is_singleplayer ||
+			isAttached() ||
 			g_settings->getBool("disable_anticheat")) {
 		m_last_good_position = m_base_position;
-		return false;
-	}
-
-	if (getParent()) {
-		// Player movement is locked by parent. Position updates are ignored.
 		return false;
 	}
 
