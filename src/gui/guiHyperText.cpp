@@ -619,7 +619,7 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 #if USE_FREETYPE
 					if (e.font->getType() == irr::gui::EGFT_CUSTOM) {
 						e.baseline = e.dim.Height - 1 -
-							((irr::gui::CGUITTFont *)e.font)->getAscender() / 64;
+							((CGUITTFont *)e.font)->getAscender() / 64;
 					}
 #endif
 				} else {

@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 
 #if USE_FREETYPE
-#include "irrlicht_changes/CGUITTFont.h"
+#include "gui/guiTTFont.h"
 #endif
 
 /** maximum size distance for getting a "similar" font size */
@@ -316,7 +316,7 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 
 #if USE_FREETYPE
 	for (const std::string &font_path : fallback_settings) {
-		irr::gui::IGUIFont *font = gui::CGUITTFont::createTTFont(m_env,
+		irr::gui::IGUIFont *font = CGUITTFont::createTTFont(m_env,
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
 

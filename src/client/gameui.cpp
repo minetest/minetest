@@ -19,10 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "gameui.h"
-#include <irrlicht_changes/static_text.h>
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"
+#include "gui/guiStaticText.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
@@ -54,15 +54,15 @@ GameUI::GameUI()
 void GameUI::init()
 {
 	// First line of debug text
-	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
+	m_guitext = GUIStaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 
 	// Second line of debug text
-	m_guitext2 = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
+	m_guitext2 = GUIStaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
 		false, guiroot);
 
 	// Chat text
-	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
+	m_guitext_chat = GUIStaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
 		//false, false); // Disable word wrap as of now
 		false, true, guiroot);
 	u16 chat_font_size = g_settings->getU16("chat_font_size");
@@ -74,19 +74,19 @@ void GameUI::init()
 	// At the middle of the screen
 	// Object infos are shown in this
 	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
-	m_guitext_info = gui::StaticText::add(guienv, L"",
+	m_guitext_info = GUIStaticText::add(guienv, L"",
 		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
 			v2s32(100, chat_font_height *
 			(g_settings->getU16("recent_chat_messages") + 3)),
 			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
-	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
+	m_guitext_status = GUIStaticText::add(guienv, L"<Status>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_status->setVisible(false);
 
 	// Profiler text (size is updated when text is updated)
-	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
+	m_guitext_profiler = GUIStaticText::add(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
 		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
@@ -260,7 +260,7 @@ void GameUI::updateProfiler()
 		core::position2di upper_left(6, 50);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;
-		lower_right.Y += size.Height; 
+		lower_right.Y += size.Height;
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}

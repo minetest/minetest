@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #if USE_FREETYPE
-	#include "irrlicht_changes/CGUITTFont.h"
+	#include "gui/guiTTFont.h"
 #endif
 
 inline u32 clamp_u8(s32 value)
@@ -322,7 +322,7 @@ void GUIChatConsole::drawText()
 #if USE_FREETYPE
 			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
 				// Draw colored text if FreeType is enabled
-				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
+				CGUITTFont *tmp = dynamic_cast<CGUITTFont *>(m_font);
 				tmp->draw(
 					fragment.text,
 					destrect,
@@ -330,7 +330,7 @@ void GUIChatConsole::drawText()
 					false,
 					false,
 					&AbsoluteClippingRect);
-			} else 
+			} else
 #endif
 			{
 				// Otherwise use standard text

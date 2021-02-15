@@ -11,7 +11,7 @@
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
 #include "IGUIFont.h"
-#include "irrlicht_changes/static_text.h"
+#include "guiStaticText.h"
 #include "porting.h"
 #include "StyleSpec.h"
 #include "util/numeric.h"
@@ -47,7 +47,7 @@ GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	for (size_t i = 0; i < 4; i++) {
 		Colors[i] = Environment->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
 	}
-	StaticText = gui::StaticText::add(Environment, Text.c_str(), core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), false, false, this, id);
+	StaticText = GUIStaticText::add(Environment, Text.c_str(), core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), false, false, this, id);
 	StaticText->setTextAlignment(EGUIA_CENTER, EGUIA_CENTER);
 	// END PATCH
 }

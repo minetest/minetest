@@ -117,7 +117,6 @@ LOCAL_SRC_FILES := \
 	../../../src/database/database-files.cpp        \
 	../../../src/database/database-sqlite3.cpp      \
 	$(wildcard ../../../src/gui/*.cpp)              \
-	$(wildcard ../../../src/irrlicht_changes/*.cpp) \
 	$(wildcard ../../../src/mapgen/*.cpp)           \
 	$(wildcard ../../../src/network/*.cpp)          \
 	$(wildcard ../../../src/script/*.cpp)           \

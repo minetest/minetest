@@ -27,6 +27,7 @@
    John Norman
    john@suckerfreegames.com
 */
+// This file has been modified to remove the classes from the Irrlicht namespace.
 
 #pragma once
 
@@ -80,9 +81,8 @@ static const irr::u16 UTF16_LO_SURROGATE = 0xDC00;
 #define UTF16_IS_SURROGATE_HI(c)	(((c) & 0xFC00) == 0xD800)
 #define UTF16_IS_SURROGATE_LO(c)	(((c) & 0xFC00) == 0xDC00)
 
-
-namespace irr
-{
+using namespace irr;
+using namespace core;
 
 	// Define our character types.
 #ifdef USTRING_CPP0X_NEWLITERALS	// C++0x
@@ -94,9 +94,6 @@ namespace irr
 	typedef u16 uchar16_t;
 	typedef u8 uchar8_t;
 #endif
-
-namespace core
-{
 
 namespace unicode
 {
@@ -3638,7 +3635,7 @@ template <typename TAlloc, typename B, typename A, typename BAlloc>
 inline ustring16<TAlloc>&& operator+(const std::basic_string<B, A, BAlloc>& left, ustring16<TAlloc>&& right)
 {
 	//std::cout << "MOVE operator+(&, &&)" << std::endl;
-	right.insert(core::ustring16<TAlloc>(left), 0);
+	right.insert(ustring16<TAlloc>(left), 0);
 	return std::move(right);
 }
 
@@ -3862,16 +3859,16 @@ namespace unicode
 
 //! Hashing algorithm for hashing a ustring.  Used for things like unordered_maps.
 //! Algorithm taken from std::hash<std::string>.
-class hash : public std::unary_function<core::ustring, size_t>
+class hash : public std::unary_function<ustring, size_t>
 {
 	public:
-		size_t operator()(const core::ustring& s) const
+		size_t operator()(const ustring& s) const
 		{
 			size_t ret = 2166136261U;
 			size_t index = 0;
 			size_t stride = 1 + s.size_raw() / 10;
 
-			core::ustring::const_iterator i = s.begin();
+			ustring::const_iterator i = s.begin();
 			while (i != s.end())
 			{
 				// TODO: Don't force u32 on an x64 OS.  Make it agnostic.
@@ -3886,6 +3883,3 @@ class hash : public std::unary_function<core::ustring, size_t>
 } // end namespace unicode
 
 #endif
-
-} // end namespace core
-} // end namespace irr

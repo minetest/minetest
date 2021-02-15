@@ -53,7 +53,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
-#include "irrlicht_changes/static_text.h"
 #include "client/guiscalingfilter.h"
 #include "guiAnimatedImage.h"
 #include "guiBackgroundImage.h"
@@ -65,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryList.h"
 #include "guiItemImage.h"
 #include "guiScrollContainer.h"
+#include "guiStaticText.h"
 #include "intlGUIEditBox.h"
 #include "guiHyperText.h"
 #include "guiScene.h"
@@ -1497,7 +1497,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+			GUIStaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
 				data->current_parent, 0);
 		}
 
@@ -1533,7 +1533,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	bool is_editable = !spec.fname.empty();
 	if (!is_editable && !is_multiline) {
 		// spec field id to 0, this stops submit searching for a value that isn't there
-		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+		GUIStaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
 				data->current_parent, 0);
 		return;
 	}
@@ -1600,7 +1600,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		int font_height = g_fontengine->getTextHeight();
 		rect.UpperLeftCorner.Y -= font_height;
 		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-		IGUIElement *t = gui::StaticText::add(Environment, spec.flabel.c_str(),
+		IGUIElement *t = GUIStaticText::add(Environment, spec.flabel.c_str(),
 				rect, false, true, data->current_parent, 0);
 
 		if (t)
@@ -1868,7 +1868,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				258 + m_fields.size(),
 				4
 			);
-			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
+			gui::IGUIStaticText *e = GUIStaticText::add(Environment,
 					spec.flabel.c_str(), rect, false, false, data->current_parent,
 					spec.fid);
 			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
@@ -1954,7 +1954,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			L"",
 			258 + m_fields.size()
 		);
-		gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
+		gui::IGUIStaticText *e = GUIStaticText::add(Environment, spec.flabel.c_str(),
 				rect, false, false, data->current_parent, spec.fid);
 		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 
@@ -3156,7 +3156,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	{
 		assert(!m_tooltip_element);
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
-		m_tooltip_element = gui::StaticText::add(Environment, L"",
+		m_tooltip_element = GUIStaticText::add(Environment, L"",
 			core::rect<s32>(0, 0, 110, 18));
 		m_tooltip_element->enableOverrideColor(true);
 		m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);

@@ -26,5 +26,13 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/intlGUIEditBox.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/modalMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/profilergraph.cpp
-	PARENT_SCOPE
+	${CMAKE_CURRENT_SOURCE_DIR}/guiStaticText.cpp
 )
+
+if (ENABLE_FREETYPE)
+	set(gui_SRCS ${gui_SRCS}
+		${CMAKE_CURRENT_SOURCE_DIR}/guiTTFont.cpp
+	)
+endif()
+
+set(gui_SRCS ${gui_SRCS} PARENT_SCOPE)

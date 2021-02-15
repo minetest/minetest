@@ -4,7 +4,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "static_text.h"
+#include "guiStaticText.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
 #include <IGUIFont.h>
@@ -13,20 +13,15 @@
 #include <SColor.h>
 
 #if USE_FREETYPE
-	#include "CGUITTFont.h"
+	#include "guiTTFont.h"
 #endif
 
 #include "util/string.h"
 
-namespace irr
-{
-
 #if USE_FREETYPE
 
-namespace gui
-{
 //! constructor
-StaticText::StaticText(const EnrichedString &text, bool border,
+GUIStaticText::GUIStaticText(const EnrichedString &text, bool border,
 			IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, const core::rect<s32>& rectangle,
 			bool background)
@@ -37,7 +32,7 @@ StaticText::StaticText(const EnrichedString &text, bool border,
 	OverrideFont(0), LastBreakFont(0)
 {
 	#ifdef _DEBUG
-	setDebugName("StaticText");
+	setDebugName("GUIStaticText");
 	#endif
 
 	setText(text);
@@ -45,14 +40,14 @@ StaticText::StaticText(const EnrichedString &text, bool border,
 
 
 //! destructor
-StaticText::~StaticText()
+GUIStaticText::~GUIStaticText()
 {
 	if (OverrideFont)
 		OverrideFont->drop();
 }
 
 //! draws the element and its children
-void StaticText::draw()
+void GUIStaticText::draw()
 {
 	if (!IsVisible)
 		return;
@@ -114,7 +109,7 @@ void StaticText::draw()
 
 #if USE_FREETYPE
 			if (font->getType() == irr::gui::EGFT_CUSTOM) {
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+				CGUITTFont *tmp = static_cast<CGUITTFont*>(font);
 				tmp->draw(str,
 					r, previous_color, // FIXME
 					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
@@ -140,7 +135,7 @@ void StaticText::draw()
 
 
 //! Sets another skin independent font.
-void StaticText::setOverrideFont(IGUIFont* font)
+void GUIStaticText::setOverrideFont(IGUIFont* font)
 {
 	if (OverrideFont == font)
 		return;
@@ -157,13 +152,13 @@ void StaticText::setOverrideFont(IGUIFont* font)
 }
 
 //! Gets the override font (if any)
-IGUIFont * StaticText::getOverrideFont() const
+IGUIFont * GUIStaticText::getOverrideFont() const
 {
 	return OverrideFont;
 }
 
 //! Get the font which is used right now for drawing
-IGUIFont* StaticText::getActiveFont() const
+IGUIFont* GUIStaticText::getActiveFont() const
 {
 	if ( OverrideFont )
 		return OverrideFont;
@@ -174,7 +169,7 @@ IGUIFont* StaticText::getActiveFont() const
 }
 
 //! Sets another color for the text.
-void StaticText::setOverrideColor(video::SColor color)
+void GUIStaticText::setOverrideColor(video::SColor color)
 {
 	ColoredText.setDefaultColor(color);
 	updateText();
@@ -182,7 +177,7 @@ void StaticText::setOverrideColor(video::SColor color)
 
 
 //! Sets another color for the text.
-void StaticText::setBackgroundColor(video::SColor color)
+void GUIStaticText::setBackgroundColor(video::SColor color)
 {
 	ColoredText.setBackground(color);
 	Background = true;
@@ -190,14 +185,14 @@ void StaticText::setBackgroundColor(video::SColor color)
 
 
 //! Sets whether to draw the background
-void StaticText::setDrawBackground(bool draw)
+void GUIStaticText::setDrawBackground(bool draw)
 {
 	Background = draw;
 }
 
 
 //! Gets the background color
-video::SColor StaticText::getBackgroundColor() const
+video::SColor GUIStaticText::getBackgroundColor() const
 {
 	IGUISkin *skin = Environment->getSkin();
 
@@ -207,39 +202,39 @@ video::SColor StaticText::getBackgroundColor() const
 
 
 //! Checks if background drawing is enabled
-bool StaticText::isDrawBackgroundEnabled() const
+bool GUIStaticText::isDrawBackgroundEnabled() const
 {
 	return Background;
 }
 
 
 //! Sets whether to draw the border
-void StaticText::setDrawBorder(bool draw)
+void GUIStaticText::setDrawBorder(bool draw)
 {
 	Border = draw;
 }
 
 
 //! Checks if border drawing is enabled
-bool StaticText::isDrawBorderEnabled() const
+bool GUIStaticText::isDrawBorderEnabled() const
 {
 	return Border;
 }
 
 
-void StaticText::setTextRestrainedInside(bool restrainTextInside)
+void GUIStaticText::setTextRestrainedInside(bool restrainTextInside)
 {
 	RestrainTextInside = restrainTextInside;
 }
 
 
-bool StaticText::isTextRestrainedInside() const
+bool GUIStaticText::isTextRestrainedInside() const
 {
 	return RestrainTextInside;
 }
 
 
-void StaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
+void GUIStaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
 {
 	HAlign = horizontal;
 	VAlign = vertical;
@@ -247,9 +242,9 @@ void StaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vert
 
 
 #if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 7
-const video::SColor& StaticText::getOverrideColor() const
+const video::SColor& GUIStaticText::getOverrideColor() const
 #else
-video::SColor StaticText::getOverrideColor() const
+video::SColor GUIStaticText::getOverrideColor() const
 #endif
 {
 	return ColoredText.getDefaultColor();
@@ -258,13 +253,13 @@ video::SColor StaticText::getOverrideColor() const
 
 //! Sets if the static text should use the overide color or the
 //! color in the gui skin.
-void StaticText::enableOverrideColor(bool enable)
+void GUIStaticText::enableOverrideColor(bool enable)
 {
 	// TODO
 }
 
 
-bool StaticText::isOverrideColorEnabled() const
+bool GUIStaticText::isOverrideColorEnabled() const
 {
 	return true;
 }
@@ -272,20 +267,20 @@ bool StaticText::isOverrideColorEnabled() const
 
 //! Enables or disables word wrap for using the static text as
 //! multiline text control.
-void StaticText::setWordWrap(bool enable)
+void GUIStaticText::setWordWrap(bool enable)
 {
 	WordWrap = enable;
 	updateText();
 }
 
 
-bool StaticText::isWordWrapEnabled() const
+bool GUIStaticText::isWordWrapEnabled() const
 {
 	return WordWrap;
 }
 
 
-void StaticText::setRightToLeft(bool rtl)
+void GUIStaticText::setRightToLeft(bool rtl)
 {
 	if (RightToLeft != rtl)
 	{
@@ -295,7 +290,7 @@ void StaticText::setRightToLeft(bool rtl)
 }
 
 
-bool StaticText::isRightToLeft() const
+bool GUIStaticText::isRightToLeft() const
 {
 	return RightToLeft;
 }
@@ -303,7 +298,7 @@ bool StaticText::isRightToLeft() const
 
 //! Breaks the single text line.
 // Updates the font colors
-void StaticText::updateText()
+void GUIStaticText::updateText()
 {
 	const EnrichedString &cText = ColoredText;
 	BrokenText.clear();
@@ -537,19 +532,19 @@ void StaticText::updateText()
 
 
 //! Sets the new caption of this element.
-void StaticText::setText(const wchar_t* text)
+void GUIStaticText::setText(const wchar_t* text)
 {
 	setText(EnrichedString(text, getOverrideColor()));
 }
 
-void StaticText::setText(const EnrichedString &text)
+void GUIStaticText::setText(const EnrichedString &text)
 {
 	ColoredText = text;
 	IGUIElement::setText(ColoredText.c_str());
 	updateText();
 }
 
-void StaticText::updateAbsolutePosition()
+void GUIStaticText::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 	updateText();
@@ -557,7 +552,7 @@ void StaticText::updateAbsolutePosition()
 
 
 //! Returns the height of the text in pixels when it is drawn.
-s32 StaticText::getTextHeight() const
+s32 GUIStaticText::getTextHeight() const
 {
 	IGUIFont* font = getActiveFont();
 	if (!font)
@@ -572,7 +567,7 @@ s32 StaticText::getTextHeight() const
 }
 
 
-s32 StaticText::getTextWidth() const
+s32 GUIStaticText::getTextWidth() const
 {
 	IGUIFont *font = getActiveFont();
 	if (!font)
@@ -594,7 +589,7 @@ s32 StaticText::getTextWidth() const
 //! Writes attributes of the element.
 //! Implement this to expose the attributes of your element for
 //! scripting languages, editors, debuggers or xml serialization purposes.
-void StaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+void GUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIStaticText::serializeAttributes(out,options);
 
@@ -615,7 +610,7 @@ void StaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWri
 
 
 //! Reads attributes of the element
-void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
+void GUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 {
 	IGUIStaticText::deserializeAttributes(in,options);
 
@@ -635,11 +630,6 @@ void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 	// OverrideFont = in->getAttributeAsFont("OverrideFont");
 }
 
-} // end namespace gui
-
 #endif // USE_FREETYPE
-
-} // end namespace irr
-
 
 #endif // _IRR_COMPILE_WITH_GUI_

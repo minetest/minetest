@@ -188,8 +188,12 @@ src/gui/guiScene.h
 src/gui/guiScrollBar.cpp
 src/gui/guiSkin.cpp
 src/gui/guiSkin.h
+src/gui/guiStaticText.cpp
+src/gui/guiStaticText.h
 src/gui/guiTable.cpp
 src/gui/guiTable.h
+src/gui/guiTTFont.cpp
+src/gui/guiTTFont.h
 src/gui/guiVolumeChange.cpp
 src/gui/guiVolumeChange.h
 src/gui/intlGUIEditBox.cpp
@@ -209,11 +213,6 @@ src/inventory.cpp
 src/inventory.h
 src/inventorymanager.cpp
 src/inventorymanager.h
-src/irrlicht_changes/CGUITTFont.cpp
-src/irrlicht_changes/CGUITTFont.h
-src/irrlicht_changes/irrUString.h
-src/irrlicht_changes/static_text.cpp
-src/irrlicht_changes/static_text.h
 src/irrlichttypes.h
 src/itemdef.cpp
 src/itemdef.h
@@ -473,6 +472,7 @@ src/util/directiontables.cpp
 src/util/directiontables.h
 src/util/enriched_string.cpp
 src/util/enriched_string.h
+src/util/irr_ustring.h
 src/util/md32_common.h
 src/util/numeric.cpp
 src/util/numeric.h

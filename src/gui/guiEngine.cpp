@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
-#include "irrlicht_changes/static_text.h"
+#include "guiStaticText.h"
 
 #if ENABLE_GLES
 #include "client/tile.h"
@@ -156,7 +156,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 		g_fontengine->getTextHeight());
 	rect += v2s32(4, 0);
 
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = GUIStaticText::add(RenderingEngine::get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 
 	//create formspecsource
@@ -595,7 +595,7 @@ void GUIEngine::updateTopLeftTextSize()
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext->remove();
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = GUIStaticText::add(RenderingEngine::get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 }
 

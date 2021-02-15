@@ -28,15 +28,12 @@
    John Norman
    john@suckerfreegames.com
 */
+// This file has been modified to remove the classes from the Irrlicht namespace and add
+// support for enriched color strings.
 
 #include <irrlicht.h>
 #include <iostream>
-#include "CGUITTFont.h"
-
-namespace irr
-{
-namespace gui
-{
+#include "guiTTFont.h"
 
 // Manages the FT_Face cache.
 struct SGUITTFace : public virtual irr::IReferenceCounted
@@ -317,7 +314,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 
 	// Log.
 	if (logger)
-		logger->log(L"CGUITTFont", core::stringw(core::stringw(L"Creating new font: ") + core::ustring(filename).toWCHAR_s() + L" " + core::stringc(size) + L"pt " + (antialias ? L"+antialias " : L"-antialias ") + (transparency ? L"+transparency" : L"-transparency")).c_str(), irr::ELL_INFORMATION);
+		logger->log(L"CGUITTFont", core::stringw(core::stringw(L"Creating new font: ") + ustring(filename).toWCHAR_s() + L" " + core::stringc(size) + L"pt " + (antialias ? L"+antialias " : L"-antialias ") + (transparency ? L"+transparency" : L"-transparency")).c_str(), irr::ELL_INFORMATION);
 
 	// Grab the face.
 	SGUITTFace* face = 0;
@@ -358,7 +355,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 		}
 		else
 		{
-			core::ustring converter(filename);
+			ustring converter(filename);
 			if (FT_New_Face(c_library, reinterpret_cast<const char*>(converter.toUTF8_s().c_str()), 0, &face->face))
 			{
 				if (logger) logger->log(L"CGUITTFont", L"FT_New_Face failed.", irr::ELL_INFORMATION);
@@ -479,7 +476,7 @@ CGUITTGlyphPage* CGUITTFont::getLastGlyphPage() const
 CGUITTGlyphPage* CGUITTFont::createGlyphPage(const u8& pixel_mode)
 {
 	CGUITTGlyphPage* page = 0;
-	
+
 	// Name of our page.
 	io::path name("TTFontGlyphPage_");
 	name += tt_face->family_name;
@@ -582,7 +579,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	}
 
 	// Convert to a unicode string.
-	core::ustring utext = text.getString();
+	ustring utext = text.getString();
 
 	// Set up our render map.
 	core::map<u32, CGUITTGlyphPage*> Render_Map;
@@ -590,7 +587,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	// Start parsing characters.
 	u32 n;
 	uchar32_t previousChar = 0;
-	core::ustring::const_iterator iter(utext);
+	ustring::const_iterator iter(utext);
 	std::vector<video::SColor> applied_colors;
 	while (!iter.atEnd())
 	{
@@ -687,10 +684,10 @@ core::dimension2d<u32> CGUITTFont::getCharDimension(const wchar_t ch) const
 
 core::dimension2d<u32> CGUITTFont::getDimension(const wchar_t* text) const
 {
-	return getDimension(core::ustring(text));
+	return getDimension(ustring(text));
 }
 
-core::dimension2d<u32> CGUITTFont::getDimension(const core::ustring& text) const
+core::dimension2d<u32> CGUITTFont::getDimension(const ustring& text) const
 {
 	// Get the maximum font height.  Unfortunately, we have to do this hack as
 	// Irrlicht will draw things wrong.  In FreeType, the font size is the
@@ -708,7 +705,7 @@ core::dimension2d<u32> CGUITTFont::getDimension(const core::ustring& text) const
 	core::dimension2d<u32> line(0, max_font_height);
 
 	uchar32_t previousChar = 0;
-	core::ustring::const_iterator iter = text.begin();
+	ustring::const_iterator iter = text.begin();
 	for (; !iter.atEnd(); ++iter)
 	{
 		uchar32_t p = *iter;
@@ -808,7 +805,7 @@ u32 CGUITTFont::getGlyphIndexByChar(uchar32_t c) const
 
 	// Check for a valid glyph.  If it is invalid, attempt to use the replacement character.
 	if (glyph == 0)
-		glyph = FT_Get_Char_Index(tt_face, core::unicode::UTF_REPLACEMENT_CHARACTER);
+		glyph = FT_Get_Char_Index(tt_face, unicode::UTF_REPLACEMENT_CHARACTER);
 
 	// If our glyph is already loaded, don't bother doing any batch loading code.
 	if (glyph != 0 && Glyphs[glyph - 1].isLoaded)
@@ -845,17 +842,17 @@ u32 CGUITTFont::getGlyphIndexByChar(uchar32_t c) const
 
 s32 CGUITTFont::getCharacterFromPos(const wchar_t* text, s32 pixel_x) const
 {
-	return getCharacterFromPos(core::ustring(text), pixel_x);
+	return getCharacterFromPos(ustring(text), pixel_x);
 }
 
-s32 CGUITTFont::getCharacterFromPos(const core::ustring& text, s32 pixel_x) const
+s32 CGUITTFont::getCharacterFromPos(const ustring& text, s32 pixel_x) const
 {
 	s32 x = 0;
 	//s32 idx = 0;
 
 	u32 character = 0;
 	uchar32_t previousChar = 0;
-	core::ustring::const_iterator iter = text.begin();
+	ustring::const_iterator iter = text.begin();
 	while (!iter.atEnd())
 	{
 		uchar32_t c = *iter;
@@ -950,11 +947,11 @@ core::vector2di CGUITTFont::getKerning(const uchar32_t thisLetter, const uchar32
 
 void CGUITTFont::setInvisibleCharacters(const wchar_t *s)
 {
-	core::ustring us(s);
+	ustring us(s);
 	Invisible = us;
 }
 
-void CGUITTFont::setInvisibleCharacters(const core::ustring& s)
+void CGUITTFont::setInvisibleCharacters(const ustring& s)
 {
 	Invisible = s;
 }
@@ -1192,6 +1189,3 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	return container;
 }
-
-} // end namespace gui
-} // end namespace irr
