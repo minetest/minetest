@@ -146,15 +146,11 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
-	if(isAttached())
-	{
-		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
-		m_base_position = pos;
+	if (auto *parent = getParent()) {
+		m_base_position = parent->getBasePosition();
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
-	}
-	else
-	{
+	} else {
 		if(m_prop.physical){
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;

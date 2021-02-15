@@ -488,8 +488,12 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
 
-	playersao->setBasePosition(position);
-	player->setSpeed(speed);
+	if (!playersao->isAttached()) {
+		// Only update player positions when moving freely
+		// to not interfere with attachment handling
+		playersao->setBasePosition(position);
+		player->setSpeed(speed);
+	}
 	playersao->setLookPitch(pitch);
 	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
