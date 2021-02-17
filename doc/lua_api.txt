@@ -6039,18 +6039,18 @@ an itemstring, a table or `nil`.
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `get_description()`: returns the description shown in inventory list tooltips.
-    * The engine uses the same as this function for item descriptions.
+    * The engine uses this when showing item descriptions in tooltips.
     * Fields for finding the description, in order:
         * `description` in item metadata (See [Item Metadata].)
         * `description` in item definition
         * item name
-* `get_short_description()`: returns the short description.
+* `get_short_description()`: returns the short description or nil.
     * Unlike the description, this does not include new lines.
-    * The engine uses the same as this function for short item descriptions.
     * Fields for finding the short description, in order:
         * `short_description` in item metadata (See [Item Metadata].)
         * `short_description` in item definition
-        * first line of the description (See `get_description()`.)
+        * first line of the description (From item meta or def, see `get_description()`.)
+        * Returns nil if none of the above are set
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -7171,8 +7171,9 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         short_description = "Steel Axe",
         -- Must not contain new lines.
-        -- Defaults to the first line of description.
-        -- See also: `get_short_description` in [`ItemStack`]
+        -- Defaults to nil.
+        -- Use an [`ItemStack`] to get the short description, eg:
+        --   ItemStack(itemname):get_short_description()
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.

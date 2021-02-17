@@ -118,10 +118,6 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
-	-- default short_description to first line of description
-	itemdef.short_description = itemdef.short_description or
-		(itemdef.description or ""):gsub("\n.*","")
-
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
