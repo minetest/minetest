@@ -199,11 +199,7 @@ public:
 	v3f getEyeOffset() const;
 	float getZoomFOV() const;
 
-	const std::unordered_map<std::string, PhysicsModifier> &getPhysicsModifiers()
-	{
-		return m_physics_modifiers;
-	}
-
+	bool hasPhysicsModifiers() const { return !m_physics_modifiers.empty(); }
 	void setPhysicsModifier(const std::string &key, const PhysicsModifier &modifier);
 	void deletePhysicsModifier(const std::string &key);
 
@@ -255,11 +251,13 @@ private:
 public:
 	PhysicsModifier m_physics_override;
 
-	// Flag, when set to true, disables physics modifiers so that only the override
-	// matters. It is set when a mod calls set_physics_override and is irreversible
-	// until the player leaves and logs back in.
+	// Whether overrides are used instead of modifiers.
 	bool m_physics_override_set = false;
+
+	// Whether overrides or modifiers have been sent
 	bool m_physics_override_sent = false;
+
+	// Physics flags:
 	bool m_physics_override_sneak = true;
 	bool m_physics_override_sneak_glitch = false;
 	bool m_physics_override_new_move = true;

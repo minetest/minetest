@@ -1496,13 +1496,6 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 
 	playersao->setPhysicsModifier(key, modifier);
 
-	if (playersao->m_physics_override_set) {
-		warningstream << "set_physics_modifier will have no effect because ";
-		warningstream << "set_physics_override was previously called ";
-		script_log_short_src(L, warningstream);
-		warningstream << std::endl;
-	}
-
 	return 0;
 }
 
@@ -1622,7 +1615,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		// No overrides were set, revert to modifier mode
 		playersao->m_physics_override_sent = false;
 		return 0;
-	} else if (!playersao->getPhysicsModifiers().empty()) {
+	} else if (playersao->hasPhysicsModifiers()) {
 		warningstream << "Use of set_physics_override will disable active ";
 		warningstream << "physics modifiers ";
 		script_log_short_src(L, warningstream);
