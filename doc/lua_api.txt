@@ -6557,7 +6557,7 @@ object you are working with still exists.
         * `gravity`: multiplier to default gravity value (default: `1`)
 * `set_physics_modifier(key_string, modifier_table)`: Adds a physics modifier to
    the player under the given key.
-   * Modifiers are resolved by first multiplying all `multiply` modifiers, and then adding all `add` modifiers.
+   * Modifiers are resolved by first adding all `add` modifiers, and then multiplying all `multiply` modifiers.
    * `key_string`: A string key identifying this modifier. Should take the format
      "modname:modifier_name".
    * `modifier_table`: a table with the same fields as `get_effective_physics`. Plus:

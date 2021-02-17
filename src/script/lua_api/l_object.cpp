@@ -1445,8 +1445,10 @@ static bool read_physics_modifier(lua_State *L, int index,
 	if (type == "add") {
 		modifier.is_add = true;
 	} else if (type != "multiply") {
-		warningstream << "Unknown modifier type " << type << ", defaulting to multiply." << std::endl;
-		warningstream << script_get_backtrace(L);
+		warningstream << "Unknown modifier type " << type << ", defaulting to multiply. ";
+		script_log_short_src(L, warningstream);
+		warningstream << std::endl;
+		infostream << script_get_backtrace(L) << std::endl;
 	}
 
 	float def = modifier.is_add ? 0.f : 1.f;
@@ -1511,13 +1513,6 @@ int ObjectRef::l_remove_physics_modifier(lua_State *L)
 	const std::string key = readParam<std::string>(L, 2);
 
 	playersao->deletePhysicsModifier(key);
-
-	if (playersao->m_physics_override_set) {
-		warningstream << "remove_physics_modifier will have no effect because ";
-		warningstream << "set_physics_override was previously called ";
-		script_log_short_src(L, warningstream);
-		warningstream << std::endl;
-	}
 
 	return 0;
 }
@@ -1620,6 +1615,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		warningstream << "physics modifiers ";
 		script_log_short_src(L, warningstream);
 		warningstream << std::endl;
+		infostream << script_get_backtrace(L) << std::endl;
 	}
 
 	return 0;
