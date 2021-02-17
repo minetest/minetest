@@ -737,6 +737,18 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	}
 	lua_pop(L, 1);
 
+	lua_getfield(L, -1, "bgcolor");
+	if (!lua_isnil(L, -1)) {
+		if (lua_toboolean(L, -1)) {
+			video::SColor color;
+			if (read_color(L, -1, &color))
+				prop->nametag_bgcolor = color;
+		} else {
+			prop->nametag_bgcolor = nullopt;
+		}
+	}
+	lua_pop(L, 1);
+
 	std::string nametag = getstringfield_default(L, 2, "text", "");
 	prop->nametag = nametag;
 
@@ -758,13 +770,24 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 	if (!prop)
 		return 0;
 
-	video::SColor color = prop->nametag_color;
-
 	lua_newtable(L);
-	push_ARGB8(L, color);
+
+	push_ARGB8(L, prop->nametag_color);
 	lua_setfield(L, -2, "color");
+
+	if (prop->nametag_bgcolor) {
+		push_ARGB8(L, prop->nametag_bgcolor.value());
+		lua_setfield(L, -2, "bgcolor");
+	} else {
+		lua_pushboolean(L, false);
+		lua_setfield(L, -2, "bgcolor");
+	}
+
 	lua_pushstring(L, prop->nametag.c_str());
 	lua_setfield(L, -2, "text");
+
+
+
 	return 1;
 }
 

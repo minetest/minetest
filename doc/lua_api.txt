@@ -6274,15 +6274,21 @@ object you are working with still exists.
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
     * {
-        color = {a=0..255, r=0..255, g=0..255, b=0..255},
         text = "",
+        color = {a=0..255, r=0..255, g=0..255, b=0..255},
+        bgcolor = {a=0..255, r=0..255, g=0..255, b=0..255},
       }
 * `set_nametag_attributes(attributes)`
     * sets the attributes of the nametag of an object
     * `attributes`:
       {
-        color = ColorSpec,
         text = "My Nametag",
+        color = ColorSpec,
+        -- ^ Text color
+        bgcolor = ColorSpec or false,
+        -- ^ Sets background color of nametag
+        -- `false` will cause the background to be set automatically based on user settings
+        -- Default: false
       }
 
 #### Lua entity only (no-op for other objects)
@@ -6956,9 +6962,13 @@ Player properties need to be saved manually.
         -- For all other objects, a nil or empty string removes the nametag.
         -- To hide a nametag, set its color alpha to zero. That will disable it entirely.
 
-
         nametag_color = <ColorSpec>,
-        -- Sets color of nametag
+        -- Sets text color of nametag
+
+        nametag_bgcolor = <ColorSpec>,
+        -- Sets background color of nametag
+        -- `false` will cause the background to be set automatically based on user settings.
+        -- Default: false
 
         infotext = "",
         -- By default empty, text to be shown when pointed at object
