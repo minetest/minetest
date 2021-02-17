@@ -69,10 +69,7 @@ public:
 		return m_value;
 	}
 
-	const T &value_or(const T &def) const
-	{
-		return m_has_value ? m_value : def;
-	}
+	const T &value_or(const T &def) const { return m_has_value ? m_value : def; }
 
 	bool has_value() const noexcept { return m_has_value; }
 
