@@ -207,24 +207,15 @@ public:
 	void setPhysicsModifier(const std::string &key, const PhysicsModifier &modifier);
 	void deletePhysicsModifier(const std::string &key);
 
-	// Not const - physics modifier is cached
-	const PhysicsModifier &getEffectivePhysics();
+	const PhysicsModifier &getEffectivePhysics() const;
 
 	inline Metadata &getMeta() { return m_meta; }
 
 private:
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
-	std::string generateUpdatePhysicsOverrideCommand();
-
-	// Not const since it may cached
-	PhysicsModifier calculatePhysicsModifier();
-	const PhysicsModifier &getTotalPhysicsModifier();
-	void setPhysicsModifiersDirty()
-	{
-		m_physics_modifier_dirty = true;
-		m_physics_override_sent = false;
-	}
+	std::string generateUpdatePhysicsOverrideCommand() const;
+	void updatePhysicsModifiersTotal();
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;
@@ -257,8 +248,7 @@ private:
 	s16 m_wanted_range = 0.0f;
 
 	std::unordered_map<std::string, PhysicsModifier> m_physics_modifiers;
-	PhysicsModifier m_physics_modifier; // Cache for calculatePhysicsModifier
-	bool m_physics_modifier_dirty = true;
+	PhysicsModifier m_physics_modifiers_total;
 
 	Metadata m_meta;
 

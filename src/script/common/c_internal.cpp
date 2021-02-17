@@ -135,18 +135,22 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	lua_remove(L, error_handler);
 }
 
-static void script_log(lua_State *L, const std::string &message,
-	std::ostream &log_to, bool do_error, int stack_depth)
+void script_log_short_src(lua_State *L, std::ostream &log_to, int stack_depth)
 {
 	lua_Debug ar;
-
-	log_to << message << " ";
 	if (lua_getstack(L, stack_depth, &ar)) {
 		FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
 		log_to << "(at " << ar.short_src << ":" << ar.currentline << ")";
 	} else {
 		log_to << "(at ?:?)";
 	}
+}
+
+static void script_log(lua_State *L, const std::string &message,
+	std::ostream &log_to, bool do_error, int stack_depth)
+{
+	log_to << message << " ";
+	script_log_short_src(L, log_to, stack_depth);
 	log_to << std::endl;
 
 	if (do_error)

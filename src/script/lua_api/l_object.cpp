@@ -1449,7 +1449,7 @@ static bool read_physics_modifier(lua_State *L, int index,
 		warningstream << script_get_backtrace(L);
 	}
 
-	int def =  modifier.is_add ? 0 : 1;
+	float def = modifier.is_add ? 0.f : 1.f;
 
 	modifier.speed = getfloatfield_default(L, index, "speed", def);
 	modifier.jump = getfloatfield_default(L, index, "jump", def);
@@ -1498,8 +1498,9 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 
 	if (playersao->m_physics_override_set) {
 		warningstream << "set_physics_modifier will have no effect because ";
-		warningstream << "set_physics_override was previously called" << std::endl;
-		warningstream << script_get_backtrace(L);
+		warningstream << "set_physics_override was previously called ";
+		script_log_short_src(L, warningstream);
+		warningstream << std::endl;
 	}
 
 	return 0;
@@ -1520,8 +1521,9 @@ int ObjectRef::l_remove_physics_modifier(lua_State *L)
 
 	if (playersao->m_physics_override_set) {
 		warningstream << "remove_physics_modifier will have no effect because ";
-		warningstream << "set_physics_override was previously called" << std::endl;
-		warningstream << script_get_backtrace(L);
+		warningstream << "set_physics_override was previously called ";
+		script_log_short_src(L, warningstream);
+		warningstream << std::endl;
 	}
 
 	return 0;
@@ -1596,7 +1598,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		playersao->m_physics_override_set = true;
 	} else if (lua_gettop(L) > 2 || !lua_isnil(L, 2)) {
 		// old, non-table format
-		// TODO: Remove this code after version 5.4.0
+		// TODO: Remove this code after version 5.4.0 is released
 		log_deprecated(L, "Deprecated use of set_physics_override(num, num, num)");
 
 		if (!lua_isnoneornil(L, 2)) {
@@ -1617,12 +1619,14 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	}
 
 	if (!playersao->m_physics_override_set) {
+		// No overrides were set, revert to modifier mode
 		playersao->m_physics_override_sent = false;
 		return 0;
 	} else if (!playersao->getPhysicsModifiers().empty()) {
 		warningstream << "Use of set_physics_override will disable active ";
-		warningstream << "physics modifiers" << std::endl;
-		warningstream << script_get_backtrace(L);
+		warningstream << "physics modifiers ";
+		script_log_short_src(L, warningstream);
+		warningstream << std::endl;
 	}
 
 	return 0;

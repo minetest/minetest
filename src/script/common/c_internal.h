@@ -109,6 +109,18 @@ enum RunCallbacksMode
 };
 
 std::string script_get_backtrace(lua_State *L);
+
+/**
+ * Prints short source string to stream
+ *
+ * For example (at path/to/file:123)
+ *
+ * @param L Lua state
+ * @param log_to Target stream
+ * @param stack_depth Lua stack depth
+ */
+void script_log_short_src(lua_State *L, std::ostream &log_to, int stack_depth=1);
+
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 void script_run_callbacks_f(lua_State *L, int nargs,
