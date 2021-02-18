@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/subgames.h"
 #include "porting.h"
 #include "util/metricsbackend.h"
-#include <algorithm>
 
 /**
  * Manage server mods
