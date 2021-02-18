@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
+"POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
@@ -47,10 +47,6 @@ msgstr "Återanslut"
 msgid "The server has requested a reconnect:"
 msgstr "Servern har begärt en återanslutning:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Laddar..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Protokollversionen matchar ej. "
@@ -64,11 +60,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Servern stöder protokollversioner mellan $1 och $2. "
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"Försök återaktivera allmän serverlista och kolla din internetanslutning."
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Vi stöder endast protokollversion $1."
 
@@ -76,7 +67,8 @@ msgstr "Vi stöder endast protokollversion $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Vi stöder protokollversioner mellan version $1 och $2."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -86,7 +78,8 @@ msgstr "Vi stöder protokollversioner mellan version $1 och $2."
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Beroenden:"
 
@@ -163,12 +156,53 @@ msgid "enabled"
 msgstr "aktiverad"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "Laddar..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Alla paket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Already installed"
+msgstr "Tangent används redan"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Tillbaka till huvudmeny"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "Bilda Spel"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -193,6 +227,16 @@ msgid "Install"
 msgstr "Installera"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "Installera"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "Valfria beroenden:"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Moddar"
@@ -206,9 +250,25 @@ msgid "No results"
 msgstr "Inga resultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Sök"
+#, fuzzy
+msgid "No updates"
+msgstr "Uppdatera"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -223,7 +283,11 @@ msgid "Update"
 msgstr "Uppdatera"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -532,6 +596,10 @@ msgid "Scale"
 msgstr "Skala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "Sök"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
 msgstr "Välj katalog"
 
@@ -661,6 +729,15 @@ msgstr "Misslyckades installera $1 till $2"
 msgid "Unable to install a modpack as a $1"
 msgstr "Misslyckades installera $1 till $2"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Laddar..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+"Försök återaktivera allmän serverlista och kolla din internetanslutning."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr ""
@@ -721,6 +798,17 @@ msgid "Credits"
 msgstr "Medverkande"
 
 #: builtin/mainmenu/tab_credits.lua
+#, fuzzy
+msgid "Open User Data Directory"
+msgstr "Välj katalog"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "Före detta bidragande"
 
@@ -737,14 +825,10 @@ msgid "Bind Address"
 msgstr "Bindningsadress"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Konfigurera"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Kreativt läge"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Aktivera Skada"
 
@@ -761,8 +845,8 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Namn/Lösenord"
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -774,12 +858,22 @@ msgstr "Ingen värld skapad eller vald!"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
+msgid "Password"
+msgstr "Nytt Lösenord"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
 msgid "Play Game"
 msgstr "Starta spel"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "Port"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Select Mods"
+msgstr "Välj värld:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -798,23 +892,23 @@ msgstr "Bilda Spel"
 msgid "Address / Port"
 msgstr "Adress / Port"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Anslut"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Kreativt läge"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "Skada aktiverat"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Radera Favorit"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr "Favoritmarkera"
 
@@ -823,16 +917,16 @@ msgstr "Favoritmarkera"
 msgid "Join Game"
 msgstr "Bilda Spel"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr "Namn / Lösenord"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Ping"
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP aktiverat"
 
@@ -862,10 +956,6 @@ msgid "Antialiasing:"
 msgstr "Kantutjämning:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "Är du säker på att du vill starta om din enspelarvärld?"
-
-#: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Autosave Screen Size"
 msgstr "Spara fönsterstorlek automatiskt"
@@ -873,10 +963,6 @@ msgstr "Spara fönsterstorlek automatiskt"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "Bilinjärt filter"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "Stötkartläggning"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -891,20 +977,12 @@ msgid "Fancy Leaves"
 msgstr "Fina Löv"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmap + Aniso-filter"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "Nej"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -934,17 +1012,9 @@ msgstr "Ogenomskinliga löv"
 msgid "Opaque Water"
 msgstr "Ogenomskinligt vatten"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Parrallax Ocklusion"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "Partiklar"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "Starta om enspelarvärld"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -957,6 +1027,10 @@ msgstr "Inställningar"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Shaders"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Shaders (experimental)"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1003,22 +1077,6 @@ msgstr "Vajande Löv"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Vajande Växter"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Ja"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Konfigurera moddar"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Huvudsaklig"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Starta Enspelarläge"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1184,20 +1242,20 @@ msgid "Continue"
 msgstr "Fortsätt"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1347,34 +1405,6 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1774,6 +1804,24 @@ msgstr "X Knapp 2"
 msgid "Zoom"
 msgstr "Zoom"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+msgid "Minimap in texture mode"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Lösenorden matchar inte!"
@@ -2035,14 +2083,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-"0 = parallax ocklusion med sluttningsinformation (snabbare).\n"
-"1 = reliefmappning (långsammare, noggrannare)."
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr ""
 
@@ -2160,6 +2200,10 @@ msgstr "Ett meddelande som visas för alla klienter när servern stängs ner."
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2420,10 +2464,6 @@ msgid "Builtin"
 msgstr "Inbyggd"
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr "Bumpmappning"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2492,16 +2532,6 @@ msgstr "Grottbegränsning"
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2667,6 +2697,10 @@ msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "ContentDB URL"
 msgstr "Fortsätt"
@@ -2728,7 +2762,10 @@ msgid "Crosshair alpha"
 msgstr "Hårkorsalpha"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+#, fuzzy
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr "Hårkorsalpha (ogenomskinlighet, mellan 0 och 255)."
 
 #: src/settings_translation_file.cpp
@@ -2736,8 +2773,10 @@ msgid "Crosshair color"
 msgstr "Hårkorsfärg"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
-msgstr "Hårkorsförg (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2847,14 +2886,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Definierar plats och terräng för valfria kullar och sjöar."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-"Definierar samplingssteg av textur.\n"
-"Högre värden resulterar i jämnare normalmappning."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Defines the base ground level."
 msgstr "Definierar trädområden och trädtäthet."
@@ -2937,6 +2968,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
 msgstr "Desynkronisera blockanimation"
+
+#: src/settings_translation_file.cpp
+msgid "Dig key"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3088,31 +3123,11 @@ msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3133,12 +3148,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3148,7 +3157,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
+msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3451,10 +3460,6 @@ msgid "GUI scaling filter txr2img"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr ""
 
@@ -3509,8 +3514,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 
@@ -3977,6 +3982,10 @@ msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr ""
 
@@ -4051,6 +4060,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for decreasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4150,6 +4166,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the inventory.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4714,11 +4737,6 @@ msgid "Main menu script"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Main menu style"
-msgstr "Huvudmeny"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -4729,6 +4747,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4901,7 +4927,7 @@ msgid "Maximum FPS"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4947,6 +4973,13 @@ msgstr ""
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5179,14 +5212,6 @@ msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr ""
 
@@ -5209,10 +5234,6 @@ msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5239,35 +5260,6 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Parallax occlusion scale"
-msgstr "Parrallax Ocklusion"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5333,6 +5325,15 @@ msgstr "Tangent för filmiskt länge"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place key"
+msgstr "Tangent för filmiskt länge"
+
+#: src/settings_translation_file.cpp
+msgid "Place repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5488,10 +5489,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5768,6 +5765,12 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5899,10 +5902,6 @@ msgid "Strength of 3D mode parallax."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -5997,6 +5996,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -6055,8 +6058,8 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6082,15 +6085,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6225,6 +6233,17 @@ msgid ""
 "Use mip mapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6560,6 +6579,24 @@ msgid "Y-level of seabed."
 msgstr "Y-nivå av sjöbotten."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "cURL filhemladdning tidsgräns"
 
@@ -6571,34 +6608,12 @@ msgstr "cURL parallellgräns"
 msgid "cURL timeout"
 msgstr "cURL-timeout"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Slå av/på Filmisk Kamera"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Välj modfil:"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-nivå till vilket luftöars skuggor når."
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "0 = parallax occlusion with slope information (faster).\n"
+#~ "1 = relief mapping (slower, more accurate)."
 #~ msgstr ""
-#~ "Definierar områden för luftöars jämna terräng.\n"
-#~ "Jämna luftöar förekommer när oljud > 0."
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Kontrollerar bredd av tunnlar, mindre värden skapar bredare tunnlar."
-
-#, fuzzy
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Kontrollerar densiteten av luftöars bergsterräng.\n"
-#~ "Är en förskjutning adderad till oljudsvärdet för 'np_mountain'."
+#~ "0 = parallax ocklusion med sluttningsinformation (snabbare).\n"
+#~ "1 = reliefmappning (långsammare, noggrannare)."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -6608,11 +6623,94 @@ msgstr "cURL-timeout"
 #~ "Justera gammakodningen för ljustabeller. Högre tal är ljusare.\n"
 #~ "Denna inställning påverkar endast klienten och ignoreras av servern."
 
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "Laddar ner och installerar $1, vänligen vänta..."
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Är du säker på att du vill starta om din enspelarvärld?"
 
 #~ msgid "Back"
 #~ msgstr "Tillbaka"
 
+#~ msgid "Bump Mapping"
+#~ msgstr "Stötkartläggning"
+
+#~ msgid "Bumpmapping"
+#~ msgstr "Bumpmappning"
+
+#~ msgid "Config mods"
+#~ msgstr "Konfigurera moddar"
+
+#~ msgid "Configure"
+#~ msgstr "Konfigurera"
+
+#, fuzzy
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Kontrollerar densiteten av luftöars bergsterräng.\n"
+#~ "Är en förskjutning adderad till oljudsvärdet för 'np_mountain'."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Kontrollerar bredd av tunnlar, mindre värden skapar bredare tunnlar."
+
+#~ msgid "Crosshair color (R,G,B)."
+#~ msgstr "Hårkorsförg (R,G,B)."
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Definierar områden för luftöars jämna terräng.\n"
+#~ "Jämna luftöar förekommer när oljud > 0."
+
+#~ msgid ""
+#~ "Defines sampling step of texture.\n"
+#~ "A higher value results in smoother normal maps."
+#~ msgstr ""
+#~ "Definierar samplingssteg av textur.\n"
+#~ "Högre värden resulterar i jämnare normalmappning."
+
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Laddar ner och installerar $1, vänligen vänta..."
+
+#~ msgid "Main"
+#~ msgstr "Huvudsaklig"
+
+#, fuzzy
+#~ msgid "Main menu style"
+#~ msgstr "Huvudmeny"
+
+#~ msgid "Name/Password"
+#~ msgstr "Namn/Lösenord"
+
+#~ msgid "No"
+#~ msgstr "Nej"
+
 #~ msgid "Ok"
 #~ msgstr "Ok"
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Parrallax Ocklusion"
+
+#, fuzzy
+#~ msgid "Parallax occlusion scale"
+#~ msgstr "Parrallax Ocklusion"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Starta om enspelarvärld"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Välj modfil:"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Starta Enspelarläge"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Slå av/på Filmisk Kamera"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-nivå till vilket luftöars skuggor når."
+
+#~ msgid "Yes"
+#~ msgstr "Ja"

@@ -183,6 +183,64 @@ static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 	return false;
 }
 
+#ifdef __ANDROID__
+
+bool GUIModalMenu::simulateMouseEvent(
+		gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event)
+{
+	SEvent mouse_event{}; // value-initialized, not unitialized
+	mouse_event.EventType = EET_MOUSE_INPUT_EVENT;
+	mouse_event.MouseInput.X = m_pointer.X;
+	mouse_event.MouseInput.Y = m_pointer.Y;
+	switch (touch_event) {
+	case ETIE_PRESSED_DOWN:
+		mouse_event.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
+		mouse_event.MouseInput.ButtonStates = EMBSM_LEFT;
+		break;
+	case ETIE_MOVED:
+		mouse_event.MouseInput.Event = EMIE_MOUSE_MOVED;
+		mouse_event.MouseInput.ButtonStates = EMBSM_LEFT;
+		break;
+	case ETIE_LEFT_UP:
+		mouse_event.MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
+		mouse_event.MouseInput.ButtonStates = 0;
+		break;
+	default:
+		return false;
+	}
+	if (preprocessEvent(mouse_event))
+		return true;
+	if (!target)
+		return false;
+	return target->OnEvent(mouse_event);
+}
+
+void GUIModalMenu::enter(gui::IGUIElement *hovered)
+{
+	sanity_check(!m_hovered);
+	m_hovered.grab(hovered);
+	SEvent gui_event{};
+	gui_event.EventType = EET_GUI_EVENT;
+	gui_event.GUIEvent.Caller = m_hovered.get();
+	gui_event.GUIEvent.EventType = EGET_ELEMENT_HOVERED;
+	gui_event.GUIEvent.Element = gui_event.GUIEvent.Caller;
+	m_hovered->OnEvent(gui_event);
+}
+
+void GUIModalMenu::leave()
+{
+	if (!m_hovered)
+		return;
+	SEvent gui_event{};
+	gui_event.EventType = EET_GUI_EVENT;
+	gui_event.GUIEvent.Caller = m_hovered.get();
+	gui_event.GUIEvent.EventType = EGET_ELEMENT_LEFT;
+	m_hovered->OnEvent(gui_event);
+	m_hovered.reset();
+}
+
+#endif
+
 bool GUIModalMenu::preprocessEvent(const SEvent &event)
 {
 #ifdef __ANDROID__
@@ -230,89 +288,50 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 	}
 
 	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
-		SEvent translated;
-		memset(&translated, 0, sizeof(SEvent));
-		translated.EventType = EET_MOUSE_INPUT_EVENT;
-		gui::IGUIElement *root = Environment->getRootGUIElement();
+		irr_ptr<GUIModalMenu> holder;
+		holder.grab(this); // keep this alive until return (it might be dropped downstream [?])
 
-		if (!root) {
-			errorstream << "GUIModalMenu::preprocessEvent"
-				    << " unable to get root element" << std::endl;
-			return false;
-		}
-		gui::IGUIElement *hovered =
-				root->getElementFromPoint(core::position2d<s32>(
-						event.TouchInput.X, event.TouchInput.Y));
-
-		translated.MouseInput.X = event.TouchInput.X;
-		translated.MouseInput.Y = event.TouchInput.Y;
-		translated.MouseInput.Control = false;
-
-		if (event.TouchInput.touchedCount == 1) {
-			switch (event.TouchInput.Event) {
-			case ETIE_PRESSED_DOWN:
+		switch ((int)event.TouchInput.touchedCount) {
+		case 1: {
+			if (event.TouchInput.Event == ETIE_PRESSED_DOWN || event.TouchInput.Event == ETIE_MOVED)
 				m_pointer = v2s32(event.TouchInput.X, event.TouchInput.Y);
-				translated.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
-				translated.MouseInput.ButtonStates = EMBSM_LEFT;
+			if (event.TouchInput.Event == ETIE_PRESSED_DOWN)
 				m_down_pos = m_pointer;
-				break;
-			case ETIE_MOVED:
-				m_pointer = v2s32(event.TouchInput.X, event.TouchInput.Y);
-				translated.MouseInput.Event = EMIE_MOUSE_MOVED;
-				translated.MouseInput.ButtonStates = EMBSM_LEFT;
-				break;
-			case ETIE_LEFT_UP:
-				translated.MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
-				translated.MouseInput.ButtonStates = 0;
-				hovered = root->getElementFromPoint(m_down_pos);
-				// we don't have a valid pointer element use last
-				// known pointer pos
-				translated.MouseInput.X = m_pointer.X;
-				translated.MouseInput.Y = m_pointer.Y;
-
-				// reset down pos
-				m_down_pos = v2s32(0, 0);
-				break;
-			default:
-				break;
+			gui::IGUIElement *hovered = Environment->getRootGUIElement()->getElementFromPoint(core::position2d<s32>(m_pointer));
+			if (event.TouchInput.Event == ETIE_PRESSED_DOWN)
+				Environment->setFocus(hovered);
+			if (m_hovered != hovered) {
+				leave();
+				enter(hovered);
 			}
-		} else if ((event.TouchInput.touchedCount == 2) &&
-				(event.TouchInput.Event == ETIE_PRESSED_DOWN)) {
-			hovered = root->getElementFromPoint(m_down_pos);
-
-			translated.MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
-			translated.MouseInput.ButtonStates = EMBSM_LEFT | EMBSM_RIGHT;
-			translated.MouseInput.X = m_pointer.X;
-			translated.MouseInput.Y = m_pointer.Y;
-			if (hovered)
-				hovered->OnEvent(translated);
-
-			translated.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
-			translated.MouseInput.ButtonStates = EMBSM_LEFT;
-
-			if (hovered)
-				hovered->OnEvent(translated);
-
-			return true;
-		} else {
-			// ignore unhandled 2 touch events (accidental moving for example)
+			gui::IGUIElement *focused = Environment->getFocus();
+			bool ret = simulateMouseEvent(focused, event.TouchInput.Event);
+			if (!ret && m_hovered != focused)
+				ret = simulateMouseEvent(m_hovered.get(), event.TouchInput.Event);
+			if (event.TouchInput.Event == ETIE_LEFT_UP)
+				leave();
+			return ret;
+		}
+		case 2: {
+			if (event.TouchInput.Event != ETIE_PRESSED_DOWN)
+				return true; // ignore
+			auto focused = Environment->getFocus();
+			if (!focused)
+				return true;
+			SEvent rclick_event{};
+			rclick_event.EventType = EET_MOUSE_INPUT_EVENT;
+			rclick_event.MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
+			rclick_event.MouseInput.ButtonStates = EMBSM_LEFT | EMBSM_RIGHT;
+			rclick_event.MouseInput.X = m_pointer.X;
+			rclick_event.MouseInput.Y = m_pointer.Y;
+			focused->OnEvent(rclick_event);
+			rclick_event.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
+			rclick_event.MouseInput.ButtonStates = EMBSM_LEFT;
+			focused->OnEvent(rclick_event);
 			return true;
 		}
-
-		// check if translated event needs to be preprocessed again
-		if (preprocessEvent(translated))
+		default: // ignored
 			return true;
-
-		if (hovered) {
-			grab();
-			bool retval = hovered->OnEvent(translated);
-
-			if (event.TouchInput.Event == ETIE_LEFT_UP)
-				// reset pointer
-				m_pointer = v2s32(0, 0);
-
-			drop();
-			return retval;
 		}
 	}
 #endif

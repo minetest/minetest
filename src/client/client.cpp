@@ -1196,7 +1196,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	if (canSendChatMessage()) {
 		u32 now = time(NULL);
 		float time_passed = now - m_last_chat_message_sent;
-		m_last_chat_message_sent = time(NULL);
+		m_last_chat_message_sent = now;
 
 		m_chat_message_allowance += time_passed * (CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 		if (m_chat_message_allowance > CLIENT_CHAT_MESSAGE_LIMIT_PER_10S)
@@ -1275,9 +1275,8 @@ void Client::sendPlayerPos()
 	// Save bandwidth by only updating position when
 	// player is not dead and something changed
 
-	// FIXME: This part causes breakages in mods like 3d_armor, and has been commented for now
-	// if (m_activeobjects_received && player->isDead())
-	//	return;
+	if (m_activeobjects_received && player->isDead())
+		return;
 
 	if (
 			player->last_position     == player->getPosition() &&
@@ -1833,7 +1832,7 @@ void Client::makeScreenshot()
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
 			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-					narrow_to_wide(sstr.str())));
+					utf8_to_wide(sstr.str())));
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}

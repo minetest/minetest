@@ -175,7 +175,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		}
 	}
 #endif
-	g_fontengine = new FontEngine(g_settings, guienv);
+	g_fontengine = new FontEngine(guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2

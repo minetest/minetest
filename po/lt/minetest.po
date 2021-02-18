@@ -2,28 +2,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lithuanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-05-10 12:32+0000\n"
-"Last-Translator: restcoser <restcoser.mail@gmail.com>\n"
+"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"PO-Revision-Date: 2020-09-23 07:41+0000\n"
+"Last-Translator: Kornelijus Tvarijanavičius <kornelitvari@protonmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/lt/>\n"
 "Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
-"19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
-"1 : 2);\n"
-"X-Generator: Weblate 4.1-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
+"%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "Prisikelti"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "Jūs numirėte."
+msgstr "Jūs numirėte"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -51,10 +49,6 @@ msgstr "Prisijungti iš naujo"
 msgid "The server has requested a reconnect:"
 msgstr "Serveris paprašė prisijungti iš naujo:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Įkeliama..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Neatitinka protokolo versija. "
@@ -68,12 +62,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Serveris palaiko protokolo versijas nuo $1 iki $2 "
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"Pabandykite dar kart įjungti viešą serverių sąrašą ir patikrinkite savo "
-"interneto ryšį."
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Mes palaikome tik $1 protokolo versiją."
 
@@ -81,7 +69,8 @@ msgstr "Mes palaikome tik $1 protokolo versiją."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Mes palaikome protokolo versijas nuo $1 iki $2."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -89,17 +78,17 @@ msgstr "Mes palaikome protokolo versijas nuo $1 iki $2."
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "Atsisakyti"
+msgstr "Atšaukti"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 #, fuzzy
 msgid "Dependencies:"
 msgstr "Priklauso:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "Išjungti papildinį"
+msgstr "Išjungti visus papildinius"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -111,9 +100,8 @@ msgid "Enable all"
 msgstr "Įjungti visus"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "Pervadinti papildinių paką:"
+msgstr "Aktyvuoti papildinį"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -137,9 +125,8 @@ msgid "No (optional) dependencies"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No game description provided."
-msgstr "Papildinio aprašymas nepateiktas"
+msgstr "Nepateiktas žaidimo aprašymas."
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -147,9 +134,8 @@ msgid "No hard dependencies"
 msgstr "Priklauso:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No modpack description provided."
-msgstr "Papildinio aprašymas nepateiktas"
+msgstr "Nepateiktas papildinio aprašymas."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -173,13 +159,54 @@ msgid "enabled"
 msgstr "įjungtas"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "Įkeliama..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
+msgid "Already installed"
+msgstr "Klavišas jau naudojamas"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "Back to Main Menu"
 msgstr "Pagrindinis meniu"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "Slėpti vidinius"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -205,6 +232,16 @@ msgid "Install"
 msgstr "Įdiegti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "Įdiegti"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "Inicijuojami mazgai"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Papildiniai"
@@ -218,9 +255,25 @@ msgid "No results"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Ieškoti"
+#, fuzzy
+msgid "No updates"
+msgstr "Atnaujinti"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -237,7 +290,11 @@ msgid "Update"
 msgstr "Atnaujinti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -277,9 +334,8 @@ msgid "Create"
 msgstr "Sukurti"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Papildinio informacija:"
+msgstr "Dekoracijos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -543,14 +599,16 @@ msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Select directory"
-msgstr "Pasirinkite papildinio failą:"
+msgid "Search"
+msgstr "Ieškoti"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
+msgid "Select directory"
+msgstr "Pasirinkite aplanką"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr "Pasirinkite papildinio failą:"
+msgstr "Pasirinkite failą"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -639,11 +697,9 @@ msgstr ""
 "paketui $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
-"\n"
-"Papildinio diegimas: nepalaikomas failo tipas „$1“, arba sugadintas archyvas"
+"Papildinio diegimas: nepalaikomas failo tipas „$1“ arba sugadintas archyvas"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -677,6 +733,16 @@ msgstr "Nepavyko įdiegti $1 į $2"
 msgid "Unable to install a modpack as a $1"
 msgstr "Nepavyko įdiegti $1 į $2"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Įkeliama..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+"Pabandykite dar kart įjungti viešą serverių sąrašą ir patikrinkite savo "
+"interneto ryšį."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr ""
@@ -687,9 +753,8 @@ msgid "Content"
 msgstr "Tęsti"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "Pasirinkite tekstūros paketą:"
+msgstr "Pasirinkite tekstūros paketą"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -737,6 +802,17 @@ msgid "Credits"
 msgstr "Padėkos"
 
 #: builtin/mainmenu/tab_credits.lua
+#, fuzzy
+msgid "Open User Data Directory"
+msgstr "Pasirinkite aplanką"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "Ankstesni bendradarbiai"
 
@@ -753,14 +829,10 @@ msgid "Bind Address"
 msgstr "Susieti adresą"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Konfigūruoti"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Kūrybinė veiksena"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Leisti sužeidimus"
 
@@ -779,8 +851,8 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Vardas/slaptažodis"
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -792,12 +864,22 @@ msgstr "Nesukurtas ar pasirinktas joks pasaulis!"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
+msgid "Password"
+msgstr "Naujas slaptažodis"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
 msgid "Play Game"
 msgstr "Pradėti žaidimą"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "Prievadas"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Select Mods"
+msgstr "Pasirinkite pasaulį:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -813,28 +895,26 @@ msgid "Start Game"
 msgstr "Slėpti vidinius"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Adresas / Prievadas :"
+msgstr "Adresas / Prievadas"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Jungtis"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Kūrybinė veiksena"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "Žalojimas įjungtas"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
-msgstr "Mėgiami:"
+msgstr "Pašalinti iš mėgiamų"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 #, fuzzy
 msgid "Favorite"
 msgstr "Mėgiami:"
@@ -844,17 +924,16 @@ msgstr "Mėgiami:"
 msgid "Join Game"
 msgstr "Slėpti vidinius"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
-msgstr "Vardas / Slaptažodis :"
+msgstr "Vardas / Slaptažodis"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr ""
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP įjungtas"
 
@@ -884,21 +963,12 @@ msgid "Antialiasing:"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "Atstatyti vieno žaidėjo pasaulį"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "„Bilinear“ filtras"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -915,20 +985,12 @@ msgid "Fancy Leaves"
 msgstr "Nepermatomi lapai"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "Ne"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -960,19 +1022,10 @@ msgstr "Nepermatomi lapai"
 msgid "Opaque Water"
 msgstr "Nepermatomas vanduo"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Paralaksinė okliuzija"
-
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Particles"
 msgstr "Įjungti visus"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Reset singleplayer world"
-msgstr "Atstatyti vieno žaidėjo pasaulį"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -985,6 +1038,10 @@ msgstr "Nustatymai"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Šešėliavimai"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Shaders (experimental)"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1033,22 +1090,6 @@ msgstr "Nepermatomi lapai"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Taip"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Konfigūruoti papildinius"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Pagrindinis"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Atstatyti vieno žaidėjo pasaulį"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1132,33 +1173,28 @@ msgstr ""
 "Patikrinkite debug.txt dėl papildomos informacijos."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "Susieti adresą"
+msgstr "- Adresas: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "Kūrybinė veiksena"
+msgstr "- Kūrybinis režimas "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Damage: "
-msgstr "Leisti sužeidimus"
+msgstr "- Sužeidimai: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Port: "
-msgstr "Prievadas"
+msgstr "- Prievadas: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "Viešas"
+msgstr "- Viešas: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
@@ -1166,9 +1202,8 @@ msgid "- PvP: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Server Name: "
-msgstr "Serveris"
+msgstr "- Serverio pavadinimas: "
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1223,27 +1258,30 @@ msgid ""
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
 "Numatytas valdymas:\n"
-"- WASD: judėti\n"
-"- Tarpas: šokti/lipti\n"
-"- Lyg2: leistis/eiti žemyn\n"
-"- Q: išmesti elementą\n"
-"- I: inventorius\n"
+"- %s: judėti į priekį\n"
+"- %s: judėti atgal\n"
+"- %s: judėti į kairę\n"
+"- %s: judėti į dešinę\n"
+"- %s: šokti/lipti\n"
+"- %s: leistis/eiti žemyn\n"
+"- %s: išmesti daiktą\n"
+"- %s: inventorius\n"
 "- Pelė: sukti/žiūrėti\n"
 "- Pelės kairys: kasti/smugiuoti\n"
 "- Pelės dešinys: padėti/naudoti\n"
 "- Pelės ratukas: pasirinkti elementą\n"
-"- T: kalbėtis\n"
+"- %s: kalbėtis\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1357,9 +1395,8 @@ msgid "Game paused"
 msgstr "Žaidimo pavadinimas"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Hosting server"
-msgstr "Kuriamas serveris...."
+msgstr "Kuriamas serveris"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
@@ -1379,34 +1416,6 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1812,6 +1821,24 @@ msgstr "X mygtukas 2"
 msgid "Zoom"
 msgstr "Pritraukti"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr ""
+
+#: src/client/minimap.cpp
+msgid "Minimap in texture mode"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Slaptažodžiai nesutampa!"
@@ -2022,7 +2049,7 @@ msgstr "Garso lygis: "
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr "Įvesti"
+msgstr "Įvesti "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2065,12 +2092,6 @@ msgid ""
 "Increase these to 'zoom' into the detail of the fractal.\n"
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2181,6 +2202,10 @@ msgid "ABM interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "ABM time budget"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
 msgstr ""
 
@@ -2273,9 +2298,8 @@ msgid "Announce server"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Announce to this serverlist."
-msgstr "Paskelbti Serverį"
+msgstr "Paskelbti tai serverių sąrašui"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2418,10 +2442,6 @@ msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2489,16 +2509,6 @@ msgstr ""
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2641,9 +2651,8 @@ msgid "Connect glass"
 msgstr "Jungtis"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect to external media server"
-msgstr "Jungiamasi prie serverio..."
+msgstr "Prisijungti prie išorinio medijos serverio"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
@@ -2664,6 +2673,10 @@ msgstr "Nustatyti klavišus"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2726,7 +2739,9 @@ msgid "Crosshair alpha"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2734,7 +2749,9 @@ msgid "Crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2838,12 +2855,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr ""
 
@@ -2915,6 +2926,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Dig key"
+msgstr "Dešinėn"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Digging particles"
 msgstr "Įjungti visus"
 
@@ -2983,9 +2999,8 @@ msgid "Enable joysticks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable mod channels support."
-msgstr "Papildiniai internete"
+msgstr "Įjungti papildinių kanalų palaikymą."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3065,33 +3080,12 @@ msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables minimap."
-msgstr "Leisti sužeidimus"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
-msgstr ""
+msgstr "Įjungia minimapą."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3111,12 +3105,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3126,7 +3114,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
+msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3429,10 +3417,6 @@ msgid "GUI scaling filter txr2img"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr ""
 
@@ -3487,8 +3471,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 
@@ -3959,6 +3943,10 @@ msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr ""
 
@@ -4034,6 +4022,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for decreasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4133,6 +4128,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the inventory.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4698,11 +4700,6 @@ msgid "Main menu script"
 msgstr "Pagrindinis meniu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Main menu style"
-msgstr "Pagrindinis meniu"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -4713,6 +4710,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4888,7 +4893,7 @@ msgid "Maximum FPS"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4934,6 +4939,13 @@ msgstr ""
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5168,14 +5180,6 @@ msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr ""
 
@@ -5198,10 +5202,6 @@ msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5228,35 +5228,6 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Parallax occlusion scale"
-msgstr "Paralaksinė okliuzija"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5322,6 +5293,15 @@ msgstr "Kūrybinė veiksena"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place key"
+msgstr "Kūrybinė veiksena"
+
+#: src/settings_translation_file.cpp
+msgid "Place repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5479,10 +5459,6 @@ msgstr ""
 #, fuzzy
 msgid "Right key"
 msgstr "Dešinėn"
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
@@ -5746,6 +5722,12 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5879,10 +5861,6 @@ msgid "Strength of 3D mode parallax."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -5976,6 +5954,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -6034,8 +6016,8 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6061,15 +6043,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6202,6 +6189,17 @@ msgid ""
 "Use mip mapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6534,6 +6532,24 @@ msgid "Y-level of seabed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr ""
 
@@ -6545,27 +6561,66 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Įjungti kinematografinį"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Ar tikrai norite perkurti savo lokalų pasaulį?"
+
+#~ msgid "Back"
+#~ msgstr "Atgal"
+
+#~ msgid "Config mods"
+#~ msgstr "Konfigūruoti papildinius"
+
+#~ msgid "Configure"
+#~ msgstr "Konfigūruoti"
 
 #, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Pasirinkite papildinio failą:"
-
-#, fuzzy
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Leisti sužeidimus"
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Atsiunčiama $1, prašome palaukti..."
 
 #, fuzzy
 #~ msgid "Enable VBO"
 #~ msgstr "Įjungti papildinį"
 
 #, fuzzy
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "Atsiunčiama $1, prašome palaukti..."
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Leisti sužeidimus"
 
-#~ msgid "Back"
-#~ msgstr "Atgal"
+#~ msgid "Main"
+#~ msgstr "Pagrindinis"
+
+#, fuzzy
+#~ msgid "Main menu style"
+#~ msgstr "Pagrindinis meniu"
+
+#~ msgid "Name/Password"
+#~ msgstr "Vardas/slaptažodis"
+
+#~ msgid "No"
+#~ msgstr "Ne"
 
 #~ msgid "Ok"
 #~ msgstr "Gerai"
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Paralaksinė okliuzija"
+
+#, fuzzy
+#~ msgid "Parallax occlusion scale"
+#~ msgstr "Paralaksinė okliuzija"
+
+#, fuzzy
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Atstatyti vieno žaidėjo pasaulį"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Pasirinkite papildinio failą:"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Atstatyti vieno žaidėjo pasaulį"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Įjungti kinematografinį"
+
+#~ msgid "Yes"
+#~ msgstr "Taip"

@@ -50,22 +50,26 @@ bool LuaHelper::isNaN(lua_State *L, int idx)
 /*
  * Read template functions
  */
-template <> bool LuaHelper::readParam(lua_State *L, int index)
+template <>
+bool LuaHelper::readParam(lua_State *L, int index)
 {
 	return lua_toboolean(L, index) != 0;
 }
 
-template <> s16 LuaHelper::readParam(lua_State *L, int index)
+template <>
+s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	return lua_tonumber(L, index);
 }
 
-template <> int LuaHelper::readParam(lua_State *L, int index)
+template <>
+int LuaHelper::readParam(lua_State *L, int index)
 {
 	return luaL_checkint(L, index);
 }
 
-template <> float LuaHelper::readParam(lua_State *L, int index)
+template <>
+float LuaHelper::readParam(lua_State *L, int index)
 {
 	if (isNaN(L, index))
 		throw LuaError("NaN value is not allowed.");
@@ -73,7 +77,8 @@ template <> float LuaHelper::readParam(lua_State *L, int index)
 	return (float)luaL_checknumber(L, index);
 }
 
-template <> v2s16 LuaHelper::readParam(lua_State *L, int index)
+template <>
+v2s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	v2s16 p;
 	CHECK_POS_TAB(index);
@@ -88,7 +93,8 @@ template <> v2s16 LuaHelper::readParam(lua_State *L, int index)
 	return p;
 }
 
-template <> v2f LuaHelper::readParam(lua_State *L, int index)
+template <>
+v2f LuaHelper::readParam(lua_State *L, int index)
 {
 	v2f p;
 	CHECK_POS_TAB(index);
@@ -103,7 +109,8 @@ template <> v2f LuaHelper::readParam(lua_State *L, int index)
 	return p;
 }
 
-template <> v3f LuaHelper::readParam(lua_State *L, int index)
+template <>
+v3f LuaHelper::readParam(lua_State *L, int index)
 {
 	v3f p;
 	CHECK_POS_TAB(index);
@@ -122,7 +129,8 @@ template <> v3f LuaHelper::readParam(lua_State *L, int index)
 	return p;
 }
 
-template <> std::string LuaHelper::readParam(lua_State *L, int index)
+template <>
+std::string LuaHelper::readParam(lua_State *L, int index)
 {
 	size_t length;
 	std::string result;

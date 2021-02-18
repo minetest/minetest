@@ -299,7 +299,7 @@ do
 			t:add(f_length, buffer(2,2))
 			local textlen = buffer(2,2):uint()
 			if minetest_check_length(buffer, 4 + textlen*2, t) then
-				t:add(f_message, minetest_convert_utf16(buffer(4, textlen*2), "Converted chat message"))
+				t:add(f_message, buffer(4, textlen*2), buffer(4, textlen*2):ustring())
 			end
 		end
 	}
@@ -873,7 +873,7 @@ end
 -- TOCLIENT_HP
 
 do
-	local f_hp = ProtoField.uint16("minetest.server.hp", "Hitpoints", base.DEC)
+	local f_hp = ProtoField.uint16("minetest.server.hp", "Health points", base.DEC)
 
 	minetest_server_commands[0x33] = {
 		"HP", 4,
@@ -1379,35 +1379,6 @@ function minetest_check_length(tvb, min_len, t)
 	end
 end
 
--- Takes a Tvb or TvbRange (i.e. part of a packet) that
--- contains a UTF-16 string and returns a TvbRange containing
--- string converted to ASCII. Any characters outside the range
--- 0x20 to 0x7e are replaced by a question mark.
--- Parameter: tvb: Tvb or TvbRange that contains the UTF-16 data
--- Parameter: name: will be the name of the newly created Tvb.
--- Returns: New TvbRange containing the ASCII string.
--- TODO: Handle surrogates (should only produce one question mark)
--- TODO: Remove this when Wireshark supports UTF-16 strings natively.
-function minetest_convert_utf16(tvb, name)
-	local hex, pos, char
-	hex = ""
-	for pos = 0, tvb:len() - 2, 2 do
-		char = tvb(pos, 2):uint()
-		if (char >= 0x20 and char <= 0x7e) or char == 0x0a then
-			hex = hex .. string.format(" %02x", char)
-		else
-			hex = hex .. " 3F"
-		end
-	end
-	if hex == "" then
-		-- This is a hack to avoid a failed assertion in tvbuff.c
-		-- (function: ensure_contiguous_no_exception)
-		return ByteArray.new("00"):tvb(name):range(0,0)
-	else
-		return ByteArray.new(hex):tvb(name):range()
-	end
-end
-
 -- Decodes a variable-length string as ASCII text
 -- t_textlen, t_text should be the ProtoFields created by minetest_field_helper
 --   alternatively t_text can be a ProtoField.string and t_textlen can be nil
@@ -1438,7 +1409,7 @@ function minetest_decode_helper_utf16(tvb, t, lentype, offset, f_textlen, f_text
 	end
 	local textlen = tvb(offset, n):uint() * 2
 	if minetest_check_length(tvb, offset + n + textlen, t) then
-		t:add(f_text, minetest_convert_utf16(tvb(offset + n, textlen), "UTF-16 text"))
+		t:add(f_text, tvb(offset + n, textlen), tvb(offset + n, textlen):ustring())
 		return offset + n + textlen
 	end
 end

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irrlichttypes.h"
 #include "IGUIEditBox.h"
 #include "IOSOperator.h"
 #include "guiScrollBar.h"

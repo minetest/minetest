@@ -27,8 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
-void set_default_settings(Settings *settings)
+void set_default_settings()
 {
+	Settings *settings = Settings::createLayer(SL_DEFAULTS);
+
 	// Client and server
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
@@ -238,6 +240,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
+	settings->setDefault("show_nametag_backgrounds", "true");
 
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
@@ -459,7 +462,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");

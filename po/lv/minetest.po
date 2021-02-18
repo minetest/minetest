@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-04 16:41+0000\n"
+"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"PO-Revision-Date: 2020-07-12 17:41+0000\n"
 "Last-Translator: Uko Koknevics <TheZeus121@gmail.com>\n"
 "Language-Team: Latvian <https://hosted.weblate.org/projects/minetest/"
 "minetest/lv/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n % 10 == 0 || n % 100 >= 11 && n % 100 <= "
 "19) ? 0 : ((n % 10 == 1 && n % 100 != 11) ? 1 : 2);\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -52,10 +52,6 @@ msgstr "Atjaunot savienojumu"
 msgid "The server has requested a reconnect:"
 msgstr "Serveris ir pieprasījis savienojuma atjaunošanu:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Ielāde..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Protokola versiju neatbilstība. "
@@ -69,12 +65,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Serveris atbalsta protokola versijas starp $1 un $2. "
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"Pamēģiniet atkārtoti ieslēgt publisko serveru sarakstu un pārbaudiet "
-"interneta savienojumu."
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Mēs atbalstam tikai protokola versiju $1."
 
@@ -82,7 +72,8 @@ msgstr "Mēs atbalstam tikai protokola versiju $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Mēs atbalstam protokola versijas starp $1 un $2."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -92,7 +83,8 @@ msgstr "Mēs atbalstam protokola versijas starp $1 un $2."
 msgid "Cancel"
 msgstr "Atcelt"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Atkarības:"
 
@@ -166,12 +158,53 @@ msgid "enabled"
 msgstr "iespējots"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "Ielāde..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Visi papildinājumi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Already installed"
+msgstr "Šis taustiņš jau tiek izmantots"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Atpakaļ uz Galveno Izvēlni"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "Spēlēt (kā serveris)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -196,6 +229,16 @@ msgid "Install"
 msgstr "Instalēt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "Instalēt"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "Neobligātās atkarības:"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Modi"
@@ -209,9 +252,25 @@ msgid "No results"
 msgstr "Nav resultātu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Meklēt"
+#, fuzzy
+msgid "No updates"
+msgstr "Atjaunot"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -226,7 +285,11 @@ msgid "Update"
 msgstr "Atjaunot"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -267,9 +330,8 @@ msgid "Create"
 msgstr "Izveidot"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Informācija:"
+msgstr "Dekorācijas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -527,6 +589,10 @@ msgid "Scale"
 msgstr "Mērogs"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "Meklēt"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
 msgstr "Izvēlēties mapi"
 
@@ -643,6 +709,16 @@ msgstr "Neizdevās instalēt modu kā $1"
 msgid "Unable to install a modpack as a $1"
 msgstr "Neizdevās instalēt modu komplektu kā $1"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Ielāde..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+"Pamēģiniet atkārtoti ieslēgt publisko serveru sarakstu un pārbaudiet "
+"interneta savienojumu."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr "Pārlūkot tiešsaistes saturu"
@@ -696,6 +772,17 @@ msgid "Credits"
 msgstr "Pateicības"
 
 #: builtin/mainmenu/tab_credits.lua
+#, fuzzy
+msgid "Open User Data Directory"
+msgstr "Izvēlēties mapi"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "Bijušie dalībnieki"
 
@@ -712,14 +799,10 @@ msgid "Bind Address"
 msgstr "Piesaistes adrese"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Iestatīt"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Radošais režīms"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Iespējot bojājumus"
 
@@ -736,8 +819,8 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Vārds/Parole"
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -748,12 +831,22 @@ msgid "No world created or selected!"
 msgstr "Pasaule nav ne izveidota, ne izvēlēta!"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Password"
+msgstr "Jaunā parole"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
 msgstr "Spēlēt"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "Ports"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Select Mods"
+msgstr "Izvēlieties pasauli:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -771,23 +864,23 @@ msgstr "Sākt spēli"
 msgid "Address / Port"
 msgstr "Adrese / Ports"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Pieslēgties"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Radošais režīms"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "Bojājumi iespējoti"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Izdzēst no izlases"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr "Pievienot izlasei"
 
@@ -795,16 +888,16 @@ msgstr "Pievienot izlasei"
 msgid "Join Game"
 msgstr "Pievienoties spēlei"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr "Vārds / Parole"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Pings"
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP iespējots"
 
@@ -833,21 +926,12 @@ msgid "Antialiasing:"
 msgstr "Gludināšana:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
-"Vai esat pārliecināts, ka vēlaties atiestatīt savu viena spēlētāja pasauli?"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr "Atcerēties ekrāna izmēru"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "Bilineārais filtrs"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "“Bump Mapping”"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -862,20 +946,12 @@ msgid "Fancy Leaves"
 msgstr "Skaistas lapas"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr "Izveidot normāl-kartes"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr "“Mipmap”"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "“Mipmap” + anizotr. filtrs"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "Nē"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -905,17 +981,9 @@ msgstr "Necaurredzamas lapas"
 msgid "Opaque Water"
 msgstr "Necaurredzams ūdens"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Tekstūru dziļums"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "Daļiņas"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "Atiestatīt viena spēlētāja pasauli"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -928,6 +996,11 @@ msgstr "Iestatījumi"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Šeideri"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Shaders (experimental)"
+msgstr "Šeideri (nepieejami)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -972,22 +1045,6 @@ msgstr "Viļņojoši šķidrumi"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Viļņojoši augi"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Jā"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Iestatīt modus"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Galvenā izvēlne"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Sākt viena spēlētāja spēli"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1143,20 +1200,20 @@ msgid "Continue"
 msgstr "Turpināt"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1303,34 +1360,6 @@ msgstr "MiB/s"
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
 msgstr "Minikarte šobrīd atspējota vai nu spēlei, vai modam"
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr "Minikarte paslēpta"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr "Minikarte radara režīmā, palielinājums x1"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr "Minikarte radara režīmā, palielinājums x2"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr "Minikarte radara režīmā, palielinājums x4"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr "Minikarte virsmas režīmā, palielinājums x1"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr "Minikarte virsmas režīmā, palielinājums x2"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
-msgstr "Minikarte virsmas režīmā, palielinājums x4"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1724,6 +1753,25 @@ msgstr "X Poga 2"
 msgid "Zoom"
 msgstr "Zoom"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr "Minikarte paslēpta"
+
+#: src/client/minimap.cpp
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr "Minikarte radara režīmā, palielinājums x1"
+
+#: src/client/minimap.cpp
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr "Minikarte virsmas režīmā, palielinājums x1"
+
+#: src/client/minimap.cpp
+#, fuzzy
+msgid "Minimap in texture mode"
+msgstr "Minikarte virsmas režīmā, palielinājums x1"
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Paroles nesakrīt!"
@@ -1976,12 +2024,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr ""
 
@@ -2085,6 +2127,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2321,10 +2367,6 @@ msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2392,16 +2434,6 @@ msgstr ""
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2556,6 +2588,10 @@ msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "ContentDB URL"
 msgstr ""
 
@@ -2612,7 +2648,9 @@ msgid "Crosshair alpha"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2620,7 +2658,9 @@ msgid "Crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2720,12 +2760,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr ""
 
@@ -2793,6 +2827,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Dig key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2944,31 +2982,11 @@ msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2989,12 +3007,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3004,7 +3016,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
+msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3306,10 +3318,6 @@ msgid "GUI scaling filter txr2img"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr ""
 
@@ -3363,8 +3371,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 
@@ -3835,6 +3843,10 @@ msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr ""
 
@@ -3909,6 +3921,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for decreasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4008,6 +4027,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the inventory.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4570,10 +4596,6 @@ msgid "Main menu script"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Main menu style"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -4584,6 +4606,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4750,7 +4780,7 @@ msgid "Maximum FPS"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4796,6 +4826,13 @@ msgstr ""
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5028,14 +5065,6 @@ msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr ""
 
@@ -5061,10 +5090,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Online Content Repository"
 msgstr ""
 
@@ -5087,34 +5112,6 @@ msgid ""
 "Open the pause menu when the window's focus is lost. Does not pause if a "
 "formspec is\n"
 "open."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5181,6 +5178,14 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "Kustība uz augšu/leju pēc skatīšanās virziena"
+
+#: src/settings_translation_file.cpp
+msgid "Place key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Place repetition interval"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5337,10 +5342,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5595,6 +5596,12 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5724,10 +5731,6 @@ msgid "Strength of 3D mode parallax."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -5821,6 +5824,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -5879,8 +5886,8 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5906,15 +5913,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6047,6 +6059,17 @@ msgid ""
 "Use mip mapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6374,6 +6397,24 @@ msgid "Y-level of seabed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr ""
 
@@ -6385,11 +6426,61 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr ""
+#~ "Vai esat pārliecināts, ka vēlaties atiestatīt savu viena spēlētāja "
+#~ "pasauli?"
+
 #~ msgid "Back"
 #~ msgstr "Atpakaļ"
+
+#~ msgid "Bump Mapping"
+#~ msgstr "“Bump Mapping”"
+
+#~ msgid "Config mods"
+#~ msgstr "Iestatīt modus"
+
+#~ msgid "Configure"
+#~ msgstr "Iestatīt"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Lejuplādējas un instalējas $1, lūdzu uzgaidiet..."
 
+#~ msgid "Generate Normal Maps"
+#~ msgstr "Izveidot normāl-kartes"
+
+#~ msgid "Main"
+#~ msgstr "Galvenā izvēlne"
+
+#~ msgid "Minimap in radar mode, Zoom x2"
+#~ msgstr "Minikarte radara režīmā, palielinājums x2"
+
+#~ msgid "Minimap in radar mode, Zoom x4"
+#~ msgstr "Minikarte radara režīmā, palielinājums x4"
+
+#~ msgid "Minimap in surface mode, Zoom x2"
+#~ msgstr "Minikarte virsmas režīmā, palielinājums x2"
+
+#~ msgid "Minimap in surface mode, Zoom x4"
+#~ msgstr "Minikarte virsmas režīmā, palielinājums x4"
+
+#~ msgid "Name/Password"
+#~ msgstr "Vārds/Parole"
+
+#~ msgid "No"
+#~ msgstr "Nē"
+
 #~ msgid "Ok"
 #~ msgstr "Ok"
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Tekstūru dziļums"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Atiestatīt viena spēlētāja pasauli"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Sākt viena spēlētāja spēli"
+
+#~ msgid "Yes"
+#~ msgstr "Jā"

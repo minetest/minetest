@@ -982,7 +982,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 
 	bool set_default = !lua_isboolean(L, 3) || readParam<bool>(L, 3);
 
-	g_settings->setNoiseParams(name, np, set_default);
+	Settings::getLayer(set_default ? SL_DEFAULTS : SL_GLOBAL)->setNoiseParams(name, np);
 
 	return 0;
 }
@@ -1336,10 +1336,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	if (read_noiseparams(L, -1, &ore->np)) {
 		ore->flags |= OREFLAG_USE_NOISE;
 	} else if (ore->needs_noise) {
-		errorstream << "register_ore: specified ore type requires valid "
-			"'noise_params' parameter" << std::endl;
-		delete ore;
-		return 0;
+		log_deprecated(L,
+			"register_ore: ore type requires 'noise_params' but it is not specified, falling back to defaults");
 	}
 	lua_pop(L, 1);
 

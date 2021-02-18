@@ -153,7 +153,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 RenderingEngine::~RenderingEngine()
 {
 	core.reset();
-	m_device->drop();
+	m_device->closeDevice();
 	s_singleton = nullptr;
 }
 

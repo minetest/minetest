@@ -30,8 +30,8 @@ fake_function() {
 	gettext("Double-tapping the jump key toggles fly mode.");
 	gettext("Always fly and fast");
 	gettext("If disabled, \"special\" key is used to fly fast if both fly and fast mode are\nenabled.");
-	gettext("Rightclick repetition interval");
-	gettext("The time in seconds it takes between repeated right clicks when holding the right\nmouse button.");
+	gettext("Place repetition interval");
+	gettext("The time in seconds it takes between repeated node placements when holding\nthe place button.");
 	gettext("Automatic jumping");
 	gettext("Automatically jump up single-node obstacles.");
 	gettext("Safe digging and placing");
@@ -54,6 +54,8 @@ fake_function() {
 	gettext("The type of joystick");
 	gettext("Joystick button repetition interval");
 	gettext("The time in seconds it takes between repeated events\nwhen holding down a joystick button combination.");
+	gettext("Joystick deadzone");
+	gettext("The deadzone of the joystick");
 	gettext("Joystick frustum sensitivity");
 	gettext("The sensitivity of the joystick axes for moving the\ningame view frustum around.");
 	gettext("Forward key");
@@ -68,6 +70,10 @@ fake_function() {
 	gettext("Key for jumping.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Sneak key");
 	gettext("Key for sneaking.\nAlso used for climbing down and descending in water if aux1_descends is disabled.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Dig key");
+	gettext("Key for digging.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Place key");
+	gettext("Key for placing.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Inventory key");
 	gettext("Key for opening the inventory.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Special key");
@@ -229,7 +235,7 @@ fake_function() {
 	gettext("Minimum texture size");
 	gettext("When using bilinear/trilinear/anisotropic filters, low-resolution textures\ncan be blurred, so automatically upscale them with nearest-neighbor\ninterpolation to preserve crisp pixels. This sets the minimum texture size\nfor the upscaled textures; higher values look sharper, but require more\nmemory.  Powers of 2 are recommended. Setting this higher than 1 may not\nhave a visible effect unless bilinear/trilinear/anisotropic filtering is\nenabled.\nThis is also used as the base node texture size for world-aligned\ntexture autoscaling.");
 	gettext("FSAA");
-	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
+	gettext("Use multi-sample antialiasing (MSAA) to smooth out block edges.\nThis algorithm smooths out the 3D viewport while keeping the image sharp,\nbut it doesn't affect the insides of textures\n(which is especially noticeable with transparent textures).\nVisible spaces appear between nodes when shaders are disabled.\nIf set to 0, MSAA is disabled.\nA restart is required after changing this option.");
 	gettext("Undersampling");
 	gettext("Undersampling is similar to using a lower screen resolution, but it applies\nto the game world only, keeping the GUI intact.\nIt should give a significant performance boost at the cost of less detailed image.\nHigher values result in a less detailed image.");
 	gettext("Shaders");
@@ -240,20 +246,6 @@ fake_function() {
 	gettext("Tone Mapping");
 	gettext("Filmic tone mapping");
 	gettext("Enables Hable's 'Uncharted 2' filmic tone mapping.\nSimulates the tone curve of photographic film and how this approximates the\nappearance of high dynamic range images. Mid-range contrast is slightly\nenhanced, highlights and shadows are gradually compressed.");
-	gettext("Bumpmapping");
-	gettext("Bumpmapping");
-	gettext("Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.\nRequires shaders to be enabled.");
-	gettext("Parallax Occlusion");
-	gettext("Parallax occlusion");
-	gettext("Enables parallax occlusion mapping.\nRequires shaders to be enabled.");
-	gettext("Parallax occlusion mode");
-	gettext("0 = parallax occlusion with slope information (faster).\n1 = relief mapping (slower, more accurate).");
-	gettext("Parallax occlusion iterations");
-	gettext("Number of parallax occlusion iterations.");
-	gettext("Parallax occlusion scale");
-	gettext("Overall scale of parallax occlusion effect.");
-	gettext("Parallax occlusion bias");
-	gettext("Overall bias of parallax occlusion effect, usually scale/2.");
 	gettext("Waving Nodes");
 	gettext("Waving liquids");
 	gettext("Set to true to enable waving liquids (like water).\nRequires shaders to be enabled.");
@@ -272,8 +264,8 @@ fake_function() {
 	gettext("Arm inertia, gives a more realistic movement of\nthe arm when the camera moves.");
 	gettext("Maximum FPS");
 	gettext("If FPS would go higher than this, limit it by sleeping\nto not waste CPU power for no benefit.");
-	gettext("FPS in pause menu");
-	gettext("Maximum FPS when game is paused.");
+	gettext("FPS when unfocused or paused");
+	gettext("Maximum FPS when the window is not focused, or when the game is paused.");
 	gettext("Pause on lost window focus");
 	gettext("Open the pause menu when the window's focus is lost. Does not pause if a formspec is\nopen.");
 	gettext("Viewing range");
@@ -309,7 +301,7 @@ fake_function() {
 	gettext("Texture path");
 	gettext("Path to texture directory. All textures are first searched from here.");
 	gettext("Video driver");
-	gettext("The rendering back-end for Irrlicht.\nA restart is required after changing this.\nNote: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.\nOn other platforms, OpenGL is recommended, and it’s the only driver with\nshader support currently.");
+	gettext("The rendering back-end for Irrlicht.\nA restart is required after changing this.\nNote: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.\nOn other platforms, OpenGL is recommended.\nShaders are supported by OpenGL (desktop only) and OGLES2 (experimental)");
 	gettext("Cloud radius");
 	gettext("Radius of cloud area stated in number of 64 node cloud squares.\nValues larger than 26 will start to produce sharp cutoffs at cloud area corners.");
 	gettext("View bobbing factor");
@@ -339,9 +331,9 @@ fake_function() {
 	gettext("Selection box width");
 	gettext("Width of the selection box lines around nodes.");
 	gettext("Crosshair color");
-	gettext("Crosshair color (R,G,B).");
+	gettext("Crosshair color (R,G,B).\nAlso controls the object crosshair color");
 	gettext("Crosshair alpha");
-	gettext("Crosshair alpha (opaqueness, between 0 and 255).");
+	gettext("Crosshair alpha (opaqueness, between 0 and 255).\nAlso controls the object crosshair color");
 	gettext("Recent Chat Messages");
 	gettext("Maximum number of recent chat messages to show");
 	gettext("Desynchronize block animation");
@@ -377,7 +369,7 @@ fake_function() {
 	gettext("Autoscaling mode");
 	gettext("World-aligned textures may be scaled to span several nodes. However,\nthe server may not send the scale you want, especially if you use\na specially-designed texture pack; with this option, the client tries\nto determine the scale automatically basing on the texture size.\nSee also texture_min_size.\nWarning: This option is EXPERIMENTAL!");
 	gettext("Show entity selection boxes");
-	gettext("Show entity selection boxes");
+	gettext("Show entity selection boxes\nA restart is required after changing this.");
 	gettext("Menus");
 	gettext("Clouds in menu");
 	gettext("Use a cloud animation for the main menu background.");
@@ -503,6 +495,8 @@ fake_function() {
 	gettext("To reduce lag, block transfers are slowed down when a player is building something.\nThis determines how long they are slowed down after placing or removing a node.");
 	gettext("Max. packets per iteration");
 	gettext("Maximum number of packets sent per send step, if you have a slow connection\ntry reducing it, but don't reduce it to a number below double of targeted\nclient number.");
+	gettext("Map Compression Level for Network Transfer");
+	gettext("ZLib compression level to use when sending mapblocks to the client.\n-1 - Zlib's default compression level\n0 - no compresson, fastest\n9 - best compression, slowest\n(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)");
 	gettext("Game");
 	gettext("Default game");
 	gettext("Default game when creating a new world.\nThis will be overridden when creating a world from the main menu.");
@@ -601,7 +595,7 @@ fake_function() {
 	gettext("Acceleration of gravity, in nodes per second per second.");
 	gettext("Advanced");
 	gettext("Deprecated Lua API handling");
-	gettext("Handling for deprecated Lua API calls:\n-    legacy: (try to) mimic old behaviour (default for release).\n-    log: mimic and log backtrace of deprecated call (default for debug).\n-    error: abort on usage of deprecated call (suggested for mod developers).");
+	gettext("Handling for deprecated Lua API calls:\n-    none: Do not log deprecated calls\n-    log: mimic and log backtrace of deprecated call (default).\n-    error: abort on usage of deprecated call (suggested for mod developers).");
 	gettext("Max. clearobjects extra blocks");
 	gettext("Number of extra blocks that can be loaded by /clearobjects at once.\nThis is a trade-off between sqlite transaction overhead and\nmemory consumption (4096=100MB, as a rule of thumb).");
 	gettext("Unload unused server data");
@@ -610,12 +604,16 @@ fake_function() {
 	gettext("Maximum number of statically stored objects in a block.");
 	gettext("Synchronous SQLite");
 	gettext("See https://www.sqlite.org/pragma.html#pragma_synchronous");
+	gettext("Map Compression Level for Disk Storage");
+	gettext("ZLib compression level to use when saving mapblocks to disk.\n-1 - Zlib's default compression level\n0 - no compresson, fastest\n9 - best compression, slowest\n(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)");
 	gettext("Dedicated server step");
 	gettext("Length of a server tick and the interval at which objects are generally updated over\nnetwork.");
 	gettext("Active block management interval");
 	gettext("Length of time between active block management cycles");
 	gettext("ABM interval");
 	gettext("Length of time between Active Block Modifier (ABM) execution cycles");
+	gettext("ABM time budget");
+	gettext("The time budget allowed for ABMs to execute on each step\n(as a fraction of the ABM Interval)");
 	gettext("NodeTimer interval");
 	gettext("Length of time between NodeTimer execution cycles");
 	gettext("Ignore world errors");
@@ -687,8 +685,6 @@ fake_function() {
 	gettext("Maximum time in ms a file download (e.g. a mod download) may take.");
 	gettext("High-precision FPU");
 	gettext("Makes DirectX work with LuaJIT. Disable if it causes troubles.");
-	gettext("Main menu style");
-	gettext("Changes the main menu UI:\n-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.\n-   Simple: One singleplayer world, no game or texture pack choosers. May be\nnecessary for smaller screens.");
 	gettext("Main menu script");
 	gettext("Replaces the default main menu with a custom one.");
 	gettext("Engine profiling data print interval");
@@ -958,6 +954,12 @@ fake_function() {
 	gettext("Terrain noise threshold for hills.\nControls proportion of world area covered by hills.\nAdjust towards 0.0 for a larger proportion.");
 	gettext("Hill steepness");
 	gettext("Controls steepness/height of hills.");
+	gettext("Cavern limit");
+	gettext("Y-level of cavern upper limit.");
+	gettext("Cavern taper");
+	gettext("Y-distance over which caverns expand to full size.");
+	gettext("Cavern threshold");
+	gettext("Defines full size of caverns, smaller values create larger caverns.");
 	gettext("Dungeon minimum Y");
 	gettext("Lower Y limit of dungeons.");
 	gettext("Dungeon maximum Y");
@@ -971,6 +973,8 @@ fake_function() {
 	gettext("First of two 3D noises that together define tunnels.");
 	gettext("Cave2 noise");
 	gettext("Second of two 3D noises that together define tunnels.");
+	gettext("Cavern noise");
+	gettext("3D noise defining giant caverns.");
 	gettext("Dungeon noise");
 	gettext("3D noise that determines number of dungeons per mapchunk.");
 	gettext("Mapgen Fractal");
@@ -1097,4 +1101,6 @@ fake_function() {
 	gettext("The URL for the content repository");
 	gettext("ContentDB Flag Blacklist");
 	gettext("Comma-separated list of flags to hide in the content repository.\n\"nonfree\" can be used to hide packages which do not qualify as 'free software',\nas defined by the Free Software Foundation.\nYou can also specify content ratings.\nThese flags are independent from Minetest versions,\nso see a full list at https://content.minetest.net/help/content_flags/");
+	gettext("ContentDB Max Concurrent Downloads");
+	gettext("Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.\nThis should be lower than curl_parallel_limit.");
 }
