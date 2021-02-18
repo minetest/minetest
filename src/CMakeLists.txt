@@ -295,7 +295,6 @@ else()
 		endif(NOT HAIKU AND NOT APPLE)
 
 		find_package(JPEG REQUIRED)
-		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
 		if(APPLE)
 			find_library(CARBON_LIB Carbon REQUIRED)
