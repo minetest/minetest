@@ -42,5 +42,5 @@ core.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool
 		return -- barely noticeable, so don't even send
 	end
 
-	player:add_player_velocity(kdir)
+	player:add_velocity(kdir)
 end)
