@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Nynorsk (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2021-01-10 01:32+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2021-02-20 05:50+0000\n"
+"Last-Translator: Tor Egil Hoftun Kvæstad <toregilhk@hotmail.com>\n"
 "Language-Team: Norwegian Nynorsk <https://hosted.weblate.org/projects/"
 "minetest/minetest/nn/>\n"
 "Language: nn\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,12 +24,11 @@ msgstr "Du døydde"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Ein feil har skjedd med eit Lua manus, slik som ein mod:"
+msgstr "Ein feil oppstod i eit LUA-skript:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -41,11 +40,11 @@ msgstr "Hovudmeny"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Kople attende sambandet"
+msgstr "Kople til igjen"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Tenarmaskinen ber om å få forbindelsen attende:"
+msgstr "Tenaren har førespurt å kople til igjen:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -53,19 +52,19 @@ msgstr "Protkoll versjon bommert. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Tenarmaskinen krevjar protokoll versjon $1. "
+msgstr "Tenaren krev protokoll versjon $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Tenarmaskinen støttar protokoll versjonar mellom $1 og $2. "
+msgstr "Tenaren støtter protokollversjonar mellom $1 og $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Vi støttar berre protokoll versjon $1."
+msgstr "Me støtter berre protokoll versjon $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Vi støttar protokoll versjonar mellom $1 og $2."
+msgstr "Me støtter protokollversjonar mellom $1 og $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -85,62 +84,59 @@ msgstr "Avhengigheiter:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Deaktiver allt"
+msgstr "Deaktiver alt"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Deaktivere modifikasjons-pakka"
+msgstr "Deaktiver modifikasjonspakken"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Aktiver allt"
+msgstr "Aktiver alt"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Aktiver modifikasjons-pakka"
+msgstr "Aktiver modifikasjonspakken"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Fåfengt å aktivere modifikasjon \"$1\" sia den innehald ugyldige teikn. "
-"Berre teikna [a-z0-9_] e tillaten."
+"Klarte ikkje å aktivere modifikasjon «$1», då den inneheld ugyldige teikn. "
+"Berre teikna [a-z0-9_] er tillatne."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Finn fleire modifikasjonar"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Modifikasjon:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Valgbare avhengigheiter:"
+msgstr "Ingen (valfrie) avhengigheiter"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Ikkje nokon spill skildring e sørgja for."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Ikkje nokon avhengigheiter."
+msgstr "Ingen obligatoriske avhengigheiter"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Ikkje noko modifikasjons-pakke skildring e sørgja for."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Valgbare avhengigheiter:"
+msgstr "Ingen valfrie avhengigheiter"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "Valgbare avhengigheiter:"
+msgstr "Valfrie avhengigheiter:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -149,19 +145,19 @@ msgstr "Lagre"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr "Verda:"
+msgstr "Verd:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "Aktivert"
+msgstr "aktivert"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "«$1» eksisterer allereie. Vil du overskrive den?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "$1 og $2 avhengigheiter vil verte installerte."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -174,39 +170,36 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Laster ned..."
+msgstr "$1 lastar ned …"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 obligatoriske avhengigheiter vart ikkje funne."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 vil verte installert, og $2 avhengigheiter vil verte hoppa over."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Alle pakker"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Knapp er allereie i bruk"
+msgstr "Allereie installert"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Attende til hovudmeny"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Bli husvert"
+msgstr "Basisspel:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB er ikkje tilgjengeleg når Minetest vart kompilert utan cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -215,7 +208,7 @@ msgstr "Laster ned..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr "Fåfengt å laste ned $1"
+msgstr "Klarte ikkje å laste ned $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -227,44 +220,41 @@ msgid "Install"
 msgstr "Installer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installer"
+msgstr "Installer $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Valgbare avhengigheiter:"
+msgstr "Installer manglande avhengigheiter"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Modder"
+msgstr "Modifikasjonar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "Ikkje nokon pakkar kunne bli henta"
+msgstr "Ingen pakkar kunne verte henta"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Ikkje noko resultat"
+msgstr "Ingen resultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Oppdater"
+msgstr "Ingen oppdateringar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Ikkje funnen"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Overskriv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Ver venleg å sjekke at basisspelet er korrekt."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -284,19 +274,19 @@ msgstr "Oppdater"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Oppdater alt [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Sjå meir informasjon i ein nettlesar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Ein verd med namnet \"$1\" finns allereie"
+msgstr "Ein verd med namnet «$1» eksisterer allereie"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Ytterlegare terreng"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -312,11 +302,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Biom"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Holer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -328,17 +318,16 @@ msgid "Create"
 msgstr "Skap"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Informasjon:"
+msgstr "Dekorasjonar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Last ned eit spel, sånn som Minetest spellet, ifrå minetest.net"
+msgstr "Last ned eit spel, slik som Minetest-spelet, frå minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr "Last eit ned på minetest.net"
+msgstr "Last ned eit frå minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -346,15 +335,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Flatt terreng"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Svevande landmassar på himmelen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Flyteland (eksperimentell)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -362,11 +351,11 @@ msgstr "Spel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generer ikkjefraktalterreng: Hav og undergrunn"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Haugar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
@@ -374,15 +363,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Aukar fuktigheita rundt elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Sjøar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Låg fuktigheit og høg temperatur fører til grunne eller tørre elver"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -398,15 +387,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Fjell"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Leireflyt"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Nettverk av tunellar og holer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -422,11 +411,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Elver på havnivå"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -449,15 +438,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperert, Ørken"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperert, Ørken, Jungel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperert, Ørken, Jungel, Tundra, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
@@ -465,15 +454,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Tre og jungelgras"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Varier elvedjupne"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Svært store holer djupt i undergrunnen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -490,7 +479,7 @@ msgstr "Du har ikkje installert noko spel."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Er du sikker på at du har lyst til å slette \"$1\"?"
+msgstr "Er du sikker på at du vil slette «$1»?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -500,23 +489,23 @@ msgstr "Slett"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "pkgmgr: sletting av \"$1\" gjekk ikkje"
+msgstr "pkgmgr: klarte ikkje å slette «$1»"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "pkgmgr: ugyldig rute \"$1\""
+msgstr "pkgmgr: ugyldig sti «$1»"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Slett verd \"$1\"?"
+msgstr "Slett verd «$1»?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr "Akseptér"
+msgstr "Aksepter"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Omdøp Modpakka:"
+msgstr "Døyp om modifikasjonspakken:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -532,11 +521,11 @@ msgstr "(Ikkje nokon skildring gjeven)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "To-dimensjonal lyd"
+msgstr "2D-støy"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Attende til innstillingar"
+msgstr "< Tilbake til innstillingssida"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -592,11 +581,11 @@ msgstr "Søk"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr "Velje ein mappe"
+msgstr "Vel katalog"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr "Velje eit dokument"
+msgstr "Vel fil"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -604,11 +593,11 @@ msgstr "Vis tekniske namn"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr "Verdien må i det minste være $1."
+msgstr "Verdien må minst vere $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr "Verdien må ikkje være høgare enn $1."
+msgstr "Verdien må ikkje vere større enn $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -647,7 +636,7 @@ msgstr "Absolutt verdi"
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "Standard"
+msgstr "standardar"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -663,35 +652,37 @@ msgstr "$1 (Aktivert)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr "$1 modder"
+msgstr "$1 modifikasjonar"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "Funka ikkje å installere $1 til $2"
+msgstr "Klarte ikkje å installere $1 til $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
 msgstr ""
-"Installer modifikasjon: Funka ikkje å finne eit ekte modifikasjons namn for: "
-"$1"
+"Installer modifikasjon: Klarte ikkje å finne det reelle modifikasjonsnamnet "
+"for: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Installer Modifikasjon: Funka ikkje å finne ein passande for modpakke $1"
+"Installer modifikasjon: Klarte ikkje å finne ein passande katalog for "
+"modifikasjonspakke $1"
 
 #: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
 msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
 "Installer: Ikkje-støtta dokument type \"$1\" eller så funker ikkje arkivet"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr "Installer: dokument: \"$1\""
+msgstr "Installer: fil: «$1»"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr "Funka ikkje å finne ein gyldig modifikasjon eller mod-pakke"
+msgstr "Klarte ikkje å finne ein gyldig modifikasjon eller modifikasjonspakke"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -711,9 +702,10 @@ msgstr "Funka ikkje å installere mod-pakka som ein $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Laster ned..."
+msgstr "Lastar …"
 
 #: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
 "Forsøkje å kople attende den offentlege tenarmaskin-lista og sjekk sambands "
@@ -729,7 +721,7 @@ msgstr "Innhald"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr "Deaktivér tekstur pakke"
+msgstr "Deaktiver teksturpakke"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
@@ -737,15 +729,15 @@ msgstr "Informasjon:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr "Installer pakker:"
+msgstr "Installerte pakker:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "Ikkje nokon avhengigheiter."
+msgstr "Ingen avhengigheiter."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr "Ikkje nokon pakke skildring tilgjengelig"
+msgstr "Inga pakkeskildring tilgjengeleg"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
@@ -757,15 +749,15 @@ msgstr "Avinstallér pakka"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "Bruk tekstur pakke"
+msgstr "Bruk teksturpakke"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr "Aktive bidragere"
+msgstr "Aktive bidragsytarar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr "Kjerne-utviklere"
+msgstr "Kjerne-utviklarar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
@@ -784,11 +776,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr "Førre bidragere"
+msgstr "Tidlegare bidragsytarar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr "Førre kjerne-utviklere"
+msgstr "Tidlegare kjerne-utviklarar"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -807,20 +799,22 @@ msgid "Enable Damage"
 msgstr "Aktivér skading"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
 msgid "Host Game"
 msgstr "Bli husvert"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
 msgid "Host Server"
 msgstr "Bli tenarmaskin's vert"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Installer spel frå ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Namn"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -828,12 +822,11 @@ msgstr "Ny"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr "Ikkje noko verd skapt eller valgt!"
+msgstr "Inga verd skapt eller valt!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nytt passord"
+msgstr "Passord"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -844,9 +837,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Vel verd:"
+msgstr "Vel modifikasjonar"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -854,7 +846,7 @@ msgstr "Vel verd:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr "Tenarmaskin port"
+msgstr "Tenarport"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
@@ -862,7 +854,7 @@ msgstr "Start spel"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr "Stad/port"
+msgstr "Adresse / port"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Connect"
@@ -926,6 +918,7 @@ msgid "Antialiasing:"
 msgstr "Kantutjemning:"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Autosave Screen Size"
 msgstr "Automatisk sjerm størrelse"
 
@@ -962,10 +955,12 @@ msgid "No Mipmap"
 msgstr "Ingen Mipkart"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Node Highlighting"
 msgstr "Knute-fremheving"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Node Outlining"
 msgstr "Knute-utlinjing"
 
@@ -983,17 +978,18 @@ msgstr "Ugjennomsiktig vatn"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr "Partikkler"
+msgstr "Partiklar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr "Sjerm:"
+msgstr "Skjerm:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
 msgstr "Innstillingar"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Shaders"
 msgstr "Dybdeskaper"
 
@@ -1003,6 +999,7 @@ msgid "Shaders (experimental)"
 msgstr "Dybdeskaper (ikkje tilgjengelig)"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Shaders (unavailable)"
 msgstr "Dybdeskaper (ikkje tilgjengelig)"
 
@@ -1019,10 +1016,12 @@ msgid "Texturing:"
 msgstr "Teksturering:"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "For å aktivere skumrings-effekt så må OpenGL driveren være i bruk."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Tone Mapping"
 msgstr "Tone kartlegging"
 
@@ -1035,6 +1034,7 @@ msgid "Trilinear Filter"
 msgstr "Tri-lineær filtréring"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Waving Leaves"
 msgstr "Raslende lauv"
 
@@ -1044,6 +1044,7 @@ msgid "Waving Liquids"
 msgstr "Raslende lauv"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Waving Plants"
 msgstr "Raslende planter"
 
@@ -1061,23 +1062,24 @@ msgstr "Førebur noder"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr "Førebur node..."
+msgstr "Førebur nodar …"
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr "Lastar teksturar..."
+msgstr "Lastar teksturar …"
 
 #: src/client/client.cpp
+#, fuzzy
 msgid "Rebuilding shaders..."
 msgstr "Gjennbygger dybdeskaper..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "Kopling gikk galen (Tidsavbrott?)"
+msgstr "Tilkoplingsfeil (Tidsavbrot?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Kunne ikkje finne eller ha i gang spelet \""
+msgstr "Kunne ikkje finne eller laste spelet \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1088,8 +1090,9 @@ msgid "Main Menu"
 msgstr "Hovudmeny"
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Ingen verd valgt og ikkje nokon adresse valg. Ikkje noko å gjere."
+msgstr "Inga verd er vald og ikkje nokon adresse valg. Ikkje noko å gjere."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
@@ -1097,13 +1100,15 @@ msgstr "Spelarnamn for langt."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr "Ver vennleg og velje eit anna namn!"
+msgstr "Ver venleg å velje eit namn!"
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Provided password file failed to open: "
 msgstr "Passord dokumentet du ga går ikkje an å åpne: "
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Provided world path doesn't exist: "
 msgstr "Verds-ruta du ga finnes ikkje: "
 
@@ -1132,6 +1137,7 @@ msgid "- Address: "
 msgstr "- Adresse: "
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Creative Mode: "
 msgstr "- Gude løyving: "
 
@@ -1158,7 +1164,7 @@ msgstr "- Spelar mot spelar (PvP): "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr "- Tenarmaskin namn: "
+msgstr "- Tenarnamn: "
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1198,10 +1204,10 @@ msgstr "Kopler til tenarmaskin..."
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr "Fortsetja"
+msgstr "Fortset"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1219,19 +1225,19 @@ msgid ""
 "- %s: chat\n"
 msgstr ""
 "Styring:\n"
-"- %s: Framsteg\n"
-"- %s: Baksteg\n"
-"- %s: Sidesteg mot venstre\n"
-"- %s: Sidesteg mot høyre\n"
-"- %s: hopp/klatre\n"
-"- %s: snike seg rundt/bøye seg\n"
-"- %s: slipp gjennstand\n"
+"- %s: gå framover\n"
+"- %s: gå bakover\n"
+"- %s: gå mot venstre\n"
+"- %s: gå mot høgre\n"
+"- %s: hopp/klatre opp\n"
+"- %s: grav/slå\n"
+"- %s: plasser/nytt\n"
+"- %s: snik/klatre ned\n"
+"- %s: slepp ting\n"
 "- %s: inventar\n"
-"- Datamus: snu seg/sjå rundt\n"
-"- Datamus, venstre klikk: grave/slå\n"
-"- Datamus, høgre klikk: plassér/bruk\n"
-"- Datamus, skrolle-hjul: select item\n"
-"- %s: skravlerør\n"
+"- Mus: snu deg/sjå\n"
+"- Musehjul: vel ting\n"
+"- %s: nettprat\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1424,7 +1430,7 @@ msgstr "Lyd e dempa"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Lydsystemet er slått av"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
@@ -1759,14 +1765,14 @@ msgid "Minimap hidden"
 msgstr "Minikart er gøymt"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Minikart i radar modus, Zoom x1"
+msgstr "Minikart i radarmodus, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Minikart i overflate modus, Zoom x1"
+msgstr "Minikart i overflatemodus, Zoom x%d"
 
 #: src/client/minimap.cpp
 #, fuzzy
@@ -2054,11 +2060,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "3D-skyer"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D-modus"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
@@ -2066,13 +2072,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr ""
+msgstr "3D-støy som definerer gigantiske holer."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
+"3D-støy som definerer fjellstruktur og -høgde.\n"
+"Definerer og strukturen på fjellterreng for flyteland."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2088,7 +2096,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining terrain."
-msgstr ""
+msgstr "3D-støy som definerer terreng."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
@@ -2120,11 +2128,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Ein beskjed som skal visast til alle klientane når tenaren kræsjar."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
+"Ein beskjed som skal visast til alle klientane når tenaren vert slått av."
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
@@ -2140,11 +2149,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Akselerasjon i luft"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Gravitasjonsakselerasjon, i nodar per sekund per sekund."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2191,7 +2200,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Avansert"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2212,11 +2221,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
-msgstr ""
+msgstr "Antal meldingar ein spelar kan sende per 10 sekund."
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
-msgstr ""
+msgstr "Forsterkar dalane."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -2281,7 +2290,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
-msgstr ""
+msgstr "Rapporter automatisk til tenarlista."
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
@@ -2289,7 +2298,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
-msgstr ""
+msgstr "Autoskaleringsmodus"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2305,11 +2314,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Basis"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
-msgstr ""
+msgstr "Basisprivilegium"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
@@ -2365,7 +2374,7 @@ msgstr "Bygg intern spelar"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "Innebygd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2439,11 +2448,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr ""
+msgstr "Tekststørrelse for nettprat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr ""
+msgstr "Nettpratstast"
 
 #: src/settings_translation_file.cpp
 msgid "Chat log level"
@@ -2491,11 +2500,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
-msgstr ""
+msgstr "Klient"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Klient og tenar"
 
 #: src/settings_translation_file.cpp
 msgid "Client modding"
@@ -2511,15 +2520,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Klatrefart"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Skyradius"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "Skyer"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
@@ -2527,11 +2536,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
-msgstr ""
+msgstr "Skyer i meny"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Farga tåke"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2594,7 +2603,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
-msgstr ""
+msgstr "URL til ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2638,11 +2647,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "Kræsjmelding"
 
 #: src/settings_translation_file.cpp
 msgid "Creative"
-msgstr ""
+msgstr "Kreativ"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2698,29 +2707,31 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "Standard akselerasjon"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr ""
+msgstr "Standard spel"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"Standard spel når du lagar ei ny verd.\n"
+"Dette vil verte overstyrt når du lagar ei verd frå hovudmenyen."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr ""
+msgstr "Standard passord"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Standard privilegium"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr ""
+msgstr "Standard rapportformat"
 
 #: src/settings_translation_file.cpp
 msgid "Default stack size"
