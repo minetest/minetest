@@ -5174,6 +5174,25 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
       should listen for incoming messages with
       `minetest.register_on_modchannel_message`
 
+
+Metrics
+-------
+
+The following function is only available when Minetest was built with
+[Prometheus](https://wiki.minetest.net/Server_Metrics_using_Prometheus).
+
+* `minetest.create_metric(type, name, help)`
+    * Returns `MetricRef`.
+    * `type`: `counter` or `gauge`, see [MetricRef].
+    * `name`: name of the metric.
+    * `help`: help description about the metric.
+
+Metric names can only contain letters, numbers, and underscores. You should
+start the name with your mod name plus an underscore, eg: `mymod_some_statistic`.
+When Prometheus queries for metrics, Minetest will prepend your name with
+`minetest_`, eg: `minetest_mymod_some_statistic`.
+
+
 Inventory
 ---------
 
@@ -6136,6 +6155,31 @@ An interface to use mod channels on client and server
 * `send_all(message)`: Send `message` though the mod channel.
     * If mod channel is not writeable or invalid, message will be dropped.
     * Message size is limited to 65535 characters by protocol.
+
+`MetricRef`
+-----------
+
+Represents a value to be used in metric gathering software, such as
+Prometheus.
+
+Created by [`minetest.create_metric`](#Metrics)
+
+A metric is either a gauge or a counter.
+A gauge may go up and down as needed, but a counter may only increase.
+See [Prometheus Metric Types](https://prometheus.io/docs/concepts/metric_types/).
+
+## Methods
+
+* increment([value]):
+    * Increment by `value`.
+    * `value` defaults to 1 if not present.
+* decrement([value]):
+    * Decrement by `value`. Gauges only.
+    * `value` defaults to 1 if not present.
+* set(value):
+    * Set `value`. Gauges only.
+* get(): returns current value.
+
 
 `NodeMetaRef`
 -------------

@@ -22,38 +22,49 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "util/thread.h"
 
-class MetricCounter
+class Metric
 {
 public:
-	MetricCounter() = default;
-
-	virtual ~MetricCounter() {}
+	Metric() = default;
+	virtual ~Metric() = default;
 
 	virtual void increment(double number = 1.0) = 0;
 	virtual double get() const = 0;
 };
 
-typedef std::shared_ptr<MetricCounter> MetricCounterPtr;
+typedef std::shared_ptr<Metric> MetricPtr;
 
-class SimpleMetricCounter : public MetricCounter
+class MetricGauge : public Metric
+{
+public:
+	MetricGauge() = default;
+	~MetricGauge() override = default;
+
+	virtual void decrement(double number = 1.0) = 0;
+	virtual void set(double number) = 0;
+};
+
+typedef std::shared_ptr<MetricGauge> MetricGaugePtr;
+
+class SimpleMetricCounter : public Metric
 {
 public:
 	SimpleMetricCounter() = delete;
 
-	virtual ~SimpleMetricCounter() {}
+	~SimpleMetricCounter() override {}
 
 	SimpleMetricCounter(const std::string &name, const std::string &help_str) :
-			MetricCounter(), m_name(name), m_help_str(help_str),
-			m_counter(0.0)
+			m_name(name), m_help_str(help_str), m_counter(0.0)
 	{
 	}
 
-	virtual void increment(double number)
+	void increment(double number) override
 	{
 		MutexAutoLock lock(m_mutex);
 		m_counter += number;
 	}
-	virtual double get() const
+
+	double get() const override
 	{
 		MutexAutoLock lock(m_mutex);
 		return m_counter;
@@ -67,48 +78,37 @@ private:
 	double m_counter;
 };
 
-class MetricGauge
-{
-public:
-	MetricGauge() = default;
-	virtual ~MetricGauge() {}
-
-	virtual void increment(double number = 1.0) = 0;
-	virtual void decrement(double number = 1.0) = 0;
-	virtual void set(double number) = 0;
-	virtual double get() const = 0;
-};
-
-typedef std::shared_ptr<MetricGauge> MetricGaugePtr;
-
 class SimpleMetricGauge : public MetricGauge
 {
 public:
 	SimpleMetricGauge() = delete;
 
 	SimpleMetricGauge(const std::string &name, const std::string &help_str) :
-			MetricGauge(), m_name(name), m_help_str(help_str), m_gauge(0.0)
+			m_name(name), m_help_str(help_str), m_gauge(0.0)
 	{
 	}
 
-	virtual ~SimpleMetricGauge() {}
+	~SimpleMetricGauge() override {}
 
-	virtual void increment(double number)
+	void increment(double number) override
 	{
 		MutexAutoLock lock(m_mutex);
 		m_gauge += number;
 	}
-	virtual void decrement(double number)
+
+	void decrement(double number) override
 	{
 		MutexAutoLock lock(m_mutex);
 		m_gauge -= number;
 	}
-	virtual void set(double number)
+
+	void set(double number) override
 	{
 		MutexAutoLock lock(m_mutex);
 		m_gauge = number;
 	}
-	virtual double get() const
+
+	double get() const override
 	{
 		MutexAutoLock lock(m_mutex);
 		return m_gauge;
@@ -129,7 +129,7 @@ public:
 
 	virtual ~MetricsBackend() {}
 
-	virtual MetricCounterPtr addCounter(
+	virtual MetricPtr addCounter(
 			const std::string &name, const std::string &help_str);
 	virtual MetricGaugePtr addGauge(
 			const std::string &name, const std::string &help_str);

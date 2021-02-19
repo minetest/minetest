@@ -27,8 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #endif
 
-MetricCounterPtr MetricsBackend::addCounter(
-		const std::string &name, const std::string &help_str)
+MetricPtr MetricsBackend::addCounter(const std::string &name, const std::string &help_str)
 {
 	return std::make_shared<SimpleMetricCounter>(name, help_str);
 }
@@ -41,14 +40,12 @@ MetricGaugePtr MetricsBackend::addGauge(
 
 #if USE_PROMETHEUS
 
-class PrometheusMetricCounter : public MetricCounter
+class PrometheusMetricCounter : public Metric
 {
 public:
 	PrometheusMetricCounter() = delete;
-
 	PrometheusMetricCounter(const std::string &name, const std::string &help_str,
 			std::shared_ptr<prometheus::Registry> registry) :
-			MetricCounter(),
 			m_family(prometheus::BuildCounter()
 							.Name(name)
 							.Help(help_str)
@@ -57,10 +54,10 @@ public:
 	{
 	}
 
-	virtual ~PrometheusMetricCounter() {}
+	~PrometheusMetricCounter() override {}
 
-	virtual void increment(double number) { m_counter.Increment(number); }
-	virtual double get() const { return m_counter.Value(); }
+	void increment(double number) override { m_counter.Increment(number); }
+	double get() const override { return m_counter.Value(); }
 
 private:
 	prometheus::Family<prometheus::Counter> &m_family;
@@ -74,7 +71,6 @@ public:
 
 	PrometheusMetricGauge(const std::string &name, const std::string &help_str,
 			std::shared_ptr<prometheus::Registry> registry) :
-			MetricGauge(),
 			m_family(prometheus::BuildGauge()
 							.Name(name)
 							.Help(help_str)
@@ -83,12 +79,12 @@ public:
 	{
 	}
 
-	virtual ~PrometheusMetricGauge() {}
+	~PrometheusMetricGauge() override {}
 
-	virtual void increment(double number) { m_gauge.Increment(number); }
-	virtual void decrement(double number) { m_gauge.Decrement(number); }
-	virtual void set(double number) { m_gauge.Set(number); }
-	virtual double get() const { return m_gauge.Value(); }
+	void increment(double number) override { m_gauge.Increment(number); }
+	void decrement(double number) override { m_gauge.Decrement(number); }
+	void set(double number) override { m_gauge.Set(number); }
+	double get() const override { return m_gauge.Value(); }
 
 private:
 	prometheus::Family<prometheus::Gauge> &m_family;
@@ -106,19 +102,19 @@ public:
 		m_exposer->RegisterCollectable(m_registry);
 	}
 
-	virtual ~PrometheusMetricsBackend() {}
+	~PrometheusMetricsBackend() override {}
 
-	virtual MetricCounterPtr addCounter(
-			const std::string &name, const std::string &help_str);
-	virtual MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str);
+	MetricPtr addCounter(
+			const std::string &name, const std::string &help_str) override;
+	MetricGaugePtr addGauge(
+			const std::string &name, const std::string &help_str) override;
 
 private:
 	std::unique_ptr<prometheus::Exposer> m_exposer;
 	std::shared_ptr<prometheus::Registry> m_registry;
 };
 
-MetricCounterPtr PrometheusMetricsBackend::addCounter(
+MetricPtr PrometheusMetricsBackend::addCounter(
 		const std::string &name, const std::string &help_str)
 {
 	return std::make_shared<PrometheusMetricCounter>(name, help_str, m_registry);

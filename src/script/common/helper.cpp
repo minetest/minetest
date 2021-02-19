@@ -78,6 +78,15 @@ float LuaHelper::readParam(lua_State *L, int index)
 }
 
 template <>
+double LuaHelper::readParam(lua_State *L, int index)
+{
+	if (isNaN(L, index))
+		throw LuaError("NaN value is not allowed.");
+
+	return (double)luaL_checknumber(L, index);
+}
+
+template <>
 v2s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	v2s16 p;

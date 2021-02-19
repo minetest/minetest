@@ -368,6 +368,10 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
+	inline MetricsBackend *getMetrics() const {
+		return m_metrics_backend.get();
+	}
+
 	// Bind address
 	Address m_bind_addr;
 
@@ -674,14 +678,14 @@ private:
 	std::unique_ptr<MetricsBackend> m_metrics_backend;
 
 	// Server metrics
-	MetricCounterPtr m_uptime_counter;
+	MetricPtr m_uptime_counter;
 	MetricGaugePtr m_player_gauge;
 	MetricGaugePtr m_timeofday_gauge;
 	// current server step lag
 	MetricGaugePtr m_lag_gauge;
-	MetricCounterPtr m_aom_buffer_counter;
-	MetricCounterPtr m_packet_recv_counter;
-	MetricCounterPtr m_packet_recv_processed_counter;
+	MetricPtr m_aom_buffer_counter;
+	MetricPtr m_packet_recv_counter;
+	MetricPtr m_packet_recv_processed_counter;
 };
 
 /*

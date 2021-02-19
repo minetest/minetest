@@ -428,7 +428,7 @@ private:
 	MapDatabase *dbase = nullptr;
 	MapDatabase *dbase_ro = nullptr;
 
-	MetricCounterPtr m_save_time_counter;
+	MetricPtr m_save_time_counter;
 };
 
 
