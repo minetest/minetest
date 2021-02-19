@@ -421,12 +421,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	/* Modify count according to collected data */
 	count = src_item.count;
-	if (!caused_by_move_somewhere) {
-		if (src_can_take_count != -1 && count > src_can_take_count)
-			count = std::min((int)count, src_can_take_count);
-		if (dst_can_put_count != -1 && count > dst_can_put_count)
-			count = std::min((int)count, dst_can_put_count);
-	}
+	if (src_can_take_count != -1 && count > src_can_take_count)
+		count = std::min((int)count, src_can_take_count);
+	if (dst_can_put_count != -1 && count > dst_can_put_count)
+		count = std::min((int)count, dst_can_put_count);
 
 	/* Limit according to source item count */
 	if (count > list_from->getItem(from_i).count)
@@ -467,6 +465,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	bool did_swap = false;
 	move_count = list_from->moveItem(from_i,
 		list_to, to_i, count, allow_swap, &did_swap);
+	if (caused_by_move_somewhere)
+		count = old_count;
 	assert(allow_swap == did_swap);
 	assert(move_count == expected_move_count);
 
