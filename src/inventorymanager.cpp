@@ -574,7 +574,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if (caused_by_move_somewhere)
 			src_item.count = move_count;
 		onPutAndOnTake(src_item, player);
-		src_item.count = src_item_count;
+		if (caused_by_move_somewhere)
+			src_item.count = src_item_count;
 		if (did_swap) {
 			// Item is now placed in source list
 			src_item = list_from->getItem(from_i);
