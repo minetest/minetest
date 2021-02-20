@@ -5178,19 +5178,21 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
 Metrics
 -------
 
-The following function is only available when Minetest was built with
+The following function will only be defined when Minetest was built with
 [Prometheus](https://wiki.minetest.net/Server_Metrics_using_Prometheus).
 
 * `minetest.create_metric(type, name [, help, labels])`
-    * Returns `MetricRef`.
-    * `type`: strinrg, `counter` or `gauge`, see [MetricRef].
+    * Returns [`MetricRef`].
+    * `type`: string, `counter` or `gauge`, see [`MetricRef`].
     * `name`: string, name of the metric.
     * `help`: string or nil, a help description about the metric.
     * `labels`: table or nil, a map from label keys to values.
-
-You can call this multiple times for the same metric name to create dimensional/labelled data.
-All metrics with the same name must have the same type, and `help` will only be read the first
-time the metric name is created.
+    * You can call this multiple times with the same metric name and
+      different labels to create dimensional/labelled data.
+    * All metrics with the same name must have the same type, and
+      `help` will only be read the first time the metric name is created.
+    * It's fine to call this multiple times with the same arguments,
+      but it is recommended to store the MetricRef for ease of use.
 
 Metric names can only contain letters, numbers, and underscores. You should
 start the name with your mod name plus an underscore, eg: `mymod_some_statistic`.
