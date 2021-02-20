@@ -131,10 +131,10 @@ public:
 
 	virtual ~MetricsBackend() {}
 
-	virtual MetricPtr addCounter(
-			const std::string &name, const std::string &help_str, const MetricLabels &labels = {});
-	virtual MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str, const MetricLabels &labels = {});
+	virtual MetricPtr addCounter(const std::string &name, const std::string &help_str,
+			const MetricLabels &labels = {});
+	virtual MetricGaugePtr addGauge(const std::string &name,
+			const std::string &help_str, const MetricLabels &labels = {});
 };
 
 #if USE_PROMETHEUS
