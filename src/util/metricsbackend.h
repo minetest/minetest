@@ -122,6 +122,8 @@ private:
 	double m_gauge;
 };
 
+using MetricLabels = std::map<std::string, std::string>;
+
 class MetricsBackend
 {
 public:
@@ -130,9 +132,9 @@ public:
 	virtual ~MetricsBackend() {}
 
 	virtual MetricPtr addCounter(
-			const std::string &name, const std::string &help_str);
+			const std::string &name, const std::string &help_str, const MetricLabels &labels = {});
 	virtual MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str);
+			const std::string &name, const std::string &help_str, const MetricLabels &labels = {});
 };
 
 #if USE_PROMETHEUS

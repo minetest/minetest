@@ -27,13 +27,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #endif
 
-MetricPtr MetricsBackend::addCounter(const std::string &name, const std::string &help_str)
+MetricPtr MetricsBackend::addCounter(const std::string &name, const std::string &help_str, const MetricLabels &labels)
 {
 	return std::make_shared<SimpleMetricCounter>(name, help_str);
 }
 
 MetricGaugePtr MetricsBackend::addGauge(
-		const std::string &name, const std::string &help_str)
+		const std::string &name, const std::string &help_str, const MetricLabels &labels)
 {
 	return std::make_shared<SimpleMetricGauge>(name, help_str);
 }
@@ -44,58 +44,72 @@ class PrometheusMetricCounter : public Metric
 {
 public:
 	PrometheusMetricCounter() = delete;
-	PrometheusMetricCounter(const std::string &name, const std::string &help_str,
-			std::shared_ptr<prometheus::Registry> registry) :
-			m_family(prometheus::BuildCounter()
-							.Name(name)
-							.Help(help_str)
-							.Register(*registry)),
-			m_counter(m_family.Add({}))
-	{
-	}
-
+	PrometheusMetricCounter(prometheus::Counter &counter) : counter(counter) {}
 	~PrometheusMetricCounter() override {}
 
-	void increment(double number) override { m_counter.Increment(number); }
-	double get() const override { return m_counter.Value(); }
+	void increment(double number) override { counter.Increment(number); }
+	double get() const override { return counter.Value(); }
 
 private:
-	prometheus::Family<prometheus::Counter> &m_family;
-	prometheus::Counter &m_counter;
+	prometheus::Counter &counter;
 };
 
 class PrometheusMetricGauge : public MetricGauge
 {
 public:
 	PrometheusMetricGauge() = delete;
-
-	PrometheusMetricGauge(const std::string &name, const std::string &help_str,
-			std::shared_ptr<prometheus::Registry> registry) :
-			m_family(prometheus::BuildGauge()
-							.Name(name)
-							.Help(help_str)
-							.Register(*registry)),
-			m_gauge(m_family.Add({}))
-	{
-	}
-
+	PrometheusMetricGauge(prometheus::Gauge &gauge): gauge(gauge) {}
 	~PrometheusMetricGauge() override {}
 
-	void increment(double number) override { m_gauge.Increment(number); }
-	void decrement(double number) override { m_gauge.Decrement(number); }
-	void set(double number) override { m_gauge.Set(number); }
-	double get() const override { return m_gauge.Value(); }
+	void increment(double number) override { gauge.Increment(number); }
+	void decrement(double number) override { gauge.Decrement(number); }
+	void set(double number) override { gauge.Set(number); }
+	double get() const override { return gauge.Value(); }
 
 private:
-	prometheus::Family<prometheus::Gauge> &m_family;
-	prometheus::Gauge &m_gauge;
+	prometheus::Gauge &gauge;
 };
 
 class PrometheusMetricsBackend : public MetricsBackend
 {
+	std::unordered_map<std::string, prometheus::Family<prometheus::Counter>&> counter_families;
+	std::unordered_map<std::string, prometheus::Family<prometheus::Gauge>&> gauge_families;
+
+	prometheus::Family<prometheus::Counter> &getCreateCounterFamily(const std::string &name, const std::string &help_str)
+	{
+		auto it = counter_families.find(name);
+		if (it != counter_families.end()) {
+			return it->second;
+		}
+
+		auto &family = prometheus::BuildCounter()
+			.Name(name)
+			.Help(help_str)
+			.Register(*m_registry);
+
+		counter_families.emplace(name, family);
+		return family;
+	}
+
+	prometheus::Family<prometheus::Gauge> &getCreateGaugeFamily(const std::string &name, const std::string &help_str)
+	{
+		auto it = gauge_families.find(name);
+		if (it != gauge_families.end()) {
+			return it->second;
+		}
+
+		auto &family = prometheus::BuildGauge()
+			.Name(name)
+			.Help(help_str)
+			.Register(*m_registry);
+
+		gauge_families.emplace(name, family);
+		return family;
+	}
+
 public:
 	PrometheusMetricsBackend(const std::string &addr) :
-			MetricsBackend(), m_exposer(std::unique_ptr<prometheus::Exposer>(
+			m_exposer(std::unique_ptr<prometheus::Exposer>(
 							  new prometheus::Exposer(addr))),
 			m_registry(std::make_shared<prometheus::Registry>())
 	{
@@ -105,26 +119,23 @@ public:
 	~PrometheusMetricsBackend() override {}
 
 	MetricPtr addCounter(
-			const std::string &name, const std::string &help_str) override;
+			const std::string &name, const std::string &help_str, const MetricLabels &labels) override
+	{
+		auto &family = getCreateCounterFamily(name, help_str);
+		return std::make_shared<PrometheusMetricCounter>(family.Add(labels));
+	}
+
 	MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str) override;
+			const std::string &name, const std::string &help_str, const MetricLabels &labels) override
+	{
+		auto &family = getCreateGaugeFamily(name, help_str);
+		return std::make_shared<PrometheusMetricGauge>(family.Add(labels));
+	}
 
 private:
 	std::unique_ptr<prometheus::Exposer> m_exposer;
 	std::shared_ptr<prometheus::Registry> m_registry;
 };
-
-MetricPtr PrometheusMetricsBackend::addCounter(
-		const std::string &name, const std::string &help_str)
-{
-	return std::make_shared<PrometheusMetricCounter>(name, help_str, m_registry);
-}
-
-MetricGaugePtr PrometheusMetricsBackend::addGauge(
-		const std::string &name, const std::string &help_str)
-{
-	return std::make_shared<PrometheusMetricGauge>(name, help_str, m_registry);
-}
 
 MetricsBackend *createPrometheusMetricsBackend()
 {

@@ -157,15 +157,31 @@ int ModApiMetrics::l_create_metric(lua_State *L)
 
 	std::string type = luaL_checkstring(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	std::string help = luaL_checkstring(L, 3);
+	std::string help = readParam<std::string>(L, 3, "");
+
+	MetricLabels labels = {};
+	if (!lua_isnoneornil(L, 4)) {
+		luaL_checktype(L, 4, LUA_TTABLE);
+
+		lua_pushnil(L);
+		while (lua_next(L, 4) != 0) {
+			// key at index -2 and value at index -1
+			std::string key = lua_tostring(L, -2);
+			std::string value = lua_tostring(L, -1);
+			labels[key] = value;
+
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
 
 	name.insert(0, "minetest_");
 
 	auto metrics = getServer(L)->getMetrics();
 	if (type == "counter") {
-		MetricRef::create(L, metrics->addCounter(name, help));
+		MetricRef::create(L, metrics->addCounter(name, help, labels));
 	} else if (type == "gauge") {
-		MetricRef::create(L, metrics->addGauge(name, help));
+		MetricRef::create(L, metrics->addGauge(name, help, labels));
 	} else {
 		throw LuaError(std::string("Unknown metric type ") + type);
 	}

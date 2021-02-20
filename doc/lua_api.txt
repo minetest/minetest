@@ -5181,11 +5181,16 @@ Metrics
 The following function is only available when Minetest was built with
 [Prometheus](https://wiki.minetest.net/Server_Metrics_using_Prometheus).
 
-* `minetest.create_metric(type, name, help)`
+* `minetest.create_metric(type, name [, help, labels])`
     * Returns `MetricRef`.
-    * `type`: `counter` or `gauge`, see [MetricRef].
-    * `name`: name of the metric.
-    * `help`: help description about the metric.
+    * `type`: strinrg, `counter` or `gauge`, see [MetricRef].
+    * `name`: string, name of the metric.
+    * `help`: string or nil, a help description about the metric.
+    * `labels`: table or nil, a map from label keys to values.
+
+You can call this multiple times for the same metric name to create dimensional/labelled data.
+All metrics with the same name must have the same type, and `help` will only be read the first
+time the metric name is created.
 
 Metric names can only contain letters, numbers, and underscores. You should
 start the name with your mod name plus an underscore, eg: `mymod_some_statistic`.
