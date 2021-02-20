@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-12-10 19:29+0000\n"
+"PO-Revision-Date: 2021-02-23 15:50+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -154,52 +154,51 @@ msgstr "ativado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" já existe. Gostaria de sobrescrevê-lo?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "As dependências de $1 e $2 serão instaladas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 por $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"A descarregar $1,\n"
+"$2 na fila"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "A descarregar..."
+msgstr "A descarregar $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 dependências necessárias não foram encontradas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 serão instalados e $2 dependências serão ignoradas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Todos os pacotes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Tecla já em uso"
+msgstr "Já instalado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Voltar ao menu principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Hospedar Jogo"
+msgstr "Jogo base:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -223,14 +222,12 @@ msgid "Install"
 msgstr "Instalar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Instalar"
+msgstr "Instalar $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dependências opcionais:"
+msgstr "Instalar dependências ausentes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -246,26 +243,24 @@ msgid "No results"
 msgstr "Sem resultados"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Atualizar"
+msgstr "Sem atualizações"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Mutar som"
+msgstr "Não encontrado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Sobrescrever"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Verifique se o jogo base está correto."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Enfileirado"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -281,11 +276,11 @@ msgstr "Atualizar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Atualizar tudo [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Exibir mais informações num navegador da Web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -767,15 +762,16 @@ msgid "Credits"
 msgstr "Méritos"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Selecione o diretório"
+msgstr "Abrir o diretório de dados do utilizador"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Abre o diretório que contém mundos, jogos, mods fornecidos pelo utilizador,\n"
+"e pacotes de textura num gestor de ficheiros / explorador."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -815,7 +811,7 @@ msgstr "Instalar jogos do ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -826,9 +822,8 @@ msgid "No world created or selected!"
 msgstr "Nenhum mundo criado ou seleccionado!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Palavra-passe nova"
+msgstr "Palavra-passe"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -839,9 +834,8 @@ msgid "Port"
 msgstr "Porta"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Seleccionar Mundo:"
+msgstr "Selecionar mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -993,9 +987,8 @@ msgid "Shaders"
 msgstr "Sombras"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Terrenos flutuantes (experimental)"
+msgstr "Shaders (experimental)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1195,7 +1188,7 @@ msgid "Continue"
 msgstr "Continuar"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1215,15 +1208,15 @@ msgstr ""
 "Controles:\n"
 "- %s: mover para a frente\n"
 "- %s: mover para trás\n"
-"- %s: mover à esquerda\n"
-"- %s: mover-se para a direita\n"
+"- %s: mover para a esquerda\n"
+"- %s: mover para a direita\n"
 "- %s: saltar/escalar\n"
+"- %s: cavar/socar\n"
+"- %s: colocar/usar\n"
 "- %s: esgueirar/descer\n"
 "- %s: soltar item\n"
 "- %s: inventário\n"
 "- Rato: virar/ver\n"
-"- Rato à esquerda: escavar/dar soco\n"
-"- Rato direito: posicionar/usar\n"
 "- Roda do rato: selecionar item\n"
 "- %s: bate-papo\n"
 
@@ -1752,19 +1745,18 @@ msgid "Minimap hidden"
 msgstr "Minimapa escondido"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Minimapa em modo radar, zoom 1x"
+msgstr "Minimapa em modo radar, ampliação %dx"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Minimapa em modo de superfície, zoom 1x"
+msgstr "Minimapa em modo de superfície, ampliação %dx"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Tamanho mínimo da textura"
+msgstr "Minimapa em modo de textura"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2170,7 +2162,7 @@ msgstr "Intervalo do ABM"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Orçamento de tempo do ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2676,7 +2668,7 @@ msgstr "Lista negra de flags do ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Máximo de descargas simultâneas de ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
