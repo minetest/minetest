@@ -353,12 +353,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	bool allow_swap = !list_to->itemFits(to_i, src_item, &restitem)
 		&& restitem.count == src_item.count
 		&& !caused_by_move_somewhere;
-	int expected_move_count = src_item.count - restitem.count;
+	move_count = src_item.count - restitem.count;
 
 	// Shift-click: Cannot fill this stack, proceed with next slot
-	if (caused_by_move_somewhere && restitem.count == src_item.count) {
-		// Don't forget to update move_count, else it proceeds with an outdated value!
-		move_count = 0;
+	if (caused_by_move_somewhere && move_count == 0) {
 		return;
 	}
 
@@ -391,10 +389,13 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// Take from one inventory, put into another
 		int src_item_count = src_item.count;
 		if (caused_by_move_somewhere)
-			src_item.count = expected_move_count;
+			// When moving somewhere: temporarily use the actual movable stack
+			// size to ensure correct callback execution.
+			src_item.count = move_count;
 		dst_can_put_count = allowPut(src_item, player);
 		src_can_take_count = allowTake(src_item, player);
 		if (caused_by_move_somewhere)
+			// Reset source item count
 			src_item.count = src_item_count;
 		bool swap_expected = allow_swap;
 		allow_swap = allow_swap
@@ -422,9 +423,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/* Modify count according to collected data */
 	count = src_item.count;
 	if (src_can_take_count != -1 && count > src_can_take_count)
-		count = std::min((int)count, src_can_take_count);
+		count = src_can_take_count;
 	if (dst_can_put_count != -1 && count > dst_can_put_count)
-		count = std::min((int)count, dst_can_put_count);
+		count = dst_can_put_count;
 
 	/* Limit according to source item count */
 	if (count > list_from->getItem(from_i).count)
@@ -432,6 +433,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	/* If no items will be moved, don't go further */
 	if (count == 0) {
+		if (caused_by_move_somewhere)
+			// Set move count to zero, as no items have been moved
+			move_count = 0;
+
 		// Undo client prediction. See 'clientApply'
 		if (from_inv.type == InventoryLocation::PLAYER)
 			list_from->setModified();
@@ -448,6 +453,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				<<" list=\""<<to_list<<"\""
 				<<" i="<<to_i
 				<<std::endl;
+
 		return;
 	}
 
@@ -468,7 +474,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if (caused_by_move_somewhere)
 		count = old_count;
 	assert(allow_swap == did_swap);
-	assert(move_count == expected_move_count);
 
 	// If source is infinite, reset it's stack
 	if (src_can_take_count == -1) {
@@ -572,9 +577,12 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	} else {
 		int src_item_count = src_item.count;
 		if (caused_by_move_somewhere)
+			// When moving somewhere: temporarily use the actual movable stack
+			// size to ensure correct callback execution.
 			src_item.count = move_count;
 		onPutAndOnTake(src_item, player);
 		if (caused_by_move_somewhere)
+			// Reset source item count
 			src_item.count = src_item_count;
 		if (did_swap) {
 			// Item is now placed in source list
