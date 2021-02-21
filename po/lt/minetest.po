@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Lithuanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
-"PO-Revision-Date: 2020-09-23 07:41+0000\n"
+"PO-Revision-Date: 2021-02-23 15:50+0000\n"
 "Last-Translator: Kornelijus Tvarijanavičius <kornelitvari@protonmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/lt/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
 "%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -28,12 +28,10 @@ msgid "OK"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Klaida įvyko Lua scenarijuje, tokiame kaip papildinys:"
+msgstr "Įvyko klaida Lua skripte:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Įvyko klaida:"
 
@@ -67,7 +65,7 @@ msgstr "Mes palaikome tik $1 protokolo versiją."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Mes palaikome protokolo versijas nuo $1 iki $2."
+msgstr "Mes palaikome protokolo versijas tarp $1 ir $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -82,16 +80,14 @@ msgstr "Atšaukti"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Dependencies:"
-msgstr "Priklauso:"
+msgstr "Priklauso nuo:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
 msgstr "Išjungti visus papildinius"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
 msgstr "Išjungti papildinį"
 
@@ -129,9 +125,8 @@ msgid "No game description provided."
 msgstr "Nepateiktas žaidimo aprašymas."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Priklauso:"
+msgstr "Nėra būtinų priklausomybių"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -177,9 +172,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Įkeliama..."
+msgstr "$1 atsiunčiama..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
