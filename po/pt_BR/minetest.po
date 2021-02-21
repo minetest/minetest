@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2021-02-23 15:50+0000\n"
-"Last-Translator: Ronoaldo Pereira <ronoaldo@gmail.com>\n"
+"Last-Translator: Victor Barcelos Lacerda <victornuti.1@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -3608,7 +3608,7 @@ msgstr "Ruído de altura"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr "Parâmetros de ruido de seleção de altura do gerador de mundo v6"
+msgstr "Parâmetros de ruido de seleção de altura"
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -3616,11 +3616,11 @@ msgstr "FPU de alta precisão"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
-msgstr "Esparsamento das colinas no gerador de mundo plano"
+msgstr "Inclinação dos morros"
 
 #: src/settings_translation_file.cpp
 msgid "Hill threshold"
-msgstr "Threshold das colinas no gerador de mundo plano"
+msgstr "Limite das colinas no gerador de mundo plano"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness1 noise"
@@ -4243,7 +4243,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tecla para aumentar o alcance de visão.\n"
+"Tecla para aumentar o volume.\n"
 "Consulte http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4315,7 +4315,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tecla para pular. \n"
+"Tecla para por o som em mudo. \n"
 "Consulte http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
