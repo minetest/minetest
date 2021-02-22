@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-30 21:13+0100\n"
 "PO-Revision-Date: 2021-02-23 15:50+0000\n"
-"Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
+"Last-Translator: Osoitz <oelkoro@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/minetest/minetest/"
 "eu/>\n"
 "Language: eu\n"
@@ -265,7 +265,7 @@ msgstr "Mesedez, egiaztatu oinarri jokoa zuzena dela."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Ilaran"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -971,11 +971,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "Hosto opakoak"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "Ur opakoa"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
@@ -1213,11 +1213,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Bezeroa sortzen..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Zerbitzaria sortzen..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
