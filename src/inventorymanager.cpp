@@ -339,6 +339,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 
 	ItemStack src_item = list_from->getItem(from_i);
+	/* Limit according to source item count */
+	if (count > list_from->getItem(from_i).count)
+		count = list_from->getItem(from_i).count;
 	if (count > 0)
 		src_item.count = count;
 	if (src_item.empty())
@@ -416,9 +419,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		count = src_can_take_count;
 	if (dst_can_put_count != -1 && count > dst_can_put_count)
 		count = dst_can_put_count;
-	/* Limit according to source item count */
-	if (count > list_from->getItem(from_i).count)
-		count = list_from->getItem(from_i).count;
 
 	/* If no items will be moved, don't go further */
 	if (count == 0) {
