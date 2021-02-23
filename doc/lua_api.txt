@@ -256,6 +256,9 @@ Subfolders with names starting with `_` or `.` are ignored.
 If a subfolder contains a media file with the same name as a media file
 in one of its parents, the parent's file is used.
 
+Although it is discouraged, a mod can overwrite a media file of any mod that it
+depends on by supplying a file with an equal name.
+
 Naming conventions
 ------------------
 
