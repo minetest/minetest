@@ -503,6 +503,11 @@
 
 ### Basic
 
+#    Whether nametag backgrounds should be shown by default.
+#    Mods may still set a background.
+#    type: bool
+# show_nametag_backgrounds = true
+
 #    Enable vertex buffer objects.
 #    This should greatly improve graphics performance.
 #    type: bool
@@ -1298,7 +1303,7 @@
 #    type: bool
 # enable_damage = false
 
-#    Enable creative mode for new created maps.
+#    Enable creative mode for all players
 #    type: bool
 # creative_mode = false
 

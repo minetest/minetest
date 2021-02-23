@@ -203,6 +203,8 @@ fake_function() {
 	gettext("Graphics");
 	gettext("In-Game");
 	gettext("Basic");
+	gettext("Show nametag backgrounds by default");
+	gettext("Whether nametag backgrounds should be shown by default.\nMods may still set a background.");
 	gettext("VBO");
 	gettext("Enable vertex buffer objects.\nThis should greatly improve graphics performance.");
 	gettext("Fog");
@@ -513,7 +515,7 @@ fake_function() {
 	gettext("Damage");
 	gettext("Enable players getting damage and dying.");
 	gettext("Creative");
-	gettext("Enable creative mode for new created maps.");
+	gettext("Enable creative mode for all players");
 	gettext("Fixed map seed");
 	gettext("A chosen map seed for a new map, leave empty for random.\nWill be overridden when creating a new world in the main menu.");
 	gettext("Default password");
