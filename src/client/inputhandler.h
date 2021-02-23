@@ -201,7 +201,7 @@ private:
 	// The current state of keys
 	KeyList keyIsDown;
 
-	// Whether a key was down
+	// Like keyIsDown but only reset when that key is read
 	KeyList keyWasDown;
 
 	// Whether a key has just been pressed
