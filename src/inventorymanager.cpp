@@ -340,7 +340,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 
 	ItemStack src_item = list_from->getItem(from_i);
-	if (count > 0)
+	if (count > 0 && count < src_item.count)
 		src_item.count = count;
 	if (src_item.empty())
 		return;
