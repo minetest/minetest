@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2020-12-05 15:29+0000\n"
 "Last-Translator: HunSeongPark <gnstjd980831@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -703,6 +703,11 @@ msgstr "$1 모드팩을 설치할 수 없습니다"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "불러오는 중..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "클라이언트 스크립트가 비활성화됨"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2975,7 +2980,8 @@ msgid "Enable console window"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "새로 만든 맵에서 creative모드를 활성화시킵니다."
 
 #: src/settings_translation_file.cpp
@@ -5980,6 +5986,10 @@ msgstr ""
 "설정 적용 후 재시작이 필요합니다."
 
 #: src/settings_translation_file.cpp
+msgid "Show nametag backgrounds by default"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "서버닫힘 메시지"
 
@@ -6683,6 +6693,12 @@ msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled "
 "in.\n"
 "If disabled, bitmap and XML vectors fonts are used instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
 msgstr ""
 
 #: src/settings_translation_file.cpp

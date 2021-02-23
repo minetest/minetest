@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Jacques Lagrange <Jacques.Reads@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
@@ -701,6 +701,11 @@ msgstr "Impossibile installare un pacchetto mod come un $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Caricamento..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Scripting su lato client disabilitato"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3017,7 +3022,8 @@ msgid "Enable console window"
 msgstr "Attivare la finestra della console"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Abilitare la modalità creativa per le nuove mappe create."
 
 #: src/settings_translation_file.cpp
@@ -3584,10 +3590,10 @@ msgid ""
 msgstr ""
 "Gestione delle chiamate API Lua deprecate:\n"
 "- none (nessuno): non registra le chiamate obsolete\n"
-"- log (registro): imita e registra il backtrace di una chiamata obsoleta ("
-"impostazione predefinita).\n"
-"- error (errore): interrompe l'utilizzo della chiamata deprecata ("
-"consigliata per gli sviluppatori di mod)."
+"- log (registro): imita e registra il backtrace di una chiamata obsoleta "
+"(impostazione predefinita).\n"
+"- error (errore): interrompe l'utilizzo della chiamata deprecata "
+"(consigliata per gli sviluppatori di mod)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6359,6 +6365,11 @@ msgstr ""
 "È necessario riavviare dopo aver cambiato questo."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Carattere grassetto per impostazione predefinita"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Messaggio di chiusura"
 
@@ -6968,8 +6979,8 @@ msgid ""
 msgstr ""
 "Utilizzare l'antialiasing multi-campione (MSAA) per smussare i bordi del "
 "blocco.\n"
-"Questo algoritmo uniforma la visualizzazione 3D mantenendo l'immagine nitida,"
-"\n"
+"Questo algoritmo uniforma la visualizzazione 3D mantenendo l'immagine "
+"nitida,\n"
 "ma non influenza l'interno delle texture\n"
 "(che è particolarmente evidente con trame trasparenti).\n"
 "Gli spazi visibili appaiono tra i nodi quando gli shader sono disabilitati.\n"
@@ -7217,6 +7228,12 @@ msgstr ""
 "Se si usano caratteri FreeType, richiede la compilazione col supporto "
 "FreeType.\n"
 "Se disabilitati, si utilizzano invece i caratteri bitmap e XML vettoriali."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-01-10 01:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -701,6 +701,11 @@ msgstr "Klarte ikke å installere en modpakke som en $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Laster..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skripting er slått av på klientside"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2974,7 +2979,8 @@ msgid "Enable console window"
 msgstr "Skru på konsollvindu"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Skru på kreativt modusfor nye opprettede kart."
 
 #: src/settings_translation_file.cpp
@@ -5888,6 +5894,11 @@ msgstr ""
 "Krever omstart etter endring."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Fet skrifttype som forvalg"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Beskjed ved avslutning"
 
@@ -6584,6 +6595,12 @@ msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled "
 "in.\n"
 "If disabled, bitmap and XML vectors fonts are used instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
 msgstr ""
 
 #: src/settings_translation_file.cpp

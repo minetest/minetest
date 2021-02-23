@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-23 15:50+0000\n"
 "Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
@@ -700,6 +700,11 @@ msgstr "Gagal memasang paket mod sebagai $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Memuat..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skrip sisi klien dimatikan"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2619,8 +2624,8 @@ msgid ""
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
-"untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif ("
-"melalui request_insecure_environment())."
+"untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif "
+"(melalui request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -2991,7 +2996,8 @@ msgid "Enable console window"
 msgstr "Gunakan jendela konsol"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Gunakan mode kreatif pada peta baru."
 
 #: src/settings_translation_file.cpp
@@ -3901,8 +3907,8 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
-"Jika dinyalakan, Anda dapat menaruh blok pada posisi (kaki + ketinggian mata)"
-"\n"
+"Jika dinyalakan, Anda dapat menaruh blok pada posisi (kaki + ketinggian "
+"mata)\n"
 "tempat Anda berdiri. Ini berguna saat bekerja dengan kotak nodus (nodebox) "
 "dalam daerah sempit."
 
@@ -5671,8 +5677,8 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
-"Buka menu jeda saat jendela hilang fokus. Tidak menjeda jika formspec sedang "
-"\n"
+"Buka menu jeda saat jendela hilang fokus. Tidak menjeda jika formspec "
+"sedang \n"
 "dibuka."
 
 #: src/settings_translation_file.cpp
@@ -6249,6 +6255,11 @@ msgid ""
 msgstr ""
 "Tampilkan kotak pilihan entitas\n"
 "Dibutuhkan mulai ulang setelah mengganti ini."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Fon tebal bawaan"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -7071,6 +7082,12 @@ msgstr ""
 "Apakah fon FreeType digunakan, membutuhkan dukungan FreeType saat "
 "dikompilasi.\n"
 "Jika dimatikan, fon bitmap dan vektor XML akan dipakai."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

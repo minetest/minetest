@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-01 05:52+0000\n"
 "Last-Translator: cafou <weblate@ptitux.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -711,6 +711,11 @@ msgstr "Impossible d'installer un pack de mods comme un $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Chargement..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Les scripts côté client sont désactivés"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3030,7 +3035,8 @@ msgid "Enable console window"
 msgstr "Activer la console"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Activer le mode créatif pour les cartes nouvellement créées."
 
 #: src/settings_translation_file.cpp
@@ -6352,6 +6358,11 @@ msgstr ""
 "Un redémarrage du jeu est nécessaire pour prendre effet."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "La police est en gras par défaut"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Message d'arrêt du serveur"
 
@@ -7203,6 +7214,12 @@ msgstr ""
 "le support Freetype.\n"
 "Si désactivée, des polices bitmap et en vecteurs XML seront utilisé en "
 "remplacement."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

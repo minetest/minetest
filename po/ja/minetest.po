@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -697,6 +697,11 @@ msgstr "Modパックを$1としてインストールすることができませ�
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "読み込み中..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "クライアント側のスクリプトは無効"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -1853,7 +1858,9 @@ msgstr "キーが重複しています"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "キー設定です。 (このメニューで失敗する場合は minetest.conf から該当する設定を削除してください)"
+msgstr ""
+"キー設定です。 (このメニューで失敗する場合は minetest.conf から該当する設定を"
+"削除してください)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2975,7 +2982,8 @@ msgid "Enable console window"
 msgstr "コンソールウィンドウを有効化"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "新しく作成されたマップでクリエイティブモードを有効にします。"
 
 #: src/settings_translation_file.cpp
@@ -5261,7 +5269,9 @@ msgstr "最大FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "ウィンドウにフォーカスが合っていないとき、またはポーズメニュー表示中の最大FPS。"
+msgstr ""
+"ウィンドウにフォーカスが合っていないとき、またはポーズメニュー表示中の最大"
+"FPS。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5321,7 +5331,8 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
-"同時ダウンロードの最大数です。この制限を超えるダウンロードはキューに入れられます。\n"
+"同時ダウンロードの最大数です。この制限を超えるダウンロードはキューに入れられ"
+"ます。\n"
 "これは curl_parallel_limit よりも低い値でなければなりません。"
 
 #: src/settings_translation_file.cpp
@@ -6223,6 +6234,11 @@ msgstr ""
 "変更後は再起動が必要です。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "既定で太字のフォント"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "サーバ終了時のメッセージ"
 
@@ -6790,7 +6806,8 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
-"マルチサンプルアンチエイリアス（MSAA）を使用して、ブロックエッジを滑らかにします。\n"
+"マルチサンプルアンチエイリアス（MSAA）を使用して、ブロックエッジを滑らかにし"
+"ます。\n"
 "このアルゴリズムは、画像を鮮明に保ちながら3Dビューポートを滑らかにします。\n"
 "しかし、それはテクスチャの内部には影響しません\n"
 "（これは、透明なテクスチャで特に目立ちます）。\n"
@@ -7032,6 +7049,12 @@ msgstr ""
 "コンパイルされている必要があります。 \n"
 "無効にした場合、代わりにビットマップおよび XML ベクターフォントが使用されま"
 "す。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

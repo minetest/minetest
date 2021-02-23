@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2020-07-17 08:41+0000\n"
 "Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -707,6 +707,11 @@ msgstr "Malsukcesis instali modifaĵaron kiel $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Enlegante…"
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Klient-flanka skriptado malŝaltita"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3000,7 +3005,8 @@ msgid "Enable console window"
 msgstr "Ŝalti konzolan fenestron"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Ŝalti krean reĝimon por novaj mapoj."
 
 #: src/settings_translation_file.cpp
@@ -6264,6 +6270,11 @@ msgstr ""
 "Rerulo necesas post la ŝanĝo."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Implice grasa tiparo"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Ferma mesaĝo"
 
@@ -7052,6 +7063,12 @@ msgid ""
 msgstr ""
 "Ĉu tiparoj de FreeType uziĝas; postulas entradukitan subtenon de FreeType.\n"
 "Malŝaltite, ĉi tio anstataŭe uzigas tiparojn bitbildajn kaj XML-vektorajn."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

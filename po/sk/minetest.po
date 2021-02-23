@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -708,6 +708,11 @@ msgstr "Nie je možné nainštalovať balíček rozšírení $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Nahrávam..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skriptovanie na strane klienta je zakázané"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3000,7 +3005,8 @@ msgid "Enable console window"
 msgstr "Aktivuj okno konzoly"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Aktivuj kreatívny režim pre novo vytvorené mapy."
 
 #: src/settings_translation_file.cpp
@@ -5302,7 +5308,8 @@ msgstr "Maximálne FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "Maximálne FPS, ak je hra nie je v aktuálnom okne, alebo je pozastavená."
+msgstr ""
+"Maximálne FPS, ak je hra nie je v aktuálnom okne, alebo je pozastavená."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -6269,6 +6276,11 @@ msgstr ""
 "Po zmene je požadovaný reštart."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Štandardne tučné písmo"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Správa pri vypínaní"
 
@@ -7089,6 +7101,12 @@ msgstr ""
 "Aby boli FreeType písma použité, je nutné aby bola podpora FreeType "
 "zakompilovaná.\n"
 "Ak je zakázané, budú použité bitmapové a XML vektorové písma."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

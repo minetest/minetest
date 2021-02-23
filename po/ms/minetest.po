@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-01 05:52+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
@@ -699,6 +699,11 @@ msgstr "Gagal memasang pek mods sebagai $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Sedang memuatkan..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skrip pihak klien dilumpuhkan"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3003,7 +3008,8 @@ msgid "Enable console window"
 msgstr "Membolehkan tetingkap konsol"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Membolehkan mod kreatif untuk peta baru dicipta."
 
 #: src/settings_translation_file.cpp
@@ -3562,8 +3568,8 @@ msgid ""
 msgstr ""
 "Cara pengendalian panggilan API Lua yang terkecam:\n"
 "-    none: Jangan log panggilan terkecam\n"
-"-    log: meniru dan menulis log runut balik bagi panggilan terkecam (lalai)."
-"\n"
+"-    log: meniru dan menulis log runut balik bagi panggilan terkecam "
+"(lalai).\n"
 "-    error: gugurkan penggunaan panggilan terkecam (digalakkan untuk "
 "pembangun mods)."
 
@@ -6302,6 +6308,11 @@ msgstr ""
 "Anda perlu mulakan semula selepas mengubah tetapan ini."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Fon tebal secara lalainya"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Mesej penutupan"
 
@@ -7134,8 +7145,8 @@ msgstr ""
 "lebih tajam, tetapi memerlukan memori yang lebih banyak.  Nilai kuasa 2\n"
 "digalakkan.  Menetapkan nilai ini lebih tinggi dari 1 tidak akan "
 "menampakkan\n"
-"kesan yang nyata melainkan tapisan bilinear/trilinear/anisotropik dibolehkan."
-"\n"
+"kesan yang nyata melainkan tapisan bilinear/trilinear/anisotropik "
+"dibolehkan.\n"
 "Ini juga digunakan sebagai saiz tekstur nod asas untuk autopenyesuaian\n"
 "tekstur jajaran dunia."
 
@@ -7148,6 +7159,12 @@ msgstr ""
 "Menetapkan sama ada fon FreeType digunakan, memerlukan sokongan Freetype\n"
 "dikompil bersama. Jika dilumpuhkan, fon peta bit dan vektor XML akan "
 "digunakan."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

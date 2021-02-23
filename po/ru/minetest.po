@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Ertu (Er2, Err) <er2official@outlook.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -703,6 +703,11 @@ msgstr "Не удаётся установить пакет модов как $1
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Загрузка..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Клиентские моды отключены"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3010,7 +3015,8 @@ msgid "Enable console window"
 msgstr "Включить окно консоли"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Включить творческий режим для вновь созданных карт."
 
 #: src/settings_translation_file.cpp
@@ -6285,6 +6291,11 @@ msgstr ""
 "Требует перезапуска после изменения."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Стандартный жирный шрифт"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Сообщение о выключении"
 
@@ -6881,10 +6892,10 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
-"Используйте многовыборочное сглаживание (MSAA) для сглаживания краев блоков."
-"\n"
-"Этот алгоритм сглаживает область просмотра 3D, сохраняя резкость изображения,"
-"\n"
+"Используйте многовыборочное сглаживание (MSAA) для сглаживания краев "
+"блоков.\n"
+"Этот алгоритм сглаживает область просмотра 3D, сохраняя резкость "
+"изображения,\n"
 "но это не влияет на внутренности текстур\n"
 "(что особенно заметно на прозрачных текстурах).\n"
 "Когда шейдеры отключены, между узлами появляются видимые пробелы.\n"
@@ -7127,6 +7138,12 @@ msgstr ""
 "Использовать ли шрифты FreeType. Поддержка FreeType должна быть включена при "
 "сборке.\n"
 "Если отключено, используются растровые и XML-векторные изображения."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2020-12-27 00:29+0000\n"
 "Last-Translator: Atrate <Atrate@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -720,6 +720,11 @@ msgstr "Nie można zainstalować paczki modów jako $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Ładowanie..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skryptowanie po stronie klienta jest wyłączone"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3031,7 +3036,8 @@ msgid "Enable console window"
 msgstr "Odblokuj okno konsoli"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Zezwól na tryb kreatywny dla nowo powstałych map."
 
 #: src/settings_translation_file.cpp
@@ -6389,6 +6395,10 @@ msgstr ""
 "Wymagany restart po zmianie ustawienia."
 
 #: src/settings_translation_file.cpp
+msgid "Show nametag backgrounds by default"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Komunikat zamknięcia serwera"
 
@@ -7179,6 +7189,12 @@ msgid ""
 msgstr ""
 "Kiedy tylko czcionki wolnego typu są używane wymagana jest ich kompilacja "
 "wspierająca takie czcionki."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

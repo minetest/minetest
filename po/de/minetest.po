@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -705,6 +705,11 @@ msgstr "Fehler bei der Modpack-Installation von $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Lädt …"
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Clientseitige Skripte sind deaktiviert"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3033,7 +3038,8 @@ msgid "Enable console window"
 msgstr "Konsolenfenster aktivieren"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Kreativmodus für neu erstellte Karten aktivieren."
 
 #: src/settings_translation_file.cpp
@@ -6384,6 +6390,11 @@ msgstr ""
 "Nach Änderung ist ein Neustart erforderlich."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Schrift standardmäßig fett"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Herunterfahrnachricht"
 
@@ -6992,12 +7003,12 @@ msgid ""
 "A restart is required after changing this option."
 msgstr ""
 "Multi-Sample-Antialiasing (MSAA) benutzen, um Blockecken zu glätten.\n"
-"Dieser Algorithmus glättet das 3-D-Sichtfeld während das Bild scharf bleibt,"
-"\n"
+"Dieser Algorithmus glättet das 3-D-Sichtfeld während das Bild scharf "
+"bleibt,\n"
 "beeinträchtigt jedoch nicht die Textureninnenflächen\n"
 "(was sich insbesondere bei transparenten Texturen bemerkbar macht).\n"
-"Sichtbare Lücken erscheinen zwischen Blöcken, wenn Shader ausgeschaltet sind."
-"\n"
+"Sichtbare Lücken erscheinen zwischen Blöcken, wenn Shader ausgeschaltet "
+"sind.\n"
 "Wenn der Wert auf 0 steht, ist MSAA deaktiviert.\n"
 "Ein Neustart ist erforderlich, nachdem diese Option geändert worden ist."
 
@@ -7243,6 +7254,12 @@ msgstr ""
 "einkompiliert worden sein.\n"
 "Falls deaktiviert, werden stattdessen Bitmap- und XML-Vektor-Schriften "
 "benutzt."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

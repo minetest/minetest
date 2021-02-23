@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-23 15:50+0000\n"
 "Last-Translator: Victor Barcelos Lacerda <victornuti.1@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -701,6 +701,11 @@ msgstr "Não foi possível instalar um modpack como um $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Carregando..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Scripting de cliente está desabilitado"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3017,7 +3022,8 @@ msgid "Enable console window"
 msgstr "Habilitar janela de console"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Habilitar modo criativo para mundos novos."
 
 #: src/settings_translation_file.cpp
@@ -3957,8 +3963,8 @@ msgid ""
 msgstr ""
 "Se o tamanho do arquivo debug.txt exceder o número de megabytes "
 "especificado\n"
-"nesta configuração quando ele for aberto, o arquivo é movido para debug.txt."
-"1,\n"
+"nesta configuração quando ele for aberto, o arquivo é movido para debug."
+"txt.1,\n"
 "excluindo um debug.txt.1 mais antigo, se houver.\n"
 "debug.txt só é movido se esta configuração for positiva."
 
@@ -5791,7 +5797,8 @@ msgstr "Pausa quando o foco da janela é perdido"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
-msgstr "Limite de blocos na fila de espera de carregamento do disco por jogador"
+msgstr ""
+"Limite de blocos na fila de espera de carregamento do disco por jogador"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks to generate"
@@ -6308,6 +6315,11 @@ msgstr ""
 "É necessário reiniciar após alterar isso."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Fonte em negrito por padrão"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Mensagem de desligamento"
 
@@ -6427,8 +6439,8 @@ msgid ""
 "items."
 msgstr ""
 "Especifica o tamanho padrão da pilha de nós, items e ferramentas.\n"
-"Note que mods e games talvez definam explicitamente um tamanho para certos ("
-"ou todos) os itens."
+"Note que mods e games talvez definam explicitamente um tamanho para certos "
+"(ou todos) os itens."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7148,6 +7160,12 @@ msgstr ""
 "Se as fontes FreeType são usadas, requer que suporte FreeType tenha sido "
 "compilado.\n"
 "Se desativado, fontes de bitmap e de vetores XML são usadas em seu lugar."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

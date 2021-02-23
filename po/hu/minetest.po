@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-13 08:50+0000\n"
 "Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -711,6 +711,11 @@ msgstr "$1 modcsomag telepítése meghiúsult"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "Betöltés…"
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Kliens oldali szkriptek letiltva"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2974,7 +2979,8 @@ msgid "Enable console window"
 msgstr "Konzolablak engedélyezése"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Kreatív mód engedélyezése az újonnan létrehozott térképekhez."
 
 #: src/settings_translation_file.cpp
@@ -6173,6 +6179,11 @@ msgstr ""
 "A változtatás után a játék újraindítása szükséges."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Félkövér betűtípus alapértelmezetten"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Leállítási üzenet"
 
@@ -6882,6 +6893,12 @@ msgid ""
 msgstr ""
 "Használatban vannak-e freetype betűtípusok. Szükséges a beépített freetype "
 "támogatás."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."

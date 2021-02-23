@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 21:13+0100\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-02-23 15:50+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
@@ -702,6 +702,11 @@ msgstr "Não foi possível instalar um modpack como um $1"
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
 msgstr "A carregar..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "O scripting de cliente está desativado"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3005,7 +3010,8 @@ msgid "Enable console window"
 msgstr "Ativar janela de console"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Ativar modo criativo para mundos novos."
 
 #: src/settings_translation_file.cpp
@@ -6300,6 +6306,11 @@ msgstr ""
 "Apos mudar isso uma reinicialização é necessária."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Fonte em negrito por predefinição"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Mensagem de desligamento"
 
@@ -7111,6 +7122,12 @@ msgid ""
 msgstr ""
 "Se forem utilizadas fontes freetype, requer suporte a freetype para ser "
 "compilado."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
