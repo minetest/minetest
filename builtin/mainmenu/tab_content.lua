@@ -146,10 +146,25 @@ local function get_formspec(tabview, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
+local function handle_doubleclick(pkg)
+	if pkg.type == "txp" then
+		if core.settings:get("texture_path") == pkg.path then
+			core.settings:set("texture_path", "")
+		else
+			core.settings:set("texture_path", pkg.path)
+		end
+		packages = nil
+	end
+end
+
+--------------------------------------------------------------------------------
 local function handle_buttons(tabview, fields, tabname, tabdata)
 	if fields["pkglist"] ~= nil then
 		local event = core.explode_table_event(fields["pkglist"])
 		tabdata.selected_pkg = event.row
+		if event.type == "DCL" then
+			handle_doubleclick(packages:get_list()[tabdata.selected_pkg])
+		end
 		return true
 	end
 
