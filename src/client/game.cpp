@@ -2415,7 +2415,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->isKeyDown(KeyType::LEFT),
 		input->isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP),
-		isKeyDown(KeyType::SPECIAL1),
+		isKeyDown(KeyType::AUX1),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
@@ -2432,7 +2432,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			( (u32)(isKeyDown(KeyType::LEFT)                          & 0x1) << 2) |
 			( (u32)(isKeyDown(KeyType::RIGHT)                         & 0x1) << 3) |
 			( (u32)(isKeyDown(KeyType::JUMP)                          & 0x1) << 4) |
-			( (u32)(isKeyDown(KeyType::SPECIAL1)                      & 0x1) << 5) |
+			( (u32)(isKeyDown(KeyType::AUX1)                          & 0x1) << 5) |
 			( (u32)(isKeyDown(KeyType::SNEAK)                         & 0x1) << 6) |
 			( (u32)(isKeyDown(KeyType::DIG)                           & 0x1) << 7) |
 			( (u32)(isKeyDown(KeyType::PLACE)                         & 0x1) << 8) |

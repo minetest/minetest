@@ -39,7 +39,7 @@ typedef enum
 	jump_id = 0,
 	crunch_id,
 	zoom_id,
-	special1_id,
+	aux1_id,
 	after_last_element_id,
 	settings_starter_id,
 	rare_controls_starter_id,
@@ -69,7 +69,7 @@ typedef enum
 	j_backward,
 	j_left,
 	j_right,
-	j_special1
+	j_aux1
 } touch_gui_joystick_move_id;
 
 typedef enum
@@ -217,7 +217,7 @@ private:
 
 	// forward, backward, left, right
 	touch_gui_button_id m_joystick_names[5] = {
-			forward_id, backward_id, left_id, right_id, special1_id};
+			forward_id, backward_id, left_id, right_id, aux1_id};
 	bool m_joystick_status[5] = {false, false, false, false, false};
 
 	/*
@@ -237,7 +237,7 @@ private:
 	int m_joystick_id = -1;
 	bool m_joystick_has_really_moved = false;
 	bool m_fixed_joystick = false;
-	bool m_joystick_triggers_special1 = false;
+	bool m_joystick_triggers_aux1 = false;
 	button_info *m_joystick_btn_off = nullptr;
 	button_info *m_joystick_btn_bg = nullptr;
 	button_info *m_joystick_btn_center = nullptr;

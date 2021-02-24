@@ -80,7 +80,7 @@ void set_default_settings()
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
-	settings->setDefault("keymap_special1", "KEY_KEY_E");
+	settings->setDefault("keymap_aux1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
@@ -464,7 +464,7 @@ void set_default_settings()
 	settings->setDefault("touchtarget", "true");
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
-	settings->setDefault("virtual_joystick_triggers_aux", "false");
+	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("emergequeue_limit_diskonly", "16");

@@ -40,7 +40,7 @@ const char **button_imagenames = (const char *[]) {
 	"jump_btn.png",
 	"down.png",
 	"zoom.png",
-	"aux_btn.png"
+	"aux1_btn.png"
 };
 
 const char **joystick_imagenames = (const char *[]) {
@@ -80,8 +80,8 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 		case zoom_id:
 			key = "zoom";
 			break;
-		case special1_id:
-			key = "special1";
+		case aux1_id:
+			key = "aux1";
 			break;
 		case fly_id:
 			key = "freemove";
@@ -425,7 +425,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
-	m_joystick_triggers_special1 = g_settings->getBool("virtual_joystick_triggers_aux");
+	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	button_size = MYMIN(m_screensize.Y / 4.5f,
 			porting::getDisplayDensity() *
@@ -521,9 +521,9 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 					m_screensize.Y - (3 * button_size)),
 			L"z", false);
 
-	// init special1/aux button
-	if (!m_joystick_triggers_special1)
-		initButton(special1_id,
+	// init aux1 button
+	if (!m_joystick_triggers_aux1)
+		initButton(aux1_id,
 				rect<s32>(m_screensize.X - (1.25 * button_size),
 						m_screensize.Y - (2.5 * button_size),
 						m_screensize.X - (0.25 * button_size),
@@ -923,7 +923,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				}
 
 				if (distance > button_size) {
-					m_joystick_status[j_special1] = true;
+					m_joystick_status[j_aux1] = true;
 					// move joystick "button"
 					s32 ndx = button_size * dx / distance - button_size / 2.0f;
 					s32 ndy = button_size * dy / distance - button_size / 2.0f;
@@ -1039,7 +1039,7 @@ bool TouchScreenGUI::doubleTapDetection()
 void TouchScreenGUI::applyJoystickStatus()
 {
 	for (unsigned int i = 0; i < 5; i++) {
-		if (i == 4 && !m_joystick_triggers_special1)
+		if (i == 4 && !m_joystick_triggers_aux1)
 			continue;
 
 		SEvent translated{};

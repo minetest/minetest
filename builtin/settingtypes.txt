@@ -75,7 +75,7 @@ free_move (Flying) bool false
 #    If enabled, makes move directions relative to the player's pitch when flying or swimming.
 pitch_move (Pitch move mode) bool false
 
-#    Fast movement (via the "special" key).
+#    Fast movement (via the "Aux1" key).
 #    This requires the "fast" privilege on the server.
 fast_move (Fast movement) bool false
 
@@ -99,14 +99,14 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2
 
-#    If enabled, "special" key instead of "sneak" key is used for climbing down and
+#    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
-aux1_descends (Special key for climbing/descending) bool false
+aux1_descends (Aux1 key for climbing/descending) bool false
 
 #    Double-tapping the jump key toggles fly mode.
 doubletap_jump (Double tap jump for fly) bool false
 
-#    If disabled, "special" key is used to fly fast if both fly and fast mode are
+#    If disabled, "Aux1" key is used to fly fast if both fly and fast mode are
 #    enabled.
 always_fly_fast (Always fly and fast) bool true
 
@@ -135,9 +135,9 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 #    If disabled, virtual joystick will center to first-touch's position.
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
-#    (Android) Use virtual joystick to trigger "aux" button.
-#    If enabled, virtual joystick will also tap "aux" button when out of main circle.
-virtual_joystick_triggers_aux (Virtual joystick triggers aux button) bool false
+#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
+virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
 #    Enable joysticks
 enable_joysticks (Enable joysticks) bool false
@@ -199,7 +199,7 @@ keymap_inventory (Inventory key) key KEY_KEY_I
 
 #    Key for moving fast in fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_special1 (Special key) key KEY_KEY_E
+keymap_aux1 (Aux1 key) key KEY_KEY_E
 
 #    Key for opening the chat window.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
