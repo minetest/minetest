@@ -27,6 +27,7 @@ extern "C" {
 }
 
 #include "server.h"
+#include "server/mods.h"
 #include "s_async.h"
 #include "log.h"
 #include "filesys.h"
@@ -196,7 +197,7 @@ void* AsyncWorkerThread::run()
 {
 	lua_State *L = getStack();
 
-	std::string script = getServer()->getBuiltinLuaPath() + DIR_DELIM + "init.lua";
+	std::string script = ServerModManager::getBuiltinLuaPath() + DIR_DELIM + "init.lua";
 	try {
 		loadScript(script);
 	} catch (const ModError &e) {

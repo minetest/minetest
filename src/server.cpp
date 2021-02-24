@@ -410,7 +410,7 @@ void Server::init()
 	// Must be created before mod loading because we have some inventory creation
 	m_inventory_mgr = std::unique_ptr<ServerInventoryManager>(new ServerInventoryManager());
 
-	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	m_script->loadMod(ServerModManager::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
 	m_modmgr->loadMods(m_script);
 
@@ -3599,11 +3599,6 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 void Server::getModNames(std::vector<std::string> &modlist)
 {
 	m_modmgr->getModNames(modlist);
-}
-
-std::string Server::getBuiltinLuaPath()
-{
-	return porting::path_share + DIR_DELIM + "builtin";
 }
 
 std::string Server::getModStoragePath() const

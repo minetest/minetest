@@ -51,4 +51,5 @@ public:
 	 * @param paths result vector
 	 */
 	void getModsMediaPaths(std::vector<std::string> &paths) const;
+	static std::string getBuiltinLuaPath();
 };
