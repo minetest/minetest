@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-12-27 00:29+0000\n"
-"Last-Translator: Atrate <Atrate@protonmail.com>\n"
+"PO-Revision-Date: 2021-02-25 23:50+0000\n"
+"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -108,8 +108,9 @@ msgstr ""
 "znaki. Tylko znaki od [a-z, 0-9 i _] są dozwolone."
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "Find More Mods"
-msgstr ""
+msgstr "Znajdź więcej modów"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -153,22 +154,28 @@ msgid "enabled"
 msgstr "włączone"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" już istnieje. Czy chciałbyś to nadpisać?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Zależności $1 i $2 będą zainstalowane."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 przez $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 pobierany,\n"
+"$2 w kolejce"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -176,12 +183,14 @@ msgid "$1 downloading..."
 msgstr "Ładowanie..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 wymaga zależności, których nie można znaleźć."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 będzie zainstalowany, a zależności $2 zostaną pominięte."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -258,15 +267,15 @@ msgstr "Wycisz dźwięk"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Nadpisz"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Proszę sprawdzić, czy gra podstawowa jest poprawnie zainstalowana."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "W kolejce"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -282,11 +291,11 @@ msgstr "Aktualizacja"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Zaktualizuj wszystko [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Pokaż więcej informacji w przeglądarce"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -303,7 +312,7 @@ msgstr "Wysokość mrozu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Wysokość suchości"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -364,7 +373,7 @@ msgstr "Gra"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generuj niefraktalny teren: oceany i podziemia"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -443,13 +452,15 @@ msgstr "Ziarno losowości"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Płynne przejście między biomami"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Struktury pojawiające się na terenie (brak wpływu na drzewa i trawę w "
+"dżungli stworzone przez v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
