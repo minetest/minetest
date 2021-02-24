@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-13 08:50+0000\n"
-"Last-Translator: Jacques Lagrange <Jacques.Reads@gmail.com>\n"
+"PO-Revision-Date: 2021-02-25 23:50+0000\n"
+"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -747,7 +747,7 @@ msgstr "Rinomina"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr "Disinstalla la raccolta"
+msgstr "Disinstalla pacchetto"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1888,7 +1888,7 @@ msgstr "Selezione raggio"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr "Schermata"
+msgstr "Screenshot"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
@@ -3409,7 +3409,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr "Formato delle schermate."
+msgstr "Formato degli screenshot."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
@@ -4764,7 +4764,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tasto per scattare schermate.\n"
+"Tasto per scattare gli screenshot.\n"
 "Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5784,7 +5784,7 @@ msgid ""
 "Path to save screenshots at. Can be an absolute or relative path.\n"
 "The folder will be created if it doesn't already exist."
 msgstr ""
-"Percorso dove salvare le schermate. Può essere un percorso assoluto o "
+"Percorso dove salvare gli screenshot. Può essere un percorso assoluto o "
 "relativo.\n"
 "La cartella sarà create se non esiste già."
 
@@ -6141,15 +6141,15 @@ msgstr "Larghezza dello schermo"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr "Cartella delle schermate"
+msgstr "Cartella degli screenshot"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
-msgstr "Formato delle schermate"
+msgstr "Formato degli screenshot"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot quality"
-msgstr "Qualità delle schermate"
+msgstr "Qualità degli screenshot"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6157,8 +6157,8 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
-"Qualità delle schermate. Usata solo per il formato JPEG.\n"
-"1 significa qualità peggiore, 100 significa qualità migliore.\n"
+"Qualità degli screenshot. Usata solo per il formato JPEG.\n"
+"1 significa la qualità peggiore, 100 quella migliore.\n"
 "Usa 0 per la qualità predefinita."
 
 #: src/settings_translation_file.cpp
