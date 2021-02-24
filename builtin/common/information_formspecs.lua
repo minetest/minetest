@@ -54,7 +54,8 @@ local function build_chatcommands_formspec(name, sel, copy)
 	local rows = {}
 	rows[1] = "#FFF,0,"..F(S("Command"))..","..F(S("Parameters"))
 
-	local description = S("For more information, click on any entry in the list.").."\n" ..
+	local description = S("For more information, click on "
+		.. "any entry in the list.").. "\n" ..
 		S("Double-click to copy the entry to the chat history.")
 
 	for i, data in ipairs(mod_cmds) do

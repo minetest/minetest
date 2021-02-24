@@ -57,7 +57,10 @@ local function do_help_cmd(name, param)
 		end
 		table.sort(cmds)
 		return true, S("Available commands: @1", table.concat(cmds, " ")) .. "\n"
-				.. S("Use '@1help <cmd>' to get more information, or '@2help all' to list everything.", cmd_marker, cmd_marker)
+				.. S("Use '@1help <cmd>' to get more "
+				.. "information, or '@2help all' to list "
+				.. "everything.",
+				cmd_marker, cmd_marker)
 	elseif param == "all" then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do

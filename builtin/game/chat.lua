@@ -88,7 +88,8 @@ core.register_on_chat_message(function(name, message)
 		end
 	else
 		core.chat_send_player(name,
-				S("You don't have permission to run this command (missing privileges: @1).",
+				S("You don't have permission to run this command "
+				.. "(missing privileges: @1).",
 				table.concat(missing_privs, ", ") .. ")"))
 	end
 	return true  -- Handled chat message
@@ -114,7 +115,8 @@ local function parse_range_str(player_name, str)
 	else
 		p1, p2 = core.string_to_area(str)
 		if p1 == nil then
-			return false, S("Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)")
+			return false, S("Incorrect area format. "
+				.. "Expected: (x1,y1,z1) (x2,y2,z2)")
 		end
 	end
 
@@ -126,7 +128,8 @@ end
 --
 core.register_chatcommand("me", {
 	params = S("<action>"),
-	description = S("Show chat action (e.g., '/me orders a pizza' displays '<player name> orders a pizza')"),
+	description = S("Show chat action (e.g., '/me orders a pizza' "
+		.. "displays '<player name> orders a pizza')"),
 	privs = {shout=true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
@@ -141,7 +144,8 @@ core.register_chatcommand("admin", {
 		if admin then
 			return true, S("The administrator of this server is @1.", admin)
 		else
-			return false, S("There's no administrator named in the config file.")
+			return false, S("There's no administrator named "
+				.. "in the config file.")
 		end
 	end,
 })
@@ -542,7 +546,8 @@ core.register_chatcommand("set", {
 		setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
 			if not core.settings:get(setname) then
-				return false, S("Failed. Use '/set -n <name> <value>' to create a new setting.")
+				return false, S("Failed. Use '/set -n <name> <value>' "
+					.. "to create a new setting.")
 			end
 			core.settings:set(setname, setvalue)
 			return true, S("@1 = @2", setname, setvalue)
@@ -589,7 +594,8 @@ end
 
 core.register_chatcommand("emergeblocks", {
 	params = S("(here [<radius>]) | (<pos1> <pos2>)"),
-	description = S("Load (or, if nonexistent, generate) map blocks contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)"),
+	description = S("Load (or, if nonexistent, generate) map blocks contained in "
+		.. "area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)"),
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -614,7 +620,8 @@ core.register_chatcommand("emergeblocks", {
 
 core.register_chatcommand("deleteblocks", {
 	params = S("(here [<radius>]) | (<pos1> <pos2>)"),
-	description = S("Delete map blocks contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)"),
+	description = S("Delete map blocks contained in area pos1 to pos2 "
+		.. "(<pos1> and <pos2> must be in parentheses)"),
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -623,17 +630,20 @@ core.register_chatcommand("deleteblocks", {
 		end
 
 		if core.delete_area(p1, p2) then
-			return true, S("Successfully cleared area ranging from @1 to @2.",
+			return true, S("Successfully cleared area "
+				.. "ranging from @1 to @2.",
 				core.pos_to_string(p1, 1), core.pos_to_string(p2, 1))
 		else
-			return false, S("Failed to clear one or more blocks in area.")
+			return false, S("Failed to clear one or more "
+				.. "blocks in area.")
 		end
 	end,
 })
 
 core.register_chatcommand("fixlight", {
 	params = S("(here [<radius>]) | (<pos1> <pos2>)"),
-	description = S("Resets lighting in the area between pos1 and pos2 (<pos1> and <pos2> must be in parentheses)"),
+	description = S("Resets lighting in the area between pos1 and pos2 "
+		.. "(<pos1> and <pos2> must be in parentheses)"),
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -642,7 +652,8 @@ core.register_chatcommand("fixlight", {
 		end
 
 		if core.fix_light(p1, p2) then
-			return true, S("Successfully reset light in the area ranging from @1 to @2.",
+			return true, S("Successfully reset light in the area "
+				.. "ranging from @1 to @2.",
 				core.pos_to_string(p1, 1), core.pos_to_string(p2, 1))
 		else
 			return false, S("Failed to load one or more blocks in area.")
@@ -701,11 +712,14 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		core.chat_send_player(receiver, msg)
 		local msg_other
 		if partiality == true then
-			msg_other = S("@1 partially added to inventory of @2.", stackstring, receiver)
+			msg_other = S("@1 partially added to inventory of @2.",
+					stackstring, receiver)
 		elseif partiality == false then
-			msg_other = S("@1 could not be added to inventory of @2.", stackstring, receiver)
+			msg_other = S("@1 could not be added to inventory of @2.",
+					stackstring, receiver)
 		else
-			msg_other = S("@1 added to inventory of @2.", stackstring, receiver)
+			msg_other = S("@1 added to inventory of @2.",
+					stackstring, receiver)
 		end
 		return true, msg_other
 	end
@@ -809,7 +823,10 @@ end)
 
 core.register_chatcommand("rollback_check", {
 	params = S("[<range>] [<seconds>] [<limit>]"),
-	description = S("Check who last touched a node or a node near it within the time specified by <seconds>. Default: range = 0, seconds = 86400 = 24h, limit = 5. Set <seconds> to inf for no time limit"),
+	description = S("Check who last touched a node or a node near it "
+		.. "within the time specified by <seconds>. "
+		.. "Default: range = 0, seconds = 86400 = 24h, limit = 5. "
+		.. "Set <seconds> to inf for no time limit"),
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -835,7 +852,9 @@ core.register_chatcommand("rollback_check", {
 			local num_actions = #actions
 			if num_actions == 0 then
 				core.chat_send_player(name,
-						S("Nobody has touched the specified location in @1 seconds.", seconds))
+						S("Nobody has touched the specified "
+						.. "location in @1 seconds.",
+						seconds))
 				return
 			end
 			local time = os.time()
@@ -858,7 +877,9 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = S("(<name> [<seconds>]) | (:<actor> [<seconds>])"),
-	description = S("Revert actions of a player. Default for <seconds> is 60. Set <seconds> to inf for no time limit"),
+	description = S("Revert actions of a player. "
+		.. "Default for <seconds> is 60. "
+		.. "Set <seconds> to inf for no time limit"),
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -870,14 +891,18 @@ core.register_chatcommand("rollback", {
 			local player_name
 			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
 			if not player_name then
-				return false, S("Invalid parameters. See /help rollback and /help rollback_check.")
+				return false, S("Invalid parameters. "
+					.. "See /help rollback and "
+					.. "/help rollback_check.")
 			end
 			seconds = tonumber(seconds) or 60
 			target_name = "player:"..player_name
-			rev_msg = S("Reverting actions of player '@1' since @2 seconds.", player_name, seconds)
+			rev_msg = S("Reverting actions of player '@1' since @2 seconds.",
+				player_name, seconds)
 		else
 			seconds = tonumber(seconds) or 60
-			rev_msg = S("Reverting actions of @1 since @2 seconds.", target_name, seconds)
+			rev_msg = S("Reverting actions of @1 since @2 seconds.",
+				target_name, seconds)
 		end
 		core.chat_send_player(name, rev_msg)
 		local success, log = core.rollback_revert_actions_by(
@@ -925,7 +950,8 @@ core.register_chatcommand("time", {
 		end
 		local player_privs = core.get_player_privs(name)
 		if not player_privs.settime then
-			return false, S("You don't have permission to run this command (missing privilege: settime).")
+			return false, S("You don't have permission to run "
+				.. "this command (missing privilege: settime).")
 		end
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		if not hour then
@@ -1053,7 +1079,8 @@ core.register_chatcommand("clearobjects", {
 
 		core.log("action", name .. " clears all objects ("
 				.. options.mode .. " mode).")
-		core.chat_send_all(S("Clearing all objects. This may take a long time. You may experience a timeout. (by @1)", name))
+		core.chat_send_all(S("Clearing all objects. This may take a long time. "
+			.. "You may experience a timeout. (by @1)", name))
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
 		core.chat_send_all("*** "..S("Cleared all objects."))
@@ -1105,7 +1132,9 @@ core.register_chatcommand("clearinv", {
 		local player
 		if param and param ~= "" and param ~= name then
 			if not core.check_player_privs(name, {server=true}) then
-				return false, S("You don't have permission to clear another player's inventory (missing privilege: server).")
+				return false, S("You don't have permission to "
+					.. "clear another player's inventory "
+					.. "(missing privilege: server).")
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, S("@1 cleared your inventory.", name))
