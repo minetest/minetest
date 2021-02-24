@@ -418,121 +418,111 @@ core.register_chatcommand("remove_player", {
 	end,
 })
 
+
+-- pos may be a non-integer position
+local function find_free_position_near(pos)
+	local tries = {
+		{x=1, y=0, z=0},
+		{x=-1, y=0, z=0},
+		{x=0, y=0, z=1},
+		{x=0, y=0, z=-1},
+	}
+	for _, d in ipairs(tries) do
+		local p = vector.add(pos, d)
+		local n = core.get_node_or_nil(p)
+		if n then
+			local def = core.registered_nodes[n.name]
+			if def and not def.walkable then
+				return p
+			end
+		end
+	end
+	return pos
+end
+
+-- Teleports player <name> to <p> if possible
+local function teleport_to_pos(name, p)
+	local lm = 31000
+	if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm
+			or p.z < -lm or p.z > lm then
+		return false, "Cannot teleport out of map bounds!"
+	end
+	local teleportee = core.get_player_by_name(name)
+	if not teleportee then
+		return false, "Cannot get player with name " .. name
+	end
+	if teleportee:get_attach() then
+		return false, "Cannot teleport, " .. name ..
+			" is attached to an object!"
+	end
+	teleportee:set_pos(p)
+	return true, "Teleporting " .. name .. " to " .. core.pos_to_string(p, 1)
+end
+
+-- Teleports player <name> next to player <target_name> if possible
+local function teleport_to_player(name, target_name)
+	if name == target_name then
+		return false, "One does not teleport to oneself."
+	end
+	local teleportee = core.get_player_by_name(name)
+	if not teleportee then
+		return false, "Cannot get teleportee with name " .. name
+	end
+	if teleportee:get_attach() then
+		return false, "Cannot teleport, " .. name ..
+			" is attached to an object!"
+	end
+	local target = core.get_player_by_name(target_name)
+	if not target then
+		return false, "Cannot get target player with name " .. target_name
+	end
+	local p = find_free_position_near(target:get_pos())
+	teleportee:set_pos(p)
+	return true, "Teleporting " .. name .. " to " .. target_name .. " at " ..
+		core.pos_to_string(p, 1)
+end
+
 core.register_chatcommand("teleport", {
-	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
+	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
 	description = "Teleport to position or player",
 	privs = {teleport=true},
 	func = function(name, param)
-		-- Returns (pos, true) if found, otherwise (pos, false)
-		local function find_free_position_near(pos)
-			local tries = {
-				{x=1,y=0,z=0},
-				{x=-1,y=0,z=0},
-				{x=0,y=0,z=1},
-				{x=0,y=0,z=-1},
-			}
-			for _, d in ipairs(tries) do
-				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
-				local n = core.get_node_or_nil(p)
-				if n and n.name then
-					local def = core.registered_nodes[n.name]
-					if def and not def.walkable then
-						return p, true
-					end
-				end
-			end
-			return pos, false
-		end
-
 		local p = {}
-		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
+		p.x, p.y, p.z = param:match("^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		p = vector.apply(p, tonumber)
 		if p.x and p.y and p.z then
-
-			local lm = 31000
-			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
-				return false, "Cannot teleport out of map bounds!"
-			end
-			local teleportee = core.get_player_by_name(name)
-			if teleportee then
-				if teleportee:get_attach() then
-					return false, "Can't teleport, you're attached to an object!"
-				end
-				teleportee:set_pos(p)
-				return true, "Teleporting to "..core.pos_to_string(p)
-			end
+			return teleport_to_pos(name, p)
 		end
 
 		local target_name = param:match("^([^ ]+)$")
-		local teleportee = core.get_player_by_name(name)
-
-		p = nil
 		if target_name then
-			local target = core.get_player_by_name(target_name)
-			if target then
-				p = target:get_pos()
-			end
+			return teleport_to_player(name, target_name)
 		end
 
-		if teleportee and p then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, you're attached to an object!"
-			end
-			p = find_free_position_near(p)
-			teleportee:set_pos(p)
-			return true, "Teleporting to " .. target_name
-					.. " at "..core.pos_to_string(p)
-		end
+		local has_bring_priv = core.check_player_privs(name, {bring=true})
+		local missing_bring_msg = "You don't have permission to teleport " ..
+			"other players (missing bring privilege)"
 
-		if not core.check_player_privs(name, {bring=true}) then
-			return false, "You don't have permission to teleport other players (missing bring privilege)"
-		end
-
-		teleportee = nil
-		p = {}
 		local teleportee_name
 		teleportee_name, p.x, p.y, p.z = param:match(
 				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
-		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
-		end
-		if teleportee and p.x and p.y and p.z then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, player is attached to an object!"
+		p = vector.apply(p, tonumber)
+		if teleportee_name and p.x and p.y and p.z then
+			if not has_bring_priv then
+				return false, missing_bring_msg
 			end
-			teleportee:set_pos(p)
-			return true, "Teleporting " .. teleportee_name
-					.. " to " .. core.pos_to_string(p)
+			return teleport_to_pos(teleportee_name, p)
 		end
 
-		teleportee = nil
-		p = nil
 		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
-		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
-		end
-		if target_name then
-			local target = core.get_player_by_name(target_name)
-			if target then
-				p = target:get_pos()
+		if teleportee_name and target_name then
+			if not has_bring_priv then
+				return false, missing_bring_msg
 			end
-		end
-		if teleportee and p then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, player is attached to an object!"
-			end
-			p = find_free_position_near(p)
-			teleportee:set_pos(p)
-			return true, "Teleporting " .. teleportee_name
-					.. " to " .. target_name
-					.. " at " .. core.pos_to_string(p)
+			return teleport_to_player(teleportee_name, target_name)
 		end
 
-		return false, 'Invalid parameters ("' .. param
-				.. '") or player not found (see /help teleport)'
+		return false
 	end,
 })
 
