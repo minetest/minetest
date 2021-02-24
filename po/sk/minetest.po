@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-13 08:50+0000\n"
+"PO-Revision-Date: 2021-03-14 11:02+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -190,7 +190,7 @@ msgstr "$1 bude nainštalovaný, a $2 závislosti budú preskočené."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr "Všetky balíčky"
+msgstr "Všetko"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
@@ -198,7 +198,7 @@ msgstr "Už je nainštalované"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "Naspäť do hlavného menu"
+msgstr "Hlavné menu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
@@ -268,7 +268,7 @@ msgstr "Čaká v rade"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr "Balíčky textúr"
+msgstr "Textúry"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -577,7 +577,7 @@ msgstr "Prosím vlož platné číslo."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Obnov štandardné hodnoty"
+msgstr "Obnov štand. hodnoty"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -710,9 +710,8 @@ msgid "Loading..."
 msgstr "Nahrávam..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Skriptovanie na strane klienta je zakázané"
+msgstr "Zoznam verejných serverov je zakázaný"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -1023,7 +1022,7 @@ msgstr "Aby mohli byť aktivované shadery, musí sa použiť OpenGL."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr "Tone Mapping (Optim. farieb)"
+msgstr "Optim. farieb"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
@@ -3005,9 +3004,8 @@ msgid "Enable console window"
 msgstr "Aktivuj okno konzoly"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Aktivuj kreatívny režim pre novo vytvorené mapy."
+msgstr "Aktivuj kreatívny režim pre všetkých hráčov"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -4987,13 +4985,13 @@ msgid ""
 "-    verbose"
 msgstr ""
 "Úroveň ladiacich informácií, ktoré budú zapísané do debug.txt:\n"
-"-    <nič> (bez logovania)\n"
-"-    žiadna (správy bez úrovne)\n"
-"-    chyby\n"
-"-    varovania\n"
-"-    akcie\n"
-"-    informácie\n"
-"-    všetko"
+"- <nič> (bez logovania)\n"
+"- none - žiadna (správy bez úrovne)\n"
+"- error - chyby\n"
+"- warning - varovania\n"
+"- akcie\n"
+"- info - informácie\n"
+"- verbose - všetko"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
@@ -6276,9 +6274,8 @@ msgstr ""
 "Po zmene je požadovaný reštart."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "Štandardne tučné písmo"
+msgstr "Pri mene zobraz štandardne pozadie"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -7107,6 +7104,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Či sa má pri mene zobraziť pozadie.\n"
+"Rozšírenia stále môžu pozadie nastaviť."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
