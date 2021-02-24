@@ -1,5 +1,6 @@
 -- Minetest: builtin/client/chatcommands.lua
 
+local S = minetest.get_translator("__builtin")
 
 core.register_on_sending_chat_message(function(message)
 	if message:sub(1,2) == ".." then
@@ -7,8 +8,10 @@ core.register_on_sending_chat_message(function(message)
 	end
 
 	local first_char = message:sub(1,1)
-	if first_char == "/" or first_char == "." then
-		core.display_chat_message(core.gettext("issued command: ") .. message)
+	if first_char == "." then
+		core.display_chat_message(core.gettext("Issued command: ") .. message)
+	elseif first_char == "/" then
+		core.display_chat_message(S("Issued command: @1", message))
 	end
 
 	if first_char ~= "." then
@@ -66,7 +69,7 @@ core.register_chatcommand("clear_chat_queue", {
 	description = core.gettext("Clear the out chat queue"),
 	func = function(param)
 		core.clear_out_chat_queue()
-		return true, core.gettext("The out chat queue is now empty")
+		return true, core.gettext("The out chat queue is now empty.")
 	end,
 })
 
