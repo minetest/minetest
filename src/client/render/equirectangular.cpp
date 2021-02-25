@@ -45,7 +45,7 @@ RenderingCoreEquirectangular::RenderingCoreEquirectangular(
 	mat.UseMipMaps = false;
 	mat.ZBuffer = false;
 	mat.ZWriteEnable = false;
-	u32 shader = s->getShader("equirectangular_merge", TILE_MATERIAL_BASIC, 0);
+	u32 shader = s->getShader("equirectangular_merge", TILE_MATERIAL_BASIC);
 	mat.MaterialType = s->getShaderInfo(shader).material;
 	mat.TextureLayer[0].AnisotropicFilter = false;
 	mat.TextureLayer[0].BilinearFilter = false;
@@ -76,12 +76,17 @@ void RenderingCoreEquirectangular::clearTextures()
 
 void RenderingCoreEquirectangular::drawAll()
 {
-	driver->setRenderTarget(nullptr, false, false, skycolor);
-	draw3D();
-	drawHUD();
-
-	if (!client->is360VideoMode())
+	if (!client->is360VideoMode()) {
+		driver->setRenderTarget(nullptr, false, false, skycolor);
+		draw3D();
+		drawHUD();
 		return;
+	}
+
+	scene::ICameraSceneNode *cam = camera->getCameraNode();
+	core::vector3df camTarget = cam->getTarget();
+	f32 camAspect = cam->getAspectRatio();
+	f32 camFOV = cam->getFOV();
 
 	camera->m_enable_draw_wielded_tool = false;
 	for (int i = 0; i < 6; i ++) {
@@ -165,6 +170,16 @@ void RenderingCoreEquirectangular::drawAll()
 		}
 		raw_image->drop();
 		renderOutput->unlock();
+
+		// Restore any changes made by calling RenderingCoreCubeMap::useFace()
+		cam->setTarget(camTarget);
+		cam->setAspectRatio(camAspect);
+		cam->setFOV(camFOV);
+
+		// Render normal view after rendering and saving the output
+		driver->setRenderTarget(nullptr, false, false, skycolor);
+		draw3D();
+		drawHUD();
 	} else {
 		driver->setRenderTarget(nullptr, false, false, skycolor);
 		driver->draw2DImage(renderOutput, v2s32(0, 0));

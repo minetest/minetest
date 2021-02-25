@@ -1892,7 +1892,7 @@ void Client::toggle360Video()
 		sendChatMessage(msg);
 	}
 	pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-			narrow_to_wide(sstr.str())));
+			utf8_to_wide(sstr.str())));
 }
 
 bool Client::shouldShowMinimap() const
