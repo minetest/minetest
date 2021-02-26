@@ -415,11 +415,6 @@ public:
 		return m_csm_restriction_flags & flag;
 	}
 
-	inline std::unordered_map<u32, u32> &getHUDTranslationMap()
-	{
-		return m_hud_server_to_client;
-	}
-
 	bool joinModChannel(const std::string &channel) override;
 	bool leaveModChannel(const std::string &channel) override;
 	bool sendModChannelMessage(const std::string &channel,
@@ -555,9 +550,6 @@ private:
 	std::unordered_map<int, s32> m_sounds_client_to_server;
 	// Relation of client id to object id
 	std::unordered_map<int, u16> m_sounds_to_objects;
-
-	// Map server hud ids to client hud ids
-	std::unordered_map<u32, u32> m_hud_server_to_client;
 
 	// Privileges
 	std::unordered_set<std::string> m_privileges;

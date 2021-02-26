@@ -859,6 +859,9 @@ private:
 	Hud *hud = nullptr;
 	Minimap *mapper = nullptr;
 
+	// Map server hud ids to client hud ids
+	std::unordered_map<u32, u32> m_hud_server_to_client;
+
 	GameRunData runData;
 	Flags m_flags;
 
@@ -2605,12 +2608,11 @@ void Game::handleClientEvent_HandleParticleEvent(ClientEvent *event,
 void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	auto &hud_server_to_client = client->getHUDTranslationMap();
 
 	u32 server_id = event->hudadd.server_id;
 	// ignore if we already have a HUD with that ID
-	auto i = hud_server_to_client.find(server_id);
-	if (i != hud_server_to_client.end()) {
+	auto i = m_hud_server_to_client.find(server_id);
+	if (i != m_hud_server_to_client.end()) {
 		delete event->hudadd.pos;
 		delete event->hudadd.name;
 		delete event->hudadd.scale;
@@ -2638,7 +2640,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->size = *event->hudadd.size;
 	e->z_index = event->hudadd.z_index;
 	e->text2  = *event->hudadd.text2;
-	hud_server_to_client[server_id] = player->addHud(e);
+	m_hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd.pos;
 	delete event->hudadd.name;
@@ -2654,18 +2656,28 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 void Game::handleClientEvent_HudRemove(ClientEvent *event, CameraOrientation *cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	HudElement *e = player->removeHud(event->hudrm.id);
-	delete e;
+
+	auto i = m_hud_server_to_client.find(event->hudrm.id);
+	if (i != m_hud_server_to_client.end()) {
+		HudElement *e = player->removeHud(i->second);
+		delete e;
+		m_hud_server_to_client.erase(i);
+	}
+
 }
 
 void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	u32 id = event->hudchange.id;
-	HudElement *e = player->getHud(id);
+	HudElement *e = nullptr;
 
-	if (e == NULL) {
+	auto i = m_hud_server_to_client.find(event->hudchange.id);
+	if (i != m_hud_server_to_client.end()) {
+		e = player->getHud(i->second);
+	}
+
+	if (e == nullptr) {
 		delete event->hudchange.v3fdata;
 		delete event->hudchange.v2fdata;
 		delete event->hudchange.sdata;
