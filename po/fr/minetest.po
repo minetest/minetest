@@ -1,18 +1,20 @@
+#
+# Thibauld < >, 2021.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-01 05:52+0000\n"
-"Last-Translator: cafou <weblate@ptitux.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
-"fr/>\n"
-"Language: fr\n"
+"PO-Revision-Date: 2021-02-27 18:50+0100\n"
+"Last-Translator: AirSThib < >\n"
+"Language-Team: French - France < >\n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"Plural-Forms: nplurals=2;plural=(n>1);\n"
+"X-Generator: Gtranslator 3.36.0\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -154,26 +156,27 @@ msgstr "activé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "$1 existe déjà. Voulez-vous écrire par dessus ?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Les dépendances nécessaires à $1 et $2 vont être installées."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 par $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 téléchargement,\n"
+"$2 en attente"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Chargement..."
+msgstr "Chargement de $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -188,18 +191,16 @@ msgid "All packages"
 msgstr "Tous les paquets"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Touche déjà utilisée"
+msgstr "Déjà installé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Retour au menu principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Héberger une partie"
+msgstr "Base du jeu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -223,14 +224,12 @@ msgid "Install"
 msgstr "Installer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installer"
+msgstr "Installer $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dépendances optionnelles :"
+msgstr "Installer les dépendances manquantes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -246,14 +245,12 @@ msgid "No results"
 msgstr "Aucun résultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Mise à jour"
+msgstr "À jour"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Couper le son"
+msgstr "Non trouvé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
@@ -261,7 +258,7 @@ msgstr "Écraser"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Veuillez vérifier que la base du jeu soit correcte."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -281,7 +278,7 @@ msgstr "Mise à jour"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Tout mettre à jour $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -713,9 +710,8 @@ msgid "Loading..."
 msgstr "Chargement..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Les scripts côté client sont désactivés"
+msgstr "La liste des serveurs publics est désactivée"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -776,9 +772,8 @@ msgid "Credits"
 msgstr "Crédits"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Choisissez un répertoire"
+msgstr "Ouvrir le répertoire de sauvegarde de données"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
@@ -838,7 +833,6 @@ msgid "No world created or selected!"
 msgstr "Aucun monde créé ou sélectionné !"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
 msgstr "Nouveau mot de passe"
 
@@ -851,9 +845,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Sélectionner un monde :"
+msgstr "Choisir les mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1005,7 +998,6 @@ msgid "Shaders"
 msgstr "Shaders"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
 msgstr "Îles volantes (expérimental)"
 
@@ -1208,7 +1200,7 @@ msgid "Continue"
 msgstr "Continuer"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1231,12 +1223,12 @@ msgstr ""
 "- %s : à gauche\n"
 "- %s : à droite\n"
 "- %s : sauter/grimper\n"
+"- %s : piocher/actionner\n"
+"- %s : placer/utiliser\n"
 "- %s : marcher lentement/descendre\n"
 "- %s : lâcher l'objet en main\n"
 "- %s : inventaire\n"
 "- Souris : tourner/regarder\n"
-"- Souris gauche : creuser/attaquer\n"
-"- Souris droite : placer/utiliser\n"
 "- Molette souris : sélectionner objet\n"
 "- %s : discuter\n"
 
@@ -1762,19 +1754,18 @@ msgid "Minimap hidden"
 msgstr "Mini-carte cachée"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Mini-carte en mode radar, zoom x1"
+msgstr "Mini-carte en mode radar, zoom ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Mini-carte en mode surface, zoom x1"
+msgstr "Mini-carte en mode surface, zoom ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Taille minimum des textures"
+msgstr "Mini-carte en mode texture"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2244,13 +2235,12 @@ msgid ""
 "Value = 0.0: 50% of volume is floatland.\n"
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
-msgstr ""
-"Règle la densité de la couche de massifs volants.\n"
-"La densité augmente avec cette valeur. Peut être positive ou négative.\n"
-"Valeur égale à 0,0 implique 50 % du volume est du massif volant.\n"
-"Valeur égale à 2,0 implique une couche de massifs volants solide\n"
-"(peut dépendre de « mgv7_np_floatland », toujours vérifier pour\n"
-"être sûr)."
+msgstr "Règle la densité de la couche de massifs volants.
+La densité augmente avec cette valeur. Peut être positive ou négative.
+Valeur égale à 0,0 implique 50% du volume est du massif volant.
+Valeur égale à 2,0 implique une couche de massifs volants solide
+(peut dépendre de « mgv7_np_floatland », toujours vérifier pour
+être sûr)."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2767,11 +2757,12 @@ msgid "Crosshair alpha"
 msgstr "Opacité du réticule"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Opacité du réticule (entre 0 et 255)."
+msgstr ""
+"Opacité du réticule (entre 0 et 255).\n"
+"Contrôle également la couleur transparente de l'objet"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2782,6 +2773,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Couleur de transparence (R,V,B)\n"
+"Contrôle également la couleur transparente de l'objet"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2966,9 +2959,8 @@ msgid "Desynchronize block animation"
 msgstr "Désynchroniser les textures animées par mapblock"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Droite"
+msgstr "Touche de pioche"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3035,9 +3027,8 @@ msgid "Enable console window"
 msgstr "Activer la console"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Activer le mode créatif pour les cartes nouvellement créées."
+msgstr "Activer le mode créatif pour tous les joueurs."
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -3196,9 +3187,8 @@ msgstr ""
 "définie en bas, plus pour une couche solide de massif volant."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "FPS maximum quand le jeu est en pause."
+msgstr "FPS maximum quand le jeu est en pause"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3589,7 +3579,6 @@ msgid "HUD toggle key"
 msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -4135,9 +4124,8 @@ msgid "Joystick button repetition interval"
 msgstr "Intervalle de répétition du bouton du Joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Type de manette"
+msgstr "Angle mort du joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4242,13 +4230,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour sauter.\n"
+"Touche pour piocher.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4395,13 +4382,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour sauter.\n"
+"Touche pour placer/utiliser.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5174,11 +5160,11 @@ msgstr "Rendre toutes les liquides opaques"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Niveau de compression de la carte"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Niveau de compression de la carte pour transfert par réseau"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5365,7 +5351,6 @@ msgid "Maximum FPS"
 msgstr "FPS maximum"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr "FPS maximum quand le jeu est en pause."
 
@@ -5848,12 +5833,10 @@ msgid "Pitch move mode"
 msgstr "Mode de mouvement libre"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Voler"
+msgstr "Touche de placement"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
 msgstr "Intervalle de répétition du clic droit"
 
@@ -6349,18 +6332,16 @@ msgid "Show entity selection boxes"
 msgstr "Afficher les boîtes de sélection de l'entité"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Détermine la langue. Laisser vide pour utiliser celui de votre système.\n"
+"Montrer les boîtes de la sélection\n"
 "Un redémarrage du jeu est nécessaire pour prendre effet."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "La police est en gras par défaut"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6645,9 +6626,8 @@ msgid "The URL for the content repository"
 msgstr "L'URL du dépôt de contenu en ligne"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "L'identifiant de la manette à utiliser"
+msgstr "Angle mort du joystick"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6724,7 +6704,6 @@ msgstr ""
 "Ceci devrait être configuré avec 'active_object_send_range_blocks'."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6789,7 +6768,6 @@ msgstr ""
 "le bouton droit de la souris."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
