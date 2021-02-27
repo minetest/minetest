@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-01 05:52+0000\n"
+"PO-Revision-Date: 2021-03-10 17:02+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -701,9 +701,8 @@ msgid "Loading..."
 msgstr "Sedang memuatkan..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Skrip pihak klien dilumpuhkan"
+msgstr "Senarai pelayan awam dilumpuhkan"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3008,9 +3007,8 @@ msgid "Enable console window"
 msgstr "Membolehkan tetingkap konsol"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Membolehkan mod kreatif untuk peta baru dicipta."
+msgstr "Membolehkan mod kreatif untuk semua pemain"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -6308,9 +6306,8 @@ msgstr ""
 "Anda perlu mulakan semula selepas mengubah tetapan ini."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "Fon tebal secara lalainya"
+msgstr "Tunjuk latar belakang tag nama secara lalainya"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6588,7 +6585,7 @@ msgstr ""
 "pelayan lama,\n"
 "pilihan ini membolehkan pemaksaan ia untuk jenis nod tertentu. Ambil "
 "perhatian\n"
-"bahawa ianya dianggap DALAM UJIKAJI dan mungkin tidak berfungsi dengan betul."
+"bahawa ia dianggap DALAM UJIKAJI dan mungkin tidak berfungsi dengan betul."
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -6793,8 +6790,8 @@ msgid ""
 msgstr ""
 "Untuk mengurangkan lembapnya tindak balas, pemindahan blok diperlahankan "
 "apabila pemain membina sesuatu.\n"
-"Tetapan ini menetapkan berapa lama ianya diperlahankan setelah meletakkan "
-"atau mengalihkan sesebuah nod."
+"Tetapan ini menetapkan berapa lama ia diperlahankan setelah meletakkan atau "
+"mengalihkan sesebuah nod."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -7165,6 +7162,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Sama ada latar belakang tag nama patut ditunjukkan secara lalainya.\n"
+"Mods masih boleh tetapkan latar belakang."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
