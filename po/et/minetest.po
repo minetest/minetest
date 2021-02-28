@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Estonian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-12-05 15:29+0000\n"
-"Last-Translator: Janar Leas <janar.leas@gmail.com>\n"
+"PO-Revision-Date: 2021-03-02 15:50+0000\n"
+"Last-Translator: Ayes <andris.sass@gmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
 "minetest/et/>\n"
 "Language: et\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -153,7 +153,7 @@ msgstr "Sisse lülitatud"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" on juba olemas. Kas sa tahad seda üle kirjutada?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -170,9 +170,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Allalaadimine..."
+msgstr "$1 allalaadimine..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -180,29 +179,27 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "Installitakse $1 ja $2 sõltuvus jäetakse vahele."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Kõik pakid"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Nupp juba kasutuses"
+msgstr "Juba installeeritud"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Tagasi peamenüüsse"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Võõrusta"
+msgstr "Põhi Mäng:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB ei ole olemas kui Minetest on kompileeritud ilma cURL'ita"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -222,14 +219,13 @@ msgid "Install"
 msgstr "Paigalda"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Paigalda"
+msgstr "Paigalda $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
 msgid "Install missing dependencies"
-msgstr "Valikulised sõltuvused:"
+msgstr "Paigalda valikulised sõltuvused"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -245,21 +241,21 @@ msgid "No results"
 msgstr "Tulemused puuduvad"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Uuenda"
+msgstr "Värskendusi pole"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "Not found"
-msgstr ""
+msgstr "Ei leitud"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Ümber kirjuta"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Palun tee kindlaks et põhi mäng on õige."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -279,11 +275,11 @@ msgstr "Uuenda"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Uuenda kõiki [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Vaata rohkem infot veebibrauseris"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -705,9 +701,8 @@ msgid "Loading..."
 msgstr "Laadimine..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Kliendipoolne skriptimine on keelatud"
+msgstr "Avalike serverite loend on keelatud"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -768,9 +763,8 @@ msgid "Credits"
 msgstr "Tegijad"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Vali kataloog"
+msgstr "Avalik Kasutaja Andmete Kaust"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
@@ -816,7 +810,7 @@ msgstr "Lisa mänge sisuvaramust"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -840,9 +834,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Vali maailm:"
+msgstr "Vali mod"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -996,7 +989,7 @@ msgstr "Varjutajad"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Lendsaared (katseline)"
+msgstr "Shaderid (eksperimentaalsed)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1196,7 +1189,7 @@ msgid "Continue"
 msgstr "Jätka"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1219,12 +1212,12 @@ msgstr ""
 "- %s: liigu vasakule\n"
 "- %s: liigu paremale\n"
 "- %s: hüppa/roni\n"
+"- %s: kaeva/viruta\n"
+"- %s: paigalda/kasuta\n"
 "- %s: hiili/mine alla\n"
 "- %s: viska ese\n"
 "- %s: seljakott\n"
 "- Hiir: keera/vaata\n"
-"- Hiire vasakklõps: kaeva/viruta\n"
-"- Hiire paremklõps: paigalda/kasuta\n"
 "- Hiireratas: vali ese\n"
 "- %s: vestlus\n"
 
@@ -1341,16 +1334,18 @@ msgid "Item definitions..."
 msgstr "Esemete määratlused..."
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/client/game.cpp
 msgid "Media..."
 msgstr "Meedia..."
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1444,9 +1439,9 @@ msgid "Viewing range is at minimum: %d"
 msgstr "Vaate kaugus on vähim võimalik: %d"
 
 #: src/client/game.cpp
-#, c-format
+#, c-format, fuzzy
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "helitugevus muutetud %d%%-ks"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -1454,11 +1449,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "Suumimine on praegu mängu või modi tõttu keelatud"
 
 #: src/client/game.cpp
 msgid "ok"
-msgstr ""
+msgstr "sobib"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -1495,7 +1490,7 @@ msgstr "Tagasinihe"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "Suurtähelukk"
 
 #: src/client/keycode.cpp
 msgid "Clear"
@@ -1753,14 +1748,14 @@ msgid "Minimap hidden"
 msgstr "Pisikaart peidetud"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Radarkaart, Suurendus ×1"
+msgstr "Radarkaart, Suurendus ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Pinnakaart, Suurendus ×1"
+msgstr "Pinnakaart, Suurendus ×%d"
 
 #: src/client/minimap.cpp
 #, fuzzy
@@ -1773,7 +1768,7 @@ msgstr "Paroolid ei ole samad!"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "Registreeru ja liitu"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1799,7 +1794,7 @@ msgstr "Iseastuja"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "Automaatne hüppamine"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -1872,16 +1867,18 @@ msgid "Local command"
 msgstr "Kohalik käsk"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Mute"
-msgstr ""
+msgstr "Summuta"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
 msgstr "Järgmine üksus"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Prev. item"
-msgstr ""
+msgstr "Eelmine asi"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -1966,8 +1963,9 @@ msgstr "Hääle Volüüm: "
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
+#, fuzzy
 msgid "Enter "
-msgstr ""
+msgstr "Sisesta "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2046,7 +2044,7 @@ msgstr "3D pilved"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D-režiim"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
