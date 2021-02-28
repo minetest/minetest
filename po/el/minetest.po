@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Greek (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-13 08:50+0000\n"
-"Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
+"PO-Revision-Date: 2021-03-02 15:50+0000\n"
+"Last-Translator: THANOS SIOURDAKIS <siourdakisthanos@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/minetest/minetest/"
 "el/>\n"
 "Language: el\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,7 @@ msgstr "Πέθανες"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Εντάξει"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -139,15 +139,15 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Αποθήκευση"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Κόσμος:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "ενεργοποιήθηκε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -182,15 +182,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Όλα τα Πακέτα"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr ""
+msgstr "Ήδη εγκαταστημένο"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "Πίσω στο Κύριο Μενού"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
@@ -211,11 +211,11 @@ msgstr ""
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "Παιχνίδια"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Εγκατάσταση"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
@@ -236,7 +236,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Χωρίς αποτελέσματα"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
@@ -244,7 +244,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Δε βρέθηκε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
@@ -264,15 +264,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Απεγκατάσταση"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Ενημέρωση"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Ενημέρωση Όλων [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -312,7 +312,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Δημιουργία"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -344,7 +344,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "Παιχνίδι"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -352,7 +352,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Λόφοι"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
@@ -364,7 +364,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Λίμνες"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
@@ -384,7 +384,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Βουνά"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -396,7 +396,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "Κανένα παιχνίδι επιλεγμένο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -408,7 +408,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
@@ -417,7 +417,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Σπόρος"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -467,7 +467,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "Όνομα κόσμου"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
@@ -481,7 +481,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Διαγραφή"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -497,7 +497,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Αποδοχή"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -523,7 +523,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Περιήγηση"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
@@ -531,7 +531,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Επεξεργασία"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -571,15 +571,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Search"
-msgstr ""
+msgstr "Αναζήτηση"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "Επιλογή φακέλου"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "Επιλογή αρχείου"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -666,7 +666,7 @@ msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "Εγκατάσταση: αρχείο: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -704,11 +704,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Περιήγηση διαδικτυακού περιεχομένου"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "Περιεχόμενο"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -716,11 +716,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Πληροφορίες:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Εγκαταστημένα Πακέτα:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -732,7 +732,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Μετονομασία"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -752,7 +752,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr ""
+msgstr "Μνείες"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Open User Data Directory"
@@ -802,11 +802,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Όνομα"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Νέο"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
@@ -814,7 +814,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Password"
-msgstr ""
+msgstr "Κωδικός"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -822,7 +822,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr ""
+msgstr "Θήρα"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
@@ -830,23 +830,23 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Επιλογή Κόσμου:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Θήρα Διακομιστή"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Εκκίνηση Παιχνιδιού"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "Διεύθυνση Αποθετηρίου"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Connect"
-msgstr ""
+msgstr "Σύνδεση"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -870,7 +870,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
-msgstr ""
+msgstr "Όνομα / Κωδικός"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -899,7 +899,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "Όλες οι ρυθμίσεις"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -915,7 +915,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Αλλαγή πλήκτρων"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
@@ -951,7 +951,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Κανένα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -971,7 +971,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Ρυθμίσεις"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
@@ -1031,7 +1031,7 @@ msgstr ""
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Έτοιμο!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
@@ -1063,7 +1063,7 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Κύριο μενού"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
@@ -1075,7 +1075,7 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Παρακαλώ επιλέξτε ένα όνομα!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
@@ -1095,7 +1095,7 @@ msgstr ""
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "needs_fallback_font"
 
 #: src/client/game.cpp
 msgid ""
@@ -1105,7 +1105,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Address: "
-msgstr ""
+msgstr "- Διεύθυνση: "
 
 #: src/client/game.cpp
 msgid "- Creative Mode: "
@@ -1121,7 +1121,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- Θήρα: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1134,7 +1134,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- Όνομα Διακομιστή: "
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1174,7 +1174,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Συνέχεια"
 
 #: src/client/game.cpp
 #, c-format
@@ -1241,11 +1241,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Έξοδος στο Μενού"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Έξοδος στο ΛΣ"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
@@ -1281,7 +1281,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Πληροφορίες Παιχνιδιού:"
 
 #: src/client/game.cpp
 msgid "Game paused"
@@ -1365,11 +1365,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Ένταση Ήχου"
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "Σίγαση Ήχου"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
@@ -1454,7 +1454,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "Εκκαθάριση"
 
 #: src/client/keycode.cpp
 msgid "Control"
@@ -1462,7 +1462,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "Κάτω"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1478,7 +1478,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Βοήθεια"
 
 #: src/client/keycode.cpp
 msgid "Home"
@@ -1510,7 +1510,7 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "Αριστερά"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1535,7 +1535,7 @@ msgstr ""
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "Μενού"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1619,16 +1619,16 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "Παύση"
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "Αναπαραγωγή"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Εκτύπωση"
 
 #: src/client/keycode.cpp
 msgid "Return"
@@ -1636,7 +1636,7 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "Δεξιά"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1673,7 +1673,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Ύπνος"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
@@ -1689,7 +1689,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "Πάνω"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1701,7 +1701,7 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr ""
+msgstr "Μεγέθυνση"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -1769,7 +1769,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Εντολή"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
@@ -1813,7 +1813,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "Το πλήκτρο ήδη χρησιμοποιείται"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -1825,11 +1825,11 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Σίγαση"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr ""
+msgstr "Επόμενο αντικείμενο"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
@@ -1841,7 +1841,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "Στιγμιότυπο οθόνης"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
@@ -1889,27 +1889,27 @@ msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "Αλλαγή"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Επιβεβαίωση Κωδικού"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "Νέος Κωδικός"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "Παλιός Κωδικός"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "Έξοδος"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr ""
+msgstr "Σε σίγαση"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
@@ -2131,7 +2131,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Περισσότερα"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2245,7 +2245,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Βασικό"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2459,7 +2459,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "Σύννεφα"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
@@ -3103,7 +3103,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Ομίχλη"
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
@@ -3131,7 +3131,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Μέγεθος γραμματοσειράς"
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the default font in point (pt)."
@@ -3236,7 +3236,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Πλήρης οθόνη"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
@@ -3287,7 +3287,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Βαρύτητα"
 
 #: src/settings_translation_file.cpp
 msgid "Ground level"
@@ -4362,7 +4362,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Γλώσσα"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -4941,7 +4941,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mute sound"
-msgstr ""
+msgstr "Σίγαση ήχου"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4969,7 +4969,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Δίκτυο"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5132,7 +5132,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
-msgstr ""
+msgstr "Όνομα παίκτη"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -5389,7 +5389,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Ασφάλεια"
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
