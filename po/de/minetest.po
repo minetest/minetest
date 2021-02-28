@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-13 08:50+0000\n"
+"PO-Revision-Date: 2021-03-02 15:50+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -707,9 +707,8 @@ msgid "Loading..."
 msgstr "Lädt …"
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Clientseitige Skripte sind deaktiviert"
+msgstr "Öffentliche Serverliste ist deaktiviert"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -1286,7 +1285,7 @@ msgstr "Unbegrenzte Sichtweite aktiviert"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr "Zum Hauptmenü"
+msgstr "Hauptmenü"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
@@ -3038,9 +3037,8 @@ msgid "Enable console window"
 msgstr "Konsolenfenster aktivieren"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Kreativmodus für neu erstellte Karten aktivieren."
+msgstr "Kreativmodus für alle Spieler aktivieren"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -6390,9 +6388,8 @@ msgstr ""
 "Nach Änderung ist ein Neustart erforderlich."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "Schrift standardmäßig fett"
+msgstr "Namensschildhintergründe standardmäßig anzeigen"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -7260,6 +7257,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Ob Namensschildhintergründe standardmäßig angezeigt werden sollen.\n"
+"Mods können immer noch einen Hintergrund setzen."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
