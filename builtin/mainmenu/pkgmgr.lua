@@ -90,7 +90,7 @@ local function load_texture_packs(txtpath, retval)
 			retval[#retval + 1] = {
 				name = item,
 				author = conf:get("author"),
-				release = tonumber(conf:get("release") or "0"),
+				release = tonumber(conf:get("release")) or 0,
 				list_name = name,
 				type = "txp",
 				path = path,
@@ -135,7 +135,7 @@ function get_mods(path,retval,modpack)
 			-- Read from config
 			toadd.name = name
 			toadd.author = mod_conf.author
-			toadd.release = tonumber(mod_conf.release or "0")
+			toadd.release = tonumber(mod_conf.release) or 0
 			toadd.path = prefix
 			toadd.type = "mod"
 
