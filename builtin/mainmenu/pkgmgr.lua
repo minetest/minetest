@@ -413,18 +413,7 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 end
 
 ---------- toggles or en/disables a mod or modpack and its dependencies --------
-function pkgmgr.enable_mod(this, toset)
-	local list = this.data.list:get_list()
-	local mod = list[this.data.selected_mod]
-
-	-- Game mods can't be enabled or disabled
-	if mod.is_game_content then
-		return
-	end
-
-	local toggled_mods = {}
-
-	local enabled_mods = {}
+local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
 	if not mod.is_modpack then
 		-- Toggle or en/disable the mod
 		if toset == nil then
@@ -443,19 +432,25 @@ function pkgmgr.enable_mod(this, toset)
 		-- interleaved unsupported
 		for i = 1, #list do
 			if list[i].modpack == mod.name then
-				if toset == nil then
-					toset = not list[i].enabled
-				end
-				if list[i].enabled ~= toset then
-					list[i].enabled = toset
-					toggled_mods[#toggled_mods+1] = list[i].name
-				end
-				if toset then
-					enabled_mods[list[i].name] = true
-				end
+				toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, list[i])
 			end
 		end
 	end
+end
+
+function pkgmgr.enable_mod(this, toset)
+	local list = this.data.list:get_list()
+	local mod = list[this.data.selected_mod]
+
+	-- Game mods can't be enabled or disabled
+	if mod.is_game_content then
+		return
+	end
+
+	local toggled_mods = {}
+	local enabled_mods = {}
+	toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
+
 	if not toset then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
