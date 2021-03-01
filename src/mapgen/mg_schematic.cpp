@@ -440,12 +440,12 @@ bool Schematic::serializeToLua(std::ostream *os,
 
 				ss << indent << indent << "{" << "name=\"";
 
-				if (c < m_nodenames.size()) {
+				if (c < names.size()) {
 					// Get node name from cache
-					ss << m_nodenames[c];
+					ss << names[c];
 				} else {
-					// If cache is unavailable (biome decoration), use NodeDefManager
-					sanity_check(m_ndef != nullptr);
+					// If cache is unavailable (biome decoration)
+					FATAL_ERROR_IF(m_ndef == nullptr, "Invalid node list and missing NodeDefManager");
 					ss << m_ndef->get(c).name;
 				}
 
