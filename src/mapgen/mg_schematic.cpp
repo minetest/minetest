@@ -436,9 +436,20 @@ bool Schematic::serializeToLua(std::ostream *os,
 				u8 probability   = schemdata[i].param1 & MTSCHEM_PROB_MASK;
 				bool force_place = schemdata[i].param1 & MTSCHEM_FORCE_PLACE;
 
-				ss << indent << indent << "{"
-					<< "name=\"" << names[schemdata[i].getContent()]
-					<< "\", prob=" << (u16)probability * 2
+				content_t c = schemdata[i].getContent();
+
+				ss << indent << indent << "{" << "name=\"";
+
+				if (c < m_nodenames.size()) {
+					// Get node name from cache
+					ss << m_nodenames[c];
+				} else {
+					// If cache is unavailable (biome decoration), use NodeDefManager
+					sanity_check(m_ndef != nullptr);
+					ss << m_ndef->get(c).name;
+				}
+
+				ss << "\", prob=" << (u16)probability * 2
 					<< ", param2=" << (u16)schemdata[i].param2;
 
 				if (force_place)
