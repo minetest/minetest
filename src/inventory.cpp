@@ -56,7 +56,7 @@ ItemStack::ItemStack(const std::string &name_, u16 count_,
 		count = 1;
 }
 
-void ItemStack::serialize(std::ostream &os, bool serialize_meta) const
+void ItemStack::serialize(std::ostream &os, bool serialize_meta, bool disk) const
 {
 	if (empty())
 		return;
@@ -78,7 +78,7 @@ void ItemStack::serialize(std::ostream &os, bool serialize_meta) const
 	if (parts >= 4) {
 		os << " ";
 		if (serialize_meta)
-			metadata.serialize(os);
+			metadata.serialize(os, disk);
 		else
 			os << "<metadata size=" << metadata.size() << ">";
 	}
@@ -243,10 +243,10 @@ void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 	deSerialize(is, itemdef);
 }
 
-std::string ItemStack::getItemString(bool include_meta) const
+std::string ItemStack::getItemString(bool include_meta, bool disk) const
 {
 	std::ostringstream os(std::ios::binary);
-	serialize(os, include_meta);
+	serialize(os, include_meta, disk);
 	return os.str();
 }
 
@@ -425,7 +425,7 @@ void InventoryList::setName(const std::string &name)
 	setModified();
 }
 
-void InventoryList::serialize(std::ostream &os, bool incremental) const
+void InventoryList::serialize(std::ostream &os, bool incremental, bool disk) const
 {
 	//os.imbue(std::locale("C"));
 
@@ -436,7 +436,7 @@ void InventoryList::serialize(std::ostream &os, bool incremental) const
 			os<<"Empty";
 		} else {
 			os<<"Item ";
-			item.serialize(os);
+			item.serialize(os, true, disk);
 		}
 		// TODO: Implement this:
 		// if (!incremental || item.checkModified())
@@ -847,13 +847,13 @@ bool Inventory::operator == (const Inventory &other) const
 	return true;
 }
 
-void Inventory::serialize(std::ostream &os, bool incremental) const
+void Inventory::serialize(std::ostream &os, bool incremental, bool disk) const
 {
 	//std::cout << "Serialize " << (int)incremental << ", n=" << m_lists.size() << std::endl;
 	for (const InventoryList *list : m_lists) {
 		if (!incremental || list->checkModified()) {
 			os << "List " << list->getName() << " " << list->getSize() << "\n";
-			list->serialize(os, incremental);
+			list->serialize(os, incremental, disk);
 		} else {
 			os << "KeepList " << list->getName() << "\n";
 		}

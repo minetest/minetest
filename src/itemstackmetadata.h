@@ -34,7 +34,7 @@ public:
 	void clear() override;
 	bool setString(const std::string &name, const std::string &var) override;
 
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, bool disk = true) const;
 	void deSerialize(std::istream &is);
 
 	const ToolCapabilities &getToolCapabilities(

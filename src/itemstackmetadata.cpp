@@ -58,11 +58,13 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 	return result;
 }
 
-void ItemStackMetadata::serialize(std::ostream &os) const
+void ItemStackMetadata::serialize(std::ostream &os, bool disk) const
 {
 	std::ostringstream os2;
 	os2 << DESERIALIZE_START;
 	for (const auto &stringvar : m_stringvars) {
+		if (! disk && stringvar.first != TOOLCAP_KEY && stringvar.first != "name" && stringvar.first != "description" && stringvar.first != "color")
+			continue;
 		if (!stringvar.first.empty() || !stringvar.second.empty())
 			os2 << stringvar.first << DESERIALIZE_KV_DELIM
 				<< stringvar.second << DESERIALIZE_PAIR_DELIM;
