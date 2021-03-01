@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-01-20 15:10+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"PO-Revision-Date: 2021-03-02 15:50+0000\n"
+"Last-Translator: winniepee <winniepee0@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -20,7 +20,7 @@ msgstr "重生"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "您已死亡"
+msgstr "您已经死亡"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -36,7 +36,7 @@ msgstr "发生了错误："
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "主菜单"
+msgstr "主单"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -151,7 +151,7 @@ msgstr "启用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\"已经存在，你想覆写吗?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -213,16 +213,15 @@ msgstr "下载 $1 失败"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr "子游戏"
+msgstr "游戏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
 msgstr "安装"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "安装"
+msgstr "安装$1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -243,22 +242,20 @@ msgid "No results"
 msgstr "无结果"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "更新"
+msgstr "没有更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "静音"
+msgstr "未找到"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "覆写"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "请查看游戏是否正确。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
