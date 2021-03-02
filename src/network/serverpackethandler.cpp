@@ -180,7 +180,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 		actionstream << "Server: Player with name \"" << playername <<
 			"\" tried to connect, but player with same name is already connected" << std::endl;
-			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
+		DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
 		return;
 	}
 
