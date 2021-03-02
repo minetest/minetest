@@ -391,6 +391,7 @@ void set_default_settings()
 	settings->setDefault("sqlite_synchronous", "2");
 	settings->setDefault("map_compression_level_disk", "3");
 	settings->setDefault("map_compression_level_net", "-1");
+	settings->setDefault("send_all_item_metadata", "false");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");

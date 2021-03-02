@@ -1471,7 +1471,7 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
 
 	std::ostringstream os(std::ios::binary);
-	sao->getInventory()->serialize(os, incremental, false);
+	sao->getInventory()->serialize(os, incremental, g_settings->getBool("send_all_item_metadata"));
 	sao->getInventory()->setModified(false);
 	player->setModified(true);
 
@@ -2335,7 +2335,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 	*/
 	thread_local const int net_compression_level = rangelim(g_settings->getS16("map_compression_level_net"), -1, 9);
 	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false, net_compression_level, false);
+	block->serialize(os, ver, false, net_compression_level, g_settings->getBool("send_all_item_metadata"));
 	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
@@ -2692,7 +2692,7 @@ void Server::sendDetachedInventory(Inventory *inventory, const std::string &name
 
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
-		inventory->serialize(os, false, false);
+		inventory->serialize(os, false, g_settings->getBool("send_all_item_metadata"));
 		inventory->setModified(false);
 
 		const std::string &os_str = os.str();
