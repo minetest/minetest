@@ -223,11 +223,11 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	if grantname ~= caller then
 		core.chat_send_player(grantname, caller
 				.. " granted you privileges: "
-				.. core.privs_to_string(grantprivs, ' '))
+				.. core.privs_to_string(grantprivs, ", "))
 	end
 	return true, "Privileges of " .. grantname .. ": "
 		.. core.privs_to_string(
-			core.get_player_privs(grantname), ' ')
+			core.get_player_privs(grantname), ", ")
 end
 
 core.register_chatcommand("grant", {
@@ -294,11 +294,11 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	if revokename ~= caller then
 		core.chat_send_player(revokename, caller
 			.. " revoked privileges from you: "
-			.. core.privs_to_string(revokeprivs, ' '))
+			.. core.privs_to_string(revokeprivs, ", "))
 	end
 	return true, "Privileges of " .. revokename .. ": "
 		.. core.privs_to_string(
-			core.get_player_privs(revokename), ' ')
+			core.get_player_privs(revokename), ", ")
 end
 
 core.register_chatcommand("revoke", {
