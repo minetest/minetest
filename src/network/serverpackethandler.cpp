@@ -174,6 +174,16 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
+	RemotePlayer *player = m_env->getPlayer(playername);
+
+	// If player is already connected, cancel
+	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+		actionstream << "Server: Player with name \"" << playername <<
+			"\" tried to connect, but player with same name is already connected" << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
+		return;
+	}
+
 	m_clients.setPlayerName(peer_id, playername);
 	//TODO (later) case insensitivity
 
