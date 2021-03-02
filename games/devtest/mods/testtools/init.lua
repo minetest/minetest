@@ -613,6 +613,16 @@ minetest.register_tool("testtools:object_attacher", {
 	end,
 })
 
+local function print_object(obj)
+	if obj:is_player() then
+		return "player '"..obj:get_player_name().."'"
+	elseif obj:get_luaentity() then
+		return "LuaEntity '"..obj:get_luaentity().name.."'"
+	else
+		return "object"
+	end
+end
+
 minetest.register_tool("testtools:children_getter", {
 	description = S("Children Getter") .."\n"..
 		S("Shows list of objects attached to object") .."\n"..
@@ -632,23 +642,11 @@ minetest.register_tool("testtools:children_getter", {
 			else
 				return
 			end
-			if selected_object:is_player() then
-				self_name = "player '"..selected_object:get_player_name().."'"
-			elseif selected_object:get_luaentity() then
-				self_name = "LuaEntity '"..selected_object:get_entity_name().."'"
-			else
-				self_name = "object"
-			end
+			self_name = print_object(selected_object)
 			local children = selected_object:get_children()
 			local ret = ""
 			for c=1, #children do
-				if children[c]:get_luaentity() then
-					ret = ret .. "* "..S("LuaEntity '@1'", children[c]:get_entity_name())
-				elseif children[c]:is_player() then
-					ret = ret .. "* "..S("player '@1'", children[c]:get_player_name())
-				else
-					ret = ret .. "* "..S("object")
-				end
+				ret = ret .. "* " .. print_object(children[c])
 				if c < #children then
 					ret = ret .. "\n"
 				end
@@ -712,23 +710,28 @@ local function show_node_meta_formspec(user, pos, key, value, keylist)
 		"label[0,0;"..F(S("Current keys:")).."]"..
 		textlist..
 		"field[3,0.5;12,1;key;"..F(S("Key"))..";"..F(key).."]"..
-		"textarea[3,1.5;12,6;value;"..F(S("Value"))..";"..F(value).."]"..
+		"textarea[3,1.5;12,6;value;"..F(S("Value (use empty value to delete key)"))..";"..F(value).."]"..
 		"button[0,8;3,1;get;"..F(S("Get value")).."]"..
 		"button[4,8;3,1;set;"..F(S("Set value")).."]"..
 		"label[0,7.2;"..F(S("pos = @1", minetest.pos_to_string(pos))).."]")
 end
 
-local function get_node_meta_keylist(meta, playername)
+local function get_node_meta_keylist(meta, playername, escaped)
 	local keys = {}
+	local ekeys = {}
 	local mtable = meta:to_table()
 	for k,_ in pairs(mtable.fields) do
 		table.insert(keys, k)
+		if escaped then
+			table.insert(ekeys, F(k))
+		else
+			table.insert(ekeys, k)
+		end
 	end
 	if playername then
 		node_meta_latest_keylist[playername] = keys
 	end
-	local keylist = table.concat(keys, ",")
-	return keylist
+	return table.concat(ekeys, ",")
 end
 
 minetest.register_tool("testtools:node_meta_editor", {
@@ -747,7 +750,7 @@ minetest.register_tool("testtools:node_meta_editor", {
 		node_meta_posses[user:get_player_name()] = pos
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
-		show_node_meta_formspec(user, pos, "", "", get_node_meta_keylist(meta, user:get_player_name()))
+		show_node_meta_formspec(user, pos, "", "", get_node_meta_keylist(meta, user:get_player_name(), true))
 		return itemstack
 	end,
 })
@@ -848,7 +851,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				end
 				local key = keylist_table[evnt.index]
 				local value = meta:get_string(key)
-				local keylist = table.concat(keylist_table, ",")
+				local keylist_escaped = {}
+				for k,v in pairs(keylist_table) do
+					keylist_escaped[k] = F(v)
+				end
+				local keylist = table.concat(keylist_escaped, ",")
 				show_node_meta_formspec(player, pos, key, value, keylist)
 				return
 			end
@@ -860,12 +867,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if fields.get then
 				local value = meta:get_string(fields.key)
 				show_node_meta_formspec(player, pos, fields.key, value,
-						get_node_meta_keylist(meta, name))
+						get_node_meta_keylist(meta, name, true))
 				return
 			elseif fields.set then
 				meta:set_string(fields.key, fields.value)
 				show_node_meta_formspec(player, pos, fields.key, fields.value,
-						get_node_meta_keylist(meta, name))
+						get_node_meta_keylist(meta, name, true))
 				return
 			end
 		end
