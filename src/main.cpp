@@ -47,10 +47,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiEngine.h"
 #include "gui/mainmenumanager.h"
 #endif
-
 #ifdef HAVE_TOUCHSCREENGUI
 	#include "gui/touchscreengui.h"
 #endif
+
+// for version information only
+extern "C" {
+#if USE_LUAJIT
+	#include <luajit.h>
+#else
+	#include <lua.h>
+#endif
+}
 
 #if !defined(SERVER) && \
 	(IRRLICHT_VERSION_MAJOR == 1) && \
@@ -351,6 +359,11 @@ static void print_version()
 #ifndef SERVER
 	std::cout << "Using Irrlicht " IRRLICHT_SDK_VERSION << std::endl;
 #endif
+#if USE_LUAJIT
+	std::cout << "Using " << LUAJIT_VERSION << std::endl;
+#else
+	std::cout << "Using " << LUA_RELEASE << std::endl;
+#endif
 	std::cout << g_build_info << std::endl;
 }
 
@@ -474,11 +487,14 @@ static bool create_userdata_path()
 static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 {
 	startup_message();
-	set_default_settings(g_settings);
+	set_default_settings();
 
 	// Initialize sockets
 	sockets_init();
 	atexit(sockets_cleanup);
+
+	// Initialize g_settings
+	Settings::createLayer(SL_GLOBAL);
 
 	if (!read_config_file(cmd_args))
 		return false;

@@ -213,13 +213,13 @@ void showInputDialog(const std::string &acceptButton, const std::string &hint,
 			jacceptButton, jhint, jcurrent, jeditType);
 }
 
-void openURLAndroid(const std::string &url)
+void openURIAndroid(const std::string &url)
 {
-	jmethodID url_open = jnienv->GetMethodID(nativeActivity, "openURL",
+	jmethodID url_open = jnienv->GetMethodID(nativeActivity, "openURI",
 		"(Ljava/lang/String;)V");
 
 	FATAL_ERROR_IF(url_open == nullptr,
-		"porting::openURLAndroid unable to find java openURL method");
+		"porting::openURIAndroid unable to find java openURI method");
 
 	jstring jurl = jnienv->NewStringUTF(url.c_str());
 	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);

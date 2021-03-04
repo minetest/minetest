@@ -118,12 +118,6 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
-	-- default description to item name
-	itemdef.description = itemdef.description or name
-	-- default short_description to first line of description
-	itemdef.short_description = itemdef.short_description or
-		itemdef.description:gsub("\n.*","")
-
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
@@ -325,13 +319,6 @@ for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
 end
-
-
--- Obsolete:
--- Aliases for core.register_alias (how ironic...)
--- core.alias_node = core.register_alias
--- core.alias_tool = core.register_alias
--- core.alias_craftitem = core.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.
@@ -619,6 +606,7 @@ core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_
 core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
 core.registered_on_player_inventory_actions, core.register_on_player_inventory_action = make_registration()
 core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
+core.registered_on_rightclickplayers, core.register_on_rightclickplayer = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

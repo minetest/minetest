@@ -396,14 +396,7 @@ int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 // TODO(hmmmm): Move this to ServerMap
 bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 {
-#if 0
-	v2s16 p = v2s16((blockpos.X * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2,
-					(blockpos.Y * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2);
-	int ground_level = getGroundLevelAtPoint(p);
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= min(water_level, ground_level);
-#endif
-
-	// Use a simple heuristic; the above method is wildly inaccurate anyway.
+	// Use a simple heuristic
 	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= mgparams->water_level;
 }
 
@@ -425,6 +418,10 @@ bool EmergeManager::pushBlockEmergeData(
 			u16 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
 				m_qlimit_generate : m_qlimit_diskonly;
 			if (count_peer >= qlimit_peer)
+				return false;
+		} else {
+			// limit block enqueue requests for active blocks to 1/2 of total
+			if (count_peer * 2 >= m_qlimit_total)
 				return false;
 		}
 	}

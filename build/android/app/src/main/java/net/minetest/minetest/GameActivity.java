@@ -142,8 +142,8 @@ public class GameActivity extends NativeActivity {
 		return getResources().getDisplayMetrics().widthPixels;
 	}
 
-	public void openURL(String url) {
-		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+	public void openURI(String uri) {
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 		startActivity(browserIntent);
 	}
 }

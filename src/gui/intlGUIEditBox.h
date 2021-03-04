@@ -7,16 +7,15 @@
 #include "IrrCompileConfig.h"
 //#ifdef _IRR_COMPILE_WITH_GUI_
 
-#include <IGUIEditBox.h>
+#include "guiEditBox.h"
 #include "irrArray.h"
 #include "IOSOperator.h"
-#include "guiScrollBar.h"
 
 namespace irr
 {
 namespace gui
 {
-	class intlGUIEditBox : public IGUIEditBox
+	class intlGUIEditBox : public GUIEditBox
 	{
 	public:
 
@@ -26,112 +25,18 @@ namespace gui
 			bool writable = true, bool has_vscrollbar = false);
 
 		//! destructor
-		virtual ~intlGUIEditBox();
-
-		//! Sets another skin independent font.
-		virtual void setOverrideFont(IGUIFont* font=0);
-
-		//! Gets the override font (if any)
-		/** \return The override font (may be 0) */
-		virtual IGUIFont* getOverrideFont() const;
-
-		//! Get the font which is used right now for drawing
-		/** Currently this is the override font when one is set and the
-		font of the active skin otherwise */
-		virtual IGUIFont* getActiveFont() const;
-
-		//! Sets another color for the text.
-		virtual void setOverrideColor(video::SColor color);
-
-		//! Gets the override color
-		virtual video::SColor getOverrideColor() const;
-
-		//! Sets if the text should use the overide color or the
-		//! color in the gui skin.
-		virtual void enableOverrideColor(bool enable);
-
-		//! Checks if an override color is enabled
-		/** \return true if the override color is enabled, false otherwise */
-		virtual bool isOverrideColorEnabled(void) const;
+		virtual ~intlGUIEditBox() {}
 
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw);
 
 		virtual bool isDrawBackgroundEnabled() const { return true; }
 
-		//! Turns the border on or off
-		virtual void setDrawBorder(bool border);
-
-		virtual bool isDrawBorderEnabled() const { return Border; }
-
-		//! Enables or disables word wrap for using the edit box as multiline text editor.
-		virtual void setWordWrap(bool enable);
-
-		//! Checks if word wrap is enabled
-		//! \return true if word wrap is enabled, false otherwise
-		virtual bool isWordWrapEnabled() const;
-
-		//! Enables or disables newlines.
-		/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
-		instead a newline character will be inserted. */
-		virtual void setMultiLine(bool enable);
-
-		//! Checks if multi line editing is enabled
-		//! \return true if mult-line is enabled, false otherwise
-		virtual bool isMultiLineEnabled() const;
-
-		//! Enables or disables automatic scrolling with cursor position
-		//! \param enable: If set to true, the text will move around with the cursor position
-		virtual void setAutoScroll(bool enable);
-
-		//! Checks to see if automatic scrolling is enabled
-		//! \return true if automatic scrolling is enabled, false if not
-		virtual bool isAutoScrollEnabled() const;
-
-		//! Gets the size area of the text in the edit box
-		//! \return Returns the size in pixels of the text
-		virtual core::dimension2du getTextDimension();
-
-		//! Sets text justification
-		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
-
-		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
-
 		//! draws the element and its children
 		virtual void draw();
 
-		//! Sets the new caption of this element.
-		virtual void setText(const wchar_t* text);
-
-		//! Sets the maximum amount of characters which may be entered in the box.
-		//! \param max: Maximum amount of characters. If 0, the character amount is
-		//! infinity.
-		virtual void setMax(u32 max);
-
-		//! Returns maximum amount of characters, previously set by setMax();
-		virtual u32 getMax() const;
-
-		//! Sets whether the edit box is a password box. Setting this to true will
-		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
-		\param passwordBox: true to enable password, false to disable
-		\param passwordChar: the character that is displayed instead of letters */
-		virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
-
-		//! Returns true if the edit box is currently a password box.
-		virtual bool isPasswordBox() const;
-
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
-
-		//! set true if this EditBox is writable
-		virtual void setWritable(bool can_write_text);
-
-		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
-
-		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 		virtual void setCursorChar(const wchar_t cursorChar) {}
 
@@ -143,64 +48,17 @@ namespace gui
 
 	protected:
 		//! Breaks the single text line.
-		void breakText();
+		virtual void breakText();
 		//! sets the area of the given line
-		void setTextRect(s32 line);
-		//! returns the line number that the cursor is on
-		s32 getLineFromPos(s32 pos);
-		//! adds a letter to the edit box
-		void inputChar(wchar_t c);
+		virtual void setTextRect(s32 line);
+
 		//! calculates the current scroll position
 		void calculateScrollPos();
-		//! send some gui event to parent
-		void sendGuiEvent(EGUI_EVENT_TYPE type);
-		//! set text markers
-		void setTextMarkers(s32 begin, s32 end);
 
-		bool processKey(const SEvent& event);
-		bool processMouse(const SEvent& event);
 		s32 getCursorPos(s32 x, s32 y);
 
 		//! Create a vertical scrollbar
 		void createVScrollBar();
-
-		//! Update the vertical scrollbar (visibilty & scroll position)
-		void updateVScrollBar();
-
-		bool MouseMarking = false;
-		bool Border;
-		bool OverrideColorEnabled = false;
-		s32 MarkBegin = 0;
-		s32 MarkEnd = 0;
-
-		video::SColor OverrideColor = video::SColor(101,255,255,255);
-		gui::IGUIFont *OverrideFont = nullptr;
-		gui::IGUIFont *LastBreakFont = nullptr;
-		IOSOperator *Operator = nullptr;
-
-		u64 BlinkStartTime = 0;
-		s32 CursorPos = 0;
-		s32 HScrollPos = 0;
-		s32 VScrollPos = 0; // scroll position in characters
-		u32 Max = 0;
-
-		bool WordWrap = false;
-		bool MultiLine = false;
-		bool AutoScroll = true;
-		bool PasswordBox = false;
-		wchar_t PasswordChar = L'*';
-		EGUI_ALIGNMENT HAlign = EGUIA_UPPERLEFT;
-		EGUI_ALIGNMENT VAlign = EGUIA_CENTER;
-
-		core::array<core::stringw> BrokenText;
-		core::array<s32> BrokenTextPositions;
-
-		core::rect<s32> CurrentTextRect = core::rect<s32>(0,0,1,1);
-		core::rect<s32> FrameRect; // temporary values
-		u32 m_scrollbar_width;
-		GUIScrollBar *m_vscrollbar;
-		bool m_writable;
-
 	};
 
 

@@ -1,4 +1,4 @@
-local WATER_ALPHA = 160
+local WATER_ALPHA = "^[opacity:" .. 160
 local WATER_VISC = 1
 local LAVA_VISC = 7
 
@@ -127,12 +127,13 @@ minetest.register_node("basenodes:water_source", {
 	description = "Water Source".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
-	tiles = {"default_water.png"},
+	waving = 3,
+	tiles = {"default_water.png"..WATER_ALPHA},
 	special_tiles = {
-		{name = "default_water.png", backface_culling = false},
-		{name = "default_water.png", backface_culling = true},
+		{name = "default_water.png"..WATER_ALPHA, backface_culling = false},
+		{name = "default_water.png"..WATER_ALPHA, backface_culling = true},
 	},
-	alpha = WATER_ALPHA,
+	use_texture_alpha = "blend",
 	paramtype = "light",
 	walkable = false,
 	pointable = false,
@@ -152,12 +153,15 @@ minetest.register_node("basenodes:water_flowing", {
 	description = "Flowing Water".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
+	waving = 3,
 	tiles = {"default_water_flowing.png"},
 	special_tiles = {
-		{name = "default_water_flowing.png", backface_culling = false},
-		{name = "default_water_flowing.png", backface_culling = false},
+		{name = "default_water_flowing.png"..WATER_ALPHA,
+			backface_culling = false},
+		{name = "default_water_flowing.png"..WATER_ALPHA,
+			backface_culling = false},
 	},
-	alpha = WATER_ALPHA,
+	use_texture_alpha = "blend",
 	paramtype = "light",
 	paramtype2 = "flowingliquid",
 	walkable = false,
@@ -178,12 +182,13 @@ minetest.register_node("basenodes:river_water_source", {
 	description = "River Water Source".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
-	tiles = { "default_river_water.png" },
+	waving = 3,
+	tiles = { "default_river_water.png"..WATER_ALPHA },
 	special_tiles = {
-		{name = "default_river_water.png", backface_culling = false},
-		{name = "default_river_water.png", backface_culling = true},
+		{name = "default_river_water.png"..WATER_ALPHA, backface_culling = false},
+		{name = "default_river_water.png"..WATER_ALPHA, backface_culling = true},
 	},
-	alpha = WATER_ALPHA,
+	use_texture_alpha = "blend",
 	paramtype = "light",
 	walkable = false,
 	pointable = false,
@@ -205,12 +210,15 @@ minetest.register_node("basenodes:river_water_flowing", {
 	description = "Flowing River Water".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
-	tiles = {"default_river_water_flowing.png"},
+	waving = 3,
+	tiles = {"default_river_water_flowing.png"..WATER_ALPHA},
 	special_tiles = {
-		{name = "default_river_water_flowing.png", backface_culling = false},
-		{name = "default_river_water_flowing.png", backface_culling = false},
+		{name = "default_river_water_flowing.png"..WATER_ALPHA,
+			backface_culling = false},
+		{name = "default_river_water_flowing.png"..WATER_ALPHA,
+			backface_culling = false},
 	},
-	alpha = WATER_ALPHA,
+	use_texture_alpha = "blend",
 	paramtype = "light",
 	paramtype2 = "flowingliquid",
 	walkable = false,

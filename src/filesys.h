@@ -85,9 +85,6 @@ void GetRecursiveSubPaths(const std::string &path,
 		  bool list_files,
 		  const std::set<char> &ignore = {});
 
-// Tries to delete all, returns false if any failed
-bool DeletePaths(const std::vector<std::string> &paths);
-
 // Only pass full paths to this one. True on success.
 bool RecursiveDeleteContent(const std::string &path);
 

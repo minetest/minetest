@@ -58,7 +58,7 @@ void initializePathsAndroid();
 void showInputDialog(const std::string &acceptButton,
 					const std::string &hint, const std::string &current, int editType);
 
-void openURLAndroid(const std::string &url);
+void openURIAndroid(const std::string &url);
 
 /**
  * WORKAROUND for not working callbacks from java -> c++

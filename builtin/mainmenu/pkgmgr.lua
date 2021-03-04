@@ -72,6 +72,34 @@ local function cleanup_path(temppath)
 	return temppath
 end
 
+local function load_texture_packs(txtpath, retval)
+	local list = core.get_dir_list(txtpath, true)
+	local current_texture_path = core.settings:get("texture_path")
+
+	for _, item in ipairs(list) do
+		if item ~= "base" then
+			local name = item
+
+			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
+			if path == current_texture_path then
+				name = fgettext("$1 (Enabled)", name)
+			end
+
+			local conf = Settings(path .. "texture_pack.conf")
+
+			retval[#retval + 1] = {
+				name = item,
+				author = conf:get("author"),
+				release = tonumber(conf:get("release")) or 0,
+				list_name = name,
+				type = "txp",
+				path = path,
+				enabled = path == current_texture_path,
+			}
+		end
+	end
+end
+
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
 
@@ -107,12 +135,12 @@ function get_mods(path,retval,modpack)
 			-- Read from config
 			toadd.name = name
 			toadd.author = mod_conf.author
-			toadd.release = tonumber(mod_conf.release or "0")
+			toadd.release = tonumber(mod_conf.release) or 0
 			toadd.path = prefix
 			toadd.type = "mod"
 
 			-- Check modpack.txt
-			--  Note: modpack.conf is already checked above
+			-- Note: modpack.conf is already checked above
 			local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
 			if modpackfile then
 				modpackfile:close()
@@ -136,32 +164,13 @@ pkgmgr = {}
 
 function pkgmgr.get_texture_packs()
 	local txtpath = core.get_texturepath()
-	local list = core.get_dir_list(txtpath, true)
+	local txtpath_system = core.get_texturepath_share()
 	local retval = {}
 
-	local current_texture_path = core.settings:get("texture_path")
-
-	for _, item in ipairs(list) do
-		if item ~= "base" then
-			local name = item
-
-			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
-			if path == current_texture_path then
-				name = fgettext("$1 (Enabled)", name)
-			end
-
-			local conf = Settings(path .. "texture_pack.conf")
-
-			retval[#retval + 1] = {
-				name = item,
-				author = conf:get("author"),
-				release = tonumber(conf:get("release") or "0"),
-				list_name = name,
-				type = "txp",
-				path = path,
-				enabled = path == current_texture_path,
-			}
-		end
+	load_texture_packs(txtpath, retval)
+	-- on portable versions these two paths coincide. It avoids loading the path twice
+	if txtpath ~= txtpath_system then
+		load_texture_packs(txtpath_system, retval)
 	end
 
 	table.sort(retval, function(a, b)
@@ -404,18 +413,7 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 end
 
 ---------- toggles or en/disables a mod or modpack and its dependencies --------
-function pkgmgr.enable_mod(this, toset)
-	local list = this.data.list:get_list()
-	local mod = list[this.data.selected_mod]
-
-	-- Game mods can't be enabled or disabled
-	if mod.is_game_content then
-		return
-	end
-
-	local toggled_mods = {}
-
-	local enabled_mods = {}
+local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
 	if not mod.is_modpack then
 		-- Toggle or en/disable the mod
 		if toset == nil then
@@ -434,23 +432,29 @@ function pkgmgr.enable_mod(this, toset)
 		-- interleaved unsupported
 		for i = 1, #list do
 			if list[i].modpack == mod.name then
-				if toset == nil then
-					toset = not list[i].enabled
-				end
-				if list[i].enabled ~= toset then
-					list[i].enabled = toset
-					toggled_mods[#toggled_mods+1] = list[i].name
-				end
-				if toset then
-					enabled_mods[list[i].name] = true
-				end
+				toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, list[i])
 			end
 		end
 	end
+end
+
+function pkgmgr.enable_mod(this, toset)
+	local list = this.data.list:get_list()
+	local mod = list[this.data.selected_mod]
+
+	-- Game mods can't be enabled or disabled
+	if mod.is_game_content then
+		return
+	end
+
+	local toggled_mods = {}
+	local enabled_mods = {}
+	toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
+
 	if not toset then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
-		minetest.log("info", "Following mods were disabled: " ..
+		core.log("info", "Following mods were disabled: " ..
 			table.concat(toggled_mods, ", "))
 		return
 	end
@@ -487,7 +491,7 @@ function pkgmgr.enable_mod(this, toset)
 			enabled_mods[name] = true
 			local mod_to_enable = list[mod_ids[name]]
 			if not mod_to_enable then
-				minetest.log("warning", "Mod dependency \"" .. name ..
+				core.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
 				if mod_to_enable.enabled == false then
@@ -508,7 +512,7 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Log the list of enabled mods
 	table.sort(toggled_mods)
-	minetest.log("info", "Following mods were enabled: " ..
+	core.log("info", "Following mods were enabled: " ..
 		table.concat(toggled_mods, ", "))
 end
 

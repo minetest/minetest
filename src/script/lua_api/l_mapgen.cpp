@@ -873,9 +873,6 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	if (lua_isnumber(L, -1))
 		settingsmgr->setMapSetting("chunksize", readParam<std::string>(L, -1), true);
 
-	warn_if_field_exists(L, 1, "flagmask",
-		"Obsolete: flags field now includes unset flags.");
-
 	lua_getfield(L, 1, "flags");
 	if (lua_isstring(L, -1))
 		settingsmgr->setMapSetting("mg_flags", readParam<std::string>(L, -1), true);
@@ -985,7 +982,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 
 	bool set_default = !lua_isboolean(L, 3) || readParam<bool>(L, 3);
 
-	g_settings->setNoiseParams(name, np, set_default);
+	Settings::getLayer(set_default ? SL_DEFAULTS : SL_GLOBAL)->setNoiseParams(name, np);
 
 	return 0;
 }
@@ -1338,11 +1335,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	lua_getfield(L, index, "noise_params");
 	if (read_noiseparams(L, -1, &ore->np)) {
 		ore->flags |= OREFLAG_USE_NOISE;
-	} else if (ore->NEEDS_NOISE) {
-		errorstream << "register_ore: specified ore type requires valid "
-			"'noise_params' parameter" << std::endl;
-		delete ore;
-		return 0;
+	} else if (ore->needs_noise) {
+		log_deprecated(L,
+			"register_ore: ore type requires 'noise_params' but it is not specified, falling back to defaults");
 	}
 	lua_pop(L, 1);
 

@@ -75,7 +75,7 @@ free_move (Flying) bool false
 #    If enabled, makes move directions relative to the player's pitch when flying or swimming.
 pitch_move (Pitch move mode) bool false
 
-#    Fast movement (via the "special" key).
+#    Fast movement (via the "Aux1" key).
 #    This requires the "fast" privilege on the server.
 fast_move (Fast movement) bool false
 
@@ -99,14 +99,14 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2
 
-#    If enabled, "special" key instead of "sneak" key is used for climbing down and
+#    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
-aux1_descends (Special key for climbing/descending) bool false
+aux1_descends (Aux1 key for climbing/descending) bool false
 
 #    Double-tapping the jump key toggles fly mode.
 doubletap_jump (Double tap jump for fly) bool false
 
-#    If disabled, "special" key is used to fly fast if both fly and fast mode are
+#    If disabled, "Aux1" key is used to fly fast if both fly and fast mode are
 #    enabled.
 always_fly_fast (Always fly and fast) bool true
 
@@ -135,9 +135,9 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 #    If disabled, virtual joystick will center to first-touch's position.
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
-#    (Android) Use virtual joystick to trigger "aux" button.
-#    If enabled, virtual joystick will also tap "aux" button when out of main circle.
-virtual_joystick_triggers_aux (Virtual joystick triggers aux button) bool false
+#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
+virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
 #    Enable joysticks
 enable_joysticks (Enable joysticks) bool false
@@ -151,6 +151,9 @@ joystick_type (Joystick type) enum auto auto,generic,xbox
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
 repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
+
+#    The deadzone of the joystick
+joystick_deadzone (Joystick deadzone) int 2048
 
 #    The sensitivity of the joystick axes for moving the
 #    ingame view frustum around.
@@ -196,7 +199,7 @@ keymap_inventory (Inventory key) key KEY_KEY_I
 
 #    Key for moving fast in fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_special1 (Special key) key KEY_KEY_E
+keymap_aux1 (Aux1 key) key KEY_KEY_E
 
 #    Key for opening the chat window.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -448,6 +451,10 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 
 [**Basic]
 
+#    Whether nametag backgrounds should be shown by default.
+#    Mods may still set a background.
+show_nametag_backgrounds (Show nametag backgrounds by default) bool true
+
 #    Enable vertex buffer objects.
 #    This should greatly improve graphics performance.
 enable_vbo (VBO) bool true
@@ -517,8 +524,8 @@ texture_min_size (Minimum texture size) int 64
 #    This algorithm smooths out the 3D viewport while keeping the image sharp,
 #    but it doesn't affect the insides of textures
 #    (which is especially noticeable with transparent textures).
-#    This option is experimental and might cause visible spaces between blocks
-#    when set above 0.
+#    Visible spaces appear between nodes when shaders are disabled.
+#    If set to 0, MSAA is disabled.
 #    A restart is required after changing this option.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
@@ -594,7 +601,7 @@ fps_max_unfocused (FPS when unfocused or paused) int 20 1
 pause_on_lost_focus (Pause on lost window focus) bool false
 
 #    View distance in nodes.
-viewing_range (Viewing range) int 100 20 4000
+viewing_range (Viewing range) int 190 20 4000
 
 #   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
 #   Only works on GLES platforms. Most users will not need to change this.
@@ -658,8 +665,8 @@ texture_path (Texture path) path
 #    The rendering back-end for Irrlicht.
 #    A restart is required after changing this.
 #    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended, and it’s the only driver with
-#    shader support currently.
+#    On other platforms, OpenGL is recommended.
+#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
 video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl,ogles1,ogles2
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
@@ -961,7 +968,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 
 #    File in client/serverlist/ that contains your favorite servers displayed in the
 #    Multiplayer Tab.
-serverlist_file (Serverlist file) string favoriteservers.txt
+serverlist_file (Serverlist file) string favoriteservers.json
 
 #    Maximum size of the out chat queue.
 #    0 to disable queueing and -1 to make the queue size unlimited.
@@ -978,7 +985,7 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
-client_mapblock_limit (Mapblock limit) int 5000
+client_mapblock_limit (Mapblock limit) int 7500
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
@@ -1048,6 +1055,13 @@ full_block_send_enable_min_time_from_building (Delay in sending blocks after bui
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024
 
+#    ZLib compression level to use when sending mapblocks to the client.
+#    -1 - Zlib's default compression level
+#     0 - no compresson, fastest
+#     9 - best compression, slowest
+#     (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
+map_compression_level_net (Map Compression Level for Network Transfer) int -1 -1 9
+
 [*Game]
 
 #    Default game when creating a new world.
@@ -1075,7 +1089,7 @@ default_stack_max (Default stack size) int 99
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
-#    Enable creative mode for new created maps.
+#    Enable creative mode for all players
 creative_mode (Creative) bool false
 
 #    A chosen map seed for a new map, leave empty for random.
@@ -1137,17 +1151,17 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
-active_object_send_range_blocks (Active object send range) int 4
+active_object_send_range_blocks (Active object send range) int 8
 
 #    The radius of the volume of blocks around every player that is subject to the
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
 #    This should be configured together with active_object_send_range_blocks.
-active_block_range (Active block range) int 3
+active_block_range (Active block range) int 4
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
-max_block_send_distance (Max block send distance) int 10
+max_block_send_distance (Max block send distance) int 12
 
 #    Maximum number of forceloaded mapblocks.
 max_forceloaded_blocks (Maximum forceloaded blocks) int 16
@@ -1220,10 +1234,10 @@ movement_gravity (Gravity) float 9.81
 [**Advanced]
 
 #    Handling for deprecated Lua API calls:
-#    -    legacy: (try to) mimic old behaviour (default for release).
-#    -    log: mimic and log backtrace of deprecated call (default for debug).
+#    -    none: Do not log deprecated calls
+#    -    log: mimic and log backtrace of deprecated call (default).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
-deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
+deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,error
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
@@ -1239,6 +1253,13 @@ max_objects_per_block (Maximum objects per block) int 64
 
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
+
+#    ZLib compression level to use when saving mapblocks to disk.
+#    -1 - Zlib's default compression level
+#     0 - no compresson, fastest
+#     9 - best compression, slowest
+#     (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
+map_compression_level_disk (Map Compression Level for Disk Storage) int 3 -1 9
 
 #    Length of a server tick and the interval at which objects are generally updated over
 #    network.
@@ -1433,7 +1454,7 @@ mg_name (Mapgen name) enum v7 v7,valleys,carpathian,v5,flat,fractal,singlenode,v
 water_level (Water level) int 1
 
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
-max_block_generate_distance (Max block generate distance) int 8
+max_block_generate_distance (Max block generate distance) int 10
 
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
@@ -2152,15 +2173,15 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 512
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
-emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 64
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
-emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 64
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128
 
 #    Number of emerge threads to use.
 #    Value 0:
@@ -2188,4 +2209,5 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
 
 #    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+#    This should be lower than curl_parallel_limit.
 contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3

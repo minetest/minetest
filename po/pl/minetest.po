@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-09 12:14+0000\n"
-"Last-Translator: Mikołaj Zaremba <mikolajzaremba03@gmail.com>\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
+"PO-Revision-Date: 2020-12-27 00:29+0000\n"
+"Last-Translator: Atrate <Atrate@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -25,7 +25,7 @@ msgstr "Umarłeś"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -47,10 +47,6 @@ msgstr "Połącz ponownie"
 msgid "The server has requested a reconnect:"
 msgstr "Serwer zażądał ponownego połączenia:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Ładowanie..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Niezgodne wersje protokołów. "
@@ -64,12 +60,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Serwer wspiera protokoły w wersjach od $1 do $2. "
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"Spróbuj ponownie włączyć publiczną listę serwerów i sprawdź swoje połączenie "
-"z siecią Internet."
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Wspieramy wyłącznie protokół w wersji $1."
 
@@ -77,7 +67,8 @@ msgstr "Wspieramy wyłącznie protokół w wersji $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Wspieramy protokoły w wersji od $1 do $2."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -87,7 +78,8 @@ msgstr "Wspieramy protokoły w wersji od $1 do $2."
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Zależności:"
 
@@ -161,16 +153,57 @@ msgid "enabled"
 msgstr "włączone"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "Ładowanie..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Wszystkie zasoby"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Already installed"
+msgstr "Klawisz już zdefiniowany"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Powrót do menu głównego"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "Utwórz grę"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB nie jest dostępne gdy Minetest był zbudowany bez cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -191,6 +224,16 @@ msgid "Install"
 msgstr "Instaluj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "Instaluj"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "Dodatkowe zależności:"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Mody"
@@ -204,9 +247,26 @@ msgid "No results"
 msgstr "Brak Wyników"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Szukaj"
+#, fuzzy
+msgid "No updates"
+msgstr "Aktualizacja"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Not found"
+msgstr "Wycisz dźwięk"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -221,7 +281,11 @@ msgid "Update"
 msgstr "Aktualizacja"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -230,7 +294,7 @@ msgstr "Istnieje już świat o nazwie \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Dodatkowy teren"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 #, fuzzy
@@ -238,9 +302,8 @@ msgid "Altitude chill"
 msgstr "Wysokość mrozu"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Wysokość mrozu"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -267,9 +330,8 @@ msgid "Create"
 msgstr "Utwórz"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Iteracje"
+msgstr "Dekoracje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -280,13 +342,12 @@ msgid "Download one from minetest.net"
 msgstr "Ściągnij taką z minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Minimalna wartość Y lochu"
+msgstr "Lochy"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Płaski teren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -294,9 +355,8 @@ msgid "Floating landmasses in the sky"
 msgstr "Gęstość gór na latających wyspach"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Poziom wznoszonego terenu"
+msgstr "Latające wyspy (eksperymentalne)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -308,7 +368,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Wzgórza"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -317,15 +377,17 @@ msgstr "Sterownik graficzny"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Zwiększa wilgotność wokół rzek"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Jeziora"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Niska wilgotność i wysoka temperatura wpływa na niski stan rzek lub ich "
+"wysychanie"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -341,9 +403,8 @@ msgid "Mapgen-specific flags"
 msgstr "Generator mapy flat flagi"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "Szum góry"
+msgstr "Góry"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -351,19 +412,20 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Sieć jaskiń i korytarzy."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Nie wybrano gry"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Spadek temperatury wraz z wysokością"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Spadek wilgotności wraz ze wzrostem wysokości"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -536,6 +598,10 @@ msgid "Scale"
 msgstr "Skaluj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "Szukaj"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
 msgstr "Wybierz katalog"
 
@@ -651,6 +717,21 @@ msgstr "Nie moźna zainstalować moda jako $1"
 msgid "Unable to install a modpack as a $1"
 msgstr "Nie można zainstalować paczki modów jako $1"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Ładowanie..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skryptowanie po stronie klienta jest wyłączone"
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+"Spróbuj ponownie włączyć publiczną listę serwerów i sprawdź swoje połączenie "
+"z siecią Internet."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr "Przeglądaj zawartość online"
@@ -704,6 +785,17 @@ msgid "Credits"
 msgstr "Autorzy"
 
 #: builtin/mainmenu/tab_credits.lua
+#, fuzzy
+msgid "Open User Data Directory"
+msgstr "Wybierz katalog"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "Byli współautorzy"
 
@@ -720,14 +812,10 @@ msgid "Bind Address"
 msgstr "Adres"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Ustaw"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Tryb kreatywny"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Włącz obrażenia"
 
@@ -744,8 +832,8 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Nazwa gracza/Hasło"
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -756,12 +844,22 @@ msgid "No world created or selected!"
 msgstr "Nie wybrano bądź nie utworzono świata!"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Password"
+msgstr "Nowe hasło"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
 msgstr "Graj"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "Port"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Select Mods"
+msgstr "Wybierz świat:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -779,23 +877,23 @@ msgstr "Rozpocznij grę"
 msgid "Address / Port"
 msgstr "Adres / Port"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Połącz"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Tryb kreatywny"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "Obrażenia włączone"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Usuń ulubiony"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr "Ulubione"
 
@@ -803,16 +901,16 @@ msgstr "Ulubione"
 msgid "Join Game"
 msgstr "Dołącz do gry"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr "Nazwa gracza / Hasło"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Ping"
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP włączone"
 
@@ -841,20 +939,12 @@ msgid "Antialiasing:"
 msgstr "Antyaliasing:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "Jesteś pewny że chcesz zresetować świat singleplayer?"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr "Automatyczny zapis rozmiaru okienka"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "Filtrowanie dwuliniowe"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "Mapowanie wypukłości"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -869,20 +959,12 @@ msgid "Fancy Leaves"
 msgstr "Ozdobne liście"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr "Generuj normalne mapy"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr "Mipmapy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmapy i Filtr anizotropowe"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "Nie"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -912,17 +994,9 @@ msgstr "Nieprzejrzyste liście"
 msgid "Opaque Water"
 msgstr "Nieprzejrzysta Woda"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Mapowanie paralaksy"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "Włącz Efekty Cząsteczkowe"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "Resetuj świat pojedynczego gracza"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -935,6 +1009,11 @@ msgstr "Ustawienia"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Shadery"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Shaders (experimental)"
+msgstr "Latające wyspy (eksperymentalne)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -979,22 +1058,6 @@ msgstr "Fale (Ciecze)"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Falujące rośliny"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Tak"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Ustawienia modów"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Menu główne"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Tryb jednoosobowy"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1150,20 +1213,20 @@ msgid "Continue"
 msgstr "Kontynuuj"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1309,34 +1372,6 @@ msgstr "MiB/s"
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
 msgstr "Minimapa aktualnie wyłączona przez grę lub mod"
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr "Minimapa ukryta"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr "Minimapa w trybie radaru, Zoom x1"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr "Minimapa w trybie radaru, Zoom x2"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr "Minimapa w trybie radaru, Zoom x4"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr "Minimapa w trybie powierzchniowym, powiększenie x1"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr "Minimapa w trybie powierzchniowym, powiększenie x2"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
-msgstr "Minimapa w trybie powierzchniowym, powiększenie x4"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1730,6 +1765,25 @@ msgstr "Przycisk X 2"
 msgid "Zoom"
 msgstr "Zoom"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr "Minimapa ukryta"
+
+#: src/client/minimap.cpp
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr "Minimapa w trybie radaru, Zoom x1"
+
+#: src/client/minimap.cpp
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr "Minimapa w trybie powierzchniowym, powiększenie x1"
+
+#: src/client/minimap.cpp
+#, fuzzy
+msgid "Minimap in texture mode"
+msgstr "Minimalna wielkość tekstury dla filtrów"
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Hasła nie są jednakowe!"
@@ -2004,14 +2058,6 @@ msgstr ""
 "dla wyspy, ustaw 3 wartości równe, aby uzyskać surowy kształt."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-"0 = parallax occlusion z informacją nachylenia (szybsze).\n"
-"1 = relief mapping (wolniejsze, bardziej dokładne)."
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr "Szum 2D który wpływa na kształt/rozmiar łańcuchów górskich."
 
@@ -2137,6 +2183,10 @@ msgstr ""
 #, fuzzy
 msgid "ABM interval"
 msgstr "Interwał zapisu mapy"
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2388,7 +2438,7 @@ msgstr "Ścieżka czcionki typu Monospace"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Bold font path"
-msgstr "Ścieżka czcionki"
+msgstr "Ścieżka fontu pogrubionego."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2402,10 +2452,6 @@ msgstr "Buduj w pozycji gracza"
 #: src/settings_translation_file.cpp
 msgid "Builtin"
 msgstr "Wbudowany"
-
-#: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr "Mapowanie wypukłości"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2483,21 +2529,6 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
-msgstr ""
-"Zmienia interfejs użytkownika menu głównego:\n"
-"-   Pełny:   Wiele światów jednoosobowych, wybór gry, wybór paczki tekstur, "
-"itd.\n"
-"-   Prosty:   Jeden świat jednoosobowy, brak wyboru gry lub paczki tekstur. "
-"Może być konieczny dla mniejszych ekranów."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2662,6 +2693,10 @@ msgid "ContentDB Flag Blacklist"
 msgstr "Flaga czarnej listy ContentDB"
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "ContentDB URL"
 msgstr "Zawartość"
@@ -2728,7 +2763,10 @@ msgid "Crosshair alpha"
 msgstr "Kanał alfa celownika"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+#, fuzzy
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr "Kanał alfa celownika (pomiędzy 0 a 255)."
 
 #: src/settings_translation_file.cpp
@@ -2736,8 +2774,10 @@ msgid "Crosshair color"
 msgstr "Kolor celownika"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
-msgstr "Kolor celownika (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2845,22 +2885,13 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Określa położenie oraz teren z dodatkowymi górami i jeziorami."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-"Definiuje krok próbkowania tekstury.\n"
-"Wyższa wartość reprezentuje łagodniejszą mapę normalnych."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the base ground level."
-msgstr "Określa obszary drzewiaste oraz ich gęstość."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Defines the depth of the river channel."
-msgstr "Określa obszary drzewiaste oraz ich gęstość."
+msgstr "Określa głębokość rzek."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -2876,7 +2907,7 @@ msgstr "Określa strukturę kanałów rzecznych."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Defines the width of the river valley."
-msgstr "Określa obszary na których drzewa mają jabłka."
+msgstr "Określa szerokość doliny rzecznej."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2937,6 +2968,11 @@ msgid "Desynchronize block animation"
 msgstr "Odsynchronizuj animację bloków"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dig key"
+msgstr "W prawo"
+
+#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Włącz efekty cząsteczkowe"
 
@@ -2977,15 +3013,15 @@ msgid "Dungeon minimum Y"
 msgstr "Minimalna wartość Y lochu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Minimalna wartość Y lochu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
-msgstr ""
+msgstr "Włącz protokół sieciowy IPv6 (dla gry oraz dla jej serwera)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3000,7 +3036,8 @@ msgid "Enable console window"
 msgstr "Odblokuj okno konsoli"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Zezwól na tryb kreatywny dla nowo powstałych map."
 
 #: src/settings_translation_file.cpp
@@ -3069,10 +3106,13 @@ msgstr ""
 "jeżeli następuje połączenie z serwerem."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable vertex buffer objects.\n"
 "This should greatly improve graphics performance."
 msgstr ""
+"Uaktywnij \"vertex buffer objects\" aby zmniejszyć wymagania wobec karty "
+"grafiki."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3106,40 +3146,12 @@ msgid "Enables animation of inventory items."
 msgstr "Włącz animację inwentarza przedmiotów."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"Włącza mapowanie wypukłości dla tekstur. Mapy normalnych muszą być dodane w "
-"paczce tekstur\n"
-"lub muszą być automatycznie wygenerowane.\n"
-"Wymaga włączonych shaderów."
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "Włącza cachowanie facedir obracanych meshów."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
 msgstr "Włącz minimapę."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-"Włącza generację map normalnych w locie  (efekt płaskorzeźby).\n"
-"Wymaga włączenia mapowania wypukłości."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"Włącza mapowanie paralaksy.\n"
-"Wymaga włączenia shaderów."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3159,14 +3171,6 @@ msgstr "Metody bytów"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-"Eksperymentalna opcja, może powodować widoczne przestrzenie\n"
-"pomiędzy blokami kiedy ustawiona powyżej 0."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3176,8 +3180,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
-msgstr "FPS podczas pauzy w menu"
+#, fuzzy
+msgid "FPS when unfocused or paused"
+msgstr "Maksymalny FPS gdy gra spauzowana."
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3328,9 +3333,8 @@ msgid "Floatland tapering distance"
 msgstr "Podstawowy szum wznoszącego się terenu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "Poziom wznoszonego terenu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -3514,10 +3518,6 @@ msgid "GUI scaling filter txr2img"
 msgstr "Filtr skalowania GUI txr2img"
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr "Generuj mapy normalnych"
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "Globalne wywołania zwrotne"
 
@@ -3584,8 +3584,8 @@ msgstr "Klawisz przełączania HUD"
 #, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Obsługa przestarzałych wywołań lua api:\n"
@@ -4148,6 +4148,11 @@ msgid "Joystick button repetition interval"
 msgstr "Interwał powtarzania przycisku joysticka"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Joystick deadzone"
+msgstr "Typ Joysticka"
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr "Czułość drgania joysticka"
 
@@ -4247,6 +4252,17 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz zmniejszania głośności.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for digging.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Klawisz skakania.\n"
 "Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4390,6 +4406,17 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz otwierania inwentarza.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for placing.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Klawisz skakania.\n"
 "Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5192,11 +5219,6 @@ msgid "Main menu script"
 msgstr "Skrypt głównego menu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Main menu style"
-msgstr "Skrypt głównego menu"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -5210,6 +5232,14 @@ msgstr "Sprawia, że DirectX działa z LuaJIT. Wyłącz jeśli występują kłop
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
 msgstr "Zmienia ciecze w nieprzeźroczyste"
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5411,7 +5441,8 @@ msgid "Maximum FPS"
 msgstr "Maksymalny FPS"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+#, fuzzy
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr "Maksymalny FPS gdy gra spauzowana."
 
 #: src/settings_translation_file.cpp
@@ -5469,6 +5500,13 @@ msgid ""
 msgstr ""
 "Maksymalna liczba bloków do skolejkowania które mają być wczytane z pliku.\n"
 "Pozostaw puste a odpowiednia liczba zostanie dobrana automatycznie."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5725,14 +5763,6 @@ msgid "Noises"
 msgstr "Szumy"
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr "Próbkowanie normalnych map"
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr "Siła map normlanych"
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr "Liczba powstających wątków"
 
@@ -5762,10 +5792,6 @@ msgstr ""
 "konsumpcją pamięci (4096=100MB, praktyczna zasada)."
 
 #: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr "Liczba iteracji dla parallax occlusion."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Online Content Repository"
 msgstr "Repozytorium Zawartości z Sieci"
@@ -5792,35 +5818,6 @@ msgid ""
 msgstr ""
 "Otwórz menu pauzy, gdy okno jest nieaktywne. Nie zatrzymuje gry jeśli "
 "formspec jest otwarty."
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr "Ogólny błąd systematyczny efektu zamykania paralaksy, zwykle skala/2."
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr "Całkowity efekt skalowania zamknięcia paralaksy."
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr "Zamknięcie paralaksy"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr "Błąd systematyczny zamknięcia paralaksy"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr "Iteracje zamknięcia paralaksy"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr "Tryb zamknięcia paralaksy"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Parallax occlusion scale"
-msgstr "Skala parallax occlusion"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5893,6 +5890,16 @@ msgstr "Klawisz latania"
 #, fuzzy
 msgid "Pitch move mode"
 msgstr "Tryb nachylenia ruchu włączony"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place key"
+msgstr "Klawisz latania"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Place repetition interval"
+msgstr "Interwał powtórzenia prawego kliknięcia myszy"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6071,10 +6078,6 @@ msgstr "Szum podwodnej grani"
 #: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "W prawo"
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
-msgstr "Interwał powtórzenia prawego kliknięcia myszy"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6383,6 +6386,19 @@ msgid "Show entity selection boxes"
 msgstr "Pokazuj zaznaczenie wybranych obiektów"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+"Ustaw język. Zostaw puste pole, aby użyć języka systemowego.\n"
+"Wymagany restart po zmianie ustawienia."
+
+#: src/settings_translation_file.cpp
+msgid "Show nametag backgrounds by default"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Komunikat zamknięcia serwera"
 
@@ -6533,10 +6549,6 @@ msgid "Strength of 3D mode parallax."
 msgstr "Siła paralaksy."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr "Siła generowanych zwykłych map."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -6639,6 +6651,11 @@ msgid "The URL for the content repository"
 msgstr "Adres URL repozytorium zawartości"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "The deadzone of the joystick"
+msgstr "Identyfikator użycia joysticka"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -6704,8 +6721,8 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6738,6 +6755,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
@@ -6745,10 +6768,10 @@ msgstr ""
 "joysticka."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 "Czas, wyrażany w sekundach,pomiędzy powtarzanymi kliknięciami prawego "
 "przycisku myszy."
@@ -6907,6 +6930,17 @@ msgstr ""
 "wydajność,\n"
 "zwłaszcza przy korzystaniu z tekstur wysokiej rozdzielczości.\n"
 "Gamma correct dowscaling nie jest wspierany."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7157,6 +7191,12 @@ msgstr ""
 "wspierająca takie czcionki."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr "Określ kiedy animacje tekstur na blok powinny być niesynchronizowane."
 
@@ -7293,6 +7333,24 @@ msgid "Y-level of seabed."
 msgstr "Wysokość dna jezior."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "cURL przekroczono limit pobierania pliku"
 
@@ -7304,113 +7362,12 @@ msgstr "Limit równoległy cURL"
 msgid "cURL timeout"
 msgstr "Limit czasu cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Przełącz na tryb Cinematic"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Wybierz plik paczki:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y górnej granicy lawy dużych jaskiń."
-
-#~ msgid "Waving Water"
-#~ msgstr "Falująca woda"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Określa czy lochy mają być czasem przez generowane teren."
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Projekcja lochów"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Wysokość do której rozciągają się cienie wznoszącego terenu."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr ""
-#~ "Wysokość średniego punktu wznoszącego się terenu oraz powierzchni jezior."
-
-#~ msgid "Waving water"
-#~ msgstr "Falująca woda"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Zmienność wysokości wzgórz oraz głębokości jezior na gładkim terenie "
-#~ "wznoszącym się."
-
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "0 = parallax occlusion with slope information (faster).\n"
+#~ "1 = relief mapping (slower, more accurate)."
 #~ msgstr ""
-#~ "Maksymalna, standardowa wysokość, powyżej lub poniżej średniego punktu "
-#~ "górzystego terenu."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Ta czcionka zostanie użyta w niektórych językach."
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Siłą przyśpieszenia środkowego krzywej światła."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Limit cieni"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Ścieżka do pliku .ttf lub bitmapy."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Ostrość naświetlenia"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Głębia dużej jaskini"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Wsparcie IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Kanał alfa cienia czcionki (nieprzeźroczystość, od 0 do 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Wysokość gór latających wysp"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Podstawowy szum wysokości wznoszącego się terenu"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Włącz filmic tone mapping"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Włącz VBO"
-
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Określa obszary wznoszącego się gładkiego terenu.\n"
-#~ "Wygładzone powierzchnie pojawiają się gdy szum > 0."
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "Ostrość ciemności"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Kontroluje szerokość tuneli, mniejsze wartości tworzą szersze tunele."
-
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Kontroluje gęstość wznoszącego się terenu górzystego.\n"
-#~ "Jest to wartość dodana do wartość szumu 'np_mountain'."
-
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Centrum przyśpieszenia środkowego krzywej światła."
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Zmienia sposób w jaki podobne do gór latające wyspy zwężają się ku "
-#~ "środkowi nad i pod punktem środkowym."
+#~ "0 = parallax occlusion z informacją nachylenia (szybsze).\n"
+#~ "1 = relief mapping (wolniejsze, bardziej dokładne)."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7421,20 +7378,280 @@ msgstr "Limit czasu cURL"
 #~ "jasność.\n"
 #~ "To ustawienie jest tylko dla klientów, ignorowane przez serwer."
 
-#~ msgid "Path to save screenshots at."
-#~ msgstr "Ścieżka, pod którą zapisywane są zrzuty ekranu."
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr ""
+#~ "Zmienia sposób w jaki podobne do gór latające wyspy zwężają się ku "
+#~ "środkowi nad i pod punktem środkowym."
 
-#~ msgid "Parallax occlusion strength"
-#~ msgstr "Siła zamknięcia paralaksy"
-
-#~ msgid "Limit of emerge queues on disk"
-#~ msgstr "Limit oczekiwań na dysku"
-
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "Pobieranie i instalowanie $1, proszę czekaj..."
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Jesteś pewny że chcesz zresetować świat singleplayer?"
 
 #~ msgid "Back"
 #~ msgstr "Backspace"
 
+#~ msgid "Bump Mapping"
+#~ msgstr "Mapowanie wypukłości"
+
+#~ msgid "Bumpmapping"
+#~ msgstr "Mapowanie wypukłości"
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Centrum przyśpieszenia środkowego krzywej światła."
+
+#~ msgid ""
+#~ "Changes the main menu UI:\n"
+#~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
+#~ "chooser, etc.\n"
+#~ "-   Simple: One singleplayer world, no game or texture pack choosers. May "
+#~ "be\n"
+#~ "necessary for smaller screens."
+#~ msgstr ""
+#~ "Zmienia interfejs użytkownika menu głównego:\n"
+#~ "-   Pełny:   Wiele światów jednoosobowych, wybór gry, wybór paczki "
+#~ "tekstur, itd.\n"
+#~ "-   Prosty:   Jeden świat jednoosobowy, brak wyboru gry lub paczki "
+#~ "tekstur. Może być konieczny dla mniejszych ekranów."
+
+#~ msgid "Config mods"
+#~ msgstr "Ustawienia modów"
+
+#~ msgid "Configure"
+#~ msgstr "Ustaw"
+
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Kontroluje gęstość wznoszącego się terenu górzystego.\n"
+#~ "Jest to wartość dodana do wartość szumu 'np_mountain'."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Kontroluje szerokość tuneli, mniejsze wartości tworzą szersze tunele."
+
+#~ msgid "Crosshair color (R,G,B)."
+#~ msgstr "Kolor celownika (R,G,B)."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "Ostrość ciemności"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Określa obszary wznoszącego się gładkiego terenu.\n"
+#~ "Wygładzone powierzchnie pojawiają się gdy szum > 0."
+
+#~ msgid ""
+#~ "Defines sampling step of texture.\n"
+#~ "A higher value results in smoother normal maps."
+#~ msgstr ""
+#~ "Definiuje krok próbkowania tekstury.\n"
+#~ "Wyższa wartość reprezentuje łagodniejszą mapę normalnych."
+
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Pobieranie i instalowanie $1, proszę czekaj..."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Włącz VBO"
+
+#~ msgid ""
+#~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
+#~ "texture pack\n"
+#~ "or need to be auto-generated.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "Włącza mapowanie wypukłości dla tekstur. Mapy normalnych muszą być dodane "
+#~ "w paczce tekstur\n"
+#~ "lub muszą być automatycznie wygenerowane.\n"
+#~ "Wymaga włączonych shaderów."
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Włącz filmic tone mapping"
+
+#~ msgid ""
+#~ "Enables on the fly normalmap generation (Emboss effect).\n"
+#~ "Requires bumpmapping to be enabled."
+#~ msgstr ""
+#~ "Włącza generację map normalnych w locie  (efekt płaskorzeźby).\n"
+#~ "Wymaga włączenia mapowania wypukłości."
+
+#~ msgid ""
+#~ "Enables parallax occlusion mapping.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "Włącza mapowanie paralaksy.\n"
+#~ "Wymaga włączenia shaderów."
+
+#~ msgid ""
+#~ "Experimental option, might cause visible spaces between blocks\n"
+#~ "when set to higher number than 0."
+#~ msgstr ""
+#~ "Eksperymentalna opcja, może powodować widoczne przestrzenie\n"
+#~ "pomiędzy blokami kiedy ustawiona powyżej 0."
+
+#~ msgid "FPS in pause menu"
+#~ msgstr "FPS podczas pauzy w menu"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Podstawowy szum wysokości wznoszącego się terenu"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Wysokość gór latających wysp"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Kanał alfa cienia czcionki (nieprzeźroczystość, od 0 do 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Generate Normal Maps"
+#~ msgstr "Generuj normalne mapy"
+
+#~ msgid "Generate normalmaps"
+#~ msgstr "Generuj mapy normalnych"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Wsparcie IPv6."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Głębia dużej jaskini"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Ostrość naświetlenia"
+
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Limit oczekiwań na dysku"
+
+#~ msgid "Main"
+#~ msgstr "Menu główne"
+
+#, fuzzy
+#~ msgid "Main menu style"
+#~ msgstr "Skrypt głównego menu"
+
+#~ msgid "Minimap in radar mode, Zoom x2"
+#~ msgstr "Minimapa w trybie radaru, Zoom x2"
+
+#~ msgid "Minimap in radar mode, Zoom x4"
+#~ msgstr "Minimapa w trybie radaru, Zoom x4"
+
+#~ msgid "Minimap in surface mode, Zoom x2"
+#~ msgstr "Minimapa w trybie powierzchniowym, powiększenie x2"
+
+#~ msgid "Minimap in surface mode, Zoom x4"
+#~ msgstr "Minimapa w trybie powierzchniowym, powiększenie x4"
+
+#~ msgid "Name/Password"
+#~ msgstr "Nazwa gracza/Hasło"
+
+#~ msgid "No"
+#~ msgstr "Nie"
+
+#~ msgid "Normalmaps sampling"
+#~ msgstr "Próbkowanie normalnych map"
+
+#~ msgid "Normalmaps strength"
+#~ msgstr "Siła map normlanych"
+
+#~ msgid "Number of parallax occlusion iterations."
+#~ msgstr "Liczba iteracji dla parallax occlusion."
+
 #~ msgid "Ok"
 #~ msgstr "OK"
+
+#~ msgid "Overall bias of parallax occlusion effect, usually scale/2."
+#~ msgstr ""
+#~ "Ogólny błąd systematyczny efektu zamykania paralaksy, zwykle skala/2."
+
+#~ msgid "Overall scale of parallax occlusion effect."
+#~ msgstr "Całkowity efekt skalowania zamknięcia paralaksy."
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Mapowanie paralaksy"
+
+#~ msgid "Parallax occlusion"
+#~ msgstr "Zamknięcie paralaksy"
+
+#~ msgid "Parallax occlusion bias"
+#~ msgstr "Błąd systematyczny zamknięcia paralaksy"
+
+#~ msgid "Parallax occlusion iterations"
+#~ msgstr "Iteracje zamknięcia paralaksy"
+
+#~ msgid "Parallax occlusion mode"
+#~ msgstr "Tryb zamknięcia paralaksy"
+
+#, fuzzy
+#~ msgid "Parallax occlusion scale"
+#~ msgstr "Skala parallax occlusion"
+
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Siła zamknięcia paralaksy"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Ścieżka do pliku .ttf lub bitmapy."
+
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Ścieżka, pod którą zapisywane są zrzuty ekranu."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Projekcja lochów"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Resetuj świat pojedynczego gracza"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Wybierz plik paczki:"
+
+#~ msgid "Shadow limit"
+#~ msgstr "Limit cieni"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Tryb jednoosobowy"
+
+#~ msgid "Strength of generated normalmaps."
+#~ msgstr "Siła generowanych zwykłych map."
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Siłą przyśpieszenia środkowego krzywej światła."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Ta czcionka zostanie użyta w niektórych językach."
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Przełącz na tryb Cinematic"
+
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Maksymalna, standardowa wysokość, powyżej lub poniżej średniego punktu "
+#~ "górzystego terenu."
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Zmienność wysokości wzgórz oraz głębokości jezior na gładkim terenie "
+#~ "wznoszącym się."
+
+#~ msgid "Waving Water"
+#~ msgstr "Falująca woda"
+
+#~ msgid "Waving water"
+#~ msgstr "Falująca woda"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Określa czy lochy mają być czasem przez generowane teren."
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y górnej granicy lawy dużych jaskiń."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr ""
+#~ "Wysokość średniego punktu wznoszącego się terenu oraz powierzchni jezior."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Wysokość do której rozciągają się cienie wznoszącego terenu."
+
+#~ msgid "Yes"
+#~ msgstr "Tak"

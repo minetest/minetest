@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 android {
 	compileSdkVersion 29
-	buildToolsVersion '30.0.2'
-	ndkVersion '21.3.6528147'
+	buildToolsVersion '30.0.3'
+	ndkVersion '22.0.7026061'
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
 		minSdkVersion 16
@@ -64,10 +64,9 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
 	}
-	/*copy {
-		// ToDo: fix Minetest shaders that currently don't work with OpenGL ES
+	copy {
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
-	}*/
+	}
 	copy {
 		from "../native/deps/Android/Irrlicht/shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 	}

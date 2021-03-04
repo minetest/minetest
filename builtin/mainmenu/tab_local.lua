@@ -18,6 +18,7 @@
 
 local enable_gamebar = PLATFORM ~= "Android"
 local current_game, singleplayer_refresh_gamebar
+
 if enable_gamebar then
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
@@ -115,7 +116,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval ..
 			"button[3.9,3.8;2.8,1;world_delete;".. fgettext("Delete") .. "]" ..
-			"button[6.55,3.8;2.8,1;world_configure;".. fgettext("Configure") .. "]" ..
+			"button[6.55,3.8;2.8,1;world_configure;".. fgettext("Select Mods") .. "]" ..
 			"button[9.2,3.8;2.8,1;world_create;".. fgettext("New") .. "]" ..
 			"label[3.9,-0.05;".. fgettext("Select World:") .. "]"..
 			"checkbox[0,-0.20;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..

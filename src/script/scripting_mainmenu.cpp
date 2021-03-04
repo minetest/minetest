@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern "C" {
 #include "lualib.h"
 }
-
 #define MAINMENU_NUM_ASYNC_THREADS 4
 
 

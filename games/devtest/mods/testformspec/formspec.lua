@@ -33,6 +33,34 @@ local tabheaders_fs = [[
 	tabheader[8,6;10,1.5;tabs_size2;Height=1.5;1;false;false]
 ]]
 
+local inv_style_fs = [[
+	style_type[list;noclip=true]
+	list[current_player;main;-0.75,0.75;2,2]
+
+	real_coordinates[false]
+	list[current_player;main;1.5,0;3,2]
+	real_coordinates[true]
+
+	real_coordinates[false]
+	style_type[list;size=1.1;spacing=0.1]
+	list[current_player;main;5,0;3,2]
+	real_coordinates[true]
+
+	style_type[list;size=.001;spacing=0]
+	list[current_player;main;7,3.5;8,4]
+
+	box[3,3.5;1,1;#000000]
+	box[5,3.5;1,1;#000000]
+	box[4,4.5;1,1;#000000]
+	box[3,5.5;1,1;#000000]
+	box[5,5.5;1,1;#000000]
+	style_type[list;spacing=.25,.125;size=.75,.875]
+	list[current_player;main;3,3.5;3,3]
+
+	style_type[list;spacing=0;size=1.1]
+	list[current_player;main;.5,7;8,4]
+]]
+
 local hypertext_basic = [[
 <bigger>Normal test</bigger>
 This is a normal text.
@@ -199,6 +227,7 @@ local scroll_fs =
 	"box[1,1;8,6;#00aa]"..
 	"scroll_container[1,1;8,6;scrbar;vertical]"..
 		"button[0,1;1,1;lorem;Lorem]"..
+		"animated_image[0,1;4.5,1;clip_animated_image;testformspec_animation.png;4;100]" ..
 		"button[0,10;1,1;ipsum;Ipsum]"..
 		"pwdfield[2,2;1,1;lorem2;Lorem]"..
 		"list[current_player;main;4,4;1,5;]"..
@@ -211,6 +240,8 @@ local scroll_fs =
 		"tooltip[0,11;3,2;Buz;#f00;#000]"..
 		"box[0,11;3,2;#00ff00]"..
 		"hypertext[3,13;3,3;;" .. hypertext_basic .. "]" ..
+		"hypertext[3,17;3,3;;Hypertext with no scrollbar\\; the scroll container should scroll.]" ..
+		"textarea[3,21;3,1;textarea;;More scroll within scroll]" ..
 		"container[0,18]"..
 			"box[1,2;3,2;#0a0a]"..
 			"scroll_container[1,2;3,2;scrbar2;horizontal;0.06]"..
@@ -310,6 +341,9 @@ local pages = {
 		"size[12,13]real_coordinates[true]" ..
 		"container[0.5,1.5]" .. tabheaders_fs .. "container_end[]",
 
+		-- Inv
+		"size[12,13]real_coordinates[true]" .. inv_style_fs,
+
 	-- Animation
 		[[
 			formspec_version[3]
@@ -327,6 +361,10 @@ Number]
 			animated_image[3,4.25;1,1;;testformspec_animation.png;4;0;3]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
+
+			style[m1;bgcolor=black]
+			model[0.5,6;4,4;m1;testformspec_character.b3d;testformspec_character.png]
+			model[5,6;4,4;m2;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;true]
 		]],
 
 	-- Scroll containers
@@ -337,7 +375,7 @@ Number]
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Anim,ScrollC;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Anim,ScrollC;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end

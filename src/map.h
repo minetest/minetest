@@ -381,7 +381,7 @@ public:
 	MapgenParams *getMapgenParams();
 
 	bool saveBlock(MapBlock *block);
-	static bool saveBlock(MapBlock *block, MapDatabase *db);
+	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
@@ -416,13 +416,9 @@ private:
 	std::string m_savedir;
 	bool m_map_saving_enabled;
 
-#if 0
-	// Chunk size in MapSectors
-	// If 0, chunks are disabled.
-	s16 m_chunksize;
-	// Chunks
-	core::map<v2s16, MapChunk*> m_chunks;
-#endif
+	int m_map_compression_level;
+
+	std::set<v3s16> m_chunks_in_progress;
 
 	/*
 		Metadata is re-written on disk only if this is true.

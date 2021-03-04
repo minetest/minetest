@@ -316,7 +316,8 @@ KeyPress::KeyPress(const char *name)
 	int chars_read = mbtowc(&Char, name, 1);
 	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 	m_name = "";
-	warningstream << "KeyPress: Unknown key '" << name << "', falling back to first char.";
+	warningstream << "KeyPress: Unknown key '" << name
+		<< "', falling back to first char." << std::endl;
 }
 
 KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)

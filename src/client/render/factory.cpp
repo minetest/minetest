@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "factory.h"
-#include <stdexcept>
+#include "log.h"
 #include "plain.h"
 #include "anaglyph.h"
 #include "interlaced.h"
@@ -45,5 +45,8 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 		return new RenderingCoreSideBySide(device, client, hud, true);
 	if (stereo_mode == "crossview")
 		return new RenderingCoreSideBySide(device, client, hud, false, true);
-	throw std::invalid_argument("Invalid rendering mode: " + stereo_mode);
+
+	// fallback to plain renderer
+	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
+	return new RenderingCorePlain(device, client, hud);
 }

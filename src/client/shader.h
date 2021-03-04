@@ -20,9 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <IMaterialRendererServices.h>
 #include "irrlichttypes_bloated.h"
+#include <IMaterialRendererServices.h>
 #include <string>
+#include "tile.h"
+#include "nodedef.h"
 
 class IGameDef;
 
@@ -46,8 +48,8 @@ struct ShaderInfo {
 	std::string name = "";
 	video::E_MATERIAL_TYPE base_material = video::EMT_SOLID;
 	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
-	u8 drawtype = 0;
-	u8 material_type = 0;
+	NodeDrawType drawtype = NDT_NORMAL;
+	MaterialType material_type = TILE_MATERIAL_BASIC;
 
 	ShaderInfo() = default;
 	virtual ~ShaderInfo() = default;
@@ -65,8 +67,7 @@ namespace irr { namespace video {
 class IShaderConstantSetter {
 public:
 	virtual ~IShaderConstantSetter() = default;
-	virtual void onSetConstants(video::IMaterialRendererServices *services,
-			bool is_highlevel) = 0;
+	virtual void onSetConstants(video::IMaterialRendererServices *services) = 0;
 	virtual void onSetMaterial(const video::SMaterial& material)
 	{ }
 };
@@ -128,10 +129,10 @@ public:
 	virtual ~IShaderSource() = default;
 
 	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		MaterialType material_type, NodeDrawType drawtype = NDT_NORMAL){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
 	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		MaterialType material_type, NodeDrawType drawtype = NDT_NORMAL){return 0;}
 };
 
 class IWritableShaderSource : public IShaderSource {
@@ -139,16 +140,12 @@ public:
 	IWritableShaderSource() = default;
 	virtual ~IWritableShaderSource() = default;
 
-	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
-	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
-	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
-
 	virtual void processQueue()=0;
 	virtual void insertSourceShader(const std::string &name_of_shader,
 		const std::string &filename, const std::string &program)=0;
 	virtual void rebuildShaders()=0;
+
+	/// @note Takes ownership of @p setter.
 	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
 };
 

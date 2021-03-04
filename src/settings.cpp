@@ -33,27 +33,50 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <algorithm>
 
-static Settings main_settings;
-Settings *g_settings = &main_settings;
+Settings *g_settings = nullptr; // Populated in main()
 std::string g_settings_path;
 
-Settings::~Settings()
+Settings *Settings::s_layers[SL_TOTAL_COUNT] = {0}; // Zeroed by compiler
+std::unordered_map<std::string, const FlagDesc *> Settings::s_flags;
+
+
+Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 {
-	clear();
+	if ((int)sl < 0 || sl >= SL_TOTAL_COUNT)
+		throw new BaseException("Invalid settings layer");
+
+	Settings *&pos = s_layers[(size_t)sl];
+	if (pos)
+		throw new BaseException("Setting layer " + std::to_string(sl) + " already exists");
+
+	pos = new Settings(end_tag);
+	pos->m_settingslayer = sl;
+
+	if (sl == SL_GLOBAL)
+		g_settings = pos;
+	return pos;
 }
 
 
-Settings & Settings::operator += (const Settings &other)
+Settings *Settings::getLayer(SettingsLayer sl)
 {
-	if (&other == this)
-		return *this;
+	sanity_check((int)sl >= 0 && sl < SL_TOTAL_COUNT);
+	return s_layers[(size_t)sl];
+}
 
+
+Settings::~Settings()
+{
 	MutexAutoLock lock(m_mutex);
-	MutexAutoLock lock2(other.m_mutex);
 
-	updateNoLock(other);
+	if (m_settingslayer < SL_TOTAL_COUNT)
+		s_layers[(size_t)m_settingslayer] = nullptr;
 
-	return *this;
+	// Compatibility
+	if (m_settingslayer == SL_GLOBAL)
+		g_settings = nullptr;
+
+	clearNoLock();
 }
 
 
@@ -62,11 +85,16 @@ Settings & Settings::operator = (const Settings &other)
 	if (&other == this)
 		return *this;
 
+	// TODO: Avoid copying Settings objects. Make this private.
+	FATAL_ERROR_IF(m_settingslayer != SL_TOTAL_COUNT && other.m_settingslayer != SL_TOTAL_COUNT,
+		("Tried to copy unique Setting layer " + std::to_string(m_settingslayer)).c_str());
+
 	MutexAutoLock lock(m_mutex);
 	MutexAutoLock lock2(other.m_mutex);
 
 	clearNoLock();
-	updateNoLock(other);
+	m_settings = other.m_settings;
+	m_callbacks = other.m_callbacks;
 
 	return *this;
 }
@@ -130,11 +158,11 @@ bool Settings::readConfigFile(const char *filename)
 	if (!is.good())
 		return false;
 
-	return parseConfigLines(is, "");
+	return parseConfigLines(is);
 }
 
 
-bool Settings::parseConfigLines(std::istream &is, const std::string &end)
+bool Settings::parseConfigLines(std::istream &is)
 {
 	MutexAutoLock lock(m_mutex);
 
@@ -142,7 +170,7 @@ bool Settings::parseConfigLines(std::istream &is, const std::string &end)
 
 	while (is.good()) {
 		std::getline(is, line);
-		SettingsParseEvent event = parseConfigObject(line, end, name, value);
+		SettingsParseEvent event = parseConfigObject(line, name, value);
 
 		switch (event) {
 		case SPE_NONE:
@@ -155,8 +183,8 @@ bool Settings::parseConfigLines(std::istream &is, const std::string &end)
 		case SPE_END:
 			return true;
 		case SPE_GROUP: {
-			Settings *group = new Settings;
-			if (!group->parseConfigLines(is, "}")) {
+			Settings *group = new Settings("}");
+			if (!group->parseConfigLines(is)) {
 				delete group;
 				return false;
 			}
@@ -169,7 +197,8 @@ bool Settings::parseConfigLines(std::istream &is, const std::string &end)
 		}
 	}
 
-	return end.empty();
+	// false (failure) if end tag not found
+	return m_end_tag.empty();
 }
 
 
@@ -179,6 +208,14 @@ void Settings::writeLines(std::ostream &os, u32 tab_depth) const
 
 	for (const auto &setting_it : m_settings)
 		printEntry(os, setting_it.first, setting_it.second, tab_depth);
+
+	// For groups this must be "}" !
+	if (!m_end_tag.empty()) {
+		for (u32 i = 0; i < tab_depth; i++)
+			os << "\t";
+
+		os << m_end_tag << "\n";
+	}
 }
 
 
@@ -193,9 +230,7 @@ void Settings::printEntry(std::ostream &os, const std::string &name,
 
 		entry.group->writeLines(os, tab_depth + 1);
 
-		for (u32 i = 0; i != tab_depth; i++)
-			os << "\t";
-		os << "}\n";
+		// Closing bracket handled by writeLines
 	} else {
 		os << name << " = ";
 
@@ -207,8 +242,7 @@ void Settings::printEntry(std::ostream &os, const std::string &name,
 }
 
 
-bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
-	const std::string &end, u32 tab_depth)
+bool Settings::updateConfigObject(std::istream &is, std::ostream &os, u32 tab_depth)
 {
 	SettingEntries::const_iterator it;
 	std::set<std::string> present_entries;
@@ -220,11 +254,11 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 	// in the object if existing
 	while (is.good() && !end_found) {
 		std::getline(is, line);
-		SettingsParseEvent event = parseConfigObject(line, end, name, value);
+		SettingsParseEvent event = parseConfigObject(line, name, value);
 
 		switch (event) {
 		case SPE_END:
-			os << line << (is.eof() ? "" : "\n");
+			// Skip end tag. Append later.
 			end_found = true;
 			break;
 		case SPE_MULTILINE:
@@ -252,14 +286,13 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			if (it != m_settings.end() && it->second.is_group) {
 				os << line << "\n";
 				sanity_check(it->second.group != NULL);
-				was_modified |= it->second.group->updateConfigObject(is, os,
-					"}", tab_depth + 1);
+				was_modified |= it->second.group->updateConfigObject(is, os, tab_depth + 1);
 			} else if (it == m_settings.end()) {
 				// Remove by skipping
 				was_modified = true;
-				Settings removed_group; // Move 'is' to group end
+				Settings removed_group("}"); // Move 'is' to group end
 				std::stringstream ss;
-				removed_group.updateConfigObject(is, ss, "}", tab_depth + 1);
+				removed_group.updateConfigObject(is, ss, tab_depth + 1);
 				break;
 			} else {
 				printEntry(os, name, it->second, tab_depth);
@@ -273,6 +306,9 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 		}
 	}
 
+	if (!line.empty() && is.eof())
+		os << "\n";
+
 	// Add any settings in the object that don't exist in the config file yet
 	for (it = m_settings.begin(); it != m_settings.end(); ++it) {
 		if (present_entries.find(it->first) != present_entries.end())
@@ -280,6 +316,12 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 
 		printEntry(os, it->first, it->second, tab_depth);
 		was_modified = true;
+	}
+
+	// Append ending tag
+	if (!m_end_tag.empty()) {
+		os << m_end_tag << "\n";
+		was_modified |= !end_found;
 	}
 
 	return was_modified;
@@ -293,7 +335,7 @@ bool Settings::updateConfigFile(const char *filename)
 	std::ifstream is(filename);
 	std::ostringstream os(std::ios_base::binary);
 
-	bool was_modified = updateConfigObject(is, os, "");
+	bool was_modified = updateConfigObject(is, os);
 	is.close();
 
 	if (!was_modified)
@@ -366,29 +408,37 @@ bool Settings::parseCommandLine(int argc, char *argv[],
  * Getters *
  ***********/
 
-
-const SettingsEntry &Settings::getEntry(const std::string &name) const
+Settings *Settings::getParent() const
 {
-	MutexAutoLock lock(m_mutex);
+	// If the Settings object is within the hierarchy structure,
+	// iterate towards the origin (0) to find the next fallback layer
+	if (m_settingslayer >= SL_TOTAL_COUNT)
+		return nullptr;
 
-	SettingEntries::const_iterator n;
-	if ((n = m_settings.find(name)) == m_settings.end()) {
-		if ((n = m_defaults.find(name)) == m_defaults.end())
-			throw SettingNotFoundException("Setting [" + name + "] not found.");
+	for (int i = (int)m_settingslayer - 1; i >= 0; --i) {
+		if (s_layers[i])
+			return s_layers[i];
 	}
-	return n->second;
+
+	// No parent
+	return nullptr;
 }
 
 
-const SettingsEntry &Settings::getEntryDefault(const std::string &name) const
+const SettingsEntry &Settings::getEntry(const std::string &name) const
 {
-	MutexAutoLock lock(m_mutex);
+	{
+		MutexAutoLock lock(m_mutex);
 
-	SettingEntries::const_iterator n;
-	if ((n = m_defaults.find(name)) == m_defaults.end()) {
-		throw SettingNotFoundException("Setting [" + name + "] not found.");
+		SettingEntries::const_iterator n;
+		if ((n = m_settings.find(name)) != m_settings.end())
+			return n->second;
 	}
-	return n->second;
+
+	if (auto parent = getParent())
+		return parent->getEntry(name);
+
+	throw SettingNotFoundException("Setting [" + name + "] not found.");
 }
 
 
@@ -404,15 +454,6 @@ Settings *Settings::getGroup(const std::string &name) const
 const std::string &Settings::get(const std::string &name) const
 {
 	const SettingsEntry &entry = getEntry(name);
-	if (entry.is_group)
-		throw SettingNotFoundException("Setting [" + name + "] is a group.");
-	return entry.value;
-}
-
-
-const std::string &Settings::getDefault(const std::string &name) const
-{
-	const SettingsEntry &entry = getEntryDefault(name);
 	if (entry.is_group)
 		throw SettingNotFoundException("Setting [" + name + "] is a group.");
 	return entry.value;
@@ -491,29 +532,25 @@ u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	u32 *flagmask) const
 {
 	u32 flags = 0;
-	u32 mask_default = 0;
 
-	std::string value;
 	// Read default value (if there is any)
-	if (getDefaultNoEx(name, value)) {
-		flags = std::isdigit(value[0])
-			? stoi(value)
-			: readFlagString(value, flagdesc, &mask_default);
-	}
+	if (auto parent = getParent())
+		flags = parent->getFlagStr(name, flagdesc, flagmask);
 
 	// Apply custom flags "on top"
-	value = get(name);
-	u32 flags_user;
-	u32 mask_user = U32_MAX;
-	flags_user = std::isdigit(value[0])
-		? stoi(value) // Override default
-		: readFlagString(value, flagdesc, &mask_user);
+	if (m_settings.find(name) != m_settings.end()) {
+		std::string value = get(name);
+		u32 flags_user;
+		u32 mask_user = U32_MAX;
+		flags_user = std::isdigit(value[0])
+			? stoi(value) // Override default
+			: readFlagString(value, flagdesc, &mask_user);
 
-	flags &= ~mask_user;
-	flags |=  flags_user;
-
-	if (flagmask)
-		*flagmask = mask_default | mask_user;
+		flags &= ~mask_user;
+		flags |=  flags_user;
+		if (flagmask)
+			*flagmask |= mask_user;
+	}
 
 	return flags;
 }
@@ -521,7 +558,12 @@ u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 
 bool Settings::getNoiseParams(const std::string &name, NoiseParams &np) const
 {
-	return getNoiseParamsFromGroup(name, np) || getNoiseParamsFromValue(name, np);
+	if (getNoiseParamsFromGroup(name, np) || getNoiseParamsFromValue(name, np))
+		return true;
+	if (auto parent = getParent())
+		return parent->getNoiseParams(name, np);
+
+	return false;
 }
 
 
@@ -583,13 +625,18 @@ bool Settings::exists(const std::string &name) const
 {
 	MutexAutoLock lock(m_mutex);
 
-	return (m_settings.find(name) != m_settings.end() ||
-		m_defaults.find(name) != m_defaults.end());
+	if (m_settings.find(name) != m_settings.end())
+		return true;
+	if (auto parent = getParent())
+		return parent->exists(name);
+	return false;
 }
 
 
 std::vector<std::string> Settings::getNames() const
 {
+	MutexAutoLock lock(m_mutex);
+
 	std::vector<std::string> names;
 	for (const auto &settings_it : m_settings) {
 		names.push_back(settings_it.first);
@@ -618,17 +665,6 @@ bool Settings::getNoEx(const std::string &name, std::string &val) const
 {
 	try {
 		val = get(name);
-		return true;
-	} catch (SettingNotFoundException &e) {
-		return false;
-	}
-}
-
-
-bool Settings::getDefaultNoEx(const std::string &name, std::string &val) const
-{
-	try {
-		val = getDefault(name);
 		return true;
 	} catch (SettingNotFoundException &e) {
 		return false;
@@ -746,24 +782,25 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
  ***********/
 
 bool Settings::setEntry(const std::string &name, const void *data,
-	bool set_group, bool set_default)
+	bool set_group)
 {
-	Settings *old_group = NULL;
-
 	if (!checkNameValid(name))
 		return false;
 	if (!set_group && !checkValueValid(*(const std::string *)data))
 		return false;
 
+	Settings *old_group = NULL;
 	{
 		MutexAutoLock lock(m_mutex);
 
-		SettingsEntry &entry = set_default ? m_defaults[name] : m_settings[name];
+		SettingsEntry &entry = m_settings[name];
 		old_group = entry.group;
 
 		entry.value    = set_group ? "" : *(const std::string *)data;
 		entry.group    = set_group ? *(Settings **)data : NULL;
 		entry.is_group = set_group;
+		if (set_group)
+			entry.group->m_end_tag = "}";
 	}
 
 	delete old_group;
@@ -774,7 +811,7 @@ bool Settings::setEntry(const std::string &name, const void *data,
 
 bool Settings::set(const std::string &name, const std::string &value)
 {
-	if (!setEntry(name, &value, false, false))
+	if (!setEntry(name, &value, false))
 		return false;
 
 	doCallbacks(name);
@@ -782,9 +819,10 @@ bool Settings::set(const std::string &name, const std::string &value)
 }
 
 
+// TODO: Remove this function
 bool Settings::setDefault(const std::string &name, const std::string &value)
 {
-	return setEntry(name, &value, false, true);
+	return getLayer(SL_DEFAULTS)->set(name, value);
 }
 
 
@@ -794,17 +832,7 @@ bool Settings::setGroup(const std::string &name, const Settings &group)
 	// avoid double-free by copying the source
 	Settings *copy = new Settings();
 	*copy = group;
-	return setEntry(name, &copy, true, false);
-}
-
-
-bool Settings::setGroupDefault(const std::string &name, const Settings &group)
-{
-	// Settings must own the group pointer
-	// avoid double-free by copying the source
-	Settings *copy = new Settings();
-	*copy = group;
-	return setEntry(name, &copy, true, true);
+	return setEntry(name, &copy, true);
 }
 
 
@@ -874,8 +902,7 @@ bool Settings::setFlagStr(const std::string &name, u32 flags,
 }
 
 
-bool Settings::setNoiseParams(const std::string &name,
-	const NoiseParams &np, bool set_default)
+bool Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
 {
 	Settings *group = new Settings;
 
@@ -888,7 +915,7 @@ bool Settings::setNoiseParams(const std::string &name,
 	group->setFloat("lacunarity",  np.lacunarity);
 	group->setFlagStr("flags",     np.flags, flagdesc_noiseparams, np.flags);
 
-	return setEntry(name, &group, true, set_default);
+	return setEntry(name, &group, true);
 }
 
 
@@ -912,20 +939,8 @@ bool Settings::remove(const std::string &name)
 }
 
 
-void Settings::clear()
-{
-	MutexAutoLock lock(m_mutex);
-	clearNoLock();
-}
-
-void Settings::clearDefaults()
-{
-	MutexAutoLock lock(m_mutex);
-	clearDefaultsNoLock();
-}
-
 SettingsParseEvent Settings::parseConfigObject(const std::string &line,
-	const std::string &end, std::string &name, std::string &value)
+	std::string &name, std::string &value)
 {
 	std::string trimmed_line = trim(line);
 
@@ -933,7 +948,7 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 		return SPE_NONE;
 	if (trimmed_line[0] == '#')
 		return SPE_COMMENT;
-	if (trimmed_line == end)
+	if (trimmed_line == m_end_tag)
 		return SPE_END;
 
 	size_t pos = trimmed_line.find('=');
@@ -952,67 +967,26 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 }
 
 
-void Settings::updateNoLock(const Settings &other)
-{
-	m_settings.insert(other.m_settings.begin(), other.m_settings.end());
-	m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
-}
-
-
 void Settings::clearNoLock()
 {
-
 	for (SettingEntries::const_iterator it = m_settings.begin();
 			it != m_settings.end(); ++it)
 		delete it->second.group;
 	m_settings.clear();
-
-	clearDefaultsNoLock();
 }
 
-void Settings::clearDefaultsNoLock()
-{
-	for (SettingEntries::const_iterator it = m_defaults.begin();
-			it != m_defaults.end(); ++it)
-		delete it->second.group;
-	m_defaults.clear();
-}
 
 void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
 	u32 flags)
 {
-	m_flags[name] = flagdesc;
+	s_flags[name] = flagdesc;
 	setDefault(name, writeFlagString(flags, flagdesc, U32_MAX));
-}
-
-void Settings::overrideDefaults(Settings *other)
-{
-	for (const auto &setting : other->m_settings) {
-		if (setting.second.is_group) {
-			setGroupDefault(setting.first, *setting.second.group);
-			continue;
-		}
-		const FlagDesc *flagdesc = getFlagDescFallback(setting.first);
-		if (flagdesc) {
-			// Flags cannot be copied directly.
-			// 1) Get the current set flags
-			u32 flags = getFlagStr(setting.first, flagdesc, nullptr);
-			// 2) Set the flags as defaults
-			other->setDefault(setting.first, flagdesc, flags);
-			// 3) Get the newly set flags and override the default setting value
-			setDefault(setting.first, flagdesc,
-				other->getFlagStr(setting.first, flagdesc, nullptr));
-			continue;
-		}
-		// Also covers FlagDesc settings
-		setDefault(setting.first, setting.second.value);
-	}
 }
 
 const FlagDesc *Settings::getFlagDescFallback(const std::string &name) const
 {
-	auto it = m_flags.find(name);
-	return it == m_flags.end() ? nullptr : it->second;
+	auto it = s_flags.find(name);
+	return it == s_flags.end() ? nullptr : it->second;
 }
 
 void Settings::registerChangedCallback(const std::string &name,

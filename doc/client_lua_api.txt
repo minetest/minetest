@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.4.0
+Minetest Lua Client Modding API Reference 5.5.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -620,7 +620,7 @@ Helper functions
 * `minetest.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
 * `minetest.is_nan(arg)`
-    * returns true true when the passed number represents NaN.
+    * returns true when the passed number represents NaN.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
@@ -1001,6 +1001,7 @@ Please do not try to access the reference until the camera is initialized, other
 
 ### LocalPlayer
 An interface to retrieve information about the player.
+This object will only be available after the client is initialized. Earlier accesses will yield a `nil` value.
 
 Methods:
 

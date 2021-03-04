@@ -29,3 +29,4 @@ AlignAfterOpenBracket: DontAlign
 ContinuationIndentWidth: 16
 ConstructorInitializerIndentWidth: 16
 BreakConstructorInitializers: AfterColon
+AlwaysBreakTemplateDeclarations: Yes

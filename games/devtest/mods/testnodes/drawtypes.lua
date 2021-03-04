@@ -145,6 +145,23 @@ minetest.register_node("testnodes:fencelike", {
 })
 
 minetest.register_node("testnodes:torchlike", {
+	description = S("Torchlike Drawtype Test Node"),
+	drawtype = "torchlike",
+	paramtype = "light",
+	tiles = {
+		"testnodes_torchlike_floor.png",
+		"testnodes_torchlike_ceiling.png",
+		"testnodes_torchlike_wall.png",
+	},
+
+
+	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+	inventory_image = fallback_image("testnodes_torchlike_floor.png"),
+})
+
+minetest.register_node("testnodes:torchlike_wallmounted", {
 	description = S("Wallmounted Torchlike Drawtype Test Node"),
 	drawtype = "torchlike",
 	paramtype = "light",
@@ -161,6 +178,8 @@ minetest.register_node("testnodes:torchlike", {
 	groups = { dig_immediate = 3 },
 	inventory_image = fallback_image("testnodes_torchlike_floor.png"),
 })
+
+
 
 minetest.register_node("testnodes:signlike", {
 	description = S("Wallmounted Signlike Drawtype Test Node"),
@@ -331,68 +350,72 @@ minetest.register_node("testnodes:plantlike_rooted_degrotate", {
 })
 
 -- Demonstrative liquid nodes, source and flowing form.
-minetest.register_node("testnodes:liquid", {
-	description = S("Source Liquid Drawtype Test Node"),
-	drawtype = "liquid",
-	paramtype = "light",
-	tiles = {
-		"testnodes_liquidsource.png",
-	},
-	special_tiles = {
-		{name="testnodes_liquidsource.png", backface_culling=false},
-		{name="testnodes_liquidsource.png", backface_culling=true},
-	},
-	use_texture_alpha = true,
+-- DRAWTYPE ONLY, NO LIQUID PHYSICS!
+-- Liquid ranges 0 to 8
+for r = 0, 8 do
+	minetest.register_node("testnodes:liquid_"..r, {
+		description = S("Source Liquid Drawtype Test Node, Range @1", r),
+		drawtype = "liquid",
+		paramtype = "light",
+		tiles = {
+			"testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100",
+		},
+		special_tiles = {
+			{name="testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
+			{name="testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=true},
+		},
+		use_texture_alpha = "blend",
 
 
-	walkable = false,
-	liquidtype = "source",
-	liquid_range = 1,
-	liquid_viscosity = 0,
-	liquid_alternative_flowing = "testnodes:liquid_flowing",
-	liquid_alternative_source = "testnodes:liquid",
-	groups = { dig_immediate = 3 },
-})
-minetest.register_node("testnodes:liquid_flowing", {
-	description = S("Flowing Liquid Drawtype Test Node"),
-	drawtype = "flowingliquid",
-	paramtype = "light",
-	paramtype2 = "flowingliquid",
-	tiles = {
-		"testnodes_liquidflowing.png",
-	},
-	special_tiles = {
-		{name="testnodes_liquidflowing.png", backface_culling=false},
-		{name="testnodes_liquidflowing.png", backface_culling=false},
-	},
-	use_texture_alpha = true,
+		walkable = false,
+		liquid_range = r,
+		liquid_viscosity = 0,
+		liquid_alternative_flowing = "testnodes:liquid_flowing_"..r,
+		liquid_alternative_source = "testnodes:liquid_"..r,
+		groups = { dig_immediate = 3 },
+	})
+	minetest.register_node("testnodes:liquid_flowing_"..r, {
+		description = S("Flowing Liquid Drawtype Test Node, Range @1", r),
+		drawtype = "flowingliquid",
+		paramtype = "light",
+		paramtype2 = "flowingliquid",
+		tiles = {
+			"testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100",
+		},
+		special_tiles = {
+			{name="testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
+			{name="testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
+		},
+		use_texture_alpha = "blend",
 
 
-	walkable = false,
-	liquidtype = "flowing",
-	liquid_range = 1,
-	liquid_viscosity = 0,
-	liquid_alternative_flowing = "testnodes:liquid_flowing",
-	liquid_alternative_source = "testnodes:liquid",
-	groups = { dig_immediate = 3 },
-})
+		walkable = false,
+		liquid_range = r,
+		liquid_viscosity = 0,
+		liquid_alternative_flowing = "testnodes:liquid_flowing_"..r,
+		liquid_alternative_source = "testnodes:liquid_"..r,
+		groups = { dig_immediate = 3 },
+	})
+
+end
+
+-- Waving liquid test (drawtype only)
 minetest.register_node("testnodes:liquid_waving", {
 	description = S("Waving Source Liquid Drawtype Test Node"),
 	drawtype = "liquid",
 	paramtype = "light",
 	tiles = {
-		"testnodes_liquidsource.png^[brighten",
+		"testnodes_liquidsource.png^[colorize:#0000FF:127",
 	},
 	special_tiles = {
-		{name="testnodes_liquidsource.png^[brighten", backface_culling=false},
-		{name="testnodes_liquidsource.png^[brighten", backface_culling=true},
+		{name="testnodes_liquidsource.png^[colorize:#0000FF:127", backface_culling=false},
+		{name="testnodes_liquidsource.png^[colorize:#0000FF:127", backface_culling=true},
 	},
-	use_texture_alpha = true,
+	use_texture_alpha = "blend",
 	waving = 3,
 
 
 	walkable = false,
-	liquidtype = "source",
 	liquid_range = 1,
 	liquid_viscosity = 0,
 	liquid_alternative_flowing = "testnodes:liquid_flowing_waving",
@@ -405,26 +428,23 @@ minetest.register_node("testnodes:liquid_flowing_waving", {
 	paramtype = "light",
 	paramtype2 = "flowingliquid",
 	tiles = {
-		"testnodes_liquidflowing.png^[brighten",
+		"testnodes_liquidflowing.png^[colorize:#0000FF:127",
 	},
 	special_tiles = {
-		{name="testnodes_liquidflowing.png^[brighten", backface_culling=false},
-		{name="testnodes_liquidflowing.png^[brighten", backface_culling=false},
+		{name="testnodes_liquidflowing.png^[colorize:#0000FF:127", backface_culling=false},
+		{name="testnodes_liquidflowing.png^[colorize:#0000FF:127", backface_culling=false},
 	},
-	use_texture_alpha = true,
+	use_texture_alpha = "blend",
 	waving = 3,
 
 
 	walkable = false,
-	liquidtype = "flowing",
 	liquid_range = 1,
 	liquid_viscosity = 0,
 	liquid_alternative_flowing = "testnodes:liquid_flowing_waving",
 	liquid_alternative_source = "testnodes:liquid_waving",
 	groups = { dig_immediate = 3 },
 })
-
-
 
 -- Invisible node
 minetest.register_node("testnodes:airlike", {
@@ -526,7 +546,7 @@ scale("allfaces_optional_waving",
 scale("plantlike",
 	S("Double-sized Plantlike Drawtype Test Node"),
 	S("Half-sized Plantlike Drawtype Test Node"))
-scale("torchlike",
+scale("torchlike_wallmounted",
 	S("Double-sized Wallmounted Torchlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Torchlike Drawtype Test Node"))
 scale("signlike",

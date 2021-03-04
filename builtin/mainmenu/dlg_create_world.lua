@@ -98,7 +98,7 @@ local function create_world_formspec(dialogdata)
 	-- Error out when no games found
 	if #pkgmgr.games == 0 then
 		return "size[12.25,3,true]" ..
-			"box[0,0;12,2;#ff8800]" ..
+			"box[0,0;12,2;" .. mt_color_orange .. "]" ..
 			"textarea[0.3,0;11.7,2;;;"..
 			fgettext("You have no games installed.") .. "\n" ..
 			fgettext("Download one from minetest.net") .. "]" ..
@@ -443,7 +443,7 @@ local function create_world_buttonhandler(this, fields)
 	end
 
 	if fields["mgv6_biomes"] then
-		local entry = minetest.formspec_escape(fields["mgv6_biomes"])
+		local entry = core.formspec_escape(fields["mgv6_biomes"])
 		for b=1, #mgv6_biomes do
 			if entry == mgv6_biomes[b][1] then
 				local ftable = core.settings:get_flags("mgv6_spflags")

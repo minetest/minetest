@@ -247,8 +247,8 @@ void TestUtilities::testStartsWith()
 
 void TestUtilities::testStrEqual()
 {
-	UASSERT(str_equal(narrow_to_wide("abc"), narrow_to_wide("abc")));
-	UASSERT(str_equal(narrow_to_wide("ABC"), narrow_to_wide("abc"), true));
+	UASSERT(str_equal(utf8_to_wide("abc"), utf8_to_wide("abc")));
+	UASSERT(str_equal(utf8_to_wide("ABC"), utf8_to_wide("abc"), true));
 }
 
 
@@ -302,9 +302,18 @@ void TestUtilities::testAsciiPrintableHelper()
 
 void TestUtilities::testUTF8()
 {
-	UASSERT(wide_to_utf8(utf8_to_wide("")) == "");
-	UASSERT(wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!"))
-		== "the shovel dug a crumbly node!");
+	UASSERT(utf8_to_wide("¤") == L"¤");
+
+	UASSERT(wide_to_utf8(L"¤") == "¤");
+
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("")), "");
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!")),
+		"the shovel dug a crumbly node!");
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-ä-")),
+		"-ä-");
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-\xF0\xA0\x80\x8B-")),
+		"-\xF0\xA0\x80\x8B-");
+
 }
 
 void TestUtilities::testRemoveEscapes()

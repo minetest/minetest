@@ -21,7 +21,7 @@ GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 		is_horizontal(horizontal), is_auto_scaling(auto_scale),
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
-		large_step(50), last_change(0), drag_offset(0), page_size(100), border_size(0)
+		large_step(50), drag_offset(0), page_size(100), border_size(0)
 {
 	refreshControls();
 	setNotClipped(false);

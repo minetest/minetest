@@ -75,8 +75,6 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (name.empty())
 		return NULL;
 
-	m_to_delete.insert(name);
-
 #if ENABLE_GLES
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
@@ -88,6 +86,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	image = Align2Npot2(image, m_driver);
 	retval = m_driver->addTexture(name.c_str(), image);
+	m_to_delete.insert(name);
 	image->drop();
 	return retval;
 #else
@@ -170,6 +169,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			m_menumanager,
 			NULL /* &client */,
 			m_texture_source,
+			m_sound_manager,
 			m_formspecgui,
 			m_buttonhandler,
 			"",
@@ -484,8 +484,6 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 		core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
 		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
 				((free_space/2)-splashsize.Y/2)+10);
-
-	video::SColor bgcolor(255,50,50,50);
 
 	draw2DImageFilterScaled(driver, texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),

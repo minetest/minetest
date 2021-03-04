@@ -100,7 +100,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
 		u16 shader_id = shdrsrc->getShader(
-			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", 1, 1);
+			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", TILE_MATERIAL_ALPHA);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
 	} else {
 		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -571,8 +571,6 @@ void Hud::drawCompassTranslate(HudElement *e, video::ITexture *texture,
 void Hud::drawCompassRotate(HudElement *e, video::ITexture *texture,
 		const core::rect<s32> &rect, int angle)
 {
-	core::dimension2di imgsize(texture->getOriginalSize());
-
 	core::rect<s32> oldViewPort = driver->getViewPort();
 	core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
 	core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
@@ -1055,9 +1053,9 @@ void drawItemStack(
 
 	if (def.type == ITEM_TOOL && item.wear != 0) {
 		// Draw a progressbar
-		float barheight = rect.getHeight() / 16;
-		float barpad_x = rect.getWidth() / 16;
-		float barpad_y = rect.getHeight() / 16;
+		float barheight = static_cast<float>(rect.getHeight()) / 16;
+		float barpad_x = static_cast<float>(rect.getWidth()) / 16;
+		float barpad_y = static_cast<float>(rect.getHeight()) / 16;
 
 		core::rect<s32> progressrect(
 			rect.UpperLeftCorner.X + barpad_x,

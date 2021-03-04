@@ -31,10 +31,10 @@ Table of Contents
 
 Further documentation
 ----------------------
-- Website: http://minetest.net/
-- Wiki: http://wiki.minetest.net/
-- Developer wiki: http://dev.minetest.net/
-- Forum: http://forum.minetest.net/
+- Website: https://minetest.net/
+- Wiki: https://wiki.minetest.net/
+- Developer wiki: https://dev.minetest.net/
+- Forum: https://forum.minetest.net/
 - GitHub: https://github.com/minetest/minetest/
 - [doc/](doc/) directory of source distribution
 
@@ -68,7 +68,7 @@ Some can be changed in the key config dialog in the settings tab.
 | P                             | Enable/disable pitch move mode                                 |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
-| E                             | Move fast in fast mode                                         |
+| E                             | Aux1 (Move fast in fast mode. Games may add special features)  |
 | C                             | Cycle through camera modes                                     |
 | V                             | Cycle through minimap modes                                    |
 | Shift + V                     | Change minimap orientation                                     |

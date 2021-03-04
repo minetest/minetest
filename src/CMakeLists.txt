@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 project(minetest)
 
 INCLUDE(CheckIncludeFiles)
@@ -124,27 +122,6 @@ option(ENABLE_FREETYPE "Enable FreeType2 (TrueType fonts and basic unicode suppo
 set(USE_FREETYPE FALSE)
 
 if(ENABLE_FREETYPE)
-##
-## Note: FindFreetype.cmake seems to have been fixed in recent versions of
-## CMake. If issues persist, re-enable this workaround specificially for the
-## failing platforms.
-##
-#	if(UNIX)
-#		include(FindPkgConfig)
-#		if(PKG_CONFIG_FOUND)
-#			pkg_check_modules(FREETYPE QUIET freetype2)
-#			if(FREETYPE_FOUND)
-#				SET(FREETYPE_PKGCONFIG_FOUND TRUE)
-#				SET(FREETYPE_LIBRARY ${FREETYPE_LIBRARIES})
-#				# Because CMake is idiotic
-#				string(REPLACE ";" " " FREETYPE_CFLAGS_STR ${FREETYPE_CFLAGS})
-#				string(REPLACE ";" " " FREETYPE_LDFLAGS_STR ${FREETYPE_LDFLAGS})
-#			endif(FREETYPE_FOUND)
-#		endif(PKG_CONFIG_FOUND)
-#	endif(UNIX)
-#	if(NOT FREETYPE_FOUND)
-#		find_package(Freetype)
-#	endif()
 	find_package(Freetype)
 	if(FREETYPE_FOUND)
 		message(STATUS "Freetype enabled.")
@@ -555,7 +532,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
-	set(client_LIBS
+	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
@@ -571,9 +548,14 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
-	target_link_libraries(
-		${client_LIBS}
-	)
+	if(NOT USE_LUAJIT)
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			# This is necessary for dynamic Lua modules
+			# to work when Lua is statically linked (issue #10806)
+			ENABLE_EXPORTS 1
+		)
+	endif()
+
 	if(ENABLE_GLES)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -644,7 +626,15 @@ if(BUILD_SERVER)
 		${PLATFORM_LIBS}
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
-			COMPILE_DEFINITIONS "SERVER")
+		COMPILE_DEFINITIONS "SERVER")
+	if(NOT USE_LUAJIT)
+		set_target_properties(${PROJECT_NAME}server PROPERTIES
+			# This is necessary for dynamic Lua modules
+			# to work when Lua is statically linked (issue #10806)
+			ENABLE_EXPORTS 1
+		)
+	endif()
+
 	if (USE_GETTEXT)
 		target_link_libraries(${PROJECT_NAME}server ${GETTEXT_LIBRARY})
 	endif()
@@ -677,10 +667,11 @@ endif(BUILD_SERVER)
 # Blacklisted locales that don't work.
 # see issue #4638
 set(GETTEXT_BLACKLISTED_LOCALES
-	be
+	ar
 	he
-	ko
 	ky
+	ms_Arab
+	th
 )
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
@@ -688,7 +679,7 @@ option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
 if (GETTEXTLIB_FOUND AND APPLY_LOCALE_BLACKLIST)
 	set(GETTEXT_USED_LOCALES "")
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
-		if (NOT ";${GETTEXT_BLACKLISTED_LOCALES};" MATCHES ";${LOCALE};")
+		if (NOT "${LOCALE}" IN_LIST GETTEXT_BLACKLISTED_LOCALES)
 			list(APPEND GETTEXT_USED_LOCALES ${LOCALE})
 		endif()
 	endforeach()

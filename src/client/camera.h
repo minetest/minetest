@@ -25,27 +25,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
+#include "util/Optional.h"
 
 class LocalPlayer;
 struct MapDrawControl;
 class Client;
 class WieldMeshSceneNode;
 
-struct Nametag {
+struct Nametag
+{
+	scene::ISceneNode *parent_node;
+	std::string text;
+	video::SColor textcolor;
+	Optional<video::SColor> bgcolor;
+	v3f pos;
+
 	Nametag(scene::ISceneNode *a_parent_node,
-			const std::string &a_nametag_text,
-			const video::SColor &a_nametag_color,
-			const v3f &a_nametag_pos):
+			const std::string &text,
+			const video::SColor &textcolor,
+			const Optional<video::SColor> &bgcolor,
+			const v3f &pos):
 		parent_node(a_parent_node),
-		nametag_text(a_nametag_text),
-		nametag_color(a_nametag_color),
-		nametag_pos(a_nametag_pos)
+		text(text),
+		textcolor(textcolor),
+		bgcolor(bgcolor),
+		pos(pos)
 	{
 	}
-	scene::ISceneNode *parent_node;
-	std::string nametag_text;
-	video::SColor nametag_color;
-	v3f nametag_pos;
+
+	video::SColor getBgColor(bool use_fallback) const
+	{
+		if (bgcolor)
+			return bgcolor.value();
+		else if (!use_fallback)
+			return video::SColor(0, 0, 0, 0);
+		else if (textcolor.getLuminance() > 186)
+			// Dark background for light text
+			return video::SColor(50, 50, 50, 50);
+		else
+			// Light background for dark text
+			return video::SColor(50, 255, 255, 255);
+	}
 };
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
@@ -164,8 +184,8 @@ public:
 	}
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
-		const std::string &nametag_text, video::SColor nametag_color,
-		const v3f &pos);
+		const std::string &text, video::SColor textcolor,
+		Optional<video::SColor> bgcolor, const v3f &pos);
 
 	void removeNametag(Nametag *nametag);
 
@@ -245,4 +265,5 @@ private:
 	bool m_arm_inertia;
 
 	std::list<Nametag *> m_nametags;
+	bool m_show_nametag_backgrounds;
 };

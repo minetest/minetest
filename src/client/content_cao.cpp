@@ -460,18 +460,20 @@ void GenericCAO::setChildrenVisible(bool toset)
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			// Check if the entity is forced to appear in first person.
-			obj->setVisible(obj->isForcedVisible() ? true : toset);
+			obj->setVisible(obj->m_force_visible ? true : toset);
 		}
 	}
 }
 
-void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+void GenericCAO::setAttachment(int parent_id, const std::string &bone,
+		v3f position, v3f rotation, bool force_visible)
 {
 	int old_parent = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
+	m_force_visible = force_visible;
 
 	ClientActiveObject *parent = m_env->getActiveObject(parent_id);
 
@@ -482,15 +484,30 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 	updateAttachments();
+
+	// Forcibly show attachments if required by set_attach
+	if (m_force_visible) {
+		m_is_visible = true;
+	} else if (!m_is_local_player) {
+		// Objects attached to the local player should be hidden in first person
+		m_is_visible = !m_attached_to_local ||
+			m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST;
+		m_force_visible = false;
+	} else {
+		// Local players need to have this set,
+		// otherwise first person attachments fail.
+		m_is_visible = true;
+	}
 }
 
 void GenericCAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation) const
+	v3f *rotation, bool *force_visible) const
 {
 	*parent_id = m_attachment_parent_id;
 	*bone = m_attachment_bone;
 	*position = m_attachment_position;
 	*rotation = m_attachment_rotation;
+	*force_visible = m_force_visible;
 }
 
 void GenericCAO::clearChildAttachments()
@@ -509,9 +526,9 @@ void GenericCAO::clearChildAttachments()
 void GenericCAO::clearParentAttachment()
 {
 	if (m_attachment_parent_id)
-		setAttachment(0, "", m_attachment_position, m_attachment_rotation);
+		setAttachment(0, "", m_attachment_position, m_attachment_rotation, false);
 	else
-		setAttachment(0, "", v3f(), v3f());
+		setAttachment(0, "", v3f(), v3f(), false);
 }
 
 void GenericCAO::addAttachmentChild(int child_id)
@@ -894,6 +911,9 @@ u16 GenericCAO::getLightPosition(v3s16 *pos)
 
 void GenericCAO::updateMarker()
 {
+	if (!m_client->getMinimap())
+		return;
+
 	if (!m_prop.show_on_minimap) {
 		if (m_marker)
 			m_client->getMinimap()->removeMarker(&m_marker);
@@ -914,7 +934,7 @@ void GenericCAO::updateNametag()
 	if (m_is_local_player) // No nametag for local player
 		return;
 
-	if (m_prop.nametag.empty()) {
+	if (m_prop.nametag.empty() || m_prop.nametag_color.getAlpha() == 0) {
 		// Delete nametag
 		if (m_nametag) {
 			m_client->getCamera()->removeNametag(m_nametag);
@@ -932,12 +952,14 @@ void GenericCAO::updateNametag()
 	if (!m_nametag) {
 		// Add nametag
 		m_nametag = m_client->getCamera()->addNametag(node,
-			m_prop.nametag, m_prop.nametag_color, pos);
+			m_prop.nametag, m_prop.nametag_color,
+			m_prop.nametag_bgcolor, pos);
 	} else {
 		// Update nametag
-		m_nametag->nametag_text = m_prop.nametag;
-		m_nametag->nametag_color = m_prop.nametag_color;
-		m_nametag->nametag_pos = pos;
+		m_nametag->text = m_prop.nametag;
+		m_nametag->textcolor = m_prop.nametag_color;
+		m_nametag->bgcolor = m_prop.nametag_bgcolor;
+		m_nametag->pos = pos;
 	}
 }
 
@@ -1145,7 +1167,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 	}
 
-	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
+	if (!getParent() && node && fabs(m_prop.automatic_rotate) > 0.001f) {
 		// This is the child node's rotation. It is only used for automatic_rotate.
 		v3f local_rot = node->getRotation();
 		local_rot.Y = modulo360f(local_rot.Y - dtime * core::RADTODEG *
@@ -1154,7 +1176,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	}
 
 	if (!getParent() && m_prop.automatic_face_movement_dir &&
-			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)) {
+			(fabs(m_velocity.Z) > 0.001f || fabs(m_velocity.X) > 0.001f)) {
 		float target_yaw = atan2(m_velocity.Z, m_velocity.X) * 180 / M_PI
 				+ m_prop.automatic_face_movement_dir_offset;
 		float max_rotation_per_sec =
@@ -1487,17 +1509,24 @@ void GenericCAO::updateBonePosition()
 		if (!bone)
 			continue;
 
+		//If bone is manually positioned there is no need to perform the bug check
+		bool skip = false;
+		for (auto &it : m_bone_position) {
+			if (it.first == bone->getName()) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
 		// Workaround for Irrlicht bug
 		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
 		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
 		// and update the bones transformation.
 		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-		float offset_X = fabsf(bone_rot.X - bone->getRotation().X);
-		float offset_Y = fabsf(bone_rot.Y - bone->getRotation().Y);
-		float offset_Z = fabsf(bone_rot.Z - bone->getRotation().Z);
-		if ((offset_X > 179.9f && offset_X < 180.1f)
-				|| (offset_Y > 179.9f && offset_Y < 180.1f)
-				|| (offset_Z > 179.9f && offset_Z < 180.1f)) {
+		float offset = fabsf(bone_rot.X - bone->getRotation().X);
+		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
 		}
@@ -1771,25 +1800,9 @@ void GenericCAO::processMessage(const std::string &data)
 		std::string bone = deSerializeString16(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
-		m_force_visible = readU8(is); // Returns false for EOF
+		bool force_visible = readU8(is); // Returns false for EOF
 
-		setAttachment(parent_id, bone, position, rotation);
-
-		// Forcibly show attachments if required by set_attach
-		if (m_force_visible)
-			m_is_visible = true;
-		// localplayer itself can't be attached to localplayer
-		else if (!m_is_local_player) {
-			// Objects attached to the local player should be hidden in first
-			// person provided the forced boolean isn't set.
-			m_is_visible = !m_attached_to_local ||
-				m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST;
-			m_force_visible = false;
-		} else {
-			// Local players need to have this set,
-			// otherwise first person attachments fail.
-			m_is_visible = true;
-		}
+		setAttachment(parent_id, bone, position, rotation, force_visible);
 	} else if (cmd == AO_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
 
@@ -1908,13 +1921,23 @@ void GenericCAO::updateMeshCulling()
 	if (!m_is_local_player)
 		return;
 
-	// Grab the active player scene node so we know there's
-	// at least a mesh to occlude from the camera.
+	const bool hidden = m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST;
+
+	if (m_meshnode && m_prop.visual == "upright_sprite") {
+		u32 buffers = m_meshnode->getMesh()->getMeshBufferCount();
+		for (u32 i = 0; i < buffers; i++) {
+			video::SMaterial &mat = m_meshnode->getMesh()->getMeshBuffer(i)->getMaterial();
+			// upright sprite has no backface culling
+			mat.setFlag(video::EMF_FRONT_FACE_CULLING, hidden);
+		}
+		return;
+	}
+
 	irr::scene::ISceneNode *node = getSceneNode();
 	if (!node)
 		return;
 
-	if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
+	if (hidden) {
 		// Hide the mesh by culling both front and
 		// back faces. Serious hackyness but it works for our
 		// purposes. This also preserves the skeletal armature.

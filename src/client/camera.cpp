@@ -79,6 +79,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_fov                 = std::fmax(g_settings->getFloat("fov"), 45.0f);
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
+	m_show_nametag_backgrounds  = g_settings->getBool("show_nametag_backgrounds");
 }
 
 Camera::~Camera()
@@ -691,46 +692,47 @@ void Camera::drawNametags()
 	core::matrix4 trans = m_cameranode->getProjectionMatrix();
 	trans *= m_cameranode->getViewMatrix();
 
-	for (std::list<Nametag *>::const_iterator
-			i = m_nametags.begin();
-			i != m_nametags.end(); ++i) {
-		Nametag *nametag = *i;
-		if (nametag->nametag_color.getAlpha() == 0) {
-			// Enforce hiding nametag,
-			// because if freetype is enabled, a grey
-			// shadow can remain.
-			continue;
-		}
-		v3f pos = nametag->parent_node->getAbsolutePosition() + nametag->nametag_pos * BS;
+	gui::IGUIFont *font = g_fontengine->getFont();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	v2u32 screensize = driver->getScreenSize();
+
+	for (const Nametag *nametag : m_nametags) {
+		// Nametags are hidden in GenericCAO::updateNametag()
+
+		v3f pos = nametag->parent_node->getAbsolutePosition() + nametag->pos * BS;
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
 			std::wstring nametag_colorless =
-				unescape_translate(utf8_to_wide(nametag->nametag_text));
-			core::dimension2d<u32> textsize =
-				g_fontengine->getFont()->getDimension(
+				unescape_translate(utf8_to_wide(nametag->text));
+			core::dimension2d<u32> textsize = font->getDimension(
 				nametag_colorless.c_str());
 			f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
 				core::reciprocal(transformed_pos[3]);
-			v2u32 screensize = RenderingEngine::get_video_driver()->getScreenSize();
 			v2s32 screen_pos;
 			screen_pos.X = screensize.X *
 				(0.5 * transformed_pos[0] * zDiv + 0.5) - textsize.Width / 2;
 			screen_pos.Y = screensize.Y *
 				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
 			core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
-			g_fontengine->getFont()->draw(
-				translate_string(utf8_to_wide(nametag->nametag_text)).c_str(),
-				size + screen_pos, nametag->nametag_color);
+			core::rect<s32> bg_size(-2, 0, textsize.Width+2, textsize.Height);
+
+			auto bgcolor = nametag->getBgColor(m_show_nametag_backgrounds);
+			if (bgcolor.getAlpha() != 0)
+				driver->draw2DRectangle(bgcolor, bg_size + screen_pos);
+
+			font->draw(
+				translate_string(utf8_to_wide(nametag->text)).c_str(),
+				size + screen_pos, nametag->textcolor);
 		}
 	}
 }
 
 Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
-		const std::string &nametag_text, video::SColor nametag_color,
-		const v3f &pos)
+		const std::string &text, video::SColor textcolor,
+		Optional<video::SColor> bgcolor, const v3f &pos)
 {
-	Nametag *nametag = new Nametag(parent_node, nametag_text, nametag_color, pos);
+	Nametag *nametag = new Nametag(parent_node, text, textcolor, bgcolor, pos);
 	m_nametags.push_back(nametag);
 	return nametag;
 }

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"             // for SER_FMT_VER_INVALID
 #include "network/networkpacket.h"
 #include "network/networkprotocol.h"
+#include "network/address.h"
 #include "porting.h"
 
 #include <list>
@@ -188,7 +189,6 @@ enum ClientStateEvent
 {
 	CSE_Hello,
 	CSE_AuthAccept,
-	CSE_InitLegacy,
 	CSE_GotInit2,
 	CSE_SetDenied,
 	CSE_SetDefinitionsSent,
@@ -338,17 +338,24 @@ public:
 	u8 getMajor() const { return m_version_major; }
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
-	const std::string &getFull() const { return m_full_version; }
+	const std::string &getFullVer() const { return m_full_version; }
 	
 	void setLangCode(const std::string &code) { m_lang_code = code; }
 	const std::string &getLangCode() const { return m_lang_code; }
+
+	void setCachedAddress(const Address &addr) { m_addr = addr; }
+	const Address &getAddress() const { return m_addr; }
+
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
 
 	/* current state of client */
 	ClientState m_state = CS_Created;
-	
+
+	// Cached here so retrieval doesn't have to go to connection API
+	Address m_addr;
+
 	// Client sent language code
 	std::string m_lang_code;
 
@@ -364,6 +371,7 @@ private:
 	std::set<v3s16> m_blocks_sent;
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
+	v3f m_last_camera_dir;
 
 	const u16 m_max_simul_sends;
 	const float m_min_time_from_building;
@@ -383,10 +391,10 @@ private:
 	std::map<v3s16, float> m_blocks_sending;
 
 	/*
-		Blocks that have been modified since last sending them.
-		These blocks will not be marked as sent, even if the
-		client reports it has received them to account for blocks
-		that are being modified while on the line.
+		Blocks that have been modified since blocks were
+		sent to the client last (getNextBlocks()).
+		This is used to reset the unsent distance, so that
+		modified blocks are resent to the client.
 
 		List of block positions.
 	*/
@@ -411,7 +419,7 @@ private:
 
 	/*
 		client information
-	 */
+	*/
 	u8 m_version_major = 0;
 	u8 m_version_minor = 0;
 	u8 m_version_patch = 0;

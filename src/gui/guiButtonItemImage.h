@@ -42,7 +42,6 @@ public:
 			Client *client);
 
 private:
-	std::string m_item_name;
 	Client *m_client;
 	GUIItemImage *m_image;
 };

@@ -360,7 +360,7 @@ void ContentFeatures::reset()
 		i = TileDef();
 	for (auto &j : tiledef_special)
 		j = TileDef();
-	alpha = 255;
+	alpha = ALPHAMODE_OPAQUE;
 	post_effect_color = video::SColor(0, 0, 0, 0);
 	param_type = CPT_NONE;
 	param_type_2 = CPT2_NONE;
@@ -405,6 +405,31 @@ void ContentFeatures::reset()
 	node_dig_prediction = "air";
 }
 
+void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
+{
+	// No special handling for nodebox/mesh here as it doesn't make sense to
+	// throw warnings when the server is too old to support the "correct" way
+	switch (drawtype) {
+	case NDT_NORMAL:
+		alpha = legacy_alpha == 255 ? ALPHAMODE_OPAQUE : ALPHAMODE_CLIP;
+		break;
+	case NDT_LIQUID:
+	case NDT_FLOWINGLIQUID:
+		alpha = legacy_alpha == 255 ? ALPHAMODE_OPAQUE : ALPHAMODE_BLEND;
+		break;
+	default:
+		alpha = legacy_alpha == 255 ? ALPHAMODE_CLIP : ALPHAMODE_BLEND;
+		break;
+	}
+}
+
+u8 ContentFeatures::getAlphaForLegacy() const
+{
+	// This is so simple only because 255 and 0 mean wildly different things
+	// depending on drawtype...
+	return alpha == ALPHAMODE_OPAQUE ? 255 : 0;
+}
+
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 {
 	const u8 version = CONTENTFEATURES_VERSION;
@@ -433,7 +458,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	for (const TileDef &td : tiledef_special) {
 		td.serialize(os, protocol_version);
 	}
-	writeU8(os, alpha);
+	writeU8(os, getAlphaForLegacy());
 	writeU8(os, color.getRed());
 	writeU8(os, color.getGreen());
 	writeU8(os, color.getBlue());
@@ -489,21 +514,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 
 	os << serializeString16(node_dig_prediction);
 	writeU8(os, leveled_max);
-}
-
-void ContentFeatures::correctAlpha(TileDef *tiles, int length)
-{
-	// alpha == 0 means that the node is using texture alpha
-	if (alpha == 0 || alpha == 255)
-		return;
-
-	for (int i = 0; i < length; i++) {
-		if (tiles[i].name.empty())
-			continue;
-		std::stringstream s;
-		s << tiles[i].name << "^[noalpha^[opacity:" << ((int)alpha);
-		tiles[i].name = s.str();
-	}
+	writeU8(os, alpha);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -539,7 +550,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
 	for (TileDef &td : tiledef_special)
 		td.deSerialize(is, version, drawtype);
-	alpha = readU8(is);
+	setAlphaFromLegacy(readU8(is));
 	color.setRed(readU8(is));
 	color.setGreen(readU8(is));
 	color.setBlue(readU8(is));
@@ -597,10 +608,16 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	try {
 		node_dig_prediction = deSerializeString16(is);
-		u8 tmp_leveled_max = readU8(is);
+
+		u8 tmp = readU8(is);
 		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
 			throw SerializationError("");
-		leveled_max = tmp_leveled_max;
+		leveled_max = tmp;
+
+		tmp = readU8(is);
+		if (is.eof())
+			throw SerializationError("");
+		alpha = static_cast<enum AlphaMode>(tmp);
 	} catch(SerializationError &e) {};
 }
 
@@ -617,7 +634,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	bool has_scale = tiledef.scale > 0;
 	bool use_autoscale = tsettings.autoscale_mode == AUTOSCALE_FORCE ||
 		(tsettings.autoscale_mode == AUTOSCALE_ENABLE && !has_scale);
-	if (use_autoscale && layer->texture) {
+	if (use_autoscale) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
 		float size = std::fmin(texture_size.Width, texture_size.Height);
@@ -692,6 +709,7 @@ bool ContentFeatures::textureAlphaCheck(ITextureSource *tsrc, const TileDef *til
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	static thread_local bool long_warning_printed = false;
 	std::set<std::string> seen;
+
 	for (int i = 0; i < length; i++) {
 		if (seen.find(tiles[i].name) != seen.end())
 			continue;
@@ -716,20 +734,21 @@ bool ContentFeatures::textureAlphaCheck(ITextureSource *tsrc, const TileDef *til
 
 break_loop:
 		image->drop();
-		if (!ok) {
-			warningstream << "Texture \"" << tiles[i].name << "\" of "
-				<< name << " has transparent pixels, assuming "
-				"use_texture_alpha = true." << std::endl;
-			if (!long_warning_printed) {
-				warningstream << "  This warning can be a false-positive if "
-					"unused pixels in the texture are transparent. However if "
-					"it is meant to be transparent, you *MUST* update the "
-					"nodedef and set use_texture_alpha = true! This compatibility "
-					"code will be removed in a few releases." << std::endl;
-				long_warning_printed = true;
-			}
-			return true;
+		if (ok)
+			continue;
+		warningstream << "Texture \"" << tiles[i].name << "\" of "
+			<< name << " has transparency, assuming "
+			"use_texture_alpha = \"clip\"." << std::endl;
+		if (!long_warning_printed) {
+			warningstream << "  This warning can be a false-positive if "
+				"unused pixels in the texture are transparent. However if "
+				"it is meant to be transparent, you *MUST* update the "
+				"nodedef and set use_texture_alpha = \"clip\"! This "
+				"compatibility code will be removed in a few releases."
+				<< std::endl;
+			long_warning_printed = true;
 		}
+		return true;
 	}
 	return false;
 }
@@ -774,31 +793,33 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	bool is_liquid = false;
 
-	u8 material_type = (alpha == 255) ?
-		TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+	if (alpha == ALPHAMODE_LEGACY_COMPAT) {
+		// Before working with the alpha mode, resolve any legacy kludges
+		alpha = textureAlphaCheck(tsrc, tdef, 6) ? ALPHAMODE_CLIP : ALPHAMODE_OPAQUE;
+	}
+
+	MaterialType material_type = alpha == ALPHAMODE_OPAQUE ?
+		TILE_MATERIAL_OPAQUE : (alpha == ALPHAMODE_CLIP ? TILE_MATERIAL_BASIC :
+		TILE_MATERIAL_ALPHA);
 
 	switch (drawtype) {
 	default:
 	case NDT_NORMAL:
-		material_type = (alpha == 255) ?
-			TILE_MATERIAL_OPAQUE : TILE_MATERIAL_ALPHA;
 		solidness = 2;
 		break;
 	case NDT_AIRLIKE:
 		solidness = 0;
 		break;
 	case NDT_LIQUID:
-		assert(liquid_type == LIQUID_SOURCE);
 		if (tsettings.opaque_water)
-			alpha = 255;
+			alpha = ALPHAMODE_OPAQUE;
 		solidness = 1;
 		is_liquid = true;
 		break;
 	case NDT_FLOWINGLIQUID:
-		assert(liquid_type == LIQUID_FLOWING);
 		solidness = 0;
 		if (tsettings.opaque_water)
-			alpha = 255;
+			alpha = ALPHAMODE_OPAQUE;
 		is_liquid = true;
 		break;
 	case NDT_GLASSLIKE:
@@ -850,19 +871,16 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	case NDT_MESH:
 	case NDT_NODEBOX:
-		if (alpha == 255 && textureAlphaCheck(tsrc, tdef, 6))
-			alpha = 0;
-
 		solidness = 0;
-		if (waving == 1)
+		if (waving == 1) {
 			material_type = TILE_MATERIAL_WAVING_PLANTS;
-		else if (waving == 2)
+		} else if (waving == 2) {
 			material_type = TILE_MATERIAL_WAVING_LEAVES;
-		else if (waving == 3)
-			material_type = (alpha == 255) ? TILE_MATERIAL_WAVING_LIQUID_OPAQUE :
-				TILE_MATERIAL_WAVING_LIQUID_BASIC;
-		else if (alpha == 255)
-			material_type = TILE_MATERIAL_OPAQUE;
+		} else if (waving == 3) {
+			material_type = alpha == ALPHAMODE_OPAQUE ?
+				TILE_MATERIAL_WAVING_LIQUID_OPAQUE : (alpha == ALPHAMODE_CLIP ?
+				TILE_MATERIAL_WAVING_LIQUID_BASIC : TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT);
+		}
 		break;
 	case NDT_TORCHLIKE:
 	case NDT_SIGNLIKE:
@@ -876,23 +894,19 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	}
 
 	if (is_liquid) {
-		// Vertex alpha is no longer supported, correct if necessary.
-		correctAlpha(tdef, 6);
-		correctAlpha(tdef_overlay, 6);
-		correctAlpha(tdef_spec, CF_SPECIAL_COUNT);
-
 		if (waving == 3) {
-			material_type = (alpha == 255) ? TILE_MATERIAL_WAVING_LIQUID_OPAQUE :
-				TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT;
+			material_type = alpha == ALPHAMODE_OPAQUE ?
+				TILE_MATERIAL_WAVING_LIQUID_OPAQUE : (alpha == ALPHAMODE_CLIP ?
+				TILE_MATERIAL_WAVING_LIQUID_BASIC : TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT);
 		} else {
-			material_type = (alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE :
+			material_type = alpha == ALPHAMODE_OPAQUE ? TILE_MATERIAL_LIQUID_OPAQUE :
 				TILE_MATERIAL_LIQUID_TRANSPARENT;
 		}
 	}
 
 	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype);
 
-	u8 overlay_material = material_type;
+	MaterialType overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
 		overlay_material = TILE_MATERIAL_BASIC;
 	else if (overlay_material == TILE_MATERIAL_LIQUID_OPAQUE)
@@ -913,7 +927,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 					tdef[j].backface_culling, tsettings);
 	}
 
-	u8 special_material = material_type;
+	MaterialType special_material = material_type;
 	if (drawtype == NDT_PLANTLIKE_ROOTED) {
 		if (waving == 1)
 			special_material = TILE_MATERIAL_WAVING_PLANTS;
@@ -1596,7 +1610,7 @@ static void removeDupes(std::vector<content_t> &list)
 void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
-		if (f.liquid_type != LIQUID_NONE) {
+		if (f.liquid_type != LIQUID_NONE || f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
 			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
 			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
 			continue;

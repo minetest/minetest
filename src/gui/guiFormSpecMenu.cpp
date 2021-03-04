@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include <iterator>
 #include <limits>
@@ -48,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "client/client.h"
 #include "client/fontengine.h"
+#include "client/sound.h"
 #include "util/hex.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
@@ -65,10 +67,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiScrollContainer.h"
 #include "intlGUIEditBox.h"
 #include "guiHyperText.h"
+#include "guiScene.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
-		errorstream<< "Invalid pos for element " << a << "specified: \""	\
+		errorstream<< "Invalid pos for element " << a << " specified: \""	\
 			<< parts[b] << "\"" << std::endl;								\
 			return;															\
 	}
@@ -76,7 +79,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MY_CHECKGEOM(a,b)													\
 	if (v_geom.size() != 2) {												\
 		errorstream<< "Invalid geometry for element " << a <<				\
-			"specified: \"" << parts[b] << "\"" << std::endl;				\
+			" specified: \"" << parts[b] << "\"" << std::endl;				\
 			return;															\
 	}
 /*
@@ -94,11 +97,13 @@ inline u32 clamp_u8(s32 value)
 
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
-		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
+		Client *client, ISimpleTextureSource *tsrc, ISoundManager *sound_manager,
+		IFormSource *fsrc, TextDest *tdst,
 		const std::string &formspecPrepend, bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr, remap_dbl_click),
 	m_invmgr(client),
 	m_tsrc(tsrc),
+	m_sound_manager(sound_manager),
 	m_client(client),
 	m_formspec_prepend(formspecPrepend),
 	m_form_src(fsrc),
@@ -142,11 +147,12 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-	const std::string &formspecPrepend)
+	const std::string &formspecPrepend, ISoundManager *sound_manager)
 {
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
-			client, client->getTextureSource(), fs_src, txt_dest, formspecPrepend);
+			client, client->getTextureSource(), sound_manager, fs_src,
+			txt_dest, formspecPrepend);
 		cur_formspec->doPause = false;
 
 		/*
@@ -492,19 +498,39 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 			3
 		);
 
-		v2f32 slot_spacing = data->real_coordinates ?
-				v2f32(imgsize.X * 1.25f, imgsize.Y * 1.25f) : spacing;
+		auto style = getDefaultStyleForElement("list", spec.fname);
 
-		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos)
-				: getElementBasePos(&v_pos);
+		v2f32 slot_scale = style.getVector2f(StyleSpec::SIZE, v2f32(0, 0));
+		v2f32 slot_size(
+			slot_scale.X <= 0 ? imgsize.X : std::max<f32>(slot_scale.X * imgsize.X, 1),
+			slot_scale.Y <= 0 ? imgsize.Y : std::max<f32>(slot_scale.Y * imgsize.Y, 1)
+		);
+
+		v2f32 slot_spacing = style.getVector2f(StyleSpec::SPACING, v2f32(-1, -1));
+		v2f32 default_spacing = data->real_coordinates ?
+				v2f32(imgsize.X * 0.25f, imgsize.Y * 0.25f) :
+				v2f32(spacing.X - imgsize.X, spacing.Y - imgsize.Y);
+
+		slot_spacing.X = slot_spacing.X < 0 ? default_spacing.X :
+				imgsize.X * slot_spacing.X;
+		slot_spacing.Y = slot_spacing.Y < 0 ? default_spacing.Y :
+				imgsize.Y * slot_spacing.Y;
+
+		slot_spacing += slot_size;
+
+		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos) :
+				getElementBasePos(&v_pos);
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + (geom.X - 1) * slot_spacing.X + imgsize.X,
-				pos.Y + (geom.Y - 1) * slot_spacing.Y + imgsize.Y);
+				pos.X + (geom.X - 1) * slot_spacing.X + slot_size.X,
+				pos.Y + (geom.Y - 1) * slot_spacing.Y + slot_size.Y);
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
-				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
-				slot_spacing, this, data->inventorylist_options, m_font);
+				spec.fid, rect, m_invmgr, loc, listname, geom, start_i,
+				v2s32(slot_size.X, slot_size.Y), slot_spacing, this,
+				data->inventorylist_options, m_font);
+
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 		m_inventorylists.push_back(e);
 		m_fields.push_back(spec);
@@ -613,6 +639,9 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 				data->current_parent, spec.fid, spec.flabel.c_str());
 
 		auto style = getDefaultStyleForElement("checkbox", name);
+
+		spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 		if (spec.fname == m_focused_element) {
@@ -899,7 +928,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent, spec.fid,
 		rect, texture_name, frame_count, frame_duration, m_tsrc);
 
 	if (parts.size() >= 7)
@@ -1019,6 +1048,9 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 				data->current_parent, spec.fid, spec.flabel.c_str());
 
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
+
+		spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
 		e->setStyles(style);
 
 		if (spec.fname == m_focused_element) {
@@ -1380,6 +1412,9 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 			e->setSelected(stoi(str_initial_selection)-1);
 
 		auto style = getDefaultStyleForElement("dropdown", name);
+
+		spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 		m_fields.push_back(spec);
@@ -1746,6 +1781,10 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 	);
 
 	spec.ftype = f_HyperText;
+
+	auto style = getDefaultStyleForElement("hypertext", spec.fname);
+	spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 	GUIHyperText *e = new GUIHyperText(spec.flabel.c_str(), Environment,
 			data->current_parent, spec.fid, rect, m_client, m_tsrc);
 	e->drop();
@@ -1998,6 +2037,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 
 		auto style = getStyleForElement("image_button", spec.fname);
 
+		spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
 		// Override style properties with values specified directly in the element
 		if (!image_name.empty())
 			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::FGIMG, image_name);
@@ -2106,6 +2147,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		e->setTabHeight(geom.Y);
 
 		auto style = getDefaultStyleForElement("tabheader", name);
+
+		spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, true));
 
 		for (const std::string &button : buttons) {
@@ -2194,6 +2238,9 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 				item_name, m_client);
 
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
+
+		spec_btn.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
 		e_btn->setStyles(style);
 
 		if (spec_btn.fname == m_focused_element) {
@@ -2695,6 +2742,97 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 		<< "'" << std::endl;
 }
 
+void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() < 5 || (parts.size() > 9 &&
+			m_formspec_version <= FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid model element (" << parts.size() << "): '" << element
+			<< "'" << std::endl;
+		return;
+	}
+
+	// Avoid length checks by resizing
+	if (parts.size() < 9)
+		parts.resize(9);
+
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	std::vector<std::string> v_geom = split(parts[1], ',');
+	std::string name = unescape_string(parts[2]);
+	std::string meshstr = unescape_string(parts[3]);
+	std::vector<std::string> textures = split(parts[4], ',');
+	std::vector<std::string> vec_rot = split(parts[5], ',');
+	bool inf_rotation = is_yes(parts[6]);
+	bool mousectrl = is_yes(parts[7]) || parts[7].empty(); // default true
+	std::vector<std::string> frame_loop = split(parts[8], ',');
+
+	MY_CHECKPOS("model", 0);
+	MY_CHECKGEOM("model", 1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * (float)imgsize.X;
+		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+	}
+
+	if (!data->explicit_size)
+		warningstream << "invalid use of model without a size[] element" << std::endl;
+
+	scene::IAnimatedMesh *mesh = m_client->getMesh(meshstr);
+
+	if (!mesh) {
+		errorstream << "Invalid model element: Unable to load mesh:"
+				<< std::endl << "\t" << meshstr << std::endl;
+		return;
+	}
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	core::rect<s32> rect(pos, pos + geom);
+
+	GUIScene *e = new GUIScene(Environment, RenderingEngine::get_scene_manager(),
+			data->current_parent, rect, spec.fid);
+
+	auto meshnode = e->setMesh(mesh);
+
+	for (u32 i = 0; i < textures.size() && i < meshnode->getMaterialCount(); ++i)
+		e->setTexture(i, m_tsrc->getTexture(unescape_string(textures[i])));
+
+	if (vec_rot.size() >= 2)
+		e->setRotation(v2f(stof(vec_rot[0]), stof(vec_rot[1])));
+
+	e->enableContinuousRotation(inf_rotation);
+	e->enableMouseControl(mousectrl);
+
+	s32 frame_loop_begin = 0;
+	s32 frame_loop_end = 0x7FFFFFFF;
+
+	if (frame_loop.size() == 2) {
+	    frame_loop_begin = stoi(frame_loop[0]);
+	    frame_loop_end = stoi(frame_loop[1]);
+	}
+
+	e->setFrameLoop(frame_loop_begin, frame_loop_end);
+
+	auto style = getStyleForElement("model", spec.fname);
+	e->setStyles(style);
+	e->drop();
+
+	m_fields.push_back(spec);
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2888,6 +3026,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "set_focus") {
 		parseSetFocus(description);
+		return;
+	}
+
+	if (type == "model") {
+		parseModel(data, description);
 		return;
 	}
 
@@ -3383,8 +3526,6 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 
 GUIInventoryList::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
-	core::rect<s32> imgrect(0, 0, imgsize.X, imgsize.Y);
-
 	for (const GUIInventoryList *e : m_inventorylists) {
 		s32 item_index = e->getItemIndexAtPos(p);
 		if (item_index != -1)
@@ -3596,7 +3737,8 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 {
 	EnrichedString ntext(text);
 	ntext.setDefaultColor(color);
-	ntext.setBackground(bgcolor);
+	if (!ntext.hasBackground())
+		ntext.setBackground(bgcolor);
 
 	setStaticText(m_tooltip_element, ntext);
 
@@ -3714,7 +3856,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
+void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 {
 	if(m_text_dst)
 	{
@@ -4400,6 +4542,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
 					s.send = true;
 					acceptInput();
 					s.send = false;
@@ -4443,6 +4587,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					continue;
 
 				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
+
 					s.send = true;
 					if (s.is_exit) {
 						if (m_allowclose) {
@@ -4465,6 +4612,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							s2.send = false;
 						}
 					}
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
 					s.send = true;
 					acceptInput(quit_mode_no);
 
@@ -4481,6 +4630,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					acceptInput(quit_mode_no);
 					s.fdefault = L"";
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
 					s.send = true;
 					acceptInput();
 					s.send = false;

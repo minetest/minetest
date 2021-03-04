@@ -138,26 +138,6 @@ void RemoteClient::GetNextBlocks (
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);
 
-	/*infostream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
-			<<camera_dir.Z<<")"<<std::endl;*/
-
-	/*
-		Get the starting value of the block finder radius.
-	*/
-
-	if (m_last_center != center) {
-		m_nearest_unsent_d = 0;
-		m_last_center = center;
-	}
-
-	/*infostream<<"m_nearest_unsent_reset_timer="
-			<<m_nearest_unsent_reset_timer<<std::endl;*/
-
-	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
-	s16 d_start = m_nearest_unsent_d;
-
-	//infostream<<"d_start="<<d_start<<std::endl;
-
 	u16 max_simul_sends_usually = m_max_simul_sends;
 
 	/*
@@ -189,6 +169,29 @@ void RemoteClient::GetNextBlocks (
 	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
 
+	/*
+		Get the starting value of the block finder radius.
+	*/
+	if (m_last_center != center) {
+		m_nearest_unsent_d = 0;
+		m_last_center = center;
+	}
+	// reset the unsent distance if the view angle has changed more that 10% of the fov
+	// (this matches isBlockInSight which allows for an extra 10%)
+	if (camera_dir.dotProduct(m_last_camera_dir) < std::cos(camera_fov * 0.1f)) {
+		m_nearest_unsent_d = 0;
+		m_last_camera_dir = camera_dir;
+	}
+	if (m_nearest_unsent_d > 0) {
+		// make sure any blocks modified since the last time we sent blocks are resent
+		for (const v3s16 &p : m_blocks_modified) {
+			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
+		}
+	}
+	m_blocks_modified.clear();
+
+	s16 d_start = m_nearest_unsent_d;
+
 	// Distrust client-sent FOV and get server-set player object property
 	// zoom FOV (degrees) as a check to avoid hacked clients using FOV to load
 	// distant world.
@@ -206,6 +209,13 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
 		wanted_range);
 
+	s16 d_max = full_d_max;
+
+	// Don't loop very much at a time
+	s16 max_d_increment_at_time = 2;
+	if (d_max > d_start + max_d_increment_at_time)
+		d_max = d_start + max_d_increment_at_time;
+
 	// cos(angle between velocity and camera) * |velocity|
 	// Limit to 0.0f in case player moves backwards.
 	f32 dot = rangelim(camera_dir.dotProduct(playerspeed), 0.0f, 300.0f);
@@ -222,7 +232,7 @@ void RemoteClient::GetNextBlocks (
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 
 	s16 d;
-	for (d = d_start; d <= full_d_max; d++) {
+	for (d = d_start; d <= d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
@@ -295,20 +305,14 @@ void RemoteClient::GetNextBlocks (
 			*/
 			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
 
-			bool surely_not_found_on_disk = false;
-			bool block_is_invalid = false;
+			bool block_not_found = false;
 			if (block) {
 				// Reset usage timer, this block will be of use in the future.
 				block->resetUsageTimer();
 
-				// Block is dummy if data doesn't exist.
-				// It means it has been not found from disk and not generated
-				if (block->isDummy()) {
-					surely_not_found_on_disk = true;
-				}
-
-				if (!block->isGenerated())
-					block_is_invalid = true;
+				// Check whether the block exists (with data)
+				if (block->isDummy() || !block->isGenerated())
+					block_not_found = true;
 
 				/*
 					If block is not close, don't send it unless it is near
@@ -322,7 +326,7 @@ void RemoteClient::GetNextBlocks (
 						continue;
 				}
 
-				if (m_occ_cull && !block_is_invalid &&
+				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
 					continue;
 				}
@@ -332,7 +336,7 @@ void RemoteClient::GetNextBlocks (
 				If block has been marked to not exist on disk (dummy) or is
 				not generated and generating new ones is not wanted, skip block.
 			*/
-			if (!generate && (surely_not_found_on_disk || block_is_invalid)) {
+			if (!generate && block_not_found) {
 				// get next one.
 				continue;
 			}
@@ -340,7 +344,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Add inexistent block to emerge queue.
 			*/
-			if (block == NULL || surely_not_found_on_disk || block_is_invalid) {
+			if (block == NULL || block_not_found) {
 				if (emerge->enqueueBlockEmerge(peer_id, p, generate)) {
 					if (nearest_emerged_d == -1)
 						nearest_emerged_d = d;
@@ -393,21 +397,18 @@ queue_full_break:
 
 void RemoteClient::GotBlock(v3s16 p)
 {
-	if (m_blocks_modified.find(p) == m_blocks_modified.end()) {
-		if (m_blocks_sending.find(p) != m_blocks_sending.end())
-			m_blocks_sending.erase(p);
-		else
-			m_excess_gotblocks++;
-
+	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
+		m_blocks_sending.erase(p);
+		// only add to sent blocks if it actually was sending
+		// (it might have been modified since)
 		m_blocks_sent.insert(p);
+	} else {
+		m_excess_gotblocks++;
 	}
 }
 
 void RemoteClient::SentBlock(v3s16 p)
 {
-	if (m_blocks_modified.find(p) != m_blocks_modified.end())
-		m_blocks_modified.erase(p);
-
 	if (m_blocks_sending.find(p) == m_blocks_sending.end())
 		m_blocks_sending[p] = 0.0f;
 	else
@@ -417,29 +418,24 @@ void RemoteClient::SentBlock(v3s16 p)
 
 void RemoteClient::SetBlockNotSent(v3s16 p)
 {
-	m_nearest_unsent_d = 0;
 	m_nothing_to_send_pause_timer = 0;
 
-	if (m_blocks_sending.find(p) != m_blocks_sending.end())
-		m_blocks_sending.erase(p);
-	if (m_blocks_sent.find(p) != m_blocks_sent.end())
-		m_blocks_sent.erase(p);
-	m_blocks_modified.insert(p);
+	// remove the block from sending and sent sets,
+	// and mark as modified if found
+	if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
+		m_blocks_modified.insert(p);
 }
 
 void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 {
-	m_nearest_unsent_d = 0;
 	m_nothing_to_send_pause_timer = 0;
 
 	for (auto &block : blocks) {
 		v3s16 p = block.first;
-		m_blocks_modified.insert(p);
-
-		if (m_blocks_sending.find(p) != m_blocks_sending.end())
-			m_blocks_sending.erase(p);
-		if (m_blocks_sent.find(p) != m_blocks_sent.end())
-			m_blocks_sent.erase(p);
+		// remove the block from sending and sent sets,
+		// and mark as modified if found
+		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
+			m_blocks_modified.insert(p);
 	}
 }
 
@@ -455,9 +451,6 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		switch (event) {
 		case CSE_Hello:
 			m_state = CS_HelloSent;
-			break;
-		case CSE_InitLegacy:
-			m_state = CS_AwaitingInit2;
 			break;
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;

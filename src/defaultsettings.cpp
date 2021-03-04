@@ -27,8 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
-void set_default_settings(Settings *settings)
+void set_default_settings()
 {
+	Settings *settings = Settings::createLayer(SL_DEFAULTS);
+
 	// Client and server
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
@@ -52,7 +54,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
-	settings->setDefault("client_mapblock_limit", "5000");
+	settings->setDefault("client_mapblock_limit", "7500");
 	settings->setDefault("enable_build_where_you_stand", "false");
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
@@ -78,7 +80,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
-	settings->setDefault("keymap_special1", "KEY_KEY_E");
+	settings->setDefault("keymap_aux1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
@@ -166,7 +168,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("tooltip_append_itemname", "false");
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("fps_max_unfocused", "20");
-	settings->setDefault("viewing_range", "100");
+	settings->setDefault("viewing_range", "190");
 #if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
 #endif
@@ -238,6 +240,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
+	settings->setDefault("show_nametag_backgrounds", "true");
 
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
@@ -279,10 +282,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_type", "");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
+	settings->setDefault("joystick_deadzone", "2048");
 
 	// Main menu
 	settings->setDefault("main_menu_path", "");
-	settings->setDefault("serverlist_file", "favoriteservers.txt");
+	settings->setDefault("serverlist_file", "favoriteservers.json");
 
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
@@ -358,11 +362,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
 	settings->setDefault("enable_rollback_recording", "false");
-#ifdef NDEBUG
-	settings->setDefault("deprecated_lua_api_handling", "legacy");
-#else
 	settings->setDefault("deprecated_lua_api_handling", "log");
-#endif
 
 	settings->setDefault("kick_msg_shutdown", "Server shutting down.");
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
@@ -370,11 +370,11 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("chat_message_format", "<@name> @message");
 	settings->setDefault("profiler_print_interval", "0");
-	settings->setDefault("active_object_send_range_blocks", "4");
-	settings->setDefault("active_block_range", "3");
+	settings->setDefault("active_object_send_range_blocks", "8");
+	settings->setDefault("active_block_range", "4");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
-	settings->setDefault("max_block_send_distance", "10");
+	settings->setDefault("max_block_send_distance", "12");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
 	settings->setDefault("csm_restriction_flags", "62");
@@ -389,6 +389,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chat_message_limit_per_10sec", "8.0");
 	settings->setDefault("chat_message_limit_trigger_kick", "50");
 	settings->setDefault("sqlite_synchronous", "2");
+	settings->setDefault("map_compression_level_disk", "3");
+	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
@@ -400,9 +402,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("chat_log_level", "error");
-	settings->setDefault("emergequeue_limit_total", "512");
-	settings->setDefault("emergequeue_limit_diskonly", "64");
-	settings->setDefault("emergequeue_limit_generate", "64");
+	settings->setDefault("emergequeue_limit_total", "1024");
+	settings->setDefault("emergequeue_limit_diskonly", "128");
+	settings->setDefault("emergequeue_limit_generate", "128");
 	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
@@ -433,7 +435,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("max_block_generate_distance", "8");
+	settings->setDefault("max_block_generate_distance", "10");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 	Mapgen::setDefaultSettings(settings);
 
@@ -460,10 +462,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
-	settings->setDefault("virtual_joystick_triggers_aux", "false");
+	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("emergequeue_limit_diskonly", "16");
@@ -474,6 +475,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
+	settings->setDefault("map_compression_level_disk", "-1");
+	settings->setDefault("map_compression_level_net", "3");
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");

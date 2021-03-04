@@ -51,12 +51,8 @@ public:
 
 	~CAOShaderConstantSetter() override = default;
 
-	void onSetConstants(video::IMaterialRendererServices *services,
-			bool is_highlevel) override
+	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		if (!is_highlevel)
-			return;
-
 		// Ambient color
 		video::SColorf emissive_color(m_emissive_color);
 
@@ -183,84 +179,61 @@ void ClientEnvironment::step(float dtime)
 	if(dtime > 0.5)
 		dtime = 0.5;
 
-	f32 dtime_downcount = dtime;
-
 	/*
 		Stuff that has a maximum time increment
 	*/
 
-	u32 loopcount = 0;
-	do
-	{
-		loopcount++;
+	u32 steps = ceil(dtime / dtime_max_increment);
+	f32 dtime_part = dtime / steps;
+	for (; steps > 0; --steps) {
+		/*
+			Local player handling
+		*/
 
-		f32 dtime_part;
-		if(dtime_downcount > dtime_max_increment)
-		{
-			dtime_part = dtime_max_increment;
-			dtime_downcount -= dtime_part;
-		}
-		else
-		{
-			dtime_part = dtime_downcount;
-			/*
-				Setting this to 0 (no -=dtime_part) disables an infinite loop
-				when dtime_part is so small that dtime_downcount -= dtime_part
-				does nothing
-			*/
-			dtime_downcount = 0;
+		// Control local player
+		lplayer->applyControl(dtime_part, this);
+
+		// Apply physics
+		if (!free_move && !is_climbing) {
+			// Gravity
+			v3f speed = lplayer->getSpeed();
+			if (!lplayer->in_liquid)
+				speed.Y -= lplayer->movement_gravity *
+					lplayer->physics_override_gravity * dtime_part * 2.0f;
+
+			// Liquid floating / sinking
+			if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+					!lplayer->swimming_pitch)
+				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
+
+			// Liquid resistance
+			if (lplayer->in_liquid_stable || lplayer->in_liquid) {
+				// How much the node's viscosity blocks movement, ranges
+				// between 0 and 1. Should match the scale at which viscosity
+				// increase affects other liquid attributes.
+				static const f32 viscosity_factor = 0.3f;
+
+				v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+				f32 dl = d_wanted.getLength();
+				if (dl > lplayer->movement_liquid_fluidity_smooth)
+					dl = lplayer->movement_liquid_fluidity_smooth;
+
+				dl *= (lplayer->liquid_viscosity * viscosity_factor) +
+					(1 - viscosity_factor);
+				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
+				speed += d;
+			}
+
+			lplayer->setSpeed(speed);
 		}
 
 		/*
-			Handle local player
+			Move the lplayer.
+			This also does collision detection.
 		*/
-
-		{
-			// Control local player
-			lplayer->applyControl(dtime_part, this);
-
-			// Apply physics
-			if (!free_move && !is_climbing) {
-				// Gravity
-				v3f speed = lplayer->getSpeed();
-				if (!lplayer->in_liquid)
-					speed.Y -= lplayer->movement_gravity *
-						lplayer->physics_override_gravity * dtime_part * 2.0f;
-
-				// Liquid floating / sinking
-				if (lplayer->in_liquid && !lplayer->swimming_vertical &&
-						!lplayer->swimming_pitch)
-					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
-
-				// Liquid resistance
-				if (lplayer->in_liquid_stable || lplayer->in_liquid) {
-					// How much the node's viscosity blocks movement, ranges
-					// between 0 and 1. Should match the scale at which viscosity
-					// increase affects other liquid attributes.
-					static const f32 viscosity_factor = 0.3f;
-
-					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
-					f32 dl = d_wanted.getLength();
-					if (dl > lplayer->movement_liquid_fluidity_smooth)
-						dl = lplayer->movement_liquid_fluidity_smooth;
-
-					dl *= (lplayer->liquid_viscosity * viscosity_factor) +
-						(1 - viscosity_factor);
-					v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
-					speed += d;
-				}
-
-				lplayer->setSpeed(speed);
-			}
-
-			/*
-				Move the lplayer.
-				This also does collision detection.
-			*/
-			lplayer->move(dtime_part, this, position_max_increment,
-				&player_collisions);
-		}
-	} while (dtime_downcount > 0.001);
+		lplayer->move(dtime_part, this, position_max_increment,
+			&player_collisions);
+	}
 
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 
@@ -359,13 +332,6 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 		return (GenericCAO*) obj;
 
 	return NULL;
-}
-
-bool isFreeClientActiveObjectId(const u16 id,
-	ClientActiveObjectMap &objects)
-{
-	return id != 0 && objects.find(id) == objects.end();
-
 }
 
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)

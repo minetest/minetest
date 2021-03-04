@@ -111,10 +111,9 @@ public:
 
 	u16 punch(v3f dir, const ToolCapabilities *toolcap, ServerActiveObject *puncher,
 			float time_from_last_punch);
-	void rightClick(ServerActiveObject *clicker) {}
+	void rightClick(ServerActiveObject *clicker);
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	void setHPRaw(u16 hp) { m_hp = hp; }
-	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
 

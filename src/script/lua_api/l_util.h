@@ -65,11 +65,11 @@ private:
 	// is_yes(arg)
 	static int l_is_yes(lua_State *L);
 
-	// is_nan(arg)
-	static int l_is_nan(lua_State *L);
-
 	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
+
+	// get_user_path()
+	static int l_get_user_path(lua_State *L);
 
 	// compress(data, method, ...)
 	static int l_compress(lua_State *L);
