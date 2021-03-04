@@ -712,7 +712,7 @@ int ObjectRef::l_set_player_hidden(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *sao = getobject(ref);
-  RemotePlayer *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (sao == nullptr || player == nullptr)
 		return 0;
 

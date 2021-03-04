@@ -3113,9 +3113,9 @@ std::string Server::getStatusString()
 			  PlayerSAO *sao = player->getPlayerSAO();
 			  if (sao && !sao->getVisible())
 				  continue;
-      }
+			}
 
-      // Get name of player
+			// Get name of player
 			const char *name = player ? player->getName() : "<unknown>";
 
 
