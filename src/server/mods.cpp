@@ -107,4 +107,3 @@ void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "locale");
 	}
 }
-

@@ -27,7 +27,6 @@ extern "C" {
 }
 
 #include "server.h"
-#include "server/mods.h"
 #include "s_async.h"
 #include "log.h"
 #include "filesys.h"
