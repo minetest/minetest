@@ -357,13 +357,14 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		switch (e->type) {
 			case HUD_ELEM_TEXT: {
 				irr::gui::IGUIFont *textfont = font;
-				unsigned int font_size = g_fontengine->getDefaultFontSize();
+				unsigned int default_font_size = g_fontengine->getDefaultFontSize();
+				unsigned int font_size = default_font_size;
 
 				if (e->size.X > 0)
 					font_size *= e->size.X;
 
-				if (font_size != g_fontengine->getDefaultFontSize())
-					textfont = g_fontengine->getFont(font_size);
+				if (font_size != default_font_size || e->bold || e->italic)
+					textfont = g_fontengine->getFont(FontSpec(font_size, FM_Standard, e->bold, e->italic));
 
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,

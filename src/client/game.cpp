@@ -2731,6 +2731,8 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->size      = event->hudadd->size;
 	e->z_index   = event->hudadd->z_index;
 	e->text2     = event->hudadd->text2;
+	e->bold      = event->hudadd->bold;
+	e->italic    = event->hudadd->italic;
 	m_hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd;
@@ -2796,6 +2798,10 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		CASE_SET(HUD_STAT_Z_INDEX, z_index, data);
 
 		CASE_SET(HUD_STAT_TEXT2, text2, sdata);
+
+		CASE_SET(HUD_STAT_BOLD, bold, booldata);
+
+		CASE_SET(HUD_STAT_ITALIC, italic, booldata);
 	}
 
 #undef CASE_SET

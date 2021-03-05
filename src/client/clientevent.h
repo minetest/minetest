@@ -64,6 +64,7 @@ struct ClientEventHudAdd
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index;
+	bool bold, italic;
 };
 
 struct ClientEventHudChange
@@ -73,6 +74,7 @@ struct ClientEventHudChange
 	v2f v2fdata;
 	std::string sdata;
 	u32 data;
+	bool booldata;
 	v3f v3fdata;
 	v2s32 v2s32data;
 };
