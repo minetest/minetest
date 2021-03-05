@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemstackmetadata.h"
 #include "util/serialize.h"
 #include "util/strfnd.h"
+#include "util/numeric.h"
 #include <algorithm>
 
 #define DESERIALIZE_START '\x01'
@@ -62,18 +63,24 @@ void ItemStackMetadata::serialize(std::ostream &os, bool disk) const
 {
 	std::ostringstream os2;
 	os2 << DESERIALIZE_START;
+	std::string unsent_fields;
 	for (const auto &stringvar : m_stringvars) {
 		if (! disk
 				&& stringvar.first != TOOLCAP_KEY
 				&& stringvar.first != "description"
 				&& stringvar.first != "color"
 				&& stringvar.first != "short_description"
-				&& stringvar.first != "palette_index")
+				&& stringvar.first != "palette_index") {
+			unsent_fields += stringvar.first + "=" + stringvar.second;
 			continue;
+		}
 		if (!stringvar.first.empty() || !stringvar.second.empty())
 			os2 << stringvar.first << DESERIALIZE_KV_DELIM
 				<< stringvar.second << DESERIALIZE_PAIR_DELIM;
 	}
+	if (! unsent_fields.empty())
+		os2 << "hash" << DESERIALIZE_KV_DELIM
+			<< murmur_hash_64_ua(unsent_fields.data(), unsent_fields.length(), 0xdeadbeef) << DESERIALIZE_PAIR_DELIM;
 	os << serializeJsonStringIfNeeded(os2.str());
 }
 
