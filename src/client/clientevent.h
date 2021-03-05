@@ -52,6 +52,31 @@ enum ClientEventType : u8
 	CLIENTEVENT_MAX,
 };
 
+struct ClientEventHudAdd
+{
+	u32 server_id;
+	u8 type;
+	v2f pos, scale;
+	std::string name;
+	std::string text, text2;
+	u32 number, item, dir;
+	v2f align, offset;
+	v3f world_pos;
+	v2s32 size;
+	s16 z_index;
+};
+
+struct ClientEventHudChange
+{
+	u32 id;
+	HudElementStat stat;
+	v2f v2fdata;
+	std::string sdata;
+	u32 data;
+	v3f v3fdata;
+	v2s32 v2s32data;
+};
+
 struct ClientEvent
 {
 	ClientEventType type;
@@ -93,38 +118,12 @@ struct ClientEvent
 		{
 			u32 id;
 		} delete_particlespawner;
-		struct
-		{
-			u32 server_id;
-			u8 type;
-			v2f *pos;
-			std::string *name;
-			v2f *scale;
-			std::string *text;
-			u32 number;
-			u32 item;
-			u32 dir;
-			v2f *align;
-			v2f *offset;
-			v3f *world_pos;
-			v2s32 *size;
-			s16 z_index;
-			std::string *text2;
-		} hudadd;
+		ClientEventHudAdd *hudadd;
 		struct
 		{
 			u32 id;
 		} hudrm;
-		struct
-		{
-			u32 id;
-			HudElementStat stat;
-			v2f *v2fdata;
-			std::string *sdata;
-			u32 data;
-			v3f *v3fdata;
-			v2s32 *v2s32data;
-		} hudchange;
+		ClientEventHudChange *hudchange;
 		SkyboxParams *set_sky;
 		struct
 		{
