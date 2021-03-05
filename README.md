@@ -238,7 +238,7 @@ General options and their default values:
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
     ENABLE_PROMETHEUS=OFF      - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
-    ENABLE_SYSTEM_JSONCPP=OFF  - Use JsonCPP from system
+    ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
     OPENGL_GL_PREFERENCE=LEGACY - Linux client build only; See CMake Policy CMP0072 for reference
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     USE_GPROF=FALSE            - Enable profiling using GProf
@@ -354,7 +354,7 @@ This is outdated and not recommended. Follow the instructions on https://dev.min
 Run the following script in PowerShell:
 
 ```powershell
-cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF -DENABLE_SYSTEM_JSONCPP=ON
+cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
 cmake --build . --config Release
 ```
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.

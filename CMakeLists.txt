@@ -204,8 +204,8 @@ find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
 
-# JsonCPP doesn't compile well on GCC 4.8
-if(NOT ENABLE_SYSTEM_JSONCPP)
+# JsonCpp doesn't compile well on GCC 4.8
+if(NOT USE_SYSTEM_JSONCPP)
 	set(GCC_MINIMUM_VERSION "4.9")
 endif()
 
