@@ -2496,7 +2496,9 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	// The paths are ordered in descending priority
+
+	// ordered in descending priority
+	paths.push_back(getBuiltinLuaPath() + DIR_DELIM + "locale");
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
 	m_modmgr->getModsMediaPaths(paths);
