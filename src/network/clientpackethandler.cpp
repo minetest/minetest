@@ -1056,6 +1056,8 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v2s32 size;
 	s16 z_index = 0;
 	std::string text2;
+	bool bold = false;
+	bool italic = false;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
@@ -1064,6 +1066,8 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 		*pkt >> size;
 		*pkt >> z_index;
 		*pkt >> text2;
+		*pkt >> bold;
+		*pkt >> italic;
 	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
@@ -1084,6 +1088,8 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd->size      = size;
 	event->hudadd->z_index   = z_index;
 	event->hudadd->text2     = text2;
+	event->hudadd->bold      = bold;
+	event->hudadd->italic    = italic;
 	m_client_event_queue.push(event);
 }
 
@@ -1105,6 +1111,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	v2f v2fdata;
 	v3f v3fdata;
 	u32 intdata = 0;
+	bool booldata = false;
 	v2s32 v2s32data;
 	u32 server_id;
 	u8 stat;
@@ -1120,6 +1127,8 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 		*pkt >> v3fdata;
 	else if (stat == HUD_STAT_SIZE )
 		*pkt >> v2s32data;
+	else if (stat == HUD_STAT_BOLD || stat == HUD_STAT_ITALIC)
+		*pkt >> booldata;
 	else
 		*pkt >> intdata;
 
@@ -1132,6 +1141,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	event->hudchange->v3fdata   = v3fdata;
 	event->hudchange->sdata     = sdata;
 	event->hudchange->data      = intdata;
+	event->hudchange->booldata  = booldata;
 	event->hudchange->v2s32data = v2s32data;
 	m_client_event_queue.push(event);
 }
