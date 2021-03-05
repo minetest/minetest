@@ -410,7 +410,7 @@ void Server::init()
 	// Must be created before mod loading because we have some inventory creation
 	m_inventory_mgr = std::unique_ptr<ServerInventoryManager>(new ServerInventoryManager());
 
-	m_script->loadMod(ServerModManager::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
 	m_modmgr->loadMods(m_script);
 
@@ -2500,6 +2500,7 @@ void Server::fillMediaCache()
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
 	m_modmgr->getModsMediaPaths(paths);
+	paths.push_back(getBuiltinLuaPath() + DIR_DELIM + "locale");
 
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
@@ -3604,6 +3605,11 @@ void Server::getModNames(std::vector<std::string> &modlist)
 std::string Server::getModStoragePath() const
 {
 	return m_path_world + DIR_DELIM + "mod_storage";
+}
+
+std::string Server::getBuiltinLuaPath()
+{
+	return porting::path_share + DIR_DELIM + "builtin";
 }
 
 v3f Server::findSpawnPos()

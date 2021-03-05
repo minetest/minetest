@@ -197,7 +197,7 @@ void* AsyncWorkerThread::run()
 {
 	lua_State *L = getStack();
 
-	std::string script = ServerModManager::getBuiltinLuaPath() + DIR_DELIM + "init.lua";
+	std::string script = getServer()->getBuiltinLuaPath() + DIR_DELIM + "init.lua";
 	try {
 		loadScript(script);
 	} catch (const ModError &e) {

@@ -98,7 +98,6 @@ void ServerModManager::getModNames(std::vector<std::string> &modlist) const
 
 void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 {
-	paths.push_back(getBuiltinLuaPath() + DIR_DELIM + "locale");
 	for (auto it = m_sorted_mods.crbegin(); it != m_sorted_mods.crend(); it++) {
 		const ModSpec &spec = *it;
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "textures");
@@ -109,7 +108,3 @@ void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 	}
 }
 
-std::string ServerModManager::getBuiltinLuaPath()
-{
-	return porting::path_share + DIR_DELIM + "builtin";
-}
