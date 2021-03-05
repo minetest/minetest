@@ -507,7 +507,7 @@ core.register_chatcommand("teleport", {
 
 		local has_bring_priv = core.check_player_privs(name, {bring=true})
 		local missing_bring_msg = S("You don't have permission to teleport " ..
-			"other players (missing privilege: bring).")
+			"other players (missing privilege: @1).", "bring")
 
 		local teleportee_name
 		teleportee_name, p.x, p.y, p.z = param:match(
@@ -780,13 +780,11 @@ core.register_chatcommand("spawnentity", {
 		end
 		p.y = p.y + 1
 		local obj = core.add_entity(p, entityname)
-		local msg
 		if obj then
-			msg = S("@1 spawned.", entityname)
+			return true, S("@1 spawned.", entityname)
 		else
-			msg = S("@1 failed to spawn.", entityname)
+			return true, S("@1 failed to spawn.", entityname)
 		end
-		return true, msg:format(entityname)
 	end,
 })
 
@@ -951,7 +949,7 @@ core.register_chatcommand("time", {
 		local player_privs = core.get_player_privs(name)
 		if not player_privs.settime then
 			return false, S("You don't have permission to run "
-				.. "this command (missing privilege: settime).")
+				.. "this command (missing privilege: @1).", "settime")
 		end
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		if not hour then
@@ -1134,7 +1132,7 @@ core.register_chatcommand("clearinv", {
 			if not core.check_player_privs(name, {server=true}) then
 				return false, S("You don't have permission to "
 					.. "clear another player's inventory "
-					.. "(missing privilege: server).")
+					.. "(missing privilege: @1).", "server")
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, S("@1 cleared your inventory.", name))

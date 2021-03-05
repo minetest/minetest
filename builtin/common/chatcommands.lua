@@ -1,5 +1,7 @@
 -- Minetest: builtin/common/chatcommands.lua
 
+-- For server-side translations (if INIT == "game")
+-- Otherwise, use core.gettext
 local S = core.get_translator("__builtin")
 
 core.registered_chatcommands = {}
@@ -31,14 +33,12 @@ function core.override_chatcommand(name, redefinition)
 	core.registered_chatcommands[name] = chatcommand
 end
 
-local cmd_marker = "/"
-
-if INIT == "client" then
-	cmd_marker = "."
-end
-
 local function do_help_cmd(name, param)
 	local function format_help_line(cmd, def)
+		local cmd_marker = "/"
+		if INIT == "client" then
+			cmd_marker = "."
+		end
 		local msg = core.colorize("#00ffff", cmd_marker .. cmd)
 		if def.params and def.params ~= "" then
 			msg = msg .. " " .. def.params
@@ -60,10 +60,9 @@ local function do_help_cmd(name, param)
 		if INIT == "game" then
 			msg = S("Available commands: @1",
 				table.concat(cmds, " ")) .. "\n"
-				.. S("Use '@1help <cmd>' to get more "
-				.. "information, or '@2help all' to list "
-				.. "everything.",
-				cmd_marker, cmd_marker)
+				.. S("Use '/help <cmd>' to get more "
+				.. "information, or '/help all' to list "
+				.. "everything.")
 		else
 			msg = core.gettext("Available commands: ")
 				.. table.concat(cmds, " ") .. "\n"
