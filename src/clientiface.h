@@ -233,6 +233,8 @@ public:
 	//
 	u16 net_proto_version = 0;
 
+	u8 mapsaving_enabled = 0;
+
 	/* Authentication information */
 	std::string enc_pwd = "";
 	bool create_player_on_auth_success = false;

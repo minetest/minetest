@@ -100,9 +100,16 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	u16 min_net_proto_version = 0;
 	u16 max_net_proto_version;
 	std::string playerName;
+	u8 mapsaving_enabled = 0;
 
 	*pkt >> client_max >> supp_compr_modes >> min_net_proto_version
 			>> max_net_proto_version >> playerName;
+
+	try {
+		*pkt >> mapsaving_enabled;
+	} catch (PacketError &e) {};
+
+	client->mapsaving_enabled = mapsaving_enabled;
 
 	u8 our_max = SER_FMT_VER_HIGHEST_READ;
 	// Use the highest version supported by both
