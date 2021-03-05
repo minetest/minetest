@@ -20,8 +20,10 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 # Test which win32 compiler is present
-which i586-mingw32msvc-windres &>/dev/null && toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
-which i686-w64-mingw32-windres &>/dev/null && toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
+which i686-w64-mingw32-gcc &>/dev/null &&
+	toolchain_file=$dir/toolchain_i686-w64-mingw32.cmake
+which i686-w64-mingw32-gcc-posix &>/dev/null &&
+	toolchain_file=$dir/toolchain_i686-w64-mingw32-posix.cmake
 
 if [ -z "$toolchain_file" ]; then
 	echo "Unable to determine which mingw32 compiler to use"
