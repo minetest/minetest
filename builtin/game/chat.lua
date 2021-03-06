@@ -1075,10 +1075,12 @@ core.register_chatcommand("clearobjects", {
 			return false, S("Invalid usage, see /help clearobjects.")
 		end
 
-		core.log("action", name .. " clears all objects ("
+		core.log("action", name .. " clears objects ("
 				.. options.mode .. " mode).")
-		core.chat_send_all(S("Clearing all objects. This may take a long time. "
-			.. "You may experience a timeout. (by @1)", name))
+		if options.mode == "full" then
+			core.chat_send_all(S("Clearing all objects. This may take a long time. "
+				.. "You may experience a timeout. (by @1)", name))
+		end
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
 		core.chat_send_all("*** "..S("Cleared all objects."))
