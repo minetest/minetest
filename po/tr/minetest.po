@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-13 08:50+0000\n"
+"PO-Revision-Date: 2021-03-07 07:10+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -700,9 +700,8 @@ msgid "Loading..."
 msgstr "Yükleniyor..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "İstemci tarafı betik devre dışı"
+msgstr "Açık sunucu listesi devre dışı"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2999,9 +2998,8 @@ msgid "Enable console window"
 msgstr "Konsol penceresini etkinleştir"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Yeni yaratılan haritalar için yaratıcı kipi etkinleştir."
+msgstr "Tüm oyuncular için yaratıcı kipi etkinleştir"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -6264,9 +6262,8 @@ msgstr ""
 "Bunu değiştirdikten sonra yeniden başlatma gerekir."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "Öntanımlı kalın yazı tipi"
+msgstr "Ad etiketi arka planlarını öntanımlı olarak göster"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -7105,6 +7102,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Ad etiketi arka planlarının öntanımlı olarak gösterilip gösterilmeyileceği.\n"
+"Modlar yine de bir arka plan ayarlayabilir."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
