@@ -368,6 +368,7 @@ core.register_node(":ignore", {
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
+	node_placement_prediction = "",
 	on_place = function(itemstack, placer, pointed_thing)
 		core.chat_send_player(
 				placer:get_player_name(),
