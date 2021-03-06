@@ -85,7 +85,7 @@ class OreScatter : public Ore {
 public:
 	OreScatter() : Ore(false) {}
 
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	void generate(MMVManip *vm, int mapseed, u32 blockseed,
 			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
@@ -95,7 +95,7 @@ class OreSheet : public Ore {
 public:
 	OreSheet() : Ore(true) {}
 
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	u16 column_height_min;
 	u16 column_height_max;
@@ -107,7 +107,7 @@ public:
 
 class OrePuff : public Ore {
 public:
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
@@ -123,7 +123,7 @@ public:
 
 class OreBlob : public Ore {
 public:
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	OreBlob() : Ore(true) {}
 	void generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -132,7 +132,7 @@ public:
 
 class OreVein : public Ore {
 public:
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	float random_factor;
 	Noise *noise2 = nullptr;
@@ -147,7 +147,7 @@ public:
 
 class OreStratum : public Ore {
 public:
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	NoiseParams np_stratum_thickness;
 	Noise *noise_stratum_thickness = nullptr;
