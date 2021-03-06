@@ -1053,24 +1053,58 @@ core.register_chatcommand("days", {
 	end
 })
 
+local function parse_shutdown_param(param)
+	local delay, reconnect, message
+	local one, two, three
+	one, two, three = param:match("^(%S+) +(%-r) +(.*)")
+	if one and two and three then
+		-- 3 arguments: delay, reconnect and message
+		return one, two, three
+	end
+	-- 2 arguments
+	one, two = param:match("^(%S+) +(.*)")
+	if one and two then
+		if tonumber(one) then
+			delay = one
+			if two == "-r" then
+				reconnect = two
+			else
+				message = two
+			end
+		elseif one == "-r" then
+			reconnect, message = one, two
+		end
+		return delay, reconnect, message
+	end
+	-- 1 argument
+	one = param:match("(.*)")
+	if tonumber(one) then
+		delay = one
+	elseif one == "-r" then
+		reconnect = one
+	else
+		message = one
+	end
+	return delay, reconnect, message
+end
+
 core.register_chatcommand("shutdown", {
-	params = S("[<delay_in_seconds> | -1] [reconnect] [<message>]"),
-	description = S("Shutdown server (-1 cancels a delayed shutdown)"),
+	params = S("[<delay_in_seconds> | -1] [-r] [<message>]"),
+	description = S("Shutdown server (-1 cancels a delayed shutdown, -r allows players to reconnect)"),
 	privs = {server=true},
 	func = function(name, param)
-		local delay, reconnect, message
-		delay, param = param:match("^%s*(%S+)(.*)")
-		if param then
-			reconnect, param = param:match("^%s*(%S+)(.*)")
+		local delay, reconnect, message = parse_shutdown_param(param)
+		local bool_reconnect = reconnect == "-r"
+		if not message then
+			message = ""
 		end
-		message = param and param:match("^%s*(.+)") or ""
 		delay = tonumber(delay) or 0
 
 		if delay == 0 then
 			core.log("action", name .. " shuts down server")
 			core.chat_send_all("*** "..S("Server shutting down (operator request)."))
 		end
-		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
+		core.request_shutdown(message:trim(), bool_reconnect, delay)
 		return true
 	end,
 })
