@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-07-17 08:41+0000\n"
+"PO-Revision-Date: 2021-03-07 07:10+0000\n"
 "Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.5.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -299,9 +299,8 @@ msgid "Altitude chill"
 msgstr "Alteca malvarmiĝo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Alteca malvarmiĝo"
+msgstr "Alteca sekeco"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -458,9 +457,8 @@ msgid "Temperate, Desert, Jungle, Tundra, Taiga"
 msgstr "Milda, Dezerto, Ĝangalo, Tundro, Tajgo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "Bruo de terena bazo"
+msgstr "Terensurfaca forfrotiĝo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
