@@ -1471,7 +1471,8 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
 
 	std::ostringstream os(std::ios::binary);
-	sao->getInventory()->serialize(os, incremental, g_settings->getBool("send_all_item_metadata") || getClient(sao->getPeerID(), CS_InitDone)->mapsaving_enabled);
+	RemoteClient *client = getClientNoEx(sao->getPeerID(), CS_InitDone);
+	sao->getInventory()->serialize(os, incremental, g_settings->getBool("send_all_item_metadata") || (client && client->mapsaving_enabled));
 	sao->getInventory()->setModified(false);
 	player->setModified(true);
 
