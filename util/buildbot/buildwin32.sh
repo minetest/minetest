@@ -31,7 +31,7 @@ if [ -z "$toolchain_file" ]; then
 fi
 echo "Using $toolchain_file"
 
-irrlicht_version=1.8.4
+irrlicht_version=1.9.0mt0
 ogg_version=1.3.2
 vorbis_version=1.3.5
 curl_version=7.65.3
@@ -48,7 +48,7 @@ mkdir -p $libdir
 cd $builddir
 
 # Get stuff
-[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://minetest.kitsunemimi.pw/irrlicht-$irrlicht_version-win32.zip \
+[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip \
 	-c -O $packagedir/irrlicht-$irrlicht_version.zip
 [ -e $packagedir/zlib-$zlib_version.zip ] || wget http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip \
 	-c -O $packagedir/zlib-$zlib_version.zip
@@ -102,6 +102,8 @@ if [ "x$NO_MINETEST_GAME" = "x" ]; then
 	cd ..
 fi
 
+irr_dlls=$(echo $libdir/irrlicht/bin/*.dll | tr ' ' ';')
+
 # Build the thing
 [ -d _build ] && rm -Rf _build/
 mkdir _build
@@ -118,9 +120,9 @@ cmake .. \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/Win32-gcc/libIrrlicht.dll.a \
-	-DIRRLICHT_DLL=$libdir/irrlicht/bin/Win32-gcc/Irrlicht.dll \
+	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include/irrlicht \
+	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/libIrrlicht.dll.a \
+	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
