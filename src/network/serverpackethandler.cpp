@@ -626,13 +626,17 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	const bool player_has_interact = checkPriv(player->getName(), "interact");
 
-	auto check_inv_access = [player, player_has_interact] (
+	auto check_inv_access = [player, player_has_interact, this] (
 			const InventoryLocation &loc) -> bool {
 		if (loc.type == InventoryLocation::CURRENT_PLAYER)
 			return false; // Only used internally on the client, never sent
 		if (loc.type == InventoryLocation::PLAYER) {
 			// Allow access to own inventory in all cases
 			return loc.name == player->getName();
+		}
+		if (loc.type == InventoryLocation::DETACHED) {
+			if (!getInventoryMgr()->checkDetachedInventoryAccess(loc, player->getName()))
+				return false;
 		}
 
 		if (!player_has_interact) {
