@@ -3287,7 +3287,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos,
 	const PointedThing &pointed, const NodeMetadata *meta)
 {
-	std::string prediction = selected_def.node_placement_prediction;
+	const auto &prediction = selected_def.node_placement_prediction;
+
 	const NodeDefManager *nodedef = client->ndef();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode node;
@@ -3357,8 +3358,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 	if (!found) {
 		errorstream << "Node placement prediction failed for "
-			<< selected_def.name << " (places "
-			<< prediction
+			<< selected_def.name << " (places " << prediction
 			<< ") - Name not known" << std::endl;
 		// Handle this as if prediction was empty
 		// Report to server
@@ -3369,9 +3369,14 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	const ContentFeatures &predicted_f = nodedef->get(id);
 
 	// Predict param2 for facedir and wallmounted nodes
+	// Compare core.item_place_node() for what the server does
 	u8 param2 = 0;
 
-	if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
+	const u8 place_param2 = selected_def.place_param2;
+
+	if (place_param2) {
+		param2 = place_param2;
+	} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		v3s16 dir = nodepos - neighbourpos;
 
@@ -3382,9 +3387,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		} else {
 			param2 = dir.Z < 0 ? 5 : 4;
 		}
-	}
-
-	if (predicted_f.param_type_2 == CPT2_FACEDIR ||
+	} else if (predicted_f.param_type_2 == CPT2_FACEDIR ||
 			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
 		v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
@@ -3395,11 +3398,9 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		}
 	}
 
-	assert(param2 <= 5);
-
-	//Check attachment if node is in group attached_node
-	if (((ItemGroupList) predicted_f.groups)["attached_node"] != 0) {
-		static v3s16 wallmounted_dirs[8] = {
+	// Check attachment if node is in group attached_node
+	if (itemgroup_get(predicted_f.groups, "attached_node") != 0) {
+		const static v3s16 wallmounted_dirs[8] = {
 			v3s16(0, 1, 0),
 			v3s16(0, -1, 0),
 			v3s16(1, 0, 0),
@@ -3424,11 +3425,11 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	}
 
 	// Apply color
-	if ((predicted_f.param_type_2 == CPT2_COLOR
+	if (!place_param2 && (predicted_f.param_type_2 == CPT2_COLOR
 			|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
 			|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
-		const std::string &indexstr = selected_item.metadata.getString(
-			"palette_index", 0);
+		const auto &indexstr = selected_item.metadata.
+			getString("palette_index", 0);
 		if (!indexstr.empty()) {
 			s32 index = mystoi(indexstr);
 			if (predicted_f.param_type_2 == CPT2_COLOR) {
@@ -3468,11 +3469,10 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 			return false;
 		}
-	} catch (InvalidPositionException &e) {
+	} catch (const InvalidPositionException &e) {
 		errorstream << "Node placement prediction failed for "
 			<< selected_def.name << " (places "
-			<< prediction
-			<< ") - Position not loaded" << std::endl;
+			<< prediction << ") - Position not loaded" << std::endl;
 		soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 		return false;
 	}

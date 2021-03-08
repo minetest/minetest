@@ -294,7 +294,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		}
 		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		// mipmaps cause "thin black line" artifacts
-#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 		material.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
 		if (m_enable_shaders) {
@@ -303,23 +303,26 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
-scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors, const ContentFeatures &f)
+static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
+	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client, false);
 	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
-	u8 param2 = 0;
-	if (f.param_type_2 == CPT2_WALLMOUNTED ||
+
+	if (n.getParam2()) {
+		// keep it
+	} else if (f.param_type_2 == CPT2_WALLMOUNTED ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		if (f.drawtype == NDT_TORCHLIKE)
-			param2 = 1;
+			n.setParam2(1);
 		else if (f.drawtype == NDT_SIGNLIKE ||
 				f.drawtype == NDT_NODEBOX ||
 				f.drawtype == NDT_MESH)
-			param2 = 4;
+			n.setParam2(4);
 	}
-	gen.renderSingle(id, param2);
+	gen.renderSingle(n.getContent(), n.getParam2());
 
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
@@ -413,15 +416,19 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_LIQUID:
 			setCube(f, def.wield_scale);
 			break;
-		default:
+		default: {
 			// Render non-trivial drawtypes like the actual node
-			mesh = createSpecialNodeMesh(client, id, &m_colors, f);
+			MapNode n(id);
+			n.setParam2(def.place_param2);
+
+			mesh = createSpecialNodeMesh(client, n, &m_colors, f);
 			changeToMesh(mesh);
 			mesh->drop();
 			m_meshnode->setScale(
 				def.wield_scale * WIELD_SCALE_FACTOR
 				/ (BS * f.visual_scale));
 			break;
+		}
 		}
 
 		u32 material_count = m_meshnode->getMaterialCount();
@@ -585,11 +592,15 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			result->buffer_colors.emplace_back(l0.has_color, l0.color);
 			break;
 		}
-		default:
+		default: {
 			// Render non-trivial drawtypes like the actual node
-			mesh = createSpecialNodeMesh(client, id, &result->buffer_colors, f);
+			MapNode n(id);
+			n.setParam2(def.place_param2);
+
+			mesh = createSpecialNodeMesh(client, n, &result->buffer_colors, f);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 			break;
+		}
 		}
 
 		u32 mc = mesh->getMeshBufferCount();
