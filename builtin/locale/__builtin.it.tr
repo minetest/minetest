@@ -193,7 +193,7 @@ Available commands: (see also: /help <cmd>)=Comandi disponibili: (vedi anche /he
 Close=Chiudi
 Privilege=Privilegio
 Description=Descrizione
-print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset=print [<filtro>] | dump [<filtro>] | save [<formato> [<filtro>]] | reset=
+print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset=print [<filtro>] | dump [<filtro>] | save [<formato> [<filtro>]] | reset
 Handle the profiler and profiling data=Gestisce il profiler e i dati da esso elaborati
 Statistics written to action log.=Statistiche scritte nel log delle azioni.
 Statistics were reset.=Le statistiche sono state resettate.
