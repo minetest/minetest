@@ -51,7 +51,7 @@ RUN mkdir build && \
 
 FROM alpine:3.11
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit && \
+RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
 
