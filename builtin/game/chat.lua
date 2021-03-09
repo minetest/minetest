@@ -48,7 +48,7 @@ end
 core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
 
 local msg_time_threshold =
-	tonumber(core.settings:get("chatcommand_msg_time_threshold")) or 0.01
+	tonumber(core.settings:get("chatcommand_msg_time_threshold")) or 0.1
 core.register_on_chat_message(function(name, message)
 	if message:sub(1,1) ~= "/" then
 		return
@@ -95,7 +95,7 @@ core.register_on_chat_message(function(name, message)
 						minetest.colorize("#f3d2ff", " (%.5g s)"):format(delay)
 				else
 					result = minetest.colorize("#f3d2ff",
-						"Chat command executed after %.5f s"):format(delay)
+						"Command execution took %.5f s"):format(delay)
 				end
 			end
 			if result then
