@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "inventoryoptimisation.h"
 #include "metadata.h"
 #include "tool.h"
 
@@ -34,7 +35,7 @@ public:
 	void clear() override;
 	bool setString(const std::string &name, const std::string &var) override;
 
-	void serialize(std::ostream &os, bool disk = true) const;
+	void serialize(std::ostream &os, InventoryOptimizationOption opt = INV_OO_NONE) const;
 	void deSerialize(std::istream &is);
 
 	const ToolCapabilities &getToolCapabilities(

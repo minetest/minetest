@@ -59,13 +59,14 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 	return result;
 }
 
-void ItemStackMetadata::serialize(std::ostream &os, bool disk) const
+void ItemStackMetadata::serialize(std::ostream &os, InventoryOptimizationOption opt) const
 {
 	std::ostringstream os2;
 	os2 << DESERIALIZE_START;
 	std::string unsent_fields;
+	bool sparse_meta = opt & INV_OO_META_SPARSE;
 	for (const auto &stringvar : m_stringvars) {
-		if (! disk
+		if (sparse_meta
 				&& stringvar.first != TOOLCAP_KEY
 				&& stringvar.first != "description"
 				&& stringvar.first != "color"

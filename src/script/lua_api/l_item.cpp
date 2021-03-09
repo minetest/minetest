@@ -41,7 +41,7 @@ int LuaItemStack::gc_object(lua_State *L)
 int LuaItemStack::mt_tostring(lua_State *L)
 {
 	LuaItemStack *o = checkobject(L, 1);
-	std::string itemstring = o->m_stack.getItemString(false);
+	std::string itemstring = o->m_stack.getItemString(INV_OO_NO_META);
 	lua_pushfstring(L, "ItemStack(\"%s\")", itemstring.c_str());
 	return 1;
 }

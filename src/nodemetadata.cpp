@@ -40,7 +40,7 @@ NodeMetadata::~NodeMetadata()
 	delete m_inventory;
 }
 
-void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk, bool disk_inv) const
+void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk, InventoryOptimizationOption opt) const
 {
 	int num_vars = disk ? m_stringvars.size() : countNonPrivate();
 	writeU32(os, num_vars);
@@ -55,7 +55,7 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk, bool disk_
 			writeU8(os, (priv) ? 1 : 0);
 	}
 
-	m_inventory->serialize(os, false, disk || disk_inv);
+	m_inventory->serialize(os, opt);
 }
 
 void NodeMetadata::deSerialize(std::istream &is, u8 version)
@@ -113,7 +113,7 @@ int NodeMetadata::countNonPrivate() const
 */
 
 void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
-	bool absolute_pos, bool disk_inv) const
+	bool absolute_pos, InventoryOptimizationOption opt) const
 {
 	/*
 		Version 0 is a placeholder for "nothing to see here; go away."
@@ -146,7 +146,7 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
 			u16 p16 = (p.Z * MAP_BLOCKSIZE + p.Y) * MAP_BLOCKSIZE + p.X;
 			writeU16(os, p16);
 		}
-		data->serialize(os, version, disk, disk_inv);
+		data->serialize(os, version, disk, opt);
 	}
 }
 

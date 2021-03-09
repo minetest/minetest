@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_set>
+#include "inventoryoptimisation.h"
 #include "metadata.h"
 
 /*
@@ -40,7 +41,7 @@ public:
 	NodeMetadata(IItemDefManager *item_def_mgr);
 	~NodeMetadata();
 
-	void serialize(std::ostream &os, u8 version, bool disk = true, bool disk_inv = true) const;
+	void serialize(std::ostream &os, u8 version, bool disk = true, InventoryOptimizationOption opt = INV_OO_NONE) const;
 	void deSerialize(std::istream &is, u8 version);
 
 	void clear();
@@ -82,7 +83,7 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os, u8 blockver, bool disk = true,
-		bool absolute_pos = false, bool disk_inv = true) const;
+		bool absolute_pos = false, InventoryOptimizationOption opt = INV_OO_NONE) const;
 	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr,
 		bool absolute_pos = false);
 

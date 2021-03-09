@@ -491,6 +491,7 @@ private:
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
 	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);
+	InventoryOptimizationOption getOptimisationOption(session_t peer_id, bool incremental = false);
 
 	void handleChatInterfaceEvent(ChatEvent *evt);
 

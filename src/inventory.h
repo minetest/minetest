@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "inventoryoptimisation.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
 #include "itemstackmetadata.h"
@@ -40,13 +41,13 @@ struct ItemStack
 	~ItemStack() = default;
 
 	// Serialization
-	void serialize(std::ostream &os, bool serialize_meta = true, bool disk = true) const;
+	void serialize(std::ostream &os, InventoryOptimizationOption opt = INV_OO_NONE) const;
 	// Deserialization. Pass itemdef unless you don't want aliases resolved.
 	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
 	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
 	// Returns the string used for inventory
-	std::string getItemString(bool include_meta = true, bool disk = true) const;
+	std::string getItemString(InventoryOptimizationOption opt = INV_OO_NONE) const;
 	// Returns the tooltip
 	std::string getDescription(IItemDefManager *itemdef) const;
 	std::string getShortDescription(IItemDefManager *itemdef) const;
@@ -195,7 +196,7 @@ public:
 	void setSize(u32 newsize);
 	void setWidth(u32 newWidth);
 	void setName(const std::string &name);
-	void serialize(std::ostream &os, bool incremental, bool disk = true) const;
+	void serialize(std::ostream &os, InventoryOptimizationOption opt = INV_OO_NONE) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList(const InventoryList &other);
@@ -295,7 +296,7 @@ public:
 	}
 
 	// Never ever serialize to disk using "incremental"!
-	void serialize(std::ostream &os, bool incremental = false, bool disk = true) const;
+	void serialize(std::ostream &os, InventoryOptimizationOption opt = INV_OO_NONE) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList * addList(const std::string &name, u32 size);

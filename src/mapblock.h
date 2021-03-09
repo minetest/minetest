@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <set>
 #include "irr_v3d.h"
+#include "inventoryoptimisation.h"
 #include "mapnode.h"
 #include "exceptions.h"
 #include "constants.h"
@@ -473,7 +474,7 @@ public:
 	// These don't write or read version by itself
 	// Set disk to true for on-disk format, false for over-the-network format
 	// Precondition: version >= SER_FMT_VER_LOWEST_WRITE
-	void serialize(std::ostream &os, u8 version, bool disk, int compression_level, bool disk_inv = true);
+	void serialize(std::ostream &os, u8 version, bool disk, int compression_level, InventoryOptimizationOption opt = INV_OO_NONE);
 	// If disk == true: In addition to doing other things, will add
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);

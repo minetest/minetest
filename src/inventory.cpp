@@ -56,7 +56,7 @@ ItemStack::ItemStack(const std::string &name_, u16 count_,
 		count = 1;
 }
 
-void ItemStack::serialize(std::ostream &os, bool serialize_meta, bool disk) const
+void ItemStack::serialize(std::ostream &os, InventoryOptimizationOption opt) const
 {
 	if (empty())
 		return;
@@ -77,10 +77,10 @@ void ItemStack::serialize(std::ostream &os, bool serialize_meta, bool disk) cons
 		os << " " << wear;
 	if (parts >= 4) {
 		os << " ";
-		if (serialize_meta)
-			metadata.serialize(os, disk);
-		else
+		if (opt & INV_OO_NO_META)
 			os << "<metadata size=" << metadata.size() << ">";
+		else
+			metadata.serialize(os, opt);
 	}
 }
 
@@ -243,10 +243,10 @@ void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 	deSerialize(is, itemdef);
 }
 
-std::string ItemStack::getItemString(bool include_meta, bool disk) const
+std::string ItemStack::getItemString(InventoryOptimizationOption opt) const
 {
 	std::ostringstream os(std::ios::binary);
-	serialize(os, include_meta, disk);
+	serialize(os, opt);
 	return os.str();
 }
 
@@ -425,7 +425,7 @@ void InventoryList::setName(const std::string &name)
 	setModified();
 }
 
-void InventoryList::serialize(std::ostream &os, bool incremental, bool disk) const
+void InventoryList::serialize(std::ostream &os, InventoryOptimizationOption opt) const
 {
 	//os.imbue(std::locale("C"));
 
@@ -436,10 +436,10 @@ void InventoryList::serialize(std::ostream &os, bool incremental, bool disk) con
 			os<<"Empty";
 		} else {
 			os<<"Item ";
-			item.serialize(os, true, disk);
+			item.serialize(os, opt);
 		}
 		// TODO: Implement this:
-		// if (!incremental || item.checkModified())
+		// if (opt & INV_OO_INCREMENTAL && !item.checkModified())
 		// os << "Keep";
 		os<<"\n";
 	}
@@ -847,15 +847,15 @@ bool Inventory::operator == (const Inventory &other) const
 	return true;
 }
 
-void Inventory::serialize(std::ostream &os, bool incremental, bool disk) const
+void Inventory::serialize(std::ostream &os, InventoryOptimizationOption opt) const
 {
 	//std::cout << "Serialize " << (int)incremental << ", n=" << m_lists.size() << std::endl;
 	for (const InventoryList *list : m_lists) {
-		if (!incremental || list->checkModified()) {
-			os << "List " << list->getName() << " " << list->getSize() << "\n";
-			list->serialize(os, incremental, disk);
-		} else {
+		if (opt & INV_OO_INCREMENTAL && !list->checkModified()) {
 			os << "KeepList " << list->getName() << "\n";
+		} else {
+			os << "List " << list->getName() << " " << list->getSize() << "\n";
+			list->serialize(os, opt);
 		}
 	}
 
