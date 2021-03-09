@@ -62,26 +62,25 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 void ItemStackMetadata::serialize(std::ostream &os, InventoryOptimizationOption opt) const
 {
 	std::ostringstream os2;
+	std::ostringstream os_hash;
 	os2 << DESERIALIZE_START;
-	std::string unsent_fields;
 	bool sparse_meta = opt & INV_OO_META_SPARSE;
 	for (const auto &stringvar : m_stringvars) {
-		if (sparse_meta
-				&& stringvar.first != TOOLCAP_KEY
-				&& stringvar.first != "description"
-				&& stringvar.first != "color"
-				&& stringvar.first != "short_description"
-				&& stringvar.first != "palette_index") {
-			unsent_fields += stringvar.first + "=" + stringvar.second;
-			continue;
-		}
+		bool silent = sparse_meta
+			&& stringvar.first != TOOLCAP_KEY
+			&& stringvar.first != "description"
+			&& stringvar.first != "color"
+			&& stringvar.first != "short_description"
+			&& stringvar.first != "palette_index";
 		if (!stringvar.first.empty() || !stringvar.second.empty())
-			os2 << stringvar.first << DESERIALIZE_KV_DELIM
+			(silent ? os_hash : os2) << stringvar.first << DESERIALIZE_KV_DELIM
 				<< stringvar.second << DESERIALIZE_PAIR_DELIM;
 	}
-	if (! unsent_fields.empty())
+	std::string hash_str = os_hash.str();
+	if (! hash_str.empty()) {
 		os2 << "hash" << DESERIALIZE_KV_DELIM
-			<< murmur_hash_64_ua(unsent_fields.data(), unsent_fields.length(), 0xdeadbeef) << DESERIALIZE_PAIR_DELIM;
+			<< murmur_hash_64_ua(hash_str.data(), hash_str.length(), 0xdeadbeef) << DESERIALIZE_PAIR_DELIM;
+	}
 	os << serializeJsonStringIfNeeded(os2.str());
 }
 
