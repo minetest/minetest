@@ -36,7 +36,7 @@ public:
 	virtual bool registerObject(T *obj) = 0;
 	virtual void removeObject(u16 id) = 0;
 
-	T *getActiveObject(u16 id)
+	T *getActiveObject(u16 id) const
 	{
 		typename std::unordered_map<u16, T *>::const_iterator n =
 				m_active_objects.find(id);

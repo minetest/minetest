@@ -237,7 +237,7 @@ public:
 		-------------------------------------------
 	*/
 
-	ServerActiveObject* getActiveObject(u16 id)
+	ServerActiveObject *getActiveObject(u16 id) const
 	{
 		return m_ao_manager.getActiveObject(id);
 	}

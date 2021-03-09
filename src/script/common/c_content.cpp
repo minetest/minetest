@@ -1046,7 +1046,8 @@ void read_server_sound_params(lua_State *L, int index,
 		lua_getfield(L, index, "object");
 		if(!lua_isnil(L, -1)){
 			ObjectRef *ref = ObjectRef::checkobject(L, -1);
-			ServerActiveObject *sao = ObjectRef::getobject(ref);
+			ServerActiveObject *sao = ObjectRef::getobject(ref,
+					ObjectRef::getServer(L)->getEnv());
 			if(sao){
 				params.object = sao->getId();
 				params.type = ServerSoundParams::SSP_OBJECT;

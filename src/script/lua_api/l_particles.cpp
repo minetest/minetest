@@ -231,7 +231,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		if (!lua_isnil(L, -1)) {
 			ObjectRef *ref = ObjectRef::checkobject(L, -1);
 			lua_pop(L, 1);
-			attached = ObjectRef::getobject(ref);
+			attached = ObjectRef::getobject(ref, ObjectRef::getServer(L)->getEnv());
 		}
 
 		p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
