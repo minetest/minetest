@@ -1459,6 +1459,8 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 {
 	RemotePlayer *player = sao->getPlayer();
 
+	thread_local bool send_all = g_settings->getBool("send_all_item_metadata");
+
 	// Do not send new format to old clients
 	incremental &= player->protocol_version >= 38;
 
@@ -1472,7 +1474,7 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 
 	std::ostringstream os(std::ios::binary);
 	RemoteClient *client = getClientNoEx(sao->getPeerID(), CS_InitDone);
-	sao->getInventory()->serialize(os, incremental, g_settings->getBool("send_all_item_metadata") || (client && client->mapsaving_enabled));
+	sao->getInventory()->serialize(os, incremental, send_all || (client && client->mapsaving_enabled));
 	sao->getInventory()->setModified(false);
 	player->setModified(true);
 
@@ -2335,8 +2337,9 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 		Create a packet with the block in the right format
 	*/
 	thread_local const int net_compression_level = rangelim(g_settings->getS16("map_compression_level_net"), -1, 9);
+	thread_local bool send_all = g_settings->getBool("send_all_item_metadata");
 	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false, net_compression_level, g_settings->getBool("send_all_item_metadata") || getClient(peer_id)->mapsaving_enabled);
+	block->serialize(os, ver, false, net_compression_level, send_all || getClient(peer_id)->mapsaving_enabled);
 	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
@@ -2691,9 +2694,11 @@ void Server::sendDetachedInventory(Inventory *inventory, const std::string &name
 	} else {
 		pkt << true; // Update inventory
 
+		thread_local bool send_all = g_settings->getBool("send_all_item_metadata");
+
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
-		inventory->serialize(os, false, g_settings->getBool("send_all_item_metadata"));
+		inventory->serialize(os, false, send_all);
 		inventory->setModified(false);
 
 		const std::string &os_str = os.str();
