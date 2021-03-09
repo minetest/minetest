@@ -1269,11 +1269,9 @@
 #    type: int min: -1 max: 9
 # map_compression_level_net = -1
 
-#	 When this is enbled, all item metadata will be sent to all clients. This
-# 	 might be useful to allow for local map saving, but it also increases
-# 	 lag, and malicious players could abuse it to crash the server or prevent
-# 	 other players from logging in by making the server crash automatically
-#	 when they log in.
+#    Sends all item metadata fields to clients. Otherwise the server will truncate
+#    irrelevant data per-client to reduce load and network traffic.
+#    Note: Set to "true" to allow local map saving on clients prior to 5.5.0-dev.
 # send_all_item_metadata = false
 
 ## Game
