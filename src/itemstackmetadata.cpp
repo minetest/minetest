@@ -78,7 +78,7 @@ void ItemStackMetadata::serialize(std::ostream &os, InventoryOptimizationOption 
 	}
 	std::string hash_str = os_hash.str();
 	if (! hash_str.empty()) {
-		os2 << "hash" << DESERIALIZE_KV_DELIM
+		os2 << "_hash" << DESERIALIZE_KV_DELIM
 			<< murmur_hash_64_ua(hash_str.data(), hash_str.length(), 0xdeadbeef) << DESERIALIZE_PAIR_DELIM;
 	}
 	os << serializeJsonStringIfNeeded(os2.str());
