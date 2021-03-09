@@ -51,7 +51,7 @@ ObjectRef *ObjectRef::checkobject(lua_State *L, int narg)
 
 ServerActiveObject *ObjectRef::getobject(ObjectRef *ref, const ServerEnvironment &senv)
 {
-	ServerActiveObject *sao = senv.getActiveObject(ref->m_obj_id);
+	ServerActiveObject *sao = ref->m_obj_id != 0 ? senv.getActiveObject(ref->m_obj_id) : nullptr;
 	if (sao && sao->isGone())
 		return nullptr;
 	return sao;
@@ -2274,7 +2274,7 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 }
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
-	m_obj_id(object->getId())
+	m_obj_id(object ? object->getId() : 0)
 {}
 
 // Creates an ObjectRef and leaves it on top of stack

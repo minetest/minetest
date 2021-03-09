@@ -51,7 +51,10 @@ public:
 
 	static ServerActiveObject *getobject(ObjectRef *ref, const ServerEnvironment &senv);
 private:
-	u16 m_obj_id = 0; // the object's ActiveObject-id
+	// the object's id
+	// 0 means invalid
+	u16 m_obj_id = 0;
+
 	static const char className[];
 	static luaL_Reg methods[];
 

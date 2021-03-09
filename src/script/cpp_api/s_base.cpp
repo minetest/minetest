@@ -348,10 +348,8 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
  * table instead of creating their own.(*)
  * When an active object is removed, the existing ObjectRef is invalidated
  * using ::set_null() and removed from the core.object_refs table.
- * (*) An exception to this are NULL ObjectRefs and anonymous ObjectRefs
- *     for objects without ID.
- *     It's unclear what the latter are needed for and their use is problematic
- *     since we lose control over the ref and the contained pointer.
+ * (*) An exception to this are invalid ObjectRefs. Anonymous ObjectRefs
+ *     for objects without ID are also counted as invalid.
  */
 
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
@@ -389,7 +387,7 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 	// Get object_refs[id]
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_gettable(L, objectstable);
-	// Set object reference to NULL
+	// Invalidate object reference
 	ObjectRef::set_null(L);
 	lua_pop(L, 1); // pop object
 
@@ -403,7 +401,7 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 		ServerActiveObject *cobj)
 {
-	if (cobj == NULL || cobj->getId() == 0) {
+	if (!cobj || cobj->getId() == 0) {
 		ObjectRef::create(L, cobj);
 	} else {
 		push_objectRef(L, cobj->getId());
