@@ -1734,11 +1734,10 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 	std::ostringstream os(std::ios_base::binary);
 	switch (schem_format) {
 	case SCHEM_FMT_MTS:
-		schem->serializeToMts(&os, schem->m_nodenames);
+		schem->serializeToMts(&os);
 		break;
 	case SCHEM_FMT_LUA:
-		schem->serializeToLua(&os, schem->m_nodenames,
-			use_comments, indent_spaces);
+		schem->serializeToLua(&os, use_comments, indent_spaces);
 		break;
 	default:
 		return 0;

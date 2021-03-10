@@ -108,12 +108,14 @@ ObjDef *Schematic::clone() const
 
 void Schematic::resolveNodeNames()
 {
+	c_nodes.clear();
 	getIdsFromNrBacklog(&c_nodes, true, CONTENT_AIR);
 
 	size_t bufsize = size.X * size.Y * size.Z;
 	for (size_t i = 0; i != bufsize; i++) {
 		content_t c_original = schemdata[i].getContent();
 		content_t c_new = c_nodes[c_original];
+		// Unfold condensed ID layout to content_t
 		schemdata[i].setContent(c_new);
 	}
 }
@@ -279,8 +281,7 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 }
 
 
-bool Schematic::deserializeFromMts(std::istream *is,
-	std::vector<std::string> *names)
+bool Schematic::deserializeFromMts(std::istream *is)
 {
 	std::istream &ss = *is;
 	content_t cignore = CONTENT_IGNORE;
@@ -312,6 +313,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 		slice_probs[y] = (version >= 3) ? readU8(ss) : MTSCHEM_PROB_ALWAYS_OLD;
 
 	//// Read node names
+	m_nodenames.clear();
 	u16 nidmapcount = readU16(ss);
 	for (int i = 0; i != nidmapcount; i++) {
 		std::string name = deSerializeString16(ss);
@@ -324,8 +326,9 @@ bool Schematic::deserializeFromMts(std::istream *is,
 			have_cignore = true;
 		}
 
-		names->push_back(name);
+		m_nodenames.push_back(name);
 	}
+	m_nodenames_idx = m_nodenames.size(); // All nodes are translated
 
 	//// Read node data
 	size_t nodecount = size.X * size.Y * size.Z;
@@ -354,13 +357,17 @@ bool Schematic::deserializeFromMts(std::istream *is,
 			schemdata[i].param1 >>= 1;
 	}
 
+	// Prepare for node resolver
+	m_nnlistsizes.push_back(m_nodenames.size());
 	return true;
 }
 
 
-bool Schematic::serializeToMts(std::ostream *os,
-	const std::vector<std::string> &names) const
+bool Schematic::serializeToMts(std::ostream *os) const
 {
+	// Nodes must not be resolved (-> condensed)
+	// checking here is not possible because "schemdata" might be temporary.
+
 	std::ostream &ss = *os;
 
 	writeU32(ss, MTSCHEM_FILE_SIGNATURE);         // signature
@@ -370,9 +377,9 @@ bool Schematic::serializeToMts(std::ostream *os,
 	for (int y = 0; y != size.Y; y++)             // Y slice probabilities
 		writeU8(ss, slice_probs[y]);
 
-	writeU16(ss, names.size()); // name count
-	for (size_t i = 0; i != names.size(); i++)
-		ss << serializeString16(names[i]); // node names
+	writeU16(ss, m_nodenames.size()); // name count
+	for (size_t i = 0; i != m_nodenames.size(); i++)
+		ss << serializeString16(m_nodenames[i]); // node names
 
 	// compressed bulk node data
 	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE,
@@ -382,8 +389,7 @@ bool Schematic::serializeToMts(std::ostream *os,
 }
 
 
-bool Schematic::serializeToLua(std::ostream *os,
-	const std::vector<std::string> &names, bool use_comments,
+bool Schematic::serializeToLua(std::ostream *os, bool use_comments,
 	u32 indent_spaces) const
 {
 	std::ostream &ss = *os;
@@ -391,6 +397,9 @@ bool Schematic::serializeToLua(std::ostream *os,
 	std::string indent("\t");
 	if (indent_spaces > 0)
 		indent.assign(indent_spaces, ' ');
+
+	bool resolve_done = isResolveDone();
+	FATAL_ERROR_IF(resolve_done && !m_ndef, "serializeToLua: NodeDefManager is required");
 
 	//// Write header
 	{
@@ -436,16 +445,18 @@ bool Schematic::serializeToLua(std::ostream *os,
 				u8 probability   = schemdata[i].param1 & MTSCHEM_PROB_MASK;
 				bool force_place = schemdata[i].param1 & MTSCHEM_FORCE_PLACE;
 
+				// After node resolving: real content_t, lookup using NodeDefManager
+				// Prior node resolving: condensed ID, lookup using m_nodenames
 				content_t c = schemdata[i].getContent();
 
 				ss << indent << indent << "{" << "name=\"";
 
-				if (c < names.size()) {
-					// Get node name from cache
-					ss << names[c];
-				} else {
-					// If cache is unavailable (biome decoration)
-					FATAL_ERROR_IF(m_ndef == nullptr, "Invalid node list and missing NodeDefManager");
+				if (!resolve_done) {
+					// Prior node resolving (eg. direct schematic load)
+					FATAL_ERROR_IF(c >= m_nodenames.size(), "Invalid node list");
+					ss << m_nodenames[c];
+				} else  {
+					// After node resolving (eg. biome decoration)
 					ss << m_ndef->get(c).name;
 				}
 
@@ -478,17 +489,13 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 		return false;
 	}
 
-	size_t origsize = m_nodenames.size();
-	if (!deserializeFromMts(&is, &m_nodenames))
+	if (!deserializeFromMts(&is))
 		return false;
-
-	m_nnlistsizes.push_back(m_nodenames.size() - origsize);
 
 	name = filename;
 
 	if (replace_names) {
-		for (size_t i = origsize; i < m_nodenames.size(); i++) {
-			std::string &node_name = m_nodenames[i];
+		for (std::string &node_name : m_nodenames) {
 			StringMap::iterator it = replace_names->find(node_name);
 			if (it != replace_names->end())
 				node_name = it->second;
@@ -506,29 +513,29 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 	const NodeDefManager *ndef)
 {
 	MapNode *orig_schemdata = schemdata;
-	std::vector<std::string> ndef_nodenames;
-	std::vector<std::string> *names;
 
-	if (m_resolve_done && ndef == NULL)
-		ndef = m_ndef;
+	bool needs_condense = isResolveDone();
 
-	if (ndef) {
-		names = &ndef_nodenames;
+	if (!m_ndef)
+		m_ndef = ndef;
+
+	if (needs_condense) {
+
+		if (!m_ndef)
+			return false;
 
 		u32 volume = size.X * size.Y * size.Z;
 		schemdata = new MapNode[volume];
 		for (u32 i = 0; i != volume; i++)
 			schemdata[i] = orig_schemdata[i];
 
-		generate_nodelist_and_update_ids(schemdata, volume, names, ndef);
-	} else { // otherwise, use the names we have on hand in the list
-		names = &m_nodenames;
+		condenseContentIds(volume);
 	}
 
 	std::ostringstream os(std::ios_base::binary);
-	bool status = serializeToMts(&os, *names);
+	bool status = serializeToMts(&os);
 
-	if (ndef) {
+	if (needs_condense) {
 		delete []schemdata;
 		schemdata = orig_schemdata;
 	}
@@ -595,26 +602,29 @@ void Schematic::applyProbabilities(v3s16 p0,
 }
 
 
-void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
-	std::vector<std::string> *usednodes, const NodeDefManager *ndef)
+void Schematic::condenseContentIds(size_t nodecount)
 {
 	std::unordered_map<content_t, content_t> nodeidmap;
 	content_t numids = 0;
 
+	// Reset node resolve fields
+	m_nodenames.clear();
+	m_nodenames_idx = 0;
+
 	for (size_t i = 0; i != nodecount; i++) {
 		content_t id;
-		content_t c = nodes[i].getContent();
+		content_t c = schemdata[i].getContent();
 
 		std::unordered_map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
 		if (it == nodeidmap.end()) {
 			id = numids;
 			numids++;
 
-			usednodes->push_back(ndef->get(c).name);
+			m_nodenames.push_back(m_ndef->get(c).name);
 			nodeidmap.insert(std::make_pair(c, id));
 		} else {
 			id = it->second;
 		}
-		nodes[i].setContent(id);
+		schemdata[i].setContent(id);
 	}
 }
