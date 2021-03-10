@@ -93,6 +93,8 @@ if [ "x$NO_MINETEST_GAME" = "x" ]; then
 fi
 
 irr_dlls=$(echo $libdir/irrlicht/bin/*.dll | tr ' ' ';')
+vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
+gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
 # Build the thing
 [ -d _build ] && rm -Rf _build/
@@ -127,9 +129,8 @@ cmake .. \
 	\
 	-DVORBIS_INCLUDE_DIR=$libdir/libvorbis/include \
 	-DVORBIS_LIBRARY=$libdir/libvorbis/lib/libvorbis.dll.a \
-	-DVORBIS_DLL=$libdir/libvorbis/bin/libvorbis-0.dll \
+	-DVORBIS_DLL="$vorbis_dlls" \
 	-DVORBISFILE_LIBRARY=$libdir/libvorbis/lib/libvorbisfile.dll.a \
-	-DVORBISFILE_DLL=$libdir/libvorbis/bin/libvorbisfile-3.dll \
 	\
 	-DOPENAL_INCLUDE_DIR=$libdir/openal_stripped/include/AL \
 	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/libOpenAL32.dll.a \
@@ -140,8 +141,7 @@ cmake .. \
 	-DCURL_LIBRARY=$libdir/libcurl/lib/libcurl.dll.a \
 	\
 	-DGETTEXT_MSGFMT=`which msgfmt` \
-	-DGETTEXT_DLL=$libdir/gettext/bin/libintl-8.dll \
-	-DGETTEXT_ICONV_DLL=$libdir/gettext/bin/libiconv-2.dll \
+	-DGETTEXT_DLL="$gettext_dlls" \
 	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
 	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \
 	\
