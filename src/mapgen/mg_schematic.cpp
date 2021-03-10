@@ -313,7 +313,8 @@ bool Schematic::deserializeFromMts(std::istream *is)
 		slice_probs[y] = (version >= 3) ? readU8(ss) : MTSCHEM_PROB_ALWAYS_OLD;
 
 	//// Read node names
-	m_nodenames.clear();
+	NodeResolver::reset();
+
 	u16 nidmapcount = readU16(ss);
 	for (int i = 0; i != nidmapcount; i++) {
 		std::string name = deSerializeString16(ss);
@@ -328,7 +329,9 @@ bool Schematic::deserializeFromMts(std::istream *is)
 
 		m_nodenames.push_back(name);
 	}
-	m_nodenames_idx = m_nodenames.size(); // All nodes are translated
+
+	// Prepare for node resolver
+	m_nnlistsizes.push_back(m_nodenames.size());
 
 	//// Read node data
 	size_t nodecount = size.X * size.Y * size.Z;
@@ -357,8 +360,6 @@ bool Schematic::deserializeFromMts(std::istream *is)
 			schemdata[i].param1 >>= 1;
 	}
 
-	// Prepare for node resolver
-	m_nnlistsizes.push_back(m_nodenames.size());
 	return true;
 }
 
