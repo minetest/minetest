@@ -84,3 +84,10 @@ local function run_player_add_pos_tests(player)
 end
 unittests.register("test_player_add_pos", run_player_add_pos_tests, {player=true})
 
+--
+-- Player get uuid
+--
+local function test_player_guid_tests(player)
+	assert(player:get_guid()==player:get_player_name())
+end
+unittests.register("test_player_guid", test_player_guid_tests, {player=true})
