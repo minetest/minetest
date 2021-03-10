@@ -255,8 +255,7 @@ Library specific options:
     FREETYPE_INCLUDE_DIR_ft2build   - Only if building with FreeType 2; directory that contains ft2build.h
     FREETYPE_LIBRARY                - Only if building with FreeType 2; path to libfreetype.a/libfreetype.so/freetype.lib
     FREETYPE_DLL                    - Only if building with FreeType 2 on Windows; path to libfreetype.dll
-    GETTEXT_DLL                     - Only when building with gettext on Windows; path to libintl3.dll
-    GETTEXT_ICONV_DLL               - Only when building with gettext on Windows; path to libiconv2.dll
+    GETTEXT_DLL                     - Only when building with gettext on Windows; paths to libintl + libiconv DLLs
     GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains iconv.h
     GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
@@ -284,9 +283,8 @@ Library specific options:
     OPENGLES2_LIBRARY               - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
     SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
     SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
-    VORBISFILE_DLL                  - Only if building with sound on Windows; path to libvorbisfile-3.dll
     VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
-    VORBIS_DLL                      - Only if building with sound on Windows; path to libvorbis-0.dll
+    VORBIS_DLL                      - Only if building with sound on Windows; paths to vorbis DLLs
     VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
     VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
     XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
