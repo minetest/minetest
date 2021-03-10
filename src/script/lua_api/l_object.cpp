@@ -793,6 +793,21 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 
 /* LuaEntitySAO-only */
 
+// get_guid()
+int ObjectRef::l_get_guid(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *sao = getluaobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	const GUID &guid = sao->get_guid();
+
+	lua_pushstring(L, guid.c_str());
+	return 1;
+}
+
 // set_velocity(self, velocity)
 int ObjectRef::l_set_velocity(lua_State *L)
 {
@@ -2353,6 +2368,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod_dep(ObjectRef, get_velocity, get_player_velocity),
 
 	// LuaEntitySAO-only
+	luamethod(ObjectRef, get_guid),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),

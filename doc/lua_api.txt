@@ -6299,6 +6299,9 @@ object you are working with still exists.
     * The object is removed after returning from Lua. However the `ObjectRef`
       itself instantly becomes unusable with all further method calls having
       no effect and returning `nil`.
+* `get_guid()`: returns a global unique identifier (a string)
+    * An object keeps its guid forever, even over server restarts.
+    * The same guid will never be reused for a different object.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `set_acceleration(acc)`

@@ -640,6 +640,7 @@ void ServerEnvironment::saveMeta()
 	args.set("lbm_introduction_times",
 		m_lbm_mgr.createIntroductionTimesString());
 	args.setU64("day_count", m_day_count);
+	args.set("luaent_guid_next", m_luaent_guid_generator.peekNext());
 	args.writeLines(ss);
 
 	if(!fs::safeWriteToFile(path, ss.str()))
@@ -713,6 +714,10 @@ void ServerEnvironment::loadMeta()
 
 	m_day_count = args.exists("day_count") ?
 		args.getU64("day_count") : 0;
+
+	const std::string &next_luaent_guid = args.exists("luaent_guid_next") ?
+		args.get("luaent_guid_next") : "v1guid1000"; // 1000 is chosen arbitrarily
+	m_luaent_guid_generator.seed(next_luaent_guid);
 }
 
 /**
@@ -721,6 +726,7 @@ void ServerEnvironment::loadMeta()
 void ServerEnvironment::loadDefaultMeta()
 {
 	m_lbm_mgr.loadIntroductionTimes("", m_server, m_game_time);
+	m_luaent_guid_generator.seed("v1guid1000"); // 1000 is chosen arbitrarily
 }
 
 struct ActiveABM

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "unit_sao.h"
+#include "guid.h"
 
 class LuaEntitySAO : public UnitSAO
 {
@@ -30,11 +31,7 @@ public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data);
 	// Used by the Lua API
 	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &name,
-			const std::string &state) :
-			UnitSAO(env, pos),
-			m_init_name(name), m_init_state(state)
-	{
-	}
+			const std::string &state);
 	~LuaEntitySAO();
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
@@ -56,6 +53,7 @@ public:
 	u16 getHP() const;
 
 	/* LuaEntitySAO-specific */
+	const GUID &get_guid() const { return m_guid; }
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity) { m_velocity += velocity; }
 	v3f getVelocity();
@@ -86,6 +84,8 @@ private:
 	std::string m_init_name;
 	std::string m_init_state;
 	bool m_registered = false;
+
+	GUID m_guid;
 
 	v3f m_velocity;
 	v3f m_acceleration;

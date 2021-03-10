@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "activeobject.h"
 #include "environment.h"
+#include "guid.h"
 #include "mapnode.h"
 #include "settings.h"
 #include "server/activeobjectmgr.h"
@@ -296,6 +297,9 @@ public:
 	*/
 	void activateBlock(MapBlock *block, u32 additional_dtime=0);
 
+	GUID generateNextLuaentGUID()
+	{ return m_luaent_guid_generator.generateNext(); }
+
 	/*
 		{Active,Loading}BlockModifiers
 		-------------------------------------------
@@ -429,6 +433,8 @@ private:
 	Server *m_server;
 	// Active Object Manager
 	server::ActiveObjectMgr m_ao_manager;
+	// Generator for luaentity guids
+	GUIDGenerator m_luaent_guid_generator;
 	// World path
 	const std::string m_path_world;
 	// Outgoing network message buffer for active objects
