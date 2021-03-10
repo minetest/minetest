@@ -82,10 +82,12 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 	m_hp = hp;
 	m_velocity = velocity;
 	m_rotation = rotation;
-	if (!guid.empty())
+	if (!guid.empty()) {
 		m_guid = guid;
-	else
+	} else {
 		m_guid = env->generateNextLuaentGUID();
+		m_force_write_staticdata = true;
+	}
 }
 
 LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &name,

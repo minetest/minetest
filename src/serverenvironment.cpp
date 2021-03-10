@@ -2061,7 +2061,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				While changes are always saved, blocks are only marked as modified
 				if the object has moved or different staticdata. (see above)
 			*/
-			bool shall_be_written = (!stays_in_same_block || data_changed);
+			bool shall_be_written = (!stays_in_same_block || data_changed ||
+					obj->m_force_write_staticdata);
+			obj->m_force_write_staticdata = false;
 			u32 reason = shall_be_written ? MOD_REASON_STATIC_DATA_CHANGED : MOD_REASON_UNKNOWN;
 
 			// Delete old static object

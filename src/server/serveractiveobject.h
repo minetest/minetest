@@ -229,6 +229,11 @@ public:
 	*/
 	bool m_static_exists = false;
 	/*
+		Set this to true when the staticdata needs to be saved even though it
+		looks like it did not change.
+	*/
+	bool m_force_write_staticdata = false;
+	/*
 		The block from which the object was loaded from, and in which
 		a copy of the static data resides.
 	*/
