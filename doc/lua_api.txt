@@ -3173,7 +3173,7 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 * `vector.offset(v, x, y, z)`:
     * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.#
 * `vector.to_string(v)`:
-    * Returns a string `"("..v.x..", "..v.y..", "..v.z..")"`.
+    * Returns a string of the form `"(x, y, z)"`.
 * `vector.from_string(s[, init])`:
     * Returns a new vector by reading it from the given string `s`.
     * Returns `nil` on failure.
