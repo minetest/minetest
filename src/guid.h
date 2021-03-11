@@ -39,19 +39,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * A's version number is higher than B's and B's version number is 1 or
  * A and B both have version number 1 and A's deci_num is higher
  */
-typedef std::string GUID;
+typedef std::string GUId;
 
 /**
  * Generates infinitely many guids.
  */
-class GUIDGenerator {
+class GUIdGenerator {
 public:
 	/**
 	 * Creates a new uninitialized generator.
 	 */
-	GUIDGenerator() = default;
+	GUIdGenerator() = default;
 
-	~GUIDGenerator() = default;
+	~GUIdGenerator() = default;
 
 	/**
 	 * The validity of a guid.
@@ -75,26 +75,26 @@ public:
 	 * @param first the first guid that should be returned by generateNext
 	 * @return the validity of the given id; Valid iff the generator is seeded
 	 */
-	Validity seed(const GUID &first);
+	Validity seed(const GUId &first);
 
 	/**
 	 * Generates the next guid, which it will never return again.
 	 * @return the new guid, or "" if the generator is not yet initialized
 	 */
-	GUID generateNext();
+	GUId generateNext();
 
 	/**
 	 * Returns the guid that would be generated next.
 	 * @return the next guid
 	 */
-	GUID peekNext() const;
+	GUId peekNext() const;
 
 	/**
 	 * Returns the validity for a guid.
 	 * @param id the guid
 	 * @return the validity of id
 	 */
-	static Validity getValidity(const GUID &id);
+	static Validity getValidity(const GUId &id);
 
 private:
 	/**

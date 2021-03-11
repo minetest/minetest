@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DIGITS_PER_U64 19
 #define MAX_NUM_IN_U64 9999999999999999999ul
 
-GUIDGenerator::Validity GUIDGenerator::seed(const GUID &first)
+GUIdGenerator::Validity GUIdGenerator::seed(const GUId &first)
 {
 	Validity v = getValidity(first);
 	if (v != Valid)
@@ -43,12 +43,12 @@ GUIDGenerator::Validity GUIDGenerator::seed(const GUID &first)
 	return Valid;
 }
 
-GUID GUIDGenerator::generateNext()
+GUId GUIdGenerator::generateNext()
 {
 	if (m_next_v.empty())
 		return "";
 
-	GUID ret = peekNext();
+	GUId ret = peekNext();
 
 	// increment m_next_v
 
@@ -76,7 +76,7 @@ GUID GUIDGenerator::generateNext()
 	return ret;
 }
 
-GUID GUIDGenerator::peekNext() const
+GUId GUIdGenerator::peekNext() const
 {
 	if (m_next_v.empty())
 		return "";
@@ -91,7 +91,7 @@ GUID GUIDGenerator::peekNext() const
 	return id_strm.str();
 }
 
-GUIDGenerator::Validity GUIDGenerator::getValidity(const GUID &id)
+GUIdGenerator::Validity GUIdGenerator::getValidity(const GUId &id)
 {
 	if (id.empty())
 		return Old;

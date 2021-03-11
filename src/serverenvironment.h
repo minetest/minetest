@@ -297,7 +297,7 @@ public:
 	*/
 	void activateBlock(MapBlock *block, u32 additional_dtime=0);
 
-	GUID generateNextLuaentGUID()
+	GUId generateNextLuaentGUId()
 	{ return m_luaent_guid_generator.generateNext(); }
 
 	/*
@@ -434,7 +434,7 @@ private:
 	// Active Object Manager
 	server::ActiveObjectMgr m_ao_manager;
 	// Generator for luaentity guids
-	GUIDGenerator m_luaent_guid_generator;
+	GUIdGenerator m_luaent_guid_generator;
 	// World path
 	const std::string m_path_world;
 	// Outgoing network message buffer for active objects

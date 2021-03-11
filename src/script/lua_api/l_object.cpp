@@ -802,7 +802,7 @@ int ObjectRef::l_get_guid(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	const GUID &guid = sao->get_guid();
+	const GUId &guid = sao->getGuid();
 
 	lua_pushstring(L, guid.c_str());
 	return 1;

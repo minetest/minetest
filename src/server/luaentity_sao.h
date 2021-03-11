@@ -53,7 +53,7 @@ public:
 	u16 getHP() const;
 
 	/* LuaEntitySAO-specific */
-	const GUID &get_guid() const { return m_guid; }
+	const GUId &getGuid() const { return m_guid; }
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity) { m_velocity += velocity; }
 	v3f getVelocity();
@@ -85,7 +85,7 @@ private:
 	std::string m_init_state;
 	bool m_registered = false;
 
-	GUID m_guid;
+	GUId m_guid;
 
 	v3f m_velocity;
 	v3f m_acceleration;

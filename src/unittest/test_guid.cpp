@@ -45,7 +45,7 @@ void TestGUID::runTests(IGameDef *gamedef)
 void TestGUID::testGetValidity()
 {
 #define ASSERT_VALIDITY(str, validity) \
-		UASSERT(GUIDGenerator::getValidity(str) == GUIDGenerator::validity)
+		UASSERT(GUIdGenerator::getValidity(str) == GUIdGenerator::validity)
 
 	ASSERT_VALIDITY("v1guid1", Valid);
 	ASSERT_VALIDITY("", Old);
@@ -62,20 +62,20 @@ void TestGUID::testGetValidity()
 
 void TestGUID::testGenerate()
 {
-	GUIDGenerator generator;
+	GUIdGenerator generator;
 	UASSERT(generator.peekNext() == "");
 	UASSERT(generator.generateNext() == "");
 
-	UASSERT(generator.seed("foo") == GUIDGenerator::Invalid);
+	UASSERT(generator.seed("foo") == GUIdGenerator::Invalid);
 	UASSERT(generator.generateNext() == "");
 
-	UASSERT(generator.seed("") == GUIDGenerator::Old);
+	UASSERT(generator.seed("") == GUIdGenerator::Old);
 	UASSERT(generator.generateNext() == "");
 
-	UASSERT(generator.seed("v1guid0") == GUIDGenerator::Invalid);
+	UASSERT(generator.seed("v1guid0") == GUIdGenerator::Invalid);
 	UASSERT(generator.generateNext() == "");
 
-	UASSERT(generator.seed("v1guid1") == GUIDGenerator::Valid);
+	UASSERT(generator.seed("v1guid1") == GUIdGenerator::Valid);
 	UASSERT(generator.peekNext() == "v1guid1");
 	UASSERT(generator.peekNext() == "v1guid1");
 	UASSERT(generator.generateNext() == "v1guid1");
@@ -93,7 +93,7 @@ void TestGUID::testGenerate()
 	UASSERT(generator.generateNext() == "v1guid11");
 	UASSERT(generator.generateNext() == "v1guid12");
 
-	UASSERT(generator.seed("v1guid1000000000000") == GUIDGenerator::Valid);
+	UASSERT(generator.seed("v1guid1000000000000") == GUIdGenerator::Valid);
 	UASSERT(generator.generateNext() == "v1guid1000000000000");
 	UASSERT(generator.generateNext() == "v1guid1000000000001");
 	UASSERT(generator.generateNext() == "v1guid1000000000002");
@@ -101,7 +101,7 @@ void TestGUID::testGenerate()
 
 	UASSERT(generator.seed("v1guid1000000000000000000000000000000000000000"
 			"0000000000000000000000000000000000000000000000000000000000000"
-			"000000000000000000000000000000000000000000000000") == GUIDGenerator::Valid);
+			"000000000000000000000000000000000000000000000000") == GUIdGenerator::Valid);
 	UASSERT(generator.generateNext() == "v1guid1000000000000000000000000000000000000000"
 			"0000000000000000000000000000000000000000000000000000000000000"
 			"000000000000000000000000000000000000000000000000");
@@ -112,7 +112,7 @@ void TestGUID::testGenerate()
 			"0000000000000000000000000000000000000000000000000000000000000"
 			"000000000000000000000000000000000000000000000002");
 
-	UASSERT(generator.seed("v1guid9999999999999999998") == GUIDGenerator::Valid);
+	UASSERT(generator.seed("v1guid9999999999999999998") == GUIdGenerator::Valid);
 	UASSERT(generator.generateNext() == "v1guid9999999999999999998");
 	UASSERT(generator.generateNext() == "v1guid9999999999999999999");
 	UASSERT(generator.generateNext() == "v1guid10000000000000000000");

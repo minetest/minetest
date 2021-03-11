@@ -85,7 +85,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 	if (!guid.empty()) {
 		m_guid = guid;
 	} else {
-		m_guid = env->generateNextLuaentGUID();
+		m_guid = env->generateNextLuaentGUId();
 		m_force_write_staticdata = true;
 	}
 }
@@ -95,7 +95,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &n
 		UnitSAO(env, pos),
 		m_init_name(name), m_init_state(state)
 {
-	m_guid = env->generateNextLuaentGUID();
+	m_guid = env->generateNextLuaentGUId();
 }
 
 LuaEntitySAO::~LuaEntitySAO()
