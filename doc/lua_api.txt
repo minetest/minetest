@@ -6204,7 +6204,6 @@ object you are working with still exists.
 
 ### Methods
 
-
 * `get_guid()`: returns a global unique identifier (a string)
     * An object keeps its guid forever, even over server restarts.
     * The same guid will never be reused for a different object.
