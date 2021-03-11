@@ -3144,10 +3144,12 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * A copy of `a` if `a` is a vector.
     * `{x = a, y = b, z = c}`, if all of `a`, `b`, `c` are defined numbers.
 * `vector.from_string(s[, init])`:
-    * Returns a new vector by reading it from the given string `s`.
+    * Returns `v, np`, where `v` is a vector read from the given string `s` and
+      `np` is the next position in the string after the vector.
     * Returns `nil` on failure.
-    * `s`: Is of the form `"(x, y, z)"`. Additional spaces, leaving away commas
-           and adding an additional comma to the end is allowed.
+    * `s`: Has to begin with a substring of the form `"(x, y, z)"`. Additional
+           spaces, leaving away commas and adding an additional comma to the end
+           is allowed.
     * `init`: If given starts looking for the vector at this string index.
 * `vector.to_string(v)`:
     * Returns a string of the form `"(x, y, z)"`.
