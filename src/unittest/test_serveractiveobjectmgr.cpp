@@ -33,6 +33,7 @@ public:
 	bool getCollisionBox(aabb3f *toset) const override { return false; }
 	bool getSelectionBox(aabb3f *toset) const override { return false; }
 	bool collideWithObjects() const override { return false; }
+	std::string getGuid() const override { return ""; }
 };
 
 class TestServerActiveObjectMgr : public TestBase

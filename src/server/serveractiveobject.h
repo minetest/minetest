@@ -158,6 +158,9 @@ public:
 	virtual u16 getHP() const
 	{ return 0; }
 
+	// Returns always the same unique string for the same object.
+	virtual std::string getGuid() const = 0;
+
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
 	virtual const ItemGroupList &getArmorGroups() const

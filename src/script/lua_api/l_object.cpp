@@ -114,6 +114,21 @@ int ObjectRef::l_remove(lua_State *L)
 	return 0;
 }
 
+// get_guid()
+int ObjectRef::l_get_guid(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	const std::string &guid = sao->getGuid();
+
+	lua_pushstring(L, guid.c_str());
+	return 1;
+}
+
 // get_pos(self)
 int ObjectRef::l_get_pos(lua_State *L)
 {
@@ -792,21 +807,6 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 }
 
 /* LuaEntitySAO-only */
-
-// get_guid()
-int ObjectRef::l_get_guid(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *sao = getluaobject(ref);
-	if (sao == nullptr)
-		return 0;
-
-	const GUId &guid = sao->getGuid();
-
-	lua_pushstring(L, guid.c_str());
-	return 1;
-}
 
 // set_velocity(self, velocity)
 int ObjectRef::l_set_velocity(lua_State *L)
@@ -2334,6 +2334,7 @@ const char ObjectRef::className[] = "ObjectRef";
 luaL_Reg ObjectRef::methods[] = {
 	// ServerActiveObject
 	luamethod(ObjectRef, remove),
+	luamethod(ObjectRef, get_guid),
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
 	luamethod_aliased(ObjectRef, move_to, moveto),
@@ -2368,7 +2369,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod_dep(ObjectRef, get_velocity, get_player_velocity),
 
 	// LuaEntitySAO-only
-	luamethod(ObjectRef, get_guid),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),

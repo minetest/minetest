@@ -91,6 +91,7 @@ public:
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
 	void setPlayerYaw(const float yaw);
+	std::string getGuid() const override;
 	// Data should not be sent at player initialization
 	void setPlayerYawAndSend(const float yaw);
 	void setLookPitch(const float pitch);
