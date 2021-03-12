@@ -1921,6 +1921,8 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 
 	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
+	if (!mesh)
+		return nullptr;
 	mesh->grab();
 	if (!cache)
 		RenderingEngine::get_mesh_cache()->removeMesh(mesh);
