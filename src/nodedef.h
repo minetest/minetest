@@ -811,7 +811,7 @@ public:
 		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
 	inline bool isResolveDone() const { return m_resolve_done; }
-	void reset();
+	void reset(bool resolve_done = false);
 
 	// Vector containing all node names in the resolve "queue"
 	std::vector<std::string> m_nodenames;

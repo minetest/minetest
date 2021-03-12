@@ -76,10 +76,6 @@ void SchematicManager::clear()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Schematic::Schematic()
-= default;
-
-
 Schematic::~Schematic()
 {
 	delete []schemdata;
@@ -114,9 +110,13 @@ void Schematic::resolveNodeNames()
 	size_t bufsize = size.X * size.Y * size.Z;
 	for (size_t i = 0; i != bufsize; i++) {
 		content_t c_original = schemdata[i].getContent();
-		content_t c_new = c_nodes[c_original];
+		if (c_original >= c_nodes.size()) {
+			errorstream << "Corrupt schematic. name=\"" << name
+				<< "\" at index " << i << std::endl;
+			c_original = 0;
+		}
 		// Unfold condensed ID layout to content_t
-		schemdata[i].setContent(c_new);
+		schemdata[i].setContent(c_nodes[c_original]);
 	}
 }
 
@@ -379,8 +379,9 @@ bool Schematic::serializeToMts(std::ostream *os) const
 		writeU8(ss, slice_probs[y]);
 
 	writeU16(ss, m_nodenames.size()); // name count
-	for (size_t i = 0; i != m_nodenames.size(); i++)
+	for (size_t i = 0; i != m_nodenames.size(); i++) {
 		ss << serializeString16(m_nodenames[i]); // node names
+	}
 
 	// compressed bulk node data
 	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE,
@@ -490,6 +491,9 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 		return false;
 	}
 
+	if (!m_ndef)
+		m_ndef = ndef;
+
 	if (!deserializeFromMts(&is))
 		return false;
 
@@ -503,8 +507,8 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 		}
 	}
 
-	if (ndef)
-		ndef->pendNodeResolve(this);
+	if (m_ndef)
+		m_ndef->pendNodeResolve(this);
 
 	return true;
 }
@@ -513,7 +517,7 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 bool Schematic::saveSchematicToFile(const std::string &filename,
 	const NodeDefManager *ndef)
 {
-	MapNode *orig_schemdata = schemdata;
+	Schematic *schem = this;
 
 	bool needs_condense = isResolveDone();
 
@@ -521,25 +525,20 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 		m_ndef = ndef;
 
 	if (needs_condense) {
-
 		if (!m_ndef)
 			return false;
 
-		u32 volume = size.X * size.Y * size.Z;
-		schemdata = new MapNode[volume];
-		for (u32 i = 0; i != volume; i++)
-			schemdata[i] = orig_schemdata[i];
+		schem = (Schematic *)this->clone();
 
-		condenseContentIds(volume);
+		u32 volume = size.X * size.Y * size.Z;
+		schem->condenseContentIds(volume);
 	}
 
 	std::ostringstream os(std::ios_base::binary);
-	bool status = serializeToMts(&os);
+	bool status = schem->serializeToMts(&os);
 
-	if (needs_condense) {
-		delete []schemdata;
-		schemdata = orig_schemdata;
-	}
+	if (needs_condense)
+		delete schem;
 
 	if (!status)
 		return false;
@@ -575,6 +574,10 @@ bool Schematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2)
 	}
 
 	delete vm;
+
+	// Reset and mark as complete
+	NodeResolver::reset(true);
+
 	return true;
 }
 
@@ -609,8 +612,7 @@ void Schematic::condenseContentIds(size_t nodecount)
 	content_t numids = 0;
 
 	// Reset node resolve fields
-	m_nodenames.clear();
-	m_nodenames_idx = 0;
+	NodeResolver::reset();
 
 	for (size_t i = 0; i != nodecount; i++) {
 		content_t id;

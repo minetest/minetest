@@ -92,7 +92,7 @@ enum SchematicFormatType {
 
 class Schematic : public ObjDef, public NodeResolver {
 public:
-	Schematic();
+	Schematic() = default;
 	virtual ~Schematic();
 
 	ObjDef *clone() const;
