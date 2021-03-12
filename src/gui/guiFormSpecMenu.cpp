@@ -2746,7 +2746,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() < 5 || (parts.size() > 9 &&
+	if (parts.size() < 5 || (parts.size() > 10 &&
 			m_formspec_version <= FORMSPEC_API_VERSION)) {
 		errorstream << "Invalid model element (" << parts.size() << "): '" << element
 			<< "'" << std::endl;
@@ -2766,6 +2766,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	bool inf_rotation = is_yes(parts[6]);
 	bool mousectrl = is_yes(parts[7]) || parts[7].empty(); // default true
 	std::vector<std::string> frame_loop = split(parts[8], ',');
+	std::string speed = unescape_string(parts[9]);
 
 	MY_CHECKPOS("model", 0);
 	MY_CHECKGEOM("model", 1);
@@ -2825,6 +2826,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	}
 
 	e->setFrameLoop(frame_loop_begin, frame_loop_end);
+	e->setAnimationSpeed(stof(speed));
 
 	auto style = getStyleForElement("model", spec.fname);
 	e->setStyles(style);

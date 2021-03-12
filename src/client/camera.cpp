@@ -664,7 +664,7 @@ void Camera::wield(const ItemStack &item)
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
 	// Clear Z buffer so that the wielded tool stays in front of world geometry
-	m_wieldmgr->getVideoDriver()->clearZBuffer();
+	m_wieldmgr->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 
 	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
