@@ -365,7 +365,7 @@ public:
 	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
-	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
+	MapBlock* loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
 
 	bool deleteBlock(v3s16 blockpos) override;
 

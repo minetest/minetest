@@ -1781,8 +1781,12 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 	return ret;
 }
 
-void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
+MapBlock* ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
 {
+	MapBlock *block = nullptr;
+	bool created_new = false;
+	std::map<v3s16, MapBlock*> modified_blocks;
+
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
 
@@ -1793,10 +1797,8 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			throw SerializationError("ServerMap::loadBlock(): Failed"
 					" to read MapBlock version");
 
-		MapBlock *block = NULL;
-		bool created_new = false;
 		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
+		if (!block)
 		{
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
@@ -1810,6 +1812,10 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			sector->insertBlock(block);
 			ReflowScan scanner(this, m_emerge->ndef);
 			scanner.scan(block, &m_transforming_liquid);
+		}
+
+		if (version < 30) {
+			voxalgo::convert_legacy_light_banks(block, getNodeDefManager(), modified_blocks);
 		}
 
 		/*
@@ -1840,44 +1846,39 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			throw SerializationError("Invalid block data in database");
 		}
 	}
+
+	if (created_new) {
+		// Fix lighting if necessary
+		voxalgo::update_block_border_lighting(this, block, modified_blocks);
+	}
+
+	if (!modified_blocks.empty()) {
+		//Modified lighting, send event
+		MapEditEvent event;
+		event.type = MEET_OTHER;
+		std::map<v3s16, MapBlock *>::iterator it;
+		for (it = modified_blocks.begin();
+				it != modified_blocks.end(); ++it)
+			event.modified_blocks.insert(it->first);
+		dispatchEvent(event);
+	}
+
+	return block;
 }
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
-	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
-
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string ret;
 	dbase->loadBlock(blockpos, &ret);
-	if (!ret.empty()) {
-		loadBlock(&ret, blockpos, createSector(p2d), false);
-	} else if (dbase_ro) {
+	if (!ret.empty())
+		return loadBlock(&ret, blockpos, createSector(p2d), false);
+	if (dbase_ro)
 		dbase_ro->loadBlock(blockpos, &ret);
-		if (!ret.empty()) {
-			loadBlock(&ret, blockpos, createSector(p2d), false);
-		}
-	} else {
-		return NULL;
-	}
-
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if (created_new && (block != NULL)) {
-		std::map<v3s16, MapBlock*> modified_blocks;
-		// Fix lighting if necessary
-		voxalgo::update_block_border_lighting(this, block, modified_blocks);
-		if (!modified_blocks.empty()) {
-			//Modified lighting, send event
-			MapEditEvent event;
-			event.type = MEET_OTHER;
-			std::map<v3s16, MapBlock *>::iterator it;
-			for (it = modified_blocks.begin();
-					it != modified_blocks.end(); ++it)
-				event.modified_blocks.insert(it->first);
-			dispatchEvent(event);
-		}
-	}
-	return block;
+	if (!ret.empty())
+		return loadBlock(&ret, blockpos, createSector(p2d), false);
+	return nullptr;
 }
 
 bool ServerMap::deleteBlock(v3s16 blockpos)

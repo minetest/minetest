@@ -64,13 +64,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	27: Added light spreading flags to blocks
 	28: Added "private" flag to NodeMetadata
 	29: Switched compression to zstd, a bit of reorganization
+	30: split sunlight/node light
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST_READ 29
+#define SER_FMT_VER_HIGHEST_READ 30
 // Saved on disk version
-#define SER_FMT_VER_HIGHEST_WRITE 29
+#define SER_FMT_VER_HIGHEST_WRITE 30
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST_READ 0
 // Lowest serialization version for writing

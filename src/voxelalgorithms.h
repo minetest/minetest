@@ -60,6 +60,9 @@ void update_lighting_nodes(
 void update_block_border_lighting(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> &modified_blocks);
 
+void convert_legacy_light_banks(MapBlock *block, const NodeDefManager *nodemgr,
+	std::map<v3s16, MapBlock*> &modified_blocks);
+
 /*!
  * Copies back nodes from a voxel manipulator
  * to the map and updates lighting.

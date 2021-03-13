@@ -406,6 +406,50 @@ void spread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	}
 }
 
+void convert_legacy_light_banks(MapBlock *block, const NodeDefManager *nodemgr,
+	std::map<v3s16, MapBlock*> &modified_blocks) {
+	bool ok = true;
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
+		MapNode node = block->getNodeUnsafe(x, y, z);
+		if (!node.param1)
+			continue;
+		u8 day = node.param1 & 0x0f;
+		u8 night = (node.param1 >> 4) & 0x0f;
+		if (day != night) // if day > night, it is definitely sunlight. day < night should never happen.
+			continue;
+		const ContentFeatures &f = nodemgr->get(node);
+		if (f.param_type != CPT_LIGHT)
+			continue;
+		ok = false;
+		node.param1 &= 0xf0; // forget daylight value (it wasn't LIGHT_SUN as nightlight is never LIGHT_SUN)
+		block->setNodeNoCheck(x, y, z, node);
+	}
+	if (ok)
+		return;
+
+	mapblock_v3 blockpos = block->getPos();
+	TRACESTREAM(<<"convert_legacy_light_banks "<<PP(blockpos)<<": Fixing sunlight."<<std::endl);
+	LightQueue q(1024);
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
+		MapNode node = block->getNodeUnsafe(x, y, z);
+		if (!node.param1)
+			continue;
+		u8 day = node.param1 & 0x0f;
+		if (!day)
+			continue;
+		const ContentFeatures &f = nodemgr->get(node);
+		if (f.param_type != CPT_LIGHT)
+			continue;
+		q.push(day, {x, y, z}, blockpos, block, 6);
+	}
+
+	spread_light(block->getParent(), nodemgr, LightBank::Sun, q, modified_blocks);
+}
+
 struct SunlightPropagationUnit{
 	v2s16 relative_pos;
 	bool is_sunlit;
