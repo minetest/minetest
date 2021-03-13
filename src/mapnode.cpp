@@ -58,12 +58,12 @@ void MapNode::setLight(LightBank bank, u8 a_light, const ContentFeatures &f) noe
 	// If node doesn't contain light data, ignore this
 	if(f.param_type != CPT_LIGHT)
 		return;
-	if(bank == LIGHTBANK_DAY)
+	if(bank == LightBank::Sun)
 	{
 		param1 &= 0xf0;
 		param1 |= a_light & 0x0f;
 	}
-	else if(bank == LIGHTBANK_NIGHT)
+	else if(bank == LightBank::Art)
 	{
 		param1 &= 0x0f;
 		param1 |= (a_light & 0x0f)<<4;
@@ -77,47 +77,57 @@ void MapNode::setLight(LightBank bank, u8 a_light, const NodeDefManager *nodemgr
 	setLight(bank, a_light, nodemgr->get(*this));
 }
 
+u8 MapNode::getLightBank(LightBank bank) const noexcept {
+	switch (bank) {
+		case LightBank::Sun: return param1 & 0x0f;
+		case LightBank::Art: return (param1 >> 4) & 0x0f;
+	}
+}
+
 bool MapNode::isLightDayNightEq(const NodeDefManager *nodemgr) const
 {
-	const ContentFeatures &f = nodemgr->get(*this);
-	bool isEqual;
-
-	if (f.param_type == CPT_LIGHT) {
-		u8 day   = MYMAX(f.light_source, param1 & 0x0f);
-		u8 night = MYMAX(f.light_source, (param1 >> 4) & 0x0f);
-		isEqual = day == night;
-	} else {
-		isEqual = true;
-	}
-
-	return isEqual;
+	u8 day, night;
+	getLightBanks(day, night, nodemgr);
+	return day == night;
 }
 
 u8 MapNode::getLight(LightBank bank, const NodeDefManager *nodemgr) const
 {
-	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
-
-	u8 light;
-	if(f.param_type == CPT_LIGHT)
-		light = bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
-	else
-		light = 0;
-
-	return MYMAX(f.light_source, light);
+	u8 light = getLightRaw(bank, f);
+	if (bank == LightBank::Art)
+		light = std::max(light, f.light_source);
+	return light;
 }
 
 u8 MapNode::getLightRaw(LightBank bank, const ContentFeatures &f) const noexcept
 {
-	if(f.param_type == CPT_LIGHT)
-		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
-	return 0;
+	if (f.param_type != CPT_LIGHT)
+		return 0;
+	return getLightBank(bank);
 }
 
 u8 MapNode::getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept
 {
-	return MYMAX(f->light_source,
-	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
+	u8 light = getLightBank(bank);
+	if (bank == LightBank::Art)
+		light = std::max(light, f->light_source);
+	return light;
+}
+
+u8 MapNode::getLight(LegacyLightBank bank, const NodeDefManager *nodemgr) const {
+	// Select the brightest of [light source, propagated light]
+	const ContentFeatures &f = nodemgr->get(*this);
+	if (f.param_type == CPT_LIGHT)
+		return getLightNoChecks(bank, &f);
+	return f.light_source;
+}
+
+u8 MapNode::getLightNoChecks(LegacyLightBank bank, const ContentFeatures *f) const noexcept {
+	u8 lightsun = getLightBank(LightBank::Sun);
+	u8 lightart = getLightBank(LightBank::Art);
+	u8 light = bank == LIGHTBANK_DAY ? std::max(lightsun, lightart) : lightart;
+	return std::max(f->light_source, light);
 }
 
 bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight,
@@ -127,8 +137,10 @@ bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight,
 	const ContentFeatures &f = nodemgr->get(*this);
 	if(f.param_type == CPT_LIGHT)
 	{
-		lightday = param1 & 0x0f;
-		lightnight = (param1>>4)&0x0f;
+		u8 lightsun = getLightBank(LightBank::Sun);
+		u8 lightart = getLightBank(LightBank::Art);
+		lightday = std::max(lightsun, lightart);
+		lightnight = lightart;
 	}
 	else
 	{

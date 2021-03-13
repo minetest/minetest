@@ -569,7 +569,7 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		}
 
 		if (distance >= sunlight_min_d && !*sunlight_seen && !nonlight_seen)
-			if (n.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
+			if (n.getLight(LightBank::Sun, ndef) == LIGHT_SUN)
 				*sunlight_seen = true;
 		noncount = 0;
 		brightness_sum += decode_light(n.getLightBlend(daylight_factor, ndef));

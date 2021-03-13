@@ -99,7 +99,7 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	Calculate non-smooth lighting at interior of node.
 	Single light bank.
 */
-static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
+static u8 getInteriorLight(LegacyLightBank bank, MapNode n, s32 increment,
 	const NodeDefManager *ndef)
 {
 	u8 light = n.getLight(bank, ndef);
@@ -123,7 +123,7 @@ u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef)
 	Calculate non-smooth lighting at face of node.
 	Single light bank.
 */
-static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
+static u8 getFaceLight(LegacyLightBank bank, MapNode n, MapNode n2,
 	v3s16 face_dir, const NodeDefManager *ndef)
 {
 	u8 light;

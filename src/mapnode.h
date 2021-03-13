@@ -71,10 +71,16 @@ typedef u16 content_t;
 */
 #define CONTENT_IGNORE 127
 
-enum LightBank
+enum LegacyLightBank
 {
 	LIGHTBANK_DAY,
 	LIGHTBANK_NIGHT
+};
+
+enum class LightBank
+{
+	Sun,
+	Art,
 };
 
 /*
@@ -224,8 +230,8 @@ struct MapNode
 	 */
 	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept;
 
-	bool getLightBanks(u8 &lightday, u8 &lightnight,
-		const NodeDefManager *nodemgr) const;
+	u8 getLight(LegacyLightBank bank, const NodeDefManager *nodemgr) const;
+	u8 getLightNoChecks(LegacyLightBank bank, const ContentFeatures *f) const noexcept;
 
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
@@ -302,6 +308,10 @@ struct MapNode
 			u8 content_width, u8 params_width);
 
 private:
+	u8 getLightBank(LightBank bank) const noexcept;
+	bool getLightBanks(u8 &lightday, u8 &lightnight,
+		const NodeDefManager *nodemgr) const;
+
 	// Deprecated serialization methods
 	void deSerialize_pre22(const u8 *source, u8 version);
 };

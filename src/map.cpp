@@ -217,15 +217,15 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	const ContentFeatures &oldcf = m_nodedef->get(oldnode);
 	if (cf.lightingEquivalent(oldcf)) {
 		// No light update needed, just copy over the old light.
-		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldcf), cf);
-		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldcf), cf);
+		n.setLight(LightBank::Sun, oldnode.getLightRaw(LightBank::Sun, oldcf), cf);
+		n.setLight(LightBank::Art, oldnode.getLightRaw(LightBank::Art, oldcf), cf);
 		set_node_in_block(block, relpos, n);
 
 		modified_blocks[blockpos] = block;
 	} else {
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n.setLight(LIGHTBANK_DAY, 0, cf);
-		n.setLight(LIGHTBANK_NIGHT, 0, cf);
+		n.setLight(LightBank::Sun, 0, cf);
+		n.setLight(LightBank::Art, 0, cf);
 		set_node_in_block(block, relpos, n);
 
 		// Update lighting
@@ -780,8 +780,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n0.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-		n0.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
+		n0.setLight(LightBank::Sun, 0, m_nodedef);
+		n0.setLight(LightBank::Art, 0, m_nodedef);
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
