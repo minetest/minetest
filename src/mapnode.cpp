@@ -770,8 +770,16 @@ SharedBuffer<u8> MapNode::serializeBulk(int version,
 
 	// Serialize content
 	for (u32 i = 0; i < nodecount; i++) {
+		u8 param1 = nodes[i].param1;
+		if (version < 29) {
+			// pre-29 versions use "day" and "night" light banks instead of "sun" and "artificial"
+			u8 sun = param1 & 0x0f;
+			u8 art = param1 >> 4;
+			param1 &= 0xf0;
+			param1 |= std::max(sun, art);
+		}
 		writeU16(&databuf[i * 2], nodes[i].param0);
-		writeU8(&databuf[start1 + i], nodes[i].param1);
+		writeU8(&databuf[start1 + i], param1);
 		writeU8(&databuf[start2 + i], nodes[i].param2);
 	}
 	return databuf;
