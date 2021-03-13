@@ -47,6 +47,8 @@ end
 
 core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
 
+local msg_time_threshold =
+	tonumber(core.settings:get("chatcommand_msg_time_threshold")) or 0.1
 core.register_on_chat_message(function(name, message)
 	if message:sub(1,1) ~= "/" then
 		return
@@ -73,7 +75,9 @@ core.register_on_chat_message(function(name, message)
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
 		core.set_last_run_mod(cmd_def.mod_origin)
+		local t_before = minetest.get_us_time()
 		local success, result = cmd_def.func(name, param)
+		local delay = (minetest.get_us_time() - t_before) / 1000000
 		if success == false and result == nil then
 			core.chat_send_player(name, "-!- "..S("Invalid command usage."))
 			local help_def = core.registered_chatcommands["help"]
@@ -83,8 +87,20 @@ core.register_on_chat_message(function(name, message)
 					core.chat_send_player(name, helpmsg)
 				end
 			end
-		elseif result then
-			core.chat_send_player(name, result)
+		else
+			if delay > msg_time_threshold then
+				-- Show how much time it took to execute the command
+				if result then
+					result = result ..
+						minetest.colorize("#f3d2ff", " (%.5g s)"):format(delay)
+				else
+					result = minetest.colorize("#f3d2ff",
+						"Command execution took %.5f s"):format(delay)
+				end
+			end
+			if result then
+				core.chat_send_player(name, result)
+			end
 		end
 	else
 		core.chat_send_player(name,
