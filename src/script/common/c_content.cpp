@@ -119,6 +119,8 @@ void read_item_definition(lua_State* L, int index,
 	// "" = no prediction
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
+
+	getintfield(L, index, "place_param2", def.place_param2);
 }
 
 /******************************************************************************/
@@ -140,8 +142,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
-	lua_pushstring(L, i.short_description.c_str());
-	lua_setfield(L, -2, "short_description");
+	if (!i.short_description.empty()) {
+		lua_pushstring(L, i.short_description.c_str());
+		lua_setfield(L, -2, "short_description");
+	}
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
@@ -310,6 +314,17 @@ void read_object_properties(lua_State *L, int index,
 			prop->nametag_color = color;
 	}
 	lua_pop(L, 1);
+	lua_getfield(L, -1, "nametag_bgcolor");
+	if (!lua_isnil(L, -1)) {
+		if (lua_toboolean(L, -1)) {
+			video::SColor color;
+			if (read_color(L, -1, &color))
+				prop->nametag_bgcolor = color;
+		} else {
+			prop->nametag_bgcolor = nullopt;
+		}
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "automatic_face_movement_max_rotation_per_sec");
 	if (lua_isnumber(L, -1)) {
@@ -401,6 +416,13 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "nametag");
 	push_ARGB8(L, prop->nametag_color);
 	lua_setfield(L, -2, "nametag_color");
+	if (prop->nametag_bgcolor) {
+		push_ARGB8(L, prop->nametag_bgcolor.value());
+		lua_setfield(L, -2, "nametag_bgcolor");
+	} else {
+		lua_pushboolean(L, false);
+		lua_setfield(L, -2, "nametag_bgcolor");
+	}
 	lua_pushnumber(L, prop->automatic_face_movement_max_rotation_per_sec);
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
@@ -618,21 +640,38 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	}
 	lua_pop(L, 1);
 
-	f.alpha = getintfield_default(L, index, "alpha", 255);
+	/* alpha & use_texture_alpha */
+	// This is a bit complicated due to compatibility
 
-	bool usealpha = getboolfield_default(L, index,
-			"use_texture_alpha", false);
-	if (usealpha)
-		f.alpha = 0;
+	f.setDefaultAlphaMode();
 
-	// Read node color.
+	warn_if_field_exists(L, index, "alpha",
+		"Obsolete, only limited compatibility provided; "
+		"replaced by \"use_texture_alpha\"");
+	if (getintfield_default(L, index, "alpha", 255) != 255)
+		f.alpha = ALPHAMODE_BLEND;
+
+	lua_getfield(L, index, "use_texture_alpha");
+	if (lua_isboolean(L, -1)) {
+		warn_if_field_exists(L, index, "use_texture_alpha",
+			"Boolean values are deprecated; use the new choices");
+		if (lua_toboolean(L, -1))
+			f.alpha = (f.drawtype == NDT_NORMAL) ? ALPHAMODE_CLIP : ALPHAMODE_BLEND;
+	} else if (check_field_or_nil(L, -1, LUA_TSTRING, "use_texture_alpha")) {
+		int result = f.alpha;
+		string_to_enum(ScriptApiNode::es_TextureAlphaMode, result,
+				std::string(lua_tostring(L, -1)));
+		f.alpha = static_cast<enum AlphaMode>(result);
+	}
+	lua_pop(L, 1);
+
+	/* Other stuff */
+
 	lua_getfield(L, index, "color");
 	read_color(L, -1, &f.color);
 	lua_pop(L, 1);
 
 	getstringfield(L, index, "palette", f.palette_name);
-
-	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
 	read_color(L, -1, &f.post_effect_color);

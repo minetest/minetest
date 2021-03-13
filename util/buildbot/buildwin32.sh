@@ -20,8 +20,10 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 # Test which win32 compiler is present
-which i586-mingw32msvc-windres &>/dev/null && toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
-which i686-w64-mingw32-windres &>/dev/null && toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
+which i686-w64-mingw32-gcc &>/dev/null &&
+	toolchain_file=$dir/toolchain_i686-w64-mingw32.cmake
+which i686-w64-mingw32-gcc-posix &>/dev/null &&
+	toolchain_file=$dir/toolchain_i686-w64-mingw32-posix.cmake
 
 if [ -z "$toolchain_file" ]; then
 	echo "Unable to determine which mingw32 compiler to use"
@@ -29,7 +31,7 @@ if [ -z "$toolchain_file" ]; then
 fi
 echo "Using $toolchain_file"
 
-irrlicht_version=1.8.4
+irrlicht_version=1.9.0mt0
 ogg_version=1.3.2
 vorbis_version=1.3.5
 curl_version=7.65.3
@@ -46,7 +48,7 @@ mkdir -p $libdir
 cd $builddir
 
 # Get stuff
-[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://minetest.kitsunemimi.pw/irrlicht-$irrlicht_version-win32.zip \
+[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip \
 	-c -O $packagedir/irrlicht-$irrlicht_version.zip
 [ -e $packagedir/zlib-$zlib_version.zip ] || wget http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip \
 	-c -O $packagedir/zlib-$zlib_version.zip
@@ -100,6 +102,10 @@ if [ "x$NO_MINETEST_GAME" = "x" ]; then
 	cd ..
 fi
 
+irr_dlls=$(echo $libdir/irrlicht/bin/*.dll | tr ' ' ';')
+vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
+gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
+
 # Build the thing
 [ -d _build ] && rm -Rf _build/
 mkdir _build
@@ -116,9 +122,9 @@ cmake .. \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/Win32-gcc/libIrrlicht.dll.a \
-	-DIRRLICHT_DLL=$libdir/irrlicht/bin/Win32-gcc/Irrlicht.dll \
+	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include/irrlicht \
+	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/libIrrlicht.dll.a \
+	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
@@ -133,9 +139,8 @@ cmake .. \
 	\
 	-DVORBIS_INCLUDE_DIR=$libdir/libvorbis/include \
 	-DVORBIS_LIBRARY=$libdir/libvorbis/lib/libvorbis.dll.a \
-	-DVORBIS_DLL=$libdir/libvorbis/bin/libvorbis-0.dll \
+	-DVORBIS_DLL="$vorbis_dlls" \
 	-DVORBISFILE_LIBRARY=$libdir/libvorbis/lib/libvorbisfile.dll.a \
-	-DVORBISFILE_DLL=$libdir/libvorbis/bin/libvorbisfile-3.dll \
 	\
 	-DOPENAL_INCLUDE_DIR=$libdir/openal_stripped/include/AL \
 	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/libOpenAL32.dll.a \
@@ -146,8 +151,7 @@ cmake .. \
 	-DCURL_LIBRARY=$libdir/libcurl/lib/libcurl.dll.a \
 	\
 	-DGETTEXT_MSGFMT=`which msgfmt` \
-	-DGETTEXT_DLL=$libdir/gettext/bin/libintl-8.dll \
-	-DGETTEXT_ICONV_DLL=$libdir/gettext/bin/libiconv-2.dll \
+	-DGETTEXT_DLL="$gettext_dlls" \
 	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
 	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \
 	\

@@ -256,6 +256,9 @@ Subfolders with names starting with `_` or `.` are ignored.
 If a subfolder contains a media file with the same name as a media file
 in one of its parents, the parent's file is used.
 
+Although it is discouraged, a mod can overwrite a media file of any mod that it
+depends on by supplying a file with an equal name.
+
 Naming conventions
 ------------------
 
@@ -1745,8 +1748,9 @@ to games.
 ### `ObjectRef` groups
 
 * `immortal`: Skips all damage and breath handling for an object. This group
-  will also hide the integrated HUD status bars for players, and is
-  automatically set to all players when damage is disabled on the server.
+  will also hide the integrated HUD status bars for players. It is
+  automatically set to all players when damage is disabled on the server and
+  cannot be reset (subject to change).
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
@@ -2871,14 +2875,14 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * padding - rect, adds space between the edges of the button and the content. This value is
                 relative to bgimg_middle.
-    * sound - a sound to be played when clicked.
+    * sound - a sound to be played when triggered.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * sound - a sound to be played when clicked.
+    * sound - a sound to be played when triggered.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * sound - a sound to be played when clicked.
+    * sound - a sound to be played when the entry is changed.
 * field, pwdfield, textarea
     * border - set to false to hide the textbox background and border. Default true.
     * font - Sets font type. See button `font` property for more information.
@@ -2909,12 +2913,12 @@ Some types may inherit styles from parent types.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
-    * sound - a sound to be played when clicked.
+    * sound - a sound to be played when triggered.
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * sound - a sound to be played when clicked.
+    * sound - a sound to be played when a different tab is selected.
     * textcolor - color. Default white.
 * table, textlist
     * font - Sets font type. See button `font` property for more information.
@@ -3264,7 +3268,6 @@ Helper functions
     * returns true when the passed number represents NaN.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
-    * This value might overflow on certain 32-bit systems!
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 * `table.indexof(list, val)`: returns the smallest numerical index containing
@@ -3275,7 +3278,8 @@ Helper functions
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
-    * If multiple keys in `t` map to the same value, the result is undefined.
+    * If multiple keys in `t` map to the same value, it is unspecified which
+      value maps to that key.
 * `table.shuffle(table, [from], [to], [random_func])`:
     * Shuffles elements `from` to `to` in `table` in place
     * `from` defaults to `1`
@@ -4385,6 +4389,8 @@ Utilities
           object_step_has_moveresult = true,
           -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
           direct_velocity_on_players = true,
+          -- nodedef's use_texture_alpha accepts new string modes (5.4.0)
+          use_texture_alpha_string_modes = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -5442,20 +5448,22 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
-* `minetest.dynamic_add_media(filepath)`
-    * Adds the file at the given path to the media sent to clients by the server
-      on startup and also pushes this file to already connected clients.
+* `minetest.dynamic_add_media(filepath, callback)`
+    * `filepath`: path to a media file on the filesystem
+    * `callback`: function with arguments `name`, where name is a player name
+      (previously there was no callback argument; omitting it is deprecated)
+    * Adds the file to the media sent to clients by the server on startup
+      and also pushes this file to already connected clients.
       The file must be a supported image, sound or model format. It must not be
       modified, deleted, moved or renamed after calling this function.
       The list of dynamically added media is not persisted.
-    * Returns boolean indicating success (duplicate files count as error)
-    * The media will be ready to use (in e.g. entity textures, sound_play)
-      immediately after calling this function.
+    * Returns false on error, true if the request was accepted
+    * The given callback will be called for every player as soon as the
+      media is available on the client.
       Old clients that lack support for this feature will not see the media
-      unless they reconnect to the server.
-    * Since media transferred this way does not use client caching or HTTP
-      transfers, dynamic media should not be used with big files or performance
-      will suffer.
+      unless they reconnect to the server. (callback won't be called)
+    * Since media transferred this way currently does not use client caching
+       or HTTP transfers, dynamic media should not be used with big files.
 
 Bans
 ----
@@ -6033,18 +6041,18 @@ an itemstring, a table or `nil`.
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `get_description()`: returns the description shown in inventory list tooltips.
-    * The engine uses the same as this function for item descriptions.
+    * The engine uses this when showing item descriptions in tooltips.
     * Fields for finding the description, in order:
         * `description` in item metadata (See [Item Metadata].)
         * `description` in item definition
         * item name
-* `get_short_description()`: returns the short description.
+* `get_short_description()`: returns the short description or nil.
     * Unlike the description, this does not include new lines.
-    * The engine uses the same as this function for short item descriptions.
     * Fields for finding the short description, in order:
         * `short_description` in item metadata (See [Item Metadata].)
         * `short_description` in item definition
-        * first line of the description (See `get_description()`.)
+        * first line of the description (From item meta or def, see `get_description()`.)
+        * Returns nil if none of the above are set
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -6221,8 +6229,8 @@ object you are working with still exists.
     * `time_from_last_punch` = time since last punch action of the puncher
     * `direction`: can be `nil`
 * `right_click(clicker)`; `clicker` is another `ObjectRef`
-* `get_hp()`: returns number of hitpoints (2 * number of hearts)
-* `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
+* `get_hp()`: returns number of health points
+* `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
     * Is limited to the range of 0 ... 65535 (2^16 - 1)
     * For players: HP are also limited by `hp_max` specified in the player's
@@ -6268,15 +6276,21 @@ object you are working with still exists.
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
     * {
-        color = {a=0..255, r=0..255, g=0..255, b=0..255},
         text = "",
+        color = {a=0..255, r=0..255, g=0..255, b=0..255},
+        bgcolor = {a=0..255, r=0..255, g=0..255, b=0..255},
       }
 * `set_nametag_attributes(attributes)`
     * sets the attributes of the nametag of an object
     * `attributes`:
       {
-        color = ColorSpec,
         text = "My Nametag",
+        color = ColorSpec,
+        -- ^ Text color
+        bgcolor = ColorSpec or false,
+        -- ^ Sets background color of nametag
+        -- `false` will cause the background to be set automatically based on user settings
+        -- Default: false
       }
 
 #### Lua entity only (no-op for other objects)
@@ -6950,9 +6964,13 @@ Player properties need to be saved manually.
         -- For all other objects, a nil or empty string removes the nametag.
         -- To hide a nametag, set its color alpha to zero. That will disable it entirely.
 
-
         nametag_color = <ColorSpec>,
-        -- Sets color of nametag
+        -- Sets text color of nametag
+
+        nametag_bgcolor = <ColorSpec>,
+        -- Sets background color of nametag
+        -- `false` will cause the background to be set automatically based on user settings.
+        -- Default: false
 
         infotext = "",
         -- By default empty, text to be shown when pointed at object
@@ -7165,8 +7183,9 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         short_description = "Steel Axe",
         -- Must not contain new lines.
-        -- Defaults to the first line of description.
-        -- See also: `get_short_description` in [`ItemStack`]
+        -- Defaults to nil.
+        -- Use an [`ItemStack`] to get the short description, eg:
+        --   ItemStack(itemname):get_short_description()
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.
@@ -7339,10 +7358,18 @@ Used by `minetest.register_node`.
         -- If the node has a palette, then this setting only has an effect in
         -- the inventory and on the wield item.
 
-        use_texture_alpha = false,
-        -- Use texture's alpha channel
-        -- If this is set to false, the node will be rendered fully opaque
-        -- regardless of any texture transparency.
+        use_texture_alpha = ...,
+        -- Specifies how the texture's alpha channel will be used for rendering.
+        -- possible values:
+        -- * "opaque": Node is rendered opaque regardless of alpha channel
+        -- * "clip": A given pixel is either fully see-through or opaque
+        --           depending on the alpha channel being below/above 50% in value
+        -- * "blend": The alpha channel specifies how transparent a given pixel
+        --            of the rendered node is
+        -- The default is "opaque" for drawtypes normal, liquid and flowingliquid;
+        -- "clip" otherwise.
+        -- If set to a boolean value (deprecated): true either sets it to blend
+        -- or clip, false sets it to clip or opaque mode depending on the drawtype.
 
         palette = "palette.png",
         -- The node's `param2` is used to select a pixel from the image.
@@ -7617,6 +7644,8 @@ Used by `minetest.register_node`.
         on_dig = function(pos, node, digger),
         -- default: minetest.node_dig
         -- By default checks privileges, wears out tool and removes node.
+        -- return true if the node was dug successfully, false otherwise.
+        -- Deprecated: returning nil is the same as returning true.
 
         on_timer = function(pos, elapsed),
         -- default: nil

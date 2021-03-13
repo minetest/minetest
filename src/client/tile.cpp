@@ -2224,9 +2224,14 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::SColor c(0, 0, 0, 0);
 	video::ITexture *texture = getTexture(name);
+	if (!texture)
+		return c;
 	video::IImage *image = driver->createImage(texture,
 		core::position2d<s32>(0, 0),
 		texture->getOriginalSize());
+	if (!image)
+		return c;
+
 	u32 total = 0;
 	u32 tR = 0;
 	u32 tG = 0;

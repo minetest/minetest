@@ -168,6 +168,18 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 	return true;
 }
 
+bool ServerInventoryManager::checkDetachedInventoryAccess(
+		const InventoryLocation &loc, const std::string &player) const
+{
+	SANITY_CHECK(loc.type == InventoryLocation::DETACHED);
+
+	const auto &inv_it = m_detached_inventories.find(loc.name);
+	if (inv_it == m_detached_inventories.end())
+		return false;
+
+	return inv_it->second.owner.empty() || inv_it->second.owner == player;
+}
+
 void ServerInventoryManager::sendDetachedInventories(const std::string &peer_name,
 		bool incremental,
 		std::function<void(const std::string &, Inventory *)> apply_cb)

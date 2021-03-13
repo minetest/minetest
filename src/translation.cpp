@@ -144,14 +144,13 @@ void Translations::loadTranslation(const std::string &data)
 		}
 
 		std::wstring oword1 = word1.str(), oword2 = word2.str();
-		if (oword2.empty()) {
-			oword2 = oword1;
-			errorstream << "Ignoring empty translation for \""
-			            << wide_to_utf8(oword1) << "\"" << std::endl;
+		if (!oword2.empty()) {
+			std::wstring translation_index = textdomain + L"|";
+			translation_index.append(oword1);
+			m_translations[translation_index] = oword2;
+		} else {
+			infostream << "Ignoring empty translation for \""
+				<< wide_to_utf8(oword1) << "\"" << std::endl;
 		}
-
-		std::wstring translation_index = textdomain + L"|";
-		translation_index.append(oword1);
-		m_translations[translation_index] = oword2;
 	}
 }

@@ -180,7 +180,7 @@ void TestGameDef::defineSomeNodes()
 		"{default_water.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	f.alpha = 128;
+	f.alpha = ALPHAMODE_BLEND;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 4;
 	f.is_ground_content = true;
@@ -201,7 +201,7 @@ void TestGameDef::defineSomeNodes()
 		"{default_lava.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	f.alpha = 128;
+	f.alpha = ALPHAMODE_OPAQUE;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 7;
 	f.light_source = LIGHT_MAX-1;

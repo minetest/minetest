@@ -30,7 +30,7 @@ class Settings;
 struct NoiseParams;
 
 // Global objects
-extern Settings *g_settings;
+extern Settings *g_settings; // Same as Settings::getLayer(SL_GLOBAL);
 extern std::string g_settings_path;
 
 // Type for a settings changed callback function
@@ -58,6 +58,14 @@ enum SettingsParseEvent {
 	SPE_END,
 	SPE_GROUP,
 	SPE_MULTILINE,
+};
+
+enum SettingsLayer {
+	SL_DEFAULTS,
+	SL_GAME,
+	SL_GLOBAL,
+	SL_MAP,
+	SL_TOTAL_COUNT
 };
 
 struct ValueSpec {
@@ -92,8 +100,13 @@ typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
-	Settings() = default;
+	static Settings *createLayer(SettingsLayer sl, const std::string &end_tag = "");
+	static Settings *getLayer(SettingsLayer sl);
+	SettingsLayer getLayerType() const { return m_settingslayer; }
 
+	Settings(const std::string &end_tag = "") :
+		m_end_tag(end_tag)
+	{}
 	~Settings();
 
 	Settings & operator += (const Settings &other);
@@ -110,7 +123,7 @@ public:
 	// NOTE: Types of allowed_options are ignored.  Returns success.
 	bool parseCommandLine(int argc, char *argv[],
 			std::map<std::string, ValueSpec> &allowed_options);
-	bool parseConfigLines(std::istream &is, const std::string &end = "");
+	bool parseConfigLines(std::istream &is);
 	void writeLines(std::ostream &os, u32 tab_depth=0) const;
 
 	/***********
@@ -119,7 +132,6 @@ public:
 
 	Settings *getGroup(const std::string &name) const;
 	const std::string &get(const std::string &name) const;
-	const std::string &getDefault(const std::string &name) const;
 	bool getBool(const std::string &name) const;
 	u16 getU16(const std::string &name) const;
 	s16 getS16(const std::string &name) const;
@@ -146,7 +158,6 @@ public:
 
 	bool getGroupNoEx(const std::string &name, Settings *&val) const;
 	bool getNoEx(const std::string &name, std::string &val) const;
-	bool getDefaultNoEx(const std::string &name, std::string &val) const;
 	bool getFlag(const std::string &name) const;
 	bool getU16NoEx(const std::string &name, u16 &val) const;
 	bool getS16NoEx(const std::string &name, s16 &val) const;
@@ -170,11 +181,10 @@ public:
 	// N.B. Groups not allocated with new must be set to NULL in the settings
 	// tree before object destruction.
 	bool setEntry(const std::string &name, const void *entry,
-		bool set_group, bool set_default);
+		bool set_group);
 	bool set(const std::string &name, const std::string &value);
 	bool setDefault(const std::string &name, const std::string &value);
 	bool setGroup(const std::string &name, const Settings &group);
-	bool setGroupDefault(const std::string &name, const Settings &group);
 	bool setBool(const std::string &name, bool value);
 	bool setS16(const std::string &name, s16 value);
 	bool setU16(const std::string &name, u16 value);
@@ -185,21 +195,16 @@ public:
 	bool setV3F(const std::string &name, v3f value);
 	bool setFlagStr(const std::string &name, u32 flags,
 		const FlagDesc *flagdesc = nullptr, u32 flagmask = U32_MAX);
-	bool setNoiseParams(const std::string &name, const NoiseParams &np,
-		bool set_default=false);
+	bool setNoiseParams(const std::string &name, const NoiseParams &np);
 
 	// remove a setting
 	bool remove(const std::string &name);
-	void clear();
-	void clearDefaults();
 
 	/**************
 	 * Miscellany *
 	 **************/
 
 	void setDefault(const std::string &name, const FlagDesc *flagdesc, u32 flags);
-	// Takes the provided setting values and uses them as new defaults
-	void overrideDefaults(Settings *other);
 	const FlagDesc *getFlagDescFallback(const std::string &name) const;
 
 	void registerChangedCallback(const std::string &name,
@@ -215,9 +220,9 @@ private:
 	 ***********************/
 
 	SettingsParseEvent parseConfigObject(const std::string &line,
-		const std::string &end, std::string &name, std::string &value);
+		std::string &name, std::string &value);
 	bool updateConfigObject(std::istream &is, std::ostream &os,
-		const std::string &end, u32 tab_depth=0);
+		u32 tab_depth=0);
 
 	static bool checkNameValid(const std::string &name);
 	static bool checkValueValid(const std::string &value);
@@ -228,12 +233,14 @@ private:
 	/***********
 	 * Getters *
 	 ***********/
+	Settings *getParent() const;
 
 	const SettingsEntry &getEntry(const std::string &name) const;
-	const SettingsEntry &getEntryDefault(const std::string &name) const;
 
 	// Allow TestSettings to run sanity checks using private functions.
 	friend class TestSettings;
+	// For sane mutex locking when iterating
+	friend class LuaSettings;
 
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
@@ -242,14 +249,15 @@ private:
 	void doCallbacks(const std::string &name) const;
 
 	SettingEntries m_settings;
-	SettingEntries m_defaults;
-	std::unordered_map<std::string, const FlagDesc *> m_flags;
-
 	SettingsCallbackMap m_callbacks;
+	std::string m_end_tag;
 
 	mutable std::mutex m_callback_mutex;
 
 	// All methods that access m_settings/m_defaults directly should lock this.
 	mutable std::mutex m_mutex;
 
+	static Settings *s_layers[SL_TOTAL_COUNT];
+	SettingsLayer m_settingslayer = SL_TOTAL_COUNT;
+	static std::unordered_map<std::string, const FlagDesc *> s_flags;
 };

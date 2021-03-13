@@ -86,8 +86,7 @@ src/test_config.h
 src/cmake_config.h
 src/cmake_config_githash.h
 src/unittest/test_world/world.mt
-src/lua/build/
-locale/
+/locale/
 .directory
 *.cbp
 *.layout

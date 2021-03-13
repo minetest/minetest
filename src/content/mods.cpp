@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "porting.h"
 #include "convert_json.h"
+#include "script/common/c_internal.h"
 
 bool parseDependsString(std::string &dep, std::unordered_set<char> &symbols)
 {
@@ -44,20 +45,24 @@ bool parseDependsString(std::string &dep, std::unordered_set<char> &symbols)
 	return !dep.empty();
 }
 
+static void log_mod_deprecation(const ModSpec &spec, const std::string &warning)
+{
+	auto handling_mode = get_deprecated_handling_mode();
+	if (handling_mode != DeprecatedHandlingMode::Ignore) {
+		std::ostringstream os;
+		os << warning << " (" << spec.name << " at " << spec.path << ")" << std::endl;
+
+		if (handling_mode == DeprecatedHandlingMode::Error) {
+			throw ModError(os.str());
+		} else {
+			warningstream << os.str();
+		}
+	}
+}
+
 void parseModContents(ModSpec &spec)
 {
 	// NOTE: this function works in mutual recursion with getModsInPath
-	Settings info;
-	info.readConfigFile((spec.path + DIR_DELIM + "mod.conf").c_str());
-
-	if (info.exists("name"))
-		spec.name = info.get("name");
-
-	if (info.exists("author"))
-		spec.author = info.get("author");
-
-	if (info.exists("release"))
-		spec.release = info.getS32("release");
 
 	spec.depends.clear();
 	spec.optdepends.clear();
@@ -78,6 +83,20 @@ void parseModContents(ModSpec &spec)
 		spec.modpack_content = getModsInPath(spec.path, true);
 
 	} else {
+		Settings info;
+		info.readConfigFile((spec.path + DIR_DELIM + "mod.conf").c_str());
+
+		if (info.exists("name"))
+			spec.name = info.get("name");
+		else
+			log_mod_deprecation(spec, "Mods not having a mod.conf file with the name is deprecated.");
+
+		if (info.exists("author"))
+			spec.author = info.get("author");
+
+		if (info.exists("release"))
+			spec.release = info.getS32("release");
+
 		// Attempt to load dependencies from mod.conf
 		bool mod_conf_has_depends = false;
 		if (info.exists("depends")) {
@@ -109,6 +128,10 @@ void parseModContents(ModSpec &spec)
 			std::vector<std::string> dependencies;
 
 			std::ifstream is((spec.path + DIR_DELIM + "depends.txt").c_str());
+
+			if (is.good())
+				log_mod_deprecation(spec, "depends.txt is deprecated, please use mod.conf instead.");
+
 			while (is.good()) {
 				std::string dep;
 				std::getline(is, dep);
@@ -127,14 +150,10 @@ void parseModContents(ModSpec &spec)
 			}
 		}
 
-		if (info.exists("description")) {
+		if (info.exists("description"))
 			spec.desc = info.get("description");
-		} else {
-			std::ifstream is((spec.path + DIR_DELIM + "description.txt")
-							 .c_str());
-			spec.desc = std::string((std::istreambuf_iterator<char>(is)),
-					std::istreambuf_iterator<char>());
-		}
+		else if (fs::ReadFile(spec.path + DIR_DELIM + "description.txt", spec.desc))
+			log_mod_deprecation(spec, "description.txt is deprecated, please use mod.conf instead.");
 	}
 }
 

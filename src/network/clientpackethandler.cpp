@@ -1041,9 +1041,6 @@ void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 
 void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
-
 	u32 server_id;
 	u8 type;
 	v2f pos;
@@ -1070,22 +1067,23 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
-	event->type             = CE_HUDADD;
-	event->hudadd.server_id = server_id;
-	event->hudadd.type      = type;
-	event->hudadd.pos       = new v2f(pos);
-	event->hudadd.name      = new std::string(name);
-	event->hudadd.scale     = new v2f(scale);
-	event->hudadd.text      = new std::string(text);
-	event->hudadd.number    = number;
-	event->hudadd.item      = item;
-	event->hudadd.dir       = dir;
-	event->hudadd.align     = new v2f(align);
-	event->hudadd.offset    = new v2f(offset);
-	event->hudadd.world_pos = new v3f(world_pos);
-	event->hudadd.size      = new v2s32(size);
-	event->hudadd.z_index   = z_index;
-	event->hudadd.text2     = new std::string(text2);
+	event->type              = CE_HUDADD;
+	event->hudadd            = new ClientEventHudAdd();
+	event->hudadd->server_id = server_id;
+	event->hudadd->type      = type;
+	event->hudadd->pos       = pos;
+	event->hudadd->name      = name;
+	event->hudadd->scale     = scale;
+	event->hudadd->text      = text;
+	event->hudadd->number    = number;
+	event->hudadd->item      = item;
+	event->hudadd->dir       = dir;
+	event->hudadd->align     = align;
+	event->hudadd->offset    = offset;
+	event->hudadd->world_pos = world_pos;
+	event->hudadd->size      = size;
+	event->hudadd->z_index   = z_index;
+	event->hudadd->text2     = text2;
 	m_client_event_queue.push(event);
 }
 
@@ -1095,16 +1093,10 @@ void Client::handleCommand_HudRemove(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	auto i = m_hud_server_to_client.find(server_id);
-	if (i != m_hud_server_to_client.end()) {
-		int client_id = i->second;
-		m_hud_server_to_client.erase(i);
-
-		ClientEvent *event = new ClientEvent();
-		event->type     = CE_HUDRM;
-		event->hudrm.id = client_id;
-		m_client_event_queue.push(event);
-	}
+	ClientEvent *event = new ClientEvent();
+	event->type     = CE_HUDRM;
+	event->hudrm.id = server_id;
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudChange(NetworkPacket* pkt)
@@ -1131,19 +1123,17 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	else
 		*pkt >> intdata;
 
-	std::unordered_map<u32, u32>::const_iterator i = m_hud_server_to_client.find(server_id);
-	if (i != m_hud_server_to_client.end()) {
-		ClientEvent *event = new ClientEvent();
-		event->type              = CE_HUDCHANGE;
-		event->hudchange.id      = i->second;
-		event->hudchange.stat    = (HudElementStat)stat;
-		event->hudchange.v2fdata = new v2f(v2fdata);
-		event->hudchange.v3fdata = new v3f(v3fdata);
-		event->hudchange.sdata   = new std::string(sdata);
-		event->hudchange.data    = intdata;
-		event->hudchange.v2s32data = new v2s32(v2s32data);
-		m_client_event_queue.push(event);
-	}
+	ClientEvent *event = new ClientEvent();
+	event->type                 = CE_HUDCHANGE;
+	event->hudchange            = new ClientEventHudChange();
+	event->hudchange->id        = server_id;
+	event->hudchange->stat      = static_cast<HudElementStat>(stat);
+	event->hudchange->v2fdata   = v2fdata;
+	event->hudchange->v3fdata   = v3fdata;
+	event->hudchange->sdata     = sdata;
+	event->hudchange->data      = intdata;
+	event->hudchange->v2s32data = v2s32data;
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)

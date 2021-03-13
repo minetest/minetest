@@ -12,8 +12,6 @@ if(ENABLE_SYSTEM_GMP)
 	else()
 		message (STATUS "Detecting GMP from system failed.")
 	endif()
-else()
-	message (STATUS "Detecting GMP from system disabled! (ENABLE_SYSTEM_GMP=0)")
 endif()
 
 if(NOT USE_SYSTEM_GMP)

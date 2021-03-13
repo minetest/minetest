@@ -2,10 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-25 16:39+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"POT-Creation-Date: 2021-02-23 19:03+0100\n"
+"PO-Revision-Date: 2021-02-23 15:50+0000\n"
+"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -47,10 +46,6 @@ msgstr "Sambung ulang"
 msgid "The server has requested a reconnect:"
 msgstr "Server ini meminta untuk menyambung ulang:"
 
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Memuat..."
-
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Versi protokol tidak sesuai. "
@@ -64,11 +59,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Server mendukung protokol antara versi $1 dan versi $2. "
 
 #: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"Coba nyalakan ulang daftar server publik dan periksa sambungan internet Anda."
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Kami hanya mendukung protokol versi $1."
 
@@ -76,7 +66,8 @@ msgstr "Kami hanya mendukung protokol versi $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Kami mendukung protokol antara versi $1 dan versi $2."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -86,7 +77,8 @@ msgstr "Kami mendukung protokol antara versi $1 dan versi $2."
 msgid "Cancel"
 msgstr "Batal"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Dependensi:"
 
@@ -160,12 +152,52 @@ msgid "enabled"
 msgstr "dinyalakan"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" telah ada. Apakah Anda mau menimpanya?"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Dependensi $1 dan $2 akan dipasang."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 oleh $2"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+"$1 sedang diunduh,\n"
+"$2 dalam antrean"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 downloading..."
+msgstr "$1 mengunduh..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 membutuhkan dependensi yang tidak bisa ditemukan."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 akan dipasang dan $2 dependensi akan dilewati."
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Semua paket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Already installed"
+msgstr "Telah terpasang"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Kembali ke menu utama"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Base Game:"
+msgstr "Permainan Dasar:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -189,6 +221,14 @@ msgid "Install"
 msgstr "Pasang"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Install $1"
+msgstr "Pasang $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Install missing dependencies"
+msgstr "Pasang dependensi yang belum ada"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Mod"
@@ -202,9 +242,24 @@ msgid "No results"
 msgstr "Tiada hasil"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Cari"
+msgid "No updates"
+msgstr "Tiada pembaruan"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr "Tidak ditemukan"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Timpa"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr "Harap pastikan bahwa permainan dasar telah sesuai."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr "Diantrekan"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -219,8 +274,12 @@ msgid "Update"
 msgstr "Perbarui"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr "Tinjau"
+msgid "Update All [$1]"
+msgstr "Perbarui Semua [$1]"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Lihat informasi lebih lanjut di peramban web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -284,7 +343,7 @@ msgstr "Tanah mengambang di langit"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Floatland (uji coba)"
+msgstr "Floatland (tahap percobaan)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -518,6 +577,10 @@ msgid "Scale"
 msgstr "Skala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Search"
+msgstr "Cari"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
 msgstr "Pilih direktori"
 
@@ -634,6 +697,20 @@ msgstr "Gagal memasang mod sebagai $1"
 msgid "Unable to install a modpack as a $1"
 msgstr "Gagal memasang paket mod sebagai $1"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Memuat..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+#, fuzzy
+msgid "Public server list is disabled"
+msgstr "Skrip sisi klien dimatikan"
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+"Coba nyalakan ulang daftar server publik dan periksa sambungan internet Anda."
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr "Jelajahi konten daring"
@@ -687,6 +764,18 @@ msgid "Credits"
 msgstr "Penghargaan"
 
 #: builtin/mainmenu/tab_credits.lua
+msgid "Open User Data Directory"
+msgstr "Pilih direktori"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+"Membuka direktori yang berisi dunia, permainan, mod, dan paket tekstur\n"
+"dari pengguna dalam pengelola/penjelajah berkas."
+
+#: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
 msgstr "Penyumbang Sebelumnya"
 
@@ -703,14 +792,10 @@ msgid "Bind Address"
 msgstr "Alamat Sambungan"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Konfigurasi"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Mode Kreatif"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Nyalakan Kerusakan"
 
@@ -727,8 +812,8 @@ msgid "Install games from ContentDB"
 msgstr "Pasang permainan dari ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Nama/Kata Sandi"
+msgid "Name"
+msgstr "Nama"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -739,12 +824,20 @@ msgid "No world created or selected!"
 msgstr "Tiada dunia yang dibuat atau dipilih!"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Password"
+msgstr "Kata sandi"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
 msgstr "Mainkan Permainan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
 msgstr "Porta"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Select Mods"
+msgstr "Pilih Mod"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -762,23 +855,23 @@ msgstr "Mulai Permainan"
 msgid "Address / Port"
 msgstr "Alamat/Porta"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Sambung"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Mode kreatif"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
 msgstr "Kerusakan dinyalakan"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Hapus favorit"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
 msgstr "Favorit"
 
@@ -786,16 +879,16 @@ msgstr "Favorit"
 msgid "Join Game"
 msgstr "Gabung Permainan"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
 msgstr "Nama/Kata Sandi"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Ping"
 
 #. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
 msgstr "PvP dinyalakan"
 
@@ -824,20 +917,12 @@ msgid "Antialiasing:"
 msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "Apakah Anda yakin ingin mengatur ulang dunia Anda?"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr "Simpan Ukuran Layar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "Filter Bilinear"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "Bump Mapping"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -852,20 +937,12 @@ msgid "Fancy Leaves"
 msgstr "Daun Megah"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr "Buat Normal Maps"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
 msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "Filter Aniso. + Mipmap"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "Tidak"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -895,17 +972,9 @@ msgstr "Daun Opak"
 msgid "Opaque Water"
 msgstr "Air Opak"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "Partikel"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "Atur ulang dunia pemain tunggal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -918,6 +987,10 @@ msgstr "Pengaturan"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Shader"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Shaders (experimental)"
+msgstr "Shader (tahap percobaan)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -941,7 +1014,7 @@ msgstr "Untuk menggunakan shader, pengandar OpenGL harus digunakan."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr "Tone Mapping"
+msgstr "Pemetaan Nada"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
@@ -962,22 +1035,6 @@ msgstr "Air Berombak"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Tanaman Berayun"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Ya"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Konfigurasi mod"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Beranda"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Mulai Pemain Tunggal"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1140,13 +1197,13 @@ msgid ""
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
@@ -1156,12 +1213,12 @@ msgstr ""
 "- %s: geser kiri\n"
 "- %s: geser kanan\n"
 "- %s: lompat/panjat\n"
+"- %s: gali/pukul\n"
+"- %s: taruh/pakai\n"
 "- %s: menyelinap/turun\n"
 "- %s: jatuhkan barang\n"
 "- %s: inventaris\n"
 "- Tetikus: belok/lihat\n"
-"- Klik kiri: gali/pukul\n"
-"- Klik kanan: taruh/pakai\n"
 "- Roda tetikus: pilih barang\n"
 "- %s: obrolan\n"
 
@@ -1292,34 +1349,6 @@ msgstr "MiB/s"
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
 msgstr "Peta mini sedang dilarang oleh permainan atau mod"
-
-#: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr "Peta mini disembunyikan"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr "Peta mini mode radar, perbesaran 1x"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr "Peta mini mode radar, perbesaran 2x"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr "Peta mini mode radar, perbesaran 4x"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr "Peta mini mode permukaan, perbesaran 1x"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr "Peta mini mode permukaan, perbesaran 2x"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
-msgstr "Peta mini mode permukaan, perbesaran 4x"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1713,6 +1742,24 @@ msgstr "Tombol X 2"
 msgid "Zoom"
 msgstr "Zum"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr "Peta mini disembunyikan"
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr "Peta mini mode radar, perbesaran %dx"
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr "Peta mini mode permukaan, perbesaran %dx"
+
+#: src/client/minimap.cpp
+msgid "Minimap in texture mode"
+msgstr "Peta mini mode tekstur"
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Kata sandi tidak cocok!"
@@ -1984,14 +2031,6 @@ msgstr ""
 "untuk pulau, atur ketiga angka menjadi sama untuk bentuk mentah."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-"0 = parallax occlusion dengan informasi kemiringan (cepat).\n"
-"1 = relief mapping (pelan, lebih akurat)."
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr "Noise 2D yang mengatur bentuk/ukuran punggung gunung."
 
@@ -2118,6 +2157,10 @@ msgid "ABM interval"
 msgstr "Selang waktu ABM"
 
 #: src/settings_translation_file.cpp
+msgid "ABM time budget"
+msgstr "Anggaran waktu ABM"
+
+#: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
 msgstr "Batas mutlak antrean kemunculan blok"
 
@@ -2178,7 +2221,7 @@ msgid ""
 msgstr ""
 "Sesuaikan kepadatan lapisan floatland.\n"
 "Tambahkan nilai untuk menambah kepadatan. Dapat positif atau negatif.\n"
-"Nilai = 0.0: 50% volume adalah floatland.\n"
+"Nilai = 0.0: 50% o volume adalah floatland.\n"
 "Nilai = 2.0 (dapat lebih tinggi tergantung 'mgv7_np_floatland', selalu uji\n"
 "terlebih dahulu) membuat lapisan floatland padat (penuh)."
 
@@ -2376,10 +2419,6 @@ msgid "Builtin"
 msgstr "Terpasang bawaan"
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr "Bumpmapping"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2454,20 +2493,6 @@ msgid ""
 msgstr ""
 "Pertengahan rentang penguatan kurva cahaya.\n"
 "Nilai 0.0 adalah minimum, 1.0 adalah maksimum."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
-msgstr ""
-"Mengubah antarmuka menu utama:\n"
-"-   Full: Banyak dunia pemain tunggal, pilih permainan, paket tekstur, dll.\n"
-"-   Simple: Satu dunia pemain tunggal, tanpa pilihan permainan atau paket\n"
-"tekstur. Cocok untuk layar kecil."
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2590,8 +2615,8 @@ msgid ""
 "allow them to upload and download data to/from the internet."
 msgstr ""
 "Daftar yang dipisahkan dengan koma dari mod yang dibolehkan untuk\n"
-"mengakses HTTP API, membolehkan mereka untuk mengunggah dan\n"
-"mengunduh data ke/dari internet."
+"mengakses HTTP API, membolehkan mereka untuk mengunggah dan mengunduh data "
+"ke/dari internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2599,7 +2624,7 @@ msgid ""
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
-"untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif\n"
+"untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif "
 "(melalui request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
@@ -2633,6 +2658,10 @@ msgstr "Tombol konsol"
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
 msgstr "Daftar Hitam Flag ContentDB"
+
+#: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
+msgstr "Jumlah Maks Pengunduhan ContentDB Bersamaan"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2700,16 +2729,24 @@ msgid "Crosshair alpha"
 msgstr "Keburaman crosshair"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr "Keburaman crosshair (keopakan, dari 0 sampai 255)."
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
+msgstr ""
+"Keburaman crosshair (keopakan, dari 0 sampai 255).\n"
+"Juga mengatur warna crosshair objek"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
 msgstr "Warna crosshair"
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
-msgstr "Warna crosshair: (merah,hijau,biru) atau (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
+msgstr ""
+"Warna crosshair (R,G,B),\n"
+"sekaligus mengatur warna crosshair objek"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2813,14 +2850,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Menetapkan lokasi dan medan dari danau dan bukit pilihan."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
-msgstr ""
-"Menentukan langkah penyampelan tekstur.\n"
-"Nilai lebih tinggi menghasilkan peta lebih halus."
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr "Mengatur ketinggian dasar tanah."
 
@@ -2899,6 +2928,10 @@ msgid "Desynchronize block animation"
 msgstr "Putuskan sinkronasi animasi blok"
 
 #: src/settings_translation_file.cpp
+msgid "Dig key"
+msgstr "Tombol gali"
+
+#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Partikel menggali"
 
@@ -2963,7 +2996,8 @@ msgid "Enable console window"
 msgstr "Gunakan jendela konsol"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+#, fuzzy
+msgid "Enable creative mode for all players"
 msgstr "Gunakan mode kreatif pada peta baru."
 
 #: src/settings_translation_file.cpp
@@ -3073,39 +3107,12 @@ msgid "Enables animation of inventory items."
 msgstr "Jalankan animasi barang inventaris."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"Gunakan bumpmapping untuk tekstur. Normalmap harus disediakan oleh paket\n"
-"tekstur atau harus dihasilkan otomatis.\n"
-"Membutuhkan penggunaan shader."
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "Gunakan tembolok untuk facedir mesh yang diputar."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
 msgstr "Gunakan peta mini."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-"Buat normalmap secara langsung (efek Emboss).\n"
-"Membutuhkan penggunaan bumpmapping."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
-msgstr ""
-"Gunakan pemetaan parallax occlusion.\n"
-"Membutuhkan penggunaan shader."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3129,14 +3136,6 @@ msgstr "Metode benda (entity)"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-"Masih tahap percobaan, dapat menyebabkan terlihatnya spasi antarblok\n"
-"saat diatur dengan angka yang lebih besar dari 0."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3152,8 +3151,8 @@ msgstr ""
 "yang rata dan cocok untuk lapisan floatland padat (penuh)."
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
-msgstr "FPS (bingkai per detik) pada menu jeda"
+msgid "FPS when unfocused or paused"
+msgstr "FPS (bingkai per detik) saat dijeda atau tidak difokuskan"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3474,10 +3473,6 @@ msgid "GUI scaling filter txr2img"
 msgstr "Filter txr2img skala GUI"
 
 #: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
-msgstr "Buat normalmap"
-
-#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "Callback global"
 
@@ -3488,9 +3483,9 @@ msgid ""
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Atribut pembuatan peta global.\n"
-"Dalam pembuat peta v6, flag \"decorations\" mengatur semua hiasan kecuali\n"
-"pohon dan rumput rimba. Dalam pembuat peta lain, flag ini mengatur\n"
-"semua dekorasi."
+"Dalam pembuat peta v6, flag \"decorations\" mengatur semua hiasan, kecuali\n"
+"pohon dan rumput rimba. Dalam pembuat peta lain, flag ini mengatur semua "
+"dekorasi."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3539,12 +3534,12 @@ msgstr "Tombol beralih HUD"
 #: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Penanganan panggilan Lua API usang:\n"
-"-    legacy: (mencoba untuk) menyerupai aturan lawas (bawaan untuk rilis).\n"
+"-    none: jangan catat panggilan usang\n"
 "-    log: menyerupai dan mencatat asal-usul panggilan usang (bawaan untuk "
 "awakutu).\n"
 "-    error: batalkan penggunaan panggilan usang (disarankan untuk pengembang "
@@ -3827,9 +3822,8 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Jika FPS (bingkai per detik) lebih tinggi dari ini, akan\n"
-"dibatasi dengan jeda agar tidak menghabiskan tenaga\n"
-"CPU dengan percuma."
+"Jika FPS (bingkai per detik) lebih tinggi daripada ini, akan dibatasi\n"
+"dengan jeda agar tidak membuang tenaga CPU dengan percuma."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3915,8 +3909,8 @@ msgid ""
 msgstr ""
 "Jika dinyalakan, Anda dapat menaruh blok pada posisi (kaki + ketinggian "
 "mata)\n"
-"tempat Anda berdiri.\n"
-"Ini berguna saat bekerja dengan kotak nodus (nodebox) dalam daerah sempit."
+"tempat Anda berdiri. Ini berguna saat bekerja dengan kotak nodus (nodebox) "
+"dalam daerah sempit."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3991,8 +3985,7 @@ msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
-"Melengkapi fungsi panggil balik (callback) global saat didaftarkan,\n"
-"dengan perkakas.\n"
+"Melengkapi fungsi panggil balik (callback) global saat didaftarkan.\n"
 "(semua yang dimasukkan ke fungsi minetest.register_*())"
 
 #: src/settings_translation_file.cpp
@@ -4067,8 +4060,7 @@ msgstr ""
 "Perulangan fungsi rekursif.\n"
 "Menaikkan nilai ini menaikkan detail, tetapi juga menambah\n"
 "beban pemrosesan.\n"
-"Saat perulangan = 20, pembuat peta ini memiliki beban yang\n"
-"mirip dengan pembuat peta v7."
+"Saat perulangan = 20, beban pembuat peta ini mirip dengan v7."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
@@ -4077,6 +4069,10 @@ msgstr "ID Joystick"
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
 msgstr "Jarak penekanan tombol joystick terus-menerus"
+
+#: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr "Zona mati joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4177,6 +4173,16 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tombol untuk mengurangi volume.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Tombol untuk gali.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4319,6 +4325,16 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tombol untuk membuka inventaris.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Tombol untuk taruh.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5071,10 +5087,6 @@ msgid "Main menu script"
 msgstr "Skrip menu utama"
 
 #: src/settings_translation_file.cpp
-msgid "Main menu style"
-msgstr "Gaya menu utama"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
@@ -5088,6 +5100,14 @@ msgstr "Buat DirectX bekerja dengan LuaJIT. Matikan jika bermasalah."
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
 msgstr "Buat semua cairan buram"
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr "Tingkat Kompresi Peta untuk Penyimpanan Diska"
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
+msgstr "Tingkat Kompresi Peta untuk Transfer Jaringan"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5272,8 +5292,10 @@ msgid "Maximum FPS"
 msgstr "FPS (bingkai per detik) maksimum"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
-msgstr "FPS (bingkai per detik) maksimum saat permainan dijeda."
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
+msgstr ""
+"FPS (bingkai per detik) maksimum saat permainan dijeda atau saat jendela "
+"tidak difokuskan."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5328,6 +5350,16 @@ msgid ""
 msgstr ""
 "Jumlah maksimum blok yang akan diantrekan untuk dimuat dari berkas.\n"
 "Batasan ini diatur per pemain."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
+msgstr ""
+"Jumlah maksimum pengunduhan bersamaan. Pengunduhan yang melebihi batas ini "
+"akan\n"
+"diantrekan. Nilai ini harus lebih rendah daripada curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5582,14 +5614,6 @@ msgid "Noises"
 msgstr "Noise"
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr "Sampling normalmap"
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr "Kekuatan normalmap"
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr "Jumlah utas kemunculan"
 
@@ -5615,8 +5639,8 @@ msgstr ""
 "PERINGATAN: Penambahan jumlah utas kemunculan mempercepat mesin pembuat\n"
 "peta, tetapi dapat merusak kinerja permainan dengan mengganggu proses lain,\n"
 "terutama dalam pemain tunggal dan/atau saat menjalankan kode Lua dalam\n"
-"\"on_generated\". Untuk kebanyakan pengguna, pengaturan yang cocok adalah \"1"
-"\"."
+"\"on_generated\". Untuk kebanyakan pengguna, pengaturan yang cocok adalah "
+"\"1\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5628,10 +5652,6 @@ msgstr ""
 "waktu.\n"
 "Ini adalah pemilihan antara transaksi sqlite dan\n"
 "penggunaan memori (4096=100MB, kasarannya)."
-
-#: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr "Jumlah pengulangan parallax occlusion."
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
@@ -5657,36 +5677,9 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
-"Buka menu jeda saat jendela hilang fokus. Tidak menjeda jika formspec sedang "
+"Buka menu jeda saat jendela hilang fokus. Tidak menjeda jika formspec "
+"sedang \n"
 "dibuka."
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr "Bias keseluruhan dari efek parallax occlusion, biasanya skala/2."
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr "Skala keseluruhan dari efek parallax occlusion."
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr "Parallax occlusion"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr "Pergeseran parallax occlusion"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr "Pengulangan parallax occlusion"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr "Mode parallax occlusion"
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion scale"
-msgstr "Skala parallax occlusion"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5769,6 +5762,14 @@ msgid "Pitch move mode"
 msgstr "Mode gerak sesuai pandang"
 
 #: src/settings_translation_file.cpp
+msgid "Place key"
+msgstr "Tombol taruh"
+
+#: src/settings_translation_file.cpp
+msgid "Place repetition interval"
+msgstr "Jeda waktu taruh berulang"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
@@ -5836,7 +5837,7 @@ msgstr "Profiling"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "Alamat pendengar Prometheus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5845,6 +5846,10 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetch on http://127.0.0.1:30000/metrics"
 msgstr ""
+"Alamat pendengar Prometheus.\n"
+"Jika Minetest dikompilasi dengan pilihan ENABLE_PROMETHEUS dinyalakan,\n"
+"ini menyalakan pendengar metrik untuk Prometheus pada alamat itu.\n"
+"Metrik dapat diambil pada http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -5885,7 +5890,7 @@ msgstr "Media jarak jauh"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr "Porta server jarak jauh"
+msgstr "Port utk Kendali Jarak Jauh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5947,10 +5952,6 @@ msgstr "Noise ukuran punggung gunung"
 #: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "Tombol kanan"
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
-msgstr "Jarak klik kanan berulang"
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
@@ -6021,12 +6022,11 @@ msgid ""
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
 "Perbesar/perkecil GUI sesuai pengguna.\n"
-"Menggunakan filter nearest-neighbor-anti-alias untuk\n"
-"perbesar/perkecil GUI.\n"
+"Menggunakan filter nearest-neighbor-anti-alias untuk perbesar/perkecil GUI.\n"
 "Ini akan menghaluskan beberapa tepi kasar dan\n"
 "mencampurkan piksel-piksel saat diperkecil dengan\n"
-"mengaburkan beberapa piksel tepi saat diperkecil dengan\n"
-"skala bukan bilangan bulat."
+"mengaburkan beberapa piksel tepi saat diperkecil dengan skala bukan bilangan "
+"bulat."
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -6249,6 +6249,19 @@ msgid "Show entity selection boxes"
 msgstr "Tampilkan kotak pilihan benda"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+"Tampilkan kotak pilihan entitas\n"
+"Dibutuhkan mulai ulang setelah mengganti ini."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Show nametag backgrounds by default"
+msgstr "Fon tebal bawaan"
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Pesan saat server dimatikan"
 
@@ -6266,7 +6279,8 @@ msgstr ""
 "PERINGATAN! Tidak ada untungnya dan berbahaya jika menaikkan\n"
 "nilai ini di atas 5.\n"
 "Mengecilkan nilai ini akan meningkatkan kekerapan gua dan dungeon.\n"
-"Mengubah nilai ini untuk kegunaan khusus, membiarkannya disarankan."
+"Mengubah nilai ini untuk kegunaan khusus, membiarkannya \n"
+"disarankan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6401,10 +6415,6 @@ msgid "Strength of 3D mode parallax."
 msgstr "Kekuatan mode paralaks 3D."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
-msgstr "Kekuatan normalmap yang dibuat."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Strength of light curve boost.\n"
 "The 3 'boost' parameters define a range of the light\n"
@@ -6435,6 +6445,16 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"Tingkat permukaan peletakan air pada lapisan floatland padat.\n"
+"Air tidak ditaruh secara bawaan dan akan ditaruh jika nilai ini diatur ke\n"
+"atas 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (mulai dari\n"
+"penirusan atas).\n"
+"***PERINGATAN, POTENSI BAHAYA TERHADAP DUNIA DAN KINERJA SERVER***\n"
+"Ketika penaruhan air dinyalakan, floatland wajib diatur dan diuji agar\n"
+"berupa lapisan padat dengan mengatur 'mgv7_floatland_density' ke 2.0\n"
+"(atau nilai wajib lainnya sesuai 'mgv7_np_floatland') untuk menghindari\n"
+"aliran air ekstrem yang membebani server dan menghindari banjir\n"
+"bandang di permukaan dunia bawah."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6513,6 +6533,10 @@ msgid "The URL for the content repository"
 msgstr "URL dari gudang konten"
 
 #: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
+msgstr "Zona mati joystick yang digunakan"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
@@ -6568,7 +6592,6 @@ msgstr ""
 "server Anda."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6578,8 +6601,8 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
-"Jari-jari ruang di sekitar pemain yang menjadi blok aktif, dalam blok peta\n"
-"(16 nodus).\n"
+"Jari-jari volume blok di sekitar pemain yang menjadi blok aktif, dalam\n"
+"blok peta (16 nodus).\n"
 "Dalam blok aktif, objek dimuat dan ABM berjalan.\n"
 "Ini juga jangkauan minimum pengelolaan objek aktif (makhluk).\n"
 "Ini harus diatur bersama dengan active_object_range."
@@ -6590,14 +6613,14 @@ msgid ""
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 "Penggambar untuk Irrlicht.\n"
 "Mulai ulang dibutuhkan setelah mengganti ini.\n"
 "Catatan: Pada Android, gunakan OGLES1 jika tidak yakin! Apl mungkin gagal\n"
-"berjalan pada lainnya. Pada platform lain, OpenGL disarankan yang menjadi\n"
-"satu-satunya pengandar yang mendukung shader untuk saat ini."
+"berjalan untuk pilihan lainnya. Pada platform lain, OpenGL disarankan.\n"
+"Shader didukung oleh OpenGL (khusus desktop) dan OGLES2 (tahap percobaan)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6632,6 +6655,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+"Anggaran waktu yang dibolehkan untuk ABM dalam menjalankan\n"
+"tiap langkah (dalam pecahan dari jarak ABM)"
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
@@ -6640,11 +6671,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
-"Jeda dalam detik antarklik kanan berulang saat menekan tombol kanan tetikus."
+"Jeda dalam detik antar-penaruhan berulang saat menekan \n"
+"tombol taruh."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6796,10 +6827,27 @@ msgid ""
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
-"Gunakan mip mapping untuk penyekalaan tekstur. Dapat sedikit\n"
-"meningkatkan kinerja, terutama saat menggunakan paket tekstur\n"
-"beresolusi tinggi.\n"
+"Pakai mip mapping untuk penyekalaan tekstur. Bisa sedikit menaikkan\n"
+"kinerja, terutama pada saat memakai paket tekstur beresolusi tinggi.\n"
 "Pengecilan dengan tepat gamma tidak didukung."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
+msgstr ""
+"Pakai antialias multisampel (MSAA) untuk memperhalus tepian blok.\n"
+"Algoritme ini memperhalus tampilan 3D sambil menjaga ketajaman gambar,\n"
+"tetapi tidak memengaruhi tekstur bagian dalam (yang terlihat khususnya\n"
+"dengan tekstur transparan).\n"
+"Muncul spasi tampak di antara nodus ketika shader dimatikan.\n"
+"Jika diatur 0, MSAA dimatikan.\n"
+"Dibutuhkan mulai ulang setelah penggantian pengaturan ini."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6987,10 +7035,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
-"Saat gui_scaling_filter diatur ke true, semua gambar GUI harus\n"
-"difilter dalam perangkat lunak, tetapi beberapa gambar dibuat\n"
-"langsung ke perangkat keras (misal. render ke tekstur untuk nodus\n"
-"dalam inventaris)."
+"Saat gui_scaling_filter diatur ke true, semua gambar GUI harus difilter\n"
+"dalam perangkat lunak, tetapi beberapa gambar dibuat langsung ke\n"
+"perangkat keras (misal. render ke tekstur untuk nodus dalam inventaris)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6999,11 +7046,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
-"Saat gui_scaling_filter_txr2img dibolehkan, salin gambar-gambar\n"
-"tersebut dari perangkat keras ke perangkat lunak untuk perbesar/\n"
-"perkecil.  Saat tidak dibolehkan, kembali ke cara lama, untuk\n"
-"pengandar video yang tidak mendukung pengunduhan tekstur dari\n"
-"perangkat keras."
+"Saat gui_scaling_filter_txr2img dibolehkan, salin gambar-gambar tersebut\n"
+"dari perangkat keras ke perangkat lunak untuk perbesar/perkecil. Saat tidak\n"
+"dibolehkan, kembali ke cara lama, untuk pengandar video yang tidak\n"
+"mendukung pengunduhan tekstur dari perangkat keras."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7036,6 +7082,12 @@ msgstr ""
 "Apakah fon FreeType digunakan, membutuhkan dukungan FreeType saat "
 "dikompilasi.\n"
 "Jika dimatikan, fon bitmap dan vektor XML akan dipakai."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -7141,8 +7193,8 @@ msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
 msgstr ""
-"Titik acuan kemiringan kepadatan gunung pada sumbu Y.\n"
-"Digunakan untuk menggeser gunung secara vertikal."
+"Titik acuan kemiringan kepadatan gunung pada sumbu Y. Digunakan untuk "
+"menggeser gunung secara vertikal."
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
@@ -7159,6 +7211,10 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"Jarak Y penirusan floatland dari padat sampai kosong.\n"
+"Penirusan dimulai dari jarak ini sampai batas Y.\n"
+"Untuk lapisan floatland padat, nilai ini mengatur tinggi bukit/gunung.\n"
+"Nilai ini harus kurang dari atau sama dengan setengah jarak antarbatas Y."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
@@ -7181,6 +7237,34 @@ msgid "Y-level of seabed."
 msgstr "Ketinggian Y dari dasar laut."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+"Tingkat kompresi ZLib saat pengiriman blok peta kepada klien.\n"
+"-1 - tingkat kompresi Zlib bawaan\n"
+"0 - tanpa kompresi, tercepat\n"
+"9 - kompresi terbaik, terlambat\n"
+"(tingkat 1-3 pakai metode \"cepat\" Zlib, 4-9 pakai metode normal)"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+"Tingkat kompresi ZLib saat penyimpanan blok peta kepada klien.\n"
+"-1 - tingkat kompresi Zlib bawaan\n"
+"0 - tanpa kompresi, tercepat\n"
+"9 - kompresi terbaik, terlambat\n"
+"(tingkat 1-3 pakai metode \"cepat\" Zlib, 4-9 pakai metode normal)"
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "Batas waktu cURL mengunduh berkas"
 
@@ -7192,110 +7276,12 @@ msgstr "Batas cURL paralel"
 msgid "cURL timeout"
 msgstr "Waktu habis untuk cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Mode sinema"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Pilih berkas paket:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Batas atas Y untuk lava dalam gua besar."
-
-#~ msgid "Waving Water"
-#~ msgstr "Air Berombak"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Apakah dungeon terkadang muncul dari medan."
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Dungeon yang menonjol"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Ketinggian Y tempat bayangan floatland diperpanjang."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Ketinggian Y dari titik tengah floatland dan permukaan danau."
-
-#~ msgid "Waving water"
-#~ msgstr "Air berombak"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Variasi dari ketinggian bukit dan kedalaman danau pada medan halus "
-#~ "floatland."
-
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "0 = parallax occlusion with slope information (faster).\n"
+#~ "1 = relief mapping (slower, more accurate)."
 #~ msgstr ""
-#~ "Ketinggian maksimum secara umum, di atas dan di bawah titik tengah, dari "
-#~ "gunung floatland."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Fon ini akan digunakan pada bahasa tertentu."
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Kekuatan penguatan tengah kurva cahaya."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Batas bayangan"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Jalur ke TrueTypeFont atau bitmap."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Kecuraman keterangan"
-
-#~ msgid "Lava depth"
-#~ msgstr "Kedalaman lava"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Dukungan IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Keburaman bayangan fon (keopakan, dari 0 sampai 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Ketinggian gunung floatland"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Noise ketinggian dasar floatland"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Gunakan pemetaan suasana (tone mapping) filmis"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Gunakan VBO"
-
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Mengatur daerah dari medan halus floatland.\n"
-#~ "Floatland halus muncul saat noise > 0."
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "Kecuraman kegelapan"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Mengatur lebar terowongan, nilai lebih kecil terowongan semakin lebar."
-
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Atur kepadatan floatland berbentuk gunung.\n"
-#~ "Merupakan pergeseran yang ditambahkan ke nilai noise \"mgv7_np_mountain\"."
-
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Titik tengah penguatan tengah kurva cahaya."
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Ubah cara gunung floatland meramping di atas dan di bawah titik tengah."
+#~ "0 = parallax occlusion dengan informasi kemiringan (cepat).\n"
+#~ "1 = relief mapping (pelan, lebih akurat)."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7306,20 +7292,277 @@ msgstr "Waktu habis untuk cURL"
 #~ "Angka yang lebih tinggi lebih terang.\n"
 #~ "Pengaturan ini untuk klien saja dan diabaikan oleh peladen."
 
-#~ msgid "Path to save screenshots at."
-#~ msgstr "Jalur untuk menyimpan tangkapan layar."
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr ""
+#~ "Ubah cara gunung floatland meramping di atas dan di bawah titik tengah."
 
-#~ msgid "Parallax occlusion strength"
-#~ msgstr "Kekuatan parallax occlusion"
-
-#~ msgid "Limit of emerge queues on disk"
-#~ msgstr "Batas antrean kemunculan (emerge queue) pada diska"
-
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "Mengunduh dan memasang $1, mohon tunggu..."
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Apakah Anda yakin ingin mengatur ulang dunia Anda?"
 
 #~ msgid "Back"
 #~ msgstr "Kembali"
 
+#~ msgid "Bump Mapping"
+#~ msgstr "Bump Mapping"
+
+#~ msgid "Bumpmapping"
+#~ msgstr "Bumpmapping"
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Titik tengah penguatan tengah kurva cahaya."
+
+#~ msgid ""
+#~ "Changes the main menu UI:\n"
+#~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
+#~ "chooser, etc.\n"
+#~ "-   Simple: One singleplayer world, no game or texture pack choosers. May "
+#~ "be\n"
+#~ "necessary for smaller screens."
+#~ msgstr ""
+#~ "Mengubah antarmuka menu utama:\n"
+#~ "-   Full: Banyak dunia pemain tunggal, pilih permainan, paket tekstur, "
+#~ "dll.\n"
+#~ "-   Simple: Satu dunia pemain tunggal, tanpa pilihan permainan atau "
+#~ "paket\n"
+#~ "tekstur. Cocok untuk layar kecil."
+
+#~ msgid "Config mods"
+#~ msgstr "Konfigurasi mod"
+
+#~ msgid "Configure"
+#~ msgstr "Konfigurasi"
+
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Atur kepadatan floatland berbentuk gunung.\n"
+#~ "Merupakan pergeseran yang ditambahkan ke nilai noise \"mgv7_np_mountain\"."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Mengatur lebar terowongan, nilai lebih kecil terowongan semakin lebar."
+
+#~ msgid "Crosshair color (R,G,B)."
+#~ msgstr "Warna crosshair: (merah,hijau,biru) atau (R,G,B)."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "Kecuraman kegelapan"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Mengatur daerah dari medan halus floatland.\n"
+#~ "Floatland halus muncul saat noise > 0."
+
+#~ msgid ""
+#~ "Defines sampling step of texture.\n"
+#~ "A higher value results in smoother normal maps."
+#~ msgstr ""
+#~ "Menentukan langkah penyampelan tekstur.\n"
+#~ "Nilai lebih tinggi menghasilkan peta lebih halus."
+
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Mengunduh dan memasang $1, mohon tunggu..."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Gunakan VBO"
+
+#~ msgid ""
+#~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
+#~ "texture pack\n"
+#~ "or need to be auto-generated.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "Gunakan bumpmapping untuk tekstur. Normalmap harus disediakan oleh paket\n"
+#~ "tekstur atau harus dihasilkan otomatis.\n"
+#~ "Membutuhkan penggunaan shader."
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Gunakan pemetaan suasana (tone mapping) filmis"
+
+#~ msgid ""
+#~ "Enables on the fly normalmap generation (Emboss effect).\n"
+#~ "Requires bumpmapping to be enabled."
+#~ msgstr ""
+#~ "Buat normalmap secara langsung (efek Emboss).\n"
+#~ "Membutuhkan penggunaan bumpmapping."
+
+#~ msgid ""
+#~ "Enables parallax occlusion mapping.\n"
+#~ "Requires shaders to be enabled."
+#~ msgstr ""
+#~ "Gunakan pemetaan parallax occlusion.\n"
+#~ "Membutuhkan penggunaan shader."
+
+#~ msgid ""
+#~ "Experimental option, might cause visible spaces between blocks\n"
+#~ "when set to higher number than 0."
+#~ msgstr ""
+#~ "Masih tahap percobaan, dapat menyebabkan terlihatnya spasi antarblok\n"
+#~ "saat diatur dengan angka yang lebih besar dari 0."
+
+#~ msgid "FPS in pause menu"
+#~ msgstr "FPS (bingkai per detik) pada menu jeda"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Noise ketinggian dasar floatland"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Ketinggian gunung floatland"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Keburaman bayangan fon (keopakan, dari 0 sampai 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Generate Normal Maps"
+#~ msgstr "Buat Normal Maps"
+
+#~ msgid "Generate normalmaps"
+#~ msgstr "Buat normalmap"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Dukungan IPv6."
+
+#~ msgid "Lava depth"
+#~ msgstr "Kedalaman lava"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Kecuraman keterangan"
+
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Batas antrean kemunculan (emerge queue) pada diska"
+
+#~ msgid "Main"
+#~ msgstr "Beranda"
+
+#~ msgid "Main menu style"
+#~ msgstr "Gaya menu utama"
+
+#~ msgid "Minimap in radar mode, Zoom x2"
+#~ msgstr "Peta mini mode radar, perbesaran 2x"
+
+#~ msgid "Minimap in radar mode, Zoom x4"
+#~ msgstr "Peta mini mode radar, perbesaran 4x"
+
+#~ msgid "Minimap in surface mode, Zoom x2"
+#~ msgstr "Peta mini mode permukaan, perbesaran 2x"
+
+#~ msgid "Minimap in surface mode, Zoom x4"
+#~ msgstr "Peta mini mode permukaan, perbesaran 4x"
+
+#~ msgid "Name/Password"
+#~ msgstr "Nama/Kata Sandi"
+
+#~ msgid "No"
+#~ msgstr "Tidak"
+
+#~ msgid "Normalmaps sampling"
+#~ msgstr "Sampling normalmap"
+
+#~ msgid "Normalmaps strength"
+#~ msgstr "Kekuatan normalmap"
+
+#~ msgid "Number of parallax occlusion iterations."
+#~ msgstr "Jumlah pengulangan parallax occlusion."
+
 #~ msgid "Ok"
 #~ msgstr "Oke"
+
+#~ msgid "Overall bias of parallax occlusion effect, usually scale/2."
+#~ msgstr "Bias keseluruhan dari efek parallax occlusion, biasanya skala/2."
+
+#~ msgid "Overall scale of parallax occlusion effect."
+#~ msgstr "Skala keseluruhan dari efek parallax occlusion."
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Parallax Occlusion"
+
+#~ msgid "Parallax occlusion"
+#~ msgstr "Parallax occlusion"
+
+#~ msgid "Parallax occlusion bias"
+#~ msgstr "Pergeseran parallax occlusion"
+
+#~ msgid "Parallax occlusion iterations"
+#~ msgstr "Pengulangan parallax occlusion"
+
+#~ msgid "Parallax occlusion mode"
+#~ msgstr "Mode parallax occlusion"
+
+#~ msgid "Parallax occlusion scale"
+#~ msgstr "Skala parallax occlusion"
+
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Kekuatan parallax occlusion"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Jalur ke TrueTypeFont atau bitmap."
+
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Jalur untuk menyimpan tangkapan layar."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Dungeon yang menonjol"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Atur ulang dunia pemain tunggal"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Pilih berkas paket:"
+
+#~ msgid "Shadow limit"
+#~ msgstr "Batas bayangan"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Mulai Pemain Tunggal"
+
+#~ msgid "Strength of generated normalmaps."
+#~ msgstr "Kekuatan normalmap yang dibuat."
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Kekuatan penguatan tengah kurva cahaya."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Fon ini akan digunakan pada bahasa tertentu."
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Mode sinema"
+
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Ketinggian maksimum secara umum, di atas dan di bawah titik tengah, dari "
+#~ "gunung floatland."
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Variasi dari ketinggian bukit dan kedalaman danau pada medan halus "
+#~ "floatland."
+
+#~ msgid "View"
+#~ msgstr "Tinjau"
+
+#~ msgid "Waving Water"
+#~ msgstr "Air Berombak"
+
+#~ msgid "Waving water"
+#~ msgstr "Air berombak"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Apakah dungeon terkadang muncul dari medan."
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Batas atas Y untuk lava dalam gua besar."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Ketinggian Y dari titik tengah floatland dan permukaan danau."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Ketinggian Y tempat bayangan floatland diperpanjang."
+
+#~ msgid "Yes"
+#~ msgstr "Ya"

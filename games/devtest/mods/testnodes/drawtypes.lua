@@ -364,7 +364,7 @@ for r = 0, 8 do
 			{name="testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
 			{name="testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=true},
 		},
-		use_texture_alpha = true,
+		use_texture_alpha = "blend",
 
 
 		walkable = false,
@@ -386,7 +386,7 @@ for r = 0, 8 do
 			{name="testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
 			{name="testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
 		},
-		use_texture_alpha = true,
+		use_texture_alpha = "blend",
 
 
 		walkable = false,
@@ -411,7 +411,7 @@ minetest.register_node("testnodes:liquid_waving", {
 		{name="testnodes_liquidsource.png^[colorize:#0000FF:127", backface_culling=false},
 		{name="testnodes_liquidsource.png^[colorize:#0000FF:127", backface_culling=true},
 	},
-	use_texture_alpha = true,
+	use_texture_alpha = "blend",
 	waving = 3,
 
 
@@ -434,7 +434,7 @@ minetest.register_node("testnodes:liquid_flowing_waving", {
 		{name="testnodes_liquidflowing.png^[colorize:#0000FF:127", backface_culling=false},
 		{name="testnodes_liquidflowing.png^[colorize:#0000FF:127", backface_culling=false},
 	},
-	use_texture_alpha = true,
+	use_texture_alpha = "blend",
 	waving = 3,
 
 

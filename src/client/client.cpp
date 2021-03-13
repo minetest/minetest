@@ -663,12 +663,15 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
 
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(
+				data.c_str(), data.size(), "_tempreadfile");
+#else
 		// Silly irrlicht's const-incorrectness
 		Buffer<char> data_rw(data.c_str(), data.size());
-
-		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				*data_rw, data_rw.getSize(), "_tempreadfile");
+#endif
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 
@@ -1196,7 +1199,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	if (canSendChatMessage()) {
 		u32 now = time(NULL);
 		float time_passed = now - m_last_chat_message_sent;
-		m_last_chat_message_sent = time(NULL);
+		m_last_chat_message_sent = now;
 
 		m_chat_message_allowance += time_passed * (CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 		if (m_chat_message_allowance > CLIENT_CHAT_MESSAGE_LIMIT_PER_10S)
@@ -1275,9 +1278,8 @@ void Client::sendPlayerPos()
 	// Save bandwidth by only updating position when
 	// player is not dead and something changed
 
-	// FIXME: This part causes breakages in mods like 3d_armor, and has been commented for now
-	// if (m_activeobjects_received && player->isDead())
-	//	return;
+	if (m_activeobjects_received && player->isDead())
+		return;
 
 	if (
 			player->last_position     == player->getPosition() &&
@@ -1833,7 +1835,7 @@ void Client::makeScreenshot()
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
 			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-					narrow_to_wide(sstr.str())));
+					utf8_to_wide(sstr.str())));
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}
@@ -1915,13 +1917,20 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 
 	// Create the mesh, remove it from cache and return it
 	// This allows unique vertex colors and other properties for each instance
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+	io::IReadFile *rfile = RenderingEngine::get_filesystem()->createMemoryReadFile(
+			data.c_str(), data.size(), filename.c_str());
+#else
 	Buffer<char> data_rw(data.c_str(), data.size()); // Const-incorrect Irrlicht
-	io::IReadFile *rfile   = RenderingEngine::get_filesystem()->createMemoryReadFile(
+	io::IReadFile *rfile = RenderingEngine::get_filesystem()->createMemoryReadFile(
 			*data_rw, data_rw.getSize(), filename.c_str());
+#endif
 	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
 	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
+	if (!mesh)
+		return nullptr;
 	mesh->grab();
 	if (!cache)
 		RenderingEngine::get_mesh_cache()->removeMesh(mesh);

@@ -10,7 +10,7 @@ set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 4)
+set(VERSION_MINOR 5)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -59,6 +59,29 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # This is done here so that relative search paths are more reasonable
 find_package(Irrlicht)
+if(BUILD_CLIENT AND NOT IRRLICHT_FOUND)
+	message(FATAL_ERROR "Irrlicht is required to build the client, but it was not found.")
+elseif(IRRLICHT_INCLUDE_DIR STREQUAL "")
+	message(FATAL_ERROR "Irrlicht headers are required to build the server, but none found.")
+endif()
+
+include(CheckSymbolExists)
+set(CMAKE_REQUIRED_INCLUDES ${IRRLICHT_INCLUDE_DIR})
+unset(HAS_FORKED_IRRLICHT CACHE)
+check_symbol_exists(IRRLICHT_VERSION_MT "IrrCompileConfig.h" HAS_FORKED_IRRLICHT)
+if(NOT HAS_FORKED_IRRLICHT)
+	string(CONCAT EXPLANATION_MSG
+		"Irrlicht found, but it is not Minetest's Irrlicht fork. "
+		"The Minetest team has forked Irrlicht to make their own customizations. "
+		"It can be found here: https://github.com/minetest/irrlicht")
+	if(BUILD_CLIENT)
+		message(FATAL_ERROR "${EXPLANATION_MSG}\n"
+			"Building the client with upstream Irrlicht is no longer possible.")
+	else()
+		message(WARNING "${EXPLANATION_MSG}\n"
+			"The server can still be built with upstream Irrlicht but this is DISCOURAGED.")
+	endif()
+endif()
 
 
 # Installation
@@ -167,7 +190,6 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHA
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 	if(RUN_IN_PLACE)
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/clientmods" DESTINATION "${SHAREDIR}")
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/serverlist" DESTINATION "${SHAREDIR}/client")
@@ -202,8 +224,8 @@ find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
 
-# JsonCPP doesn't compile well on GCC 4.8
-if(NOT ENABLE_SYSTEM_JSONCPP)
+# JsonCpp doesn't compile well on GCC 4.8
+if(NOT USE_SYSTEM_JSONCPP)
 	set(GCC_MINIMUM_VERSION "4.9")
 endif()
 
@@ -212,7 +234,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
 	endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
 		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")

@@ -90,7 +90,7 @@ local function load_texture_packs(txtpath, retval)
 			retval[#retval + 1] = {
 				name = item,
 				author = conf:get("author"),
-				release = tonumber(conf:get("release") or "0"),
+				release = tonumber(conf:get("release")) or 0,
 				list_name = name,
 				type = "txp",
 				path = path,
@@ -135,7 +135,7 @@ function get_mods(path,retval,modpack)
 			-- Read from config
 			toadd.name = name
 			toadd.author = mod_conf.author
-			toadd.release = tonumber(mod_conf.release or "0")
+			toadd.release = tonumber(mod_conf.release) or 0
 			toadd.path = prefix
 			toadd.type = "mod"
 
@@ -413,18 +413,7 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 end
 
 ---------- toggles or en/disables a mod or modpack and its dependencies --------
-function pkgmgr.enable_mod(this, toset)
-	local list = this.data.list:get_list()
-	local mod = list[this.data.selected_mod]
-
-	-- Game mods can't be enabled or disabled
-	if mod.is_game_content then
-		return
-	end
-
-	local toggled_mods = {}
-
-	local enabled_mods = {}
+local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
 	if not mod.is_modpack then
 		-- Toggle or en/disable the mod
 		if toset == nil then
@@ -443,23 +432,29 @@ function pkgmgr.enable_mod(this, toset)
 		-- interleaved unsupported
 		for i = 1, #list do
 			if list[i].modpack == mod.name then
-				if toset == nil then
-					toset = not list[i].enabled
-				end
-				if list[i].enabled ~= toset then
-					list[i].enabled = toset
-					toggled_mods[#toggled_mods+1] = list[i].name
-				end
-				if toset then
-					enabled_mods[list[i].name] = true
-				end
+				toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, list[i])
 			end
 		end
 	end
+end
+
+function pkgmgr.enable_mod(this, toset)
+	local list = this.data.list:get_list()
+	local mod = list[this.data.selected_mod]
+
+	-- Game mods can't be enabled or disabled
+	if mod.is_game_content then
+		return
+	end
+
+	local toggled_mods = {}
+	local enabled_mods = {}
+	toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
+
 	if not toset then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
-		minetest.log("info", "Following mods were disabled: " ..
+		core.log("info", "Following mods were disabled: " ..
 			table.concat(toggled_mods, ", "))
 		return
 	end
@@ -496,7 +491,7 @@ function pkgmgr.enable_mod(this, toset)
 			enabled_mods[name] = true
 			local mod_to_enable = list[mod_ids[name]]
 			if not mod_to_enable then
-				minetest.log("warning", "Mod dependency \"" .. name ..
+				core.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
 				if mod_to_enable.enabled == false then
@@ -517,7 +512,7 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Log the list of enabled mods
 	table.sort(toggled_mods)
-	minetest.log("info", "Following mods were enabled: " ..
+	core.log("info", "Following mods were enabled: " ..
 		table.concat(toggled_mods, ", "))
 end
 

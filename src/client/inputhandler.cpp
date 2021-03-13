@@ -35,7 +35,7 @@ void KeyCache::populate()
 	key[KeyType::LEFT] = getKeySetting("keymap_left");
 	key[KeyType::RIGHT] = getKeySetting("keymap_right");
 	key[KeyType::JUMP] = getKeySetting("keymap_jump");
-	key[KeyType::SPECIAL1] = getKeySetting("keymap_special1");
+	key[KeyType::AUX1] = getKeySetting("keymap_aux1");
 	key[KeyType::SNEAK] = getKeySetting("keymap_sneak");
 	key[KeyType::DIG] = getKeySetting("keymap_dig");
 	key[KeyType::PLACE] = getKeySetting("keymap_place");
@@ -113,17 +113,12 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		const KeyPress &keyCode = event.KeyInput;
 		if (keysListenedFor[keyCode]) {
-				// If the key is being held down then the OS may
-				// send a continuous stream of keydown events.
-				// In this case, we don't want to let this
-				// stream reach the application as it will cause
-				// certain actions to repeat constantly.
 			if (event.KeyInput.PressedDown) {
-				if (!IsKeyDown(keyCode)) {
-					keyWasDown.set(keyCode);
+				if (!IsKeyDown(keyCode))
 					keyWasPressed.set(keyCode);
-				}
+
 				keyIsDown.set(keyCode);
+				keyWasDown.set(keyCode);
 			} else {
 				if (IsKeyDown(keyCode))
 					keyWasReleased.set(keyCode);
@@ -224,7 +219,7 @@ void RandomInputHandler::step(float dtime)
 {
 	static RandomInputHandlerSimData rnd_data[] = {
 		{ "keymap_jump", 0.0f, 40 },
-		{ "keymap_special1", 0.0f, 40 },
+		{ "keymap_aux1", 0.0f, 40 },
 		{ "keymap_forward", 0.0f, 40 },
 		{ "keymap_left", 0.0f, 40 },
 		{ "keymap_dig", 0.0f, 30 },

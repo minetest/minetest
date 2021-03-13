@@ -165,6 +165,9 @@ void ClientMap::updateDrawList()
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
+	// Read the vision range, unless unlimited range is enabled.
+	float range = m_control.range_all ? 1e7 : m_control.wanted_range;
+
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
 	// Number of blocks with mesh in rendering range
@@ -181,6 +184,7 @@ void ClientMap::updateDrawList()
 				m_nodedef->get(n).solidness == 2)
 			occlusion_culling_enabled = false;
 	}
+
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -218,32 +222,34 @@ void ClientMap::updateDrawList()
 				continue;
 			}
 
-			float range = 100000 * BS;
-			if (!m_control.range_all)
-				range = m_control.wanted_range * BS;
+			v3s16 block_coord = block->getPos();
+			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
 
-			float d = 0.0;
-			if (!isBlockInSight(block->getPos(), camera_position,
-					camera_direction, camera_fov, range, &d))
-				continue;
+			// First, perform a simple distance check, with a padding of one extra block.
+			if (!m_control.range_all &&
+					block_position.getDistanceFrom(cam_pos_nodes) > range + MAP_BLOCKSIZE)
+				continue; // Out of range, skip.
 
+			// Keep the block alive as long as it is in range.
+			block->resetUsageTimer();
 			blocks_in_range_with_mesh++;
 
-			/*
-				Occlusion culling
-			*/
+			// Frustum culling
+			float d = 0.0;
+			if (!isBlockInSight(block_coord, camera_position,
+					camera_direction, camera_fov, range * BS, &d))
+				continue;
+
+			// Occlusion culling
 			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
 					(occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
 				blocks_occlusion_culled++;
 				continue;
 			}
 
-			// This block is in range. Reset usage timer.
-			block->resetUsageTimer();
-
 			// Add to set
 			block->refGrab();
-			m_drawlist[block->getPos()] = block;
+			m_drawlist[block_coord] = block;
 
 			sector_blocks_drawn++;
 		} // foreach sectorblocks
@@ -282,8 +288,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
 	const v3f camera_position = m_camera_position;
-	const v3f camera_direction = m_camera_direction;
-	const f32 camera_fov = m_camera_fov;
 
 	/*
 		Get all blocks and draw all visible ones
@@ -310,11 +314,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (!block->mesh)
 			continue;
 
-		float d = 0.0;
-		if (!isBlockInSight(block->getPos(), camera_position,
-				camera_direction, camera_fov, 100000 * BS, &d))
-			continue;
-
+		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
+		float d = camera_position.getDistanceFrom(block_pos_r);
+		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
+		
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
 			//MutexAutoLock lock(block->mesh_mutex);

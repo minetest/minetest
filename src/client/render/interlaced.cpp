@@ -35,7 +35,11 @@ void RenderingCoreInterlaced::initMaterial()
 	IShaderSource *s = client->getShaderSource();
 	mat.UseMipMaps = false;
 	mat.ZBuffer = false;
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+	mat.ZWriteEnable = video::EZW_OFF;
+#else
 	mat.ZWriteEnable = false;
+#endif
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	mat.MaterialType = s->getShaderInfo(shader).material;
 	for (int k = 0; k < 3; ++k) {
