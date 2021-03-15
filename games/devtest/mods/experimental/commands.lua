@@ -215,5 +215,5 @@ minetest.register_chatcommand("test_place_nodes", {
 })
 
 core.register_on_chatcommand(function(name, command, params)
-	minetest.log("caught command '"..command.."', issued by '"..name.."'. Parameters: '"..params.."'")
+	minetest.log("action", "caught command '"..command.."', issued by '"..name.."'. Parameters: '"..params.."'")
 end)
