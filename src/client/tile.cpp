@@ -837,17 +837,16 @@ static video::IImage *createInventoryCubeImage(
 			image = scaled;
 		}
 		sanity_check(image->getPitch() == 4 * size);
-		return reinterpret_cast<u32 *>(image->lock());
+		return reinterpret_cast<u32 *>(image->getData());
 	};
 	auto free_image = [] (video::IImage *image) -> void {
-		image->unlock();
 		image->drop();
 	};
 
 	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {cube_size, cube_size});
 	sanity_check(result->getPitch() == 4 * cube_size);
 	result->fill(video::SColor(0x00000000u));
-	u32 *target = reinterpret_cast<u32 *>(result->lock());
+	u32 *target = reinterpret_cast<u32 *>(result->getData());
 
 	// Draws single cube face
 	// `shade_factor` is face brightness, in range [0.0, 1.0]
@@ -906,7 +905,6 @@ static video::IImage *createInventoryCubeImage(
 				{0, 5}, {1, 5},
 			});
 
-	result->unlock();
 	return result;
 }
 

@@ -129,7 +129,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 #endif
 
 	// Convert the scaled image back into a texture.
-	scaled = driver->addTexture(scalename, destimg, NULL);
+	scaled = driver->addTexture(scalename, destimg);
 	destimg->drop();
 	g_txrCache[scalename] = scaled;
 
