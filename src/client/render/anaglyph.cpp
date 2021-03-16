@@ -40,7 +40,7 @@ void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 void RenderingCoreAnaglyph::useEye(bool right)
 {
 	RenderingCoreStereo::useEye(right);
-	driver->clearZBuffer();
+	driver->clearBuffers(video::ECBF_DEPTH);
 	setupMaterial(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
 }
 
