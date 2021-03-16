@@ -79,7 +79,7 @@ void set_default_settings()
 	settings->setDefault("keymap_place", "KEY_RBUTTON");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
-	settings->setDefault("keymap_inventory", "KEY_KEY_I");
+	settings->setDefault("keymap_inventory", "KEY_TAB");
 	settings->setDefault("keymap_aux1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
