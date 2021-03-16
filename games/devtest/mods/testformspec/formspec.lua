@@ -362,20 +362,51 @@ Number]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
 
+		]],
+
+	-- Model
+		[[
+			formspec_version[3]
+			size[12,13]
 			style[m1;bgcolor=black]
-			model[0.5,6;4,4;m1;testformspec_character.b3d;testformspec_character.png]
-			model[5,6;4,4;m2;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;true]
+			style[m2;bgcolor=black]
+			label[5,1;all defaults]
+			label[5,5.1;angle = 0, 180
+continuous = false
+mouse control = false
+frame loop range = 0,30]
+			label[5,9.2;continuous = true
+mouse control = true]
+			model[0.5,0.1;4,4;m1;testformspec_character.b3d;testformspec_character.png]
+			model[0.5,4.2;4,4;m2;testformspec_character.b3d;testformspec_character.png;0,180;false;false;0,30]
+			model[0.5,8.3;4,4;m3;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;true]
 		]],
 
 	-- Scroll containers
 		"formspec_version[3]size[12,13]" ..
 		scroll_fs,
+
+	-- Sound
+		[[
+			formspec_version[3]
+			size[12,13]
+			style[snd_btn;sound=soundstuff_mono]
+			style[snd_ibtn;sound=soundstuff_mono]
+			style[snd_drp;sound=soundstuff_mono]
+			style[snd_chk;sound=soundstuff_mono]
+			style[snd_tab;sound=soundstuff_mono]
+			button[0.5,0.5;2,1;snd_btn;Sound]
+			image_button[0.5,2;2,1;testformspec_item.png;snd_ibtn;Sound]
+			dropdown[0.5,4;4;snd_drp;Sound,Two,Three;]
+			checkbox[0.5,5.5.5;snd_chk;Sound;]
+			tabheader[0.5,7;8,0.65;snd_tab;Soundtab1,Soundtab2,Soundtab3;1;false;false]
+		]],
 }
 
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Anim,ScrollC;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Anim,Model,ScrollC,Sound;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
