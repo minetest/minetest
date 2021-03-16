@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-10-29 16:26+0000\n"
+"PO-Revision-Date: 2021-03-19 20:18+0000\n"
 "Last-Translator: abidin toumi <abidin24@disroot.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -159,11 +159,11 @@ msgstr "مُفعل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" موجود مسبقًا. هل تريد الكتابة عليه؟"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "الاعتماديتان \"$1\" و $2 ستثبتان."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -174,15 +174,16 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"يُنزل $1،\n"
+"$2 في الطابور"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "يحمل..."
+msgstr "ينزل $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "يحتاج $1 لكن لم يُعثر عليها."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
@@ -193,18 +194,16 @@ msgid "All packages"
 msgstr "كل الحزم"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "المفتاح مستخدم مسبقا"
+msgstr "مثبت مسبقا"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "عُد للقائمة الرئيسة"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "استضف لعبة"
+msgstr "اللعبة القاعدية"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -228,14 +227,12 @@ msgid "Install"
 msgstr "ثبت"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "ثبت"
+msgstr "ثبت $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "الإعتماديات الإختيارية:"
+msgstr "ثبت الإعتماديات المفقودة"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -251,25 +248,24 @@ msgid "No results"
 msgstr "بدون نتائج"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "حدِث"
+msgstr "لا توجد تحديثات"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "لم يُعثر عليه"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "اكتب عليه"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "تحقق من صحة اللعبة القاعدية."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "في الطابور"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -285,7 +281,7 @@ msgstr "حدِث"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "حدِّث الكل [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -444,7 +440,7 @@ msgstr "المنشآت السطحية (لا تأثر على الأشجار وا�
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "الهياكل التي تظهر على التضاريس ، عادة الأشجار والنباتات"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -564,8 +560,9 @@ msgid "Offset"
 msgstr "المُعادل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Persistance"
-msgstr ""
+msgstr "استمرار"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -613,23 +610,24 @@ msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "التوزع على محور X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Y spread"
-msgstr ""
+msgstr "التوزع على محور Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "التوزع على محور Z"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -707,9 +705,8 @@ msgid "Loading..."
 msgstr "يحمل..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "البرمجة النصية للعميل معطلة"
+msgstr "قائمة الخوادم العمومية معطلة"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -768,15 +765,16 @@ msgid "Credits"
 msgstr "إشادات"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "إختر الدليل"
+msgstr "افتح دليل بيانات المستخدم"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"يفتح الدليل الذي يحوي العوالم والألعاب والتعديلات \n"
+"وحزم الإكساء في مدير الملفات."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -817,7 +815,7 @@ msgstr "ثبت العابا من ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "الاسم"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -828,9 +826,8 @@ msgid "No world created or selected!"
 msgstr "لم تنشئ او تحدد عالما!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "كلمة مرور جديدة"
+msgstr "كلمة المرور"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -841,9 +838,8 @@ msgid "Port"
 msgstr "المنفذ"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "حدد العالم:"
+msgstr "اختر التعديلات"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -963,9 +959,8 @@ msgid "Node Highlighting"
 msgstr "إبراز العقد"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "عدم إبراز العقد"
+msgstr "اقتضاب العقد"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -996,9 +991,8 @@ msgid "Shaders"
 msgstr "مُظللات"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "أراضيٌ عائمة (تجريبية)"
+msgstr "المظللات (تجريبية)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1186,9 +1180,8 @@ msgid "Cinematic mode enabled"
 msgstr "الوضع السينمائي مفعل"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client side scripting is disabled"
-msgstr "البرمجة النصية للعميل معطلة"
+msgstr "البرمجة النصية معطلة من جانب العميل"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
@@ -1199,7 +1192,7 @@ msgid "Continue"
 msgstr "تابع"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1222,12 +1215,12 @@ msgstr ""
 "- %s: سر يسارا\n"
 "- %s: سر يمينا\n"
 "- %s: اقفز/تسلق\n"
+"- %s: احفر/الكم\n"
+"- %s: ضع/استخدم\n"
 "- %s: ازحف/انزل\n"
 "- %s: ارمي عنصر\n"
 "- %s: افتح المخزن\n"
 "- تحريك الفأرة: دوران\n"
-"- زر الفأرة الأيمن: احفر/الكم\n"
-"- زر الفأرة الأيسر: ضع/استخدم\n"
 "- عجلة الفأرة: غيير العنصر\n"
 "- -%s: دردشة\n"
 
@@ -1361,11 +1354,11 @@ msgstr "الخريطة المصغرة معطلة من قبل لعبة أو تع�
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "وضع العقبات مفعل"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr ""
+msgstr "وضع القبات معطل"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
