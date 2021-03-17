@@ -661,28 +661,49 @@ inline const char *bool_to_cstr(bool val)
 	return val ? "true" : "false";
 }
 
+/**
+ * Converts a duration in seconds to a pretty-printed duration in
+ * days, hours, minutes and seconds.
+ *
+ * @param sec duration in seconds
+ * @return pretty-printed duration
+ */
 inline const std::string duration_to_string(int sec)
 {
+	std::ostringstream ss;
+	const char *neg = "";
+	if (sec < 0) {
+		sec = -sec;
+		neg = "-";
+	}
+	int total_sec = sec;
 	int min = sec / 60;
 	sec %= 60;
 	int hour = min / 60;
 	min %= 60;
+	int day = hour / 24;
+	hour %= 24;
 
-	std::stringstream ss;
+	if (day > 0) {
+		ss << neg << day << "d";
+		if (hour > 0 || min > 0 || sec > 0)
+			ss << " ";
+	}
+
 	if (hour > 0) {
-		ss << hour << "h";
+		ss << neg << hour << "h";
 		if (min > 0 || sec > 0)
 			ss << " ";
 	}
 
 	if (min > 0) {
-		ss << min << "min";
+		ss << neg << min << "min";
 		if (sec > 0)
 			ss << " ";
 	}
 
-	if (sec > 0) {
-		ss << sec << "s";
+	if (sec > 0 || total_sec == 0) {
+		ss << neg << sec << "s";
 	}
 
 	return ss.str();
