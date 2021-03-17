@@ -58,26 +58,20 @@ end
 
 --------------------------------------------------------------------------------
 local function get_formspec(self)
-	local formspec = ""
-
-	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
-
-		if self.parent == nil then
-			local tsize = self.tablist[self.last_tab_index].tabsize or
-					{width=self.width, height=self.height}
-			formspec = formspec ..
-					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
-						dump(self.fixed_size))
-		end
-		formspec = formspec .. self:tab_header()
-		formspec = formspec ..
-				self.tablist[self.last_tab_index].get_formspec(
-					self,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata,
-					self.tablist[self.last_tab_index].tabsize
-					)
+	if self.hidden or (self.parent ~= nil and self.parent.hidden) then
+		return ""
 	end
+	local tab = self.tablist[self.last_tab_index]
+
+	local content, prepend = tab.get_formspec(self, tab.name, tab.tabdata, tab.tabsize)
+
+	if self.parent == nil and not prepend then
+		local tsize = tab.tabsize or {width=self.width, height=self.height}
+		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height,
+				dump(self.fixed_size))
+	end
+
+	local formspec = (prepend or "") .. self:tab_header() .. content
 	return formspec
 end
 
@@ -97,14 +91,9 @@ local function handle_buttons(self,fields)
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].button_handler ~= nil then
-		return
-			self.tablist[self.last_tab_index].button_handler(
-					self,
-					fields,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata
-					)
+	local tab = self.tablist[self.last_tab_index]
+	if tab.button_handler ~= nil then
+		return tab.button_handler(self, fields, tab.name, tab.tabdata)
 	end
 
 	return false
@@ -122,14 +111,9 @@ local function handle_events(self,event)
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].evt_handler ~= nil then
-		return
-			self.tablist[self.last_tab_index].evt_handler(
-					self,
-					event,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata
-					)
+	local tab = self.tablist[self.last_tab_index]
+	if tab.evt_handler ~= nil then
+		return tab.evt_handler(self, event, tab.name, tab.tabdata)
 	end
 
 	return false
