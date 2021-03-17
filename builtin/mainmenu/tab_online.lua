@@ -15,8 +15,6 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local server_lookup -- can be used to look up server by row number in GUI
-
 local function get_sorted_servers()
 	local servers = {
 		fav = {},
@@ -61,13 +59,6 @@ local function get_formspec(tabview, name, tabdata)
 	-- it may have changed after a change by the settings menu.
 	common_update_cached_supp_proto()
 
-	local selected
-	if menudata.search_result then
-		selected = menudata.search_result[tabdata.selected]
-	else
-		selected = serverlistmgr.servers[tabdata.selected]
-	end
-
 	if not tabdata.search_for then
 		tabdata.search_for = ""
 	end
@@ -109,14 +100,14 @@ local function get_formspec(tabview, name, tabdata)
 		-- Connect
 		"button[3,6;2.5,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
-	if tabdata.selected and selected then
+	if tabdata.selected then
 		if gamedata.fav then
 			retval = retval .. "button[0.25,6;2.5,0.75;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
 		end
-		if selected.description then
+		if gamedata.serverdescription then
 			retval = retval .. "textarea[0.25,3;5.25,2.75;;;" ..
-				core.formspec_escape(gamedata.serverdescription or "") .. "]"
+				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 	end
 
@@ -160,15 +151,14 @@ local function get_formspec(tabview, name, tabdata)
 	}
 	local order = {"fav", "public", "incompatible"}
 
-	server_lookup = {}
+	tabdata.lookup = {} -- maps row number to server
 	local rows = {}
 	for _, section in ipairs(order) do
 		local section_servers = servers[section]
 		if next(section_servers) ~= nil then
-			server_lookup[#rows + 1] = false
 			rows[#rows + 1] = dividers[section]
 			for _, server in ipairs(section_servers) do
-				server_lookup[#rows + 1] = server
+				tabdata.lookup[#rows + 1] = server
 				rows[#rows + 1] = render_serverlist_row(server)
 			end
 		end
@@ -255,7 +245,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.servers then
 		local event = core.explode_table_event(fields.servers)
-		local server = server_lookup[event.row]
+		local server = tabdata.lookup[event.row]
 
 		if server then
 			if event.type == "DCL" then
@@ -312,7 +302,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local idx = core.get_table_index("servers")
 		if not idx then return end
 
-		serverlistmgr.delete_favorite(server_lookup[idx])
+		serverlistmgr.delete_favorite(tabdata.lookup[idx])
 		serverlistmgr.sync()
 		tabdata.selected = nil
 
@@ -350,7 +340,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		gamedata.selected_world = 0
 
 		local idx = core.get_table_index("servers")
-		local server = idx and server_lookup[idx]
+		local server = idx and tabdata.lookup[idx]
 
 		if server and server.address == gamedata.address and
 				server.port == gamedata.port then
