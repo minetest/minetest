@@ -122,8 +122,8 @@ local function get_formspec(tabview, name, tabdata)
 		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
 		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png") .. "," ..
 		"5=" .. core.formspec_escape(defaulttexturedir .. "server_favorite.png") .. "," ..
-		"6=" .. core.formspec_escape(defaulttexturedir .. "server_divider_discover.png") .. "," ..
-		"7=" .. core.formspec_escape(defaulttexturedir .. "server_divider_incompatible.png") .. ";" ..
+		"6=" .. core.formspec_escape(defaulttexturedir .. "server_public.png") .. "," ..
+		"7=" .. core.formspec_escape(defaulttexturedir .. "server_incompatible.png") .. ";" ..
 		"color,span=1;" ..
 		"text,align=inline;"..
 		"color,span=1;" ..
@@ -146,7 +146,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	local dividers = {
 		fav = "5,#ffff00," .. fgettext("Favorites") .. ",,,0,0,,",
-		public = "6,"..mt_color_green.."," .. fgettext("Public Servers") .. ",,,0,0,,",
+		public = "6,#4bdd42," .. fgettext("Public Servers") .. ",,,0,0,,",
 		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
 	}
 	local order = {"fav", "public", "incompatible"}
