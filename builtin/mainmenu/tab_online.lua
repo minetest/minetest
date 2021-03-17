@@ -74,46 +74,48 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"field[1,0.25;6,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
-		"image_button[7,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
-		"image_button[0.25,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "clear.png") .. ";btn_mp_clear;]" ..
-		"image_button[7.75,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "refresh.png") .. ";btn_mp_refresh;]" ..
+		"field[0.25,0.25;7,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"container[7.25,0.25]" ..
+		"image_button[0,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
+		"image_button[0.75,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "clear.png") .. ";btn_mp_clear;]" ..
+		"image_button[1.5,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "refresh.png") .. ";btn_mp_refresh;]" ..
 		"tooltip[btn_mp_clear;" .. fgettext("Clear") .. "]" ..
 		"tooltip[btn_mp_search;" .. fgettext("Search") .. "]" ..
 		"tooltip[btn_mp_refresh;" .. fgettext("Refresh") .. "]" ..
+		"container_end[]" ..
 
-		"container[8.75,0]" ..
-		"box[0,0;4.75,7;#888888]" ..
+		"container[9.75,0]" ..
+		"box[0,0;5.75,7;#888888]" ..
 
 		-- Address / Port
 		"label[0.25,0.35;" .. fgettext("Address") .. "]" ..
-		"label[3.5,0.35;" .. fgettext("Port") .. "]" ..
-		"field[0.25,0.5;3.25,0.5;te_address;;" ..
+		"label[4.5,0.35;" .. fgettext("Port") .. "]" ..
+		"field[0.25,0.5;4.25,0.75;te_address;;" ..
 			core.formspec_escape(core.settings:get("address")) .. "]" ..
-		"field[3.5,0.5;1,0.5;te_port;;" ..
+		"field[4.5,0.5;1,0.75;te_port;;" ..
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
 		"label[0.25,1.55;" .. fgettext("Name") .. "]" ..
 		"label[3,1.55;" .. fgettext("Password") .. "]" ..
-		"field[0.25,1.75;2.75,0.5;te_name;;" ..
+		"field[0.25,1.75;2.75,0.75;te_name;;" ..
 			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[3,1.75;1.5,0.5;te_pwd;]" ..
+		"pwdfield[3,1.75;2.5,0.75;te_pwd;]" ..
 
 		-- Description Background
-		"label[0.25,3.05;" .. fgettext("Server Description") .. "]" ..
-		"box[0.25,3.25;4.25,2.5;#999999]"..
+		"label[0.25,2.75;" .. fgettext("Server Description") .. "]" ..
+		"box[0.25,3;5.25,2.75;#999999]"..
 
 		-- Connect
-		"button[2.5,6;2,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"button[3,6;2.5,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
 	if tabdata.selected and selected then
 		if gamedata.fav then
-			retval = retval .. "button[0.25,6;2,0.75;btn_delete_favorite;" ..
+			retval = retval .. "button[0.25,6;2.5,0.75;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
 		end
 		if selected.description then
-			retval = retval .. "textarea[0.25,3.25;4.25,2.5;;;" ..
+			retval = retval .. "textarea[0.25,3;5.25,2.75;;;" ..
 				core.formspec_escape(gamedata.serverdescription or "") .. "]"
 		end
 	end
@@ -122,7 +124,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- Table
 	retval = retval .. "tablecolumns[" ..
-		"image," ..
+		"image,tooltip=" .. fgettext("Ping") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
@@ -135,24 +137,25 @@ local function get_formspec(tabview, name, tabdata)
 		"text,align=inline;"..
 		"color,span=1;" ..
 		"text,align=inline,width=4.25;" ..
-		"image,tooltip=" .. fgettext("Creative") .. "," ..
+		"image,tooltip=" .. fgettext("Creative mode") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_creative.png") .. "," ..
-		"align=inline,padding=0.25,width=1;" ..
-		"image,tooltip=" .. fgettext("Damage") .. "," ..
+		"align=inline,padding=0.25,width=1.5;" ..
+		--~ PvP = Player versus Player
+		"image,tooltip=" .. fgettext("Damage / PvP") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_damage.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .. "server_flags_pvp.png") .. "," ..
 		"align=inline,padding=0.25,width=1.5;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
-		"table[0.25,1;8.25,5.75;servers;"
+		"table[0.25,1;9.25,5.75;servers;"
 
 	local servers = get_sorted_servers()
 
 	local dividers = {
-		fav = "5,#ffff00," .. fgettext("Favorite Servers") .. ",,,0,0,,",
-		public = "6,"..mt_color_green.."," .. fgettext("Discover Servers") .. ",,,0,0,,",
+		fav = "5,#ffff00," .. fgettext("Favorites") .. ",,,0,0,,",
+		public = "6,"..mt_color_green.."," .. fgettext("Public Servers") .. ",,,0,0,,",
 		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
 	}
 	local order = {"fav", "public", "incompatible"}
@@ -179,7 +182,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval, "size[13.5,7,false]real_coordinates[true]"
+	return retval, "size[15.5,7,false]real_coordinates[true]"
 end
 
 --------------------------------------------------------------------------------
