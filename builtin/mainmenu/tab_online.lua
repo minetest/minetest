@@ -345,7 +345,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if server and server.address == gamedata.address and
 				server.port == gamedata.port then
 
-			serverlistmgr.add_favorite(fav)
+			serverlistmgr.add_favorite(server)
 
 			gamedata.servername        = server.name
 			gamedata.serverdescription = server.description
