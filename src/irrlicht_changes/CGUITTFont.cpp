@@ -658,7 +658,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 
 				u32 current_color = iter.getPos();
 				fallback->draw(core::stringw(l1),
-					core::rect<s32>(offset, position.LowerRightCorner),
+					core::rect<s32>({offset.X-1, offset.Y-1}, position.LowerRightCorner), // ???
 					current_color < colors.size() ? colors[current_color] : video::SColor(255, 255, 255, 255),
 					false, false, clip);
 			}
