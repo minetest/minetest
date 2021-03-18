@@ -571,7 +571,6 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	// Determine offset positions.
 	if (hcenter || vcenter)
 	{
-		// FIXME: centering doesn't account for fallback, this doesn't seem to cause any issues(?!)
 		textDimension = getDimension(text.c_str());
 
 		if (hcenter)
@@ -791,6 +790,12 @@ inline u32 CGUITTFont::getWidthFromCharacter(uchar32_t c) const
 		int w = Glyphs[n-1].advance.x / 64;
 		return w;
 	}
+	if (fallback != 0)
+	{
+		wchar_t s[] = { (wchar_t) c, 0 };
+		return fallback->getDimension(s).Width;
+	}
+
 	if (c >= 0x2000)
 		return (font_metrics.ascender / 64);
 	else return (font_metrics.ascender / 64) / 2;
@@ -814,6 +819,12 @@ inline u32 CGUITTFont::getHeightFromCharacter(uchar32_t c) const
 		s32 height = (font_metrics.ascender / 64) - Glyphs[n-1].offset.Y + Glyphs[n-1].source_rect.getHeight();
 		return height;
 	}
+	if (fallback != 0)
+	{
+		wchar_t s[] = { (wchar_t) c, 0 };
+		return fallback->getDimension(s).Height;
+	}
+
 	if (c >= 0x2000)
 		return (font_metrics.ascender / 64);
 	else return (font_metrics.ascender / 64) / 2;
