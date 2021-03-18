@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-03-18 19:54+0000\n"
-"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
+"PO-Revision-Date: 2021-03-19 20:18+0000\n"
+"Last-Translator: David Leal <halfpacho@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -4961,7 +4961,7 @@ msgstr "Proporción de cuevas grandes inundadas"
 
 #: src/settings_translation_file.cpp
 msgid "Large chat console key"
-msgstr "Tecla de consola de chat grande"
+msgstr "Tecla de la consola del chat grande"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5040,34 +5040,34 @@ msgstr "Aumento medio del centro de la curva de luz"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost center"
-msgstr ""
+msgstr "Centro de impulso de curva de luz"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost spread"
-msgstr ""
+msgstr "Dispersión de impulso de curva de luz"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve gamma"
-msgstr ""
+msgstr "Gamma de la curva de luz"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve high gradient"
-msgstr ""
+msgstr "Curva de luz de alto gradiente"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve low gradient"
-msgstr ""
+msgstr "Curva de luz de bajo gradiente"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
 "Value is stored per-world."
 msgstr ""
-"Límite de la generación de mapa, en nodos, en todas las 6 direcciones desde "
-"(0, 0, 0).\n"
-"Solo las porciones de terreno dentro de los límites son generadas.\n"
+"Límite de la generación de mapa, en nodos, en todas las 6 direcciones desde ("
+"0, 0, 0).\n"
+"Solo se generan fragmentos de mapa completamente dentro del límite de "
+"generación de mapas.\n"
 "Los valores se guardan por mundo."
 
 #: src/settings_translation_file.cpp
@@ -5078,6 +5078,11 @@ msgid ""
 "-    Downloads performed by main menu (e.g. mod manager).\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Limita el número de solicitudes HTTP paralelas. Afecta:\n"
+"- Recuperación de medios si el servidor utiliza remote_media setting.\n"
+"- Descarga de la lista de servidores y anuncio del servidor.\n"
+"- Descargas realizadas por el menú principal (por ejemplo, gestor de mods).\n"
+"Sólo tiene un efecto si se compila con cURL."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
@@ -5089,28 +5094,28 @@ msgstr "Suavizado de la fluidez líquida"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr ""
+msgstr "Bucle de máximo líquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Tiempo de purga de colas de líquidos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid sinking"
-msgstr "Velocidad de descenso"
+msgstr "Hundimiento del líquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
-msgstr ""
+msgstr "Intervalo de actualización del líquido en segundos."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr ""
+msgstr "Tick de actualización de los líquidos"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Load the game profiler"
-msgstr ""
+msgstr "Cargar el perfilador de juego"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5118,6 +5123,10 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"Cargue el generador de perfiles de juego para recopilar datos de generación "
+"de perfiles de juegos.\n"
+"Proporciona un comando /profiler para tener acceso al perfil compilado.\n"
+"Útil para desarrolladores de mods y operadores de servidores."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
