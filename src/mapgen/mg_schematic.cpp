@@ -529,9 +529,7 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 			return false;
 
 		schem = (Schematic *)this->clone();
-
-		u32 volume = size.X * size.Y * size.Z;
-		schem->condenseContentIds(volume);
+		schem->condenseContentIds();
 	}
 
 	std::ostringstream os(std::ios_base::binary);
@@ -606,7 +604,7 @@ void Schematic::applyProbabilities(v3s16 p0,
 }
 
 
-void Schematic::condenseContentIds(size_t nodecount)
+void Schematic::condenseContentIds()
 {
 	std::unordered_map<content_t, content_t> nodeidmap;
 	content_t numids = 0;
@@ -614,17 +612,18 @@ void Schematic::condenseContentIds(size_t nodecount)
 	// Reset node resolve fields
 	NodeResolver::reset();
 
+	size_t nodecount = size.X * size.Y * size.Z;
 	for (size_t i = 0; i != nodecount; i++) {
 		content_t id;
 		content_t c = schemdata[i].getContent();
 
-		std::unordered_map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
+		auto it = nodeidmap.find(c);
 		if (it == nodeidmap.end()) {
 			id = numids;
 			numids++;
 
 			m_nodenames.push_back(m_ndef->get(c).name);
-			nodeidmap.insert(std::make_pair(c, id));
+			nodeidmap.emplace(std::make_pair(c, id));
 		} else {
 			id = it->second;
 		}

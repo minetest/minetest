@@ -125,7 +125,7 @@ public:
 
 private:
 	// Counterpart to the node resolver: Condense content_t to a sequential "m_nodenames" list
-	void condenseContentIds(size_t nodecount);
+	void condenseContentIds();
 };
 
 class SchematicManager : public ObjDefManager {
