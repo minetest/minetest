@@ -2239,30 +2239,32 @@ void Game::toggleDebug()
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
-	// 3x toggle: Debug text and wireframe (needs "wireframe" priv)
+	// 3x toggle: Debug text and wireframe (needs "debug" priv)
 	// Next toggle: Back to initial
 	//
 	// The debug text can be in 2 modes: minimal and basic.
 	// * Minimal: Only technical client info that not gameplay-relevant
 	// * Basic: Info that might give gameplay advantage, e.g. pos, angle
-	// Basic mode is used when player has "debug" priv,
+	// Basic mode is used when player has "basic_debug" priv,
 	// otherwise the Minimal mode is used.
 	if (!m_game_ui->m_flags.show_minimal_debug) {
 		m_game_ui->m_flags.show_minimal_debug = true;
-		if (client->checkPrivilege("debug")) {
+		if (client->checkPrivilege("basic_debug")) {
 			m_game_ui->m_flags.show_basic_debug = true;
 		}
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		m_game_ui->showTranslatedStatusText("Debug info shown");
 	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
-		if (client->checkPrivilege("debug")) {
+		if (client->checkPrivilege("basic_debug")) {
 			m_game_ui->m_flags.show_basic_debug = true;
 		}
 		m_game_ui->m_flags.show_profiler_graph = true;
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
-	} else if (!draw_control->show_wireframe && client->checkPrivilege("wireframe")) {
-		m_game_ui->m_flags.show_basic_debug = true;
+	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
+		if (client->checkPrivilege("basic_debug")) {
+			m_game_ui->m_flags.show_basic_debug = true;
+		}
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
