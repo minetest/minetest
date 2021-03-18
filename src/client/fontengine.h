@@ -47,7 +47,7 @@ struct FontSpec {
 		bold(bold),
 		italic(italic) {}
 
-	u16 getHash()
+	u16 getHash() const
 	{
 		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
 	}

@@ -304,12 +304,7 @@ void set_default_settings()
 	settings->setDefault("mono_font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-BoldItalic.ttf"));
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
-	settings->setDefault("fallback_font_shadow", "1");
-	settings->setDefault("fallback_font_shadow_alpha", "128");
-
 	std::string font_size_str = std::to_string(TTF_DEFAULT_FONT_SIZE);
-
-	settings->setDefault("fallback_font_size", font_size_str);
 #else
 	settings->setDefault("freetype", "false");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));

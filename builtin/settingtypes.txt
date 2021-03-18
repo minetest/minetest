@@ -859,7 +859,7 @@ font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
 
 font_path_bold (Bold font path) filepath fonts/Arimo-Bold.ttf
 font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
-font_path_bolditalic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
+font_path_bold_italic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
 
 #    Font size of the monospace font in point (pt).
 mono_font_size (Monospace font size) int 15 1
@@ -872,16 +872,7 @@ mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
 
 mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Bold.ttf
 mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Italic.ttf
-mono_font_path_bolditalic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
-
-#    Font size of the fallback font in point (pt).
-fallback_font_size (Fallback font size) int 15 1
-
-#    Shadow offset (in pixels) of the fallback font. If 0, then shadow will not be drawn.
-fallback_font_shadow (Fallback font shadow) int 1
-
-#    Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255.
-fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
+mono_font_path_bold_italic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
 
 #    Path of the fallback font.
 #    If “freetype” setting is enabled: Must be a TrueType font.

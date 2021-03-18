@@ -66,12 +66,8 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 		g_settings->registerChangedCallback("font_path_bolditalic", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_shadow", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed, NULL);
-	}
-	else if (m_currentMode == FM_Fallback) {
-		g_settings->registerChangedCallback("fallback_font_size", font_setting_changed, NULL);
+	} else if (m_currentMode == FM_Fallback) {
 		g_settings->registerChangedCallback("fallback_font_path", font_setting_changed, NULL);
-		g_settings->registerChangedCallback("fallback_font_shadow", font_setting_changed, NULL);
-		g_settings->registerChangedCallback("fallback_font_shadow_alpha", font_setting_changed, NULL);
 	}
 
 	g_settings->registerChangedCallback("mono_font_path", font_setting_changed, NULL);
@@ -205,7 +201,7 @@ void FontEngine::readSettings()
 {
 	if (USE_FREETYPE && g_settings->getBool("freetype")) {
 		m_default_size[FM_Standard] = g_settings->getU16("font_size");
-		m_default_size[FM_Fallback] = g_settings->getU16("fallback_font_size");
+		m_default_size[FM_Fallback] = g_settings->getU16("font_size");
 		m_default_size[FM_Mono]     = g_settings->getU16("mono_font_size");
 
 		/*~ DO NOT TRANSLATE THIS LITERALLY!
@@ -271,18 +267,8 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	assert(spec.size != FONT_SIZE_UNSPECIFIED);
 
 	std::string setting_prefix = "";
-
-	switch (spec.mode) {
-		case FM_Fallback:
-			setting_prefix = "fallback_";
-			break;
-		case FM_Mono:
-		case FM_SimpleMono:
-			setting_prefix = "mono_";
-			break;
-		default:
-			break;
-	}
+	if (spec.mode == FM_Mono)
+		setting_prefix = "mono_";
 
 	std::string setting_suffix = "";
 	if (spec.bold)
@@ -305,13 +291,15 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	g_settings->getU16NoEx(setting_prefix + "font_shadow_alpha",
 			font_shadow_alpha);
 
-	std::string wanted_font_path;
-	wanted_font_path = g_settings->get(setting_prefix + "font_path" + setting_suffix);
+	std::string path_setting;
+	if (spec.mode == FM_Fallback)
+		path_setting = "fallback_font_path";
+	else
+		path_setting = setting_prefix + "font_path" + setting_suffix;
 
 	std::string fallback_settings[] = {
-		wanted_font_path,
-		g_settings->get("fallback_font_path"),
-		Settings::getLayer(SL_DEFAULTS)->get(setting_prefix + "font_path")
+		g_settings->get(path_setting),
+		Settings::getLayer(SL_DEFAULTS)->get(path_setting)
 	};
 
 #if USE_FREETYPE
@@ -329,11 +317,11 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 
 
 	// give up
-	errorstream << "minetest can not continue without a valid font. "
+	errorstream << "Minetest cannot continue without a valid font. "
 			"Please correct the 'font_path' setting or install the font "
 			"file in the proper location" << std::endl;
 #else
-	errorstream << "FontEngine: Tried to load freetype fonts but Minetest was"
+	errorstream << "FontEngine: Tried to load Freetype font but Minetest was"
 			" not compiled with that library." << std::endl;
 #endif
 	abort();
