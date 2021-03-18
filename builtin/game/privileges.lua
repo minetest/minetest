@@ -103,7 +103,7 @@ core.register_privilege("debug", {
 	give_to_admin = true,
 })
 core.register_privilege("wireframe", {
-	description = "Can enable wireframe",
+	description = S("Can enable wireframe"),
 	give_to_singleplayer = false,
 })
 
