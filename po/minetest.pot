@@ -6356,3 +6356,11 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+
+#: src/chat.cpp
+msgid "Opening webpage"
+msgstr ""
+
+#: src/chat.cpp
+msgid "Failed to open webpage"
+msgstr ""

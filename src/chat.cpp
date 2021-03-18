@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
+#include "porting.h"
 
 ChatBuffer::ChatBuffer(u32 scrollback):
 	m_scrollback(scrollback)
@@ -35,6 +36,21 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	if (m_scrollback == 0)
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
+	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+	if(m_cache_clickable_chat_weblinks)
+	{
+		std::string hexcode = g_settings->get("chat_weblink_color");
+		u32 colorval = strtol(hexcode.c_str(), NULL, 16);
+		u32 redval,greenval,blueval;
+		blueval = colorval % 256;
+		colorval /= 256;
+		greenval = colorval % 256;
+		colorval /= 256;
+		redval = colorval % 256;
+		// discard alpha, if included
+		//m_cache_chat_weblink_color = irr::video::SColor(255,150,150,255);
+		m_cache_chat_weblink_color = irr::video::SColor(255,redval,greenval,blueval);
+	}
 }
 
 void ChatBuffer::addLine(const std::wstring &name, const std::wstring &text)
@@ -272,6 +288,11 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		while (!next_frags.empty())
 		{
 			ChatFormattedFragment& frag = next_frags[0];
+
+			// Force text_processing on this frag. hacky.
+			if(frag.column == u32(INT_MAX))
+				text_processing = true;
+
 			if (frag.text.size() <= cols - out_column)
 			{
 				// Fragment fits into current line
@@ -286,9 +307,11 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				// So split it up
 				temp_frag.text = frag.text.substr(0, cols - out_column);
 				temp_frag.column = out_column;
-				//temp_frag.bold = frag.bold;
+				temp_frag.meta = frag.meta;
+
 				next_line.fragments.push_back(temp_frag);
 				frag.text = frag.text.substr(cols - out_column);
+				frag.column = 0;
 				out_column = cols;
 			}
 			if (out_column == cols || text_processing)
@@ -300,10 +323,11 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				next_line.first = false;
 
 				out_column = text_processing ? hanging_indentation : 0;
+				text_processing = false;
 			}
 		}
 
-		// Produce fragment
+		// Produce fragment(s) for next formatted line
 		if (in_pos < line.text.size())
 		{
 			u32 remaining_in_input = line.text.size() - in_pos;
@@ -313,22 +337,123 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			// remaining_in_{in,out}put. Try to end the fragment
 			// on a word boundary.
 			u32 frag_length = 1, space_pos = 0;
-			while (frag_length < remaining_in_input &&
-					frag_length < remaining_in_output)
+			
+			if(!m_cache_clickable_chat_weblinks)
 			{
-				if (iswspace(line.text.getString()[in_pos + frag_length]))
-					space_pos = frag_length;
-				++frag_length;
-			}
-			if (space_pos != 0 && frag_length < remaining_in_input)
-				frag_length = space_pos + 1;
+				while (frag_length < remaining_in_input &&
+						frag_length < remaining_in_output)
+				{
+					if (iswspace(line.text.getString()[in_pos + frag_length]))
+						space_pos = frag_length;
+					++frag_length;
+				}
+				if (space_pos != 0 && frag_length < remaining_in_input)
+					frag_length = space_pos + 1;
 
-			temp_frag.text = line.text.substr(in_pos, frag_length);
-			temp_frag.column = 0;
-			//temp_frag.bold = 0;
-			next_frags.push_back(temp_frag);
-			in_pos += frag_length;
-			text_processing = true;
+				temp_frag.text = line.text.substr(in_pos, frag_length);
+				temp_frag.column = 0;
+				//temp_frag.bold = 0;
+				next_frags.push_back(temp_frag);
+				in_pos += frag_length;
+				text_processing = true;
+			}
+			// Unless weblinks are enabled. Then it's slightly more complex
+			else
+			{
+				u32 http_pos = u32(std::wstring::npos);
+				text_processing = false;  // set FALSE at end of this block
+				bool halt_fragloop = false;
+				while(!halt_fragloop)
+				{
+					remaining_in_input = line.text.size() - in_pos;
+					frag_length = 0;
+					space_pos = 0;
+
+					// Note: unsigned(-1) on fail
+					http_pos = u32(line.text.getString().find(L"https://", std::size_t(in_pos)));
+					if(http_pos == u32(std::wstring::npos))
+						http_pos = u32(line.text.getString().find(L"http://", std::size_t(in_pos)));
+					if(http_pos != u32(std::wstring::npos))
+						http_pos -= in_pos;
+
+					while (frag_length < remaining_in_input &&
+							frag_length < remaining_in_output)
+					{
+						if (iswspace(line.text.getString()[in_pos + frag_length]))
+							space_pos = frag_length;
+						++frag_length;
+					}
+
+					// Http not in range, grab until space or EOL, halt as normal.
+					if(http_pos > remaining_in_output)  // sufficient unless screen is infinitely wide
+					{
+						halt_fragloop = true;
+						// force text processing on THIS frag
+						text_processing = true;
+					}
+					// At http, grab ALL until FIRST whitespace or quote mark. loop.
+					// If at end of string, next loop will be empty string to mark end of weblink. This is intentional.
+					else if(http_pos == 0)
+					{
+						frag_length = 6;
+						while (frag_length < remaining_in_input &&
+								!iswspace(line.text.getString()[in_pos + frag_length]) &&
+								line.text.getString()[in_pos + frag_length] != L'\'' &&
+								line.text.getString()[in_pos + frag_length] != L'\"' &&
+								line.text.getString()[in_pos + frag_length] != L';'
+							)
+						{
+							++frag_length;
+						}
+						space_pos = frag_length - 1;
+						if(frag_length >= remaining_in_output)
+						{
+							// Force text processing on THIS frag
+							text_processing = true;
+							halt_fragloop = true;
+						}
+					}
+					// Http in range, grab until http, loop
+					else
+					{
+						space_pos = http_pos - 1;
+						frag_length = http_pos; // - in_pos;
+					}
+
+					if (space_pos != 0 && frag_length < remaining_in_input)
+						frag_length = space_pos + 1;
+
+					temp_frag.text = line.text.substr(in_pos, frag_length);
+					temp_frag.column = text_processing ? u32(INT_MAX) : 0;
+					if(http_pos == 0)
+					{
+						temp_frag.meta = wide_to_utf8(temp_frag.text.getString());
+						// FIXME: this is probably overkill to recolor the link text.
+						temp_frag.text = EnrichedString(temp_frag.text.getString());
+						temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
+					}
+					else
+					{
+						temp_frag.meta = "";
+					}
+					next_frags.push_back(temp_frag);
+					in_pos += frag_length;
+					remaining_in_output -= std::min(frag_length, remaining_in_output);
+					
+					/*
+					std::cout << "----------" << std::endl;
+					std::cout << "http_pos = " << http_pos << std::endl;
+					std::cout << "space_pos = " << space_pos << std::endl;
+					std::cout << "frag:   '" << temp_frag.text.size() << "'" << std::endl;
+					std::cout << "in_pos: '" << in_pos << std::endl;
+					std::cout << "remain: '" << line.text.substr(in_pos).size() << "'" << std::endl;
+					std::cout << "remn in in:  '" << remaining_in_input << "'" << std::endl;
+					std::cout << "remn in out: '" << remaining_in_output << "'" << std::endl;
+					*/
+				}
+				// handled for fragments individually
+				text_processing = false;
+			}
 		}
 	}
 
@@ -767,4 +892,60 @@ void ChatBackend::scrollPageDown()
 void ChatBackend::scrollPageUp()
 {
 	m_console_buffer.scroll(-(s32)m_console_buffer.getRows());
+}
+
+void ChatBackend::middleClick(s32 col, s32 row)
+{
+	// Prevent accidental rapid clicking
+	static u32 oldtime = 0;
+	// seriously..
+	u32 newtime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+	// 0.6 seconds should suffice
+	if(newtime - oldtime < 600)
+		return;
+	oldtime = newtime;
+
+	const std::vector<ChatFormattedFragment> & frags = getConsoleBuffer().getFormattedLine(row).fragments;
+	std::string weblink = "";         // from frag meta
+
+	// Identify targetted fragment, if exists
+	int ind = frags.size() - 1;
+	while(u32(col - 1) < frags[ind].column)
+	{
+		--ind;
+	}
+	if(ind > -1)
+	{
+		weblink = frags[ind].meta;
+	}
+
+	// Debug help
+	std::string ws;
+	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
+	for(u32 i=0;i<frags.size();++i)
+	{
+		if(ind == int(i))
+			ws += '*';
+		ws += std::to_string(frags.at(i).column) + '('
+			+ std::to_string(frags.at(i).text.size()) + "),";
+	}
+	g_logger.log(LL_VERBOSE, ws);
+
+	// User notification
+	std::string mesg;
+	if(weblink.size() != 0)
+	{
+		mesg = " * ";
+		if(porting::open_url(weblink))
+		{
+			mesg += gettext("Opening webpage");
+		}
+		else
+		{
+			mesg += gettext("Failed to open webpage");
+		}
+		mesg += " '" + weblink + "'";
+		addUnparsedMessage(utf8_to_wide(mesg));
+	}
 }

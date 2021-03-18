@@ -57,6 +57,8 @@ struct ChatFormattedFragment
 	EnrichedString text;
 	// starting column
 	u32 column;
+	// web link for now. maybe future use?
+	std::string meta;
 	// formatting
 	//u8 bold:1;
 };
@@ -118,6 +120,7 @@ public:
 			std::vector<ChatFormattedLine>& destination) const;
 
 	void resize(u32 scrollback);
+
 protected:
 	s32 getTopScrollPos() const;
 	s32 getBottomScrollPos() const;
@@ -138,6 +141,11 @@ private:
 	std::vector<ChatFormattedLine> m_formatted;
 	// Empty formatted line, for error returns
 	ChatFormattedLine m_empty_formatted_line;
+
+	// Enable clickable chat weblinks
+	bool m_cache_clickable_chat_weblinks;
+	// Color of clickable chat weblinks
+	irr::video::SColor m_cache_chat_weblink_color;
 };
 
 class ChatPrompt
@@ -280,6 +288,10 @@ public:
 	void scroll(s32 rows);
 	void scrollPageDown();
 	void scrollPageUp();
+
+	// Handle middle click at this font position
+	// If clicked fragment has a web url, send it to the system default web browser
+	void middleClick(s32 col, s32 row);
 
 	// Resize recent buffer based on settings
 	void applySettings();

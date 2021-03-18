@@ -124,4 +124,7 @@ private:
 	// font
 	gui::IGUIFont *m_font = nullptr;
 	v2u32 m_fontsize;
+	
+	// Enable clickable chat weblinks
+	bool m_cache_clickable_chat_weblinks;
 };

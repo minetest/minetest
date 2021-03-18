@@ -90,6 +90,8 @@ GUIChatConsole::GUIChatConsole(
 
 	// set default cursor options
 	setCursor(true, true, 2.0, 0.1);
+	
+	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
 }
 
 GUIChatConsole::~GUIChatConsole()
@@ -321,6 +323,7 @@ void GUIChatConsole::drawText()
 
 #if USE_FREETYPE
 			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
+				
 				// Draw colored text if FreeType is enabled
 				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
 				tmp->draw(
@@ -404,9 +407,24 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 {
 
 	ChatPrompt &prompt = m_chat_backend->getPrompt();
+	static bool isctrldown;  // track this for mouse event
 
-	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+	if(event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)
 	{
+		// CTRL up
+		if(event.KeyInput.Key == KEY_LCONTROL || event.KeyInput.Key == KEY_RCONTROL || !event.KeyInput.Control)
+		{
+			isctrldown = false;
+		}
+	}
+	else if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+	{
+		// CTRL down
+		if(event.KeyInput.Key == KEY_LCONTROL || event.KeyInput.Key == KEY_RCONTROL || event.KeyInput.Control)
+		{
+			isctrldown = true;
+		}
+
 		// Key input
 		if (KeyPress(event.KeyInput) == getKeySetting("keymap_console")) {
 			closeConsole();
@@ -623,6 +641,18 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			s32 rows = myround(-3.0 * event.MouseInput.Wheel);
 			m_chat_backend->scroll(rows);
+		}
+		// Middle click opens weblink, if enabled in config
+		else if(m_cache_clickable_chat_weblinks && (
+				event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN ||
+				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && isctrldown)
+			))
+		{
+			// because console prompt and hardcoded margins
+			if(event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 )
+			{
+				m_chat_backend->middleClick(event.MouseInput.X / m_fontsize.X, event.MouseInput.Y / m_fontsize.Y);
+			}
 		}
 	}
 
