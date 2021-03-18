@@ -571,6 +571,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	// Determine offset positions.
 	if (hcenter || vcenter)
 	{
+		// FIXME: centering doesn't account for fallback, this doesn't seem to cause any issues(?!)
 		textDimension = getDimension(text.c_str());
 
 		if (hcenter)
@@ -660,7 +661,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				fallback->draw(core::stringw(l1),
 					core::rect<s32>(offset, position.LowerRightCorner),
 					current_color < colors.size() ? colors[current_color] : video::SColor(255, 255, 255, 255),
-					hcenter, vcenter, clip);
+					false, false, clip);
 			}
 
 			offset.X += fallback->getDimension(l1).Width;
@@ -1187,7 +1188,7 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 				container.push_back(current_node);
 			}
 			offset.X += getWidthFromCharacter(current_char);
-			// FIXME: missing fallback font handling here
+			// TODO: missing fallback font handling here
 
 			previous_char = current_char;
 			++text;
