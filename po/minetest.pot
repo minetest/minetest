@@ -1085,18 +1085,6 @@ msgstr ""
 msgid "Invalid gamespec."
 msgstr ""
 
-#. ~ DO NOT TRANSLATE THIS LITERALLY!
-#. This is a special string. Put either "no" or "yes"
-#. into the translation field (literally).
-#. Choose "yes" if the language requires use of the fallback
-#. font, "no" otherwise.
-#. The fallback font is (normally) required for languages with
-#. non-Latin script, like Chinese.
-#. When in doubt, test your translation.
-#: src/client/fontengine.cpp
-msgid "needs_fallback_font"
-msgstr ""
-
 #: src/client/game.cpp
 msgid "Shutting down..."
 msgstr ""

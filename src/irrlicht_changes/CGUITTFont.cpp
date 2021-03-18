@@ -275,7 +275,8 @@ CGUITTFont* CGUITTFont::create(IrrlichtDevice *device, const io::path& filename,
 //! Constructor.
 CGUITTFont::CGUITTFont(IGUIEnvironment *env)
 : use_monochrome(false), use_transparency(true), use_hinting(true), use_auto_hinting(true),
-batch_load_size(1), Device(0), Environment(env), Driver(0), GlobalKerningWidth(0), GlobalKerningHeight(0)
+batch_load_size(1), Device(0), Environment(env), Driver(0), GlobalKerningWidth(0), GlobalKerningHeight(0),
+shadow_offset(0), shadow_alpha(0), fallback(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUITTFont");
@@ -640,7 +641,30 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			if (current_color < colors.size())
 				applied_colors.push_back(colors[current_color]);
 		}
-		offset.X += getWidthFromCharacter(currentChar);
+		if (n > 0)
+		{
+			offset.X += getWidthFromCharacter(currentChar);
+		}
+		else if (fallback != 0)
+		{
+			// Let the fallback font draw it, this isn't super efficient but hopefully that doesn't matter
+			wchar_t l1[] = { (wchar_t) currentChar, 0 }, l2 = (wchar_t) previousChar;
+
+			if (visible)
+			{
+				// Apply kerning.
+				offset.X += fallback->getKerningWidth(l1, &l2);
+				offset.Y += fallback->getKerningHeight();
+
+				u32 current_color = iter.getPos();
+				fallback->draw(core::stringw(l1),
+					core::rect<s32>(offset, position.LowerRightCorner),
+					current_color < colors.size() ? colors[current_color] : video::SColor(255, 255, 255, 255),
+					hcenter, vcenter, clip);
+			}
+
+			offset.X += fallback->getDimension(l1).Width;
+		}
 
 		previousChar = currentChar;
 		++iter;
@@ -804,9 +828,9 @@ u32 CGUITTFont::getGlyphIndexByChar(uchar32_t c) const
 	// Get the glyph.
 	u32 glyph = FT_Get_Char_Index(tt_face, c);
 
-	// Check for a valid glyph.  If it is invalid, attempt to use the replacement character.
+	// Check for a valid glyph.
 	if (glyph == 0)
-		glyph = FT_Get_Char_Index(tt_face, core::unicode::UTF_REPLACEMENT_CHARACTER);
+		return 0;
 
 	// If our glyph is already loaded, don't bother doing any batch loading code.
 	if (glyph != 0 && Glyphs[glyph - 1].isLoaded)
@@ -922,13 +946,26 @@ core::vector2di CGUITTFont::getKerning(const uchar32_t thisLetter, const uchar32
 
 	core::vector2di ret(GlobalKerningWidth, GlobalKerningHeight);
 
+	u32 n = getGlyphIndexByChar(thisLetter);
+
+	// If we don't have this glyph, ask fallback font
+	if (n == 0)
+	{
+		if (fallback != 0) {
+			wchar_t l1 = (wchar_t) thisLetter, l2 = (wchar_t) previousLetter;
+			ret.X = fallback->getKerningWidth(&l1, &l2);
+			ret.Y = fallback->getKerningHeight();
+		}
+		return ret;
+	}
+
 	// If we don't have kerning, no point in continuing.
 	if (!FT_HAS_KERNING(tt_face))
 		return ret;
 
 	// Get the kerning information.
 	FT_Vector v;
-	FT_Get_Kerning(tt_face, getGlyphIndexByChar(previousLetter), getGlyphIndexByChar(thisLetter), FT_KERNING_DEFAULT, &v);
+	FT_Get_Kerning(tt_face, getGlyphIndexByChar(previousLetter), n, FT_KERNING_DEFAULT, &v);
 
 	// If we have a scalable font, the return value will be in font points.
 	if (FT_IS_SCALABLE(tt_face))
@@ -960,6 +997,9 @@ void CGUITTFont::setInvisibleCharacters(const core::ustring& s)
 video::IImage* CGUITTFont::createTextureFromChar(const uchar32_t& ch)
 {
 	u32 n = getGlyphIndexByChar(ch);
+	if (n == 0)
+		n = getGlyphIndexByChar((uchar32_t) core::unicode::UTF_REPLACEMENT_CHARACTER);
+
 	const SGUITTGlyph& glyph = Glyphs[n-1];
 	CGUITTGlyphPage* page = Glyph_Pages[glyph.glyph_page];
 
@@ -1147,6 +1187,8 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 				container.push_back(current_node);
 			}
 			offset.X += getWidthFromCharacter(current_char);
+			// FIXME: missing fallback font handling here
+
 			previous_char = current_char;
 			++text;
 		}

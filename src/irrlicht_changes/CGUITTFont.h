@@ -269,7 +269,7 @@ namespace gui
 				video::SColor color, bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
 
-			virtual void draw(const EnrichedString& text, const core::rect<s32>& position,
+			void draw(const EnrichedString& text, const core::rect<s32>& position,
 				video::SColor color, bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
 
@@ -312,6 +312,9 @@ namespace gui
 
 			//! Get the last glyph page's index.
 			u32 getLastGlyphPageIndex() const { return Glyph_Pages.size() - 1; }
+
+			//! Set font that should be used for glyphs not present in ours
+			void setFallback(gui::IGUIFont* font) { fallback = font; }
 
 			//! Create corresponding character's software image copy from the font,
 			//! so you can use this data just like any ordinary video::IImage.
@@ -387,6 +390,8 @@ namespace gui
 			core::ustring Invisible;
 			u32 shadow_offset;
 			u32 shadow_alpha;
+
+			gui::IGUIFont* fallback;
 	};
 
 } // end namespace gui

@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 enum FontMode : u8 {
 	FM_Standard = 0,
 	FM_Mono,
-	FM_Fallback,
+	_FM_Fallback, // do not use directly
 	FM_Simple,
 	FM_SimpleMono,
 	FM_MaxMode,
