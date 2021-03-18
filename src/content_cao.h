@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_object.h"
 #include "utility.h" // For IntervalLimiter
 class Settings;
-#include "MyBillboardSceneNode.h"
+//#include "MyBillboardSceneNode.h"
+#include <IBillboardSceneNode.h>
 
 /*
 	SmoothTranslator
@@ -304,6 +305,15 @@ private:
 	SmoothTranslator pos_translator;
 };
 
+static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
+		float txs, float tys, int col, int row)
+{
+	video::SMaterial& material = bill->getMaterial(0);
+	core::matrix4& matrix = material.getTextureMatrix(0);
+	matrix.setTextureTranslate(txs*col, tys*row);
+	matrix.setTextureScale(txs, tys);
+}
+
 /*
 	MobV2CAO
 */
@@ -348,7 +358,7 @@ private:
 	
 	IntervalLimiter m_attack_interval;
 	core::aabbox3d<f32> m_selection_box;
-	scene::MyBillboardSceneNode *m_node;
+	scene::IBillboardSceneNode *m_node;
 	v3f m_position;
 	std::string m_texture_name;
 	float m_yaw;

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include <SAnimatedMesh.h>
 #include "settings.h"
+#define MY_ETLM_READ_ONLY video::ETLM_READ_ONLY
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
@@ -820,7 +821,7 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrude(video::ITexture* texture)
 	{
 		// Texture is in the correct color format, we can pass it
 		// to extrudeARGB right away.
-		void* data = texture->lock(true);
+		void* data = texture->lock(MY_ETLM_READ_ONLY);
 		if (data == NULL)
 			return NULL;
 		mesh = extrudeARGB(size.Width, size.Height, (u8*) data);
@@ -830,7 +831,7 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrude(video::ITexture* texture)
 	{
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
-		video::IImage* img1 = driver->createImageFromData(format, size, texture->lock(true));
+		video::IImage* img1 = driver->createImageFromData(format, size, texture->lock(MY_ETLM_READ_ONLY));
 		if (img1 == NULL)
 			return NULL;
 

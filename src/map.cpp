@@ -3102,15 +3102,15 @@ bool ServerMap::loadSectorMeta(v2s16 p2d)
 	}
 	catch(InvalidFilenameException &e)
 	{
-		return false;
+		return NULL;
 	}
 	catch(FileNotGoodException &e)
 	{
-		return false;
+		return NULL;
 	}
 	catch(std::exception &e)
 	{
-		return false;
+		return NULL;
 	}
 	
 	return true;
@@ -3481,15 +3481,15 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		}
 		catch(InvalidFilenameException &e)
 		{
-			return false;
+			return NULL;
 		}
 		catch(FileNotGoodException &e)
 		{
-			return false;
+			return NULL;
 		}
 		catch(std::exception &e)
 		{
-			return false;
+			return NULL;
 		}
 	}
 	

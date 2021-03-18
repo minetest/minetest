@@ -555,7 +555,7 @@ InventoryItem * InventoryList::takeItem(u32 i, u32 count)
 		return item2;
 	}
 	
-	return false;
+	return NULL;
 }
 
 void InventoryList::decrementMaterials(u16 count)

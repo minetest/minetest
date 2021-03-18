@@ -145,7 +145,6 @@ endif()
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
-	MyBillboardSceneNode.cpp
 	content_mapblock.cpp
 	content_cao.cpp
 	mapblock_mesh.cpp
@@ -247,26 +246,48 @@ if(MSVC)
 else()
 	# Probably GCC
 	
-	if(WARN_ALL)
-		set(RELEASE_WARNING_FLAGS "-Wall")
-	else()
-		set(RELEASE_WARNING_FLAGS "")
-	endif()
-	
-	if(NOT APPLE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		CHECK_CXX_COMPILER_FLAG("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
-		if(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
-			set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
-		endif(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
-	endif()
+	set(CFLAGS "-fwrapv -fno-fast-math")
+	set(OPT_CFLAGS "-O3 -fomit-frame-pointer")
 	
 	if(APPLE)
 		set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "do not build for 64-bit" FORCE)
 		set(ARCH i386)
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS}")
+		if(ENABLE_SSP)
+			CHECK_CXX_COMPILER_FLAG("-fstack-protector-strong" HAS_FSTACK_STRONG)
+			if(HAS_FSTACK_STRONG)
+				set(CFLAGS "${CFLAGS} -fstack-protector-strong")
+			else()
+				set(CFLAGS "${CFLAGS} -fstack-protector")
+			endif()
+		endif()
+		if(ENABLE_SAFESTACK)
+			CHECK_CXX_COMPILER_FLAG("-fsanitize=safe-stack" HAS_SAFESTACK)
+			if(HAS_SAFESTACK)
+				set(CFLAGS "${CFLAGS} -fsanitize=safe-stack")
+				set(LDFLAGS "${LDFLAGS} -fsanitize=safe-stack -lrt")
+			endif()
+		endif()
+		if(ENABLE_PIE)
+			set(CFLAGS "${CFLAGS} -fPIC -fPIE")
+			set(LDFLAGS "${LDFLAGS} -Wl,-pie")
+		endif()
+		if(CPU_OPTS)
+			set(OPT_CFLAGS "${OPT_CFLAGS} -march=${CPUTYPE}")
+		endif()
+
+		set(CMAKE_CXX_FLAGS_RELEASE "${OPT_CFLAGS} ${CFLAGS} ${CXXFLAGS} -Wall -DNDEBUG -pipe -fpermissive -Wno-write-strings")
+		set(CMAKE_C_FLAGS_RELEASE "${OPT_CFLAGS} ${CFLAGS} -Wall -DNDEBUG -pipe")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CFLAGS} ${CXXFLAGS} -Wall -O0 -g3 -ggdb -fpermissive -Wno-write-strings")
+		set(CMAKE_C_FLAGS_DEBUG "${CFLAGS} -Wall -O0 -g3 -ggdb")
+
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE ${LDFLAGS})
+		set(CMAKE_MODULE_LINKER_FLAGS_RELEASE ${CMAKE_EXE_LINKER_FLAGS_RELEASE})
+		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE ${CMAKE_EXE_LINKER_FLAGS_RELEASE})
+		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${LDFLAGS}")
+		set(CMAKE_MODULE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
+		set(CMAKE_SHARED_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
