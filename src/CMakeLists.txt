@@ -668,7 +668,10 @@ endif(BUILD_SERVER)
 # see issue #4638
 set(GETTEXT_BLACKLISTED_LOCALES
 	ar
+	dv
 	he
+	hi
+	kn
 	ky
 	ms_Arab
 	th
