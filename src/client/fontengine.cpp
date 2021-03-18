@@ -97,6 +97,11 @@ void FontEngine::cleanCache()
 /******************************************************************************/
 irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 {
+	return getFont(spec, false);
+}
+
+irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec, bool may_fail)
+{
 	if (spec.mode == FM_Unspecified) {
 		spec.mode = m_currentMode;
 	} else if (m_currentMode == FM_Simple) {
@@ -128,6 +133,13 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 		font = initSimpleFont(spec);
 	else
 		font = initFont(spec);
+
+	if (!font && !may_fail) {
+		errorstream << "Minetest cannot continue without a valid font. "
+			"Please correct the 'font_path' setting or install the font "
+			"file in the proper location." << std::endl;
+		abort();
+	}
 
 	m_font_cache[spec.getHash()][spec.size] = font;
 
@@ -309,21 +321,15 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 		if (spec.mode != _FM_Fallback) {
 			FontSpec spec2(spec);
 			spec2.mode = _FM_Fallback;
-			font->setFallback(getFont(spec2));
+			font->setFallback(getFont(spec2, true));
 		}
 		return font;
 	}
-
-
-	// give up
-	errorstream << "Minetest cannot continue without a valid font. "
-			"Please correct the 'font_path' setting or install the font "
-			"file in the proper location" << std::endl;
 #else
-	errorstream << "FontEngine: Tried to load Freetype font but Minetest was"
-			" not compiled with that library." << std::endl;
+	errorstream << "FontEngine: Tried to load TTF font but Minetest was"
+			" compiled without Freetype." << std::endl;
 #endif
-	abort();
+	return nullptr;
 }
 
 /** initialize a font without freetype */

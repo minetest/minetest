@@ -132,10 +132,12 @@ public:
 	void readSettings();
 
 private:
+	irr::gui::IGUIFont *getFont(FontSpec spec, bool may_fail);
+
 	/** update content of font cache in case of a setting change made it invalid */
 	void updateFontCache();
 
-	/** initialize a new font */
+	/** initialize a new TTF font */
 	gui::IGUIFont *initFont(const FontSpec &spec);
 
 	/** initialize a font without freetype */
