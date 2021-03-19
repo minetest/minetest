@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include "intlGUIEditBox.h"
+#include "guiEditBoxWithScrollbar.h"
 #include "porting.h"
 
 #include "gettext.h"
@@ -109,10 +109,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		porting::mt_snprintf(info_text_buf, sizeof(info_text_buf),
 				info_text_template.c_str(), m_playername.c_str());
 
-		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
-		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,
-				Environment, this, ID_intotext, rect2, false, true);
-		delete[] info_text_buf_wide;
+		std::wstring info_text_w = utf8_to_wide(info_text_buf);
+		gui::IGUIEditBox *e = new GUIEditBoxWithScrollBar(info_text_w.c_str(),
+				true, Environment, this, ID_intotext, rect2, false, true);
 		e->drop();
 		e->setMultiLine(true);
 		e->setWordWrap(true);
