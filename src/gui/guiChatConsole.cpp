@@ -90,8 +90,19 @@ GUIChatConsole::GUIChatConsole(
 
 	// set default cursor options
 	setCursor(true, true, 2.0, 0.1);
-	
+
 	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+	if(m_cache_clickable_chat_weblinks)
+	{
+		std::string ctrlkeystoparse = g_settings->get("chat_weblink_ctrl_keys");
+		if(setupChatClickCtrlKeys(ctrlkeystoparse) == 0)
+		{
+			// if fail then try again w hardcoded string
+			g_logger.log(LL_WARNING, "Failed to parse chat_weblink_ctrl_keys. Using hardcoded default.");
+			ctrlkeystoparse = "KEY_CONTROL,KEY_LCONTROL,KEY_RCONTROL";
+			setupChatClickCtrlKeys(ctrlkeystoparse);
+		}
+	}
 }
 
 GUIChatConsole::~GUIChatConsole()
@@ -412,7 +423,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	if(event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)
 	{
 		// CTRL up
-		if(event.KeyInput.Key == KEY_LCONTROL || event.KeyInput.Key == KEY_RCONTROL || !event.KeyInput.Control)
+		if(isInCtrlKeys(event.KeyInput.Key) || !event.KeyInput.Control)
 		{
 			isctrldown = false;
 		}
@@ -420,7 +431,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	else if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// CTRL down
-		if(event.KeyInput.Key == KEY_LCONTROL || event.KeyInput.Key == KEY_RCONTROL || event.KeyInput.Control)
+		if(isInCtrlKeys(event.KeyInput.Key) || event.KeyInput.Control)
 		{
 			isctrldown = true;
 		}
@@ -669,3 +680,53 @@ void GUIChatConsole::setVisible(bool visible)
 	}
 }
 
+// Return how many "ctrl" keycodes successfully found in string, or 0 on fail
+int GUIChatConsole::setupChatClickCtrlKeys(std::string inputline)
+{
+	m_cache_chat_weblink_ctrl_keys.clear();
+
+	irr::EKEY_CODE kc;
+	std::string stemp;
+	size_t startpos = 0, endpos = 0;
+	while(startpos < inputline.size())
+	{
+		// Foreach delimited string,
+		endpos = inputline.find(',', startpos);
+		endpos = std::min(endpos, inputline.find(' ', startpos));
+		// Ignore space/comma
+		if(endpos == startpos)
+		{
+			++endpos;
+		}
+		// Ignore consecutive space/comma
+		else if(endpos - startpos > 1)
+		{
+			// If valid keycode, add it to cached list
+			stemp = inputline.substr(startpos, endpos - startpos);
+			kc = keyname_to_keycode_safemode(stemp.c_str());
+			if(kc != irr::KEY_KEY_CODES_COUNT)
+			{
+				m_cache_chat_weblink_ctrl_keys.push_back(kc);
+			}
+			else
+			{
+				stemp = "Ignoring unknown keycode '" + stemp + "' for chat_weblink_ctrl_keys, check your conf";
+				g_logger.log(LL_WARNING, stemp);
+			}
+		}
+		startpos = endpos;
+	}
+
+	return m_cache_chat_weblink_ctrl_keys.size();
+}
+
+bool GUIChatConsole::isInCtrlKeys(const irr::EKEY_CODE& kc)
+{
+	// To avoid including <algorithm>
+	for(size_t i=0; i<m_cache_chat_weblink_ctrl_keys.size(); ++i)
+	{
+		if(m_cache_chat_weblink_ctrl_keys.at(i) == kc)
+			return true;
+	}
+	return false;
+}

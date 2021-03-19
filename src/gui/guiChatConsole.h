@@ -82,6 +82,10 @@ private:
 	void drawText();
 	void drawPrompt();
 
+	// Parse conf and populate "ctrl" keys for clickable chat
+	int setupChatClickCtrlKeys(std::string inputline);
+	bool isInCtrlKeys(const irr::EKEY_CODE& kc);
+
 private:
 	ChatBackend* m_chat_backend;
 	Client* m_client;
@@ -127,4 +131,6 @@ private:
 	
 	// Enable clickable chat weblinks
 	bool m_cache_clickable_chat_weblinks;
+	// Set of "control" keys for weblink mouseclicks
+	std::vector<irr::EKEY_CODE> m_cache_chat_weblink_ctrl_keys;
 };
