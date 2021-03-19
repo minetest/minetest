@@ -208,31 +208,10 @@ bool GUIEditBox::OnEvent(const SEvent &event)
 				}
 			}
 			break;
-		case EET_KEY_INPUT_EVENT: {
-#if (defined(__linux__) || defined(__FreeBSD__)) || defined(__DragonFly__)
-			// ################################################################
-			// ValkaTR:
-			// This part is the difference from the original intlGUIEditBox
-			// It converts UTF-8 character into a UCS-2 (wchar_t)
-			wchar_t wc = L'_';
-			mbtowc(&wc, (char *)&event.KeyInput.Char,
-					sizeof(event.KeyInput.Char));
-
-			// printf( "char: %lc (%u)  \r\n", wc, wc );
-
-			SEvent irrevent(event);
-			irrevent.KeyInput.Char = wc;
-			// ################################################################
-
-			if (processKey(irrevent))
-				return true;
-#else
+		case EET_KEY_INPUT_EVENT:
 			if (processKey(event))
 				return true;
-#endif // defined(linux)
-
 			break;
-		}
 		case EET_MOUSE_INPUT_EVENT:
 			if (processMouse(event))
 				return true;
