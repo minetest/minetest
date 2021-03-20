@@ -44,6 +44,9 @@ class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
+#if BUILD_UNITTESTS
+class TestSchematic;
+#endif
 
 enum ContentParamType
 {
@@ -789,10 +792,13 @@ private:
 
 NodeDefManager *createNodeDefManager();
 
+// NodeResolver: Queue for node names which are then translated
+// to content_t after the NodeDefManager was initialized
 class NodeResolver {
 public:
 	NodeResolver();
 	virtual ~NodeResolver();
+	// Callback which is run as soon NodeDefManager is ready
 	virtual void resolveNodeNames() = 0;
 
 	// required because this class is used as mixin for ObjDef
@@ -804,12 +810,31 @@ public:
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
 		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
+	inline bool isResolveDone() const { return m_resolve_done; }
+	void reset(bool resolve_done = false);
+
+	// Vector containing all node names in the resolve "queue"
+	std::vector<std::string> m_nodenames;
+	// Specifies the "set size" of node names which are to be processed
+	// this is used for getIdsFromNrBacklog
+	// TODO: replace or remove
+	std::vector<size_t> m_nnlistsizes;
+
+protected:
+	friend class NodeDefManager; // m_ndef
+
+	const NodeDefManager *m_ndef = nullptr;
+	// Index of the next "m_nodenames" entry to resolve
+	u32 m_nodenames_idx = 0;
+
+private:
+#if BUILD_UNITTESTS
+	// Unittest requires access to m_resolve_done
+	friend class TestSchematic;
+#endif
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx = 0;
+	// Index of the next "m_nnlistsizes" entry to process
 	u32 m_nnlistsizes_idx = 0;
-	std::vector<std::string> m_nodenames;
-	std::vector<size_t> m_nnlistsizes;
-	const NodeDefManager *m_ndef = nullptr;
 	bool m_resolve_done = false;
 };

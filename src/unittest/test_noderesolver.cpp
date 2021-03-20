@@ -56,6 +56,8 @@ void TestNodeResolver::runTests(IGameDef *gamedef)
 
 class Foobar : public NodeResolver {
 public:
+	friend class TestNodeResolver; // m_ndef
+
 	void resolveNodeNames();
 
 	content_t test_nr_node1;
