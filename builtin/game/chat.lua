@@ -323,6 +323,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	return true, S("Privileges of @1: @2", revokename,
 			core.privs_to_string(
 			core.get_player_privs(revokename), ', '))
+	end
 
 core.register_chatcommand("revoke", {
 	params = S("<name> (<privilege> | all)"),
