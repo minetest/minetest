@@ -68,12 +68,17 @@ Json::Value fetchJsonValue(const std::string &url,
 	return root;
 }
 
-std::string fastWriteJson(const Json::Value &value)
+void fastWriteJson(const Json::Value &value, std::ostream &to)
 {
-	std::ostringstream oss;
 	Json::StreamWriterBuilder builder;
 	builder["indentation"] = "";
 	std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-	writer->write(value, &oss);
+	writer->write(value, &to);
+}
+
+std::string fastWriteJson(const Json::Value &value)
+{
+	std::ostringstream oss;
+	fastWriteJson(value, oss);
 	return oss.str();
 }

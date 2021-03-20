@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "inventory.h"
 #include "exceptions.h"
+#include "convert_json.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
 
@@ -142,7 +143,7 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 	}
 	root["damage_groups"] = damage_groups_object;
 
-	os << root;
+	fastWriteJson(root, os);
 }
 
 void ToolCapabilities::deserializeJson(std::istream &is)
