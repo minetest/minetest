@@ -670,15 +670,19 @@ inline const std::string duration_to_string(int sec)
 
 	std::stringstream ss;
 	if (hour > 0) {
-		ss << hour << "h ";
+		ss << hour << "h";
+		if (min > 0 || sec > 0)
+			ss << " ";
 	}
 
 	if (min > 0) {
-		ss << min << "m ";
+		ss << min << "min";
+		if (sec > 0)
+			ss << " ";
 	}
 
 	if (sec > 0) {
-		ss << sec << "s ";
+		ss << sec << "s";
 	}
 
 	return ss.str();

@@ -118,6 +118,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	if (g_logger.getTraceEnabled())
+		params.LoggingLevel = irr::ELL_DEBUG;
 	params.DriverType = driverType;
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
 	params.Bits = bits;
@@ -325,9 +327,11 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
 	switch (driver->getDriverType()) {
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 	case video::EDT_DIRECT3D8:
 		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
 		break;
+#endif
 	case video::EDT_DIRECT3D9:
 		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
 		break;

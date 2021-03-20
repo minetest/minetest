@@ -663,12 +663,15 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
 
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(
+				data.c_str(), data.size(), "_tempreadfile");
+#else
 		// Silly irrlicht's const-incorrectness
 		Buffer<char> data_rw(data.c_str(), data.size());
-
-		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				*data_rw, data_rw.getSize(), "_tempreadfile");
+#endif
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 
@@ -1914,13 +1917,20 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 
 	// Create the mesh, remove it from cache and return it
 	// This allows unique vertex colors and other properties for each instance
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+	io::IReadFile *rfile = RenderingEngine::get_filesystem()->createMemoryReadFile(
+			data.c_str(), data.size(), filename.c_str());
+#else
 	Buffer<char> data_rw(data.c_str(), data.size()); // Const-incorrect Irrlicht
-	io::IReadFile *rfile   = RenderingEngine::get_filesystem()->createMemoryReadFile(
+	io::IReadFile *rfile = RenderingEngine::get_filesystem()->createMemoryReadFile(
 			*data_rw, data_rw.getSize(), filename.c_str());
+#endif
 	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
 	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
+	if (!mesh)
+		return nullptr;
 	mesh->grab();
 	if (!cache)
 		RenderingEngine::get_mesh_cache()->removeMesh(mesh);

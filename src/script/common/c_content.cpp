@@ -119,6 +119,8 @@ void read_item_definition(lua_State* L, int index,
 	// "" = no prediction
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
+
+	getintfield(L, index, "place_param2", def.place_param2);
 }
 
 /******************************************************************************/

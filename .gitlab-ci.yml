@@ -9,16 +9,24 @@ stages:
   - deploy
 
 variables:
+  IRRLICHT_TAG: "1.9.0mt0"
   MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
   CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
 
 .build_template:
   stage: build
+  before_script:
+   - apt-get update
+   - apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
   script:
+    - git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG
+    - cd irrlicht
+    - cmake . -DBUILD_SHARED_LIBS=OFF
+    - make -j2
+    - cd ..
     - mkdir cmakebuild
-    - mkdir -p artifact/minetest/usr/
     - cd cmakebuild
-    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DENABLE_SYSTEM_JSONCPP=TRUE -DBUILD_SERVER=TRUE ..
+    - cmake -DIRRLICHT_LIBRARY=$PWD/../irrlicht/lib/Linux/libIrrlicht.a -DIRRLICHT_INCLUDE_DIR=$PWD/../irrlicht/include -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
     - make -j2
     - make install
   artifacts:
@@ -30,7 +38,7 @@ variables:
 .debpkg_template:
   stage: package
   before_script:
-    - apt-get update -y
+    - apt-get update
     - apt-get install -y git
     - mkdir -p build/deb/minetest/DEBIAN/
     - cp misc/debpkg-control build/deb/minetest/DEBIAN/control
@@ -39,6 +47,7 @@ variables:
     - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest_game
     - rm -rf build/deb/minetest/usr/share/minetest/games/minetest/.git
     - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
+    - sed -i 's/JPEG_PLACEHOLDER/'$JPEG_PKG'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
     - cd build/deb/ && dpkg-deb -b minetest/ && mv minetest.deb ../../
   artifacts:
@@ -49,7 +58,7 @@ variables:
 .debpkg_install:
   stage: deploy
   before_script:
-    - apt-get update -y
+    - apt-get update
   script:
     - apt-get install -y ./*.deb
     - minetest --version
@@ -63,9 +72,6 @@ variables:
 build:debian-9:
  extends: .build_template
  image: debian:9
- before_script:
-   - apt-get update -y
-   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:debian-9:
   extends: .debpkg_template
@@ -74,6 +80,7 @@ package:debian-9:
     - build:debian-9
   variables:
     LEVELDB_PKG: libleveldb1v5
+    JPEG_PKG: libjpeg62-turbo
 
 deploy:debian-9:
   extends: .debpkg_install
@@ -86,9 +93,6 @@ deploy:debian-9:
 build:debian-10:
  extends: .build_template
  image: debian:10
- before_script:
-   - apt-get update -y
-   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:debian-10:
   extends: .debpkg_template
@@ -97,6 +101,7 @@ package:debian-10:
     - build:debian-10
   variables:
     LEVELDB_PKG: libleveldb1d
+    JPEG_PKG: libjpeg62-turbo
 
 deploy:debian-10:
   extends: .debpkg_install
@@ -113,9 +118,6 @@ deploy:debian-10:
 build:ubuntu-16.04:
   extends: .build_template
   image: ubuntu:xenial
-  before_script:
-    - apt-get update -y
-    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:ubuntu-16.04:
   extends: .debpkg_template
@@ -124,6 +126,7 @@ package:ubuntu-16.04:
     - build:ubuntu-16.04
   variables:
     LEVELDB_PKG: libleveldb1v5
+    JPEG_PKG: libjpeg-turbo8
 
 deploy:ubuntu-16.04:
   extends: .debpkg_install
@@ -136,9 +139,6 @@ deploy:ubuntu-16.04:
 build:ubuntu-18.04:
   extends: .build_template
   image: ubuntu:bionic
-  before_script:
-    - apt-get update -y
-    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:ubuntu-18.04:
   extends: .debpkg_template
@@ -147,6 +147,7 @@ package:ubuntu-18.04:
     - build:ubuntu-18.04
   variables:
     LEVELDB_PKG: libleveldb1v5
+    JPEG_PKG: libjpeg-turbo8
 
 deploy:ubuntu-18.04:
   extends: .debpkg_install
@@ -163,7 +164,7 @@ build:fedora-28:
   extends: .build_template
   image: fedora:28
   before_script:
-    - dnf -y install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
+    - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
 
 ##
 ## MinGW for Windows
@@ -172,7 +173,7 @@ build:fedora-28:
 .generic_win_template:
   image: ubuntu:bionic
   before_script:
-    - apt-get update -y
+    - apt-get update
     - apt-get install -y wget xz-utils unzip git cmake gettext
     - wget -nv http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
     - tar -xaf mingw.tar.xz -C /usr
@@ -183,13 +184,13 @@ build:fedora-28:
   artifacts:
     expire_in: 1h
     paths:
-      - build/minetest/_build/*
+      - _build/*
 
 .package_win_template:
   extends: .generic_win_template
   stage: package
   script:
-    - unzip build/minetest/_build/minetest-*.zip
+    - unzip _build/minetest-*.zip
     - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-*-win*/bin/
     - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-*-win*/bin/
     - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-*-win*/bin/
@@ -201,7 +202,7 @@ build:fedora-28:
 build:win32:
   extends: .build_win_template
   script:
-    - ./util/buildbot/buildwin32.sh build
+    - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh build
   variables:
     WIN_ARCH: "i686"
 
@@ -216,7 +217,7 @@ package:win32:
 build:win64:
   extends: .build_win_template
   script:
-    - ./util/buildbot/buildwin64.sh build
+    - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh build
   variables:
     WIN_ARCH: "x86_64"
 

@@ -124,7 +124,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-9
+          install_linux_deps --old-irr clang-9
 
       - name: Build prometheus-cpp
         run: |
@@ -212,7 +212,10 @@ jobs:
 
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
-    runs-on: windows-2019 
+    runs-on: windows-2019
+    #### Disabled due to Irrlicht switch
+    if: false
+    #### Disabled due to Irrlicht switch
     env:
       VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
 #                    2020.11

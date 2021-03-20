@@ -950,7 +950,7 @@ void drawItemStack(
 
 	if (imesh && imesh->mesh) {
 		scene::IMesh *mesh = imesh->mesh;
-		driver->clearZBuffer();
+		driver->clearBuffers(video::ECBF_DEPTH);
 		s32 delta = 0;
 		if (rotation_kind < IT_ROT_NONE) {
 			MeshTimeInfo &ti = rotation_time_infos[rotation_kind];
