@@ -81,7 +81,7 @@ local function get_formspec(tabview, name, tabdata)
 
 		-- Address / Port
 		"label[0.25,0.35;" .. fgettext("Address") .. "]" ..
-		"label[4.5,0.35;" .. fgettext("Port") .. "]" ..
+		"label[4.25,0.35;" .. fgettext("Port") .. "]" ..
 		"field[0.25,0.5;4,0.75;te_address;;" ..
 			core.formspec_escape(core.settings:get("address")) .. "]" ..
 		"field[4.25,0.5;1.25,0.75;te_port;;" ..
