@@ -251,6 +251,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	return true, S("Privileges of @1: @2", grantname,
 			core.privs_to_string(
 			core.get_player_privs(grantname), ', '))
+	end
 
 core.register_chatcommand("grant", {
 	params = S("<name> (<privilege> | all)"),
