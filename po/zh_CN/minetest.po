@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-03-22 18:29+0000\n"
-"Last-Translator: Liu Tao <lyuutau@outlook.com>\n"
+"Last-Translator: Yangjun Wang <yangjunw50@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -184,9 +184,8 @@ msgid "All packages"
 msgstr "所有包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "按键已被占用"
+msgstr "已安装"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -2964,9 +2963,8 @@ msgid "Enable console window"
 msgstr "启用控制台窗口"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "为新建地图启用创造模式。"
+msgstr "为所有玩家启用创造模式"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
