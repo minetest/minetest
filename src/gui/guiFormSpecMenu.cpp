@@ -2745,8 +2745,8 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	}
 
 	// Avoid length checks by resizing
-	if (parts.size() < 9)
-		parts.resize(9);
+	if (parts.size() < 10)
+		parts.resize(10);
 
 	std::vector<std::string> v_pos = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
