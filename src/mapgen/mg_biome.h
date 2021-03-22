@@ -97,7 +97,8 @@ public:
 
 	virtual BiomeGenType getType() const = 0;
 
-	virtual BiomeGen *clone() const = 0;
+	// Clone this BiomeGen and set a the new BiomeManager to be used by the copy
+	virtual BiomeGen *clone(BiomeManager *biomemgr) const = 0;
 
 	// Check that the internal chunk size is what the mapgen expects, just to be sure.
 	inline void assertChunkSize(v3s16 expect) const
@@ -171,7 +172,7 @@ public:
 
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }
 
-	BiomeGen *clone() const;
+	BiomeGen *clone(BiomeManager *biomemgr) const;
 
 	// Slower, meant for Script API use
 	float calcHeatAtPoint(v3s16 pos) const;

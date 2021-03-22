@@ -159,9 +159,9 @@ BiomeGenOriginal::~BiomeGenOriginal()
 	delete noise_humidity_blend;
 }
 
-BiomeGen *BiomeGenOriginal::clone() const
+BiomeGen *BiomeGenOriginal::clone(BiomeManager *biomemgr) const
 {
-	return new BiomeGenOriginal(m_bmgr, m_params, m_csize);
+	return new BiomeGenOriginal(biomemgr, m_params, m_csize);
 }
 
 float BiomeGenOriginal::calcHeatAtPoint(v3s16 pos) const
