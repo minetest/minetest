@@ -1496,13 +1496,37 @@ void MapblockMeshGenerator::drawNode()
 */
 void MapblockMeshGenerator::generate()
 {
-	for (p.Z = 0; p.Z < MAP_BLOCKSIZE; p.Z++)
-	for (p.Y = 0; p.Y < MAP_BLOCKSIZE; p.Y++)
-	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++) {
-		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		f = &nodedef->get(n);
-		drawNode();
-	}
+	v3s16 player_pos = floatToInt(data->m_client->getEnv().getLocalPlayer()->getEyePosition(), BS);
+
+	irr::s16 playerz = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.Z - blockpos_nodes.Z));
+	irr::s16 playery = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.Y - blockpos_nodes.Y));
+	irr::s16 playerx = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.X - blockpos_nodes.X));
+
+	auto draw = [&]() {
+			n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+			f = &nodedef->get(n);
+			drawNode();
+	};
+
+	auto loop_x = [&]() {
+		for (p.X = 0; p.X < playerx; p.X++)
+			draw();
+		for (p.X = MAP_BLOCKSIZE - 1; p.X >= playerx; p.X--)
+			draw();
+	};
+
+	auto loop_y = [&]() {
+		for (p.Y = 0; p.Y < playery; p.Y++)
+			loop_x();
+		for (p.Y = MAP_BLOCKSIZE - 1; p.Y >= playery; p.Y--)
+			loop_x();
+	};
+
+	for (p.Z = 0; p.Z < playerz; p.Z++)
+		loop_y();
+
+	for (p.Z = MAP_BLOCKSIZE - 1; p.Z >= playerz; p.Z--)
+		loop_y();
 }
 
 void MapblockMeshGenerator::renderSingle(content_t node, u8 param2)
