@@ -6364,3 +6364,4 @@ msgstr ""
 #: src/chat.cpp
 msgid "Failed to open webpage"
 msgstr ""
+

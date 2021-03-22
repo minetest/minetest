@@ -37,6 +37,7 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	if (m_scrollback == 0)
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
+
 	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
 	if(m_cache_clickable_chat_weblinks)
 	{
@@ -338,7 +339,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			// remaining_in_{in,out}put. Try to end the fragment
 			// on a word boundary.
 			u32 frag_length = 1, space_pos = 0;
-			
+
 			if(!m_cache_clickable_chat_weblinks)
 			{
 				while (frag_length < remaining_in_input &&
@@ -440,17 +441,6 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 					next_frags.push_back(temp_frag);
 					in_pos += frag_length;
 					remaining_in_output -= std::min(frag_length, remaining_in_output);
-					
-					/*
-					std::cout << "----------" << std::endl;
-					std::cout << "http_pos = " << http_pos << std::endl;
-					std::cout << "space_pos = " << space_pos << std::endl;
-					std::cout << "frag:   '" << temp_frag.text.size() << "'" << std::endl;
-					std::cout << "in_pos: '" << in_pos << std::endl;
-					std::cout << "remain: '" << line.text.substr(in_pos).size() << "'" << std::endl;
-					std::cout << "remn in in:  '" << remaining_in_input << "'" << std::endl;
-					std::cout << "remn in out: '" << remaining_in_output << "'" << std::endl;
-					*/
 				}
 				// handled for fragments individually
 				text_processing = false;

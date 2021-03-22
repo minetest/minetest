@@ -334,7 +334,6 @@ void GUIChatConsole::drawText()
 
 #if USE_FREETYPE
 			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
-				
 				// Draw colored text if FreeType is enabled
 				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
 				tmp->draw(

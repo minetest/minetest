@@ -128,7 +128,7 @@ private:
 	// font
 	gui::IGUIFont *m_font = nullptr;
 	v2u32 m_fontsize;
-	
+
 	// Enable clickable chat weblinks
 	bool m_cache_clickable_chat_weblinks;
 	// Set of "control" keys for weblink mouseclicks
