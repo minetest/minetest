@@ -173,7 +173,11 @@ public:
 
 	BiomeGen *clone() const;
 
+	// Slower, meant for Script API use
+	float calcHeatAtPoint(v3s16 pos) const;
+	float calcHumidityAtPoint(v3s16 pos) const;
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
+
 	void calcBiomeNoise(v3s16 pmin);
 
 	biome_t *getBiomes(s16 *heightmap, v3s16 pmin);
@@ -238,14 +242,6 @@ public:
 	}
 
 	virtual void clear();
-
-	// For BiomeGen type 'BiomeGenOriginal'
-	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-		NoiseParams &np_heat_blend, u64 seed) const;
-	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-		NoiseParams &np_humidity_blend, u64 seed) const;
-	const Biome *getBiomeFromNoiseOriginal(float heat, float humidity,
-		v3s16 pos) const;
 
 private:
 	BiomeManager() {};
