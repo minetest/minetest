@@ -1425,6 +1425,8 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	if (!emerge || !emerge->mgparams)
+		return 0;
 
 	Mapgen mg;
 	// Intentionally truncates to s32, see Mapgen::Mapgen()
@@ -1452,6 +1454,8 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	if (!emerge || !emerge->mgparams)
+		return 0;
 
 	Mapgen mg;
 	// Intentionally truncates to s32, see Mapgen::Mapgen()

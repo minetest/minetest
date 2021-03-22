@@ -146,7 +146,9 @@ EmergeManager::EmergeManager(Server *server)
 	this->decomgr   = new DecorationManager(server);
 	this->schemmgr  = new SchematicManager(server);
 
-	this->biomegen = nullptr; // initialized later
+	// initialized later
+	this->mgparams = nullptr;
+	this->biomegen = nullptr;
 
 	// Note that accesses to this variable are not synchronized.
 	// This is because the *only* thread ever starting or stopping
