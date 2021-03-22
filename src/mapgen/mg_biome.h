@@ -97,6 +97,14 @@ public:
 
 	virtual BiomeGenType getType() const = 0;
 
+	virtual BiomeGen *clone() const = 0;
+
+	// Check that the internal chunk size is what the mapgen expects, just to be sure.
+	inline void assertChunkSize(v3s16 expect) const
+	{
+		FATAL_ERROR_IF(m_csize != expect, "Chunk size mismatches");
+	}
+
 	// Calculates the biome at the exact position provided.  This function can
 	// be called at any time, but may be less efficient than the latter methods,
 	// depending on implementation.
@@ -162,6 +170,8 @@ public:
 	virtual ~BiomeGenOriginal();
 
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }
+
+	BiomeGen *clone() const;
 
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
 	void calcBiomeNoise(v3s16 pmin);

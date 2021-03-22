@@ -224,6 +224,11 @@ BiomeGenOriginal::~BiomeGenOriginal()
 	delete noise_humidity_blend;
 }
 
+BiomeGen *BiomeGenOriginal::clone() const
+{
+	return new BiomeGenOriginal(m_bmgr, m_params, m_csize);
+}
+
 // Only usable in a mapgen thread
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
