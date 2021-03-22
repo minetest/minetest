@@ -38,20 +38,24 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
 
-	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
-	if(m_cache_clickable_chat_weblinks)
+	// Curses mode cannot access g_settings here
+	if(g_settings != NULL)
 	{
-		std::string hexcode = g_settings->get("chat_weblink_color");
-		u32 colorval = strtol(hexcode.c_str(), NULL, 16);
-		u32 redval,greenval,blueval;
-		blueval = colorval % 256;
-		colorval /= 256;
-		greenval = colorval % 256;
-		colorval /= 256;
-		redval = colorval % 256;
-		// discard alpha, if included
-		//m_cache_chat_weblink_color = irr::video::SColor(255,150,150,255);
-		m_cache_chat_weblink_color = irr::video::SColor(255,redval,greenval,blueval);
+		m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+		if(m_cache_clickable_chat_weblinks)
+		{
+			std::string hexcode = g_settings->get("chat_weblink_color");
+			u32 colorval = strtol(hexcode.c_str(), NULL, 16);
+			u32 redval,greenval,blueval;
+			blueval = colorval % 256;
+			colorval /= 256;
+			greenval = colorval % 256;
+			colorval /= 256;
+			redval = colorval % 256;
+			// discard alpha, if included
+			//m_cache_chat_weblink_color = irr::video::SColor(255,150,150,255);
+			m_cache_chat_weblink_color = irr::video::SColor(255,redval,greenval,blueval);
+		}
 	}
 }
 
