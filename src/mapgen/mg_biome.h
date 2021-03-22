@@ -158,7 +158,7 @@ struct BiomeParamsOriginal : public BiomeParams {
 class BiomeGenOriginal : public BiomeGen {
 public:
 	BiomeGenOriginal(BiomeManager *biomemgr,
-		BiomeParamsOriginal *params, v3s16 chunksize);
+		const BiomeParamsOriginal *params, v3s16 chunksize);
 	virtual ~BiomeGenOriginal();
 
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }
@@ -176,7 +176,7 @@ public:
 	float *humidmap;
 
 private:
-	BiomeParamsOriginal *m_params;
+	const BiomeParamsOriginal *m_params;
 
 	Noise *noise_heat;
 	Noise *noise_humidity;
