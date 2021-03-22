@@ -114,6 +114,59 @@ minetest.register_chatcommand("detach", {
 	end,
 })
 
+minetest.register_chatcommand("use_tool", {
+	params = "(dig <group> <leveldiff>) | (hit <damage_group> <time_from_last_punch>) [<uses>]",
+	description = "Apply tool wear a number of times, as if it were used for digging",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+		local mode, group, level, uses = string.match(param, "([a-z]+) ([a-z0-9]+) (-?%d+) (%d+)")
+		if not mode then
+			mode, group, level = string.match(param, "([a-z]+) ([a-z0-9]+) (-?%d+)")
+			uses = 1
+		end
+		if not mode or not group or not level then
+			return false
+		end
+		if mode ~= "dig" and mode ~= "hit" then
+			return false
+		end
+		local tool = player:get_wielded_item()
+		local caps = tool:get_tool_capabilities()
+		if not caps or tool:get_count() == 0 then
+			return false, "No tool in hand."
+		end
+		local actual_uses = 0
+		for u=1, uses do
+			local wear = tool:get_wear()
+			local dp
+			if mode == "dig" then
+				dp = minetest.get_dig_params({[group]=3, level=level}, caps, wear)
+			else
+				dp = minetest.get_hit_params({[group]=100}, caps, level, wear)
+			end
+			tool:add_wear(dp.wear)
+			actual_uses = actual_uses + 1
+			if tool:get_count() == 0 then
+				break
+			end
+		end
+		player:set_wielded_item(tool)
+		if tool:get_count() == 0 then
+			return true, string.format("Tool used %d time(s). "..
+					"The tool broke after %d use(s).", uses, actual_uses)
+		else
+			local wear = tool:get_wear()
+			return true, string.format("Tool used %d time(s). "..
+					"Final wear=%d", uses, wear)
+		end
+	end,
+})
+
+
+
 -- Use this to test waypoint capabilities
 minetest.register_chatcommand("test_waypoints", {
 	params = "[change_immediate]",
