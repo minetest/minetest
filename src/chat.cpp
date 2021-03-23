@@ -53,7 +53,6 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 			colorval /= 256;
 			redval = colorval % 256;
 			// discard alpha, if included
-			//m_cache_chat_weblink_color = irr::video::SColor(255,150,150,255);
 			m_cache_chat_weblink_color = irr::video::SColor(255,redval,greenval,blueval);
 		}
 	}
@@ -423,7 +422,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 					else
 					{
 						space_pos = http_pos - 1;
-						frag_length = http_pos; // - in_pos;
+						frag_length = http_pos;
 					}
 
 					if (space_pos != 0 && frag_length < remaining_in_input)
@@ -434,7 +433,6 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 					if(http_pos == 0)
 					{
 						temp_frag.meta = wide_to_utf8(temp_frag.text.getString());
-						// FIXME: this is probably overkill to recolor the link text.
 						temp_frag.text = EnrichedString(temp_frag.text.getString());
 						temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
 					}
