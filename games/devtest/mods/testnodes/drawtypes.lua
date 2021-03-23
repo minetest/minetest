@@ -549,25 +549,41 @@ minetest.register_node("testnodes:glassliquid", {
 -- should connect to nodes of the same "rail type" (=same shape, different
 -- color) only.
 local rails = {
-	{ "rail", {"testnodes_rail_straight.png", "testnodes_rail_curved.png", "testnodes_rail_t_junction.png", "testnodes_rail_crossing.png"} },
-	{ "line", {"testnodes_line_straight.png", "testnodes_line_curved.png", "testnodes_line_t_junction.png", "testnodes_line_crossing.png"}, },
-	{ "street", {"testnodes_street_straight.png", "testnodes_street_curved.png", "testnodes_street_t_junction.png", "testnodes_street_crossing.png"}, },
+	-- classic rail with 4 tiles
+	{ "rail", {"testnodes_rail_straight.png", "testnodes_rail_curved.png", "testnodes_rail_t_junction.png", "testnodes_rail_crossing.png"}, true },
+	-- line has all 6 tiles
+	{ "line", {"testnodes_line_straight.png", "testnodes_line_curved.png", "testnodes_line_t_junction.png", "testnodes_line_crossing.png", "testnodes_line_single.png", "testnodes_line_end.png"}, true },
+	-- street has custom 'dead-end' but no custom 'single' tile;
+	-- note that a texture for the 'single' tile must be specified
+	-- explicitly here (as straight, i.e. the fallback) because we
+	-- can't skip fields in the tiles table
+	{ "street", {"testnodes_street_straight.png", "testnodes_street_curved.png", "testnodes_street_t_junction.png", "testnodes_street_crossing.png", "testnodes_street_straight.png", "testnodes_street_end.png"}, true },
+	-- gunpowder has custom 'single' but no custom 'dead-end' tile
+	-- (another explicit straight fallback)
+	{ "gunpowder", {"testnodes_gunpowder_straight.png", "testnodes_gunpowder_curved.png", "testnodes_gunpowder_t_junction.png", "testnodes_gunpowder_crossing.png", "testnodes_gunpowder_single.png", "testnodes_gunpowder_straight.png"}, false },
 	-- the "groupless" nodes are nodes in which the "connect_to_raillike" group is not set
-	{ "groupless", {"testnodes_rail2_straight.png", "testnodes_rail2_curved.png", "testnodes_rail2_t_junction.png", "testnodes_rail2_crossing.png"} },
+	{ "groupless", {"testnodes_rail2_straight.png", "testnodes_rail2_curved.png", "testnodes_rail2_t_junction.png", "testnodes_rail2_crossing.png"}, true },
 }
 local colors = { "", "cyan", "red" }
 
 for r=1, #rails do
 	local id = rails[r][1]
 	local tiles = rails[r][2]
+	local colorize = rails[r][3]
 	local raillike_group
 	if id ~= "groupless" then
 		raillike_group = minetest.raillike_group(id)
 	end
-	for c=1, #colors do
+	local railcolors
+	if colorize then
+		railcolors = colors
+	else
+		railcolors = {""}
+	end
+	for c=1, #railcolors do
 		local color
-		if colors[c] ~= "" then
-			color = colors[c]
+		if railcolors[c] ~= "" then
+			color = railcolors[c]
 		end
 		minetest.register_node("testnodes:raillike_"..id..c, {
 			description = S("Raillike Drawtype Test Node: @1 @2", id, c),

@@ -408,17 +408,21 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_RAILLIKE:
 		case NDT_PLANTLIKE:
 		case NDT_FLOWINGLIQUID: {
+			int t = 0;
+			if (f.drawtype == NDT_RAILLIKE) {
+				t = 4;
+			}
 			v3f wscale = def.wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
 				wscale.Z *= 0.1f;
-			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-				tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
+			setExtruded(tsrc->getTextureName(f.tiles[t].layers[0].texture_id),
+				tsrc->getTextureName(f.tiles[t].layers[1].texture_id),
 				wscale, tsrc,
-				f.tiles[0].layers[0].animation_frame_count);
+				f.tiles[t].layers[0].animation_frame_count);
 			// Add color
-			const TileLayer &l0 = f.tiles[0].layers[0];
+			const TileLayer &l0 = f.tiles[t].layers[0];
 			m_colors.emplace_back(l0.has_color, l0.color);
-			const TileLayer &l1 = f.tiles[0].layers[1];
+			const TileLayer &l1 = f.tiles[t].layers[1];
 			m_colors.emplace_back(l1.has_color, l1.color);
 			break;
 		}

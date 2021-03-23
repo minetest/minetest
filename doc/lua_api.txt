@@ -1252,8 +1252,10 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * Adjacently-placed nodes cause horizontal bars to appear between them.
 * `raillike`
     * Often used for tracks for mining carts.
-    * Requires 4 textures to be specified in `tiles`, in order: Straight,
-      curved, t-junction, crossing.
+    * Requires 4 or 6 textures to be specified in `tiles`, in order:
+      Straight, curved, t-junction, crossing, unconnected, dead-end.
+    * If unspecified, the 'unconnected' and 'dead-end' textures will
+      fall back to the 'straight' texture.
     * Each placed node automatically switches to a suitable rotated texture
       determined by the adjacent `raillike` nodes, in order to create a
       continuous track network.

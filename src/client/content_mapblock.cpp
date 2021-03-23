@@ -1304,6 +1304,8 @@ namespace {
 		curved,
 		junction,
 		cross,
+		single,
+		end
 	};
 	struct RailDesc {
 		int tile_index;
@@ -1312,15 +1314,15 @@ namespace {
 	static const RailDesc rail_kinds[16] = {
 		                 // +x -x -z +z
 		                 //-------------
-		{straight,   0}, //  .  .  .  .
-		{straight,   0}, //  .  .  . +Z
-		{straight,   0}, //  .  . -Z  .
+		{  single,   0}, //  .  .  .  .
+		{     end, 180}, //  .  .  . +Z
+		{     end,   0}, //  .  . -Z  .
 		{straight,   0}, //  .  . -Z +Z
-		{straight,  90}, //  . -X  .  .
+		{     end, 270}, //  . -X  .  .
 		{  curved, 180}, //  . -X  . +Z
 		{  curved, 270}, //  . -X -Z  .
 		{junction, 180}, //  . -X -Z +Z
-		{straight,  90}, // +X  .  .  .
+		{     end,  90}, // +X  .  .  .
 		{  curved,  90}, // +X  .  . +Z
 		{  curved,   0}, // +X  . -Z  .
 		{junction,   0}, // +X  . -Z +Z
@@ -1333,7 +1335,8 @@ namespace {
 
 void MapblockMeshGenerator::drawRaillikeNode()
 {
-	raillike_group = nodedef->get(n).getGroup(raillike_groupname);
+	const ContentFeatures &f = nodedef->get(n);
+	raillike_group = f.getGroup(raillike_groupname);
 
 	int code = 0;
 	int angle;
@@ -1356,6 +1359,12 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	} else {
 		tile_index = rail_kinds[code].tile_index;
 		angle = rail_kinds[code].angle;
+
+		// Fix angle for fallback end texture
+		if (tile_index == end && angle >= 180 &&
+				f.tiledef[end].name == f.tiledef[straight].name) {
+			angle -= 180;
+		}
 	}
 
 	useTile(tile_index, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
