@@ -482,9 +482,7 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	const char *biome_str = lua_tostring(L, 1);
-	if (!biome_str)
-		return 0;
+	const char *biome_str = luaL_checkstring(L, 1);
 
 	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
@@ -527,30 +525,12 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 
-	NoiseParams np_heat;
-	NoiseParams np_heat_blend;
+	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 
-	MapSettingsManager *settingsmgr =
-		getServer(L)->getEmergeManager()->map_settings_mgr;
-
-	if (!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat",
-			&np_heat) ||
-			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat_blend",
-			&np_heat_blend))
+	if (!biomegen || biomegen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
-	std::string value;
-	if (!settingsmgr->getMapSetting("seed", &value))
-		return 0;
-	std::istringstream ss(value);
-	u64 seed;
-	ss >> seed;
-
-	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
-	if (!bmgr)
-		return 0;
-
-	float heat = bmgr->getHeatAtPosOriginal(pos, np_heat, np_heat_blend, seed);
+	float heat = ((BiomeGenOriginal*) biomegen)->calcHeatAtPoint(pos);
 
 	lua_pushnumber(L, heat);
 
@@ -566,31 +546,12 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 
-	NoiseParams np_humidity;
-	NoiseParams np_humidity_blend;
+	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 
-	MapSettingsManager *settingsmgr =
-		getServer(L)->getEmergeManager()->map_settings_mgr;
-
-	if (!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity",
-			&np_humidity) ||
-			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity_blend",
-			&np_humidity_blend))
+	if (!biomegen || biomegen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
-	std::string value;
-	if (!settingsmgr->getMapSetting("seed", &value))
-		return 0;
-	std::istringstream ss(value);
-	u64 seed;
-	ss >> seed;
-
-	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
-	if (!bmgr)
-		return 0;
-
-	float humidity = bmgr->getHumidityAtPosOriginal(pos, np_humidity,
-		np_humidity_blend, seed);
+	float humidity = ((BiomeGenOriginal*) biomegen)->calcHumidityAtPoint(pos);
 
 	lua_pushnumber(L, humidity);
 
@@ -606,45 +567,11 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 
-	NoiseParams np_heat;
-	NoiseParams np_heat_blend;
-	NoiseParams np_humidity;
-	NoiseParams np_humidity_blend;
-
-	MapSettingsManager *settingsmgr =
-		getServer(L)->getEmergeManager()->map_settings_mgr;
-
-	if (!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat",
-			&np_heat) ||
-			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat_blend",
-			&np_heat_blend) ||
-			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity",
-			&np_humidity) ||
-			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity_blend",
-			&np_humidity_blend))
+	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
+	if (!biomegen)
 		return 0;
 
-	std::string value;
-	if (!settingsmgr->getMapSetting("seed", &value))
-		return 0;
-	std::istringstream ss(value);
-	u64 seed;
-	ss >> seed;
-
-	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
-	if (!bmgr)
-		return 0;
-
-	float heat = bmgr->getHeatAtPosOriginal(pos, np_heat, np_heat_blend, seed);
-	if (!heat)
-		return 0;
-
-	float humidity = bmgr->getHumidityAtPosOriginal(pos, np_humidity,
-		np_humidity_blend, seed);
-	if (!humidity)
-		return 0;
-
-	const Biome *biome = bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
+	const Biome *biome = biomegen->calcBiomeAtPoint(pos);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -653,11 +580,16 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	lua_pushinteger(L, biome->index);
 	lua_setfield(L, -2, "biome");
 
-	lua_pushnumber(L, heat);
-	lua_setfield(L, -2, "heat");
+	if (biomegen->getType() == BIOMEGEN_ORIGINAL) {
+		float heat = ((BiomeGenOriginal*) biomegen)->calcHeatAtPoint(pos);
+		float humidity = ((BiomeGenOriginal*) biomegen)->calcHumidityAtPoint(pos);
 
-	lua_pushnumber(L, humidity);
-	lua_setfield(L, -2, "humidity");
+		lua_pushnumber(L, heat);
+		lua_setfield(L, -2, "heat");
+
+		lua_pushnumber(L, humidity);
+		lua_setfield(L, -2, "humidity");
+	}
 
 	return 1;
 }
@@ -1493,9 +1425,12 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	if (!emerge || !emerge->mgparams)
+		return 0;
 
 	Mapgen mg;
-	mg.seed = emerge->mgparams->seed;
+	// Intentionally truncates to s32, see Mapgen::Mapgen()
+	mg.seed = (s32)emerge->mgparams->seed;
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
@@ -1519,9 +1454,12 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	if (!emerge || !emerge->mgparams)
+		return 0;
 
 	Mapgen mg;
-	mg.seed = emerge->mgparams->seed;
+	// Intentionally truncates to s32, see Mapgen::Mapgen()
+	mg.seed = (s32)emerge->mgparams->seed;
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 

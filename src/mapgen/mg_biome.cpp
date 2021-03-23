@@ -101,71 +101,6 @@ BiomeManager *BiomeManager::clone() const
 	return mgr;
 }
 
-
-// For BiomeGen type 'BiomeGenOriginal'
-float BiomeManager::getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-	NoiseParams &np_heat_blend, u64 seed) const
-{
-	return
-		NoisePerlin2D(&np_heat,       pos.X, pos.Z, seed) +
-		NoisePerlin2D(&np_heat_blend, pos.X, pos.Z, seed);
-}
-
-
-// For BiomeGen type 'BiomeGenOriginal'
-float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-	NoiseParams &np_humidity_blend, u64 seed) const
-{
-	return
-		NoisePerlin2D(&np_humidity,       pos.X, pos.Z, seed) +
-		NoisePerlin2D(&np_humidity_blend, pos.X, pos.Z, seed);
-}
-
-
-// For BiomeGen type 'BiomeGenOriginal'
-const Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat,
-	float humidity, v3s16 pos) const
-{
-	Biome *biome_closest = nullptr;
-	Biome *biome_closest_blend = nullptr;
-	float dist_min = FLT_MAX;
-	float dist_min_blend = FLT_MAX;
-
-	for (size_t i = 1; i < getNumObjects(); i++) {
-		Biome *b = (Biome *)getRaw(i);
-		if (!b ||
-				pos.Y < b->min_pos.Y || pos.Y > b->max_pos.Y + b->vertical_blend ||
-				pos.X < b->min_pos.X || pos.X > b->max_pos.X ||
-				pos.Z < b->min_pos.Z || pos.Z > b->max_pos.Z)
-			continue;
-
-		float d_heat = heat - b->heat_point;
-		float d_humidity = humidity - b->humidity_point;
-		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
-
-		if (pos.Y <= b->max_pos.Y) { // Within y limits of biome b
-			if (dist < dist_min) {
-				dist_min = dist;
-				biome_closest = b;
-			}
-		} else if (dist < dist_min_blend) { // Blend area above biome b
-			dist_min_blend = dist;
-			biome_closest_blend = b;
-		}
-	}
-
-	const u64 seed = pos.Y + (heat + humidity) * 0.9f;
-	PcgRandom rng(seed);
-
-	if (biome_closest_blend && dist_min_blend <= dist_min &&
-			rng.range(0, biome_closest_blend->vertical_blend) >=
-			pos.Y - biome_closest_blend->max_pos.Y)
-		return biome_closest_blend;
-
-	return (biome_closest) ? biome_closest : (Biome *)getRaw(BIOME_NONE);
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////
 
 void BiomeParamsOriginal::readParams(const Settings *settings)
@@ -189,7 +124,7 @@ void BiomeParamsOriginal::writeParams(Settings *settings) const
 ////////////////////////////////////////////////////////////////////////////////
 
 BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
-	BiomeParamsOriginal *params, v3s16 chunksize)
+	const BiomeParamsOriginal *params, v3s16 chunksize)
 {
 	m_bmgr   = biomemgr;
 	m_params = params;
@@ -224,17 +159,26 @@ BiomeGenOriginal::~BiomeGenOriginal()
 	delete noise_humidity_blend;
 }
 
-// Only usable in a mapgen thread
+BiomeGen *BiomeGenOriginal::clone(BiomeManager *biomemgr) const
+{
+	return new BiomeGenOriginal(biomemgr, m_params, m_csize);
+}
+
+float BiomeGenOriginal::calcHeatAtPoint(v3s16 pos) const
+{
+	return NoisePerlin2D(&m_params->np_heat, pos.X, pos.Z, m_params->seed) +
+		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
+}
+
+float BiomeGenOriginal::calcHumidityAtPoint(v3s16 pos) const
+{
+	return NoisePerlin2D(&m_params->np_humidity, pos.X, pos.Z, m_params->seed) +
+		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
+}
+
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
-	float heat =
-		NoisePerlin2D(&m_params->np_heat,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
-	float humidity =
-		NoisePerlin2D(&m_params->np_humidity,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
-
-	return calcBiomeFromNoise(heat, humidity, pos);
+	return calcBiomeFromNoise(calcHeatAtPoint(pos), calcHumidityAtPoint(pos), pos);
 }
 
 

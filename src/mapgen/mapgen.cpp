@@ -595,7 +595,8 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 	this->heightmap = new s16[csize.X * csize.Z];
 
 	//// Initialize biome generator
-	biomegen = m_bmgr->createBiomeGen(BIOMEGEN_ORIGINAL, params->bparams, csize);
+	biomegen = emerge->biomegen;
+	biomegen->assertChunkSize(csize);
 	biomemap = biomegen->biomemap;
 
 	//// Look up some commonly used content
@@ -621,7 +622,6 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 
 MapgenBasic::~MapgenBasic()
 {
-	delete biomegen;
 	delete []heightmap;
 
 	delete m_emerge; // destroying EmergeParams is our responsibility
