@@ -82,9 +82,11 @@ private:
 	void drawText();
 	void drawPrompt();
 
-	// Parse conf and populate "ctrl" keys for clickable chat
+	// Clickable weblink stuff
 	int setupChatClickCtrlKeys(std::string inputline);
 	bool isInCtrlKeys(const irr::EKEY_CODE& kc);
+	// If clicked fragment has a web url, send it to the system default web browser
+	void middleClick(s32 col, s32 row);
 
 private:
 	ChatBackend* m_chat_backend;

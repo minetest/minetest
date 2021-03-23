@@ -289,10 +289,6 @@ public:
 	void scrollPageDown();
 	void scrollPageUp();
 
-	// Handle middle click at this font position
-	// If clicked fragment has a web url, send it to the system default web browser
-	void middleClick(s32 col, s32 row);
-
 	// Resize recent buffer based on settings
 	void applySettings();
 

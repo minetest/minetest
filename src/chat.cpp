@@ -28,8 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
-#include "porting.h"
-#include "gettext.h"
 
 ChatBuffer::ChatBuffer(u32 scrollback):
 	m_scrollback(scrollback)
@@ -885,60 +883,4 @@ void ChatBackend::scrollPageDown()
 void ChatBackend::scrollPageUp()
 {
 	m_console_buffer.scroll(-(s32)m_console_buffer.getRows());
-}
-
-void ChatBackend::middleClick(s32 col, s32 row)
-{
-	// Prevent accidental rapid clicking
-	static u32 oldtime = 0;
-	// seriously..
-	u32 newtime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-	// 0.6 seconds should suffice
-	if(newtime - oldtime < 600)
-		return;
-	oldtime = newtime;
-
-	const std::vector<ChatFormattedFragment> & frags = getConsoleBuffer().getFormattedLine(row).fragments;
-	std::string weblink = "";         // from frag meta
-
-	// Identify targetted fragment, if exists
-	int ind = frags.size() - 1;
-	while(u32(col - 1) < frags[ind].column)
-	{
-		--ind;
-	}
-	if(ind > -1)
-	{
-		weblink = frags[ind].meta;
-	}
-
-	// Debug help
-	std::string ws;
-	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
-	for(u32 i=0;i<frags.size();++i)
-	{
-		if(ind == int(i))
-			ws += '*';
-		ws += std::to_string(frags.at(i).column) + '('
-			+ std::to_string(frags.at(i).text.size()) + "),";
-	}
-	g_logger.log(LL_VERBOSE, ws);
-
-	// User notification
-	std::string mesg;
-	if(weblink.size() != 0)
-	{
-		mesg = " * ";
-		if(porting::open_url(weblink))
-		{
-			mesg += gettext("Opening webpage");
-		}
-		else
-		{
-			mesg += gettext("Failed to open webpage");
-		}
-		mesg += " '" + weblink + "'";
-		addUnparsedMessage(utf8_to_wide(mesg));
-	}
 }
