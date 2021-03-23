@@ -422,7 +422,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	if(event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)
 	{
 		// CTRL up
-		if(isInCtrlKeys(event.KeyInput.Key) || !event.KeyInput.Control)
+		if(isInCtrlKeys(event.KeyInput.Key))
 		{
 			isctrldown = false;
 		}
@@ -430,7 +430,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	else if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// CTRL down
-		if(isInCtrlKeys(event.KeyInput.Key) || event.KeyInput.Control)
+		if(isInCtrlKeys(event.KeyInput.Key))
 		{
 			isctrldown = true;
 		}
