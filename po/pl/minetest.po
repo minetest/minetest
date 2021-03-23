@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-25 23:50+0000\n"
-"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"PO-Revision-Date: 2021-03-25 17:29+0000\n"
+"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -206,9 +206,8 @@ msgid "Back to Main Menu"
 msgstr "Powrót do menu głównego"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Utwórz grę"
+msgstr "Gra podstawowa:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -238,9 +237,8 @@ msgid "Install $1"
 msgstr "Instaluj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dodatkowe zależności:"
+msgstr "Zainstaluj brakujące zależności"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -868,9 +866,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Wybierz świat:"
+msgstr "Wybierz Mody"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -2030,7 +2027,6 @@ msgstr ""
 "znajduje się poza głównym okręgiem."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -2042,7 +2038,7 @@ msgid ""
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
 "(X, Y, Z) margines fraktalu od centrum świata w jednostkach \"skali\".\n"
-"Używany by przesunąć  odpowiednie miejsce do punktu spawnu podłoża blisko "
+"Używany by przesunąć odpowiednie miejsce do punktu spawnu podłoża blisko "
 "punktu (0, 0).\n"
 "Domyślny jest odpowiedni dla zbiorów Mandelbrota, lecz wymaga edycji dla "
 "zbiorów Julii.\n"
@@ -3246,7 +3242,7 @@ msgid ""
 "This requires the \"fast\" privilege on the server."
 msgstr ""
 "Szybki ruch (za pomocą przycisku „specjalnego”).\n"
-"Wymaga to uprawnienia „fast”  na serwerze."
+"Wymaga to uprawnienia „fast” na serwerze."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3262,8 +3258,8 @@ msgid ""
 "the\n"
 "Multiplayer Tab."
 msgstr ""
-"Plik w kliencie (lista serwerów) który zawiera ulubione ulubione serwery "
-"wyświetlane w zakładce Multiplayer."
+"Plik w kliencie (lista serwerów) który zawiera ulubione serwery wyświetlane "
+"w zakładce Multiplayer."
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth"
@@ -5120,9 +5116,8 @@ msgid "Light curve boost"
 msgstr "Przyśpieszenie środkowe krzywej światła"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Light curve boost center"
-msgstr "Centrum  środkowego przyśpieszenia krzywej światła"
+msgstr "Centrum środkowego przyśpieszenia krzywej światła"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5140,9 +5135,8 @@ msgid "Light curve high gradient"
 msgstr "Przyśpieszenie środkowe krzywej światła"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Light curve low gradient"
-msgstr "Centrum  środkowego przyśpieszenia krzywej światła"
+msgstr "Centrum środkowego przyśpieszenia krzywej światła"
 
 #: src/settings_translation_file.cpp
 msgid ""
