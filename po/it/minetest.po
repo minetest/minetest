@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-25 23:50+0000\n"
-"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
+"PO-Revision-Date: 2021-03-25 17:29+0000\n"
+"Last-Translator: Alessandro Mandelli <mandelli.alessandro@ngi.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -703,9 +703,8 @@ msgid "Loading..."
 msgstr "Caricamento..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Scripting su lato client disabilitato"
+msgstr "La lista dei server pubblici è disabilitata"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -3022,9 +3021,8 @@ msgid "Enable console window"
 msgstr "Attivare la finestra della console"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Abilitare la modalità creativa per le nuove mappe create."
+msgstr "Abilitare la modalità creativa per tutti i giocatori"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -6365,9 +6363,8 @@ msgstr ""
 "È necessario riavviare dopo aver cambiato questo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "Carattere grassetto per impostazione predefinita"
+msgstr "Mostra lo sfondo del nome per impostazione predefinita"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -7234,6 +7231,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Se lo sfondo del nome deve essere mostrato per impostazione predefinita.\n"
+"I moderatori possono comunque impostare uno sfondo."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
