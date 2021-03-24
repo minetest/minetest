@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-03-25 17:29+0000\n"
-"Last-Translator: AnthonyDe <anthonydeassisi@gmail.com>\n"
+"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -1539,7 +1539,7 @@ msgstr "Convertir IME"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr "Escapada de IME"
+msgstr "Escape IME"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
