@@ -121,7 +121,7 @@ return {
 
 		-- Render information
 		fs = fs .. "label[0.75,4.9;" ..
-			fgettext("Active render:") .. "\n" ..
+			fgettext("Active renderer:") .. "\n" ..
 			core.formspec_escape(core.get_screen_info().render_info) .. "]"
 
 		if PLATFORM ~= "Android" then
