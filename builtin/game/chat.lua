@@ -91,8 +91,8 @@ core.register_on_chat_message(function(name, message)
 			if delay > msg_time_threshold then
 				-- Show how much time it took to execute the command
 				if result then
-					result = result ..
-						core.colorize("#f3d2ff", " (%.5g s)"):format(delay)
+					result = result .. core.colorize("#f3d2ff", S(" (@1 s)",
+						string.format("%.5f", delay)))
 				else
 					result = core.colorize("#f3d2ff", S(
 						"Command execution took @1 s",
