@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-03-19 20:18+0000\n"
-"Last-Translator: David Leal <halfpacho@gmail.com>\n"
+"PO-Revision-Date: 2021-03-25 17:29+0000\n"
+"Last-Translator: AnthonyDe <anthonydeassisi@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -1450,7 +1450,7 @@ msgstr "Volumen cambiado a %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr "Líneas 3D mostradas"
+msgstr "Lineas 3D mostradas"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -2686,7 +2686,7 @@ msgstr "Altura de consola"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr "Lista negra de banderas de ContentDB"
+msgstr "Lista negra de Contenido de la Base de Datos"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
@@ -2765,7 +2765,7 @@ msgid ""
 "Also controls the object crosshair color"
 msgstr ""
 "Alfa del punto de mira (opacidad, entre 0 y 255).\n"
-"También controla el color del objeto punto de mira."
+"También controla el color del objeto punto de mira"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -5113,9 +5113,8 @@ msgid "Liquid update tick"
 msgstr "Tick de actualización de los líquidos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Load the game profiler"
-msgstr "Cargar el perfilador de juego"
+msgstr "Cargar el generador de perfiles del juego"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5129,9 +5128,8 @@ msgstr ""
 "Útil para desarrolladores de mods y operadores de servidores."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Loading Block Modifiers"
-msgstr "Intervalo de modificador de bloques activos"
+msgstr "Carga de modificadores de bloque"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5163,11 +5161,11 @@ msgstr "Vuelve opacos a todos los líquidos"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Nivel de comprensión del mapa para almacenamiento de disco"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Nivel de comprensión del mapa para transferencias por la red"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5175,7 +5173,7 @@ msgstr "Directorio de mapas"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
-msgstr ""
+msgstr "Atributos de generación de mapas específicos de Mapgen Carpathian."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5191,6 +5189,9 @@ msgid ""
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
+"Atributos de generación de mapas específicos de Mapgen Fractal.\n"
+"'terreno' permite la generación de terrenos no fractales:\n"
+"océanos, islas y subterráneo."
 
 #: src/settings_translation_file.cpp
 msgid ""
