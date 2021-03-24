@@ -279,6 +279,15 @@ void ClientMap::updateDrawList()
 
 		if (sector_blocks_drawn != 0)
 			m_last_drawn_sectors.insert(sp);
+
+		for (auto it = m_drawlist.rbegin(); it != m_drawlist.rend(); it++) {
+			MapBlock* block = it->second;
+			if (block->getNeedsRemesh()) {
+				m_client->addUpdateMeshTask(block->getPos());
+				block->setNeedsRemesh(false);
+			}
+		}
+
 	}
 
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
@@ -890,4 +899,37 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
+}
+
+void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 previous_block)
+{
+	v3s16 p_blocks_min;
+	v3s16 p_blocks_max;
+	getBlocksInViewRange(current_node, &p_blocks_min, &p_blocks_max);
+
+	for (const auto &sector_it : m_sectors) {
+		MapSector *sector = sector_it.second;
+		v2s16 sp = sector->getPos();
+
+		if (!m_control.range_all) {
+			if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X ||
+					sp.Y < p_blocks_min.Z || sp.Y > p_blocks_max.Z)
+				continue;
+		}
+
+		MapBlockVect sectorblocks;
+		sector->getBlocks(sectorblocks);
+
+		for (const v3s16* pointer : { &current_block, previous_block == current_block ? NULL : &previous_block })
+		for (const auto block : sectorblocks) {
+			if (pointer == NULL) continue;
+			auto block_pos = block->getPos();
+			if (block_pos.X == pointer->X ||
+				block_pos.Y == pointer->Y ||
+				block_pos.Z == pointer->Z)
+				if (block_pos.getDistanceFromSQ(*pointer) <= 25)
+				block->setNeedsRemesh();
+		}
+
+	}
 }

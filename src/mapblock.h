@@ -480,6 +480,18 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
+
+	////
+	//// Dynamic remesh
+	////
+
+	inline void setNeedsRemesh(bool value = true) {
+		m_needs_remesh = value;
+	}
+
+	inline bool getNeedsRemesh() {
+		return m_needs_remesh;
+	}
 private:
 	/*
 		Private methods
@@ -609,6 +621,12 @@ private:
 		the list of blocks to be drawn.
 	*/
 	int m_refcount = 0;
+
+	/*
+		Marks a block for remesh next time it is scheduled for drawing.
+		This is to optimize dynamic mesh updates for blocks carrying transparent materials
+	*/
+	bool m_needs_remesh = false;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;
