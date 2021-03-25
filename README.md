@@ -259,9 +259,9 @@ Library specific options:
     GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains iconv.h
     GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
-    IRRLICHT_DLL                    - Only on Windows; path to Irrlicht.dll
+    IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
     IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h
-    IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a/Irrlicht.lib
+    IRRLICHT_LIBRARY                - Path to libIrrlichtMt.a/libIrrlichtMt.so/libIrrlichtMt.dll.a/IrrlichtMt.lib
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
