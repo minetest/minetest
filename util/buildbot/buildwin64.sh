@@ -20,7 +20,7 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 toolchain_file=$dir/toolchain_x86_64-w64-mingw32.cmake
-irrlicht_version=1.9.0mt0
+irrlicht_version=1.9.0mt1
 ogg_version=1.3.2
 vorbis_version=1.3.5
 curl_version=7.65.3
@@ -112,8 +112,8 @@ cmake .. \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include/irrlicht \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/libIrrlicht.dll.a \
+	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include/irrlichtmt \
+	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/libIrrlichtMt.dll.a \
 	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \

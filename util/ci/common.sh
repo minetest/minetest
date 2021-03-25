@@ -12,7 +12,7 @@ install_linux_deps() {
 		shift
 		pkgs+=(libirrlicht-dev)
 	else
-		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt0/ubuntu-bionic.tar.gz"
+		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt1/ubuntu-bionic.tar.gz"
 		sudo tar -xaf ubuntu-bionic.tar.gz -C /usr/local
 	fi
 
