@@ -280,20 +280,24 @@ void ClientMap::updateDrawList()
 		if (sector_blocks_drawn != 0)
 			m_last_drawn_sectors.insert(sp);
 
-		for (auto it = m_drawlist.rbegin(); it != m_drawlist.rend(); it++) {
-			MapBlock* block = it->second;
-			if (block->getNeedsRemesh()) {
-				m_client->addUpdateMeshTask(block->getPos());
-				block->setNeedsRemesh(false);
-			}
-		}
+	}
 
+	u16 blocks_queued = 0;
+	// Update block meshes if the blocks are marked dirty by camera movement
+	for (auto it = m_drawlist.rbegin(); it != m_drawlist.rend(); it++) {
+		MapBlock* block = it->second;
+		if (block->getNeedsRemesh()) {
+			block->setNeedsRemesh(false);
+			m_client->addUpdateMeshTask(block->getPos());
+			++blocks_queued;
+		}
 	}
 
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
 	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
+	g_profiler->avg("MapBlocks queued for remesh [#]", blocks_queued);
 }
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
@@ -901,11 +905,33 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
 
+static bool hasTransparency(scene::IMesh *mesh)
+{
+	if (mesh == nullptr)
+		return false;
+
+	for (u32 i = 0; i < mesh->getMeshBufferCount(); i++) {
+		irr::scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
+
+		if (buffer->getVertexCount() > 0 &&
+				(buffer->getMaterial().MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL ||
+				 buffer->getMaterial().MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 previous_block)
 {
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(current_node, &p_blocks_min, &p_blocks_max);
+
+	u16 blocks_marked = 0;
+	u16 blocks_skipped = 0;
+	u16 blocks_on_axis = 0;
+	u16 blocks_in_distance = 0;
 
 	for (const auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
@@ -920,16 +946,35 @@ void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 p
 		MapBlockVect sectorblocks;
 		sector->getBlocks(sectorblocks);
 
-		for (const v3s16* pointer : { &current_block, previous_block == current_block ? NULL : &previous_block })
+		// Loop over the current block and previous block if it's different
+		for (const v3s16* pointer : { &current_block, previous_block == current_block ? nullptr : &previous_block })
 		for (const auto block : sectorblocks) {
-			if (pointer == NULL) continue;
+			if (pointer == nullptr) continue;
 			auto block_pos = block->getPos();
 			if (block_pos.X == pointer->X ||
 				block_pos.Y == pointer->Y ||
-				block_pos.Z == pointer->Z)
-				if (block_pos.getDistanceFromSQ(*pointer) <= 25)
-				block->setNeedsRemesh();
-		}
+				block_pos.Z == pointer->Z) {
 
+				++blocks_on_axis;
+
+				// if there is known transparency
+				if (block_pos.getDistanceFromSQ(current_block) < 100) {
+					++blocks_in_distance;
+					if (block->mesh && hasTransparency(block->mesh->getMesh())) {
+						if (block->getNeedsRemesh()) {
+							++blocks_skipped;
+						}
+						else {
+							block->setNeedsRemesh(true);
+							++blocks_marked;
+						}
+					}
+				}
+			}
+		}
 	}
+	g_profiler->avg("CM::markBlocksDirty blocks on axis [#]", blocks_on_axis);
+	g_profiler->avg("CM::markBlocksDirty blocks in distance [#]", blocks_in_distance);
+	g_profiler->avg("CM::markBlocksDirty blocks marked [#]", blocks_marked);
+	g_profiler->avg("CM::markBlocksDirty blocks skipped [#]", blocks_skipped);
 }

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
 #include "camera.h"
+#include "profiler.h"
 #include <set>
 #include <map>
 
@@ -87,7 +88,7 @@ public:
 
 	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
 	{
-		v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
+		v3s16 previous_node = floatToInt(m_camera_position, BS);
 		v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
 
 		m_camera_position = pos;
@@ -95,7 +96,7 @@ public:
 		m_camera_fov = fov;
 		m_camera_offset = offset;
 
-		v3s16 current_node = floatToInt(m_camera_position, BS) + m_camera_offset;
+		v3s16 current_node = floatToInt(m_camera_position, BS);
 		v3s16 current_block = getContainerPos(current_node, MAP_BLOCKSIZE);
 
 		// if moved over node boundary
