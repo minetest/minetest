@@ -61,7 +61,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(Irrlicht)
 if(BUILD_CLIENT AND NOT IRRLICHT_FOUND)
 	message(FATAL_ERROR "Irrlicht is required to build the client, but it was not found.")
-elseif(IRRLICHT_INCLUDE_DIR STREQUAL "")
+elseif(NOT IRRLICHT_INCLUDE_DIR)
 	message(FATAL_ERROR "Irrlicht headers are required to build the server, but none found.")
 endif()
 
