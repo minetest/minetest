@@ -227,7 +227,9 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
-			return false, S("Your privileges are insufficient.")
+			return false, S("Your privileges are insufficient "..
+					"(basic_privs only allows you to grant: @1).",
+					core.privs_to_string(basic_privs, ', '))
 		end
 		if not core.registered_privileges[priv] then
 			privs_unknown = privs_unknown .. S("Unknown privilege: @1", priv) .. "\n"
@@ -309,7 +311,9 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	local has_irrevokable_priv = false
 	for priv, _ in pairs(revokeprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
-			return false, S("Your privileges are insufficient.")
+			return false, S("Your privileges are insufficient "..
+					"(basic_privs only allows you to revoke: @1).",
+					core.privs_to_string(basic_privs, ', '))
 		end
 		local def = core.registered_privileges[priv]
 		if not def then
