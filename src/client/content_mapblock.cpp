@@ -1502,31 +1502,41 @@ void MapblockMeshGenerator::generate()
 	irr::s16 playery = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.Y - blockpos_nodes.Y));
 	irr::s16 playerx = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.X - blockpos_nodes.X));
 
+	bool z_first = abs(player_pos.Z - blockpos_nodes.Z - MAP_BLOCKSIZE / 2) > abs(player_pos.X - blockpos_nodes.X - MAP_BLOCKSIZE / 2);
+
+	s16 *l1 = &p.Y;
+	s16 *l2 = z_first ? &p.Z : &p.X;
+	s16 *l3 = z_first ? &p.X : &p.Z;
+
+	irr::s16 l1_threshold = playery;
+	irr::s16 l2_threshold = z_first ? playerz : playerx;
+	irr::s16 l3_threshold = z_first ? playerx : playerz;
+
 	auto draw = [&]() {
-			n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-			f = &nodedef->get(n);
-			drawNode();
+		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+		f = &nodedef->get(n);
+		drawNode();
 	};
 
-	auto loop_x = [&]() {
-		for (p.X = 0; p.X < playerx; p.X++)
+	auto loop_l3 = [&]() {
+		for (*l3 = 0; *l3 < l3_threshold; ++(*l3))
 			draw();
-		for (p.X = MAP_BLOCKSIZE - 1; p.X >= playerx; p.X--)
+		for (*l3 = MAP_BLOCKSIZE - 1; *l3 >= l3_threshold; --(*l3))
 			draw();
 	};
 
-	auto loop_y = [&]() {
-		for (p.Y = 0; p.Y < playery; p.Y++)
-			loop_x();
-		for (p.Y = MAP_BLOCKSIZE - 1; p.Y >= playery; p.Y--)
-			loop_x();
+	auto loop_l2 = [&]() {
+		for (*l2 = 0; *l2 < l2_threshold; ++(*l2))
+			loop_l3();
+		for (*l2 = MAP_BLOCKSIZE - 1; *l2 >= l2_threshold; --(*l2))
+			loop_l3();
 	};
 
-	for (p.Z = 0; p.Z < playerz; p.Z++)
-		loop_y();
+	for (*l1 = 0; *l1 < l1_threshold; ++(*l1))
+		loop_l2();
 
-	for (p.Z = MAP_BLOCKSIZE - 1; p.Z >= playerz; p.Z--)
-		loop_y();
+	for (*l1 = MAP_BLOCKSIZE - 1; *l1 >= l1_threshold; --(*l1))
+		loop_l2();
 }
 
 void MapblockMeshGenerator::renderSingle(content_t node, u8 param2)
