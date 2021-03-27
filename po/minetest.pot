@@ -6357,11 +6357,11 @@ msgid ""
 "This should be lower than curl_parallel_limit."
 msgstr ""
 
-#: src/chat.cpp
+#: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
 msgstr ""
 
-#: src/chat.cpp
+#: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr ""
 
