@@ -167,6 +167,18 @@ core.register_chatcommand("admin", {
 	end,
 })
 
+local function privileges_of(name, privs)
+	if not privs then
+		privs = core.get_player_privs(name)
+	end
+	local privstr = core.privs_to_string(privs, ", ")
+	if privstr == "" then
+		return S("@1 doesn\'t have any privileges.", name)
+	else
+		return S("Privileges of @1: @2", name, privstr)
+	end
+end
+
 core.register_chatcommand("privs", {
 	params = S("[<name>]"),
 	description = S("Show privileges of yourself or another player"),
@@ -176,9 +188,7 @@ core.register_chatcommand("privs", {
 		if not core.player_exists(name) then
 			return false, S("Player @1 does not exist.", name)
 		end
-		return true, S("Privileges of @1: @2", name,
-				core.privs_to_string(
-				core.get_player_privs(name), ", "))
+		return true, privileges_of(name)
 	end,
 })
 
@@ -250,9 +260,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 				S("@1 granted you privileges: @2", caller,
 				core.privs_to_string(grantprivs, ', ')))
 	end
-	return true, S("Privileges of @1: @2", grantname,
-			core.privs_to_string(
-			core.get_player_privs(grantname), ', '))
+	return true, privileges_of(grantname)
 end
 
 core.register_chatcommand("grant", {
@@ -366,8 +374,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 			S("@1 revoked privileges from you: @2", caller,
 			core.privs_to_string(revokeprivs, ', ')))
 	end
-	return true, S("Privileges of @1: @2", revokename,
-			core.privs_to_string(new_privs, ', '))
+	return true, privileges_of(revokename, new_privs)
 end
 
 core.register_chatcommand("revoke", {
