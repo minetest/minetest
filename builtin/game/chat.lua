@@ -246,11 +246,11 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	if grantname ~= caller then
 		core.chat_send_player(grantname,
 				S("@1 granted you privileges: @2", caller,
-				core.privs_to_string(grantprivs, ' ')))
+				core.privs_to_string(grantprivs, ', ')))
 	end
 	return true, S("Privileges of @1: @2", grantname,
 			core.privs_to_string(
-			core.get_player_privs(grantname), ' '))
+			core.get_player_privs(grantname), ', '))
 end
 
 core.register_chatcommand("grant", {
@@ -332,11 +332,11 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 		if is_singleplayer then
 			core.chat_send_player(caller,
 					S("Note: Cannot revoke in singleplayer: @1",
-					core.privs_to_string(irrevokable, ' ')))
+					core.privs_to_string(irrevokable, ', ')))
 		elseif is_admin then
 			core.chat_send_player(caller,
 					S("Note: Cannot revoke from admin: @1",
-					core.privs_to_string(irrevokable, ' ')))
+					core.privs_to_string(irrevokable, ', ')))
 		end
 	end
 
@@ -360,10 +360,10 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	if revokename ~= caller then
 		core.chat_send_player(revokename,
 			S("@1 revoked privileges from you: @2", caller,
-			core.privs_to_string(revokeprivs, ' ')))
+			core.privs_to_string(revokeprivs, ', ')))
 	end
 	return true, S("Privileges of @1: @2", revokename,
-			core.privs_to_string(new_privs, ' '))
+			core.privs_to_string(new_privs, ', '))
 end
 
 core.register_chatcommand("revoke", {
