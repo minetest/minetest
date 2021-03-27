@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-03-28 20:29+0000\n"
-"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"Last-Translator: ResuUman <aparat2@wp.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -2202,9 +2202,8 @@ msgid "Acceleration in air"
 msgstr "Przyspieszenie w powietrzu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr "Przyśpieszenie grawitacyjne, w blokach na sekundę."
+msgstr "Przyśpieszenie grawitacyjne, w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
