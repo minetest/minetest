@@ -286,16 +286,13 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 		return false, S("Player @1 does not exist.", revokename)
 	end
 
-	local revokeprivs = core.string_to_privs(revokeprivstr)
 	local privs = core.get_player_privs(revokename)
-	local basic_privs =
-		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
-	for priv, _ in pairs(revokeprivs) do
-		if not basic_privs[priv] and not caller_privs.privs then
-			return false, S("Your privileges are insufficient.")
-		end
-	end
 
+	local revokeprivs = core.string_to_privs(revokeprivstr)
+	local is_singleplayer = core.is_singleplayer()
+	local is_admin = not is_singleplayer
+			and revokename == core.settings:get("name")
+			and revokename ~= ""
 	if revokeprivstr == "all" then
 		revokeprivs = privs
 		privs = {}
@@ -305,12 +302,58 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 		end
 	end
 
+	local privs_unknown = ""
+	local basic_privs =
+		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+	local irrevokable = {}
+	local has_irrevokable_priv = false
+	for priv, _ in pairs(revokeprivs) do
+		if not basic_privs[priv] and not caller_privs.privs then
+			return false, S("Your privileges are insufficient.")
+		end
+		local def = core.registered_privileges[priv]
+		if not def then
+			privs_unknown = privs_unknown .. S("Unknown privilege: @1", priv) .. "\n"
+		elseif is_singleplayer and def.give_to_singleplayer then
+			irrevokable[priv] = true
+			has_irrevokable_priv = true
+		elseif is_admin and def.give_to_admin then
+			irrevokable[priv] = true
+			has_irrevokable_priv = true
+		end
+	end
+	for priv, _ in pairs(irrevokable) do
+		revokeprivs[priv] = nil
+	end
+	if privs_unknown ~= "" then
+		return false, privs_unknown
+	end
+	if has_irrevokable_priv then
+		if is_singleplayer then
+			core.chat_send_player(caller,
+					S("Note: Cannot revoke in singleplayer: @1",
+					core.privs_to_string(irrevokable, ' ')))
+		elseif is_admin then
+			core.chat_send_player(caller,
+					S("Note: Cannot revoke from admin: @1",
+					core.privs_to_string(irrevokable, ' ')))
+		end
+	end
+
+	local revokecount = 0
 	for priv, _ in pairs(revokeprivs) do
 		-- call the on_revoke callbacks
 		core.run_priv_callbacks(revokename, priv, caller, "revoke")
+		revokecount = revokecount + 1
 	end
 
 	core.set_player_privs(revokename, privs)
+	local new_privs = core.get_player_privs(revokename)
+
+	if revokecount == 0 then
+		return false, S("No privileges were revoked.")
+	end
+
 	core.log("action", caller..' revoked ('
 			..core.privs_to_string(revokeprivs, ', ')
 			..') privileges from '..revokename)
@@ -320,8 +363,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 			core.privs_to_string(revokeprivs, ' ')))
 	end
 	return true, S("Privileges of @1: @2", revokename,
-			core.privs_to_string(
-			core.get_player_privs(revokename), ' '))
+			core.privs_to_string(new_privs, ' '))
 end
 
 core.register_chatcommand("revoke", {
