@@ -173,7 +173,7 @@ local function privileges_of(name, privs)
 	end
 	local privstr = core.privs_to_string(privs, ", ")
 	if privstr == "" then
-		return S("@1 doesn\'t have any privileges.", name)
+		return S("@1 does not have any privileges.", name)
 	else
 		return S("Privileges of @1: @2", name, privstr)
 	end
@@ -237,8 +237,9 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
-			return false, S("Your privileges are insufficient "..
-					"(basic_privs only allows you to grant: @1).",
+			return false, S("Your privileges are insufficient. "..
+					"'@1' only allows you to grant: @2.",
+					"basic_privs",
 					core.privs_to_string(basic_privs, ', '))
 		end
 		if not core.registered_privileges[priv] then
@@ -319,8 +320,9 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	local has_irrevokable_priv = false
 	for priv, _ in pairs(revokeprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
-			return false, S("Your privileges are insufficient "..
-					"(basic_privs only allows you to revoke: @1).",
+			return false, S("Your privileges are insufficient. "..
+					"'@1' only allows you to revoke: @2.",
+					"basic_privs",
 					core.privs_to_string(basic_privs, ', '))
 		end
 		local def = core.registered_privileges[priv]
