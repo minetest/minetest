@@ -914,8 +914,8 @@ static bool hasTransparency(scene::IMesh *mesh)
 		irr::scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
 
 		if (buffer->getVertexCount() > 0 &&
-				(buffer->getMaterial().MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL ||
-				 buffer->getMaterial().MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)) {
+				buffer->getMaterial().MaterialType != video::EMT_SOLID &&
+				buffer->getMaterial().MaterialType != video::EMT_SOLID_2_LAYER) {
 			return true;
 		}
 	}
