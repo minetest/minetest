@@ -265,7 +265,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 end
 
 core.register_chatcommand("grant", {
-	params = S("<name> (<privilege> | all)"),
+	params = S("<name> (<privilege> [, <privilege2> [<...>]] | all)"),
 	description = S("Give privileges to player"),
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
@@ -277,7 +277,7 @@ core.register_chatcommand("grant", {
 })
 
 core.register_chatcommand("grantme", {
-	params = S("<privilege> | all"),
+	params = S("<privilege> [, <privilege2> [<...>]] | all"),
 	description = S("Grant privileges to yourself"),
 	func = function(name, param)
 		if param == "" then
@@ -380,7 +380,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 end
 
 core.register_chatcommand("revoke", {
-	params = S("<name> (<privilege> | all)"),
+	params = S("<name> (<privilege> [, <privilege2> [<...>]] | all)"),
 	description = S("Remove privileges from player"),
 	privs = {},
 	func = function(name, param)
@@ -393,7 +393,7 @@ core.register_chatcommand("revoke", {
 })
 
 core.register_chatcommand("revokeme", {
-	params = S("<privilege> | all"),
+	params = S("<privilege> [, <privilege2> [<...>]] | all"),
 	description = S("Revoke privileges from yourself"),
 	privs = {},
 	func = function(name, param)
