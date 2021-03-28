@@ -70,7 +70,9 @@ Feature requests are welcome but take a moment to see if your idea follows the r
 
 ## Translations
 
-Translations of Minetest are performed using Weblate. You can access the project page  with a list of current languages [here](https://hosted.weblate.org/projects/minetest/minetest/).
+The core translations of Minetest are performed using Weblate. You can access the project page with a list of current languages [here](https://hosted.weblate.org/projects/minetest/minetest/).
+
+Builtin (the component which contains things like server messages, chat command descriptions, privilege descriptions) is translated separately; it needs to be translated by editing a `.tr` text file. See [Translation](https://dev.minetest.net/Translation) for more information.
 
 ## Donations
 
