@@ -238,7 +238,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
 			return false, S("Your privileges are insufficient. "..
-					"'@1' only allows you to grant: @2.",
+					"'@1' only allows you to grant: @2",
 					"basic_privs",
 					core.privs_to_string(basic_privs, ', '))
 		end
@@ -321,7 +321,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	for priv, _ in pairs(revokeprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
 			return false, S("Your privileges are insufficient. "..
-					"'@1' only allows you to revoke: @2.",
+					"'@1' only allows you to revoke: @2",
 					"basic_privs",
 					core.privs_to_string(basic_privs, ', '))
 		end
@@ -330,14 +330,13 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 			privs_unknown = privs_unknown .. S("Unknown privilege: @1", priv) .. "\n"
 		elseif is_singleplayer and def.give_to_singleplayer then
 			irrevokable[priv] = true
-			has_irrevokable_priv = true
 		elseif is_admin and def.give_to_admin then
 			irrevokable[priv] = true
-			has_irrevokable_priv = true
 		end
 	end
 	for priv, _ in pairs(irrevokable) do
 		revokeprivs[priv] = nil
+		has_irrevokable_priv = true
 	end
 	if privs_unknown ~= "" then
 		return false, privs_unknown
