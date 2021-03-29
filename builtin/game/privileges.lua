@@ -32,7 +32,13 @@ end
 
 core.register_privilege("interact", S("Can interact with things and modify the world"))
 core.register_privilege("shout", S("Can speak in chat"))
-core.register_privilege("basic_privs", S("Can modify 'shout' and 'interact' privileges"))
+
+local basic_privs =
+	core.string_to_privs((core.settings:get("basic_privs") or "shout,interact"))
+local basic_privs_desc = S("Can modify basic privileges (@1)",
+	core.privs_to_string(basic_privs, ', '))
+core.register_privilege("basic_privs", basic_privs_desc)
+
 core.register_privilege("privs", S("Can modify privileges"))
 
 core.register_privilege("teleport", {
