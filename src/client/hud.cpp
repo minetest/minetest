@@ -951,7 +951,7 @@ void drawItemStack(
 	const ItemDefinition &def = item.getDefinition(client->idef());
 
 	// Render as mesh if animated or no inventory image
-	if (enable_animations || def.inventory_image.empty()) {
+	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
 		ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
 		if (!imesh || !imesh->mesh)
 			return;
