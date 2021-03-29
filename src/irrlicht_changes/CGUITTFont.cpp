@@ -690,11 +690,24 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			for (size_t i = 0; i < page->render_positions.size(); ++i)
 				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
 		}
+		// render runs of matching color in batch
+		size_t ibegin;
+		video::SColor colprev;
 		for (size_t i = 0; i < page->render_positions.size(); ++i) {
-			video::SColor col = applied_colors[i];
+			ibegin = i;
+			colprev = applied_colors[i];
+			do
+				++i;
+			while (i < page->render_positions.size() && applied_colors[i] == colprev);
+			core::array<core::vector2di> tmp_positions;
+			core::array<core::recti> tmp_source_rects;
+			tmp_positions.set_pointer(&page->render_positions[ibegin], i - ibegin, false, false); // no copy
+			tmp_source_rects.set_pointer(&page->render_source_rects[ibegin], i - ibegin, false, false);
+			--i;
+
 			if (!use_transparency)
-				col.color |= 0xff000000;
-			Driver->draw2DImage(page->texture, page->render_positions[i], page->render_source_rects[i], clip, col, true);
+				colprev.color |= 0xff000000;
+			Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, colprev, true);
 		}
 	}
 }
