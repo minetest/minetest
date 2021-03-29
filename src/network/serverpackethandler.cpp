@@ -1038,6 +1038,11 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (pointed.type == POINTEDTHING_NODE) {
 			target_pos = intToFloat(pointed.node_undersurface, BS);
 		} else if (pointed.type == POINTEDTHING_OBJECT) {
+			if (playersao->getId() == pointed_object->getId()) {
+				actionstream << player->getName() << " attempted to interact with themself" << std::endl;
+				m_script->on_cheat(playersao, "interacted_with_self");
+				return;
+			}
 			target_pos = pointed_object->getBasePosition();
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
