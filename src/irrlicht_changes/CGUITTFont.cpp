@@ -547,12 +547,12 @@ void CGUITTFont::setFontHinting(const bool enable, const bool enable_auto_hintin
 
 void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	draw(EnrichedString(std::wstring(text.c_str()), color), position, color, hcenter, vcenter, clip);
+	draw(EnrichedString(std::wstring(text.c_str()), color), position, hcenter, vcenter, clip);
 }
 
-void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
+void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& position, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	std::vector<video::SColor> colors = text.getColors();
+	const std::vector<video::SColor> &colors = text.getColors();
 
 	if (!Driver)
 		return;
@@ -587,14 +587,14 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	core::map<u32, CGUITTGlyphPage*> Render_Map;
 
 	// Start parsing characters.
-	u32 n;
 	uchar32_t previousChar = 0;
 	core::ustring::const_iterator iter(utext);
 	std::vector<video::SColor> applied_colors;
+	applied_colors.reserve(utext.size_raw());
 	while (!iter.atEnd())
 	{
 		uchar32_t currentChar = *iter;
-		n = getGlyphIndexByChar(currentChar);
+		u32 n = getGlyphIndexByChar(currentChar);
 		bool visible = (Invisible.findFirst(currentChar) == -1);
 		bool lineBreak=false;
 		if (currentChar == L'\r') // Mac or Windows breaks
@@ -669,6 +669,8 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 		previousChar = currentChar;
 		++iter;
 	}
+	for (u32 i = applied_colors.size(); i < utext.size_raw(); i++)
+		applied_colors.emplace_back(video::SColor(255, 255, 255, 255));
 
 	// Draw now.
 	update_glyph_pages();
@@ -689,12 +691,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
 		}
 		for (size_t i = 0; i < page->render_positions.size(); ++i) {
-			irr::video::SColor col;
-			if (!applied_colors.empty()) {
-				col = applied_colors[i < applied_colors.size() ? i : 0];
-			} else {
-				col = irr::video::SColor(255, 255, 255, 255);
-			}
+			video::SColor col = applied_colors[i];
 			if (!use_transparency)
 				col.color |= 0xff000000;
 			Driver->draw2DImage(page->texture, page->render_positions[i], page->render_source_rects[i], clip, col, true);

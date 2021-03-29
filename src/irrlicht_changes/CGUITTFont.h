@@ -270,7 +270,7 @@ namespace gui
 				const core::rect<s32>* clip=0);
 
 			void draw(const EnrichedString& text, const core::rect<s32>& position,
-				video::SColor color, bool hcenter=false, bool vcenter=false,
+				bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
 
 			//! Returns the dimension of a character produced by this font.

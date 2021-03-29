@@ -108,16 +108,11 @@ void StaticText::draw()
 					font->getDimension(str.c_str()).Width;
 			}
 
-			//str = colorizeText(BrokenText[i].c_str(), colors, previous_color);
-			//if (!colors.empty())
-			//	previous_color = colors[colors.size() - 1];
-
 #if USE_FREETYPE
 			if (font->getType() == irr::gui::EGFT_CUSTOM) {
 				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
 				tmp->draw(str,
-					r, previous_color, // FIXME
-					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+					r, HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
 					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			} else
 #endif
