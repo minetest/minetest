@@ -177,6 +177,16 @@ v3s16 MapNode::getWallMountedDir(const NodeDefManager *nodemgr) const
 	}
 }
 
+u8 MapNode::getDegRotate(const NodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	if (f.param_type_2 == CPT2_DEGROTATE)
+		return getParam2() % 240;
+	if (f.param_type_2 == CPT2_COLORED_DEGROTATE)
+		return 10 * ((getParam2() & 0x1F) % 24);
+	return 0;
+}
+
 void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 {
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
@@ -230,6 +240,17 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 		Rotation oldrot = wallmounted_to_rot[wmountface - 2];
 		param2 &= ~7;
 		param2 |= rot_to_wallmounted[(oldrot - rot) & 3];
+	} else if (cpt2 == CPT2_DEGROTATE) {
+		int angle = param2; // in 1.5°
+		angle += 60 * rot; // don’t do that on u8
+		angle %= 240;
+		param2 = angle;
+	} else if (cpt2 == CPT2_COLORED_DEGROTATE) {
+		int angle = param2 & 0x1F; // in 15°
+		int color = param2 & 0xE0;
+		angle += 6 * rot;
+		angle %= 24;
+		param2 = color | angle;
 	}
 }
 

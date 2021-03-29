@@ -685,7 +685,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	if (!f.palette_name.empty() &&
 			!(f.param_type_2 == CPT2_COLOR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR ||
-			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_DEGROTATE))
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
 

@@ -223,6 +223,30 @@ minetest.register_node("testnodes:plantlike_waving", {
 
 
 -- param2 will rotate
+local function rotate_on_rightclick(pos, node, clicker)
+	local def = minetest.registered_nodes[node.name]
+	local aux1 = clicker:get_player_control().aux1
+
+	local deg, deg_max
+	local color, color_mult = 0, 0
+	if def.paramtype2 == "degrotate" then
+		deg = node.param2
+		deg_max = 240
+	elseif def.paramtype2 == "colordegrotate" then
+		-- MSB [3x color, 5x rotation] LSB
+		deg = node.param2 % 2^5
+		deg_max = 24
+		color_mult = 2^5
+		color = math.floor(node.param2 / color_mult)
+	end
+
+	deg = (deg + (aux1 and 10 or 1)) % deg_max
+	node.param2 = color * color_mult + deg
+	minetest.swap_node(pos, node)
+	minetest.chat_send_player(clicker:get_player_name(),
+		"Rotation is now " .. deg .. " / " .. deg_max)
+end
+
 minetest.register_node("testnodes:plantlike_degrotate", {
 	description = S("Degrotate Plantlike Drawtype Test Node"),
 	drawtype = "plantlike",
@@ -230,8 +254,38 @@ minetest.register_node("testnodes:plantlike_degrotate", {
 	paramtype2 = "degrotate",
 	tiles = { "testnodes_plantlike_degrotate.png" },
 
-
+	on_rightclick = rotate_on_rightclick,
+	place_param2 = 7,
 	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:mesh_degrotate", {
+	description = S("Degrotate Mesh Drawtype Test Node"),
+	drawtype = "mesh",
+	paramtype = "light",
+	paramtype2 = "degrotate",
+	mesh = "testnodes_pyramid.obj",
+	tiles = { "testnodes_mesh_stripes2.png" },
+
+	on_rightclick = rotate_on_rightclick,
+	place_param2 = 7,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:mesh_colordegrotate", {
+	description = S("Color Degrotate Mesh Drawtype Test Node"),
+	drawtype = "mesh",
+	paramtype2 = "colordegrotate",
+	palette = "testnodes_palette_facedir.png",
+	mesh = "testnodes_pyramid.obj",
+	tiles = { "testnodes_mesh_stripes2.png" },
+
+	on_rightclick = rotate_on_rightclick,
+	-- color index 1, 7 steps rotated
+	place_param2 = 1 * 2^5 + 7,
 	sunlight_propagates = true,
 	groups = { dig_immediate = 3 },
 })

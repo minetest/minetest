@@ -968,7 +968,7 @@ void MapblockMeshGenerator::drawPlantlike()
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
 	offset = v3f(0, 0, 0);
-	rotate_degree = 0;
+	rotate_degree = 0.0f;
 	random_offset_Y = false;
 	face_num = 0;
 	plant_height = 1.0;
@@ -988,7 +988,8 @@ void MapblockMeshGenerator::drawPlantlike()
 		break;
 
 	case CPT2_DEGROTATE:
-		rotate_degree = n.param2 * 2;
+	case CPT2_COLORED_DEGROTATE:
+		rotate_degree = 1.5f * n.getDegRotate(nodedef);
 		break;
 
 	case CPT2_LEVELED:
@@ -1343,6 +1344,7 @@ void MapblockMeshGenerator::drawMeshNode()
 	u8 facedir = 0;
 	scene::IMesh* mesh;
 	bool private_mesh; // as a grab/drop pair is not thread-safe
+	int degrotate = 0;
 
 	if (f->param_type_2 == CPT2_FACEDIR ||
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
@@ -1354,9 +1356,12 @@ void MapblockMeshGenerator::drawMeshNode()
 		facedir = n.getWallMounted(nodedef);
 		if (!enable_mesh_cache)
 			facedir = wallmounted_to_facedir[facedir];
+	} else if (f->param_type_2 == CPT2_DEGROTATE ||
+			f->param_type_2 == CPT2_COLORED_DEGROTATE) {
+		degrotate = n.getDegRotate(nodedef);
 	}
 
-	if (!data->m_smooth_lighting && f->mesh_ptr[facedir]) {
+	if (!data->m_smooth_lighting && f->mesh_ptr[facedir] && !degrotate) {
 		// use cached meshes
 		private_mesh = false;
 		mesh = f->mesh_ptr[facedir];
@@ -1364,7 +1369,10 @@ void MapblockMeshGenerator::drawMeshNode()
 		// no cache, clone and rotate mesh
 		private_mesh = true;
 		mesh = cloneMesh(f->mesh_ptr[0]);
-		rotateMeshBy6dFacedir(mesh, facedir);
+		if (facedir)
+			rotateMeshBy6dFacedir(mesh, facedir);
+		else if (degrotate)
+			rotateMeshXZby(mesh, 1.5f * degrotate);
 		recalculateBoundingBox(mesh);
 		meshmanip->recalculateNormals(mesh, true, false);
 	} else

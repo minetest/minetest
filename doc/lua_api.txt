@@ -1048,9 +1048,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
 * `paramtype2 = "degrotate"`
-    * Only valid for "plantlike" drawtype. The rotation of the node is stored in
-      `param2`.
-    * Values range 0 - 179. The value stored in `param2` is multiplied by two to
+    * Valid for `plantlike` and `mesh` drawtypes. The rotation of the node is
+      stored in `param2`.
+    * Values range 0–239. The value stored in `param2` is multiplied by 1.5 to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
     * Only valid for "plantlike" drawtype. `param2` encodes the shape and
@@ -1088,6 +1088,11 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
       and 63 being full.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
+* `paramtype2 = "colordegrotate"`
+    * Same as `degrotate`, but with colors.
+    * The first (most-significant) three bits of `param2` tells which color
+      is picked from the palette. The palette should have 8 pixels.
+    * Remaining 5 bits store rotation in range 0–23 (i.e. in 15° steps)
 * `paramtype2 = "none"`
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value

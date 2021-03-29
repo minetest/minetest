@@ -944,7 +944,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
-			param_type_2 == CPT2_COLORED_WALLMOUNTED)
+			param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			param_type_2 == CPT2_COLORED_DEGROTATE)
 		palette = tsrc->getPalette(palette_name);
 
 	if (drawtype == NDT_MESH && !mesh.empty()) {
