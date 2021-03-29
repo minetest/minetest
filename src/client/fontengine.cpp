@@ -56,7 +56,7 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 
 	readSettings();
 
-	if (m_currentMode == FM_Standard) {
+	if (m_currentMode != FM_Simple) {
 		g_settings->registerChangedCallback("font_size", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_bold", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_italic", font_setting_changed, NULL);
@@ -66,12 +66,7 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 		g_settings->registerChangedCallback("font_path_bolditalic", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_shadow", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed, NULL);
-	}
-	else if (m_currentMode == FM_Fallback) {
-		g_settings->registerChangedCallback("fallback_font_size", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("fallback_font_path", font_setting_changed, NULL);
-		g_settings->registerChangedCallback("fallback_font_shadow", font_setting_changed, NULL);
-		g_settings->registerChangedCallback("fallback_font_shadow_alpha", font_setting_changed, NULL);
 	}
 
 	g_settings->registerChangedCallback("mono_font_path", font_setting_changed, NULL);
@@ -102,6 +97,11 @@ void FontEngine::cleanCache()
 /******************************************************************************/
 irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 {
+	return getFont(spec, false);
+}
+
+irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec, bool may_fail)
+{
 	if (spec.mode == FM_Unspecified) {
 		spec.mode = m_currentMode;
 	} else if (m_currentMode == FM_Simple) {
@@ -110,6 +110,10 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 				spec.mode == FM_SimpleMono) ?
 				FM_SimpleMono : FM_Simple;
 		// Support for those could be added, but who cares?
+		spec.bold = false;
+		spec.italic = false;
+	} else if (spec.mode == _FM_Fallback) {
+		// Fallback font doesn't support these either
 		spec.bold = false;
 		spec.italic = false;
 	}
@@ -129,6 +133,13 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 		font = initSimpleFont(spec);
 	else
 		font = initFont(spec);
+
+	if (!font && !may_fail) {
+		errorstream << "Minetest cannot continue without a valid font. "
+			"Please correct the 'font_path' setting or install the font "
+			"file in the proper location." << std::endl;
+		abort();
+	}
 
 	m_font_cache[spec.getHash()][spec.size] = font;
 
@@ -204,20 +215,9 @@ unsigned int FontEngine::getFontSize(FontMode mode)
 void FontEngine::readSettings()
 {
 	if (USE_FREETYPE && g_settings->getBool("freetype")) {
-		m_default_size[FM_Standard] = g_settings->getU16("font_size");
-		m_default_size[FM_Fallback] = g_settings->getU16("fallback_font_size");
-		m_default_size[FM_Mono]     = g_settings->getU16("mono_font_size");
-
-		/*~ DO NOT TRANSLATE THIS LITERALLY!
-		This is a special string. Put either "no" or "yes"
-		into the translation field (literally).
-		Choose "yes" if the language requires use of the fallback
-		font, "no" otherwise.
-		The fallback font is (normally) required for languages with
-		non-Latin script, like Chinese.
-		When in doubt, test your translation. */
-		m_currentMode = is_yes(gettext("needs_fallback_font")) ?
-				FM_Fallback : FM_Standard;
+		m_default_size[FM_Standard]  = g_settings->getU16("font_size");
+		m_default_size[_FM_Fallback] = g_settings->getU16("font_size");
+		m_default_size[FM_Mono]      = g_settings->getU16("mono_font_size");
 
 		m_default_bold = g_settings->getBool("font_bold");
 		m_default_italic = g_settings->getBool("font_italic");
@@ -271,18 +271,8 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	assert(spec.size != FONT_SIZE_UNSPECIFIED);
 
 	std::string setting_prefix = "";
-
-	switch (spec.mode) {
-		case FM_Fallback:
-			setting_prefix = "fallback_";
-			break;
-		case FM_Mono:
-		case FM_SimpleMono:
-			setting_prefix = "mono_";
-			break;
-		default:
-			break;
-	}
+	if (spec.mode == FM_Mono)
+		setting_prefix = "mono_";
 
 	std::string setting_suffix = "";
 	if (spec.bold)
@@ -305,38 +295,41 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	g_settings->getU16NoEx(setting_prefix + "font_shadow_alpha",
 			font_shadow_alpha);
 
-	std::string wanted_font_path;
-	wanted_font_path = g_settings->get(setting_prefix + "font_path" + setting_suffix);
+	std::string path_setting;
+	if (spec.mode == _FM_Fallback)
+		path_setting = "fallback_font_path";
+	else
+		path_setting = setting_prefix + "font_path" + setting_suffix;
 
 	std::string fallback_settings[] = {
-		wanted_font_path,
-		g_settings->get("fallback_font_path"),
-		Settings::getLayer(SL_DEFAULTS)->get(setting_prefix + "font_path")
+		g_settings->get(path_setting),
+		Settings::getLayer(SL_DEFAULTS)->get(path_setting)
 	};
 
 #if USE_FREETYPE
 	for (const std::string &font_path : fallback_settings) {
-		irr::gui::IGUIFont *font = gui::CGUITTFont::createTTFont(m_env,
+		gui::CGUITTFont *font = gui::CGUITTFont::createTTFont(m_env,
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
 
-		if (font)
-			return font;
-
-		errorstream << "FontEngine: Cannot load '" << font_path <<
+		if (!font) {
+			errorstream << "FontEngine: Cannot load '" << font_path <<
 				"'. Trying to fall back to another path." << std::endl;
+			continue;
+		}
+
+		if (spec.mode != _FM_Fallback) {
+			FontSpec spec2(spec);
+			spec2.mode = _FM_Fallback;
+			font->setFallback(getFont(spec2, true));
+		}
+		return font;
 	}
-
-
-	// give up
-	errorstream << "minetest can not continue without a valid font. "
-			"Please correct the 'font_path' setting or install the font "
-			"file in the proper location" << std::endl;
 #else
-	errorstream << "FontEngine: Tried to load freetype fonts but Minetest was"
-			" not compiled with that library." << std::endl;
+	errorstream << "FontEngine: Tried to load TTF font but Minetest was"
+			" compiled without Freetype." << std::endl;
 #endif
-	abort();
+	return nullptr;
 }
 
 /** initialize a font without freetype */

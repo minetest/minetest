@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 enum FontMode : u8 {
 	FM_Standard = 0,
 	FM_Mono,
-	FM_Fallback,
+	_FM_Fallback, // do not use directly
 	FM_Simple,
 	FM_SimpleMono,
 	FM_MaxMode,
@@ -47,7 +47,7 @@ struct FontSpec {
 		bold(bold),
 		italic(italic) {}
 
-	u16 getHash()
+	u16 getHash() const
 	{
 		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
 	}
@@ -132,10 +132,12 @@ public:
 	void readSettings();
 
 private:
+	irr::gui::IGUIFont *getFont(FontSpec spec, bool may_fail);
+
 	/** update content of font cache in case of a setting change made it invalid */
 	void updateFontCache();
 
-	/** initialize a new font */
+	/** initialize a new TTF font */
 	gui::IGUIFont *initFont(const FontSpec &spec);
 
 	/** initialize a font without freetype */
