@@ -411,9 +411,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			break;
 		}
 		case NDT_PLANTLIKE_ROOTED: {
-			v3f wscale = def.wield_scale;
 			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
-				"", wscale, tsrc,
+				"", def.wield_scale, tsrc,
 				f.special_tiles[0].layers[0].animation_frame_count);
 			// Add color
 			const TileLayer &l0 = f.special_tiles[0].layers[0];
