@@ -395,7 +395,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_TORCHLIKE:
 		case NDT_RAILLIKE:
 		case NDT_PLANTLIKE:
-		case NDT_PLANTLIKE_ROOTED:
 		case NDT_FLOWINGLIQUID: {
 			v3f wscale = def.wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
@@ -409,6 +408,15 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			m_colors.emplace_back(l0.has_color, l0.color);
 			const TileLayer &l1 = f.tiles[0].layers[1];
 			m_colors.emplace_back(l1.has_color, l1.color);
+			break;
+		}
+		case NDT_PLANTLIKE_ROOTED: {
+			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
+				"", def.wield_scale, tsrc,
+				f.special_tiles[0].layers[0].animation_frame_count);
+			// Add color
+			const TileLayer &l0 = f.special_tiles[0].layers[0];
+			m_colors.emplace_back(l0.has_color, l0.color);
 			break;
 		}
 		case NDT_NORMAL:
