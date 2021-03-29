@@ -588,12 +588,13 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	core::map<u32, CGUITTGlyphPage*> Render_Map;
 
 	// Start parsing characters.
+	u32 n;
 	uchar32_t previousChar = 0;
 	core::ustring::const_iterator iter(utext);
 	while (!iter.atEnd())
 	{
 		uchar32_t currentChar = *iter;
-		u32 n = getGlyphIndexByChar(currentChar);
+		n = getGlyphIndexByChar(currentChar);
 		bool visible = (Invisible.findFirst(currentChar) == -1);
 		bool lineBreak=false;
 		if (currentChar == L'\r') // Mac or Windows breaks
