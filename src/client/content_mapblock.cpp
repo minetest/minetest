@@ -1490,53 +1490,102 @@ void MapblockMeshGenerator::drawNode()
 	}
 }
 
-/*
-	TODO: Fix alpha blending for special nodes
-	Currently only the last element rendered is blended correct
-*/
 void MapblockMeshGenerator::generate()
 {
 	v3s16 player_pos = floatToInt(data->m_client->getEnv().getLocalPlayer()->getEyePosition(), BS);
 
-	irr::s16 playerz = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.Z - blockpos_nodes.Z));
-	irr::s16 playery = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.Y - blockpos_nodes.Y));
-	irr::s16 playerx = std::max<irr::s16>(0, std::min<irr::s16>(MAP_BLOCKSIZE, player_pos.X - blockpos_nodes.X));
+	v3s16 player = v3s16(
+		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.X - blockpos_nodes.X)),
+		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.Y - blockpos_nodes.Y)),
+		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.Z - blockpos_nodes.Z)));
 
-	bool z_first = abs(player_pos.Z - blockpos_nodes.Z - MAP_BLOCKSIZE / 2) > abs(player_pos.X - blockpos_nodes.X - MAP_BLOCKSIZE / 2);
+	s16 s = MAP_BLOCKSIZE - 1;
 
-	s16 *l1 = &p.Y;
-	s16 *l2 = z_first ? &p.Z : &p.X;
-	s16 *l3 = z_first ? &p.X : &p.Z;
-
-	irr::s16 l1_threshold = playery;
-	irr::s16 l2_threshold = z_first ? playerz : playerx;
-	irr::s16 l3_threshold = z_first ? playerx : playerz;
-
-	auto draw = [&]() {
-		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		f = &nodedef->get(n);
-		drawNode();
+	// split the mapblock cuboid int octants around the player
+	// octants with 0 in origin include
+	struct octant {
+		v3s16 origin, target, increment;
+		s16 distance;
+	} octants[8] = {
+		{ v3s16(0, 0, 0), v3s16(player.X,     player.Y,     player.Z),     v3s16( 1,  1,  1) },
+		{ v3s16(0, 0, s), v3s16(player.X,     player.Y,     player.Z + 1), v3s16( 1,  1, -1) },
+		{ v3s16(0, s, 0), v3s16(player.X,     player.Y + 1, player.Z),     v3s16( 1, -1,  1) },
+		{ v3s16(0, s, s), v3s16(player.X,     player.Y + 1, player.Z + 1), v3s16( 1, -1, -1) },
+		{ v3s16(s, 0, 0), v3s16(player.X + 1, player.Y,     player.Z),     v3s16(-1,  1,  1) },
+		{ v3s16(s, 0, s), v3s16(player.X + 1, player.Y,     player.Z + 1), v3s16(-1,  1, -1) },
+		{ v3s16(s, s, 0), v3s16(player.X + 1, player.Y + 1, player.Z),     v3s16(-1, -1,  1) },
+		{ v3s16(s, s, s), v3s16(player.X + 1, player.Y + 1, player.Z + 1), v3s16(-1, -1, -1) },
 	};
 
-	auto loop_l3 = [&]() {
-		for (*l3 = 0; *l3 < l3_threshold; ++(*l3))
-			draw();
-		for (*l3 = MAP_BLOCKSIZE - 1; *l3 >= l3_threshold; --(*l3))
-			draw();
+	// calculate boundaries for each octant
+	struct boundary {
+		v3s16 min, max;
+	} bounds[8] = {
+		{ v3s16(           0,            0,            0), v3s16(player.X, player.Y, player.Z) },
+		{ v3s16(           0,            0, player.Z + 1), v3s16(player.X, player.Y,        s) },
+		{ v3s16(           0, player.Y + 1,            0), v3s16(player.X,        s, player.Z) },
+		{ v3s16(           0, player.Y + 1, player.Z + 1), v3s16(player.X,        s,        s) },
+		{ v3s16(player.X + 1,            0,            0), v3s16(       s, player.Y, player.Z) },
+		{ v3s16(player.X + 1,            0, player.Z + 1), v3s16(       s, player.Y,        s) },
+		{ v3s16(player.X + 1, player.Y + 1,            0), v3s16(       s,        s, player.Z) },
+		{ v3s16(player.X + 1, player.Y + 1, player.Z + 1), v3s16(       s,        s,        s) }
 	};
 
-	auto loop_l2 = [&]() {
-		for (*l2 = 0; *l2 < l2_threshold; ++(*l2))
-			loop_l3();
-		for (*l2 = MAP_BLOCKSIZE - 1; *l2 >= l2_threshold; --(*l2))
-			loop_l3();
-	};
+	u16 nlayers = 0;
 
-	for (*l1 = 0; *l1 < l1_threshold; ++(*l1))
-		loop_l2();
+	for (s16 i = 0; i < 8; ++i) {
 
-	for (*l1 = MAP_BLOCKSIZE - 1; *l1 >= l1_threshold; --(*l1))
-		loop_l2();
+		// clip max boundary to MAX_BLOCKSIZE - 1
+		bounds[i].max.X = std::min<s16>(MAP_BLOCKSIZE - 1, bounds[i].max.X);
+		bounds[i].max.Y = std::min<s16>(MAP_BLOCKSIZE - 1, bounds[i].max.Y);
+		bounds[i].max.Z = std::min<s16>(MAP_BLOCKSIZE - 1, bounds[i].max.Z);
+
+		// calculate maximum manhattan distance == number of layers to generate
+		octants[i].distance = abs(octants[i].target.X - octants[i].origin.X) +
+				abs(octants[i].target.Y - octants[i].origin.Y) +
+				abs(octants[i].target.Z - octants[i].origin.Z);
+
+		if (octants[i].distance > nlayers)
+			nlayers = octants[i].distance;
+	}
+
+
+	// draw each octant in layers by constant manhatan distance, starting from the most distant
+	// with each iteration, the bubble around the player will shrink
+
+	for (u16 base_a = 0; base_a <= nlayers; ++base_a)     // loop over layers
+	for (s16 i = 7; i >= 0; --i) {                        // loop over octants
+
+		struct octant *octant = octants + i;
+		struct boundary *boundary = bounds + i;
+
+		// offset layer to create bubble around the player
+		s16 a = base_a + octant->distance - nlayers;
+		if (a < 0)
+			continue;
+
+		// b and c are layer's x and y
+		for (u16 b = 0; b <= a; ++b)
+		for (u16 c = 0; c <= (a - b); ++c) {
+
+			// translate into world coordinates and clip
+			p.X = octant->origin.X + (a - b - c) * octant->increment.X;
+			if (p.X < boundary->min.X || p.X > boundary->max.X)
+				continue;
+
+			p.Z = octant->origin.Z + b * octant->increment.Z;
+			if (p.Z < boundary->min.Z || p.Z > boundary->max.Z)
+				continue;
+
+			p.Y = octant->origin.Y + c * octant->increment.Y;
+			if (p.Y < boundary->min.Y || p.Y > boundary->max.Y)
+				continue;
+
+			n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+			f = &nodedef->get(n);
+			drawNode();
+		}
+	}
 }
 
 void MapblockMeshGenerator::renderSingle(content_t node, u8 param2)
