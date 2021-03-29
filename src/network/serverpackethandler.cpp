@@ -1039,7 +1039,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			target_pos = intToFloat(pointed.node_undersurface, BS);
 		} else if (pointed.type == POINTEDTHING_OBJECT) {
 			if (playersao->getId() == pointed_object->getId()) {
-				actionstream << player->getName() << " attempted to interact with themself" << std::endl;
+				actionstream << "Server: " << player->getName()
+					<< " attempted to interact with themselves" << std::endl;
 				m_script->on_cheat(playersao, "interacted_with_self");
 				return;
 			}
