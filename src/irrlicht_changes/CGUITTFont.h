@@ -199,6 +199,7 @@ namespace gui
 
 			core::array<core::vector2di> render_positions;
 			core::array<core::recti> render_source_rects;
+			core::array<video::SColor> render_colors;
 
 		private:
 			core::array<const SGUITTGlyph*> glyph_to_be_paged;
