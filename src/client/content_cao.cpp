@@ -989,8 +989,14 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		LocalPlayer *player = m_env->getLocalPlayer();
 		m_position = player->getPosition();
 		pos_translator.val_current = m_position;
-		m_rotation.Y = wrapDegrees_0_360(player->getYaw());
-		rot_translator.val_current = m_rotation;
+
+		// Rotate the player model based on movement direction.
+		v3f speed = player->getSpeed();
+		speed.Y = 0;
+		if (speed.getLengthSQ() > 0.001f) {
+			m_rotation.Y = core::RADTODEG * -atan2f(speed.X, speed.Z);
+			rot_translator.val_current = m_rotation;
+		}
 
 		if (m_is_visible) {
 			int old_anim = player->last_animation;
