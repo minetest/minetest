@@ -31,12 +31,6 @@ using namespace irr;
 
 namespace irr {
 
-// Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-typedef int64_t s64;
-typedef uint64_t u64;
-#endif
-
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)
 namespace core {
 	template <typename T>
