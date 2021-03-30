@@ -4397,6 +4397,9 @@ Utilities
           direct_velocity_on_players = true,
           -- nodedef's use_texture_alpha accepts new string modes (5.4.0)
           use_texture_alpha_string_modes = true,
+          -- degrotate param2 rotates in units of 1.5° instead of 2°
+          -- thus changing the range of values from 0-179 to 0-240 (5.5.0)
+          degrotate_240_steps = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
