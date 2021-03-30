@@ -97,8 +97,8 @@ local function buildCreditList(source)
 end
 
 return {
-	name = "credits",
-	caption = fgettext("Credits"),
+	name = "about",
+	caption = fgettext("About"),
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
@@ -119,11 +119,16 @@ return {
 			buildCreditList(previous_contributors) .. "," ..
 			";1]"
 
+		-- Render information
+		fs = fs .. "label[0.75,4.9;" ..
+			fgettext("Active renderer:") .. "\n" ..
+			core.formspec_escape(core.get_screen_info().render_info) .. "]"
+
 		if PLATFORM ~= "Android" then
 			fs = fs .. "tooltip[userdata;" ..
 					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
 							"and texture packs in a file manager / explorer.") .. "]"
-			fs = fs .. "button[0,4.75;3.5,1;userdata;" .. fgettext("Open User Data Directory") .. "]"
+			fs = fs .. "button[0,4;3.5,1;userdata;" .. fgettext("Open User Data Directory") .. "]"
 		end
 
 		return fs

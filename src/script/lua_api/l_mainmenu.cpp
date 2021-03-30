@@ -856,14 +856,6 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 	lua_pushnumber(L,RenderingEngine::getDisplayDensity());
 	lua_settable(L, top);
 
-	lua_pushstring(L,"display_width");
-	lua_pushnumber(L,RenderingEngine::getDisplaySize().X);
-	lua_settable(L, top);
-
-	lua_pushstring(L,"display_height");
-	lua_pushnumber(L,RenderingEngine::getDisplaySize().Y);
-	lua_settable(L, top);
-
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	lua_pushstring(L,"window_width");
 	lua_pushnumber(L, window_size.X);
@@ -871,6 +863,10 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 
 	lua_pushstring(L,"window_height");
 	lua_pushnumber(L, window_size.Y);
+	lua_settable(L, top);
+
+	lua_pushstring(L, "render_info");
+	lua_pushstring(L, wide_to_utf8(RenderingEngine::get_video_driver()->getName()).c_str());
 	lua_settable(L, top);
 	return 1;
 }

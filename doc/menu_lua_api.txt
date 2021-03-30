@@ -204,7 +204,8 @@ core.get_screen_info()
     display_width   = <width of display>,
     display_height  = <height of display>,
     window_width    = <current window width>,
-    window_height   = <current window height>
+    window_height   = <current window height>,
+    render_info     = <active render information>
     }
 
 
