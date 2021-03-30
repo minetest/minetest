@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-25 23:50+0000\n"
-"Last-Translator: narrnika <narr13niki@gmail.com>\n"
+"PO-Revision-Date: 2021-03-30 05:36+0000\n"
+"Last-Translator: Konstantin Yeliseyev <kay27@bk.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -705,9 +705,8 @@ msgid "Loading..."
 msgstr "Загрузка..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Клиентские моды отключены"
+msgstr "Публичный список серверов отключён"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -1216,12 +1215,12 @@ msgstr ""
 "- %s: влево\n"
 "- %s: вправо\n"
 "- %s: прыжок/подъём\n"
+"- %s: копать/удар\n"
+"- %s: разместить/использовать\n"
 "- %s: красться/спуск\n"
 "- %s: бросить предмет\n"
 "- %s: инвентарь\n"
 "- Мышь: поворот/обзор\n"
-"- ЛКМ: копать/удар\n"
-"- ПКМ: положить/использовать\n"
 "- Колесо мыши: выбор предмета\n"
 "- %s: чат\n"
 
@@ -2168,7 +2167,7 @@ msgstr "ABM интервал"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Бюджет времени ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2249,13 +2248,11 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-"Изменяет кривую блеска, применяя к ней «гамма-\n"
-"коррекцию». Более высокие значения делают средний \n"
-"и нижний уровни света ярче. Значение «1.0» оставляет\n"
-"кривую блеска без изменений. Это оказывает \n"
-"существенное влияние только на дневной и \n"
-"искусственный свет, он очень мало влияет на \n"
-"естественный ночной свет."
+"Изменяет кривую света, применяя к ней \"гамма-коррекцию\".\n"
+"Более высокие значения делают средний и слабый свет ярче.\n"
+"Значение \"1.0\" оставляет кривую света без изменений.\n"
+"Значительный эффект виден только на дневном и искусственном\n"
+"освещении, почти не влияет на естественный ночной свет."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2307,7 +2304,9 @@ msgstr "Инерция руки"
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
-msgstr "Делает более реалистичным движение руки персонажа при движении камеры."
+msgstr ""
+"Делает более реалистичным движение руки\n"
+"персонажа при движении камеры."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -5787,14 +5786,12 @@ msgid "Pitch move mode"
 msgstr "Режим движения вниз/вверх по направлению взгляда"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Клавиша полёта"
+msgstr "Клавиша «Разместить»"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Интервал повторного клика правой кнопкой"
+msgstr "Интервал повторного размещения"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6288,9 +6285,8 @@ msgstr ""
 "Требует перезапуска после изменения."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "Стандартный жирный шрифт"
+msgstr "Отображать фон у табличек с именами"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6652,7 +6648,6 @@ msgstr ""
 "Это должно быть настроено вместе с active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6665,7 +6660,8 @@ msgstr ""
 "После изменения этого параметра потребуется перезапуск.\n"
 "Примечание: Если не уверены, используйте OGLES1 для Android, иначе\n"
 "приложение может не запуститься. На других платформах рекомендуется\n"
-"OpenGL, так как сейчас это единственный драйвер с поддержкой шейдеров."
+"OpenGL. Шейдеры поддерживаются OpenGL (только на десктопах) и OGLES2 "
+"(экспериментально)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6703,6 +6699,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Бюджет времени для выполнения ABM на каждом шаге\n"
+"(как часть ABM-интервала)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6713,11 +6711,12 @@ msgstr ""
 "когда зажата комбинация кнопок на джойстике."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
-msgstr "Задержка в секундах между кликами при зажатой правой кнопке мыши."
+msgstr ""
+"Задержка перед повторным размещением блока в секундах\n"
+"при удержании клавиши размещения"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -7141,6 +7140,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Должен ли отображаться фон бирки по умолчанию.\n"
+"Моды в любом случае могут задать фон."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
