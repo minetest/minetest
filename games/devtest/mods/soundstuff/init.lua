@@ -88,6 +88,28 @@ minetest.register_node("soundstuff:footstep_liquid", {
 	}
 })
 
+
+minetest.register_node("soundstuff:footstep_16", {
+	description = "1/16 Footstep Sound Node",
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = { -0.5, -0.5, -0.5, 0.5, -7/16, 0.5 },
+	},
+	tiles = {
+		"soundstuff_node_sound.png",
+		"soundstuff_node_sound.png",
+		"soundstuff_node_footstep.png",
+	},
+	paramtype = "light",
+	is_ground_content = false,
+	sounds = {
+		footstep = { name = "soundstuff_mono", gain = 1.0 },
+	},
+	groups = { dig_immediate = 2 },
+})
+
+
 minetest.register_node("soundstuff:footstep_climbable", {
 	description = "Climbable Footstep Sound Node",
 	drawtype = "allfaces",

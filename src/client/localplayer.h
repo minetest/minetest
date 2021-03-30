@@ -170,6 +170,7 @@ private:
 
 	v3f m_position;
 	v3s16 m_standing_node;
+	v3s16 m_liquid_stable_node = v3s16(32767, 32767, 32767);
 
 	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
 	// Stores the top bounding box of m_sneak_node

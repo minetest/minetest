@@ -253,6 +253,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	node = map->getNode(pp, &is_valid_position);
 	if (is_valid_position) {
 		in_liquid_stable = nodemgr->get(node.getContent()).isLiquid();
+		m_liquid_stable_node = pp;
 	} else {
 		in_liquid_stable = false;
 	}
@@ -686,17 +687,18 @@ v3s16 LocalPlayer::getFootstepNodePos()
 {
 	// Emit swimming sound if the player is in liquid
 	if (in_liquid_stable)
-		return floatToInt(getPosition(), BS);
+		return m_liquid_stable_node;
 
+	v3s16 base_pos = getStandingNodePos();
 	// BS * 0.05 below the player's feet ensures a 1/16th height
 	// nodebox is detected instead of the node below it.
 	if (touching_ground)
-		return floatToInt(getPosition() - v3f(0.0f, BS * 0.05f, 0.0f), BS);
+		return base_pos - floatToInt(v3f(0.0f, BS * 0.05f, 0.0f), BS);
 
 	// A larger distance below is necessary for a footstep sound
 	// when landing after a jump or fall. BS * 0.5 ensures water
 	// sounds when swimming in 1 node deep water.
-	return floatToInt(getPosition() - v3f(0.0f, BS * 0.5f, 0.0f), BS);
+	return base_pos - floatToInt(v3f(0.0f, BS * 0.5f, 0.0f), BS);
 }
 
 v3s16 LocalPlayer::getLightPosition() const
