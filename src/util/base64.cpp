@@ -46,18 +46,21 @@ static inline bool is_base64(unsigned char c)
 
 bool base64_is_valid(std::string const& s)
 {
-	int i = 0;
+	size_t i = 0;
 	for (; i < s.size(); ++i)
 		if (!is_base64(s[i]))
 			break;
-	unsigned char padding = 3 - ((s.size() + 3) % 4);
-	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == -1)
-			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == -1)
+	if (i == 0)
+		return false;
+	unsigned char padding = 3 - ((i + 3) % 4);
+	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == std::string::npos)
+			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == std::string::npos)
 			|| padding == 3)
 		return false;
 	int actual_padding = s.size() - i;
 	// omission of padding characters is allowed
-	if (actual_padding == 0) return true;
+	if (actual_padding == 0)
+		return true;
 
 	// remaining characters (max. 2) may only be padding
 	for (; i < s.size(); ++i)
