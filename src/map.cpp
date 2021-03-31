@@ -591,9 +591,9 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		NodeNeighbor sources[6]; // surrounding sources
 		int num_sources = 0;
 		NodeNeighbor flows[6]; // surrounding flowing liquid nodes
-		int num_flows = 0;
+		uint64_t num_flows = 0;
 		NodeNeighbor airs[6]; // surrounding air
-		int num_airs = 0;
+		uint64_t num_airs = 0;
 		NodeNeighbor neutrals[6]; // nodes that are solid or another kind of liquid
 		int num_neutrals = 0;
 		bool flowing_down = false;
