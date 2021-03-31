@@ -2219,8 +2219,8 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	u16 step = 1;
 	if (dim.Width > 16)
 		step = dim.Width / 16;
-	for (u16 x = 0; x < dim.Width; x += step) {
-		for (u16 y = 0; y < dim.Width; y += step) {
+	for (u32 x = 0; x < dim.Width; x += step) {
+		for (u32 y = 0; y < dim.Width; y += step) {
 			c = image->getPixel(x,y);
 			if (c.getAlpha() > 0) {
 				total++;
