@@ -50,7 +50,7 @@ bool base64_is_valid(std::string const& s)
 	for (; i < s.size(); ++i)
 		if (!is_base64(s[i]))
 			break;
-	if (i == 0)
+	if (i == 0 && s != "")
 		return false;
 	unsigned char padding = 3 - ((i + 3) % 4);
 	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == std::string::npos)

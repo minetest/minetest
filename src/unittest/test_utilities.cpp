@@ -534,6 +534,7 @@ void TestUtilities::testEulerConversion()
 
 void TestUtilities::testBase64()
 {
+	UASSERT(base64_is_valid("") == true);
 	UASSERT(base64_is_valid("A") == false);
 	// : is not a valid base64 character
 	UASSERT(base64_is_valid(":") == false);
