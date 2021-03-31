@@ -5646,7 +5646,7 @@ Misc.
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string or nil for invalid base64
-    * Padding needs to be omitted for 5.3.0 and lower not to return nil
+    * Before 5.5.0 this function did not accept padding and returned nil
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returning `true` restricts the player `name` from modifying (i.e. digging,
