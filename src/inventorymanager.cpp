@@ -909,7 +909,7 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 	CraftInput ci;
 	ci.method = CRAFT_METHOD_NORMAL;
 	ci.width = clist->getWidth() ? clist->getWidth() : 3;
-	for (u16 i=0; i < clist->getSize(); i++)
+	for (u32 i=0; i < clist->getSize(); i++)
 		ci.items.push_back(clist->getItem(i));
 
 	// Find out what is crafted and add it to result item slot
@@ -921,7 +921,7 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 
 	if (found && decrementInput) {
 		// CraftInput has been changed, apply changes in clist
-		for (u16 i=0; i < clist->getSize(); i++) {
+		for (u32 i=0; i < clist->getSize(); i++) {
 			clist->changeItem(i, ci.items[i]);
 		}
 	}
