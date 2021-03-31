@@ -98,6 +98,11 @@ PreMeshBuffer &MeshCollector::findBuffer(
 				"Mesh can't contain more than 65536 vertices");
 
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
+
+	// avoid scanning the entire list of buffers when filling with the same material
+	if (latest_buffers[layernum].size() > 0 && buffers[latest_buffers[layernum].back()].layer == layer)
+		return buffers[latest_buffers[layernum].back()];
+
 	for (PreMeshBuffer &p : buffers)
 		if (!p.closed && p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
 			return p;
@@ -114,9 +119,16 @@ void MeshCollector::startNewMeshLayer()
 		if (latest_buffers[tile_layer].size() == 1)
 			continue;
 
+		s16 latest_buffer = -1;
+		if (latest_buffers[tile_layer].size() > 0)
+			latest_buffer = latest_buffers[tile_layer].back();
+
 		for (s16 index: latest_buffers[tile_layer])
-			prebuffers[tile_layer][index].closed = true;
+			if (index != latest_buffer)
+				prebuffers[tile_layer][index].closed = true;
 
 		latest_buffers[tile_layer].clear();
+		if (latest_buffer != -1)
+			latest_buffers[tile_layer].push_back(latest_buffer);
 	}
 }
