@@ -34,7 +34,7 @@
 #include <irrlicht.h>
 #include <ft2build.h>
 #include <vector>
-#include "irrUString.h"
+#include <irrUString.h>
 #include "util/enriched_string.h"
 #include FT_FREETYPE_H
 

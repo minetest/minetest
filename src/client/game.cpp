@@ -400,12 +400,7 @@ public:
 };
 
 
-// before 1.8 there isn't a "integer interface", only float
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-typedef f32 SamplerLayer_t;
-#else
 typedef s32 SamplerLayer_t;
-#endif
 
 
 class GameGlobalShaderConstantSetter : public IShaderConstantSetter
@@ -513,38 +508,20 @@ public:
 
 		float eye_position_array[3];
 		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		eye_position_array[0] = epos.X;
-		eye_position_array[1] = epos.Y;
-		eye_position_array[2] = epos.Z;
-#else
 		epos.getAs3Values(eye_position_array);
-#endif
 		m_eye_position_pixel.set(eye_position_array, services);
 		m_eye_position_vertex.set(eye_position_array, services);
 
 		if (m_client->getMinimap()) {
 			float minimap_yaw_array[3];
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-			minimap_yaw_array[0] = minimap_yaw.X;
-			minimap_yaw_array[1] = minimap_yaw.Y;
-			minimap_yaw_array[2] = minimap_yaw.Z;
-#else
 			minimap_yaw.getAs3Values(minimap_yaw_array);
-#endif
 			m_minimap_yaw.set(minimap_yaw_array, services);
 		}
 
 		float camera_offset_array[3];
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		camera_offset_array[0] = offset.X;
-		camera_offset_array[1] = offset.Y;
-		camera_offset_array[2] = offset.Z;
-#else
 		offset.getAs3Values(camera_offset_array);
-#endif
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 

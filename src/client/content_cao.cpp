@@ -1473,11 +1473,8 @@ void GenericCAO::updateAnimation()
 	if (m_animated_meshnode->getAnimationSpeed() != m_animation_speed)
 		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 	m_animated_meshnode->setTransitionTime(m_animation_blend);
-// Requires Irrlicht 1.8 or greater
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR > 1
 	if (m_animated_meshnode->getLoopMode() != m_animation_loop)
 		m_animated_meshnode->setLoopMode(m_animation_loop);
-#endif
 }
 
 void GenericCAO::updateAnimationSpeed()

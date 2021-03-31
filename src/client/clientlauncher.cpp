@@ -178,11 +178,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	g_fontengine = new FontEngine(guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
-#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 	// Irrlicht 1.8 input colours
 	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255, 128, 128, 128));
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
-#endif
 
 	// Create the menu clouds
 	if (!g_menucloudsmgr)
