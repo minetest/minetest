@@ -1768,11 +1768,12 @@ void Client::makeScreenshot()
 	if (!raw_image)
 		return;
 
-	time_t t = time(NULL);
-	struct tm *tm = localtime(&t);
+	struct tm tm;
+	const time_t t = time(NULL);
+    localtime_r(&t, &tm);
 
 	char timetstamp_c[64];
-	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
+	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", &tm);
 
 	std::string filename_base = g_settings->get("screenshot_path")
 			+ DIR_DELIM
