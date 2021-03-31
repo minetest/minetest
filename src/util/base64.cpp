@@ -50,20 +50,20 @@ bool base64_is_valid(std::string const& s)
 	for (; i < s.size(); ++i)
 		if (!is_base64(s[i]))
 			break;
-	// number of padding characters needs to match
-	int actual_padding = s.size() - i;
-	if (actual_padding == 0) return true;
 	unsigned char padding = 3 - ((s.size() + 3) % 4);
-	if ((actual_padding != padding)
-			|| (padding == 1 && base64_chars_padding_1.find(s[i - 1]) == -1)
+	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == -1)
 			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == -1))
 		return false;
+	int actual_padding = s.size() - i;
+	// omission of padding characters is allowed
+	if (actual_padding == 0) return true;
 
 	// remaining characters (max. 2) may only be padding
 	for (; i < s.size(); ++i)
 		if (s[i] != '=')
 			return false;
-	return true;
+	// number of padding characters needs to match
+	return padding == actual_padding;
 }
 
 std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
