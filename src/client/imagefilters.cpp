@@ -19,7 +19,50 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "util/numeric.h"
 #include <cmath>
+#include <cassert>
 #include <vector>
+
+// Simple 2D bitmap class with just the functionality needed here
+class Bitmap {
+	std::vector<u8> data;
+	u32 linesize, lines;
+
+	static inline u32 bytepos(u32 index) { return index >> 3; }
+	static inline u8 bitpos(u32 index) { return index & 7; }
+
+public:
+	Bitmap(u32 width, u32 height) : data(bytepos(width * height) + 1),
+		linesize(width), lines(height) {}
+
+	inline bool get(u32 x, u32 y) const {
+		u32 index = y * linesize + x;
+		return data[bytepos(index)] & (1 << bitpos(index));
+	}
+
+	inline void set(u32 x, u32 y) {
+		u32 index = y * linesize + x;
+		data[bytepos(index)] |= 1 << bitpos(index);
+	}
+
+	inline bool all() const {
+		for (u32 i = 0; i < data.size() - 1; i++) {
+			if (data[i] != 0xff)
+				return false;
+		}
+		// last byte not entirely filled
+		for (u8 i = 0; i < bitpos(linesize * lines); i++) {
+			bool value_of_bit = data[data.size() - 1] & (1 << i);
+			if (!value_of_bit)
+				return false;
+		}
+		return true;
+	}
+
+	inline void copy(Bitmap &to) const {
+		assert(to.linesize == linesize && to.lines == lines);
+		to.data = data;
+	}
+};
 
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
@@ -36,28 +79,30 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
 	core::dimension2d<u32> dim = src->getDimension();
 
-	std::vector<bool> set;
-	set.resize(dim.Width * dim.Height, false);
-#define BIT(x, y) set[(y) * dim.Width + (x)]
+	Bitmap bitmap(dim.Width, dim.Height);
 
 	// First pass: Mark all opaque pixels.
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
 		if (src->getPixel(ctrx, ctry).getAlpha() > threshold)
-			BIT(ctrx, ctry) = true;
+			bitmap.set(ctrx, ctry);
 	}
+
+	// All pixels opaque, exit early.
+	if (bitmap.all())
+		return;
+
+	Bitmap newmap = bitmap;
 
 	// Then repeatedly look for transparent pixels, filling them in until
 	// we're finished (capped to 50 iterations).
 	for (u32 iter = 0; iter < 50; iter++) {
 
-	bool any = false;
-
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
 		// Skip pixels we have already processed.
-		if (BIT(ctrx, ctry))
+		if (bitmap.get(ctrx, ctry))
 			continue;
 
 		video::SColor c = src->getPixel(ctrx, ctry);
@@ -70,8 +115,8 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 				sy <= (ctry + 1) && sy < dim.Height; sy++)
 		for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
 				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
-			// Ignore pixels we haven't processed
-			if (!BIT(sx, sy))
+			// Ignore pixels we haven't processed.
+			if (!bitmap.get(sx, sy))
 				continue;
 	
 			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
@@ -90,15 +135,17 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);
 			src->setPixel(ctrx, ctry, c);
-			BIT(ctrx, ctry) = true;
-			any = true;
+			newmap.set(ctrx, ctry);
 		}
 	}
 
-	// If no pixels have been looked at we're done.
-	if (!any)
-		return;
 	printf("%p processed %d\n", src, (int)iter);
+	if (newmap.all())
+		return;
+
+	// Apply changes to bitmap for next run. This is done so we don't introduce
+	// a bias in color propagation in the direction pixels are processed.
+	newmap.copy(bitmap);
 
 	}
 #undef BIT
