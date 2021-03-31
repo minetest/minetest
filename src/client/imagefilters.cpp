@@ -23,13 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
  * like to discard RGB values of transparent pixels, but when blending then
- * with non-transparent neighbors, their RGB values will shpw up nonetheless.
+ * with non-transparent neighbors, their RGB values will show up nonetheless.
  *
  * This function modifies the original image in-place.
  *
  * Parameter "threshold" is the alpha level below which pixels are considered
- * transparent.  Should be 127 for 3d where alpha is threshold, but 0 for
- * 2d where alpha is blended.
+ * transparent. Should be 127 when the texture is used with ALPHA_CHANNEL_REF,
+ * 0 when alpha blending is used.
  */
 void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
@@ -41,7 +41,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
 
 		// Ignore opaque pixels.
-		irr::video::SColor c = src->getPixel(ctrx, ctry);
+		video::SColor c = src->getPixel(ctrx, ctry);
 		if (c.getAlpha() > threshold)
 			continue;
 
@@ -55,7 +55,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
 
 			// Ignore transparent pixels.
-			irr::video::SColor d = src->getPixel(sx, sy);
+			video::SColor d = src->getPixel(sx, sy);
 			if (d.getAlpha() <= threshold)
 				continue;
 
@@ -74,7 +74,38 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);
 			src->setPixel(ctrx, ctry, c);
+			continue;
 		}
+
+		// If not, steal the color from one of the near opaque pixels.
+		// (This is still better than leaving it untouched)
+		video::SColor d = c;
+		for (u32 dist = 1; dist < MYMAX(dim.Width, dim.Height); dist++) {
+			if (dist <= ctrx &&
+				(d = src->getPixel(ctrx - dist, ctry)).getAlpha() > threshold)
+				break;
+			if (dist <= ctry &&
+				(d = src->getPixel(ctrx, ctry - dist)).getAlpha() > threshold)
+				break;
+			if (dist <= ctrx && dist <= ctry &&
+				(d = src->getPixel(ctrx - dist, ctry - dist)).getAlpha() > threshold)
+				break;
+
+			if (ctrx + dist < dim.Width &&
+				(d = src->getPixel(ctrx + dist, ctry)).getAlpha() > threshold)
+				break;
+			if (ctry + dist < dim.Height &&
+				(d = src->getPixel(ctrx, ctry + dist)).getAlpha() > threshold)
+				break;
+			if (ctrx + dist < dim.Width && ctry + dist < dim.Height &&
+				(d = src->getPixel(ctrx + dist, ctry + dist)).getAlpha() > threshold)
+				break;
+		}
+
+		c.setRed(d.getRed());
+		c.setGreen(d.getGreen());
+		c.setBlue(d.getBlue());
+		src->setPixel(ctrx, ctry, c);
 	}
 }
 
