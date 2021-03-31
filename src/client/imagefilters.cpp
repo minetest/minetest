@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "util/numeric.h"
 #include <cmath>
+#include <vector>
 
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
@@ -35,79 +36,52 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
 	core::dimension2d<u32> dim = src->getDimension();
 
-	// Sample size and total weighted r, g, b values
-	u32 ss = 0, sr = 0, sg = 0, sb = 0;
+	std::vector<bool> set;
+	set.resize(dim.Width * dim.Height, false);
+#define BIT(x, y) set[(y) * dim.Width + (x)]
 
-	auto diagonal = [&] (s32 ctrx, s32 ctry, s32 offx, s32 offy, bool u) {
-		const u32 n = MYMAX(abs(offx), abs(offy));
-		s32 sx = ctrx + offx, sy = ctry + offy;
-		if (u)
-			offx = 1, offy = -1; // move to upper right
-		else
-			offx = 1, offy = 1; // move to lower right
-		for (u32 i = 0; i < n; i++, sx += offx, sy += offy) {
-			if (sx < 0 || sy < 0 || (u32)sx >= dim.Width || (u32)sy >= dim.Height)
-				continue;
-			video::SColor d = src->getPixel(sx, sy);
-			if (d.getAlpha() <= threshold)
-				continue;
-
-			// Add RGB values weighted by alpha.
-			u32 a = d.getAlpha();
-			ss += a;
-			sr += a * d.getRed();
-			sg += a * d.getGreen();
-			sb += a * d.getBlue();
-		}
-	};
-
-	// Walk each pixel looking for fully transparent ones.
+	// First pass: Mark all opaque pixels.
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
+		if (src->getPixel(ctrx, ctry).getAlpha() > threshold)
+			BIT(ctrx, ctry) = true;
+	}
 
-		// Ignore opaque pixels.
-		video::SColor c = src->getPixel(ctrx, ctry);
-		if (c.getAlpha() > threshold)
+	// Then repeatedly look for transparent pixels, filling them in until
+	// we're finished (capped to 50 iterations).
+	for (u32 iter = 0; iter < 50; iter++) {
+
+	bool any = false;
+
+	for (u32 ctry = 0; ctry < dim.Height; ctry++)
+	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
+		// Skip pixels we have already processed.
+		if (BIT(ctrx, ctry))
 			continue;
 
-		ss = sr = sg = sb = 0;
+		video::SColor c = src->getPixel(ctrx, ctry);
+
+		// Sample size and total weighted r, g, b values
+		u32 ss = 0, sr = 0, sg = 0, sb = 0;
 
 		// Walk each neighbor pixel (clipped to image bounds).
 		for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
 				sy <= (ctry + 1) && sy < dim.Height; sy++)
 		for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
 				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
-
-			// Ignore transparent pixels.
-			video::SColor d = src->getPixel(sx, sy);
-			if (d.getAlpha() <= threshold)
+			// Ignore pixels we haven't processed
+			if (!BIT(sx, sy))
 				continue;
-
-			// Add RGB values weighted by alpha.
-			u32 a = d.getAlpha();
+	
+			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
+			// use full weight since we want to propagate colors.
+			video::SColor d = src->getPixel(sx, sy);
+			u32 a = d.getAlpha() <= threshold ? 255 : d.getAlpha();
 			ss += a;
 			sr += a * d.getRed();
 			sg += a * d.getGreen();
 			sb += a * d.getBlue();
-		}
-
-		// If we found no neighbors try further away using a diamond shape.
-		if (ss == 0) {
-			for (u32 dist = 1; dist < MYMAX(dim.Width, dim.Height); dist++) {
-				diagonal(ctrx, ctry, -(s32)dist, 0, true);
-				if (ss)
-					break;
-				diagonal(ctrx, ctry, 0, -(s32)dist, false);
-				if (ss)
-					break;
-				diagonal(ctrx, ctry, 0, dist, true);
-				if (ss)
-					break;
-				diagonal(ctrx, ctry, -(s32)dist, 0, false);
-				if (ss)
-					break;
-			}
 		}
 
 		// Set pixel to average weighted by alpha.
@@ -116,8 +90,18 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);
 			src->setPixel(ctrx, ctry, c);
+			BIT(ctrx, ctry) = true;
+			any = true;
 		}
 	}
+
+	// If no pixels have been looked at we're done.
+	if (!any)
+		return;
+	printf("%p processed %d\n", src, (int)iter);
+
+	}
+#undef BIT
 }
 
 /* Scale a region of an image into another image, using nearest-neighbor with
