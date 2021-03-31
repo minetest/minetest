@@ -35,6 +35,32 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
 	core::dimension2d<u32> dim = src->getDimension();
 
+	// Sample size and total weighted r, g, b values
+	u32 ss = 0, sr = 0, sg = 0, sb = 0;
+
+	auto diagonal = [&] (s32 ctrx, s32 ctry, s32 offx, s32 offy, bool u) {
+		const u32 n = MYMAX(abs(offx), abs(offy));
+		s32 sx = ctrx + offx, sy = ctry + offy;
+		if (u)
+			offx = 1, offy = -1; // move to upper right
+		else
+			offx = 1, offy = 1; // move to lower right
+		for (u32 i = 0; i < n; i++, sx += offx, sy += offy) {
+			if (sx < 0 || sy < 0 || (u32)sx >= dim.Width || (u32)sy >= dim.Height)
+				continue;
+			video::SColor d = src->getPixel(sx, sy);
+			if (d.getAlpha() <= threshold)
+				continue;
+
+			// Add RGB values weighted by alpha.
+			u32 a = d.getAlpha();
+			ss += a;
+			sr += a * d.getRed();
+			sg += a * d.getGreen();
+			sb += a * d.getBlue();
+		}
+	};
+
 	// Walk each pixel looking for fully transparent ones.
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
@@ -45,8 +71,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 		if (c.getAlpha() > threshold)
 			continue;
 
-		// Sample size and total weighted r, g, b values.
-		u32 ss = 0, sr = 0, sg = 0, sb = 0;
+		ss = sr = sg = sb = 0;
 
 		// Walk each neighbor pixel (clipped to image bounds).
 		for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
@@ -67,45 +92,31 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			sb += a * d.getBlue();
 		}
 
-		// If we found any neighbor RGB data, set pixel to average
-		// weighted by alpha.
+		// If we found no neighbors try further away using a diamond shape.
+		if (ss == 0) {
+			for (u32 dist = 1; dist < MYMAX(dim.Width, dim.Height); dist++) {
+				diagonal(ctrx, ctry, -(s32)dist, 0, true);
+				if (ss)
+					break;
+				diagonal(ctrx, ctry, 0, -(s32)dist, false);
+				if (ss)
+					break;
+				diagonal(ctrx, ctry, 0, dist, true);
+				if (ss)
+					break;
+				diagonal(ctrx, ctry, -(s32)dist, 0, false);
+				if (ss)
+					break;
+			}
+		}
+
+		// Set pixel to average weighted by alpha.
 		if (ss > 0) {
 			c.setRed(sr / ss);
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);
 			src->setPixel(ctrx, ctry, c);
-			continue;
 		}
-
-		// If not, steal the color from one of the near opaque pixels.
-		// (This is still better than leaving it untouched)
-		video::SColor d = c;
-		for (u32 dist = 1; dist < MYMAX(dim.Width, dim.Height); dist++) {
-			if (dist <= ctrx &&
-				(d = src->getPixel(ctrx - dist, ctry)).getAlpha() > threshold)
-				break;
-			if (dist <= ctry &&
-				(d = src->getPixel(ctrx, ctry - dist)).getAlpha() > threshold)
-				break;
-			if (dist <= ctrx && dist <= ctry &&
-				(d = src->getPixel(ctrx - dist, ctry - dist)).getAlpha() > threshold)
-				break;
-
-			if (ctrx + dist < dim.Width &&
-				(d = src->getPixel(ctrx + dist, ctry)).getAlpha() > threshold)
-				break;
-			if (ctry + dist < dim.Height &&
-				(d = src->getPixel(ctrx, ctry + dist)).getAlpha() > threshold)
-				break;
-			if (ctrx + dist < dim.Width && ctry + dist < dim.Height &&
-				(d = src->getPixel(ctrx + dist, ctry + dist)).getAlpha() > threshold)
-				break;
-		}
-
-		c.setRed(d.getRed());
-		c.setGreen(d.getGreen());
-		c.setBlue(d.getBlue());
-		src->setPixel(ctrx, ctry, c);
 	}
 }
 

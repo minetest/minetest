@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
+#include "util/timetaker.h"
 
 
 #if ENABLE_GLES
@@ -1639,8 +1640,10 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 
 			// Apply the "clean transparent" filter, if needed
-			if (m_setting_mipmap || g_settings->getBool("texture_clean_transparent"))
+			if (m_setting_mipmap || g_settings->getBool("texture_clean_transparent")) {
+				TimeTaker tt("clean_transparent");
 				imageCleanTransparent(baseimg, 127);
+			}
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make
 			 * filters look as good on low-res textures as on high-res ones, by making
@@ -1648,7 +1651,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			 * mix high- and low-res textures, or for mods with least-common-denominator
 			 * textures that don't have the resources to offer high-res alternatives.
 			 */
-			const bool filter = m_setting_mipmap ||
+			const bool filter = //m_setting_mipmap ||
 				m_setting_trilinear_filter || m_setting_bilinear_filter;
 			const s32 scaleto = filter ? g_settings->getS32("texture_min_size") : 1;
 			if (scaleto > 1) {
