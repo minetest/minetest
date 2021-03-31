@@ -81,7 +81,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 
 	Bitmap bitmap(dim.Width, dim.Height);
 
-	// First pass: Mark all opaque pixels.
+	// First pass: Mark all opaque pixels
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
@@ -89,19 +89,19 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			bitmap.set(ctrx, ctry);
 	}
 
-	// All pixels opaque, exit early.
+	// Exit early if all pixels opaque
 	if (bitmap.all())
 		return;
 
 	Bitmap newmap = bitmap;
 
 	// Then repeatedly look for transparent pixels, filling them in until
-	// we're finished (capped to 50 iterations).
+	// we're finished (capped at 50 iterations).
 	for (u32 iter = 0; iter < 50; iter++) {
 
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
-		// Skip pixels we have already processed.
+		// Skip pixels we have already processed
 		if (bitmap.get(ctrx, ctry))
 			continue;
 
@@ -110,12 +110,12 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 		// Sample size and total weighted r, g, b values
 		u32 ss = 0, sr = 0, sg = 0, sb = 0;
 
-		// Walk each neighbor pixel (clipped to image bounds).
+		// Walk each neighbor pixel (clipped to image bounds)
 		for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
 				sy <= (ctry + 1) && sy < dim.Height; sy++)
 		for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
 				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
-			// Ignore pixels we haven't processed.
+			// Ignore pixels we haven't processed
 			if (!bitmap.get(sx, sy))
 				continue;
 	
@@ -129,7 +129,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			sb += a * d.getBlue();
 		}
 
-		// Set pixel to average weighted by alpha.
+		// Set pixel to average weighted by alpha
 		if (ss > 0) {
 			c.setRed(sr / ss);
 			c.setGreen(sg / ss);
@@ -139,7 +139,6 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 		}
 	}
 
-	printf("%p processed %d\n", src, (int)iter);
 	if (newmap.all())
 		return;
 
@@ -148,7 +147,6 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 	newmap.copy(bitmap);
 
 	}
-#undef BIT
 }
 
 /* Scale a region of an image into another image, using nearest-neighbor with
