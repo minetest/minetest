@@ -216,6 +216,10 @@ bool GUIEditBox::OnEvent(const SEvent &event)
 			if (processMouse(event))
 				return true;
 			break;
+		case EET_STRING_INPUT_EVENT:
+			inputString(event.StringInput.Str);
+			return true;
+			break;
 		default:
 			break;
 		}
@@ -697,6 +701,46 @@ void GUIEditBox::inputChar(wchar_t c)
 						Text.size() - m_cursor_pos));
 				Text = s;
 				++m_cursor_pos;
+			}
+
+			m_blink_start_time = porting::getTimeMs();
+			setTextMarkers(0, 0);
+		}
+	}
+	breakText();
+	sendGuiEvent(EGET_EDITBOX_CHANGED);
+	calculateScrollPos();
+}
+
+void GUIEditBox::inputString(core::stringw *str)
+{
+	if (!isEnabled() || !m_writable)
+		return;
+
+	if (str) {
+		u32 len = str->size();
+		if (Text.size()+len <= m_max || m_max == 0) {
+			core::stringw s;
+			if (m_mark_begin != m_mark_end) {
+				// clang-format off
+				// replace marked test
+				s32 real_begin = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
+				s32 real_end = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
+
+				s = Text.subString(0, real_begin);
+				s.append(*str);
+				s.append(Text.subString(real_end, Text.size() - real_end));
+				Text = s;
+				m_cursor_pos = real_begin + len;
+				// clang-format on
+			} else {
+				// append string
+				s = Text.subString(0, m_cursor_pos);
+				s.append(*str);
+				s.append(Text.subString(m_cursor_pos,
+						Text.size() - m_cursor_pos));
+				Text = s;
+				m_cursor_pos += len;
 			}
 
 			m_blink_start_time = porting::getTimeMs();
