@@ -24,15 +24,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Simple 2D bitmap class with just the functionality needed here
 class Bitmap {
-	std::vector<u8> data;
 	u32 linesize, lines;
+	std::vector<u8> data;
 
 	static inline u32 bytepos(u32 index) { return index >> 3; }
 	static inline u8 bitpos(u32 index) { return index & 7; }
 
 public:
-	Bitmap(u32 width, u32 height) : data(bytepos(width * height) + 1),
-		linesize(width), lines(height) {}
+	Bitmap(u32 width, u32 height) :  linesize(width), lines(height),
+		data(bytepos(width * height) + 1) {}
 
 	inline bool get(u32 x, u32 y) const {
 		u32 index = y * linesize + x;
@@ -51,7 +51,7 @@ public:
 		}
 		// last byte not entirely filled
 		for (u8 i = 0; i < bitpos(linesize * lines); i++) {
-			bool value_of_bit = data[data.size() - 1] & (1 << i);
+			bool value_of_bit = data.back() & (1 << i);
 			if (!value_of_bit)
 				return false;
 		}
