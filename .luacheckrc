@@ -20,7 +20,7 @@ read_globals = {
 
 	string = {fields = {"split", "trim"}},
 	table  = {fields = {"copy", "getn", "indexof", "insert_all"}},
-	math   = {fields = {"hypot"}},
+	math   = {fields = {"hypot", "round"}},
 }
 
 globals = {
