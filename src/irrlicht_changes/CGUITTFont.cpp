@@ -547,12 +547,12 @@ void CGUITTFont::setFontHinting(const bool enable, const bool enable_auto_hintin
 
 void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	draw(EnrichedString(std::wstring(text.c_str()), color), position, color, hcenter, vcenter, clip);
+	draw(EnrichedString(std::wstring(text.c_str()), color), position, hcenter, vcenter, clip);
 }
 
-void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
+void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& position, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	std::vector<video::SColor> colors = text.getColors();
+	const std::vector<video::SColor> &colors = text.getColors();
 
 	if (!Driver)
 		return;
@@ -562,6 +562,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	{
 		Glyph_Pages[i]->render_positions.clear();
 		Glyph_Pages[i]->render_source_rects.clear();
+		Glyph_Pages[i]->render_colors.clear();
 	}
 
 	// Set up some variables.
@@ -590,7 +591,6 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	u32 n;
 	uchar32_t previousChar = 0;
 	core::ustring::const_iterator iter(utext);
-	std::vector<video::SColor> applied_colors;
 	while (!iter.atEnd())
 	{
 		uchar32_t currentChar = *iter;
@@ -636,10 +636,11 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			CGUITTGlyphPage* const page = Glyph_Pages[glyph.glyph_page];
 			page->render_positions.push_back(core::position2di(offset.X + offx, offset.Y + offy));
 			page->render_source_rects.push_back(glyph.source_rect);
+			if (iter.getPos() < colors.size())
+				page->render_colors.push_back(colors[iter.getPos()]);
+			else
+				page->render_colors.push_back(video::SColor(255,255,255,255));
 			Render_Map.set(glyph.glyph_page, page);
-			u32 current_color = iter.getPos();
-			if (current_color < colors.size())
-				applied_colors.push_back(colors[current_color]);
 		}
 		if (n > 0)
 		{
@@ -688,16 +689,24 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			for (size_t i = 0; i < page->render_positions.size(); ++i)
 				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
 		}
+		// render runs of matching color in batch
+		size_t ibegin;
+		video::SColor colprev;
 		for (size_t i = 0; i < page->render_positions.size(); ++i) {
-			irr::video::SColor col;
-			if (!applied_colors.empty()) {
-				col = applied_colors[i < applied_colors.size() ? i : 0];
-			} else {
-				col = irr::video::SColor(255, 255, 255, 255);
-			}
+			ibegin = i;
+			colprev = page->render_colors[i];
+			do
+				++i;
+			while (i < page->render_positions.size() && page->render_colors[i] == colprev);
+			core::array<core::vector2di> tmp_positions;
+			core::array<core::recti> tmp_source_rects;
+			tmp_positions.set_pointer(&page->render_positions[ibegin], i - ibegin, false, false); // no copy
+			tmp_source_rects.set_pointer(&page->render_source_rects[ibegin], i - ibegin, false, false);
+			--i;
+
 			if (!use_transparency)
-				col.color |= 0xff000000;
-			Driver->draw2DImage(page->texture, page->render_positions[i], page->render_source_rects[i], clip, col, true);
+				colprev.color |= 0xff000000;
+			Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, colprev, true);
 		}
 	}
 }

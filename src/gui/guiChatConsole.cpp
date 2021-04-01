@@ -326,7 +326,6 @@ void GUIChatConsole::drawText()
 				tmp->draw(
 					fragment.text,
 					destrect,
-					video::SColor(255, 255, 255, 255),
 					false,
 					false,
 					&AbsoluteClippingRect);

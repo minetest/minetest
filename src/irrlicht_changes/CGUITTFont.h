@@ -199,6 +199,7 @@ namespace gui
 
 			core::array<core::vector2di> render_positions;
 			core::array<core::recti> render_source_rects;
+			core::array<video::SColor> render_colors;
 
 		private:
 			core::array<const SGUITTGlyph*> glyph_to_be_paged;
@@ -270,7 +271,7 @@ namespace gui
 				const core::rect<s32>* clip=0);
 
 			void draw(const EnrichedString& text, const core::rect<s32>& position,
-				video::SColor color, bool hcenter=false, bool vcenter=false,
+				bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
 
 			//! Returns the dimension of a character produced by this font.
