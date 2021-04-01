@@ -504,18 +504,17 @@ bilinear_filter (Bilinear filtering) bool false
 trilinear_filter (Trilinear filtering) bool false
 
 #    Filtered textures can blend RGB values with fully-transparent neighbors,
-#    which PNG optimizers usually discard, sometimes resulting in a dark or
-#    light edge to transparent textures. Apply this filter to clean that up
-#    at texture load time.
+#    which PNG optimizers usually discard, often resulting in dark or
+#    light edges to transparent textures. Apply a filter to clean that up
+#    at texture load time. This is automatically enabled if mipmapping is enabled.
 texture_clean_transparent (Clean transparent textures) bool false
 
 #    When using bilinear/trilinear/anisotropic filters, low-resolution textures
 #    can be blurred, so automatically upscale them with nearest-neighbor
 #    interpolation to preserve crisp pixels. This sets the minimum texture size
 #    for the upscaled textures; higher values look sharper, but require more
-#    memory.  Powers of 2 are recommended. Setting this higher than 1 may not
-#    have a visible effect unless bilinear/trilinear/anisotropic filtering is
-#    enabled.
+#    memory.  Powers of 2 are recommended. This setting is ONLY applies if
+#    bilinear/trilinear/anisotropic filtering is enabled.
 #    This is also used as the base node texture size for world-aligned
 #    texture autoscaling.
 texture_min_size (Minimum texture size) int 64
