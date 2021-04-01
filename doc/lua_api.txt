@@ -8394,7 +8394,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         url = "http://example.org",
 
         timeout = 10,
-        -- Timeout for connection in seconds. Default is 3 seconds.
+        -- Timeout for request to be completed in seconds. Default depends on engine settings.
 
         method = "GET", "POST", "PUT" or "DELETE"
         -- The http method to use. Defaults to "GET".

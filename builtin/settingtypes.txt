@@ -1413,9 +1413,8 @@ enable_ipv6 (IPv6) bool true
 
 [*Advanced]
 
-#    Default timeout for cURL, stated in milliseconds.
-#    Only has an effect if compiled with cURL.
-curl_timeout (cURL timeout) int 5000
+#    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
+curl_timeout (cURL interactive timeout) int 20000
 
 #    Limits number of parallel HTTP requests. Affects:
 #    -    Media fetch if server uses remote_media setting.
@@ -1424,7 +1423,7 @@ curl_timeout (cURL timeout) int 5000
 #    Only has an effect if compiled with cURL.
 curl_parallel_limit (cURL parallel limit) int 8
 
-#    Maximum time in ms a file download (e.g. a mod download) may take.
+#    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
 curl_file_download_timeout (cURL file download timeout) int 300000
 
 #    Makes DirectX work with LuaJIT. Disable if it causes troubles.

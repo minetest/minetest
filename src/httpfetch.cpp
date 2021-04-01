@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <sstream>
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <cerrno>
 #include <mutex>
 #include "network/socket.h" // for select()
@@ -37,13 +37,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "noise.h"
 
-std::mutex g_httpfetch_mutex;
-std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
-PcgRandom g_callerid_randomness;
+static std::mutex g_httpfetch_mutex;
+static std::unordered_map<unsigned long, std::queue<HTTPFetchResult>>
+	g_httpfetch_results;
+static PcgRandom g_callerid_randomness;
 
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
-	connect_timeout(timeout),
+	connect_timeout(10 * 1000),
 	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
 {
 }
@@ -54,7 +55,7 @@ static void httpfetch_deliver_result(const HTTPFetchResult &fetch_result)
 	unsigned long caller = fetch_result.caller;
 	if (caller != HTTPFETCH_DISCARD) {
 		MutexAutoLock lock(g_httpfetch_mutex);
-		g_httpfetch_results[caller].push(fetch_result);
+		g_httpfetch_results[caller].emplace(fetch_result);
 	}
 }
 
@@ -67,8 +68,7 @@ unsigned long httpfetch_caller_alloc()
 	// Check each caller ID except HTTPFETCH_DISCARD
 	const unsigned long discard = HTTPFETCH_DISCARD;
 	for (unsigned long caller = discard + 1; caller != discard; ++caller) {
-		std::map<unsigned long, std::queue<HTTPFetchResult> >::iterator
-			it = g_httpfetch_results.find(caller);
+		auto it = g_httpfetch_results.find(caller);
 		if (it == g_httpfetch_results.end()) {
 			verbosestream << "httpfetch_caller_alloc: allocating "
 					<< caller << std::endl;
@@ -127,8 +127,7 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Check that caller exists
-	std::map<unsigned long, std::queue<HTTPFetchResult> >::iterator
-		it = g_httpfetch_results.find(caller);
+	auto it = g_httpfetch_results.find(caller);
 	if (it == g_httpfetch_results.end())
 		return false;
 
@@ -138,7 +137,7 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 		return false;
 
 	// Pop first result
-	fetch_result = caller_results.front();
+	fetch_result = std::move(caller_results.front());
 	caller_results.pop();
 	return true;
 }
