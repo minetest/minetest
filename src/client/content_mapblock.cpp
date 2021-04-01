@@ -565,8 +565,9 @@ void MapblockMeshGenerator::drawLiquidSides()
 		}
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
-		// Don't draw face if neighbor is blocking the view
+		// Don't draw face if neighbor is drawable or ignore (map block not loaded yet)
 		if (neighbor_features.solidness == 2 ||
+				neighbor.content == CONTENT_IGNORE ||
 				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1))
 			continue;
 
