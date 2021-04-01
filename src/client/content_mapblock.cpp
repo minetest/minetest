@@ -415,12 +415,19 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y - 1, p.Z));
 	c_flowing = f->liquid_alternative_flowing_id;
 	c_source = f->liquid_alternative_source_id;
+	top_is_drawable = false;
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
 	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_liquid_bottom) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-		if (f2.solidness > 1)
+		if (f2.solidness > 1 || (f2.solidness == 0 && f2.visual_solidness == 1))
 			draw_liquid_bottom = false;
+	}
+	if (!top_is_same_liquid) {
+		const ContentFeatures &f2 = nodedef->get(ntop.getContent());
+		if (f2.solidness > 1 || (f2.solidness == 0 && f2.visual_solidness == 1)) {
+			top_is_drawable = true;
+		}
 	}
 
 	if (data->m_smooth_lighting)
@@ -559,7 +566,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
-		if (neighbor_features.solidness == 2)
+		if (neighbor_features.solidness == 2 ||
+				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1))
 			continue;
 
 		video::S3DVertex vertices[4];
@@ -606,7 +614,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 	for (int i = 0; i < 4; i++) {
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
-		vertices[i].Pos.Y += corner_levels[w][u];
+		vertices[i].Pos.Y += corner_levels[w][u] - 1E-4; // make it slightly lower to avoid Z-buffer fight
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += origin;
@@ -662,7 +670,7 @@ void MapblockMeshGenerator::drawLiquidNode()
 	getLiquidNeighborhood();
 	calculateCornerLevels();
 	drawLiquidSides();
-	if (!top_is_same_liquid)
+	if (!top_is_same_liquid && !top_is_drawable)
 		drawLiquidTop();
 	if (draw_liquid_bottom)
 		drawLiquidBottom();
@@ -1462,7 +1470,6 @@ void MapblockMeshGenerator::drawNode()
 	switch (f->drawtype) {
 		case NDT_NORMAL:   // Drawn by MapBlockMesh
 		case NDT_AIRLIKE:  // Not drawn at all
-		case NDT_LIQUID:   // Drawn by MapBlockMesh
 			return;
 		default:
 			break;
@@ -1473,6 +1480,7 @@ void MapblockMeshGenerator::drawNode()
 	else
 		light = LightPair(getInteriorLight(n, 1, nodedef));
 	switch (f->drawtype) {
+		case NDT_LIQUID:
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
 		case NDT_GLASSLIKE_FRAMED:  drawGlasslikeFramedNode(); break;
