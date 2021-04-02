@@ -619,6 +619,11 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_chat_backend->scroll(rows);
 		}
 	}
+	else if(event.EventType == EET_STRING_INPUT_EVENT)
+	{
+		prompt.input(std::wstring(event.StringInput.Str->c_str()));
+		return true;
+	}
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
