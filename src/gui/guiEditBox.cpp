@@ -674,6 +674,8 @@ bool GUIEditBox::onKeyDelete(const SEvent &event, s32 &mark_begin, s32 &mark_end
 
 void GUIEditBox::inputChar(wchar_t c)
 {
+	if (c == 0)
+		return;
 	core::stringw s(&c, 1);
 	inputString(s);
 }
