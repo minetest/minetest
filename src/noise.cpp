@@ -465,7 +465,7 @@ void Noise::allocBuffers()
 	delete[] result;
 
 	try {
-		size_t bufsize = sx * sy * sz;
+		size_t bufsize = (unsigned int)sx * sy * sz;
 		this->persist_buf  = NULL;
 		this->gradient_buf = new float[bufsize];
 		this->result       = new float[bufsize];
@@ -705,7 +705,7 @@ void Noise::gradientMap3D(
 float *Noise::perlinMap2D(float x, float y, float *persistence_map)
 {
 	float f = 1.0, g = 1.0;
-	size_t bufsize = sx * sy;
+	size_t bufsize = (unsigned int)sx * sy;
 
 	x /= np.spread.X;
 	y /= np.spread.Y;
@@ -742,7 +742,7 @@ float *Noise::perlinMap2D(float x, float y, float *persistence_map)
 float *Noise::perlinMap3D(float x, float y, float z, float *persistence_map)
 {
 	float f = 1.0, g = 1.0;
-	size_t bufsize = sx * sy * sz;
+	size_t bufsize = (unsigned int)sx * sy * sz;
 
 	x /= np.spread.X;
 	y /= np.spread.Y;
