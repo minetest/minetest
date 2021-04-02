@@ -1726,12 +1726,14 @@ to games.
 * `disable_jump`: Player (and possibly other things) cannot jump from node
   or if their feet are in the node. Note: not supported for `new_move = false`
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
-  the top of this node. The damage formula is:
-    node damage speed = `speed * (1 + value/100) * player_damage_speed`
-  Where `node damage speed` is a factor that the fall impact speed will be
-  multiplied by, which in turn determines the actual fall damage.
-  `player_damage_speed` is the calculated damage modifier for players
-  (see `ObjectRef` section below) and is 1.0 by default.
+  the top of this node. There's also an armor group with the same name.
+  The final player damage is determined by the following formula:
+    damage =
+      collision speed
+      * ((node_fall_damage_add_percent   + 100) / 100) -- node group
+      * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
+      - (14)                                           -- constant tolerance
+  Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids
 * `level`: Can be used to give an additional sense of progression in the game.
@@ -1759,7 +1761,7 @@ to games.
   cannot be reset (subject to change).
 * `fall_damage_add_percent`: Modifies the fall damage suffered by players
   when they hit the ground. It is analog to the node group with the same
-  name.
+  name. See the node group above for the exact calculation.
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
