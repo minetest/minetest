@@ -13,6 +13,8 @@ on:
       - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -24,6 +26,8 @@ on:
       - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
 
 jobs:
   # This is our minor gcc compiler
