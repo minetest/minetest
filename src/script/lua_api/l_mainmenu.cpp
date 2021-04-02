@@ -716,21 +716,24 @@ int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 }
 
 /******************************************************************************/
-bool ModApiMainMenu::mayModifyPath(const std::string &path)
+bool ModApiMainMenu::mayModifyPath(std::string path)
 {
+	path = fs::RemoveRelativePathComponents(path);
+
 	if (fs::PathStartsWith(path, fs::TempPath()))
 		return true;
 
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "games")))
-		return true;
+	std::string path_user = fs::RemoveRelativePathComponents(porting::path_user);
 
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "mods")))
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "client"))
 		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "textures")))
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "games"))
 		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "worlds")))
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "mods"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "textures"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "worlds"))
 		return true;
 
 	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_cache)))
