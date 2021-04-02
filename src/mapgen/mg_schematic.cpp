@@ -82,7 +82,7 @@ void Schematic::resolveNodeNames()
 {
 	getIdsFromNrBacklog(&c_nodes, true, CONTENT_AIR);
 
-	size_t bufsize = size.X * size.Y * size.Z;
+	size_t bufsize = (int)size.X * size.Y * size.Z;
 	for (size_t i = 0; i != bufsize; i++) {
 		content_t c_original = schemdata[i].getContent();
 		content_t c_new = c_nodes[c_original];
@@ -299,7 +299,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	}
 
 	//// Read node data
-	size_t nodecount = size.X * size.Y * size.Z;
+	size_t nodecount = (int)size.X * size.Y * size.Z;
 
 	delete []schemdata;
 	schemdata = new MapNode[nodecount];
