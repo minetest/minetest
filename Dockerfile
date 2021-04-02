@@ -49,7 +49,7 @@ RUN mkdir build && \
 	make -j2 && \
 	make install
 
-FROM alpine:3.11
+FROM alpine:3.13
 
 RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \

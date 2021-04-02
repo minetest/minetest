@@ -1,0 +1,4 @@
+./cmake-build-*
+./build/*
+./cache/*
+Dockerfile
