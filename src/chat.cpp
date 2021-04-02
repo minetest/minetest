@@ -394,7 +394,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 						// force text processing on THIS frag
 						text_processing = true;
 					}
-					// At http, grab ALL until FIRST whitespace or quote mark. loop.
+					// At http, grab ALL until FIRST whitespace or end marker. loop.
 					// If at end of string, next loop will be empty string to mark end of weblink. This is intentional.
 					else if(http_pos == 0)
 					{
@@ -403,6 +403,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 								!iswspace(line.text.getString()[in_pos + frag_length]) &&
 								line.text.getString()[in_pos + frag_length] != L'\'' &&
 								line.text.getString()[in_pos + frag_length] != L'\"' &&
+								line.text.getString()[in_pos + frag_length] != L')' &&
 								line.text.getString()[in_pos + frag_length] != L';'
 							)
 						{
