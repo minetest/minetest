@@ -408,8 +408,16 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 {
-	getSpecialTile(0, &tile_liquid_top);
-	getSpecialTile(1, &tile_liquid);
+	if (f->drawtype == NDT_FLOWINGLIQUID)
+	{
+		getSpecialTile(0, &tile_liquid_top);
+		getSpecialTile(1, &tile_liquid);
+	}
+	else
+	{
+		getTile(0, &tile_liquid_top);
+		getTile(0, &tile_liquid);
+	}
 
 	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + 1, p.Z));
 	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y - 1, p.Z));
@@ -567,8 +575,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is drawable or ignore (map block not loaded yet)
 		if (neighbor_features.solidness == 2 ||
-				neighbor.content == CONTENT_IGNORE ||
-				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1))
+				neighbor.content == CONTENT_IGNORE /* ||
+				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1) */)
 			continue;
 
 		video::S3DVertex vertices[4];
@@ -578,8 +586,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 			float v = vertex.v;
 
 			v3f pos;
-			pos.X = (base.X - 0.5f) * BS;
-			pos.Z = (base.Z - 0.5f) * BS;
+			pos.X = (base.X - 0.5f) * BS - face.dir.X * 1E-3;
+			pos.Z = (base.Z - 0.5f) * BS - face.dir.Z * 1E-3;
 			if (vertex.v) {
 				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f * BS;
 			} else if (top_is_same_liquid) {
