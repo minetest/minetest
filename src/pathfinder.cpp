@@ -546,7 +546,7 @@ ArrayGridNodeContainer::ArrayGridNodeContainer(Pathfinder *pathf, v3s16 dimensio
 {
 	m_pathf = pathf;
 
-	m_nodes_array.resize(dimensions.X * dimensions.Y * dimensions.Z);
+	m_nodes_array.resize((int)dimensions.X * dimensions.Y * dimensions.Z);
 	INFO_TARGET << "Pathfinder ArrayGridNodeContainer constructor." << std::endl;
 	for (int x = 0; x < dimensions.X; x++) {
 		for (int y = 0; y < dimensions.Y; y++) {
