@@ -138,6 +138,8 @@ public:
 	virtual void deserializeAttributes(
 			io::IAttributes *in, io::SAttributeReadWriteOptions *options);
 
+	virtual bool acceptsIME() { return isEnabled() && m_writable; };
+
 protected:
 	virtual void breakText() = 0;
 

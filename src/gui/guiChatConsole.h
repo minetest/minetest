@@ -72,6 +72,8 @@ public:
 
 	virtual void setVisible(bool visible);
 
+	virtual bool acceptsIME() { return true; }
+
 private:
 	void reformatConsole();
 	void recalculateConsolePosition();
