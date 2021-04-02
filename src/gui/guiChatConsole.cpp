@@ -620,7 +620,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_chat_backend->scroll(rows);
 		}
 	}
-#if defined(IRRLICHT_VERSION_MT_REVISION) && (IRRLICHT_VERSION_MT_REVISION >= 2)
+#if (IRRLICHT_VERSION_MT_REVISION >= 2)
 	else if(event.EventType == EET_STRING_INPUT_EVENT)
 	{
 		prompt.input(std::wstring(event.StringInput.Str->c_str()));

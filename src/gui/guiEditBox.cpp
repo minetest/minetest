@@ -217,7 +217,7 @@ bool GUIEditBox::OnEvent(const SEvent &event)
 			if (processMouse(event))
 				return true;
 			break;
-#if defined(IRRLICHT_VERSION_MT_REVISION) && (IRRLICHT_VERSION_MT_REVISION >= 2)
+#if (IRRLICHT_VERSION_MT_REVISION >= 2)
 		case EET_STRING_INPUT_EVENT:
 			inputString(*event.StringInput.Str);
 			return true;
