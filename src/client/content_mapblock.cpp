@@ -408,34 +408,19 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 {
-	if (f->drawtype == NDT_FLOWINGLIQUID)
-	{
-		getSpecialTile(0, &tile_liquid_top);
-		getSpecialTile(1, &tile_liquid);
-	}
-	else
-	{
-		getTile(0, &tile_liquid_top);
-		getTile(0, &tile_liquid);
-	}
+	getSpecialTile(0, &tile_liquid_top);
+	getSpecialTile(1, &tile_liquid);
 
 	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + 1, p.Z));
 	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y - 1, p.Z));
 	c_flowing = f->liquid_alternative_flowing_id;
 	c_source = f->liquid_alternative_source_id;
-	top_is_drawable = false;
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
 	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_liquid_bottom) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-		if (f2.solidness > 1 || (f2.solidness == 0 && f2.visual_solidness == 1))
+		if (f2.solidness > 1)
 			draw_liquid_bottom = false;
-	}
-	if (!top_is_same_liquid) {
-		const ContentFeatures &f2 = nodedef->get(ntop.getContent());
-		if (f2.solidness > 1 || (f2.solidness == 0 && f2.visual_solidness == 1)) {
-			top_is_drawable = true;
-		}
 	}
 
 	if (data->m_smooth_lighting)
@@ -573,10 +558,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 		}
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
-		// Don't draw face if neighbor is drawable or ignore (map block not loaded yet)
-		if (neighbor_features.solidness == 2 ||
-				neighbor.content == CONTENT_IGNORE /* ||
-				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1) */)
+		// Don't draw face if neighbor is blocking the view
+		if (neighbor_features.solidness == 2)
 			continue;
 
 		video::S3DVertex vertices[4];
@@ -586,8 +569,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 			float v = vertex.v;
 
 			v3f pos;
-			pos.X = (base.X - 0.5f) * BS - face.dir.X * 1E-3;
-			pos.Z = (base.Z - 0.5f) * BS - face.dir.Z * 1E-3;
+			pos.X = (base.X - 0.5f) * BS;
+			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
 				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f * BS;
 			} else if (top_is_same_liquid) {
@@ -623,7 +606,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 	for (int i = 0; i < 4; i++) {
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
-		vertices[i].Pos.Y += corner_levels[w][u] - 1E-4; // make it slightly lower to avoid Z-buffer fight
+		vertices[i].Pos.Y += corner_levels[w][u];
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += origin;
@@ -679,10 +662,57 @@ void MapblockMeshGenerator::drawLiquidNode()
 	getLiquidNeighborhood();
 	calculateCornerLevels();
 	drawLiquidSides();
-	if (!top_is_same_liquid && !top_is_drawable)
+	if (!top_is_same_liquid)
 		drawLiquidTop();
 	if (draw_liquid_bottom)
 		drawLiquidBottom();
+}
+
+void MapblockMeshGenerator::drawLiquidSourceNode()
+{
+	for (int face = 0; face < 6; face++) {
+		// Check this neighbor
+		v3s16 dir = g_6dirs[face];
+		v3s16 neighbor_pos = blockpos_nodes + p + dir;
+		MapNode neighbor = data->m_vmanip.getNodeNoExNoEmerge(neighbor_pos);
+
+		// Don't make face if neighbor is of same type or ignore
+		if (neighbor.getContent() == n.getContent() || neighbor.getContent() == CONTENT_IGNORE)
+			continue;
+
+		const ContentFeatures &neighbor_features = nodedef->get(neighbor.getContent());
+
+		// Don't make face when same or higher solidness
+		if (f->solidness <= std::max(neighbor_features.solidness, neighbor_features.visual_solidness))
+			continue;
+
+		// Face at Z-
+		v3f vertices[4] = {
+			v3f(-BS / 2,  BS / 2, -BS / 2),
+			v3f( BS / 2,  BS / 2, -BS / 2),
+			v3f( BS / 2, -BS / 2, -BS / 2),
+			v3f(-BS / 2, -BS / 2, -BS / 2),
+		};
+
+		for (v3f &vertex : vertices) {
+			switch (face) {
+				case D6D_ZP:
+					vertex.rotateXZBy(180); break;
+				case D6D_YP:
+					vertex.rotateYZBy( 90); break;
+				case D6D_XP:
+					vertex.rotateXZBy( 90); break;
+				case D6D_ZN:
+					vertex.rotateXZBy(  0); break;
+				case D6D_YN:
+					vertex.rotateYZBy(-90); break;
+				case D6D_XN:
+					vertex.rotateXZBy(-90); break;
+			}
+		}
+		useTile(face, 0, face == 1 || face == 4 ? MATERIAL_FLAG_BACKFACE_CULLING : 0);
+		drawQuad(vertices, dir);
+	}
 }
 
 void MapblockMeshGenerator::drawGlasslikeNode()
@@ -1489,7 +1519,7 @@ void MapblockMeshGenerator::drawNode()
 	else
 		light = LightPair(getInteriorLight(n, 1, nodedef));
 	switch (f->drawtype) {
-		case NDT_LIQUID:
+		case NDT_LIQUID:            drawLiquidSourceNode(); break;
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
 		case NDT_GLASSLIKE_FRAMED:  drawGlasslikeFramedNode(); break;

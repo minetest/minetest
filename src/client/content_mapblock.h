@@ -106,7 +106,6 @@ public:
 		TileSpec *tiles = NULL, int tile_count = 0);
 
 // liquid-specific
-    bool top_is_drawable;
 	bool top_is_same_liquid;
 	bool draw_liquid_bottom;
 	TileSpec tile_liquid;
@@ -155,6 +154,7 @@ public:
 
 // drawtypes
 	void drawLiquidNode();
+	void drawLiquidSourceNode();
 	void drawGlasslikeNode();
 	void drawGlasslikeFramedNode();
 	void drawAllfacesNode();

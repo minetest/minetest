@@ -659,13 +659,27 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	if (c1 == c2)
 		return 0;
 
-	if (c1 == 2)
-		return 1;
-	if (c2 == 2)
-		return 2;
+	if (c1 == 0)
+		c1 = f1.visual_solidness;
+	else if (c2 == 0)
+		c2 = f2.visual_solidness;
 
-	// All non-solid nodes are depth-sorted and handled by MapblockMeshGenerator.
-	return 0;
+	// In all cases, only render face if it is opaque.
+	// All transparency is handled by MapblockMeshGenerator.
+
+	if (c1 == c2) {
+		*equivalent = true;
+		// If same solidness, liquid takes precense
+		if (f1.isLiquid())
+			return f1.alpha == ALPHAMODE_OPAQUE ? 1 : 0;
+		if (f2.isLiquid())
+			return f2.alpha == ALPHAMODE_OPAQUE ? 2 : 0;
+	}
+
+	if (c1 > c2)
+		return f1.drawtype == NDT_NORMAL || f1.drawtype == NDT_PLANTLIKE_ROOTED || f1.alpha == ALPHAMODE_OPAQUE ? 1 : 0;
+
+	return f2.drawtype == NDT_NORMAL || f2.drawtype == NDT_PLANTLIKE_ROOTED || f2.alpha == ALPHAMODE_OPAQUE ? 2 : 0;
 }
 
 /*
