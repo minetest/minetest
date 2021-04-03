@@ -965,13 +965,14 @@ InventoryList * Inventory::getList(const std::string &name)
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
-		return NULL;
+		return nullptr;
 	return m_lists[i];
 }
 
 std::vector<const InventoryList*> Inventory::getLists()
 {
 	std::vector<const InventoryList*> lists;
+	lists.reserve(m_lists.size());
 	for (auto list : m_lists) {
 		lists.push_back(list);
 	}
@@ -990,11 +991,11 @@ bool Inventory::deleteList(const std::string &name)
 	return true;
 }
 
-const InventoryList * Inventory::getList(const std::string &name) const
+const InventoryList *Inventory::getList(const std::string &name) const
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
-		return NULL;
+		return nullptr;
 	return m_lists[i];
 }
 

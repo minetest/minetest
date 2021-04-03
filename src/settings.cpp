@@ -638,6 +638,7 @@ std::vector<std::string> Settings::getNames() const
 	MutexAutoLock lock(m_mutex);
 
 	std::vector<std::string> names;
+	names.reserve(m_settings.size());
 	for (const auto &settings_it : m_settings) {
 		names.push_back(settings_it.first);
 	}
