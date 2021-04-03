@@ -42,6 +42,7 @@ struct MeshMakeData
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
+	bool m_has_transparency = false; // true when MapblocMeshGenerator detects transpareny
 
 	Client *m_client;
 	bool m_use_shaders;
@@ -125,6 +126,11 @@ public:
 			m_animation_force_timer--;
 	}
 
+	inline bool hasTransparency()
+	{
+		return m_has_transparency;
+	}
+
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
@@ -133,6 +139,9 @@ private:
 
 	bool m_enable_shaders;
 	bool m_enable_vbo;
+
+	// handling transparency detected by MapblockMeshGenerator
+	bool m_has_transparency;
 
 	// Must animate() be called before rendering?
 	bool m_has_animation;

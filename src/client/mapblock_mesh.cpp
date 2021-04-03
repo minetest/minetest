@@ -1176,6 +1176,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	}
 
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+	m_has_transparency = data->m_has_transparency;
 
 	// Check if animation is required for this mesh
 	m_has_animation =

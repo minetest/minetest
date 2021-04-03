@@ -905,23 +905,6 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
 
-static bool hasTransparency(scene::IMesh *mesh)
-{
-	if (mesh == nullptr)
-		return false;
-
-	for (u32 i = 0; i < mesh->getMeshBufferCount(); i++) {
-		irr::scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
-
-		if (buffer->getVertexCount() > 0 &&
-				buffer->getMaterial().MaterialType != video::EMT_SOLID &&
-				buffer->getMaterial().MaterialType != video::EMT_SOLID_2_LAYER) {
-			return true;
-		}
-	}
-	return false;
-}
-
 void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 previous_block)
 {
 	v3s16 p_blocks_min;
@@ -958,9 +941,9 @@ void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 p
 				++blocks_on_axis;
 
 				// if there is known transparency
-				if (block_pos.getDistanceFromSQ(current_block) < 100) {
+				if (abs(block_pos.X - current_block.X) + abs(block_pos.Y - current_block.Y) + abs(block_pos.Z - current_block.Z) < 10) {
 					++blocks_in_distance;
-					if (block->mesh && hasTransparency(block->mesh->getMesh())) {
+					if (block->mesh && block->mesh->hasTransparency()) {
 						if (block->getNeedsRemesh()) {
 							++blocks_skipped;
 						}

@@ -1567,6 +1567,9 @@ void MapblockMeshGenerator::generate()
 	}
 
 
+	// detect transparent nodes
+	bool has_transparency = false;
+
 	// draw each octant in layers by constant manhatan distance, starting from the most distant
 	// with each iteration, the bubble around the player will shrink
 
@@ -1602,10 +1605,14 @@ void MapblockMeshGenerator::generate()
 
 				n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 				f = &nodedef->get(n);
+				if (f->alpha == ALPHAMODE_BLEND) {
+					has_transparency = true;
+				}
 				drawNode();
 			}
 		}
 	}
+	data->m_has_transparency = has_transparency;
 }
 
 void MapblockMeshGenerator::renderSingle(content_t node, u8 param2)
