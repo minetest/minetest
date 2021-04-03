@@ -691,8 +691,7 @@ void GUIEditBox::inputString(const core::stringw &str)
 	if (Text.size()+len <= m_max || m_max == 0) {
 		core::stringw s;
 		if (m_mark_begin != m_mark_end) {
-			// clang-format off
-			// replace marked test
+			// replace marked text
 			s32 real_begin = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
 			s32 real_end = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
 
@@ -701,7 +700,6 @@ void GUIEditBox::inputString(const core::stringw &str)
 			s.append(Text.subString(real_end, Text.size() - real_end));
 			Text = s;
 			m_cursor_pos = real_begin + len;
-			// clang-format on
 		} else {
 			// append string
 			s = Text.subString(0, m_cursor_pos);
