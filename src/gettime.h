@@ -34,9 +34,9 @@ inline std::string getTimestamp()
 {
 	struct tm tm;
 	const time_t t = time(NULL);
-    localtime_r(&t, &tm);
+	localtime_r(&t, &tm);
 
-    char cs[20]; // YYYY-MM-DD HH:MM:SS + '\0'
-    std::strftime(cs, 20, "%Y-%m-%d %H:%M:%S", &tm);
-    return cs;
+	char cs[20]; // YYYY-MM-DD HH:MM:SS + '\0'
+	std::strftime(cs, 20, "%Y-%m-%d %H:%M:%S", &tm);
+	return cs;
 }
