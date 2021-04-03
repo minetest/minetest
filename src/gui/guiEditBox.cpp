@@ -221,7 +221,6 @@ bool GUIEditBox::OnEvent(const SEvent &event)
 		case EET_STRING_INPUT_EVENT:
 			inputString(*event.StringInput.Str);
 			return true;
-			break;
 #endif
 		default:
 			break;
