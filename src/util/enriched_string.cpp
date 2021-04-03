@@ -65,11 +65,13 @@ void EnrichedString::operator=(const wchar_t *str)
 	addAtEnd(translate_string(std::wstring(str)), m_default_color);
 }
 
-void EnrichedString::addAtEnd(const std::wstring &s, const SColor &initial_color)
+void EnrichedString::addAtEnd(const std::wstring &s, SColor initial_color)
 {
 	SColor color(initial_color);
 	bool use_default = (m_default_length == m_string.size() &&
 		color == m_default_color);
+
+	m_colors.reserve(m_colors.size() + s.size());
 
 	size_t i = 0;
 	while (i < s.length()) {
@@ -198,12 +200,6 @@ const std::vector<SColor> &EnrichedString::getColors() const
 const std::wstring &EnrichedString::getString() const
 {
 	return m_string;
-}
-
-void EnrichedString::setDefaultColor(const irr::video::SColor &color)
-{
-	m_default_color = color;
-	updateDefaultColor();
 }
 
 void EnrichedString::updateDefaultColor()
