@@ -131,10 +131,11 @@ local function place_nodes(param)
 				p2_max = 63
 			elseif def.paramtype2 == "leveled" then
 				p2_max = 127
-			elseif def.paramtype2 == "degrotate" and def.drawtype == "plantlike" then
-				p2_max = 179
+			elseif def.paramtype2 == "degrotate" and (def.drawtype == "plantlike" or def.drawtype == "mesh") then
+				p2_max = 239
 			elseif def.paramtype2 == "colorfacedir" or
 				def.paramtype2 == "colorwallmounted" or
+				def.paramtype2 == "colordegrotate" or
 				def.paramtype2 == "color" then
 				p2_max = 255
 			end
@@ -143,7 +144,8 @@ local function place_nodes(param)
 			-- Skip undefined param2 values
 			if not ((def.paramtype2 == "meshoptions" and p2 % 8 > 4) or
 					(def.paramtype2 == "colorwallmounted" and p2 % 8 > 5) or
-					(def.paramtype2 == "colorfacedir" and p2 % 32 > 23)) then
+					((def.paramtype2 == "colorfacedir" or def.paramtype2 == "colordegrotate")
+					and p2 % 32 > 23)) then
 
 				minetest.set_node(pos, { name = itemstring, param2 = p2 })
 				nodes_placed = nodes_placed + 1
