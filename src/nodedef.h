@@ -725,7 +725,7 @@ private:
 	 * @param i a content ID
 	 * @param name a node name
 	 */
-	void addNameIdMapping(content_t i, std::string name);
+	void addNameIdMapping(content_t i, const std::string &name);
 
 	/*!
 	 * Removes a content ID from all groups.

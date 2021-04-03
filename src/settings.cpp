@@ -43,11 +43,11 @@ std::unordered_map<std::string, const FlagDesc *> Settings::s_flags;
 Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 {
 	if ((int)sl < 0 || sl >= SL_TOTAL_COUNT)
-		throw new BaseException("Invalid settings layer");
+		throw BaseException("Invalid settings layer");
 
 	Settings *&pos = s_layers[(size_t)sl];
 	if (pos)
-		throw new BaseException("Setting layer " + std::to_string(sl) + " already exists");
+		throw BaseException("Setting layer " + std::to_string(sl) + " already exists");
 
 	pos = new Settings(end_tag);
 	pos->m_settingslayer = sl;
