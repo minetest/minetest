@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <cmath>
+#include <algorithm>
 #include "content_mapblock.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
@@ -31,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client.h"
 #include "noise.h"
+#include "camera.h"
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
@@ -678,11 +680,39 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 	if (f->alpha == ALPHAMODE_OPAQUE)
 		return;
 
-	for (int face = 0; face < 6; face++) {
+	// Force mesh collector to create new mesh buffers for this node when more than one tile is defined
+	bool has_multiple_textures = f->tiles[1].layers[0].texture_id != 0;
+
+	// calculate order of faces according to player's position
+
+	struct facePointer {
+		int distance;
+		int index;
+		facePointer() : distance(0), index(0) {}
+		bool operator<(const struct facePointer& other) {
+			return distance > other.distance || (distance == other.distance && index > other.index);
+		}
+	};
+
+	std::array<struct facePointer, 6> faces;
+
+	for (s16 i = 0; i < 6; ++i) {
+		v3s16 face = blockpos_nodes + p + g_6dirs[i];
+		faces[i].distance = abs(player_pos.X - face.X) + abs(player_pos.Y - face.Y) + abs(player_pos.Z - face.Z);
+		faces[i].index = i;
+	}
+
+	std::sort(faces.begin(), faces.end());
+
+	for (int i = 0; i < 6; i++) {
+		int face = faces[i].index;
 		// Check this neighbor
 		v3s16 dir = g_6dirs[face];
 		v3s16 neighbor_pos = blockpos_nodes + p + dir;
 		MapNode neighbor = data->m_vmanip.getNodeNoExNoEmerge(neighbor_pos);
+
+		if (has_multiple_textures)
+			collector->startNewMeshLayer(true);
 
 		// Don't make face if neighbor is of same type or ignore
 		if (neighbor.getContent() == n.getContent() || neighbor.getContent() == CONTENT_IGNORE ||
@@ -720,10 +750,10 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 			}
 		}
 
-		getTile(g_6dirs[face], &tile);
+		getTile(dir, &tile);
 		if (!data->m_smooth_lighting)
 			color = encode_light(light, f->light_source);
-		if (face == 1 || face == 4) {
+		if (g_6dirs[face].Y != 0) {
 			tile.layers[0].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.layers[1].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		}
@@ -1556,7 +1586,7 @@ void MapblockMeshGenerator::drawNode()
 
 void MapblockMeshGenerator::generate()
 {
-	v3s16 player_pos = floatToInt(data->m_client->getEnv().getLocalPlayer()->getEyePosition(), BS);
+	player_pos = floatToInt(data->m_client->getCamera()->getPosition(), BS);
 
 	v3s16 player = v3s16(
 		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.X - blockpos_nodes.X)),
