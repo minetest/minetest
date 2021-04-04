@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-03-25 17:29+0000\n"
-"Last-Translator: ItsWidee <william.hochart@gmail.com>\n"
+"PO-Revision-Date: 2021-04-05 21:22+0000\n"
+"Last-Translator: François Delpierre <gitlab@pivert.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -154,21 +154,23 @@ msgstr "activé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" existe déjà. Voulez-vous l'écraser ?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Les dépendances $1 et $2 vont être installées."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 par $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 en téléchargement,\n"
+"$2 en attente"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
@@ -187,9 +189,8 @@ msgid "All packages"
 msgstr "Tous les paquets"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Touche déjà utilisée"
+msgstr "Déjà installé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -222,14 +223,12 @@ msgid "Install"
 msgstr "Installer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installer"
+msgstr "Installer $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dépendances optionnelles :"
+msgstr "Installer les dépendances manquantes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -245,14 +244,12 @@ msgid "No results"
 msgstr "Aucun résultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Mise à jour"
+msgstr "Aucune mise à jour"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Couper le son"
+msgstr "Non trouvé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
@@ -260,7 +257,7 @@ msgstr "Écraser"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Veuillez vérifier que le jeu de base est correct."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -280,7 +277,7 @@ msgstr "Mise à jour"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Tout mettre à jour [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -712,9 +709,8 @@ msgid "Loading..."
 msgstr "Chargement..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Les scripts côté client sont désactivés"
+msgstr "La liste des serveurs publics est désactivée"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -775,9 +771,8 @@ msgid "Credits"
 msgstr "Crédits"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Choisissez un répertoire"
+msgstr "Ouvrir le répertoire de données utilisateur"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
@@ -837,9 +832,8 @@ msgid "No world created or selected!"
 msgstr "Aucun monde créé ou sélectionné !"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nouveau mot de passe"
+msgstr "Mot de passe"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -850,9 +844,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Sélectionner un monde :"
+msgstr "Sélectionner les mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1004,9 +997,8 @@ msgid "Shaders"
 msgstr "Shaders"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Îles volantes (expérimental)"
+msgstr "Shaders (expérimental)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1761,19 +1753,18 @@ msgid "Minimap hidden"
 msgstr "Mini-carte cachée"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Mini-carte en mode radar, zoom x1"
+msgstr "Mini-carte en mode radar, zoom ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Mini-carte en mode surface, zoom x1"
+msgstr "Mini-carte en mode surface, zoom ×%d"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Taille minimum des textures"
+msgstr "Mini-carte en mode texture"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2182,7 +2173,7 @@ msgstr "Intervalle des ABM"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "budget de temps ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -3588,7 +3579,6 @@ msgid "HUD toggle key"
 msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -3596,11 +3586,11 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Traitement des appels d'API Lua obsolètes :\n"
-"-    legacy : imite l'ancien comportement (par défaut en mode release).\n"
-"-    log : imite et enregistre la trace des appels obsolètes (par défaut en "
+"- aucun: N'enregistre pas les appels obsolètes\n"
+"- log : imite et enregistre la trace des appels obsolètes (par défaut en "
 "mode debug).\n"
-"-    error : (=erreur) interruption à l'usage d'un appel obsolète "
-"(recommandé pour les développeurs de mods)."
+"- erreur : s'interrompt lors d'un appel obsolète (recommandé pour les "
+"développeurs de mods)."
 
 #: src/settings_translation_file.cpp
 msgid ""
