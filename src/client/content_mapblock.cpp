@@ -1621,7 +1621,7 @@ void MapblockMeshGenerator::generate()
 	// with each iteration, the bubble around the player will shrink
 
 	// loop over layers
-	for (u16 base_a = 0; base_a <= nlayers; ++base_a) {
+	for (u16 base_a = 0; base_a <= nlayers + 1; ++base_a) {
 		collector->startNewMeshLayer();
 		for (s16 i = 7; i >= 0; --i) {                        // loop over octants
 
