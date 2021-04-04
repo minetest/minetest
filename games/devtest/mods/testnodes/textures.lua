@@ -63,6 +63,21 @@ for a=1,#alphas do
 
 		groups = { dig_immediate = 3 },
 	})
+
+	-- Allfaces nodes with transparency
+	minetest.register_node("testnodes:allfaces_alpha_"..alpha, {
+		description = S("Allfaces alpha Test Node (@1)", alpha),
+		drawtype = "allfaces",
+		paramtype = "light",
+		tiles = {
+			"testnodes_alpha.png^[colorize:#ff00007f^[opacity:" .. alpha,
+		},
+		inventory_image = "testnodes_alpha.png^[colorize:#ff00007f",
+		wield_image = "testnodes_alpha.png^[colorize:#ff00007f",
+		use_texture_alpha = "blend",
+
+		groups = { dig_immediate = 3 },
+	})
 end
 
 -- Generate PNG textures
