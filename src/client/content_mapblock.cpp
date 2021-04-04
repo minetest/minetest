@@ -719,7 +719,15 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 					vertex.rotateXZBy(-90); break;
 			}
 		}
-		useTile(face, 0, face == 1 || face == 4 ? MATERIAL_FLAG_BACKFACE_CULLING : 0);
+
+		getTile(g_6dirs[face], &tile);
+		if (!data->m_smooth_lighting)
+			color = encode_light(light, f->light_source);
+		if (face == 1 || face == 4) {
+			tile.layers[0].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			tile.layers[1].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+		}
+
 		drawQuad(vertices, dir);
 	}
 }
