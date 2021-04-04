@@ -100,7 +100,9 @@ PreMeshBuffer &MeshCollector::findBuffer(
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 
 	// avoid scanning the entire list of buffers when filling with the same material
-	if (latest_buffers[layernum].size() > 0 && buffers[latest_buffers[layernum].back()].layer == layer)
+	if (latest_buffers[layernum].size() > 0 && 
+			buffers[latest_buffers[layernum].back()].layer == layer && 
+			buffers[latest_buffers[layernum].back()].vertices.size() + numVertices <= U16_MAX)
 		return buffers[latest_buffers[layernum].back()];
 
 	for (PreMeshBuffer &p : buffers)
