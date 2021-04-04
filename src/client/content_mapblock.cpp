@@ -419,7 +419,9 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_liquid_bottom) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-		if (f2.solidness > 1)
+
+		// use 1 == solidness of liquid source because own solidness is 0
+		if (f2.solidness > 1 || (f2.solidness == 0 && f2.visual_solidness == 1))
 			draw_liquid_bottom = false;
 	}
 
@@ -559,7 +561,9 @@ void MapblockMeshGenerator::drawLiquidSides()
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
-		if (neighbor_features.solidness == 2)
+		// Use 1 == solidness of liquid source, because own solidness is 0
+		if (neighbor_features.solidness > 1 ||
+				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1))
 			continue;
 
 		video::S3DVertex vertices[4];
@@ -569,8 +573,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 			float v = vertex.v;
 
 			v3f pos;
-			pos.X = (base.X - 0.5f) * BS;
-			pos.Z = (base.Z - 0.5f) * BS;
+			pos.X = (base.X - 0.5f) * BS - base.X * 1E-3;
+			pos.Z = (base.Z - 0.5f) * BS - base.Z * 1E-3;
 			if (vertex.v) {
 				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f * BS;
 			} else if (top_is_same_liquid) {
@@ -681,7 +685,8 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		MapNode neighbor = data->m_vmanip.getNodeNoExNoEmerge(neighbor_pos);
 
 		// Don't make face if neighbor is of same type or ignore
-		if (neighbor.getContent() == n.getContent() || neighbor.getContent() == CONTENT_IGNORE)
+		if (neighbor.getContent() == n.getContent() || neighbor.getContent() == CONTENT_IGNORE ||
+				neighbor.getContent() == f->liquid_alternative_flowing_id)
 			continue;
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.getContent());
