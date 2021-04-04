@@ -670,6 +670,10 @@ void MapblockMeshGenerator::drawLiquidNode()
 
 void MapblockMeshGenerator::drawLiquidSourceNode()
 {
+	// Skip rendering since this node was already rendered by fast faces.
+	if (f->alpha == ALPHAMODE_OPAQUE)
+		return;
+
 	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
 		v3s16 dir = g_6dirs[face];
