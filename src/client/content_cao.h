@@ -174,6 +174,8 @@ public:
 
 	const bool isImmortal();
 
+	inline const ObjectProperties &getProperties() const { return m_prop; }
+
 	scene::ISceneNode *getSceneNode() const;
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;

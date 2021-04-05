@@ -2568,14 +2568,18 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 
 	// Damage flash and hurt tilt are not used at death
 	if (client->getHP() > 0) {
-		runData.damage_flash += 95.0f + 3.2f * event->player_damage.amount;
-		runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
-
 		LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+		f32 hp_max = player->getCAO() ?
+			player->getCAO()->getProperties().hp_max : PLAYER_MAX_HP_DEFAULT;
+		f32 damage_ratio = event->player_damage.amount / hp_max;
+
+		runData.damage_flash += 95.0f + 64.f * damage_ratio;
+		runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
 
 		player->hurt_tilt_timer = 1.5f;
 		player->hurt_tilt_strength =
-			rangelim(event->player_damage.amount / 4.0f, 1.0f, 4.0f);
+			rangelim(damage_ratio * 5.0f, 1.0f, 4.0f);
 	}
 
 	// Play damage sound
