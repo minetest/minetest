@@ -195,7 +195,7 @@ int LuaPerlinNoiseMap::l_get_2d_map_flat(lua_State *L)
 	Noise *n = o->noise;
 	n->perlinMap2D(p.X, p.Y);
 
-	size_t maplen = n->sx * n->sy;
+	size_t maplen = (unsigned int)n->sx * n->sy;
 
 	if (use_buffer)
 		lua_pushvalue(L, 3);
@@ -255,7 +255,7 @@ int LuaPerlinNoiseMap::l_get_3d_map_flat(lua_State *L)
 	Noise *n = o->noise;
 	n->perlinMap3D(p.X, p.Y, p.Z);
 
-	size_t maplen = n->sx * n->sy * n->sz;
+	size_t maplen = (unsigned int)n->sx * n->sy * n->sz;
 
 	if (use_buffer)
 		lua_pushvalue(L, 3);
