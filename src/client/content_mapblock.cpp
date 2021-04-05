@@ -575,8 +575,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 			float v = vertex.v;
 
 			v3f pos;
-			pos.X = (base.X - 0.5f) * BS - base.X * 1E-3;
-			pos.Z = (base.Z - 0.5f) * BS - base.Z * 1E-3;
+			pos.X = (base.X - 0.5f) * BS;
+			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
 				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f * BS;
 			} else if (top_is_same_liquid) {
@@ -714,15 +714,17 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		if (has_multiple_textures)
 			collector->startNewMeshLayer(true);
 
-		// Don't make face if neighbor is of same type or ignore
-		if (neighbor.getContent() == n.getContent() || neighbor.getContent() == CONTENT_IGNORE ||
+		// Don't make face if neighbor is "ignore" or same liquid
+		if (neighbor.getContent() == CONTENT_IGNORE ||
+				neighbor.getContent() == n.getContent() ||
 				neighbor.getContent() == f->liquid_alternative_flowing_id)
 			continue;
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.getContent());
 
-		// Don't make face when same or higher solidness
-		if (f->solidness <= std::max(neighbor_features.solidness, neighbor_features.visual_solidness))
+		// Don't make face if in contact with solid block, otherwise
+		// liquid source takes priority
+		if (f->solidness <= neighbor_features.solidness)
 			continue;
 
 		// Face at Z-
@@ -753,9 +755,11 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		getTile(dir, &tile);
 		if (!data->m_smooth_lighting)
 			color = encode_light(light, f->light_source);
-		if (g_6dirs[face].Y != 0) {
-			tile.layers[0].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
-			tile.layers[1].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+		
+		// Force-enable backface culling if the neighbor draws adjacent face
+		if (neighbor_features.solidness == 1 || neighbor_features.visual_solidness == 1) {
+			tile.layers[0].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+			tile.layers[1].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 		}
 
 		drawQuad(vertices, dir);
