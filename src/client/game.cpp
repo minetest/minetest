@@ -1532,7 +1532,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			} else {
 				wait_time += dtime;
 				// Only time out if we aren't waiting for the server we started
-				if (!start_data.isSinglePlayer() && wait_time > 10) {
+				if (!start_data.address.empty() && wait_time > 10) {
 					*error_message = "Connection timed out.";
 					errorstream << *error_message << std::endl;
 					break;
