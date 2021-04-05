@@ -1544,10 +1544,10 @@ void NodeDefManager::deSerialize(std::istream &is)
 }
 
 
-void NodeDefManager::addNameIdMapping(content_t i, std::string name)
+void NodeDefManager::addNameIdMapping(content_t i, const std::string &name)
 {
 	m_name_id_mapping.set(i, name);
-	m_name_id_mapping_with_aliases.insert(std::make_pair(name, i));
+	m_name_id_mapping_with_aliases.emplace(name, i);
 }
 
 

@@ -671,7 +671,6 @@ void ClientInterface::UpdatePlayerList()
 		std::vector<session_t> clients = getClientIDs();
 		m_clients_names.clear();
 
-
 		if (!clients.empty())
 			infostream<<"Players:"<<std::endl;
 
