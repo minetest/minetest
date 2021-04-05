@@ -90,8 +90,7 @@ public:
 	bool get(const Key &name, Value *result) const
 	{
 		MutexAutoLock lock(m_mutex);
-		typename std::map<Key, Value>::const_iterator n =
-			m_values.find(name);
+		auto n = m_values.find(name);
 		if (n == m_values.end())
 			return false;
 		if (result)
@@ -103,11 +102,9 @@ public:
 	{
 		MutexAutoLock lock(m_mutex);
 		std::vector<Value> result;
-		for (typename std::map<Key, Value>::const_iterator
-				it = m_values.begin();
-				it != m_values.end(); ++it){
+		result.reserve(m_values.size());
+		for (auto it = m_values.begin(); it != m_values.end(); ++it)
 			result.push_back(it->second);
-		}
 		return result;
 	}
 
@@ -136,7 +133,7 @@ public:
 		return m_queue.empty();
 	}
 
-	void push_back(T t)
+	void push_back(const T &t)
 	{
 		MutexAutoLock lock(m_mutex);
 		m_queue.push_back(t);
@@ -158,7 +155,7 @@ public:
 		if (m_signal.wait(wait_time_max_ms)) {
 			MutexAutoLock lock(m_mutex);
 
-			T t = m_queue.front();
+			T t = std::move(m_queue.front());
 			m_queue.pop_front();
 			return t;
 		}
@@ -171,7 +168,7 @@ public:
 		if (m_signal.wait(wait_time_max_ms)) {
 			MutexAutoLock lock(m_mutex);
 
-			T t = m_queue.front();
+			T t = std::move(m_queue.front());
 			m_queue.pop_front();
 			return t;
 		}
@@ -185,7 +182,7 @@ public:
 
 		MutexAutoLock lock(m_mutex);
 
-		T t = m_queue.front();
+		T t = std::move(m_queue.front());
 		m_queue.pop_front();
 		return t;
 	}
@@ -195,7 +192,7 @@ public:
 		if (m_signal.wait(wait_time_max_ms)) {
 			MutexAutoLock lock(m_mutex);
 
-			T t = m_queue.back();
+			T t = std::move(m_queue.back());
 			m_queue.pop_back();
 			return t;
 		}
@@ -211,7 +208,7 @@ public:
 		if (m_signal.wait(wait_time_max_ms)) {
 			MutexAutoLock lock(m_mutex);
 
-			T t = m_queue.back();
+			T t = std::move(m_queue.back());
 			m_queue.pop_back();
 			return t;
 		}
@@ -225,7 +222,7 @@ public:
 
 		MutexAutoLock lock(m_mutex);
 
-		T t = m_queue.back();
+		T t = std::move(m_queue.back());
 		m_queue.pop_back();
 		return t;
 	}

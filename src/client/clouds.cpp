@@ -170,7 +170,7 @@ void Clouds::render()
 
 	// Read noise
 
-	std::vector<char> grid(m_cloud_radius_i * 2 * m_cloud_radius_i * 2); // vector<bool> is broken
+	std::vector<bool> grid(m_cloud_radius_i * 2 * m_cloud_radius_i * 2);
 	std::vector<video::S3DVertex> vertices;
 	vertices.reserve(16 * m_cloud_radius_i * m_cloud_radius_i);
 
