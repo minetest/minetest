@@ -680,39 +680,30 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 	if (f->alpha == ALPHAMODE_OPAQUE)
 		return;
 
-	// Force mesh collector to create new mesh buffers for this node when more than one tile is defined
-	bool has_multiple_textures = f->tiles[1].layers[0].texture_id != 0;
-
 	// calculate order of faces according to player's position
 
 	struct facePointer {
+		int face;
 		int distance;
-		int index;
-		facePointer() : distance(0), index(0) {}
+		bool apply_backface_culling;
+
+		facePointer() : 
+				face(0), distance(0), apply_backface_culling(false) {}
+		facePointer(int index, int distance, bool apply_backface_culling) : 
+				face(index), distance(distance), apply_backface_culling(apply_backface_culling) {}
+
 		bool operator<(const struct facePointer& other) {
-			return distance > other.distance || (distance == other.distance && index > other.index);
+			return distance > other.distance || (distance == other.distance && face > other.face);
 		}
 	};
 
-	std::array<struct facePointer, 6> faces;
+	std::vector<struct facePointer> faces;
 
-	for (s16 i = 0; i < 6; ++i) {
-		v3s16 face = blockpos_nodes + p + g_6dirs[i];
-		faces[i].distance = abs(player_pos.X - face.X) + abs(player_pos.Y - face.Y) + abs(player_pos.Z - face.Z);
-		faces[i].index = i;
-	}
-
-	std::sort(faces.begin(), faces.end());
-
-	for (int i = 0; i < 6; i++) {
-		int face = faces[i].index;
+	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
 		v3s16 dir = g_6dirs[face];
 		v3s16 neighbor_pos = blockpos_nodes + p + dir;
 		MapNode neighbor = data->m_vmanip.getNodeNoExNoEmerge(neighbor_pos);
-
-		if (has_multiple_textures)
-			collector->startNewMeshLayer(true);
 
 		// Don't make face if neighbor is "ignore" or same liquid
 		if (neighbor.getContent() == CONTENT_IGNORE ||
@@ -727,6 +718,29 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		if (f->solidness <= neighbor_features.solidness)
 			continue;
 
+		bool apply_backface_culling = neighbor_features.solidness == 1 || neighbor_features.visual_solidness == 1;
+
+		s16 distance = abs(player_pos.X - neighbor_pos.X) + abs(player_pos.Y - neighbor_pos.Y) + abs(player_pos.Z - neighbor_pos.Z);
+
+		faces.emplace_back(face, distance, apply_backface_culling);
+	}
+
+	if (faces.size() == 0)
+		return;
+
+	// Force mesh collector to create new mesh buffers for this node when more than one tile is defined
+	bool has_multiple_tiles = faces.size() > 1;
+
+	if (has_multiple_tiles)
+		std::sort(faces.begin(), faces.end());
+
+	for (const struct facePointer &fp : faces) {
+
+		if (has_multiple_tiles)
+			collector->startNewMeshLayer(true);
+
+		v3s16 dir = g_6dirs[fp.face];
+
 		// Face at Z-
 		v3f vertices[4] = {
 			v3f(-BS / 2,  BS / 2, -BS / 2),
@@ -736,7 +750,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		};
 
 		for (v3f &vertex : vertices) {
-			switch (face) {
+			switch (fp.face) {
 				case D6D_ZP:
 					vertex.rotateXZBy(180); break;
 				case D6D_YP:
@@ -757,7 +771,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 			color = encode_light(light, f->light_source);
 		
 		// Force-enable backface culling if the neighbor draws adjacent face
-		if (neighbor_features.solidness == 1 || neighbor_features.visual_solidness == 1) {
+		if (fp.apply_backface_culling) {
 			tile.layers[0].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.layers[1].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 		}
