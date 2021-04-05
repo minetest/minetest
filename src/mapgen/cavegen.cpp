@@ -551,7 +551,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 
 	for (s16 z0 = d0; z0 <= d1; z0++) {
 		s16 si = rs / 2 - MYMAX(0, abs(z0) - rs / 7 - 1);
-		for (s16 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
+		for (s32 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 
 			s16 si2 = rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
@@ -855,7 +855,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 
 	for (s16 z0 = d0; z0 <= d1; z0++) {
 		s16 si = rs / 2 - MYMAX(0, abs(z0) - rs / 7 - 1);
-		for (s16 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
+		for (s32 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
 			if (tunnel_above_ground)
 				continue;
 
