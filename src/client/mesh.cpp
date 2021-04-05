@@ -317,7 +317,7 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
 	aabb3f bbox;
 	bbox.reset(0,0,0);
-	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
+	for (u32 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		buf->recalculateBoundingBox();
 		if (j == 0)
@@ -709,7 +709,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		}
 
 		// Give initial scores
-		for (u16 i = 0; i < vcount; i++)
+		for (u32 i = 0; i < vcount; i++)
 		{
 			vc[i].score = FindVertexScore(&vc[i]);
 		}
@@ -813,7 +813,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 
 					for (u16 j : tc[highest].ind) {
 						vcache *vert = &vc[j];
-						for (u16 t = 0; t < vert->tris.size(); t++)
+						for (u32 t = 0; t < vert->tris.size(); t++)
 						{
 							if (highest == vert->tris[t])
 							{
@@ -924,7 +924,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 
 					for (u16 j : tc[highest].ind) {
 						vcache *vert = &vc[j];
-						for (u16 t = 0; t < vert->tris.size(); t++)
+						for (u32 t = 0; t < vert->tris.size(); t++)
 						{
 							if (highest == vert->tris[t])
 							{
@@ -1036,7 +1036,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 
 					for (u16 j : tc[highest].ind) {
 						vcache *vert = &vc[j];
-						for (u16 t = 0; t < vert->tris.size(); t++)
+						for (u32 t = 0; t < vert->tris.size(); t++)
 						{
 							if (highest == vert->tris[t])
 							{
