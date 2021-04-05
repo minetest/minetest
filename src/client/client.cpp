@@ -1770,7 +1770,7 @@ void Client::makeScreenshot()
 
 	struct tm tm;
 	const time_t t = time(NULL);
-	localtime_s(&t, &tm);
+	localtime_r(&t, &tm);
 
 	char timetstamp_c[64];
 	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", &tm);
