@@ -57,6 +57,8 @@ Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
 		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
 			RenderingEngine::get_scene_manager(), id)
 {
+	m_seed = (u64)myrand() << 32 | myrand();
+
 	setAutomaticCulling(scene::EAC_OFF);
 	m_box.MaxEdge.set(0, 0, 0);
 	m_box.MinEdge.set(0, 0, 0);
@@ -833,7 +835,6 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	// Allow force updating star count at game init.
 	if (m_star_params.count != star_count || force_update) {
 		m_star_params.count = star_count;
-		m_seed = (u64)myrand() << 32 | myrand();
 		updateStars();
 	}
 }
