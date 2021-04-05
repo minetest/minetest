@@ -174,7 +174,7 @@ public:
 
 	const bool isImmortal();
 
-	const ObjectProperties *getProperties() const { return &m_prop; }
+	inline const ObjectProperties &getProperties() const { return m_prop; }
 
 	scene::ISceneNode *getSceneNode() const;
 
