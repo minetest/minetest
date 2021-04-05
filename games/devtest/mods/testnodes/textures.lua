@@ -72,8 +72,6 @@ for a=1,#alphas do
 		tiles = {
 			"testnodes_alpha.png^[colorize:#ff00007f^[opacity:" .. alpha,
 		},
-		inventory_image = "testnodes_alpha.png^[colorize:#ff00007f",
-		wield_image = "testnodes_alpha.png^[colorize:#ff00007f",
 		use_texture_alpha = "blend",
 
 		groups = { dig_immediate = 3 },
