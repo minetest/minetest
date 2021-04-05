@@ -138,6 +138,8 @@ public:
 	virtual void deserializeAttributes(
 			io::IAttributes *in, io::SAttributeReadWriteOptions *options);
 
+	virtual bool acceptsIME() { return isEnabled() && m_writable; };
+
 protected:
 	virtual void breakText() = 0;
 
@@ -156,6 +158,7 @@ protected:
 	virtual s32 getCursorPos(s32 x, s32 y) = 0;
 
 	bool processKey(const SEvent &event);
+	virtual void inputString(const core::stringw &str);
 	virtual void inputChar(wchar_t c);
 
 	//! returns the line number that the cursor is on
