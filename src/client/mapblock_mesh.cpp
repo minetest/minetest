@@ -670,9 +670,9 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	if (c1 == c2) {
 		*equivalent = true;
 		// If same solidness, liquid takes precense
-		if (f1.isLiquid())
+		if (f1.drawtype == NDT_LIQUID)
 			return f1.alpha == ALPHAMODE_OPAQUE ? 1 : 0;
-		if (f2.isLiquid())
+		if (f2.drawtype == NDT_LIQUID)
 			return f2.alpha == ALPHAMODE_OPAQUE ? 2 : 0;
 	}
 
