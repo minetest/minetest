@@ -183,7 +183,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	std::string axiom = tree_definition.initial_axiom;
 	for (s16 i = 0; i < iterations; i++) {
 		std::string temp;
-		for (s16 j = 0; j < (s16)axiom.size(); j++) {
+		for (s32 j = 0; j < (s16)axiom.size(); j++) {
 			char axiom_char = axiom.at(j);
 			switch (axiom_char) {
 			case 'A':
@@ -291,7 +291,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
     */
 
 	s16 x,y,z;
-	for (s16 i = 0; i < (s16)axiom.size(); i++) {
+	for (s32 i = 0; i < (s16)axiom.size(); i++) {
 		char axiom_char = axiom.at(i);
 		core::matrix4 temp_rotation;
 		temp_rotation.makeIdentity();
