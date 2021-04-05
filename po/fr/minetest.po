@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-04-07 17:30+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"Last-Translator: François Delpierre <gitlab@pivert.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -2958,9 +2958,8 @@ msgid "Desynchronize block animation"
 msgstr "Désynchroniser les textures animées par mapblock"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Droite"
+msgstr "Touche pour creuser"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3027,9 +3026,8 @@ msgid "Enable console window"
 msgstr "Activer la console"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Activer le mode créatif pour les cartes nouvellement créées."
+msgstr "Activer le mode créatif pour tous les joueurs"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
