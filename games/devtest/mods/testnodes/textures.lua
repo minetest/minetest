@@ -160,7 +160,7 @@ minetest.register_node("testnodes:generated_png_ck", {
 minetest.register_node("testnodes:multitile_liquid", {
 	description = S("Multiple Tiles Liquid Test Node"),
 	drawtype = "liquid",
-	paramtype = "light",
+	waving = 3,
 	tiles = {
 		"default_water.png^[colorize:#ff00007f^[opacity:192",
 		"default_water.png^[colorize:#00ffff7f^[opacity:192",
@@ -169,9 +169,8 @@ minetest.register_node("testnodes:multitile_liquid", {
 		"default_water.png^[colorize:#00ff007f^[opacity:192",
 		"default_water.png^[colorize:#ff00ff7f^[opacity:192",
 	},
-	inventory_image = "default_water.png^[colorize:#00ff007f",
-	wield_image = "default_water.png^[colorize:#00ff007f",
 	use_texture_alpha = "blend",
-
-	groups = { dig_immediate = 3 },
+	paramtype = "light",
+	walkable = false,
+	groups = { water = 3, liquid = 3, dig_immediate = 3 },
 })
