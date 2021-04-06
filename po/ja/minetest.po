@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-13 08:50+0000\n"
-"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
+"PO-Revision-Date: 2021-04-06 12:12+0000\n"
+"Last-Translator: GnuPGを使うべきだ <dieeeazpnnqbpddh@cock.email>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
 "Language: ja\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -699,9 +699,8 @@ msgid "Loading..."
 msgstr "読み込み中..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "クライアント側のスクリプトは無効"
+msgstr "公開サーバー一覧は無効"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2982,9 +2981,8 @@ msgid "Enable console window"
 msgstr "コンソールウィンドウを有効化"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "新しく作成されたマップでクリエイティブモードを有効にします。"
+msgstr "全プレイヤーにクリエイティブモードを有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
