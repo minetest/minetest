@@ -237,7 +237,7 @@ void ClientEnvironment::step(float dtime)
 
 	bool player_immortal = false;
 	f32 player_fall_factor = 1.0f;
-	GenericCAO* playercao = lplayer->getCAO();
+	GenericCAO *playercao = lplayer->getCAO();
 	if (playercao) {
 		player_immortal = playercao->isImmortal();
 		int addp_p = itemgroup_get(playercao->getGroups(),
