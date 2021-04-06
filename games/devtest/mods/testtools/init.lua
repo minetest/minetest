@@ -871,6 +871,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				return
 			elseif fields.set then
 				meta:set_string(fields.key, fields.value)
+				minetest.chat_send_all(dump(meta:to_table()))
 				show_node_meta_formspec(player, pos, fields.key, fields.value,
 						get_node_meta_keylist(meta, name, true))
 				return
