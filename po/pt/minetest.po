@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-02-23 15:50+0000\n"
+"PO-Revision-Date: 2021-04-08 18:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -704,9 +704,8 @@ msgid "Loading..."
 msgstr "A carregar..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "O scripting de cliente está desativado"
+msgstr "A lista de servidores públicos está desativada"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2941,9 +2940,8 @@ msgid "Desynchronize block animation"
 msgstr "Dessincroniza animação de blocos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Tecla para a direita"
+msgstr "Tecla para escavar"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3010,9 +3008,8 @@ msgid "Enable console window"
 msgstr "Ativar janela de console"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Ativar modo criativo para mundos novos."
+msgstr "Ativar modo criativo para todos os jogadores"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -3172,9 +3169,8 @@ msgstr ""
 "terrenos flutuantes."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Máximo FPS quando o jogo é pausado."
+msgstr "FPS quando desfocado ou pausado"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3307,9 +3303,8 @@ msgid "Floatland noise"
 msgstr "Ruído no terreno flutuante"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland taper exponent"
-msgstr "Expoente de terras flutuantes montanhosas"
+msgstr "Expoente de conicidade de terrenos flutuantes"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3317,9 +3312,8 @@ msgid "Floatland tapering distance"
 msgstr "Ruído base de terra flutuante"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "Nível de água"
+msgstr "Nível da água em terreno flutuante"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
