@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-06 12:12+0000\n"
-"Last-Translator: GnuPGを使うべきだ <dieeeazpnnqbpddh@cock.email>\n"
+"PO-Revision-Date: 2021-04-08 18:26+0000\n"
+"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
 "Language: ja\n"
@@ -700,7 +700,7 @@ msgstr "読み込み中..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr "公開サーバー一覧は無効"
+msgstr "公開サーバ一覧は無効"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -2982,7 +2982,7 @@ msgstr "コンソールウィンドウを有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for all players"
-msgstr "全プレイヤーにクリエイティブモードを有効化"
+msgstr "すべてのプレイヤーにクリエイティブモードを有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -6232,9 +6232,8 @@ msgstr ""
 "変更後は再起動が必要です。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "既定で太字のフォント"
+msgstr "既定でネームタグの背景を表示"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -7053,6 +7052,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"既定でネームタグの背景を表示するかどうかです。\n"
+"Modで背景を設定することもできます。"
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
