@@ -171,6 +171,35 @@ minetest.register_chatcommand("test_waypoints", {
 	end
 })
 
+-- Test node metadata
+minetest.register_chatcommand("test_node_meta", {
+	params = "s | r",
+	description = "s to set infotext, r to remove, c to clear",
+	func = function(name, params)
+		local pos = vector.round(minetest.get_player_by_name(name):get_pos())
+		if params == "s" then
+			local meta = minetest.get_meta(pos)
+			meta:set_string("infotext", "bar")
+		elseif params == "r" then
+			local meta = minetest.get_meta(pos)
+			meta:set_string("infotext", "")
+		elseif params == "c" then
+			local meta = minetest.get_meta(pos)
+			meta:from_table({})
+			assert(meta:get_string("infotext") == "")
+		elseif params ~= "" then
+			return false, "Unknown param " .. params
+		end
+
+		local d = vector.new(10, 10, 10)
+		local nodes = minetest.find_nodes_with_meta(vector.subtract(pos, d), vector.add(pos, d))
+		for i=1, #nodes do
+			nodes[i] = minetest.pos_to_string(nodes[i])
+		end
+		return true, table.concat(nodes, "\n")
+	end
+})
+
 -- Unlimited node placement
 minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack)
 	if placer and placer:is_player() then
