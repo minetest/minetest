@@ -128,12 +128,18 @@ int LuaLocalPlayer::l_is_in_liquid_stable(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_liquid_viscosity(lua_State *L)
+int LuaLocalPlayer::l_get_move_resistance(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	lua_pushinteger(L, player->liquid_viscosity);
+	lua_pushinteger(L, player->move_resistance);
 	return 1;
+}
+
+// LEGACY: alias for 'get_move_resistance'
+int LuaLocalPlayer::l_get_liquid_viscosity(lua_State *L)
+{
+	return l_get_move_resistance(L);
 }
 
 int LuaLocalPlayer::l_is_climbing(lua_State *L)
@@ -482,6 +488,8 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, hud_remove),
 		luamethod(LuaLocalPlayer, hud_change),
 		luamethod(LuaLocalPlayer, hud_get),
+
+		luamethod(LuaLocalPlayer, get_move_resistance),
 
 		{0, 0}
 };

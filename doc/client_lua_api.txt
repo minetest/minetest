@@ -1031,7 +1031,9 @@ Methods:
 * `is_in_liquid_stable()`
     * returns true if player is in a stable liquid (This is more stable and defines the maximum speed of the player)
 * `get_liquid_viscosity()`
-    * returns liquid viscosity (Gets the viscosity of liquid to calculate friction)
+    * deprecated; same as `get_move_resistance`
+* `get_move_resistance()`
+    * returns move resistance of current node, the higher, the slower the player moves
 * `is_climbing()`
     * returns true if player is climbing
 * `swimming_vertical()`
@@ -1233,7 +1235,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 		liquid_type = <string>,         -- A string containing "none", "flowing", or "source" *May not exist*
 		liquid_alternative_flowing = <string>, -- Alternative node for liquid *May not exist*
 		liquid_alternative_source = <string>, -- Alternative node for liquid *May not exist*
-		liquid_viscosity = <number>,    -- How fast the liquid flows *May not exist*
+		liquid_viscosity = <number>,    -- How slow the liquid flows *May not exist*
 		liquid_renewable = <boolean>,   -- Whether the liquid makes an infinite source *May not exist*
 		liquid_range = <number>,        -- How far the liquid flows *May not exist*
 		drowning = bool,                -- Whether the player will drown in the node
@@ -1248,6 +1250,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 		},
 		legacy_facedir_simple = bool,   -- Whether to use old facedir
 		legacy_wallmounted = bool       -- Whether to use old wallmounted
+		move_resistance = <number>,     -- How slow players can move through the node *May not exist*
 	}
 ```
 

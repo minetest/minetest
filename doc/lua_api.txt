@@ -7529,6 +7529,10 @@ Used by `minetest.register_node`.
 
         climbable = false,  -- If true, can be climbed on (ladder)
 
+        move_resistance = 0,
+        -- Slows down movement of players through this node (max. 7).
+        -- If this is nil, it will be equal to liquid_viscosity.
+
         buildable_to = false,  -- If true, placed nodes can replace this node
 
         floodable = false,
@@ -7550,7 +7554,11 @@ Used by `minetest.register_node`.
 
         liquid_alternative_source = "",  -- Source version of flowing liquid
 
-        liquid_viscosity = 0,  -- Higher viscosity = slower flow (max. 7)
+        liquid_viscosity = 0,
+        -- Controls speed at which the liquid spreads/flows (max. 7).
+        -- 0 is fastest, 7 is slowest.
+        -- By default, this also slows down movement of players inside the node
+        -- (can be overridden with move_resistance)
 
         liquid_renewable = true,
         -- If true, a new liquid source can be created by placing two or more

@@ -403,6 +403,7 @@ void ContentFeatures::reset()
 	palette_name = "";
 	palette = NULL;
 	node_dig_prediction = "air";
+	move_resistance = 0;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -512,9 +513,26 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
 
+	// new attributes
 	os << serializeString16(node_dig_prediction);
 	writeU8(os, leveled_max);
 	writeU8(os, alpha);
+	writeU8(os, move_resistance);
+}
+
+void ContentFeatures::correctAlpha(TileDef *tiles, int length)
+{
+	// alpha == 0 means that the node is using texture alpha
+	if (alpha == 0 || alpha == 255)
+		return;
+
+	for (int i = 0; i < length; i++) {
+		if (tiles[i].name.empty())
+			continue;
+		std::stringstream s;
+		s << tiles[i].name << "^[noalpha^[opacity:" << ((int)alpha);
+		tiles[i].name = s.str();
+	}
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -618,6 +636,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 		if (is.eof())
 			throw SerializationError("");
 		alpha = static_cast<enum AlphaMode>(tmp);
+
+		u8 tmp_move_resistance = readU8(is);
+		if (is.eof())
+			throw SerializationError("");
+		move_resistance = tmp_move_resistance;
 	} catch(SerializationError &e) {};
 }
 

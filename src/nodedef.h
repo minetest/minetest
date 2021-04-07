@@ -376,6 +376,8 @@ struct ContentFeatures
 	u32 damage_per_second;
 	// client dig prediction
 	std::string node_dig_prediction;
+	// how slow players move through
+	u8 move_resistance = 0;
 
 	// --- LIQUID PROPERTIES ---
 

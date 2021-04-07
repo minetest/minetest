@@ -208,18 +208,18 @@ void ClientEnvironment::step(float dtime)
 
 			// Liquid resistance
 			if (lplayer->in_liquid_stable || lplayer->in_liquid) {
-				// How much the node's viscosity blocks movement, ranges
-				// between 0 and 1. Should match the scale at which viscosity
+				// How much the node's move_resistance blocks movement, ranges
+				// between 0 and 1. Should match the scale at which liquid_viscosity
 				// increase affects other liquid attributes.
-				static const f32 viscosity_factor = 0.3f;
+				static const f32 resistance_factor = 0.3f;
 
 				v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
 				f32 dl = d_wanted.getLength();
 				if (dl > lplayer->movement_liquid_fluidity_smooth)
 					dl = lplayer->movement_liquid_fluidity_smooth;
 
-				dl *= (lplayer->liquid_viscosity * viscosity_factor) +
-					(1 - viscosity_factor);
+				dl *= (lplayer->move_resistance * resistance_factor) +
+					(1 - resistance_factor);
 				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
 				speed += d;
 			}

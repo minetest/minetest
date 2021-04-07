@@ -228,7 +228,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
 			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			move_resistance = nodemgr->get(node.getContent()).move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -239,7 +239,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
 			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			move_resistance = nodemgr->get(node.getContent()).move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -815,7 +815,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
 			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			move_resistance = nodemgr->get(node.getContent()).move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -825,7 +825,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
 			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			move_resistance = nodemgr->get(node.getContent()).move_resistance;
 		} else {
 			in_liquid = false;
 		}
