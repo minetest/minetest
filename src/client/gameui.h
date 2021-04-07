@@ -60,7 +60,6 @@ public:
 		bool show_minimap = false;
 		bool show_debug = true;
 		bool show_profiler_graph = false;
-		bool show_block_bounds = false;
 	};
 
 	void init();
