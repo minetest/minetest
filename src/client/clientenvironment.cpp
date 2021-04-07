@@ -194,15 +194,16 @@ void ClientEnvironment::step(float dtime)
 		lplayer->applyControl(dtime_part, this);
 
 		// Apply physics
-		if (!free_move && !is_climbing) {
+		if (!free_move) {
 			// Gravity
 			v3f speed = lplayer->getSpeed();
-			if (!lplayer->in_liquid)
+			if (!is_climbing && !lplayer->in_liquid)
 				speed.Y -= lplayer->movement_gravity *
 					lplayer->physics_override_gravity * dtime_part * 2.0f;
 
 			// Liquid floating / sinking
-			if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+			if (!is_climbing && lplayer->in_liquid &&
+					!lplayer->swimming_vertical &&
 					!lplayer->swimming_pitch)
 				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
 

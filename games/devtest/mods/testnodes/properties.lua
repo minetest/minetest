@@ -233,6 +233,20 @@ for r=1, 7 do
 	})
 end
 
+minetest.register_node("testnodes:climbable_move_resistance_4", {
+	description = S("Climbable Move-resistant Node (4)"),
+	walkable = false,
+	climbable = true,
+	move_resistance = 4,
+
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = {"testnodes_climbable_resistance_side.png"},
+	is_ground_content = false,
+	groups = { dig_immediate = 3 },
+})
+
 -- By placing something on the node, the node itself will be replaced
 minetest.register_node("testnodes:buildable_to", {
 	description = S("Replacable Node"),
