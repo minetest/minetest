@@ -59,6 +59,9 @@ public:
 			Inventory *inventory);
 	~Hud();
 
+	void toggleBlockBounds();
+	void drawBlockBounds();
+
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
@@ -124,6 +127,8 @@ private:
 	video::SMaterial m_selection_material;
 
 	scene::SMeshBuffer m_rotation_mesh_buffer;
+
+	bool m_block_bounds_enabled = false;
 
 	enum
 	{

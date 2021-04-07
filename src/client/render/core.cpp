@@ -77,6 +77,7 @@ void RenderingCore::draw3D()
 	if (!show_hud)
 		return;
 	hud->drawSelectionMesh();
+	hud->drawBlockBounds();
 	if (draw_wield_tool)
 		camera->drawWieldedTool();
 }

@@ -862,6 +862,39 @@ void Hud::drawSelectionMesh()
 	}
 }
 
+void Hud::toggleBlockBounds()
+{
+	m_block_bounds_enabled = !m_block_bounds_enabled;
+}
+
+void Hud::drawBlockBounds()
+{
+	if (!m_block_bounds_enabled) {
+		return;	
+	}
+
+	auto old_material = driver->getMaterial2D();
+	driver->setMaterial(m_selection_material);
+
+	auto pos = player->getStandingNodePos();
+
+	auto blockPos = v3s16(
+		floorf((float) pos.X / 16.0f),
+		floorf((float) pos.Y / 16.0f),
+		floorf((float) pos.Z / 16.0f)
+	);
+
+	auto offset = intToFloat(client->getCamera()->getOffset(), BS);
+
+	auto box = aabb3f(
+		intToFloat(blockPos * 16, BS) - offset,
+		intToFloat((blockPos * 16) + 15, BS) - offset
+	);
+
+	driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
+	driver->setMaterial(old_material);
+}
+
 void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 {
 	m_camera_offset = camera_offset;
