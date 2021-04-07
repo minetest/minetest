@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-05 21:22+0000\n"
-"Last-Translator: ItsWidee <william.hochart@gmail.com>\n"
+"PO-Revision-Date: 2021-04-07 17:30+0000\n"
+"Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -146,7 +146,7 @@ msgstr "Enregistrer"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr "Sélectionner un monde :"
+msgstr "Monde :"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
@@ -197,9 +197,8 @@ msgid "Back to Main Menu"
 msgstr "Retour au menu principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Héberger une partie"
+msgstr "Jeu de base :"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -207,7 +206,7 @@ msgstr "ContentDB n'est pas disponible quand Minetest est compilé sans cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr "Chargement..."
+msgstr "Téléchargement..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -926,7 +925,7 @@ msgstr "Anti-crénelage :"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr "Sauvegarder automatiquement la taille d'écran"
+msgstr "Sauv. autom. de la taille d'écran"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -1023,7 +1022,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr "mappage tonal"
+msgstr "Mappage tonal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
@@ -1176,7 +1175,7 @@ msgstr "Mise à jour de la caméra activée"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Changer votre mot de passe"
+msgstr "Changer de mot de passe"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1199,7 +1198,7 @@ msgid "Continue"
 msgstr "Continuer"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1222,14 +1221,14 @@ msgstr ""
 "- %s : à gauche\n"
 "- %s : à droite\n"
 "- %s : sauter/grimper\n"
+"- %s : creuser/actionner\n"
+"- %s : placer/utiliser\n"
 "- %s : marcher lentement/descendre\n"
-"- %s : lâcher l'objet en main\n"
+"- %s : lâcher un objet\n"
 "- %s : inventaire\n"
 "- Souris : tourner/regarder\n"
-"- Souris gauche : creuser/attaquer\n"
-"- Souris droite : placer/utiliser\n"
-"- Molette souris : sélectionner objet\n"
-"- %s : discuter\n"
+"- Molette souris : sélectionner un objet\n"
+"- %s : tchat\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1746,7 +1745,7 @@ msgstr "Bouton X 2"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr "Zoomer"
+msgstr "Zoom"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -1801,7 +1800,7 @@ msgstr "\"Spécial\" = descendre"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
-msgstr "Avancer automatiquement"
+msgstr "Avancer autom."
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
@@ -1829,11 +1828,11 @@ msgstr "Console"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr "Reduire champ vision"
+msgstr "Réd. la distance"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr "Réduire le volume"
+msgstr "Réd. le volume"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -1849,11 +1848,11 @@ msgstr "Avancer"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr "Augmenter la distance"
+msgstr "Augm. la distance"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr "Augmenter le volume"
+msgstr "Augm. le volume"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1869,7 +1868,7 @@ msgstr "Touche déjà utilisée"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Raccourcis"
+msgstr "Raccourcis clavier"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -1905,11 +1904,11 @@ msgstr "Spécial"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr "Afficher/retirer l'interface"
+msgstr "Interface"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr "Afficher/retirer le canal de discussion"
+msgstr "Afficher le tchat"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1921,11 +1920,11 @@ msgstr "Voler"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr "Afficher/retirer le brouillard"
+msgstr "Brouillard"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr "Afficher/retirer la mini-carte"
+msgstr "Mini-carte"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
@@ -1933,7 +1932,7 @@ msgstr "Mode sans collision"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr "Activer/désactiver vol vertical"
+msgstr "Mouvement vertical"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2521,7 +2520,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr "Taille de police du chat"
+msgstr "Taille de police du tchat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -2537,7 +2536,7 @@ msgstr "Limite du nombre de message de discussion"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message format"
-msgstr "Format du message de chat"
+msgstr "Format du message de tchat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2545,11 +2544,11 @@ msgstr "Seuil de messages de discussion avant déconnexion forcée"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr "Longueur maximum d'un message de chat"
+msgstr "Longueur maximum d'un message de tchat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr "Afficher le chat"
+msgstr "Afficher le tchat"
 
 #: src/settings_translation_file.cpp
 msgid "Chatcommands"
@@ -2757,11 +2756,12 @@ msgid "Crosshair alpha"
 msgstr "Opacité du réticule"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Opacité du réticule (entre 0 et 255)."
+msgstr ""
+"Opacité du réticule (entre 0 et 255).\n"
+"Contrôle également la couleur du réticule de l'objet"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2772,6 +2772,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Couleur du réticule (R,G,B).\n"
+"Contrôle également la couleur du réticule de l'objet"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -3186,9 +3188,8 @@ msgstr ""
 "définie en bas, plus pour une couche solide de massif volant."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "FPS maximum quand le jeu est en pause."
+msgstr "FPS lorsqu’il n’est pas sélectionné ou mis en pause"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3401,7 +3402,7 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
-"Format des messages de chat des joueurs. Substituts valides :\n"
+"Format des messages de tchat des joueurs. Substituts valides :\n"
 "@name, @message, @timestamp (facultatif)"
 
 #: src/settings_translation_file.cpp
@@ -3586,7 +3587,7 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Traitement des appels d'API Lua obsolètes :\n"
-"- aucun: N'enregistre pas les appels obsolètes\n"
+"- aucun : N'enregistre pas les appels obsolètes\n"
 "- log : imite et enregistre la trace des appels obsolètes (par défaut en "
 "mode debug).\n"
 "- erreur : s'interrompt lors d'un appel obsolète (recommandé pour les "
@@ -3882,8 +3883,8 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
-"Si désactivé, la touche \"special\" est utilisée si le vole et le mode "
-"rapide sont tous les deux activés."
+"Si désactivé, la touche \"spécial\" est utilisée pour voler vite si les "
+"modes vol et rapide sont activés."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3906,7 +3907,8 @@ msgid ""
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
 "Si activé avec le mode vol, le joueur sera capable de traverser les blocs "
-"solides en volant."
+"solides en volant.\n"
+"Nécessite le privilège \"noclip\" sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4028,7 +4030,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chatcommands on registration."
-msgstr "Instrument d'enregistrement des commandes de chat."
+msgstr "Instrument d'enregistrement des commandes de tchat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4121,12 +4123,11 @@ msgstr "ID de manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr "Intervalle de répétition du bouton du Joystick"
+msgstr "Intervalle de répétition des boutons du Joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick deadzone"
-msgstr "Type de manette"
+msgstr "Zone morte du joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4231,13 +4232,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour sauter.\n"
+"Touche pour creuser.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4349,7 +4349,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour ouvrir la fenêtre du chat pour entrer des commandes.\n"
+"Touche pour ouvrir la fenêtre du tchat pour entrer des commandes.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4369,7 +4369,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour ouvrir la fenêtre de chat.\n"
+"Touche pour ouvrir la fenêtre de tchat.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4384,13 +4384,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour sauter.\n"
+"Touche pour placer.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4855,7 +4854,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour afficher/cacher la zone de chat.\n"
+"Touche pour afficher/cacher la zone de tchat.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5163,11 +5162,11 @@ msgstr "Rendre toutes les liquides opaques"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "Niveau de compression des cartes pour le stockage sur disque"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "Niveau de compression des cartes pour le transfert de réseau"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5354,9 +5353,10 @@ msgid "Maximum FPS"
 msgstr "FPS maximum"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr "FPS maximum quand le jeu est en pause."
+msgstr ""
+"FPS maximum lorsque la fenêtre n'est pas sélectionnée, ou lorsque le jeu est "
+"en pause."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5421,6 +5421,9 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Nombre maximum de téléchargements simultanés. Les téléchargements dépassant "
+"cette limite seront mis en file d'attente.\n"
+"Ce nombre doit être inférieur à la limite de curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5476,7 +5479,7 @@ msgstr "Nombre maximal de blocs simultanés envoyés par client"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
-msgstr "Taille maximum de la file de sortie de message du chat"
+msgstr "Taille maximum de la file de sortie de message du tchat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5518,7 +5521,7 @@ msgstr "Méthodes utilisées pour l'éclairage des objets."
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr "Verbosité minimale du log dans le chat."
+msgstr "Verbosité minimale de journalisation à écrire dans le tchat."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5629,7 +5632,8 @@ msgid ""
 msgstr ""
 "Nom du joueur.\n"
 "Lors qu'un serveur est lancé, les clients se connectant avec ce nom sont "
-"administrateurs."
+"administrateurs.\n"
+"Lorsque vous démarrez à partir du menu principal, celui-ci est remplacé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5745,8 +5749,9 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
-"Ouvrir le mesure pause lorsque le focus sur la fenêtre est perdu. Ne met pas "
-"en pause si un formspec est ouvert."
+"Ouvre le menu pause lorsque la sélection de la fenêtre est perdue. Ne met "
+"pas en pause\n"
+"si un formspec est ouvert."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5837,14 +5842,12 @@ msgid "Pitch move mode"
 msgstr "Mode de mouvement libre"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Voler"
+msgstr "Touche pour placer"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Intervalle de répétition du clic droit"
+msgstr "Intervalle de répétition du placement"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5852,7 +5855,7 @@ msgid ""
 "This requires the \"fly\" privilege on the server."
 msgstr ""
 "Le joueur est capable de voler sans être affecté par la gravité.\n"
-"Nécessite le privilège \"fly\" sur un serveur."
+"Nécessite le privilège \"fly\" sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
@@ -6260,7 +6263,7 @@ msgid ""
 "A restart is required after changing this."
 msgstr ""
 "Détermine la langue. Laisser vide pour utiliser celui de votre système.\n"
-"Un redémarrage du jeu est nécessaire pour prendre effet."
+"Un redémarrage est nécessaire après cette modification."
 
 #: src/settings_translation_file.cpp
 msgid "Set the maximum character length of a chat message sent by clients."
@@ -6273,9 +6276,8 @@ msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Mettre sur « true » active le mouvement des\n"
-"feuilles d'arbres mouvantes. Nécessite les\n"
-"shaders pour être activé."
+"Mettre sur « true » active le mouvement des feuilles d'arbres mouvantes. "
+"Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6338,18 +6340,16 @@ msgid "Show entity selection boxes"
 msgstr "Afficher les boîtes de sélection de l'entité"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Détermine la langue. Laisser vide pour utiliser celui de votre système.\n"
-"Un redémarrage du jeu est nécessaire pour prendre effet."
+"Afficher les boîtes de sélection de l'entité\n"
+"Un redémarrage est nécessaire après cette modification."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show nametag backgrounds by default"
-msgstr "La police est en gras par défaut"
+msgstr "Afficher l'arrière-plan des badges par défaut"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -6634,9 +6634,8 @@ msgid "The URL for the content repository"
 msgstr "L'URL du dépôt de contenu en ligne"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The deadzone of the joystick"
-msgstr "L'identifiant de la manette à utiliser"
+msgstr "La zone morte du joystick"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6713,7 +6712,6 @@ msgstr ""
 "Ceci devrait être configuré avec 'active_object_send_range_blocks'."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end for Irrlicht.\n"
 "A restart is required after changing this.\n"
@@ -6723,11 +6721,12 @@ msgid ""
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 "Le moteur de rendu utilisé par Irrlicht.\n"
-"Un redémarrage est nécessaire après avoir changé cette option.\n"
-"Il est recommandé de laisser OGLES1 sur Android. Dans le cas contraire, le "
-"jeu risque de planter.\n"
-"Sur les autres plateformes, OpenGL est recommandé, il s'agit du seul moteur\n"
-"à prendre en charge les shaders."
+"Un redémarrage est nécessaire après cette modification.\n"
+"Remarque : Sur Android, restez avec OGLES1 en cas de doute ! Autrement, "
+"l'application peut ne pas démarrer.\n"
+"Sur les autres plateformes, OpenGL est recommandé.\n"
+"Les shaders sont pris en charge par OpenGL (ordinateur de bureau uniquement) "
+"et OGLES2 (expérimental)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6768,23 +6767,24 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Budget de temps alloué aux ABMs pour exécuter à chaque étape (en fraction de "
+"l'intervalle ABM)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
-"L'intervalle en secondes entre des clics droits répétés lors de l'appui sur "
-"le bouton droit de la souris."
+"Le temps en secondes qu'il faut entre des événements répétés lors de l'appui "
+"d'une combinaison de boutons du joystick."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"L'intervalle en secondes entre des clics droits répétés lors de l'appui sur "
-"le bouton droit de la souris."
+"Le temps en secondes qu'il faut entre des placements de blocs répétés lors "
+"de l'appui sur le bouton de placement."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6962,6 +6962,15 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Utilise l'anticrénelage multi-échantillons (MSAA) pour lisser les bords des "
+"blocs.\n"
+"Cet algorithme lisse la vue 3D tout en conservant l'image nette,\n"
+"mais cela ne concerne pas la partie interne des textures\n"
+"(ce qui est particulièrement visible avec des textures transparentes).\n"
+"Des espaces visibles apparaissent entre les blocs lorsque les shaders sont "
+"désactivés.\n"
+"Si définie à 0, MSAA est désactivé.\n"
+"Un redémarrage est nécessaire après la modification de cette option."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7209,6 +7218,8 @@ msgid ""
 "Whether nametag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Si l'arrière-plan des badges doit être affiché par défaut.\n"
+"Les mods peuvent toujours définir un arrière-plan."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -7375,6 +7386,13 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Niveau de compression Zlib à utiliser lors de la sauvegarde des mapblocks "
+"sur le disque.\n"
+"-1 - niveau de compression de Zlib par défaut\n"
+"0 - aucune compression, le plus rapide\n"
+"9 - meilleure compression, le plus lent\n"
+"(les niveaux 1-3 utilisent la méthode \"rapide\", 4-9 utilisent la méthode "
+"normale)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7384,6 +7402,13 @@ msgid ""
 "9 - best compression, slowest\n"
 "(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
+"Niveau de compression Zlib à utiliser lors de l'envoi des mapblocks au "
+"client.\n"
+"-1 - niveau de compression de Zlib par défaut\n"
+"0 - aucune compression, le plus rapide\n"
+"9 - meilleure compression, le plus lent\n"
+"(les niveaux 1-3 utilisent la méthode \"rapide\", 4-9 utilisent la méthode "
+"normale)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
