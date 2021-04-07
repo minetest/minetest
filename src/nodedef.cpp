@@ -520,21 +520,6 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, move_resistance);
 }
 
-void ContentFeatures::correctAlpha(TileDef *tiles, int length)
-{
-	// alpha == 0 means that the node is using texture alpha
-	if (alpha == 0 || alpha == 255)
-		return;
-
-	for (int i = 0; i < length; i++) {
-		if (tiles[i].name.empty())
-			continue;
-		std::stringstream s;
-		s << tiles[i].name << "^[noalpha^[opacity:" << ((int)alpha);
-		tiles[i].name = s.str();
-	}
-}
-
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	// version detection
