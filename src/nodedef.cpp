@@ -622,10 +622,12 @@ void ContentFeatures::deSerialize(std::istream &is)
 			throw SerializationError("");
 		alpha = static_cast<enum AlphaMode>(tmp);
 
-		u8 tmp_move_resistance = readU8(is);
-		if (is.eof())
+		tmp = readU8(is);
+		if (is.eof()) {
+			move_resistance = liquid_viscosity;
 			throw SerializationError("");
-		move_resistance = tmp_move_resistance;
+		}
+		move_resistance = tmp;
 	} catch(SerializationError &e) {};
 }
 
