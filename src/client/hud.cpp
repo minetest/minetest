@@ -864,16 +864,20 @@ void Hud::drawSelectionMesh()
 
 void Hud::toggleBlockBounds()
 {
-	m_block_bounds_enabled = !m_block_bounds_enabled;
+	m_block_bounds_mode++;
+
+	if (m_block_bounds_mode > 2) {
+		m_block_bounds_mode = 0;
+	}
 }
 
 void Hud::drawBlockBounds()
 {
-	if (!m_block_bounds_enabled) {
+	if (!m_block_bounds_mode) {
 		return;	
 	}
 
-	auto old_material = driver->getMaterial2D();
+	video::SMaterial old_material = driver->getMaterial2D();
 	driver->setMaterial(m_selection_material);
 
 	auto pos = player->getStandingNodePos();
@@ -886,12 +890,27 @@ void Hud::drawBlockBounds()
 
 	auto offset = intToFloat(client->getCamera()->getOffset(), BS);
 
-	auto box = aabb3f(
-		intToFloat(blockPos * 16, BS) - offset,
-		intToFloat((blockPos * 16) + 15, BS) - offset
-	);
+	s8 radius = 2;
 
-	driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
+	auto halfNode = v3f(BS, BS, BS) / 2.0f;
+
+	for (s8 x = -radius; x <= radius; x++) {
+		for (s8 y = -radius; y <= radius; y++) {
+			for (s8 z = -radius; z <= radius; z++) {
+				auto blockOffset = v3s16(x, y, z);
+
+				if (blockOffset.getLength() == 0 || m_block_bounds_mode > 1) {
+					auto box = aabb3f(
+						intToFloat((blockPos + blockOffset) * 16, BS) - offset - halfNode,
+						intToFloat(((blockPos + blockOffset) * 16) + 15, BS) - offset + halfNode
+					);
+
+					driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
+				}
+			}
+		}
+	}
+
 	driver->setMaterial(old_material);
 }
 

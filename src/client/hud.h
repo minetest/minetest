@@ -128,7 +128,7 @@ private:
 
 	scene::SMeshBuffer m_rotation_mesh_buffer;
 
-	bool m_block_bounds_enabled = false;
+	u8 m_block_bounds_mode = 0;
 
 	enum
 	{
