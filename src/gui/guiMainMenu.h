@@ -31,6 +31,11 @@ struct MainMenuDataForScript {
 	// Whether the server has requested a reconnect
 	bool reconnect_requested = false;
 	std::string errormessage = "";
+
+	std::string transfer_address;
+	std::string transfer_port;
+	std::string transfer_playername;
+	std::string transfer_password;
 };
 
 struct MainMenuData {

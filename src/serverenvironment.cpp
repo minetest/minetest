@@ -603,6 +603,17 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
 }
 
+void ServerEnvironment::transferPlayer(const std::string &name, const std::string &address, const std::string &port)
+{
+	auto addressPack = address + ";" + port;
+
+	for (RemotePlayer *player : m_players) {
+		if (name.compare(player->getName()) == 0) {
+			m_server->DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_TRANSFER, "Transfer denied.");
+		}
+	}
+}
+
 void ServerEnvironment::saveLoadedPlayers(bool force)
 {
 	for (RemotePlayer *player : m_players) {

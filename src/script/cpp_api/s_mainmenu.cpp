@@ -35,6 +35,12 @@ void ScriptApiMainMenu::setMainMenuData(MainMenuDataForScript *data)
 	}
 	lua_settable(L, gamedata_idx);
 	setboolfield(L, gamedata_idx, "reconnect_requested", data->reconnect_requested);
+
+	setstringfield(L, gamedata_idx, "transfer_address", data->transfer_address);
+	setstringfield(L, gamedata_idx, "transfer_port", data->transfer_port);
+	setstringfield(L, gamedata_idx, "transfer_playername", data->transfer_playername);
+	setstringfield(L, gamedata_idx, "transfer_password", data->transfer_password);
+
 	lua_pop(L, 1);
 }
 

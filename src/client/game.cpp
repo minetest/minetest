@@ -724,6 +724,8 @@ public:
 			const GameStartData &game_params,
 			std::string &error_message,
 			bool *reconnect,
+			std::string &reconnect_address,
+			std::string &reconnect_port,
 			ChatBackend *chat_backend);
 
 	void run();
@@ -942,6 +944,8 @@ private:
 	bool *kill;
 	std::string *error_message;
 	bool *reconnect_requested;
+	std::string *reconnect_address;
+	std::string *reconnect_port;
 	scene::ISceneNode *skybox;
 	PausedNodesList paused_animated_nodes;
 
@@ -1119,6 +1123,8 @@ bool Game::startup(bool *kill,
 		const GameStartData &start_data,
 		std::string &error_message,
 		bool *reconnect,
+		std::string &reconnect_address,
+		std::string &reconnect_port,
 		ChatBackend *chat_backend)
 {
 
@@ -1127,7 +1133,9 @@ bool Game::startup(bool *kill,
 	device                    = m_rendering_engine->get_raw_device();
 	this->kill                = kill;
 	this->error_message       = &error_message;
-	reconnect_requested       = reconnect;
+	this->reconnect_requested = reconnect;
+	this->reconnect_address   = &reconnect_address;
+	this->reconnect_port = &reconnect_port;
 	this->input               = input;
 	this->chat_backend        = chat_backend;
 	simple_singleplayer_mode  = start_data.isSinglePlayer();
@@ -1645,12 +1653,8 @@ bool Game::connectToServer(const GameStartData &start_data,
 			if (*connection_aborted)
 				break;
 
-			if (client->accessDenied()) {
-				*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
-				*reconnect_requested = client->reconnectRequested();
-				errorstream << *error_message << std::endl;
+			if (!checkConnection())
 				break;
-			}
 
 			if (input->cancelPressed()) {
 				*connection_aborted = true;
@@ -1788,6 +1792,8 @@ inline bool Game::checkConnection()
 	if (client->accessDenied()) {
 		*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 		*reconnect_requested = client->reconnectRequested();
+		*reconnect_address = client->getReconnectAddress();
+		*reconnect_port = client->getReconnectPort();
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -4525,7 +4531,9 @@ void the_game(bool *kill,
 		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested) // Used for local game
+		bool *reconnect_requested,
+		std::string &reconnect_address,
+		std::string &reconnect_port) // Used for local game
 {
 	Game game;
 
@@ -4536,8 +4544,8 @@ void the_game(bool *kill,
 
 	try {
 
-		if (game.startup(kill, input, rendering_engine, start_data,
-				error_message, reconnect_requested, &chat_backend)) {
+		if (game.startup(kill, input, rendering_engine, start_data, error_message,
+				reconnect_requested, reconnect_address, reconnect_port, &chat_backend)) {
 			game.run();
 		}
 
