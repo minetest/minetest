@@ -160,16 +160,15 @@ minetest.register_node("testnodes:6sides_liquid", {
 	drawtype = "liquid",
 	waving = 3,
 	tiles = {
-		"testnodes_normal1.png^[opacity:192",
-		"testnodes_normal2.png^[opacity:192",
-		"testnodes_normal3.png^[opacity:192",
-		"testnodes_normal4.png^[opacity:192",
-		"testnodes_normal5.png^[opacity:192",
-		"testnodes_normal6.png^[opacity:192",
+		"testnodes_normal1.png^[colorize:#4040FF80^[opacity:192",
+		"testnodes_normal2.png^[colorize:#4040FF80^[opacity:192",
+		"testnodes_normal3.png^[colorize:#4040FF80^[opacity:192",
+		"testnodes_normal4.png^[colorize:#4040FF80^[opacity:192",
+		"testnodes_normal5.png^[colorize:#4040FF80^[opacity:192",
+		"testnodes_normal6.png^[colorize:#4040FF80^[opacity:192",
 	},
 	use_texture_alpha = "blend",
 	paramtype = "light",
 	walkable = false,
 	groups = { water = 3, liquid = 3, dig_immediate = 3 },
 })
-minetest.register_alias("testnodes:multitile_liquid", "testnodes:6sides_liquid")
