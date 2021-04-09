@@ -199,13 +199,10 @@ jobs:
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
-    #### Disabled due to Irrlicht switch
-    if: false
-    #### Disabled due to Irrlicht switch
     env:
-      VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
-#                    2020.11
-      vcpkg_packages: irrlicht zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      VCPKG_VERSION: 5cf60186a241e84e8232641ee973395d4fde90e1
+      # 2022.02
+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.config.vcpkg_triplet }}
     strategy:
       fail-fast: false
       matrix:
@@ -227,18 +224,23 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.4.0
+
+      - name: Checkout IrrlichtMT
+        uses: actions/checkout@v2.4.0
+        with:
+          repository: minetest/irrlicht
+          path: lib/irrlichtmt/
+          ref: "1.9.0mt4"
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v5
+        uses: lukka/run-vcpkg@v10.1
         with:
-          vcpkgArguments: ${{env.vcpkg_packages}}
-          vcpkgDirectory: '${{ github.workspace }}\vcpkg'
           appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
-          vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
+          vcpkgJsonGlob: '**/util/ci/vcpkg.json'
 
-      - name: CMake
+      - name: Minetest CMake
         run: |
           cmake ${{matrix.config.generator}}  `
           -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
@@ -246,7 +248,7 @@ jobs:
           -DENABLE_POSTGRESQL=OFF  `
           -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
 
-      - name: Build
+      - name: Build Minetest
         run: cmake --build . --config Release
 
       - name: CPack

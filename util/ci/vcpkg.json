@@ -1,0 +1,24 @@
+{
+	"name": "minetest",
+	"version-string": "5.5.0",
+	"dependencies": [
+		"zlib",
+		"zstd",
+		{
+			"name": "curl",
+			"features": [
+				"winssl"
+			]
+		},
+		"openal-soft",
+		"libvorbis",
+		"libogg",
+		"libjpeg-turbo",
+		"sqlite3",
+		"freetype",
+		"luajit",
+		"gmp",
+		"jsoncpp",
+		"opengl-registry"
+	]
+}

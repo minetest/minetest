@@ -30,8 +30,9 @@ perform_release() {
 
 	sed -i '/\<release/s/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
 	sed -i 's/\(<release date\)="[^"]*"/\1="'"$RELEASE_DATE"'"/' misc/net.minetest.minetest.appdata.xml
+	sed -i 's/\(\"version-string\"\): "[^"]*"/\1: "'"$RELEASE_VERSION"'"/' util/ci/vcpkg.json
 
-	git add -f CMakeLists.txt android/build.gradle misc/net.minetest.minetest.appdata.xml
+	git add -f CMakeLists.txt android/build.gradle misc/net.minetest.minetest.appdata.xml util/ci/vcpkg.json
 
 	git commit -m "Bump version to $RELEASE_VERSION"
 
