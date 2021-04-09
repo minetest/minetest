@@ -316,6 +316,9 @@ public:
 
 	bool reconnectRequested() const { return m_access_denied_reconnect; }
 
+	std::string getReconnectAddress() const { return m_access_denied_reconnect_address; }
+	std::string getReconnectPort() const { return m_access_denied_reconnect_port; }
+
 	void setFatalError(const std::string &reason)
 	{
 		m_access_denied = true;
@@ -523,6 +526,8 @@ private:
 
 	bool m_access_denied = false;
 	bool m_access_denied_reconnect = false;
+	std::string m_access_denied_reconnect_address = "";
+	std::string m_access_denied_reconnect_port = "";
 	std::string m_access_denied_reason = "";
 	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;

@@ -558,6 +558,18 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	}
 }
 
+void ServerEnvironment::transferPlayer(const std::string &name, const std::string &address, const std::string &port)
+{
+	auto addressPack = address + ";" + port;
+
+	for (RemotePlayer *player : m_players) {
+		if (name.compare(player->getName()) == 0) {
+			m_server->DenyAccessVerCompliant(player->getPeerId(),
+				player->protocol_version, SERVER_ACCESSDENIED_TRANSFER, addressPack);
+		}
+	}
+}
+
 void ServerEnvironment::saveLoadedPlayers(bool force)
 {
 	for (RemotePlayer *player : m_players) {

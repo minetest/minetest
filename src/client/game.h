@@ -48,4 +48,6 @@ void the_game(bool *kill,
 		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested);
+		bool *reconnect_requested,
+		std::string &reconnect_address,
+		std::string &reconnect_port);

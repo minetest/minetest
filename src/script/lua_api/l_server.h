@@ -27,6 +27,8 @@ private:
 	// request_shutdown([message], [reconnect])
 	static int l_request_shutdown(lua_State *L);
 
+	static int l_transfer_player(lua_State *L);
+
 	// get_server_status()
 	static int l_get_server_status(lua_State *L);
 

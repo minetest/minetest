@@ -213,6 +213,7 @@ public:
 
 	void kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect);
+	void transferPlayer(const std::string &name, const std::string &address, const std::string &port);
 	// Save players
 	void saveLoadedPlayers(bool force = false);
 	void savePlayer(RemotePlayer *player);

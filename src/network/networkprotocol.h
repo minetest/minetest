@@ -1008,6 +1008,7 @@ enum AccessDeniedCode {
 	SERVER_ACCESSDENIED_CUSTOM_STRING,
 	SERVER_ACCESSDENIED_SHUTDOWN,
 	SERVER_ACCESSDENIED_CRASH,
+	SERVER_ACCESSDENIED_TRANSFER,
 	SERVER_ACCESSDENIED_MAX,
 };
 
@@ -1028,7 +1029,8 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"Server authentication failed.  This is likely a server error.",
 	"",
 	"Server shutting down.",
-	"This server has experienced an internal error. You will now be disconnected."
+	"This server has experienced an internal error. You will now be disconnected.",
+	"Server is requesting a transfer"
 };
 
 enum PlayerListModifer : u8

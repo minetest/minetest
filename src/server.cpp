@@ -1381,7 +1381,8 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
 	pkt << (u8)reason;
-	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING)
+	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING ||
+			reason == SERVER_ACCESSDENIED_TRANSFER)
 		pkt << custom_reason;
 	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
 			reason == SERVER_ACCESSDENIED_CRASH)

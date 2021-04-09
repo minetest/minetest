@@ -206,6 +206,16 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
+	} else if (denyCode == SERVER_ACCESSDENIED_TRANSFER) {
+		std::string addressPack;
+		*pkt >> addressPack;
+
+		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reconnect = true;
+
+		size_t splitAt = addressPack.find(';');
+		m_access_denied_reconnect_address = addressPack.substr(0, splitAt);
+		m_access_denied_reconnect_port = addressPack.substr(splitAt + 1);
 	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
 	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
