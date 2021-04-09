@@ -90,8 +90,11 @@ function serverlistmgr.sync()
 end
 
 --------------------------------------------------------------------------------
-local function get_favorites_path()
+local function get_favorites_path(folder)
 	local base = core.get_user_path() .. DIR_DELIM .. "client" .. DIR_DELIM .. "serverlist" .. DIR_DELIM
+	if folder then
+		return base
+	end
 	return base .. core.settings:get("serverlist_file")
 end
 
@@ -103,9 +106,8 @@ local function save_favorites(favorites)
 		core.settings:set("serverlist_file", filename:sub(1, #filename - 4) .. ".json")
 	end
 
-	local path = get_favorites_path()
-	core.create_dir(path)
-	core.safe_file_write(path, core.write_json(favorites))
+	assert(core.create_dir(get_favorites_path(true)))
+	core.safe_file_write(get_favorites_path(), core.write_json(favorites))
 end
 
 --------------------------------------------------------------------------------

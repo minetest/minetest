@@ -58,7 +58,7 @@ private:
 	 * @param path path to check
 	 * @return true if the path may be modified
 	 */
-	static bool mayModifyPath(const std::string &path);
+	static bool mayModifyPath(std::string path);
 
 	//api calls
 
