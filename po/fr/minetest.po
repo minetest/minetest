@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-10 12:07+0000\n"
-"Last-Translator: Brian Gaucher <brianphineasgaucher@gmail.com>\n"
+"PO-Revision-Date: 2021-04-10 15:49+0000\n"
+"Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -154,7 +154,7 @@ msgstr "activé"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" existe déjà. Voulez-vous l'écraser ?"
+msgstr "« $1 » existe déjà. Voulez-vous l'écraser ?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -284,7 +284,7 @@ msgstr "Voir plus d'informations dans un navigateur web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Le monde \"$1\" existe déjà"
+msgstr "Le monde « $1 » existe déjà"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -483,7 +483,7 @@ msgstr "Vous n'avez pas de jeu installé."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Êtes-vous sûr de vouloir supprimer \"$1\" ?"
+msgstr "Êtes-vous sûr de vouloir supprimer « $1 » ?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -493,15 +493,15 @@ msgstr "Supprimer"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "Le gestionnaire de mods n'a pas pu supprimer \"$1\""
+msgstr "Le gestionnaire de mods n'a pas pu supprimer « $1 »"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "Gestionnaire de mods : chemin de mod invalide \"$1\""
+msgstr "Gestionnaire de mods : chemin de mod invalide « $1 »"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Supprimer le monde \"$1\" ?"
+msgstr "Supprimer le monde « $1 » ?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -676,12 +676,12 @@ msgstr ""
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
-"Installation d'un mod : type de fichier non supporté \"$1\" ou archive "
+"Installation d'un mod : type de fichier non supporté « $1 » ou archive "
 "endommagée"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr "Installation : fichier : \"$1\""
+msgstr "Installation : fichier : « $1 »"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -1353,7 +1353,7 @@ msgstr "Mio/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr "La minimap est actuellement désactivée par un jeu ou un mod"
+msgstr "Mini-carte actuellement désactivée par un jeu ou un mod"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1445,7 +1445,7 @@ msgstr "Distance de vue minimale : %d"
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr "Volume réglé sur %d%%"
+msgstr "Volume réglé sur %d %%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -1796,7 +1796,7 @@ msgstr "Procéder"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Special\" = climb down"
-msgstr "\"Spécial\" = descendre"
+msgstr "« Spécial » = descendre"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -1984,8 +1984,8 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
-"(Android) Fixe la position du joystick virtuel.\n"
-"Si désactivé, le joystick virtuel sera centré sur la position du doigt "
+"(Android) Fixe la position de la manette virtuel.\n"
+"Si désactivé, la manette virtuelle sera centrée sur la position du doigt "
 "principal."
 
 #: src/settings_translation_file.cpp
@@ -1994,8 +1994,8 @@ msgid ""
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Utiliser le joystick vrituel pour déclencher le bouton « aux ».\n"
-"Si activé, le joystick virtuel va également appuyer sur le bouton « aux » "
+"(Android) Utiliser la manette virtuelle pour déclencher le bouton « aux ».\n"
+"Si activé, la manette virtuelle va également appuyer sur le bouton « aux » "
 "lorsqu'en dehors du cercle principal."
 
 #: src/settings_translation_file.cpp
@@ -2237,7 +2237,7 @@ msgstr ""
 "Règle la densité de la couche des îles volantes.\n"
 "Augmenter la valeur pour augmenter la densité. Peut être positive ou "
 "négative.\n"
-"Valeur = 0,0 : 50% du volume est île volante.\n"
+"Valeur = 0,0 : 50 % du volume est île volante.\n"
 "Valeur = 2,0 (peut être plus élevée selon « mgv7_np_floatland », toujours "
 "vérifier\n"
 "pour être sûr) crée une couche d'île volante solide."
@@ -2254,10 +2254,10 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-"Il modifie la courbe de lumière en lui appliquant une \"correction gamma\".\n"
+"Il modifie la courbe de lumière en lui appliquant une « correction gamma ».\n"
 "Des valeurs plus élevées rendent les niveaux de lumière moyens et inférieurs "
 "plus lumineux.\n"
-"La valeur \"1.0\" laisse la courbe de lumière intacte.\n"
+"La valeur '1,0' laisse la courbe de lumière intacte.\n"
 "Cela n'a d'effet significatif que sur la lumière du jour et les\n"
 "la lumière, et elle a très peu d'effet sur la lumière naturelle de la nuit."
 
@@ -2357,7 +2357,7 @@ msgstr "Déclarer automatiquement le serveur à la liste des serveurs publics."
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
-msgstr "Sauver auto. la taile d'écran"
+msgstr "Sauvegarde automatique de la taille d'écran"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
@@ -2381,7 +2381,7 @@ msgstr "Principal"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
-msgstr "Privilèges par défaut"
+msgstr "Privilèges de base"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
@@ -2446,12 +2446,12 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Distance de la caméra 'près de la plane de coupure' dans les nœuds, valeur "
-"entre 0 et 0,5.\n"
+"Distance de la caméra 'près du plan de coupure' dans les nœuds, entre 0 et 0,"
+"25\n"
 "Ne fonctionne que sur les plateformes GLES. La plupart des utilisateurs n’"
 "auront pas besoin de changer cela.\n"
-"L’augmentation peut réduire les artefacts sur des GPU plus faibles.\n"
-"0,1 - Par défaut, 0,25 - Bonne valeur pour les comprimés plus faibles."
+"L’augmentation peut réduire les artefacts sur des GPUs plus faibles.\n"
+"0,1 = Défaut, 0,25 = Bonne valeur pour les tablettes plus faibles."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2514,9 +2514,9 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
-"Gamme de poussée de courbe de centre de lumière.\n"
-"Lorsque 0,0 est le niveau de lumière minimum, et 1,0 est le niveau de "
-"lumière maximum."
+"Centre de la plage d'amplification de la courbe de lumière.\n"
+"Où 0,0 est le niveau de lumière minimum, et 1,0 est le niveau de lumière "
+"maximum."
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2612,7 +2612,7 @@ msgstr "Nuages dans le menu"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr "Brume colorée"
+msgstr "Brouillard colorée"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2625,7 +2625,7 @@ msgid ""
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
 "Liste des drapeaux à cacher du dépôt des contenus.\n"
-"\"nonfree\" peut être utilisé pour cacher les paquets non libres,\n"
+"« nonfree » peut être utilisé pour cacher les paquets non libres,\n"
 "comme défini par la Free Software Foundation.\n"
 "Vous pouvez aussi spécifier des classifications de contenu.\n"
 "Ces drapeaux sont indépendants des versions de Minetest,\n"
@@ -3031,7 +3031,7 @@ msgstr "Activer le mode créatif pour tous les joueurs"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
-msgstr "Activer les joysticks"
+msgstr "Activer les manettes"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3130,11 +3130,11 @@ msgid ""
 "appearance of high dynamic range images. Mid-range contrast is slightly\n"
 "enhanced, highlights and shadows are gradually compressed."
 msgstr ""
-"Permet à Hable 'Uncharted 2' de cartographier les tonalités du film.\n"
-"Simule la courbe des tons du film photographique, ce qui se rapproche de la\n"
+"Active le mappage de ton filmique 'Uncharted 2' de Hable.\n"
+"Simule la courbe des tons du film photographique, ce qui se rapproche de la "
 "l'apparition d'images à plage dynamique élevée. Le contraste de milieu de "
-"gamme est légèrement\n"
-"améliorées, les reflets et les ombres sont progressivement compressés."
+"gamme est légèrement améliorées, les reflets et les ombres sont "
+"progressivement compressés."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -3238,8 +3238,8 @@ msgid ""
 "Fast movement (via the \"special\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Mouvement rapide (via la touche « utiliser »).\n"
-"Nécessite le privilège « rapide» sur le serveur."
+"Mouvement rapide (via la touche « spécial »).\n"
+"Nécessite le privilège « fast » sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3278,10 +3278,9 @@ msgid ""
 "light edge to transparent textures. Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
-"Les textures filtrées peuvent mélanger des valeurs RGB avec des zones 100 % "
-"transparentes.\n"
-"aboutissant parfois à des bords foncés ou clairs sur les textures "
-"transparentes.\n"
+"Les textures filtrées peuvent mélanger des valeurs RGB avec des zones 100 % "
+"transparentes, aboutissant parfois à des bords foncés ou clairs sur les "
+"textures transparentes.\n"
 "Appliquer ce filtre pour nettoyer cela au chargement de la texture."
 
 #: src/settings_translation_file.cpp
@@ -3304,7 +3303,7 @@ msgstr "Graine de génération de terrain déterminée"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr "Fixer le joystick virtuel"
+msgstr "Fixer la manette virtuelle"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
@@ -3344,7 +3343,7 @@ msgstr "Voler"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr "Brume"
+msgstr "Brouillard"
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
@@ -3352,7 +3351,7 @@ msgstr "Début du brouillard"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr "Brume"
+msgstr "Brouillard"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3360,7 +3359,7 @@ msgstr "La police est en gras par défaut"
 
 #: src/settings_translation_file.cpp
 msgid "Font italic by default"
-msgstr "La police est en gras par défaut"
+msgstr "La police est en italique par défaut"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
@@ -3392,7 +3391,7 @@ msgid ""
 "Value 0 will use the default font size."
 msgstr ""
 "Taille de police (en pt) des messages récents et du curseur.\n"
-"Une valeur nulle correspond à la taille par défaut."
+"La valeur 0 correspond à la taille par défaut."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3616,7 +3615,7 @@ msgstr "Bruit de chaleur"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr "Résolution verticale de la fenêtre de jeu."
+msgstr "Composant de hauteur de la taille initiale de la fenêtre."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3881,7 +3880,7 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
-"Si désactivé, la touche \"spécial\" est utilisée pour voler vite si les "
+"Si désactivé, la touche « spécial » est utilisée pour voler vite si les "
 "modes vol et rapide sont activés."
 
 #: src/settings_translation_file.cpp
@@ -3893,10 +3892,10 @@ msgid ""
 "so that the utility of noclip mode is reduced."
 msgstr ""
 "Si activé, le serveur n'enverra pas les blocs qui ne sont pas visibles par\n"
-"le client en fonction de sa position. Cela peut réduire de 50% à 80%\n"
+"le client en fonction de sa position. Cela peut réduire de 50 % à 80 %\n"
 "le nombre de blocs envoyés. Le client ne pourra plus voir ces blocs à moins\n"
-"de se déplacer, ce qui réduit l'efficacité des tricheries du style \"noclip"
-"\"."
+"de se déplacer, ce qui réduit l'efficacité des tricheries du style « noclip "
+"»."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3906,7 +3905,7 @@ msgid ""
 msgstr ""
 "Si activé avec le mode vol, le joueur sera capable de traverser les blocs "
 "solides en volant.\n"
-"Nécessite le privilège \"noclip\" sur le serveur."
+"Nécessite le privilège « noclip » sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3914,8 +3913,8 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
-"Si activé, la touche \"special\" est utilisée à la place de la touche "
-"\"s’accroupir\" pour monter ou descendre."
+"Si activé, la touche « spécial » est utilisée à la place de la touche « s’"
+"accroupir » pour monter ou descendre."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3968,9 +3967,8 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
-"Si les restrictions CSM pour la distance des nodes sont activée, les appels "
-"à get_node sont limités\n"
-"à la distance entre le joueur et le node."
+"Si la restriction CSM pour la distance des blocs est activé, les appels "
+"get_node sont limités à la distance entre le joueur et le bloc."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4007,7 +4005,7 @@ msgstr "Couleur de fond de la console du jeu (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
-msgstr "Hauteur de la console de tchat du jeu, entre 0.1 (10%) et 1.0 (100%)."
+msgstr "Hauteur de la console de tchat du jeu, entre 0.1 (10 %) et 1.0 (100 %)."
 
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
@@ -4121,15 +4119,15 @@ msgstr "ID de manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr "Intervalle de répétition des boutons du Joystick"
+msgstr "Intervalle de répétition des boutons de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick deadzone"
-msgstr "Zone morte du joystick"
+msgstr "Zone morte de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr "Sensibilité tronconique du joystick"
+msgstr "Sensibilité tronconique de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
@@ -4821,7 +4819,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour passer en mode \"sans-collision\".\n"
+"Touche pour passer en mode sans-collision.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4872,7 +4870,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour afficher/cacher la brume.\n"
+"Touche pour afficher/cacher le brouillard.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4990,9 +4988,7 @@ msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over\n"
 "network."
-msgstr ""
-"Temps d'intervalle entre la mise à jour des objets sur le\n"
-"réseau."
+msgstr "Temps d'intervalle entre la mise à jour des objets sur le réseau."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5036,11 +5032,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
-msgstr "Boost de courbe de lumière"
+msgstr "Amplification de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost center"
-msgstr "Centre de boost de courbe de lumière"
+msgstr "Centre d'amplification de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost spread"
@@ -5105,11 +5101,11 @@ msgstr "Écoulement du liquide"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
-msgstr "Intervalle de mise-à-jour des liquides en secondes."
+msgstr "Intervalle de mise à jour des liquides en secondes."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr "Intervalle de mise-à-jour des liquides"
+msgstr "Intervalle de mise à jour des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
@@ -5145,8 +5141,8 @@ msgstr "Script du menu principal"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
-"Rendre la couleur de la brume et du ciel différents selon l'heure du jour "
-"(aube/crépuscule) et la direction du regard."
+"Rendre la couleur du brouillard et du ciel différents selon l'heure du jour ("
+"aube/crépuscule) et la direction du regard."
 
 #: src/settings_translation_file.cpp
 msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
@@ -5379,8 +5375,7 @@ msgid ""
 "high speed."
 msgstr ""
 "Résistance maximale aux liquides. Contrôle la décélération lorsqu'un joueur "
-"entre dans un liquide à\n"
-"haute vitesse."
+"entre dans un liquide à haute vitesse."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5531,7 +5526,7 @@ msgstr "Mini-carte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
-msgstr "Hauteur de scannage de la mini-carte"
+msgstr "Hauteur de balayage de la mini-carte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
@@ -5762,8 +5757,8 @@ msgid ""
 "unavailable."
 msgstr ""
 "Chemin de la police de repli.\n"
-"Si le paramètre \"freetype\" est activé : doit être une police TrueType.\n"
-"Si le paramètre \"freetype\" est désactivé : doit être une police de "
+"Si le paramètre « freetype » est activé : doit être une police TrueType.\n"
+"Si le paramètre « freetype » est désactivé : doit être une police de "
 "vecteurs bitmap ou XML.\n"
 "Cette police sera utilisée pour certaines langues ou si la police par défaut "
 "n’est pas disponible."
@@ -5798,8 +5793,8 @@ msgid ""
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Chemin vers la police par défaut.\n"
-"Si le paramètre \"freetype\" est activé : doit être une police TrueType.\n"
-"Si le paramètre \"freetype\" est désactivé : doit être une police de "
+"Si le paramètre « freetype » est activé : doit être une police TrueType.\n"
+"Si le paramètre « freetype » est désactivé : doit être une police de "
 "vecteurs bitmap ou XML.\n"
 "La police de rentrée sera utilisée si la police ne peut pas être chargée."
 
@@ -5811,15 +5806,15 @@ msgid ""
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Chemin vers la police monospace.\n"
-"Si \"freetype\" est activé : doit être une police TrueType.\n"
-"Si \"freetype\" est désactivé : doit être une police de vecteurs bitmap ou "
+"Si « freetype » est activé : doit être une police TrueType.\n"
+"Si « freetype » est désactivé : doit être une police de vecteurs bitmap ou "
 "XML.\n"
 "Cette police est utilisée par exemple pour la console et l’écran du "
 "profileur."
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
-msgstr "Mettre en pause sur perte du focus de la fenêtre"
+msgstr "Mettre en pause sur perte de sélection de la fenêtre"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
@@ -5855,7 +5850,7 @@ msgid ""
 "This requires the \"fly\" privilege on the server."
 msgstr ""
 "Le joueur est capable de voler sans être affecté par la gravité.\n"
-"Nécessite le privilège \"fly\" sur le serveur."
+"Nécessite le privilège « fly  » sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
@@ -5946,7 +5941,7 @@ msgid ""
 "corners."
 msgstr ""
 "Rayon de l'aire des nuages où se trouve 64 blocs carrés de nuages.\n"
-"Les valeurs plus grandes que 26 entraînent une \"coupure\" nette des nuages "
+"Les valeurs plus grandes que 26 entraînent une « coupure » nette des nuages "
 "aux coins de l'aire."
 
 #: src/settings_translation_file.cpp
@@ -6090,7 +6085,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr "Sauvegarde le monde du serveur sur le disque-dur du client."
+msgstr "Sauvegarde le monde du serveur sur le disque dur du client."
 
 #: src/settings_translation_file.cpp
 msgid "Save window size automatically when modified."
@@ -6204,24 +6199,24 @@ msgid ""
 "18 = 4D \"Mandelbulb\" Julia set."
 msgstr ""
 "Choisit parmi 18 types de fractales.\n"
-"1 = réglage Mandelbrot \"Roundy\" 4D.\n"
-"2 = réglage Julia \"Roundy\" 4D.\n"
-"3 = réglage Mandelbrot \"Squarry\" 4D.\n"
-"4 = réglage Julia \"Squarry\" 4D.\n"
-"5 = réglage Mandelbrot \"Cousin Mandy\" 4D.\n"
-"6 = réglage Julia \"Cousin Mandy\" 4D.\n"
-"7 = réglage Mandelbrot \"Variation\" 4D.\n"
-"8 = réglage Julia \"Variation\" 4D.\n"
-"9 = réglage Mandelbrot \"Mandelbrot/Mandelbar\" 3D.\n"
-"10 = réglage Julia \"Mandelbrot/Mandelbar\" 3D.\n"
-"11 = réglage Mandelbrot \"Christmas Tree\" 3D.\n"
-"12 = réglage Julia \"Christmas Tree\" 3D.\n"
-"13 = réglage Mandelbrot \"Mandelbulb\" 3D.\n"
-"14 = réglage Julia \"Mandelbulb\" 3D.\n"
-"15 = réglage Mandelbrot \"Cosine Mandelbulb\" 3D.\n"
-"16 = réglage Julia \"Cosine Mandelbulb\" 3D.\n"
-"17 = réglage Mandelbrot \"Mandelbulb\" 4D.\n"
-"18 = réglage Julia \"Mandelbulb\" 4D."
+"1 = réglage Mandelbrot « Roundy » 4D.\n"
+"2 = réglage Julia « Roundy » 4D.\n"
+"3 = réglage Mandelbrot « Squarry » 4D.\n"
+"4 = réglage Julia « Squarry » 4D.\n"
+"5 = réglage Mandelbrot « Cousin Mandy » 4D.\n"
+"6 = réglage Julia « Cousin Mandy » 4D.\n"
+"7 = réglage Mandelbrot « Variation » 4D.\n"
+"8 = réglage Julia « Variation » 4D.\n"
+"9 = réglage Mandelbrot « Mandelbrot/Mandelbar » 3D.\n"
+"10 = réglage Julia « Mandelbrot/Mandelbar » 3D.\n"
+"11 = réglage Mandelbrot « Christmas Tree » 3D.\n"
+"12 = réglage Julia « Christmas Tree » 3D.\n"
+"13 = réglage Mandelbrot « Mandelbulb » 3D.\n"
+"14 = réglage Julia « Mandelbulb » 3D.\n"
+"15 = réglage Mandelbrot « Cosine Mandelbulb » 3D.\n"
+"16 = réglage Julia « Cosine Mandelbulb » 3D.\n"
+"17 = réglage Mandelbrot « Mandelbulb » 4D.\n"
+"18 = réglage Julia « Mandelbulb » 4D."
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -6494,7 +6489,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr "Emplacement du spawn statique"
+msgstr "Point d'apparition statique"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
@@ -6636,7 +6631,7 @@ msgstr "L'URL du dépôt de contenu en ligne"
 
 #: src/settings_translation_file.cpp
 msgid "The deadzone of the joystick"
-msgstr "La zone morte du joystick"
+msgstr "La zone morte de la manette"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6734,8 +6729,8 @@ msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "ingame view frustum around."
 msgstr ""
-"Sensibilité de la souris pour déplacer la \n"
-"vue en jeu autour du tronc."
+"Sensibilité des axes de la manette pour déplacer la vue en jeu autour du "
+"tronc."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6747,9 +6742,9 @@ msgstr ""
 "Force (obscurité) de l'ombrage des blocs avec l'occlusion ambiante.\n"
 "Les valeurs plus basses sont plus sombres, les valeurs plus hautes sont plus "
 "claires.\n"
-"Une gamme valide de valeurs pour ceci se situe entre 0.25 et 4.0. Si la "
-"valeur est en dehors\n"
-"de cette gamme alors elle sera définie à la plus proche des valeurs valides."
+"Une gamme valide de valeurs pour ceci se situe entre 0,25 et 4,0. Si la "
+"valeur est en dehors de cette gamme alors elle sera définie à la plus proche "
+"des valeurs valides."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6757,11 +6752,10 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
-"Le temps (en secondes) où la file des liquides peut s'agrandir au-delà de "
-"sa\n"
+"Le temps (en secondes) où la file des liquides peut s'agrandir au-delà de sa "
 "capacité de traitement jusqu'à ce qu'une tentative soit faite pour réduire "
-"sa taille en vidant\n"
-"l'ancienne file d'articles. Une valeur de 0 désactive cette fonctionnalité."
+"sa taille en vidant l'ancienne file d'articles.\n"
+"Une valeur de 0 désactive cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6777,7 +6771,7 @@ msgid ""
 "when holding down a joystick button combination."
 msgstr ""
 "Le temps en secondes qu'il faut entre des événements répétés lors de l'appui "
-"d'une combinaison de boutons du joystick."
+"d'une combinaison de boutons de la manette."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6875,8 +6869,8 @@ msgid ""
 "False = 128\n"
 "Usable to make minimap smoother on slower machines."
 msgstr ""
-"True = 256\n"
-"False = 128\n"
+"Activé = 256\n"
+"Désactive = 128\n"
 "Utile pour rendre la mini-carte plus fluide sur des ordinateurs peu "
 "performants."
 
@@ -6949,8 +6943,8 @@ msgid ""
 "Gamma correct downscaling is not supported."
 msgstr ""
 "Utilisez le mappage MIP pour mettre à l'échelle les textures. Peut augmenter "
-"légèrement les performances,\n"
-"surtout si vous utilisez un pack de textures haute résolution.\n"
+"légèrement les performances, surtout si vous utilisez un pack de textures "
+"haute résolution.\n"
 "La réduction d'échelle gamma correcte n'est pas prise en charge."
 
 #: src/settings_translation_file.cpp
@@ -7076,7 +7070,7 @@ msgstr "Plage de visualisation"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers aux button"
-msgstr "Joystick virtuel déclenche le bouton aux"
+msgstr "Manette virtuelle déclenche le bouton aux"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
@@ -7189,18 +7183,14 @@ msgid ""
 "texture autoscaling."
 msgstr ""
 "En utilisant le filtrage bilinéaire/trilinéaire/anisotrope, les textures de "
-"basse résolution\n"
-"peuvent être brouillées. Elles seront donc automatiquement agrandies avec l'"
-"interpolation\n"
-"du plus proche voisin pour garder des pixels moins floues. Ceci détermine la "
-"taille de la texture minimale\n"
-"pour les textures agrandies ; les valeurs plus hautes rendent plus "
-"détaillées, mais nécessitent\n"
-"plus de mémoire. Les puissances de 2 sont recommandées. Définir une valeur "
-"supérieure à 1 peut ne pas\n"
-"avoir d'effet visible sauf si le filtrage bilinéaire/trilinéaire/anisotrope "
-"est activé.\n"
-"Ceci est également utilisée comme taille de texture de nœud par défaut pour\n"
+"basse résolution peuvent être brouillées. Elles seront donc automatiquement "
+"agrandies avec l'interpolation du plus proche voisin pour garder des pixels "
+"moins floues. Ceci détermine la taille de la texture minimale pour les "
+"textures agrandies ; les valeurs plus hautes rendent plus détaillées, mais "
+"nécessitent plus de mémoire. Les puissances de 2 sont recommandées. Définir "
+"une valeur supérieure à 1 peut ne pas avoir d'effet visible sauf si le "
+"filtrage bilinéaire/trilinéaire/anisotrope est activé.\n"
+"Ceci est également utilisée comme taille de texture de nœud par défaut pour "
 "l'agrandissement des textures basé sur le monde."
 
 #: src/settings_translation_file.cpp
@@ -7248,7 +7238,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr "Détermine la visibilité de la brume au bout de l'aire visible."
+msgstr "Détermine la visibilité du brouillard au bout de l'aire visible."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7273,7 +7263,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
-msgstr "Résolution verticale de la fenêtre de jeu."
+msgstr "Composant de largeur de la taille initiale de la fenêtre."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -7392,7 +7382,7 @@ msgstr ""
 "-1 - niveau de compression de Zlib par défaut\n"
 "0 - aucune compression, le plus rapide\n"
 "9 - meilleure compression, le plus lent\n"
-"(les niveaux 1-3 utilisent la méthode \"rapide\", 4-9 utilisent la méthode "
+"(les niveaux 1-3 utilisent la méthode « rapide », 4-9 utilisent la méthode "
 "normale)"
 
 #: src/settings_translation_file.cpp
@@ -7408,7 +7398,7 @@ msgstr ""
 "-1 - niveau de compression de Zlib par défaut\n"
 "0 - aucune compression, le plus rapide\n"
 "9 - meilleure compression, le plus lent\n"
-"(les niveaux 1-3 utilisent la méthode \"rapide\", 4-9 utilisent la méthode "
+"(les niveaux 1-3 utilisent la méthode « rapide », 4-9 utilisent la méthode "
 "normale)"
 
 #: src/settings_translation_file.cpp
