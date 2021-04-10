@@ -55,7 +55,7 @@ if(NOT USE_CURL)
 endif()
 
 
-option(ENABLE_GETTEXT "Use GetText for internationalization" TRUE)
+option(ENABLE_GETTEXT "Use GetText for internationalization" ${BUILD_CLIENT})
 set(USE_GETTEXT FALSE)
 
 if(ENABLE_GETTEXT)
@@ -120,13 +120,13 @@ endif()
 option(ENABLE_FREETYPE "Enable FreeType2 (TrueType fonts and basic unicode support)" TRUE)
 set(USE_FREETYPE FALSE)
 
-if(ENABLE_FREETYPE)
+if(BUILD_CLIENT AND ENABLE_FREETYPE)
 	find_package(Freetype)
 	if(FREETYPE_FOUND)
 		message(STATUS "Freetype enabled.")
 		set(USE_FREETYPE TRUE)
 	endif()
-endif(ENABLE_FREETYPE)
+endif()
 
 option(ENABLE_CURSES "Enable ncurses console" TRUE)
 set(USE_CURSES FALSE)
