@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-10 04:25+0000\n"
-"Last-Translator: Tviljan <virallinen@gmail.com>\n"
+"PO-Revision-Date: 2021-04-10 15:49+0000\n"
+"Last-Translator: Markus Mikkonen <markus.mikkonen@outlook.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/minetest/"
 "minetest/fi/>\n"
 "Language: fi\n"
@@ -33,7 +33,7 @@ msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Komentosarjassa tapahtui virhe:"
+msgstr "Lua-skriptissä tapahtui virhe:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -41,7 +41,7 @@ msgstr "Tapahtui virhe:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Päävalikko"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -49,27 +49,27 @@ msgstr "Yhdistä uudelleen"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Palvelin pyysi yhteyden muodostamista uudelleen:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokollaversiot epäyhteensopivat. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Palvelin vaatii protokollaversion $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Palvelin tukee protokollaversioita välillä $1 ja $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Tuemme vain protokollaversiota $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Tuemme protokollaversioita välillä $1 ja $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -80,50 +80,52 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Peruuta"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "Riippuvuudet:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Poista kaikki käytöstä"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Poista modipaketti käytöstä"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Ota kaikki käyttöön"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Ota modipaketti käyttöön"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"Modin \"$1\" käyttöönotto epäonnistui, koska se sisälsi sallimattomia "
+"merkkejä. Vain merkit [a-z0-9_] ovat sallittuja."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Löydä lisää modeja"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Modi:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "Ei (valinnaisia) riippuvuuksia"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Pelin kuvausta ei ole annettu."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
@@ -131,15 +133,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Modipaketin kuvausta ei annettu."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Ei valinnaisia riippuvuuksia"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Valinnaiset riippuvuudet:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -152,7 +154,7 @@ msgstr "Maailma:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "käytössä"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -173,9 +175,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Ladataan..."
+msgstr "$1 latautuu..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -187,15 +188,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Kaikki paketit"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr ""
+msgstr "Asennettu jo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "Takaisin päävalikkoon"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
@@ -203,37 +204,37 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB ei ole saatavilla, jos Minetest on koottu ilman cURLia"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Ladataan..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Epäonnistui ladata $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "Pelit"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Asenna"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
-msgstr ""
+msgstr "Asenna $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr ""
+msgstr "Asenna puuttuvat riippuvuudet"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "Modit"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -241,11 +242,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Ei tuloksia"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Ei päivityksiä"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
@@ -253,7 +254,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Ylikirjoita"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -265,19 +266,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Tekstuuripaketit"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Poista"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Päivitä"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Päivitä kaikki [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -285,7 +286,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Maailma nimellä \"$1\" on jo olemassa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -305,7 +306,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Biomit"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
@@ -313,11 +314,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Luolat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Luo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -325,11 +326,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "Lataa peli, kuten Minetest Game, minetest.netistä"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Lataa yksi minetest.netistä"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -337,7 +338,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Tasainen maasto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
@@ -349,7 +350,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "Peli"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -357,7 +358,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Mäet"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
@@ -389,7 +390,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Vuoret"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -401,7 +402,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "Ei peliä valittu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -422,7 +423,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Siemen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -472,21 +473,21 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "Maailman nimi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Sinulla ei ole pelejä asennettuna."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Oletko varma että haluat poistaa \"$1\":n?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -498,11 +499,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Poista maailma \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Hyväksy"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -524,23 +525,23 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Takaisin asetussivulle"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Selaa"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Poistettu käytöstä"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Muokkaa"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Otettu käyttöön"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -576,19 +577,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Search"
-msgstr ""
+msgstr "Etsi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "Valitse hakemisto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "Valitse tiedosto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Näytä tekniset nimet"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
@@ -600,7 +601,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -608,7 +609,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -616,7 +617,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -647,7 +648,7 @@ msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Käytössä)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
@@ -704,6 +705,8 @@ msgstr ""
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Kokeile ottaa julkinen palvelinlista uudelleen käyttöön ja tarkista "
+"internetyhteytesi."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -715,7 +718,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "Poista tekstuuripaketti käytöstä"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
@@ -723,27 +726,27 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Asennetut paketit:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Ei riippuvuuksia."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "Ei paketin kuvausta saatavilla"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Nimeä uudelleen"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "Poista paketti"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "Käytä tekstuuripakettia"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -785,7 +788,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Luova tila"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
@@ -809,7 +812,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Uusi"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
@@ -821,11 +824,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "Pelaa peliä"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr ""
+msgstr "Portti"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
@@ -833,7 +836,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Valitse maailma:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
@@ -845,15 +848,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "Osoite / Portti"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Connect"
-msgstr ""
+msgstr "Yhdistä"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Luova tila"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage enabled"
@@ -865,19 +868,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorite"
-msgstr ""
+msgstr "Suosikki"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Liity peliin"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Name / Password"
-msgstr ""
+msgstr "Nimi / Salasana"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr ""
+msgstr "Viive"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
@@ -886,7 +889,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
@@ -894,15 +897,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "Kaikki asetukset"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -926,7 +929,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "Hienot lehdet"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -966,7 +969,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "Partikkelit"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -974,7 +977,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Asetukset"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
@@ -1046,7 +1049,7 @@ msgstr ""
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Ladataan tekstuureja..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
