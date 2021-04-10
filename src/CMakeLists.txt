@@ -526,8 +526,11 @@ if(USE_CURL)
 endif()
 
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
-
+# When cross-compiling assume the user doesn't want to run the executable anyway,
+# otherwise place it in <source dir>/bin/ since Minetest can only run from there.
+if(NOT CMAKE_CROSSCOMPILING)
+	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
+endif()
 
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
