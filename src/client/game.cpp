@@ -3901,6 +3901,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			|| client->getEnv().getClientMap().needsUpdateDrawList()) {
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
+		client->getEnv().getClientMap().queueBlocksForRemesh();
 		runData.update_draw_list_last_cam_dir = camera_direction;
 	}
 
