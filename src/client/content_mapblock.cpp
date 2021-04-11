@@ -421,9 +421,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_liquid_bottom) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-
-		// use 1 == solidness of liquid source because own solidness is 0
-		if (f2.solidness > 1 || (f2.solidness == 0 && f2.visual_solidness == 1))
+		if (f2.solidness > 1)
 			draw_liquid_bottom = false;
 	}
 
@@ -563,9 +561,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
-		// Use 1 == solidness of liquid source, because own solidness is 0
-		if (neighbor_features.solidness > 1 ||
-				(neighbor_features.solidness == 0 && neighbor_features.visual_solidness == 1))
+		if (neighbor_features.solidness == 2)
 			continue;
 
 		video::S3DVertex vertices[4];
