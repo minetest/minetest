@@ -485,11 +485,13 @@ public:
 	//// Dynamic remesh
 	////
 
-	inline void setNeedsRemesh(bool value = true) {
+	inline void setNeedsRemesh(bool value = true)
+	{
 		m_needs_remesh = value;
 	}
 
-	inline bool getNeedsRemesh() {
+	inline bool needsRemesh()
+	{
 		return m_needs_remesh;
 	}
 private:

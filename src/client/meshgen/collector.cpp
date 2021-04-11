@@ -114,7 +114,7 @@ PreMeshBuffer &MeshCollector::findBuffer(
 	return buffers.back();
 }
 
-void MeshCollector::startNewMeshLayer(bool forceNoReuse)
+void MeshCollector::startNewMeshLayer(bool allow_reuse)
 {
 	for (s16 tile_layer = 0; tile_layer < MAX_TILE_LAYERS; ++tile_layer) {
 		// do not close mesh buffer if there is only one
@@ -122,7 +122,7 @@ void MeshCollector::startNewMeshLayer(bool forceNoReuse)
 			continue;
 
 		s16 latest_buffer = -1;
-		if (!forceNoReuse && latest_buffers[tile_layer].size() > 0)
+		if (allow_reuse && latest_buffers[tile_layer].size() > 0)
 			latest_buffer = latest_buffers[tile_layer].back();
 
 		for (s16 index: latest_buffers[tile_layer])

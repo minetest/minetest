@@ -898,7 +898,7 @@ void ClientMap::queueBlocksForRemesh()
 	// Update block meshes if the blocks are marked dirty by camera movement
 	for (auto it = m_drawlist.rbegin(); it != m_drawlist.rend(); it++) {
 		MapBlock* block = it->second;
-		if (block->getNeedsRemesh()) {
+		if (block->needsRemesh()) {
 			block->setNeedsRemesh(false);
 			m_client->addUpdateMeshTask(block->getPos());
 			++blocks_queued;
@@ -958,7 +958,7 @@ void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 previous_node, v3s16 c
 					if (block_distance < 10) {
 						++blocks_in_distance;
 						if (block->mesh && block->mesh->hasTransparency()) {
-							if (block->getNeedsRemesh()) {
+							if (block->needsRemesh()) {
 								++blocks_skipped;
 							}
 							else {

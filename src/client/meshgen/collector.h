@@ -49,7 +49,7 @@ struct MeshCollector
 			v3f pos, video::SColor c, u8 light_source);
 	// clang-format on
 
-	void startNewMeshLayer(bool forceNoReuse = false);
+	void startNewMeshLayer(bool allow_reuse = true);
 private:
 	// clang-format off
 	void append(const TileLayer &material,
