@@ -101,7 +101,7 @@ public:
 
 		// if moved over node boundary
 		if (current_node != previous_node)
-			markBlocksDirty(current_node, current_block, previous_block);
+			markBlocksDirty(current_node, previous_node, current_block, previous_block);
 
 		// reorder the blocks when camera crosses block boundary
 		if (previous_block != current_block)
@@ -198,5 +198,5 @@ private:
 	bool m_cache_anistropic_filter;
 	bool m_added_to_shadow_renderer{false};
 
-	void markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 previous_block);
+	void markBlocksDirty(v3s16 current_node, v3s16 previous_node, v3s16 current_block, v3s16 previous_block);
 };

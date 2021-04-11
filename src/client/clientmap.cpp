@@ -181,7 +181,6 @@ void ClientMap::updateDrawList()
 	const f32 camera_fov = m_camera_fov * 1.1f;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
-
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
@@ -905,7 +904,7 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
 
-void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 previous_block)
+void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 previous_node, v3s16 current_block, v3s16 previous_block)
 {
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
@@ -931,25 +930,37 @@ void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 current_block, v3s16 p
 
 		// Loop over the current block and previous block if it's different
 		for (const v3s16* pointer : { &current_block, previous_block == current_block ? nullptr : &previous_block })
-		for (const auto block : sectorblocks) {
-			if (pointer == nullptr) continue;
-			auto block_pos = block->getPos();
-			if (block_pos.X == pointer->X ||
-				block_pos.Y == pointer->Y ||
-				block_pos.Z == pointer->Z) {
+		{
+			if (pointer == nullptr)
+				continue;
 
-				++blocks_on_axis;
+			// Skip sectors which are not on axis or where there was no movement between nodes
+			bool same_x = sp.X == pointer->X && current_node.X != previous_node.X;
+			bool same_z = sp.Y == pointer->Z && current_node.Z != previous_node.Z;
 
-				// if there is known transparency
-				if (abs(block_pos.X - current_block.X) + abs(block_pos.Y - current_block.Y) + abs(block_pos.Z - current_block.Z) < 10) {
-					++blocks_in_distance;
-					if (block->mesh && block->mesh->hasTransparency()) {
-						if (block->getNeedsRemesh()) {
-							++blocks_skipped;
-						}
-						else {
-							block->setNeedsRemesh(true);
-							++blocks_marked;
+			for (const auto block : sectorblocks) {
+
+				auto block_pos = block->getPos();
+				if (same_x || same_z ||
+						(block_pos.Y == pointer->Y && current_node.Y != previous_node.Y)) {
+
+					++blocks_on_axis;
+
+					// if there is known transparency
+					auto block_distance = abs(block_pos.X - current_block.X) +
+							abs(block_pos.Y - current_block.Y) +
+							abs(block_pos.Z - current_block.Z);
+
+					if (block_distance < 10) {
+						++blocks_in_distance;
+						if (block->mesh && block->mesh->hasTransparency()) {
+							if (block->getNeedsRemesh()) {
+								++blocks_skipped;
+							}
+							else {
+								block->setNeedsRemesh(true);
+								++blocks_marked;
+							}
 						}
 					}
 				}
