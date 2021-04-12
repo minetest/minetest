@@ -407,7 +407,7 @@ local function convert_to_falling_node(pos, node)
 
 	obj:get_luaentity():set_node(node, metatable)
 	core.remove_node(pos)
-	return true
+	return true, obj
 end
 
 function core.spawn_falling_node(pos)
