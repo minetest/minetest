@@ -128,7 +128,13 @@ private:
 
 	scene::SMeshBuffer m_rotation_mesh_buffer;
 
-	u8 m_block_bounds_mode = 0;
+	enum BlockBoundsMode
+	{
+		BLOCK_BOUNDS_OFF,
+		BLOCK_BOUNDS_CURRENT,
+		BLOCK_BOUNDS_ALL,
+		BLOCK_BOUNDS_MAX
+	} m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 
 	enum
 	{
