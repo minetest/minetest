@@ -134,16 +134,21 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 
 	int old_parent = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
+
+	// The detach callbacks might call to setAttachment() again.
+	// Ensure the attachment params are applied after this callback is run.
+	if (parent_id != old_parent)
+		onDetach(old_parent);
+
+	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
 	m_force_visible = force_visible;
 	m_attachment_sent = false;
 
-	if (parent_id != old_parent) {
-		onDetach(old_parent);
+	if (parent_id != old_parent)
 		onAttach(parent_id);
-	}
 }
 
 void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
