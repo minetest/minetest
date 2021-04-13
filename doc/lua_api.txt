@@ -4927,7 +4927,7 @@ Environment access
     * Punch node with the same effects that a player would cause
 * `minetest.spawn_falling_node(pos)`
     * Change node into falling node
-    * Returns `true` if successful, `false` on failure
+    * Returns `true` and the ObjectRef of the spawned entity if successful, `false` on failure
 
 * `minetest.find_nodes_with_meta(pos1, pos2)`
     * Get a table of positions of nodes that have metadata within a region
