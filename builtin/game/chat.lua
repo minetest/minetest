@@ -50,6 +50,11 @@ core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
 local msg_time_threshold =
 	tonumber(core.settings:get("chatcommand_msg_time_threshold")) or 0.1
 core.register_on_chat_message(function(name, message)
+	if message == "" then
+		core.chat_send_player(name, "-!- Empty message")
+		return true
+	end
+
 	if message:sub(1,1) ~= "/" then
 		return
 	end
