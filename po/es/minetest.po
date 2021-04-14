@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-14 03:37+0000\n"
-"Last-Translator: ludemys <lucianodellasavia@gmail.com>\n"
+"PO-Revision-Date: 2021-04-17 07:26+0000\n"
+"Last-Translator: David Leal <halfpacho@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5277,7 +5277,8 @@ msgstr "Retraso de generación de la malla del Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "Tamaño de cache en MB del Mapblock del generador de malla del Mapblock"
+msgstr ""
+"Tamaño de cache en MB del Mapblock del generador de la malla del Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -5383,7 +5384,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr ""
+msgstr "Anchura máxima de la barra de acceso rápido"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
@@ -5490,10 +5491,14 @@ msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
+"Proporción máxima de la ventana actual a ser usada para la barra de acceso "
+"rápido.\n"
+"Útil si hay algo para ser mostrado a la derecha o a la izquierda de la barra "
+"de acceso rápido."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
-msgstr ""
+msgstr "Envíos de bloque simultáneos máximos por cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
