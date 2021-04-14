@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-08 18:26+0000\n"
-"Last-Translator: David Leal <halfpacho@gmail.com>\n"
+"PO-Revision-Date: 2021-04-14 03:37+0000\n"
+"Last-Translator: ludemys <lucianodellasavia@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5269,19 +5269,19 @@ msgstr "Intervalo de guardado de mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr ""
+msgstr "Limite del Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
-msgstr ""
+msgstr "Retraso de generación de la malla del Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr ""
+msgstr "Tamaño de cache en MB del Mapblock del generador de malla del Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr ""
+msgstr "Expirado de descarga de Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
@@ -5363,7 +5363,7 @@ msgstr "Líquidos máximos procesados por paso."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Bloques extra máximos de clearobjects"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -5387,17 +5387,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
-msgstr ""
+msgstr "Límite máximo de grandes cuevas aleatorias por chunk."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
 msgstr ""
+"Límite máximo de número aleatorio de cavernas pequeñas por pedazo de mapa."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum liquid resistance. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Resistencia de líquidos máxima. Controla la deceleración al entrar en un "
+"líquido a:\n"
+"alta velocidad."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5412,18 +5416,24 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
+"Número máximo de bloques que pueden ser añadidos a la cola para cargarse."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "This limit is enforced per player."
 msgstr ""
+"Número máximo de bloques para ser añadidos a la cola para ser generados.\n"
+"Este límite se cumple por jugador."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
 msgstr ""
+"Número máximo de bloques para ser añadidos a a cola para cargarse desde un "
+"archivo.\n"
+"Este límite se cumple por jugador."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5431,16 +5441,22 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Número máximo de descargas simultáneas. Las descargas que sobrepasen este "
+"límite se añadirán a la cola.\n"
+"Esto debería ser menor que curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
+msgstr "Número máximo de bloques de mapa cargados forzosamente."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
+"Número máximo de bloques de mapa para el cliente para ser mantenidos en la "
+"memoria.\n"
+"Establecer a -1 para cantidad ilimitada."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5448,6 +5464,9 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
+"Número máximo de paquetes enviados por paso de envío. Si tiene una conexión "
+"lenta, intente reducirlo, pero no lo reduzca a un número menor al doble del "
+"número de cliente objetivo."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5456,15 +5475,15 @@ msgstr "Cantidad de bloques que flotan simultáneamente por cliente."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of recent chat messages to show"
-msgstr ""
+msgstr "Número máximo de mensajes del chat recientes a mostrar."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr ""
+msgstr "Número máximo de objetos almacenados estáticamente en un bloque."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
-msgstr ""
+msgstr "Objetos máximos por bloque."
 
 #: src/settings_translation_file.cpp
 msgid ""
