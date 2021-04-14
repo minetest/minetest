@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
 "PO-Revision-Date: 2021-04-17 07:26+0000\n"
-"Last-Translator: David Leal <halfpacho@gmail.com>\n"
+"Last-Translator: ludemys <lucianodellasavia@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5368,7 +5368,7 @@ msgstr "Bloques extra máximos de clearobjects"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
-msgstr ""
+msgstr "Máximos paquetes por iteración"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
@@ -5380,7 +5380,7 @@ msgstr "FPS máximo cuando el juego está pausado."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr ""
+msgstr "Máximos bloques cargados a la fuerza"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
