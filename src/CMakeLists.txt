@@ -513,6 +513,10 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/script
 )
 
+if(ENABLE_GLES)
+	include_directories(${OPENGLES2_INCLUDE_DIR} ${EGL_INCLUDE_DIR})
+endif()
+
 if(USE_GETTEXT)
 	include_directories(${GETTEXT_INCLUDE_DIR})
 endif()

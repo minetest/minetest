@@ -42,7 +42,7 @@ else()
 	)
 
 	include(FindPackageHandleStandardArgs)
-	find_package_handle_standard_args(OPENGLES2 DEFAULT_MSG OPENGLES2_LIBRARY OPENGLES2_INCLUDE_DIR)
+	find_package_handle_standard_args(OpenGLES2 DEFAULT_MSG OPENGLES2_LIBRARY OPENGLES2_INCLUDE_DIR)
 
 	find_path(EGL_INCLUDE_DIR EGL/egl.h
 		PATHS /usr/openwin/share/include
@@ -59,7 +59,6 @@ else()
 			/usr/lib
 	)
 
-	include(FindPackageHandleStandardArgs)
 	find_package_handle_standard_args(EGL DEFAULT_MSG EGL_LIBRARY EGL_INCLUDE_DIR)
 endif()
 
