@@ -335,6 +335,10 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 	case video::EDT_DIRECT3D9:
 		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
 		break;
+#if ENABLE_GLES
+	case video::EDT_OGLES1:
+	case video::EDT_OGLES2:
+#endif
 	case video::EDT_OPENGL:
 		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
 		break;

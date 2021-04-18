@@ -579,8 +579,10 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	if (use_gles) {
 		shaders_header << R"(
 			#version 100
-			)";
+		)";
 		vertex_header = R"(
+			precision mediump float;
+
 			uniform highp mat4 mWorldView;
 			uniform highp mat4 mWorldViewProj;
 			uniform mediump mat4 mTexture;
@@ -592,17 +594,17 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			attribute mediump vec3 inVertexNormal;
 			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;
-			)";
+		)";
 		fragment_header = R"(
 			precision mediump float;
-			)";
+		)";
 	} else {
 		shaders_header << R"(
 			#version 120
 			#define lowp
 			#define mediump
 			#define highp
-			)";
+		)";
 		vertex_header = R"(
 			#define mWorldView gl_ModelViewMatrix
 			#define mWorldViewProj gl_ModelViewProjectionMatrix
@@ -615,7 +617,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			#define inVertexNormal gl_Normal
 			#define inVertexTangent gl_MultiTexCoord1
 			#define inVertexBinormal gl_MultiTexCoord2
-			)";
+		)";
 	}
 
 	bool use_discard = use_gles;
