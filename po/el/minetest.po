@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Greek (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-03-22 18:29+0000\n"
-"Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
+"PO-Revision-Date: 2021-06-07 14:33+0000\n"
+"Last-Translator: THANOS SIOURDAKIS <siourdakisthanos@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/minetest/minetest/"
 "el/>\n"
 "Language: el\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -151,7 +151,7 @@ msgstr "ενεργοποιήθηκε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "Το \"$1\" ήδη υπάρχει. Θέλετε να το αντικαταστήσετε;"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -168,7 +168,6 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
 msgstr "Λήψη ..."
 
@@ -219,7 +218,7 @@ msgstr "Εγκατάσταση"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
-msgstr ""
+msgstr "Εγκατάσταση $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
@@ -527,7 +526,7 @@ msgstr "Περιήγηση"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Απενεργοποιημένο"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -595,7 +594,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -603,7 +602,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -611,7 +610,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -736,7 +735,7 @@ msgstr "Μετονομασία"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "Απεγκατάσταση πακέτου"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -798,7 +797,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Εγκατάσταση παιχνιδιών από το ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
@@ -842,7 +841,7 @@ msgstr "Εκκίνηση Παιχνιδιού"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr "Διεύθυνση Αποθετηρίου"
+msgstr "Διεύθυνση / Θήρα"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Connect"
@@ -887,15 +886,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D Σύννεφα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
@@ -967,7 +966,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "Οθόνη:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -1125,7 +1124,7 @@ msgstr "- Θήρα: "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr ""
+msgstr "- Δημόσιο: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
@@ -1442,7 +1441,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Εφαρμογές"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -1466,7 +1465,7 @@ msgstr "Κάτω"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "Τέλος"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
@@ -1506,7 +1505,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Εισαγωγή"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
@@ -1547,63 +1546,63 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr ""
+msgstr "Numpad ."
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
@@ -1632,7 +1631,7 @@ msgstr "Εκτύπωση"
 
 #: src/client/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "Επιστροφή"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
@@ -1665,7 +1664,7 @@ msgstr ""
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Επιλογή"
 
 #: src/client/keycode.cpp
 msgid "Shift"
@@ -1913,7 +1912,7 @@ msgstr "Σε σίγαση"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Ένταση ήχου: "
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -1994,7 +1993,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "3D σύννεφα"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
@@ -5436,23 +5435,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr ""
+msgstr "URL διακομιστή"
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr ""
+msgstr "Διεύθυνση διακομιστή"
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
-msgstr ""
+msgstr "Περιγραφή διακομιστή"
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr ""
+msgstr "Όνομα διακομιστή"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
-msgstr ""
+msgstr "Θύρα διακομιστή"
 
 #: src/settings_translation_file.cpp
 msgid "Server side occlusion culling"
@@ -5617,11 +5616,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Ήχος"
 
 #: src/settings_translation_file.cpp
 msgid "Special key"
-msgstr ""
+msgstr "Ειδικό πλήκτρο"
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
@@ -6113,7 +6112,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Ένταση"
 
 #: src/settings_translation_file.cpp
 msgid ""
