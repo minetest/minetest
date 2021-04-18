@@ -890,7 +890,7 @@ void Hud::drawBlockBounds()
 
 	v3f offset = intToFloat(client->getCamera()->getOffset(), BS);
 
-	s8 radius = 2;
+	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_ALL ? 2 : 0;
 
 	v3f halfNode = v3f(BS, BS, BS) / 2.0f;
 
@@ -899,14 +899,12 @@ void Hud::drawBlockBounds()
 	for (s8 z = -radius; z <= radius; z++) {
 		v3s16 blockOffset(x, y, z);
 
-		if (blockOffset.getLengthSQ() == 0 || m_block_bounds_mode == BLOCK_BOUNDS_ALL) {
-			aabb3f box(
-				intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset - halfNode,
-				intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset + halfNode
-			);
+		aabb3f box(
+			intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset - halfNode,
+			intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset + halfNode
+		);
 
-			driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
-		}
+		driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
 	}
 
 	driver->setMaterial(old_material);
