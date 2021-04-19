@@ -256,8 +256,8 @@ void MapgenDS::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// create biomes
-	biomegen->calcBiomeNoise(node_min);
-	generateBiomes();
+	//biomegen->calcBiomeNoise(node_min);
+	//generateBiomes();
 
 	// Add top and bottom side of water to transforming_liquid queue
 	updateLiquid(&data->transforming_liquid, node_min, node_max);
