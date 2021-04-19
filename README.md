@@ -133,7 +133,7 @@ Compiling
 | Dependency | Version | Commentary |
 |------------|---------|------------|
 | GCC        | 4.9+    | Can be replaced with Clang 3.4+ |
-| CMake      | 2.6+    |            |
+| CMake      | 3.5+    |            |
 | Irrlicht   | -       | Custom version required, see https://github.com/minetest/irrlicht |
 | SQLite3    | 3.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
