@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "mapgen_carpathian.h"
+#include "mapgen_ds.h"
 #include "mapgen_flat.h"
 #include "mapgen_fractal.h"
 #include "mapgen_v5.h"
@@ -97,6 +98,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"fractal",    true},
 	{"singlenode", true},
 	{"v6",         true},
+	{"diamond_square",         true},
 };
 
 STATIC_ASSERT(
@@ -176,6 +178,8 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, MapgenParams *params,
 		return new MapgenV7((MapgenV7Params *)params, emerge);
 	case MAPGEN_VALLEYS:
 		return new MapgenValleys((MapgenValleysParams *)params, emerge);
+	case MAPGEN_DIAMOND_SQUARE:
+		return new MapgenDS((MapgenDSParams *)params, emerge);
 	default:
 		return nullptr;
 	}
@@ -201,6 +205,8 @@ MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 		return new MapgenV7Params;
 	case MAPGEN_VALLEYS:
 		return new MapgenValleysParams;
+	case MAPGEN_DIAMOND_SQUARE:
+		return new MapgenDSParams;
 	default:
 		return nullptr;
 	}
