@@ -102,7 +102,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 		if (!g_settings->getBool("gui_scaling_filter_txr2img"))
 			return src;
 		srcimg = driver->createImageFromData(src->getColorFormat(),
-			src->getSize(), src->lock(), false);
+			src->getSize(), src->lock(video::ETLM_READ_ONLY), false);
 		src->unlock();
 		g_imgCache[origname] = srcimg;
 	}
