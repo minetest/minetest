@@ -862,6 +862,54 @@ void Hud::drawSelectionMesh()
 	}
 }
 
+void Hud::toggleBlockBounds()
+{
+	m_block_bounds_mode = static_cast<BlockBoundsMode>(m_block_bounds_mode + 1);
+
+	if (m_block_bounds_mode >= BLOCK_BOUNDS_MAX) {
+		m_block_bounds_mode = BLOCK_BOUNDS_OFF;
+	}
+}
+
+void Hud::drawBlockBounds()
+{
+	if (m_block_bounds_mode == BLOCK_BOUNDS_OFF) {
+		return;	
+	}
+
+	video::SMaterial old_material = driver->getMaterial2D();
+	driver->setMaterial(m_selection_material);
+
+	v3s16 pos = player->getStandingNodePos();
+
+	v3s16 blockPos(
+		floorf((float) pos.X / MAP_BLOCKSIZE),
+		floorf((float) pos.Y / MAP_BLOCKSIZE),
+		floorf((float) pos.Z / MAP_BLOCKSIZE)
+	);
+
+	v3f offset = intToFloat(client->getCamera()->getOffset(), BS);
+
+	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_ALL ? 2 : 0;
+
+	v3f halfNode = v3f(BS, BS, BS) / 2.0f;
+
+	for (s8 x = -radius; x <= radius; x++)
+	for (s8 y = -radius; y <= radius; y++)
+	for (s8 z = -radius; z <= radius; z++) {
+		v3s16 blockOffset(x, y, z);
+
+		aabb3f box(
+			intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset - halfNode,
+			intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset + halfNode
+		);
+
+		driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
+	}
+
+	driver->setMaterial(old_material);
+}
+
 void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 {
 	m_camera_offset = camera_offset;

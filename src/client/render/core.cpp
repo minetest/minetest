@@ -76,6 +76,7 @@ void RenderingCore::draw3D()
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (!show_hud)
 		return;
+	hud->drawBlockBounds();
 	hud->drawSelectionMesh();
 	if (draw_wield_tool)
 		camera->drawWieldedTool();
