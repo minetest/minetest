@@ -399,15 +399,18 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 					else if(http_pos == 0)
 					{
 						frag_length = 6;
+						// TODO? replace this with a safer (slower) regex whitelist?
+						wchar_t tempchar = line.text.getString()[in_pos+frag_length];
 						while (frag_length < remaining_in_input &&
-								!iswspace(line.text.getString()[in_pos + frag_length]) &&
-								line.text.getString()[in_pos + frag_length] != L'\'' &&
-								line.text.getString()[in_pos + frag_length] != L'\"' &&
-								line.text.getString()[in_pos + frag_length] != L')' &&
-								line.text.getString()[in_pos + frag_length] != L';'
+								!iswspace(tempchar) &&
+								tempchar != L'\'' &&
+								tempchar != L'\"' &&
+								tempchar != L')' &&
+								tempchar != L';'
 							)
 						{
 							++frag_length;
+							tempchar = line.text.getString()[in_pos+frag_length];
 						}
 						space_pos = frag_length - 1;
 						if(frag_length >= remaining_in_output)
