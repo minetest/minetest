@@ -313,12 +313,14 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 		// keep it
 	} else if (f.param_type_2 == CPT2_WALLMOUNTED ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		if (f.drawtype == NDT_TORCHLIKE)
-			n.setParam2(1);
-		else if (f.drawtype == NDT_SIGNLIKE ||
+		if (f.drawtype == NDT_TORCHLIKE ||
+				f.drawtype == NDT_SIGNLIKE ||
 				f.drawtype == NDT_NODEBOX ||
-				f.drawtype == NDT_MESH)
+				f.drawtype == NDT_MESH) {
 			n.setParam2(4);
+		}
+	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE) {
+		n.setParam2(1);
 	}
 	gen.renderSingle(n.getContent(), n.getParam2());
 

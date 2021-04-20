@@ -129,14 +129,10 @@ minetest.register_node("testnodes:fencelike", {
 })
 
 minetest.register_node("testnodes:torchlike", {
-	description = S("Torchlike Drawtype Test Node"),
+	description = S("Floor Torchlike Drawtype Test Node"),
 	drawtype = "torchlike",
 	paramtype = "light",
-	tiles = {
-		"testnodes_torchlike_floor.png",
-		"testnodes_torchlike_ceiling.png",
-		"testnodes_torchlike_wall.png",
-	},
+	tiles = { "testnodes_torchlike_floor.png^[colorize:#FF0000:64" },
 
 
 	walkable = false,
@@ -161,9 +157,21 @@ minetest.register_node("testnodes:torchlike_wallmounted", {
 	groups = { dig_immediate = 3 },
 })
 
-
-
 minetest.register_node("testnodes:signlike", {
+	description = S("Floor Signlike Drawtype Test Node"),
+	drawtype = "signlike",
+	paramtype = "light",
+	tiles = { "testnodes_signlike.png^[colorize:#FF0000:64" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+	sunlight_propagates = true,
+	inventory_image = fallback_image("testnodes_signlike.png"),
+})
+
+
+minetest.register_node("testnodes:signlike_wallmounted", {
 	description = S("Wallmounted Signlike Drawtype Test Node"),
 	drawtype = "signlike",
 	paramtype = "light",
@@ -583,7 +591,7 @@ scale("plantlike",
 scale("torchlike_wallmounted",
 	S("Double-sized Wallmounted Torchlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Torchlike Drawtype Test Node"))
-scale("signlike",
+scale("signlike_wallmounted",
 	S("Double-sized Wallmounted Signlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Signlike Drawtype Test Node"))
 scale("firelike",
