@@ -47,7 +47,7 @@ public:
 	MapgenDS(MapgenDSParams *params, EmergeParams *emerge);
 	~MapgenDS();
 
-    void AddMountainRange(double height, int z1, int x1, int z2, int x2)
+    void AddMountainRange(double height, int z1, int x1, int z2, int x2);
     void AddVolcanicIsland(double height, int z, int x);
 
 	virtual MapgenType getType() const { return MAPGEN_DIAMOND_SQUARE; }
