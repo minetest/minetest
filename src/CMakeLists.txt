@@ -152,6 +152,7 @@ if(ENABLE_POSTGRESQL)
 		# but we don't need them, so continue anyway if only those are missing.
 		if(PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY)
 			set(PostgreSQL_FOUND TRUE)
+			set(PostgreSQL_INCLUDE_DIRS ${PostgreSQL_INCLUDE_DIR})
 		endif()
 	else()
 		find_package(PostgreSQL)
