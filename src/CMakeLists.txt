@@ -102,11 +102,11 @@ endif()
 option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
 mark_as_advanced(ENABLE_GLES)
 if(BUILD_CLIENT)
-	if(ENABLE_GLES)
-		find_package(OpenGLES2 REQUIRED)
-	else()
-		# transitive dependency from Irrlicht (see longer explanation below)
-		if(NOT WIN32)
+	# transitive dependency from Irrlicht (see longer explanation below)
+	if(NOT WIN32)
+		if(ENABLE_GLES)
+			find_package(OpenGLES2 REQUIRED)
+		else()
 			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
 				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
 			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
@@ -522,10 +522,6 @@ include_directories(
 	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
 )
-
-if(ENABLE_GLES)
-	include_directories(${OPENGLES2_INCLUDE_DIR} ${EGL_INCLUDE_DIR})
-endif()
 
 if(USE_GETTEXT)
 	include_directories(${GETTEXT_INCLUDE_DIR})
