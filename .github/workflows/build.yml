@@ -80,7 +80,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-3.9
+          install_linux_deps clang-3.9 gdb
 
       - name: Build
         run: |
@@ -89,9 +89,13 @@ jobs:
           CC: clang-3.9
           CXX: clang++-3.9
 
-      - name: Test
+      - name: Unittest
         run: |
           ./bin/minetest --run-unittests
+
+      - name: Integration test
+        run: |
+          ./util/test_multiplayer.sh
 
   # This is the current clang version
   clang_9:

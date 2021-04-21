@@ -11,7 +11,9 @@ install_linux_deps() {
 		shift
 		pkgs+=(libirrlicht-dev)
 	else
-		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt1/ubuntu-bionic.tar.gz"
+		# TODO: return old URL when IrrlichtMt 1.9.0mt2 is tagged
+		#wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt1/ubuntu-bionic.tar.gz"
+		wget "http://minetest.kitsunemimi.pw/irrlichtmt-patched-temporary.tgz" -O ubuntu-bionic.tar.gz
 		sudo tar -xaf ubuntu-bionic.tar.gz -C /usr/local
 	fi
 
