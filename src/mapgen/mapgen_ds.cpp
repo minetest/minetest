@@ -27,11 +27,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 #include "emerge.h"
-#include <cmath>
-#include <cstdlib>
+#include "mg_ore.h"
+#include "mg_decoration.h"
 #include "mg_biome.h"
 
-MapgenDSParams::MapgenDSParams():np_filler_depth (0,   1.2, v3f(150, 150, 150), 261,   3, 0.7,  2.0)
+#include <cmath>
+#include <cstdlib>
+
+
+MapgenDSParams::MapgenDSParams():
+    np_filler_depth (0,   1.2, v3f(150, 150, 150), 261,   3, 0.7,  2.0)
 {}
 
 MapgenDSParams::~MapgenDSParams()
@@ -39,232 +44,162 @@ MapgenDSParams::~MapgenDSParams()
 
 //////////////////////// Map generator
 
-double range_random(double a, double b)
-{
-	return a + (((double)rand())/RAND_MAX)*(b-a);
-}
-
-DiamondSquareMountain::DiamondSquareMountain(int n, double left_top, double right_top, double left_bottom, double right_bottom, double center)
-{
-	this->n = n;
-	int half = pow(2, n-1);
-	size = pow(2, n);
-	height_map = new double*[size+1];
-	for (int i = 0; i < size+1; i++)
-	{
-		height_map[i] = new double[size+1];
-		for (int j = 0; j < size+1; j++)
-			height_map[i][j] = -1;
-	}
-
-	// Init diamond square
-	height_map[0][0] = left_top;
-	height_map[0][size] = right_top;
-	height_map[size][0] = left_bottom;
-	height_map[size][size] = right_bottom;
-	height_map[half][half] = center;
-
-	minimal = std::min(std::min(left_top, right_top), std::min(left_bottom, right_bottom));
-
-	big_rnd = 2;
-	small_rnd = 4;
-	small_rnd_size = 8;
-	process();
-}
-
-double DiamondSquareMountain::get_value(int z, int x)
-{
-	if (x < 0 || z < 0 || x > size || z > size)
-	{
-                return 0;
-        }
-
-        return height_map[z][x];
-}
-
-void DiamondSquareMountain::set_value(int z, int x, double h)
-{
-	if (x < 0 || z < 0 || x > size || z > size)
-	{
-                return;
-        }
-        height_map[z][x] = std::max(h, minimal);
-}
-
-void DiamondSquareMountain::process()
-{
-	for (int i = n; i >= 1; i--)
-	{
-		double random_div;
-		int step = pow(2, i);
-		int step2 = step/2;
-		
-		int num = pow(2, n-i);
-
-		if (step >= small_rnd_size)
-			random_div = big_rnd;
-		else
-			random_div = small_rnd;
-
-		// Diamond step
-		if (i < n)
-		{
-			int z = 0;
-                        for (int p = 1; p <= num; p++)
-			{
-                                int x = 0;
-                                for (int q = 1; q <= num; q++)
-				{
-                                        double val1 = get_value(z, x);
-                                        double val2 = get_value(z+step, x);
-                                        double val3 = get_value(z, x+step);
-                                        double val4 = get_value(z+step, x+step);
-                                        double rv = range_random(-step2/random_div, step2/random_div);
-
-                                        double val = (val1 + val2 + val3 + val4)/4 + rv;
-                                        set_value(z+step2, x+step2, val);
-                                        x += step;
-				}
-                                z += step;
-                        }
-		}
-
-		// Square step
-		{
-			int z = 0;
-        	        for (int p = 1; p <= num+1; p++)
-			{
-	                        int x = 0;
-	                        for (int q = 1; q <= num+1; q++)
-				{
-					double val1, val2, val3, val4;
-					double val, rv;
-
-					val1 = get_value(z-step2, x+step2);
-					val2 = get_value(z+step2, x+step2);
-					val3 = get_value(z, x);
-					val4 = get_value(z, x+step);
-					rv = range_random(-step2/random_div, step2/random_div);
-
-					val = (val1 + val2 + val3 + val4)/4 + rv;
-					set_value(z, x+step2, val);
-
-					val1 = get_value(z+step2, x-step2);
-					val2 = get_value(z+step2, x+step2);
-					val3 = get_value(z, x);
-					val4 = get_value(z+step, x);
-					rv = range_random(-step2/random_div, step2/random_div);
-
-					val = (val1 + val2 + val3 + val4)/4 + rv;
-					set_value(z+step2, x, val);
-
-					x += step;
-				}
-                        	z += step;
-                        }
-                }
-	}
-
-	int half = size/2;
-	double val1 = get_value(half-1, half);
-	double val2 = get_value(half+1, half);
-        double val3 = get_value(half, half-1);
-        double val4 = get_value(half, half+1);
-
-	double val = (val1 + val2 + val3 + val4)/4;
-	set_value(half, half, val); 
-/*
-	for (int i = 0; i <= size; i++)
-	{
-		for (int j = 0; j <= size; j++)
-			printf("%lf ", height_map[i][j]);
-		printf("\n");
-	}
-*/
-}
-
-DiamondSquareMountain::~DiamondSquareMountain()
-{
-	for (int i = 0; i < size; i++)
-		delete[] height_map[i];
-	delete height_map;
-}
 
 ////////////////////////////////////////////////////
+
+void MapgenDS::AddMountainRange(double height, int z1, int x1, int z2, int x2)
+{
+    
+}
+
+void MapgenDS::AddVolcanicIsland(double height, int z, int x)
+{
+    // central mountain
+    landscape->AddMountain(40, z, x, height, 3, -25);
+    landscape->AddMountain(75, z, x, height/5, 3.5, -20);
+
+    // several less mountains
+    int n = prandom.range(0, 3);
+    for (int i = 0; i < n; i++)
+    {
+        // mountain
+        double h = prandom.range(height/3, height/2);
+        double r = prandom.range(height*0.5, height*1.5);
+        double angle = prandom.range(0, 360)*3.14159/180;
+        double sx = r*cos(angle);
+        double sz = r*sin(angle);
+        landscape->AddMountain(60, z+sz, x+sx, h, 3, -20);
+        landscape->AddMountain(75, z+sz, x+sx, prandom.range(20, 40), 3.5, -15);
+    }
+
+    // second peak
+    n = prandom.range(0, 1);
+    for (int i = 0; i < n; i++)
+    {
+        // mountain
+        double h = prandom.range(height/5, height*2/3);
+        double r = prandom.range(height*1, height*2.5);
+        double angle = prandom.range(0, 360)*3.14159/180;
+        double sx = r*cos(angle);
+        double sz = r*sin(angle);
+        landscape->AddMountain(60, z+sz, x+sx, h, 3, -20);
+        landscape->AddMountain(75, z+sz, x+sx, prandom.range(20, 40), 3.5, -15);
+    }
+}
 
 MapgenDS::MapgenDS(MapgenDSParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_DIAMOND_SQUARE, params, emerge)
 {
 	const NodeDefManager *ndef = emerge->ndef;
+    prandom.seed(seed);
 
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
+    landscape = new MountainLandscape(&prandom);    
 
 	c_node = CONTENT_AIR;
 
 	MapNode n_node(c_node);
 	set_light = (ndef->get(n_node).sunlight_propagates) ? LIGHT_SUN : 0x00;
 
-	m = new DiamondSquareMountain(9, 0, 0, 0, 0, 100);
+    AddVolcanicIsland(150, 0, 0);
 
 	offset_x = 0;
 	offset_z = 0;
 }
 
+s16 MapgenDS::generateBaseTerrain()
+{
+    u32 index = 0;
+	u32 index2d = 0;
+	int stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+
+	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+			u32 vi = vm->m_area.index(node_min.X, y, z);
+			for (s16 x=node_min.X; x<=node_max.X; x++, vi++, index++, index2d++)
+            {
+				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
+					continue;
+
+                double mx = x - offset_x;
+			    double mz = z - offset_z;
+			    double height = landscape->Height(mz, mx);
+
+                if (y > height)
+                {
+                    if (y > 5)
+                    {
+					    vm->m_data[vi] = MapNode(CONTENT_AIR);
+                    }
+                    else
+                    {
+                        vm->m_data[vi] = MapNode(c_water_source);
+                    }
+                    
+                }
+				else
+                {
+					vm->m_data[vi] = MapNode(c_stone);
+                    stone_surface_max_y = std::max((int)stone_surface_max_y, (int)y);
+                }
+			}
+			index2d -= ystride;
+		}
+		index2d += ystride;
+	}
+    return stone_surface_max_y;
+}
+
 void MapgenDS::makeChunk(BlockMakeData *data)
 {
-	// Pre-conditions
+    // Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 
 	this->generating = true;
 	this->vm   = data->vmanip;
 	this->ndef = data->nodedef;
+	//TimeTaker t("makeChunk");
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
+	node_min = blockpos_min * MAP_BLOCKSIZE;
+	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
-	// Area of central chunk
-	v3s16 node_min = blockpos_min * MAP_BLOCKSIZE;
-	v3s16 node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	// Create a block-specific seed
+	blockseed = getBlockSeed2(full_node_min, seed);
 
-	blockseed = getBlockSeed2(node_min, data->seed);
+	// Generate base terrain
+	generateBaseTerrain();
 
-	MapNode n_air(CONTENT_AIR);
-	MapNode n_stone(c_stone);
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y; y <= node_max.Y; y++)
-	{
-		u32 i = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++)
-		{
-			int mx = x - offset_x + m->size/2;
-			int mz = z - offset_z + m->size/2;
-			double height = m->get_value(mz, mx);
-			if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-			{
-				if (y > height)
-					vm->m_data[i] = n_air;
-				else
-					vm->m_data[i] = n_stone;
-			}
-			i++;
-		}
-	}
-
-	// update height map
+	// Create heightmap
 	updateHeightmap(node_min, node_max);
 
-	// create biomes
-	//biomegen->calcBiomeNoise(node_min);
-	//generateBiomes();
+	// Init biome generator, place biome-specific nodes, and build biomemap
+	if (flags & MG_BIOMES) {
+		biomegen->calcBiomeNoise(node_min);
+		generateBiomes();
+	}
 
-	// Add top and bottom side of water to transforming_liquid queue
-	updateLiquid(&data->transforming_liquid, node_min, node_max);
+	// Generate the registered ores
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
-	// Set lighting
-	if ((flags & MG_LIGHT) && set_light == LIGHT_SUN)
-		setLighting(LIGHT_SUN, node_min, node_max);
+	// Generate the registered decorations
+	if (flags & MG_DECORATIONS)
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+
+	// Sprinkle some dust on top after everything else was generated
+	if (flags & MG_BIOMES)
+		dustTopNodes();
+
+	// Calculate lighting
+	if (flags & MG_LIGHT) {
+		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
+			full_node_min, full_node_max);
+	}
 
 	this->generating = false;
 }
@@ -277,7 +212,6 @@ int MapgenDS::getSpawnLevelAtPoint(v2s16 p)
 
 MapgenDS::~MapgenDS()
 {
-	delete m;
+    delete landscape;
 	delete noise_filler_depth;
 }
-

@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "mapgen.h"
-
+#include <list>
+#include "diamond_square/diamond_square.h"
 
 struct MapgenDSParams : public MapgenParams
 {
@@ -36,30 +37,6 @@ struct MapgenDSParams : public MapgenParams
 	void writeParams(Settings *settings) const {}
 };
 
-class DiamondSquareMountain
-{
-	
-public:
-	DiamondSquareMountain(int n, double left_top, double right_top, double left_bottom, double right_bottom, double center);
-	~DiamondSquareMountain();
-
-	void process();
-	double get_value(int x, int z);
-	void   set_value(int z, int x, double h);
-
-	double **height_map;
-	int size;
-	int n;
-
-	// random divisor
-	double big_rnd;
-
-	// random divisor for small cells
-	double small_rnd;
-	int small_rnd_size;
-
-	double minimal;
-};
 
 class MapgenDS : public MapgenBasic
 {
@@ -70,12 +47,17 @@ public:
 	MapgenDS(MapgenDSParams *params, EmergeParams *emerge);
 	~MapgenDS();
 
+    void AddMountainRange(double height, int z1, int x1, int z2, int x2)
+    void AddVolcanicIsland(double height, int z, int x);
+
 	virtual MapgenType getType() const { return MAPGEN_DIAMOND_SQUARE; }
 
+    s16 generateBaseTerrain();
 	void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 private:
-	DiamondSquareMountain *m;
+    PseudoRandom prandom;
+	MountainLandscape *landscape;
 	int offset_x;
 	int offset_z;
 };
