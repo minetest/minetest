@@ -167,7 +167,6 @@ minetest.register_node("testnodes:signlike", {
 	walkable = false,
 	groups = { dig_immediate = 3 },
 	sunlight_propagates = true,
-	inventory_image = fallback_image("testnodes_signlike.png"),
 })
 
 
