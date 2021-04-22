@@ -101,7 +101,7 @@ private:
 	// sha1(string, raw)
 	static int l_sha1(lua_State *L);
 
-	// Convert a ColorSpec to a ColorString
+	// colorspec_to_colorstring(colorspec)
 	static int l_colorspec_to_colorstring(lua_State *L);
 
 public:

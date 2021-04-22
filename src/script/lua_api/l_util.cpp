@@ -488,7 +488,7 @@ int ModApiUtil::l_colorspec_to_colorstring(lua_State *L)
 		char colorstring[10];
 		snprintf(colorstring, 10, "#%02X%02X%02X%02X",
 			color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-		lua_pushlstring(L, colorstring, 9);
+		lua_pushstring(L, colorstring);
 		return 1;
 	}
 
@@ -587,4 +587,3 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
 }
-
