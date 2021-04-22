@@ -700,7 +700,7 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	if (m_star_params.visible_at_day)
 		starbrightness = 1.0f;
 	else
-		starbrightness = clamp((0.25f - fabsf(tod)) * 20.0f, 0.0f, 1.0f);
+		starbrightness = (0.25f - fabsf(tod)) * 20.0f;
 
 	m_star_color = m_star_params.starcolor;
 	m_star_color.a *= clamp(starbrightness, 0.0f, 1.0f);
