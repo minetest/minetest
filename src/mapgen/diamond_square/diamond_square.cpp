@@ -45,6 +45,13 @@ DiamondSquareMountain::DiamondSquareMountain(double angle, double base, double c
 	process();
 }
 
+bool DiamondSquareMountain::inside(int z, int x)
+{
+    if (x < 0 || z < 0 || x > size || z > size)
+        return false;
+    return true;
+}
+
 double DiamondSquareMountain::get_value(int z, int x)
 {
 	if (x < 0 || z < 0 || x > size || z > size)
@@ -151,10 +158,27 @@ DiamondSquareMountain::~DiamondSquareMountain()
 	delete height_map;
 }
 
-void MountainLandscape::AddMountain(double angle, double z, double x, double height, double rnd, double base)
+void MountainLandscape::AddMountain(double angle,
+                                    double z, double x,
+                                    double height,
+                                    double rnd,
+                                    double base)
 {
     DiamondSquareMountain *mountain = new DiamondSquareMountain(angle, base, height, rnd, prandom);
-    mountains.push_back(std::make_tuple(mountain, std::make_pair(z, x)));
+    mountains.push_back(std::make_tuple(mountain, std::make_pair(z, x)));    
+}
+
+void MountainLandscape::AddCuttedMountain(double angle_main, double angle_cut,
+                                          double z, double x,
+                                          double height, double cut_height,
+                                          double rnd,
+                                          double base)
+{
+    double mh = height - base;
+    double ch = base + (height - base)*cut_height;
+    DiamondSquareMountain *mountain = new DiamondSquareMountain(angle_main, base, base + mh/cut_height, rnd, prandom);
+    DiamondSquareMountain *mountain_cut = new DiamondSquareMountain(angle_cut, ch, height, rnd, prandom);
+    cutted_mountains.push_back(std::make_tuple(mountain, mountain_cut, std::make_pair(z, x)));
 }
 
 double MountainLandscape::Height(double z, double x)
@@ -168,8 +192,36 @@ double MountainLandscape::Height(double z, double x)
 
         int mx = x - posx + m->size/2;
 		int mz = z - posz + m->size/2;
-		
+
+        if (!m->inside(mz, mx))
+            continue;
+
         double height = m->get_value(mz, mx);
+        h = std::max(h, height);
+    }
+
+    for (auto item : cutted_mountains)
+    {
+        double posz = std::get<2>(item).first;
+        double posx = std::get<2>(item).second;
+        auto m1 = std::get<0>(item);
+        auto m2 = std::get<1>(item);
+
+        int mx = x - posx + m1->size/2;
+		int mz = z - posz + m1->size/2;
+
+        if (!m1->inside(mz, mx))
+            continue;
+
+        double height = m1->get_value(mz, mx);
+
+        mx = x - posx + m2->size/2;
+		mz = z - posz + m2->size/2;
+        if (m2->inside(mz, mx))
+        {
+            height = std::min(height, m2->get_value(mz, mx));
+        }
+
         h = std::max(h, height);
     }
 
@@ -182,5 +234,13 @@ MountainLandscape::~MountainLandscape()
     {
         auto m = std::get<0>(item);
         delete m;
+    }
+
+    for (auto item : cutted_mountains)
+    {
+        auto m1 = std::get<0>(item);
+        auto m2 = std::get<1>(item);
+        delete m1;
+        delete m2;
     }
 }

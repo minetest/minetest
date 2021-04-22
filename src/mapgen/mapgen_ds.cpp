@@ -47,15 +47,31 @@ MapgenDSParams::~MapgenDSParams()
 
 ////////////////////////////////////////////////////
 
+
 void MapgenDS::AddMountainRange(double height, int z1, int x1, int z2, int x2)
 {
-    
+    double len = sqrt((x2-x1)*(x2-x1)+(z2-z1)*(z2-z1));
+    int n = 2 * len / height + 1;
+
+    std::vector<std::pair<int, int>> poss;
+    for (int i = 0; i < n; i++)
+    {
+        int x = x1 + (x2-x1)*i/(n-1) + prandom.range(-len/n/4, len/n/4);
+        int z = z1 + (z2-z1)*i/(n-1) + prandom.range(-len/n/4, len/n/4);
+        int angle = prandom.range(45, 65);
+        auto h = height*prandom.range(50,100)/100.0;
+        if (angle > 55)
+            landscape->AddMountain(angle, z, x, h, 3.5, -20);
+        else
+            landscape->AddCuttedMountain(angle, 65, z, x, h, 0.85, 3.5, -25);
+    }
 }
+
 
 void MapgenDS::AddVolcanicIsland(double height, int z, int x)
 {
     // central mountain
-    landscape->AddMountain(40, z, x, height, 3, -25);
+    landscape->AddCuttedMountain(40, 70, z, x, height, 0.85, 3.5, -25);
     landscape->AddMountain(75, z, x, height/5, 3.5, -20);
 
     // several less mountains
@@ -63,12 +79,12 @@ void MapgenDS::AddVolcanicIsland(double height, int z, int x)
     for (int i = 0; i < n; i++)
     {
         // mountain
-        double h = prandom.range(height/3, height/2);
-        double r = prandom.range(height*0.5, height*1.5);
+        double h = prandom.range(33, 50) * height / 100.0;
+        double r = prandom.range(50, 150) * height / 100.0;
         double angle = prandom.range(0, 360)*3.14159/180;
         double sx = r*cos(angle);
         double sz = r*sin(angle);
-        landscape->AddMountain(60, z+sz, x+sx, h, 3, -20);
+        landscape->AddCuttedMountain(60, 70, z+sz, x+sx, h, 0.95, 3, -20);
         landscape->AddMountain(75, z+sz, x+sx, prandom.range(20, 40), 3.5, -15);
     }
 
@@ -77,12 +93,12 @@ void MapgenDS::AddVolcanicIsland(double height, int z, int x)
     for (int i = 0; i < n; i++)
     {
         // mountain
-        double h = prandom.range(height/5, height*2/3);
-        double r = prandom.range(height*1, height*2.5);
+        double h = prandom.range(20, 66)*height/100.0;
+        double r = prandom.range(100, 250)*height/100.0;
         double angle = prandom.range(0, 360)*3.14159/180;
         double sx = r*cos(angle);
         double sz = r*sin(angle);
-        landscape->AddMountain(60, z+sz, x+sx, h, 3, -20);
+        landscape->AddCuttedMountain(60, 70, z+sz, x+sx, h, 0.95, 3, -20);
         landscape->AddMountain(75, z+sz, x+sx, prandom.range(20, 40), 3.5, -15);
     }
 }
@@ -101,7 +117,9 @@ MapgenDS::MapgenDS(MapgenDSParams *params, EmergeParams *emerge)
 	MapNode n_node(c_node);
 	set_light = (ndef->get(n_node).sunlight_propagates) ? LIGHT_SUN : 0x00;
 
-    AddVolcanicIsland(150, 0, 0);
+    //AddVolcanicIsland(150, 0, 0);
+    AddMountainRange(150, -300, -300, 300, 300);
+    AddMountainRange(250, -400+300, -400, 400+300, 400);
 
 	offset_x = 0;
 	offset_z = 0;

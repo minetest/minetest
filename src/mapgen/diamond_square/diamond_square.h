@@ -12,7 +12,8 @@ public:
 	~DiamondSquareMountain();
 
 	void process();
-	double get_value(int x, int z);
+	double get_value(int z, int x);
+    bool   inside(int z, int x);
 	void   set_value(int z, int x, double h);
 
 	double **height_map;
@@ -35,8 +36,20 @@ class MountainLandscape
     public:
         MountainLandscape(PseudoRandom *prandom) {this->prandom = prandom;}
         std::list<std::tuple<DiamondSquareMountain *, std::pair<double, double>>> mountains;
+        std::list<std::tuple<DiamondSquareMountain *, DiamondSquareMountain *, std::pair<double, double>>> cutted_mountains;
 
-        void AddMountain(double angle, double z, double x, double height, double rnd, double base);
+        void AddMountain(double angle,
+                         double z, double x,
+                         double height,
+                         double rnd,
+                         double base);
+
+        void AddCuttedMountain(double angle_main, double angle_cut,
+                               double z, double x,
+                               double height, double cut_height,
+                               double rnd,
+                               double base);
+
         double Height(double z, double x);
 
         ~MountainLandscape();
