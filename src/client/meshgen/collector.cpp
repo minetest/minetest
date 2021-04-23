@@ -100,10 +100,13 @@ PreMeshBuffer &MeshCollector::findBuffer(
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 
 	// avoid scanning the entire list of buffers when filling with the same material
-	if (latest_buffers[layernum].size() > 0 && 
-			buffers[latest_buffers[layernum].back()].layer == layer && 
-			buffers[latest_buffers[layernum].back()].vertices.size() + numVertices <= U16_MAX)
-		return buffers[latest_buffers[layernum].back()];
+	if (latest_buffers[layernum].size() > 0) {
+		PreMeshBuffer &latest_buffer = buffers[latest_buffers[layernum].back()];
+		if (!latest_buffer.closed &&
+				latest_buffer.layer == layer &&
+				latest_buffer.vertices.size() + numVertices <= U16_MAX)
+			return latest_buffer;
+	}
 
 	for (PreMeshBuffer &p : buffers)
 		if (!p.closed && p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
@@ -118,7 +121,7 @@ void MeshCollector::startNewMeshLayer(bool allow_reuse)
 {
 	for (s16 tile_layer = 0; tile_layer < MAX_TILE_LAYERS; ++tile_layer) {
 		// do not close mesh buffer if there is only one
-		if (latest_buffers[tile_layer].size() == 1)
+		if (allow_reuse && latest_buffers[tile_layer].size() == 1)
 			continue;
 
 		s16 latest_buffer = -1;
@@ -128,10 +131,7 @@ void MeshCollector::startNewMeshLayer(bool allow_reuse)
 		for (s16 index: latest_buffers[tile_layer])
 			if (index != latest_buffer) {
 				auto &buffer = prebuffers[tile_layer][index];
-				if (buffer.layer.material_type == TILE_MATERIAL_ALPHA ||
-						buffer.layer.material_type == TILE_MATERIAL_PLAIN_ALPHA ||
-						buffer.layer.material_type == TILE_MATERIAL_LIQUID_TRANSPARENT ||
-						buffer.layer.material_type == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT)
+				if (buffer.layer.hasAlpha())
 					prebuffers[tile_layer][index].closed = true;
 			}
 
