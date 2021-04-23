@@ -761,7 +761,7 @@
 #    type: path
 # texture_path =
 
-#    The rendering back-end for Irrlicht.
+#    The rendering back-end.
 #    A restart is required after changing this.
 #    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
 #    On other platforms, OpenGL is recommended.

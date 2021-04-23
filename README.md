@@ -134,7 +134,7 @@ Compiling
 |------------|---------|------------|
 | GCC        | 4.9+    | Can be replaced with Clang 3.4+ |
 | CMake      | 3.5+    |            |
-| Irrlicht   | -       | Custom version required, see https://github.com/minetest/irrlicht |
+| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | SQLite3    | 3.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
@@ -209,7 +209,7 @@ Run it:
 - You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
   - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to have the Irrlicht library installed.
+- If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
 
 ### CMake options
@@ -229,7 +229,7 @@ General options and their default values:
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
     ENABLE_FREETYPE=ON         - Build with FreeType2; Allows using TTF fonts
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
-    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by Irrlicht)
+    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by IrrlichtMt)
     ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
