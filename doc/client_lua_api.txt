@@ -651,6 +651,9 @@ Minetest namespace reference
 * `minetest.sha1(data, [raw])`: returns the sha1 hash of data
     * `data`: string of data to hash
     * `raw`: return raw bytes instead of hex digits, default: false
+* `minetest.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
+  ColorString. If the ColorSpec is invalid, returns `nil`.
+    * `colorspec`: The ColorSpec to convert
 * `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
    restrictions applied to the current mod.
    * If a flag in this table is set to true, the feature is RESTRICTED.
@@ -1348,9 +1351,8 @@ The following functions provide escape sequences:
 
 Named colors are also supported and are equivalent to
 [CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
-To specify the value of the alpha channel, append `#AA` to the end of the color name
-(e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
-value must (always) be two hexadecimal digits.
+To specify the value of the alpha channel, append `#A` or `#AA` to the end of
+the color name (e.g. `colorname#08`).
 
 `Color`
 -------------
