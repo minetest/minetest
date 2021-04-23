@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
@@ -97,7 +98,7 @@ public:
 
 		// reorder the blocks when camera crosses block boundary
 		if (previous_block != current_block)
-			updateDrawList();
+			m_needsUpdateDrawList = true;
 	}
 
 	/*
@@ -129,6 +130,8 @@ public:
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
 	void updateDrawList();
 	void updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range);
+	// Returns true if draw list needs updating before drawing the next frame.
+	bool needsUpdateDrawList() { return m_needsUpdateDrawList; }
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	void renderMapShadows(video::IVideoDriver *driver,
@@ -181,6 +184,7 @@ private:
 
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
+	bool m_needsUpdateDrawList;
 
 	std::set<v2s16> m_last_drawn_sectors;
 
