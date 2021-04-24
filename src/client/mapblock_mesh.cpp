@@ -182,7 +182,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		if (f.light_source > light_source_max)
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
-		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
+		if (f.param_type == CPT_LIGHT && f.solidness != SOLIDNESS_SOLID) {
 			u8 light_level_day = n.getLightNoChecks(LIGHTBANK_DAY, &f);
 			u8 light_level_night = n.getLightNoChecks(LIGHTBANK_NIGHT, &f);
 			if (light_level_day == LIGHT_SUN)
@@ -659,11 +659,6 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	if (c1 == c2)
 		return 0;
 
-	if (c1 == 0)
-		c1 = f1.visual_solidness;
-	else if (c2 == 0)
-		c2 = f2.visual_solidness;
-
 	// In all cases, only render face if it is opaque.
 	// All transparency is handled by MapblockMeshGenerator.
 
@@ -677,9 +672,9 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	}
 
 	if (c1 > c2)
-		return f1.drawtype == NDT_NORMAL || f1.drawtype == NDT_PLANTLIKE_ROOTED || f1.alpha == ALPHAMODE_OPAQUE ? 1 : 0;
+		return c1 == SOLIDNESS_SOLID ? 1 : 0;
 
-	return f2.drawtype == NDT_NORMAL || f2.drawtype == NDT_PLANTLIKE_ROOTED || f2.alpha == ALPHAMODE_OPAQUE ? 2 : 0;
+	return c2 == SOLIDNESS_SOLID ? 2 : 0;
 }
 
 /*

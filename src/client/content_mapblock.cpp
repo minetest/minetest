@@ -421,7 +421,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_liquid_bottom) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-		if (f2.solidness > 1)
+		if (f2.solidness > SOLIDNESS_LIQUID)
 			draw_liquid_bottom = false;
 	}
 
@@ -561,7 +561,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
-		if (neighbor_features.solidness == 2)
+		if (neighbor_features.solidness == SOLIDNESS_SOLID)
 			continue;
 
 		video::S3DVertex vertices[4];
@@ -715,7 +715,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		if (f->solidness <= neighbor_features.solidness)
 			continue;
 
-		bool apply_backface_culling = neighbor_features.solidness == 1 || neighbor_features.visual_solidness == 1;
+		bool apply_backface_culling = neighbor_features.solidness >= SOLIDNESS_TRANSPARENT;
 
 		s16 distance = manhattanDistance(player_pos, neighbor_pos);
 

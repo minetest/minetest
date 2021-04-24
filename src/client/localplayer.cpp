@@ -431,7 +431,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		v3s16 camera_np = floatToInt(getEyePosition(), BS);
 		MapNode n = map->getNode(camera_np);
 		if (n.getContent() != CONTENT_IGNORE) {
-			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2)
+			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == SOLIDNESS_SOLID)
 				camera_barely_in_ceiling = true;
 		}
 	}
@@ -1028,7 +1028,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		v3s16 camera_np = floatToInt(getEyePosition(), BS);
 		MapNode n = map->getNode(camera_np);
 		if (n.getContent() != CONTENT_IGNORE) {
-			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2)
+			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == SOLIDNESS_SOLID)
 				camera_barely_in_ceiling = true;
 		}
 	}

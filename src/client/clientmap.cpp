@@ -223,7 +223,7 @@ void ClientMap::updateDrawList()
 	if (g_settings->getBool("free_move") && g_settings->getBool("noclip")) {
 		MapNode n = getNode(cam_pos_nodes);
 		if (n.getContent() == CONTENT_IGNORE ||
-				m_nodedef->get(n).solidness == 2)
+				m_nodedef->get(n).solidness == SOLIDNESS_SOLID)
 			occlusion_culling_enabled = false;
 	}
 
@@ -686,7 +686,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// - Do not if player is in third person mode
 	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
+	if(features.solidness == SOLIDNESS_SOLID && !(g_settings->getBool("noclip") &&
 			m_client->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{

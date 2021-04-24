@@ -243,6 +243,16 @@ enum AlphaMode : u8 {
 	ALPHAMODE_LEGACY_COMPAT, /* means either opaque or clip */
 };
 
+// Solidness is used to decide which faces are drawn between adjacent nodes.
+// Larger values mean more solid node, new entries can be added in between as needed.
+enum Solidness : u8 {
+	SOLIDNESS_AIR,		// air and irlike nodes
+	SOLIDNESS_OBJECT,   // torchlike, fencelike etc.
+	SOLIDNESS_TRANSPARENT, // glasslike, allfaces
+	SOLIDNESS_LIQUID,  // liquids
+	SOLIDNESS_SOLID,   // normal nodes
+};
+
 
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
@@ -293,7 +303,6 @@ struct ContentFeatures
 	// - Currently used for flowing liquids
 	TileSpec special_tiles[CF_SPECIAL_COUNT];
 	u8 solidness; // Used when choosing which face is drawn
-	u8 visual_solidness; // When solidness=0, this tells how it looks like
 	bool backface_culling;
 #endif
 
