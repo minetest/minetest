@@ -65,5 +65,6 @@ private:
 
 	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum, u32 numVertices);
 
-	std::array<std::vector<s16>, MAX_TILE_LAYERS> latest_buffers;
+	std::array<int, MAX_TILE_LAYERS> closed_buffers{};
+	std::array<int, MAX_TILE_LAYERS> latest_buffers{};
 };

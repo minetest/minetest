@@ -100,43 +100,44 @@ PreMeshBuffer &MeshCollector::findBuffer(
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 
 	// avoid scanning the entire list of buffers when filling with the same material
-	if (latest_buffers[layernum].size() > 0) {
-		PreMeshBuffer &latest_buffer = buffers[latest_buffers[layernum].back()];
+	if (latest_buffers[layernum] < buffers.size()) {
+		PreMeshBuffer &latest_buffer = buffers[latest_buffers[layernum]];
 		if (!latest_buffer.closed &&
 				latest_buffer.layer == layer &&
 				latest_buffer.vertices.size() + numVertices <= U16_MAX)
 			return latest_buffer;
 	}
 
-	for (PreMeshBuffer &p : buffers)
-		if (!p.closed && p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
+	for (int index = 0; index < buffers.size(); ++index) {
+		PreMeshBuffer &p = buffers[index];
+		if (!p.closed && p.layer == layer && p.vertices.size() + numVertices <= U16_MAX) {
+			latest_buffers[layernum] = index;
 			return p;
+		}
+	}
 
 	buffers.emplace_back(layer);
-	latest_buffers[layernum].push_back(buffers.size()-1);
 	return buffers.back();
 }
 
 void MeshCollector::startNewMeshLayer(bool allow_reuse)
 {
+	// Force creating new mesh buffers by closing existing ones
+	// when a new layer of transparent nodes or faces is detected.
+
 	for (s16 tile_layer = 0; tile_layer < MAX_TILE_LAYERS; ++tile_layer) {
-		// do not close mesh buffer if there is only one
-		if (allow_reuse && latest_buffers[tile_layer].size() == 1)
-			continue;
 
-		s16 latest_buffer = -1;
-		if (allow_reuse && latest_buffers[tile_layer].size() > 0)
-			latest_buffer = latest_buffers[tile_layer].back();
+		// Close all mesh buffers with transparency since the last call or
+		// start of the collector
+		s16 max_buffer = prebuffers[tile_layer].size() + (allow_reuse ? -1 : 0);
+		max_buffer = MYMAX(max_buffer, 0);
+		for (s16 index = closed_buffers[tile_layer]; index < max_buffer; ++index) {
+			auto &buffer = prebuffers[tile_layer][index];
+			if (buffer.layer.hasAlpha())
+				buffer.closed = true;
+		}
 
-		for (s16 index: latest_buffers[tile_layer])
-			if (index != latest_buffer) {
-				auto &buffer = prebuffers[tile_layer][index];
-				if (buffer.layer.hasAlpha())
-					prebuffers[tile_layer][index].closed = true;
-			}
-
-		latest_buffers[tile_layer].clear();
-		if (latest_buffer != -1)
-			latest_buffers[tile_layer].push_back(latest_buffer);
+		// Remember which buffers have been processed
+		closed_buffers[tile_layer] = max_buffer;
 	}
 }
