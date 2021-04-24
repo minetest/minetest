@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "mapblock.h"
 #include "map.h"
+#include "camera.h"
 
 /*
 	CachedMapBlockData
@@ -116,6 +117,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 				q->ack_block_to_server = true;
 			q->crack_level = m_client->getCrackLevel();
 			q->crack_pos = m_client->getCrackPos();
+			q->camera_pos = m_client->getCamera()->getPosition();
 			return;
 		}
 	}
@@ -128,6 +130,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	q->ack_block_to_server = ack_block_to_server;
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
+	q->camera_pos = m_client->getCamera()->getPosition();
 	m_queue.push_back(q);
 
 	// This queue entry is a new reference to the cached blocks
@@ -228,6 +231,7 @@ void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 
 	data->setCrack(q->crack_level, q->crack_pos);
 	data->setSmoothLighting(m_cache_smooth_lighting);
+	data->setCameraPosition(q->camera_pos);
 }
 
 void MeshUpdateQueue::cleanupCache()

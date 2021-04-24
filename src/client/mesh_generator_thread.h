@@ -42,6 +42,7 @@ struct QueuedMeshUpdate
 	bool ack_block_to_server = false;
 	int crack_level = -1;
 	v3s16 crack_pos;
+	v3f camera_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
 
 	QueuedMeshUpdate() = default;

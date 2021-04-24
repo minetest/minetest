@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client.h"
 #include "noise.h"
-#include "camera.h"
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
@@ -1604,7 +1603,7 @@ void MapblockMeshGenerator::drawNode()
 
 void MapblockMeshGenerator::generate()
 {
-	player_pos = floatToInt(data->m_client->getCamera()->getPosition(), BS);
+	player_pos = floatToInt(data->m_camera_position, BS);
 
 	v3s16 player = v3s16(
 		core::clamp(player_pos.X - blockpos_nodes.X, -1, MAP_BLOCKSIZE),

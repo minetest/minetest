@@ -90,6 +90,11 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	m_smooth_lighting = smooth_lighting;
 }
 
+void MeshMakeData::setCameraPosition(v3f camera_position)
+{
+	m_camera_position = camera_position;
+}
+
 /*
 	Light and vertex color functions
 */

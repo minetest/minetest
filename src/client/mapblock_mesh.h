@@ -41,6 +41,7 @@ struct MeshMakeData
 	VoxelManipulator m_vmanip;
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	v3f m_camera_position = v3f(-1337.0f,-1337.0f,-1337.0f);
 	bool m_smooth_lighting = false;
 	bool m_has_transparency = false; // true when MapblocMeshGenerator detects transpareny
 
@@ -70,6 +71,11 @@ struct MeshMakeData
 		Enable or disable smooth lighting
 	*/
 	void setSmoothLighting(bool smooth_lighting);
+
+	/*
+		Set camera position for depth sortings
+	*/
+	void setCameraPosition(v3f camera_position);
 };
 
 /*
