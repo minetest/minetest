@@ -246,7 +246,7 @@ enum AlphaMode : u8 {
 // Solidness is used to decide which faces are drawn between adjacent nodes.
 // Larger values mean more solid node, new entries can be added in between as needed.
 enum Solidness : u8 {
-	SOLIDNESS_AIR,		// air and irlike nodes
+	SOLIDNESS_AIR,		// air and airlike nodes
 	SOLIDNESS_OBJECT,   // torchlike, fencelike etc.
 	SOLIDNESS_TRANSPARENT, // glasslike, allfaces
 	SOLIDNESS_LIQUID,  // liquids
