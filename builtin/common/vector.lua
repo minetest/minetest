@@ -250,7 +250,7 @@ function vector.sort(a, b)
 		fast_new(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z))
 end
 
-function vector.is(v)
+function vector.check(v)
 	return getmetatable(v) == metatable
 end
 
