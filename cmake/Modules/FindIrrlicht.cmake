@@ -1,5 +1,5 @@
 
-mark_as_advanced(IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR IRRLICHT_DLL)
+mark_as_advanced(IRRLICHT_DLL)
 
 # Find include directory and libraries
 
@@ -29,8 +29,22 @@ foreach(libname IN ITEMS IrrlichtMt Irrlicht)
 	endif()
 endforeach()
 
-# Users will likely need to edit these
-mark_as_advanced(CLEAR IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR)
+# Handholding for users
+if(IRRLICHT_INCLUDE_DIR AND (NOT IS_DIRECTORY "${IRRLICHT_INCLUDE_DIR}" OR
+	NOT EXISTS "${IRRLICHT_INCLUDE_DIR}/irrlicht.h"))
+	message(WARNING "IRRLICHT_INCLUDE_DIR was set to ${IRRLICHT_INCLUDE_DIR} "
+		"but irrlicht.h does not exist inside. The path will not be used.")
+	unset(IRRLICHT_INCLUDE_DIR CACHE)
+endif()
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux" OR APPLE)
+	# (only on systems where we're sure how a valid library looks like)
+	if(IRRLICHT_LIBRARY AND (IS_DIRECTORY "${IRRLICHT_LIBRARY}" OR
+		NOT IRRLICHT_LIBRARY MATCHES "\\.(a|so|dylib|lib)([.0-9]+)?$"))
+		message(WARNING "IRRLICHT_LIBRARY was set to ${IRRLICHT_LIBRARY} "
+			"but is not a valid library file. The path will not be used.")
+		unset(IRRLICHT_LIBRARY CACHE)
+	endif()
+endif()
 
 # On Windows, find the DLL for installation
 if(WIN32)
