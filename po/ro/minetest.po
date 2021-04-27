@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-11-24 11:29+0000\n"
+"PO-Revision-Date: 2021-04-28 01:32+0000\n"
 "Last-Translator: Nicolae Crefelean <kneekoo@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -154,11 +154,11 @@ msgstr "activat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "„$1” există deja. Doriți s-o suprascrieți?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Dependențele $1 și $2 vor fi instalate."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -169,37 +169,36 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 în descărcare,\n"
+"$2 în așteptare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Descărcare..."
+msgstr "$1 se descarcă..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 are dependințe care nu sunt disponibile."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 va fi instalat, iar $2 dependințe vor fi ignorate."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Toate pachetele"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Tastă deja folosită"
+msgstr "Deja instalată"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "Înapoi la meniul principal"
+msgstr "Meniul principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Găzduiește joc"
+msgstr "Jocul de bază:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -223,14 +222,12 @@ msgid "Install"
 msgstr "Instalează"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Instalează"
+msgstr "Instalează $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dependențe opționale:"
+msgstr "Instalează dependințele opționale"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -246,25 +243,24 @@ msgid "No results"
 msgstr "Fără rezultate"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Actualizare"
+msgstr "Nu există actualizări"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Indisponibile"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Suprascrie"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Verificați dacă jocul de bază este corect."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "În așteptare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -708,9 +704,8 @@ msgid "Loading..."
 msgstr "Se încarcă..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Scripturile din partea clientului sunt dezactivate"
+msgstr "Lista de servere publice este dezactivată"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -771,9 +766,8 @@ msgid "Credits"
 msgstr "Credite"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Selectează directorul"
+msgstr "Deschide directorul cu datele utilizatorului"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
@@ -830,9 +824,8 @@ msgid "No world created or selected!"
 msgstr "Nicio lume creată sau selectată!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Noua parolă"
+msgstr "Parola"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -843,9 +836,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Selectează lumea:"
+msgstr "Alege modificările"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -997,9 +989,8 @@ msgid "Shaders"
 msgstr "Umbră"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Terenuri plutitoare (experimental)"
+msgstr "Shadere (experimental)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1199,7 +1190,7 @@ msgid "Continue"
 msgstr "Continuă"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1217,19 +1208,19 @@ msgid ""
 "- %s: chat\n"
 msgstr ""
 "Controale:\n"
-"-%s: deplasați înainte\n"
-"-%s: deplasați înapoi\n"
-"-%s: deplasați spre stânga\n"
-"-%s: deplasați spre dreapta\n"
-"-%s: salt / urcare\n"
-"-%s: strecurați / coborâți\n"
-"-%s: aruncați element\n"
-"-%s: inventar\n"
-"- Mouse: rotiți / priviți\n"
-"- Mouse stânga: săpați / pocniți\n"
-"- Mouse dreapta: plasați / utilizare\n"
-"- Roată mousului: selectează elementul\n"
-"-%s: chat\n"
+"- %s: deplasare înainte\n"
+"- %s: deplasare înapoi\n"
+"- %s: deplasare stânga\n"
+"- %s: deplasare dreapta\n"
+"- %s: salt/urcare\n"
+"- %s: săpare/lovire\n"
+"- %s: plasare/utilizare\n"
+"- %s: furișare/coborâre\n"
+"- %s: aruncare obiect\n"
+"- %s: inventar\n"
+"- Maus: rotire/privire\n"
+"- Roata mausului: selectare obiect\n"
+"- %s: chat\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1756,19 +1747,18 @@ msgid "Minimap hidden"
 msgstr "Hartă mip ascunsă"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Hartă mip în modul radar, Zoom x1"
+msgstr "Mini hartă în modul radar, Zoom %dx"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Hartă mip în modul de suprafață, Zoom x1"
+msgstr "Mini hartă în modul de suprafață, Zoom %dx"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap in texture mode"
-msgstr "Hartă mip în modul de suprafață, Zoom x1"
+msgstr "Mini hartă în modul de textură"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2237,13 +2227,13 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
-"Ajustează densitatea stratului floatland.\n"
-"Mărește valoarea pentru creșterea densității. Poate fi pozitivă sau "
-"negativă.\n"
-"Valoarea = 0.0: 50% din volum este floatland.\n"
+"Ajustează densitatea stratului de insule plutitoare.\n"
+"Mărește valoarea pentru creșterea densității. Poate fi pozitivă sau negativă."
+"\n"
+"Valoarea = 0.0: 50% din volum este insulă plutitoare.\n"
 "Valoarea = 2.0 (poate fi mai mare în funcție de 'mgv7_np_floatland'; "
 "testați\n"
-"pentru siguranță) va crea un strat solid floatland."
+"pentru siguranță) va crea un strat solid de insulă plutitoare."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2815,9 +2805,8 @@ msgid "Default report format"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "Jocul implicit"
+msgstr "Dimensiunea implicită a stivei"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2924,9 +2913,8 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "Tasta dreapta"
+msgstr "Tasta pentru săpat"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3232,9 +3220,8 @@ msgid "Floatland minimum Y"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "Zgomotul solului"
+msgstr "Sunetul insulelor plutitoare"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland taper exponent"
@@ -5272,9 +5259,8 @@ msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Tasta de mutare a pitch"
+msgstr "Tasta de plasare"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
