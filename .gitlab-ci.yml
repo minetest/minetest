@@ -171,10 +171,10 @@ build:fedora-28:
 ##
 
 .generic_win_template:
-  image: ubuntu:bionic
+  image: ubuntu:focal
   before_script:
     - apt-get update
-    - apt-get install -y wget xz-utils unzip git cmake gettext
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y wget xz-utils unzip git cmake gettext
     - wget -nv http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
     - tar -xaf mingw.tar.xz -C /usr
 
@@ -184,13 +184,13 @@ build:fedora-28:
   artifacts:
     expire_in: 1h
     paths:
-      - _build/*
+      - build/build/*.zip
 
 .package_win_template:
   extends: .generic_win_template
   stage: package
   script:
-    - unzip _build/minetest-*.zip
+    - unzip build/build/*.zip
     - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-*-win*/bin/
     - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-*-win*/bin/
     - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-*-win*/bin/
