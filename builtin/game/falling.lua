@@ -205,6 +205,14 @@ core.register_entity(":__builtin:falling_node", {
 					end
 				end
 				self.object:set_rotation({x=pitch, y=yaw, z=roll})
+			elseif (def.drawtype == "mesh" and def.paramtype2 == "degrotate") then
+				local p2 = (node.param2 - (def.place_param2 or 0)) % 240
+				local yaw = (p2 / 240) * (math.pi * 2)
+				self.object:set_yaw(yaw)
+			elseif (def.drawtype == "mesh" and def.paramtype2 == "colordegrotate") then
+				local p2 = (node.param2 % 32 - (def.place_param2 or 0) % 32) % 24
+				local yaw = (p2 / 24) * (math.pi * 2)
+				self.object:set_yaw(yaw)
 			end
 		end
 	end,
