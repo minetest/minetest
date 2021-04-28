@@ -44,7 +44,6 @@ public:
 	RenderingEngine(IEventReceiver *eventReceiver);
 	~RenderingEngine();
 
-	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
 
 	video::IVideoDriver *getVideoDriver() { return driver; }
@@ -63,7 +62,11 @@ public:
 
 	void removeMesh(const irr::scene::IMesh* mesh);
 
-	static RenderingEngine *get_instance() { return s_singleton; }
+	static v2u32 getWindowSize()
+	{
+		sanity_check(s_singleton);
+		return s_singleton->_getWindowSize();
+	}
 
 	io::IFileSystem *get_filesystem()
 	{
@@ -88,11 +91,9 @@ public:
 		return s_singleton->m_device;
 	}
 
-	static u32 get_timer_time()
+	u32 get_timer_time()
 	{
-		sanity_check(s_singleton && s_singleton->m_device &&
-				s_singleton->m_device->getTimer());
-		return s_singleton->m_device->getTimer()->getTime();
+		return m_device->getTimer()->getTime();
 	}
 
 	static gui::IGUIEnvironment *get_gui_env()
@@ -109,30 +110,16 @@ public:
 				text, guienv, tsrc, dtime, percent, clouds);
 	}
 
-	inline static void draw_menu_scene(
-			gui::IGUIEnvironment *guienv, float dtime, bool clouds)
-	{
-		s_singleton->_draw_menu_scene(guienv, dtime, clouds);
-	}
+	void draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime, bool clouds);
+	void draw_scene(video::SColor skycolor, bool show_hud,
+			bool show_minimap, bool draw_wield_tool, bool draw_crosshair);
 
-	inline static void draw_scene(video::SColor skycolor, bool show_hud,
-			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
-	{
-		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
-				draw_wield_tool, draw_crosshair);
-	}
+	void initialize(Client *client, Hud *hud);
+	void finalize();
 
-	inline static void initialize(Client *client, Hud *hud)
+	bool run()
 	{
-		s_singleton->_initialize(client, hud);
-	}
-
-	inline static void finalize() { s_singleton->_finalize(); }
-
-	static bool run()
-	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->run();
+		return m_device->run();
 	}
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
@@ -143,15 +130,7 @@ private:
 			ITextureSource *tsrc, float dtime = 0, int percent = 0,
 			bool clouds = true);
 
-	void _draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime = 0,
-			bool clouds = true);
-
-	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
-			bool draw_wield_tool, bool draw_crosshair);
-
-	void _initialize(Client *client, Hud *hud);
-
-	void _finalize();
+	v2u32 _getWindowSize() const;
 
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;

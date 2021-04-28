@@ -80,7 +80,7 @@ ClientLauncher::~ClientLauncher()
 	delete g_fontengine;
 	delete g_gamecallback;
 
-	delete RenderingEngine::get_instance();
+	delete m_rendering_engine;
 
 #if USE_SOUND
 	g_sound_manager_singleton.reset();
@@ -101,7 +101,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	// List video modes if requested
 	if (list_video_modes)
-		return RenderingEngine::print_video_modes();
+		return m_rendering_engine->print_video_modes();
 
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound"))
@@ -120,12 +120,12 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		return true;
 	}
 
-	if (RenderingEngine::get_video_driver() == NULL) {
+	if (m_rendering_engine->get_video_driver() == NULL) {
 		errorstream << "Could not initialize video driver." << std::endl;
 		return false;
 	}
 
-	RenderingEngine::get_instance()->setupTopLevelWindow(PROJECT_NAME_C);
+	m_rendering_engine->setupTopLevelWindow(PROJECT_NAME_C);
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
@@ -136,15 +136,15 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	// Create game callback for menus
 	g_gamecallback = new MainGameCallback();
 
-	RenderingEngine::get_instance()->setResizable(true);
+	m_rendering_engine->setResizable(true);
 
 	init_input();
 
-	RenderingEngine::get_scene_manager()->getParameters()->
+	m_rendering_engine->get_scene_manager()->getParameters()->
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-	guienv = RenderingEngine::get_gui_env();
-	skin = RenderingEngine::get_gui_env()->getSkin();
+	guienv = m_rendering_engine->get_gui_env();
+	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
@@ -166,7 +166,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			sprite_path.append("checkbox_16.png");
 		// Texture dimensions should be a power of 2
 		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
-		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+		video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 		video::ITexture *sprite_texture = driver->getTexture(sprite_path.c_str());
 		if (sprite_texture) {
 			s32 sprite_id = sprites->addTextureAsSprite(sprite_texture);
@@ -184,7 +184,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	// Create the menu clouds
 	if (!g_menucloudsmgr)
-		g_menucloudsmgr = RenderingEngine::get_scene_manager()->createNewSceneManager();
+		g_menucloudsmgr = m_rendering_engine->get_scene_manager()->createNewSceneManager();
 	if (!g_menuclouds)
 		g_menuclouds = new Clouds(g_menucloudsmgr, -1, rand());
 	g_menuclouds->setHeight(100.0f);
@@ -212,11 +212,11 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	bool retval = true;
 	bool *kill = porting::signal_handler_killstatus();
 
-	while (RenderingEngine::run() && !*kill &&
+	while (m_rendering_engine->run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
 		// Set the window caption
 		const wchar_t *text = wgettext("Main Menu");
-		RenderingEngine::get_raw_device()->
+		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
 			L" " + utf8_to_wide(g_version_hash) +
 			L" [" + text + L"]").c_str());
@@ -224,14 +224,14 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 		try {	// This is used for catching disconnects
 
-			RenderingEngine::get_gui_env()->clear();
+			m_rendering_engine->get_gui_env()->clear();
 
 			/*
 				We need some kind of a root node to be able to add
 				custom gui elements directly on the screen.
 				Otherwise they won't be automatically drawn.
 			*/
-			guiroot = RenderingEngine::get_gui_env()->addStaticText(L"",
+			guiroot = m_rendering_engine->get_gui_env()->addStaticText(L"",
 				core::rect<s32>(0, 0, 10000, 10000));
 
 			bool game_has_run = launch_game(error_message, reconnect_requested,
@@ -254,29 +254,30 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			}
 
 			// Break out of menu-game loop to shut down cleanly
-			if (!RenderingEngine::get_raw_device()->run() || *kill) {
+			if (!m_rendering_engine->run() || *kill) {
 				if (!g_settings_path.empty())
 					g_settings->updateConfigFile(g_settings_path.c_str());
 				break;
 			}
 
-			RenderingEngine::get_video_driver()->setTextureCreationFlag(
+			m_rendering_engine->get_video_driver()->setTextureCreationFlag(
 					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
 
 #ifdef HAVE_TOUCHSCREENGUI
-			receiver->m_touchscreengui = new TouchScreenGUI(RenderingEngine::get_raw_device(), receiver);
+			receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
 			g_touchscreengui = receiver->m_touchscreengui;
 #endif
 
 			the_game(
 				kill,
 				input,
+				m_rendering_engine,
 				start_data,
 				error_message,
 				chat_backend,
 				&reconnect_requested
 			);
-			RenderingEngine::get_scene_manager()->clear();
+			m_rendering_engine->get_scene_manager()->clear();
 
 #ifdef HAVE_TOUCHSCREENGUI
 			delete g_touchscreengui;
@@ -344,8 +345,8 @@ void ClientLauncher::init_args(GameStartData &start_data, const Settings &cmd_ar
 bool ClientLauncher::init_engine()
 {
 	receiver = new MyEventReceiver();
-	new RenderingEngine(receiver);
-	return RenderingEngine::get_raw_device() != nullptr;
+	m_rendering_engine = new RenderingEngine(receiver);
+	return m_rendering_engine->get_raw_device() != nullptr;
 }
 
 void ClientLauncher::init_input()
@@ -362,7 +363,7 @@ void ClientLauncher::init_input()
 		// Make sure this is called maximum once per
 		// irrlicht device, otherwise it will give you
 		// multiple events for the same joystick.
-		if (RenderingEngine::get_raw_device()->activateJoysticks(infos)) {
+		if (m_rendering_engine->get_raw_device()->activateJoysticks(infos)) {
 			infostream << "Joystick support enabled" << std::endl;
 			joystick_infos.reserve(infos.size());
 			for (u32 i = 0; i < infos.size(); i++) {
@@ -469,7 +470,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			start_data.address.empty() && !start_data.name.empty();
 	}
 
-	if (!RenderingEngine::run())
+	if (!m_rendering_engine->run())
 		return false;
 
 	if (!start_data.isSinglePlayer() && start_data.name.empty()) {
@@ -541,14 +542,14 @@ bool ClientLauncher::launch_game(std::string &error_message,
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
 	bool *kill = porting::signal_handler_killstatus();
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	infostream << "Waiting for other menus" << std::endl;
-	while (RenderingEngine::get_raw_device()->run() && !*kill) {
+	while (m_rendering_engine->run() && !*kill) {
 		if (!isMenuActive())
 			break;
 		driver->beginScene(true, true, video::SColor(255, 128, 128, 128));
-		RenderingEngine::get_gui_env()->drawAll();
+		m_rendering_engine->get_gui_env()->drawAll();
 		driver->endScene();
 		// On some computers framerate doesn't seem to be automatically limited
 		sleep_ms(25);
@@ -557,14 +558,14 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 
 	// Cursor can be non-visible when coming from the game
 #ifndef ANDROID
-	RenderingEngine::get_raw_device()->getCursorControl()->setVisible(true);
+	m_rendering_engine->get_raw_device()->getCursorControl()->setVisible(true);
 #endif
 
 	/* show main menu */
-	GUIEngine mymenu(&input->joystick, guiroot, &g_menumgr, menudata, *kill);
+	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);
 
 	/* leave scene manager in a clean state */
-	RenderingEngine::get_scene_manager()->clear();
+	m_rendering_engine->get_scene_manager()->clear();
 }
 
 void ClientLauncher::speed_tests()

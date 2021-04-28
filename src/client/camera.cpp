@@ -541,7 +541,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, 160.0f);
 
 	// FOV and aspect ratio
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)

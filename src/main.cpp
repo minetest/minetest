@@ -225,8 +225,7 @@ int main(int argc, char *argv[])
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
 #ifndef SERVER
-	ClientLauncher launcher;
-	retval = launcher.run(game_params, cmd_args) ? 0 : 1;
+	retval = ClientLauncher().run(game_params, cmd_args) ? 0 : 1;
 #else
 	retval = 0;
 #endif
