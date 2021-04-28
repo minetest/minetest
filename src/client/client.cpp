@@ -97,6 +97,7 @@ Client::Client(
 		NodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event,
+		RenderingEngine *rendering_engine,
 		bool ipv6,
 		GameUI *game_ui
 ):
@@ -106,6 +107,7 @@ Client::Client(
 	m_nodedef(nodedef),
 	m_sound(sound),
 	m_event(event),
+	m_rendering_engine(rendering_engine),
 	m_mesh_update_thread(this),
 	m_env(
 		new ClientMap(this, control, 666),
@@ -660,8 +662,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		TRACESTREAM(<< "Client: Attempting to load image "
 			<< "file \"" << filename << "\"" << std::endl);
 
-		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
-		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
+		io::IFileSystem *irrfs = m_rendering_engine->get_filesystem();
+		video::IVideoDriver *vdrv = m_rendering_engine->get_video_driver();
 
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				data.c_str(), data.size(), "_tempreadfile");
@@ -726,6 +728,72 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	errorstream << "Client: Don't know how to load file \""
 		<< filename << "\"" << std::endl;
 	return false;
+}
+
+bool Client::extractZipFile(const char *filename, const std::string &destination)
+{
+	auto fs = m_rendering_engine->get_filesystem();
+
+	if (!fs->addFileArchive(filename, false, false, io::EFAT_ZIP)) {
+		return false;
+	}
+
+	sanity_check(fs->getFileArchiveCount() > 0);
+
+	/**********************************************************************/
+	/* WARNING this is not threadsafe!!                                   */
+	/**********************************************************************/
+	io::IFileArchive* opened_zip = fs->getFileArchive(fs->getFileArchiveCount() - 1);
+
+	const io::IFileList* files_in_zip = opened_zip->getFileList();
+
+	unsigned int number_of_files = files_in_zip->getFileCount();
+
+	for (unsigned int i=0; i < number_of_files; i++) {
+		std::string fullpath = destination;
+		fullpath += DIR_DELIM;
+		fullpath += files_in_zip->getFullFileName(i).c_str();
+		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
+
+		if (!files_in_zip->isDirectory(i)) {
+			if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir)) {
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+				return false;
+			}
+
+			io::IReadFile* toread = opened_zip->createAndOpenFile(i);
+
+			FILE *targetfile = fopen(fullpath.c_str(),"wb");
+
+			if (targetfile == NULL) {
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+				return false;
+			}
+
+			char read_buffer[1024];
+			long total_read = 0;
+
+			while (total_read < toread->getSize()) {
+
+				unsigned int bytes_read =
+						toread->read(read_buffer,sizeof(read_buffer));
+				if ((bytes_read == 0 ) ||
+					(fwrite(read_buffer, 1, bytes_read, targetfile) != bytes_read))
+				{
+					fclose(targetfile);
+					fs->removeFileArchive(fs->getFileArchiveCount() - 1);
+					return false;
+				}
+				total_read += bytes_read;
+			}
+
+			fclose(targetfile);
+		}
+
+	}
+
+	fs->removeFileArchive(fs->getFileArchiveCount() - 1);
+	return true;
 }
 
 // Virtual methods from con::PeerHandler
@@ -1910,23 +1978,17 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 
 	// Create the mesh, remove it from cache and return it
 	// This allows unique vertex colors and other properties for each instance
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
-	io::IReadFile *rfile = RenderingEngine::get_filesystem()->createMemoryReadFile(
+	io::IReadFile *rfile = m_rendering_engine->get_filesystem()->createMemoryReadFile(
 			data.c_str(), data.size(), filename.c_str());
-#else
-	Buffer<char> data_rw(data.c_str(), data.size()); // Const-incorrect Irrlicht
-	io::IReadFile *rfile = RenderingEngine::get_filesystem()->createMemoryReadFile(
-			*data_rw, data_rw.getSize(), filename.c_str());
-#endif
 	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
-	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
+	scene::IAnimatedMesh *mesh = m_rendering_engine->get_scene_manager()->getMesh(rfile);
 	rfile->drop();
 	if (!mesh)
 		return nullptr;
 	mesh->grab();
 	if (!cache)
-		RenderingEngine::get_mesh_cache()->removeMesh(mesh);
+		m_rendering_engine->get_mesh_cache()->removeMesh(mesh);
 	return mesh;
 }
 

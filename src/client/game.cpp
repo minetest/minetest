@@ -1465,7 +1465,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			start_data.password, start_data.address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6(), m_game_ui.get());
+			RenderingEngine::get_instance(), connect_address.isIPv6(), m_game_ui.get());
 
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
 

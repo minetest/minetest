@@ -59,10 +59,9 @@ public:
 
 	static RenderingEngine *get_instance() { return s_singleton; }
 
-	static io::IFileSystem *get_filesystem()
+	io::IFileSystem *get_filesystem()
 	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getFileSystem();
+		return m_device->getFileSystem();
 	}
 
 	static video::IVideoDriver *get_video_driver()
