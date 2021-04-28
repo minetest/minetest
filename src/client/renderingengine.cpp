@@ -159,7 +159,7 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
-v2u32 RenderingEngine::getWindowSize() const
+v2u32 RenderingEngine::_getWindowSize() const
 {
 	if (core)
 		return core->getVirtualSize();
@@ -497,7 +497,7 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
 		int percent, bool clouds)
 {
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
+	v2u32 screensize = getWindowSize();
 
 	v2s32 textsize(g_fontengine->getTextWidth(text), g_fontengine->getLineHeight());
 	v2s32 center(screensize.X / 2, screensize.Y / 2);
@@ -565,7 +565,7 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 /*
 	Draws the menu scene including (optional) cloud background.
 */
-void RenderingEngine::_draw_menu_scene(gui::IGUIEnvironment *guienv,
+void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
 		float dtime, bool clouds)
 {
 	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
@@ -613,19 +613,19 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 	return drivers;
 }
 
-void RenderingEngine::_initialize(Client *client, Hud *hud)
+void RenderingEngine::initialize(Client *client, Hud *hud)
 {
 	const std::string &draw_mode = g_settings->get("3d_mode");
 	core.reset(createRenderingCore(draw_mode, m_device, client, hud));
 	core->initialize();
 }
 
-void RenderingEngine::_finalize()
+void RenderingEngine::finalize()
 {
 	core.reset();
 }
 
-void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud,
+void RenderingEngine::draw_scene(video::SColor skycolor, bool show_hud,
 		bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 {
 	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);

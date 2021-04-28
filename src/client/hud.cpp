@@ -747,7 +747,7 @@ void Hud::drawHotbar(u16 playeritem) {
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
@@ -874,7 +874,7 @@ void Hud::toggleBlockBounds()
 void Hud::drawBlockBounds()
 {
 	if (m_block_bounds_mode == BLOCK_BOUNDS_OFF) {
-		return;	
+		return;
 	}
 
 	video::SMaterial old_material = driver->getMaterial2D();
@@ -956,7 +956,7 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 }
 
 void Hud::resizeHotbar() {
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
 	if (m_screensize != window_size) {
 		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *

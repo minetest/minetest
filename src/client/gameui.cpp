@@ -97,7 +97,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 	const CameraOrientation &cam, const PointedThing &pointed_old,
 	const GUIChatConsole *chat_console, float dtime)
 {
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
+	v2u32 screensize = RenderingEngine::getWindowSize();
 
 	if (m_flags.show_debug) {
 		static float drawtime_avg = 0;
@@ -228,7 +228,7 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 	if (m_flags.show_debug)
 		chat_y += 2 * g_fontengine->getLineHeight();
 
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
 	core::rect<s32> chat_size(10, chat_y,
 		window_size.X - 20, 0);
@@ -260,7 +260,7 @@ void GameUI::updateProfiler()
 		core::position2di upper_left(6, 50);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;
-		lower_right.Y += size.Height; 
+		lower_right.Y += size.Height;
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}
