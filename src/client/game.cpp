@@ -652,8 +652,6 @@ public:
 
 protected:
 
-	void extendedResourceCleanup();
-
 	// Basic initialisation
 	bool init(const std::string &map_dir, const std::string &address,
 			u16 port, const SubgameSpec &gamespec);
@@ -968,7 +966,7 @@ Game::~Game()
 	delete itemdef_manager;
 	delete draw_control;
 
-	extendedResourceCleanup();
+	clearTextureNameCache();
 
 	g_settings->deregisterChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -4062,27 +4060,6 @@ void Game::readSettings()
  Shutdown / cleanup
  ****************************************************************************/
 /****************************************************************************/
-
-void Game::extendedResourceCleanup()
-{
-	// Extended resource accounting
-	infostream << "Irrlicht resources after cleanup:" << std::endl;
-	infostream << "\tRemaining meshes   : "
-	           << RenderingEngine::get_mesh_cache()->getMeshCount() << std::endl;
-	infostream << "\tRemaining textures : "
-	           << driver->getTextureCount() << std::endl;
-
-	for (unsigned int i = 0; i < driver->getTextureCount(); i++) {
-		irr::video::ITexture *texture = driver->getTextureByIndex(i);
-		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
-		           << std::endl;
-	}
-
-	clearTextureNameCache();
-	infostream << "\tRemaining materials: "
-               << driver-> getMaterialRendererCount()
-		       << " (note: irrlicht doesn't support removing renderers)" << std::endl;
-}
 
 void Game::showDeathFormspec()
 {
