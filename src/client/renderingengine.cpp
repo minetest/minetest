@@ -225,6 +225,15 @@ bool RenderingEngine::print_video_modes()
 	return videomode_list != NULL;
 }
 
+void RenderingEngine::cleanupMeshCache()
+{
+	auto mesh_cache = m_device->getSceneManager()->getMeshCache();
+	while (mesh_cache->getMeshCount() != 0) {
+		if (scene::IAnimatedMesh *mesh = mesh_cache->getMeshByIndex(0))
+			m_rendering_engine->get_mesh_cache()->removeMesh(mesh);
+	}
+}
+
 bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 {
 	// FIXME: It would make more sense for there to be a switch of some
