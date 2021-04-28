@@ -300,12 +300,7 @@ Client::~Client()
 	}
 
 	// cleanup 3d model meshes on client shutdown
-	while (RenderingEngine::get_mesh_cache()->getMeshCount() != 0) {
-		scene::IAnimatedMesh *mesh = RenderingEngine::get_mesh_cache()->getMeshByIndex(0);
-
-		if (mesh)
-			RenderingEngine::get_mesh_cache()->removeMesh(mesh);
-	}
+	m_rendering_engine->cleanupMeshCache();
 
 	delete m_minimap;
 	m_minimap = nullptr;
