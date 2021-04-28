@@ -663,15 +663,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
 
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				data.c_str(), data.size(), "_tempreadfile");
-#else
-		// Silly irrlicht's const-incorrectness
-		Buffer<char> data_rw(data.c_str(), data.size());
-		io::IReadFile *rfile = irrfs->createMemoryReadFile(
-				*data_rw, data_rw.getSize(), "_tempreadfile");
-#endif
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 
