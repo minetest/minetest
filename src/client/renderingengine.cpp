@@ -225,12 +225,17 @@ bool RenderingEngine::print_video_modes()
 	return videomode_list != NULL;
 }
 
+void RenderingEngine::removeMesh(const irr::scene::IMesh* mesh)
+{
+	m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
+}
+
 void RenderingEngine::cleanupMeshCache()
 {
 	auto mesh_cache = m_device->getSceneManager()->getMeshCache();
 	while (mesh_cache->getMeshCount() != 0) {
 		if (scene::IAnimatedMesh *mesh = mesh_cache->getMeshByIndex(0))
-			m_rendering_engine->get_mesh_cache()->removeMesh(mesh);
+			mesh_cache->removeMesh(mesh);
 	}
 }
 
