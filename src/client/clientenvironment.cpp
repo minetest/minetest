@@ -352,7 +352,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	if (!m_ao_manager.registerObject(object))
 		return 0;
 
-	object->addToScene(m_texturesource);
+	object->addToScene(m_texturesource, RenderingEngine::get_scene_manager());
 
 	// Update lighting immediately
 	object->updateLight(getDayNightRatio());
