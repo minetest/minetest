@@ -68,6 +68,7 @@ class ClientMap : public Map, public scene::ISceneNode
 public:
 	ClientMap(
 			Client *client,
+			RenderingEngine *rendering_engine,
 			MapDrawControl &control,
 			s32 id
 	);

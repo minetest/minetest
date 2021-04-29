@@ -110,7 +110,7 @@ Client::Client(
 	m_rendering_engine(rendering_engine),
 	m_mesh_update_thread(this),
 	m_env(
-		new ClientMap(this, control, 666),
+		new ClientMap(this, rendering_engine, control, 666),
 		tsrc, this
 	),
 	m_particle_manager(&m_env),
