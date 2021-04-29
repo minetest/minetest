@@ -53,9 +53,9 @@ static video::SMaterial baseMaterial()
 	return mat;
 };
 
-Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
-		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-			RenderingEngine::get_scene_manager(), id)
+Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShaderSource *ssrc) :
+		scene::ISceneNode(rendering_engine->get_scene_manager()->getRootSceneNode(),
+			rendering_engine->get_scene_manager(), id)
 {
 	m_seed = (u64)myrand() << 32 | myrand();
 

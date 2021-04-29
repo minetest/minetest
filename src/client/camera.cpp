@@ -43,11 +43,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
-Camera::Camera(MapDrawControl &draw_control, Client *client):
+Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
 	m_client(client)
 {
-	scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
+	auto smgr = rendering_engine->get_scene_manager();
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
