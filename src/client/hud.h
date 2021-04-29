@@ -36,7 +36,6 @@ class Hud
 {
 public:
 	video::IVideoDriver *driver;
-	scene::ISceneManager *smgr;
 	gui::IGUIEnvironment *guienv;
 	Client *client;
 	LocalPlayer *player;
