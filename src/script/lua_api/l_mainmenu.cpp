@@ -397,7 +397,8 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(RenderingEngine::get_gui_env(),
+	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(
+			engine->m_rendering_engine->get_gui_env(),
 			engine->m_parent,
 			-1,
 			engine->m_menumanager,
@@ -694,7 +695,7 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 	bool is_file_select = readParam<bool>(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
-		new GUIFileSelectMenu(RenderingEngine::get_gui_env(),
+		new GUIFileSelectMenu(engine->m_rendering_engine->get_gui_env(),
 				engine->m_parent,
 				-1,
 				engine->m_menumanager,

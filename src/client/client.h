@@ -347,6 +347,7 @@ public:
 	float mediaReceiveProgress();
 
 	void afterContentReceived();
+	void showUpdateProgressTexture(void *args, u32 progress, u32 max_progress);
 
 	float getRTT();
 	float getCurRate();

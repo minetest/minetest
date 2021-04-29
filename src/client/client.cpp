@@ -1731,7 +1731,7 @@ typedef struct TextureUpdateArgs {
 	ITextureSource *tsrc;
 } TextureUpdateArgs;
 
-void texture_update_progress(void *args, u32 progress, u32 max_progress)
+void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progress)
 {
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
@@ -1750,7 +1750,7 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 			targs->last_time_ms = time_ms;
 			std::basic_stringstream<wchar_t> strm;
 			strm << targs->text_base << " " << targs->last_percent << "%...";
-			RenderingEngine::draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
+			m_rendering_engine->draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
 				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
 		}
 }
@@ -1804,7 +1804,7 @@ void Client::afterContentReceived()
 	tu_args.last_percent = 0;
 	tu_args.text_base =  wgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;
-	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
+	m_nodedef->updateTextures(this, &tu_args);
 	delete[] tu_args.text_base;
 
 	// Start mesh update thread after setting up content definitions

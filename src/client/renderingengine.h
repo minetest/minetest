@@ -95,19 +95,14 @@ public:
 		return m_device->getTimer()->getTime();
 	}
 
-	static gui::IGUIEnvironment *get_gui_env()
+	gui::IGUIEnvironment *get_gui_env()
 	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getGUIEnvironment();
+		return m_device->getGUIEnvironment();
 	}
 
-	inline static void draw_load_screen(const std::wstring &text,
+	void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool clouds = true)
-	{
-		s_singleton->_draw_load_screen(
-				text, guienv, tsrc, dtime, percent, clouds);
-	}
+			float dtime = 0, int percent = 0, bool clouds = true);
 
 	void draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime, bool clouds);
 	void draw_scene(video::SColor skycolor, bool show_hud,
@@ -125,10 +120,6 @@ public:
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
 private:
-	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
-			ITextureSource *tsrc, float dtime = 0, int percent = 0,
-			bool clouds = true);
-
 	v2u32 _getWindowSize() const;
 
 	std::unique_ptr<RenderingCore> core;

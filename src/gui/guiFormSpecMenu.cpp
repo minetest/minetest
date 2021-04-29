@@ -96,10 +96,10 @@ inline u32 clamp_u8(s32 value)
 
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
-		Client *client, ISimpleTextureSource *tsrc, ISoundManager *sound_manager,
-		IFormSource *fsrc, TextDest *tdst,
+		Client *client, gui::IGUIEnvironment *guienv, ISimpleTextureSource *tsrc,
+		ISoundManager *sound_manager, IFormSource *fsrc, TextDest *tdst,
 		const std::string &formspecPrepend, bool remap_dbl_click):
-	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr, remap_dbl_click),
+	GUIModalMenu(guienv, parent, id, menumgr, remap_dbl_click),
 	m_invmgr(client),
 	m_tsrc(tsrc),
 	m_sound_manager(sound_manager),
@@ -145,12 +145,12 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 }
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
-	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-	const std::string &formspecPrepend, ISoundManager *sound_manager)
+	gui::IGUIEnvironment *guienv, JoystickController *joystick, IFormSource *fs_src,
+	TextDest *txt_dest, const std::string &formspecPrepend, ISoundManager *sound_manager)
 {
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
-			client, client->getTextureSource(), sound_manager, fs_src,
+			client, guienv, client->getTextureSource(), sound_manager, fs_src,
 			txt_dest, formspecPrepend);
 		cur_formspec->doPause = false;
 
