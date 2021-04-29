@@ -33,13 +33,17 @@ class LocalPlayer;
 struct ItemStack;
 class WieldMeshSceneNode;
 
+namespace irr { namespace scene {
+	class ISceneManager;
+}}
+
 class ClientActiveObject : public ActiveObject
 {
 public:
 	ClientActiveObject(u16 id, Client *client, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
-	virtual void addToScene(ITextureSource *tsrc) {}
+	virtual void addToScene(ITextureSource *tsrc, irr::scene::ISceneManager *smgr) = 0;
 	virtual void removeFromScene(bool permanent) {}
 
 	virtual void updateLight(u32 day_night_ratio) {}
