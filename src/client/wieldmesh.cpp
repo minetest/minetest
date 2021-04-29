@@ -307,7 +307,8 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	MeshMakeData mesh_make_data(client, false);
 	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
-	MapblockMeshGenerator gen(&mesh_make_data, &collector);
+	MapblockMeshGenerator gen(&mesh_make_data, &collector,
+		client->getSceneManager()->getMeshManipulator());
 
 	if (n.getParam2()) {
 		// keep it
@@ -538,7 +539,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	content_t id = ndef->getId(def.name);
 
 	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
-	
+
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default

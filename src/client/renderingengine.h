@@ -79,10 +79,9 @@ public:
 		return s_singleton->m_device->getVideoDriver();
 	}
 
-	static scene::ISceneManager *get_scene_manager()
+	scene::ISceneManager *get_scene_manager()
 	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getSceneManager();
+		return m_device->getSceneManager();
 	}
 
 	static irr::IrrlichtDevice *get_raw_device()

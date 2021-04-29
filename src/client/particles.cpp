@@ -64,8 +64,8 @@ Particle::Particle(
 	v2f texsize,
 	video::SColor color
 ):
-	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-		RenderingEngine::get_scene_manager())
+	scene::ISceneNode(((Client *)gamedef)->getSceneManager()->getRootSceneNode(),
+		((Client *)gamedef)->getSceneManager())
 {
 	// Misc
 	m_gamedef = gamedef;
