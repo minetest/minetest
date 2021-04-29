@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-10-25 19:26+0000\n"
-"Last-Translator: Nick Naumenko <mykola.naumenko@protonmail.com>\n"
+"PO-Revision-Date: 2021-06-07 14:33+0000\n"
+"Last-Translator: Andrij Mizyk <andmizyk@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -29,7 +29,7 @@ msgstr "ОК"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Трапилася помилка у Lua скрипті:"
+msgstr "Трапилася помилка у скрипті Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -41,11 +41,11 @@ msgstr "Головне меню"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Повторне підключення"
+msgstr "Перепідключення"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Сервер запросив перез'єднання:"
+msgstr "Сервер запросив перезʼєднання:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -81,7 +81,7 @@ msgstr "Скасувати"
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "Залежить від:"
+msgstr "Залежності:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -89,23 +89,23 @@ msgstr "Вимкнути все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Вимкнути модпак"
+msgstr "Вимкнути пакмод"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Увімкнути все"
+msgstr "Дозволити все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Увімкнути модпак"
+msgstr "Дозволити пакмод"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Не вдалося ввімкнути модифікацію \"$1\", тому що вона містить заборонені "
-"символи. Дозволяється використання таких символів: [a-z0-9_]."
+"Не вдалося ввімкнути мод \"$1\", тому що він містить не дозволені знаки. "
+"Дозволяються такі знаки: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -117,7 +117,7 @@ msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "Необов'язкові залежності відсутні"
+msgstr "Відсутні (необовʼязкові) залежності"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -125,19 +125,19 @@ msgstr "Опис гри відсутній."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "Без обов'язкових залежностей"
+msgstr "Без обовʼязкових залежностей"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Опис модифікації відсутній."
+msgstr "Опис пакмода відсутній."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "Відсутні необов'язкові залежності"
+msgstr "Відсутні необовʼязкові залежності"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "Необов'язкові залежності:"
+msgstr "Необовʼязкові залежності:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -150,60 +150,59 @@ msgstr "Світ:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "увімкнено"
+msgstr "дозволено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" вже існує. Бажаєте перезаписати?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Встановиться $1 і $2 залежностей."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 від $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 завантажується,\n"
+"$2 у черзі"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Завантаження..."
+msgstr "$1 завантажується..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 необхідних залежностей не знайдено."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 встановиться, і $2 залежностей буде пропущено."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr "Всі пакунки"
+msgstr "Усі пакунки"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Клавіша вже використовується"
+msgstr "Уже встановлено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "Назад в Головне Меню"
+msgstr "Назад до головного меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Грати (сервер)"
+msgstr "Базова гра:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB не є доступним коли Minetest не містить підтримку cURL"
+msgstr "ContentDB недоступний, коли Minetest скомпільований без CURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -223,48 +222,45 @@ msgid "Install"
 msgstr "Встановити"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Встановити"
+msgstr "Встановити $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Необов'язкові залежності:"
+msgstr "Встановити відсутні залежності"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Модифікації"
+msgstr "Моди"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "Неможливо закачати пакунки"
+msgstr "Не вдалося отримати пакунки"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "Нічого не знайдено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Оновити"
+msgstr "Нема оновлень"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Не знайдено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Перезаписати"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Перевірте чи основна гра є правильною."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "У черзі"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -280,15 +276,15 @@ msgstr "Оновити"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Оновити все [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Переглянути більше інформації у вебоглядачі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Світ з такою назвою \"$1\" вже існує"
+msgstr "Світ з назвою \"$1\" вже існує"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -348,7 +344,7 @@ msgstr "Плаваючі земельні масиви в небі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Висячі острови"
+msgstr "Висячі острови (експериментальне)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -356,7 +352,7 @@ msgstr "Гра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr "Генерувати нефрактальну місцевість: Океани та підземелля"
+msgstr "Ґенерувати нефрактальну місцевість: океани і підземелля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -380,15 +376,15 @@ msgstr "Низька вологість і велика спека спричи�
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Генератор світу"
+msgstr "Ґенератор світу"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Прапори Генератору світу"
+msgstr "Мітки ґенератора світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Властивості генератору світу"
+msgstr "Мітки для ґенератора світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -396,7 +392,7 @@ msgstr "Гори"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr "Грязьовий потік"
+msgstr "Болотяний потік"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
@@ -404,7 +400,7 @@ msgstr "Мережа тунелів і печер"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr "Гру не вибрано"
+msgstr "Не вибрано гру"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -420,7 +416,7 @@ msgstr "Річки"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr "Річки Рівня моря"
+msgstr "Річки на рівні моря"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -449,7 +445,7 @@ msgstr "Помірний, пустеля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr "Помірного Поясу, Пустелі, Джунглі"
+msgstr "Помірний, пустелі, джунглі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
@@ -461,7 +457,7 @@ msgstr "Ерозія поверхні місцевості"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr "Дерева та трава джунглів"
+msgstr "Дерева і трава джунглів"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
@@ -472,9 +468,8 @@ msgid "Very large caverns deep in the underground"
 msgstr "Дуже великі печери глибоко під землею"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr "Увага: мінімальна тестова версія призначена для розробників."
+msgstr "Увага: тестова розробка означає для розробників."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -512,35 +507,34 @@ msgstr "Прийняти"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Перейменувати збірку модифікацій:"
+msgstr "Перейменувати пакмод:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Цей набір модифікацій (модпак) має точну назву, встановлену у modpack.conf, "
-"на що не вплине перейменування."
+"Цей пакмод має явну назву в modpack.conf, на що не вплине перейменування."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(пояснення налаштування відсутнє)"
+msgstr "(не задані описи налаштувань)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D Шум"
+msgstr "2D-шум"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Назад до Налаштувань"
+msgstr "< Назад до налаштувань"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr "Переглянути"
+msgstr "Оглянути"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr "Вимкнено"
+msgstr "Заборонено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -548,11 +542,11 @@ msgstr "Правити"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "Увімкнено"
+msgstr "Дозволено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr "Лакунарність"
+msgstr "Порожнистість"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
@@ -568,15 +562,15 @@ msgstr "Постійність"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Будь-ласка введіть коректне ціле число."
+msgstr "Введіть коректне ціле число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "Будь-ласка введіть коректне число."
+msgstr "Введіть коректне число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Відновити за замовченням"
+msgstr "Відновити типові"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -588,7 +582,7 @@ msgstr "Пошук"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr "Виберіть директорію"
+msgstr "Виберіть каталог"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
@@ -600,7 +594,7 @@ msgstr "Показувати технічні назви"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr "Значення має бути як мінімум $1."
+msgstr "Значенням має бути щонайменше $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
@@ -655,11 +649,11 @@ msgstr "полегшений"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr "$1 (Увімкнено)"
+msgstr "$1 (Дозволено)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr "$1 модифікації"
+msgstr "$1 модів"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -667,13 +661,12 @@ msgstr "Не вдалося встановити $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Встановлення модифікації: не вдається знайти реальну назву для: $1"
+msgstr "Встановлення мода: не вдається знайти справжню назву для: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Встановлення модифікації: неможливо знайти відповідну назву папки для "
-"модпаку $1"
+"Встановлення мода: неможливо знайти відповідну назву теки для пакмоду $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
@@ -685,7 +678,7 @@ msgstr "Встановлення: файл: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr "Неможливо знайти вірну модифікацію або набір модифікацій (модпак)"
+msgstr "Неможливо знайти правильний мод або пакмод"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -708,9 +701,8 @@ msgid "Loading..."
 msgstr "Завантаження..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Клієнтосторонні скрипти на клієнті вимкнено"
+msgstr "Список публічних серверів вимкнено"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -771,15 +763,16 @@ msgid "Credits"
 msgstr "Подяки"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Виберіть директорію"
+msgstr "Відкрийте каталог користувацьких даних"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Відкриває каталог, що містить надані користувачем світи, ігри, моди,\n"
+"і набори текстур у файловому керівнику / оглядачі."
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -819,7 +812,7 @@ msgstr "Встановити ігри з ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -830,9 +823,8 @@ msgid "No world created or selected!"
 msgstr "Світ не створено або не обрано!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "Новий пароль"
+msgstr "Пароль"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -843,9 +835,8 @@ msgid "Port"
 msgstr "Порт"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Виберіть світ:"
+msgstr "Виберіть моди"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -997,9 +988,8 @@ msgid "Shaders"
 msgstr "Шейдери"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Висячі острови"
+msgstr "Відтінювачі (експериментальне)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1199,7 +1189,7 @@ msgid "Continue"
 msgstr "Продовжити"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1216,19 +1206,19 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"Стандартне керування клавішами:\n"
-"- %s: вперед\n"
-"- %s: назад\n"
-"- %s: ліворуч\n"
-"- %s: праворуч\n"
+"Керування:\n"
+"- %s: рухатися вперед\n"
+"- %s: рухатися назад\n"
+"- %s: рухатися вліво\n"
+"- %s: рухатися вправо\n"
 "- %s: стрибок/лізти вгору\n"
+"- %s: копати/удар\n"
+"- %s: поставити/використати\n"
 "- %s: крастися/лізти вниз\n"
 "- %s: кинути предмет\n"
 "- %s: інвентар\n"
-"- Мишка: поворот/дивитися\n"
-"- Ліва кнопка миші: копати/удар\n"
-"- Права кнопка миші: поставити/використати\n"
-"- Колесо миші: вибір предмета\n"
+"- Mouse: поворот/дивитися\n"
+"- Mouse wheel: вибір предмета\n"
 "- %s: чат\n"
 
 #: src/client/game.cpp
@@ -1756,14 +1746,14 @@ msgid "Minimap hidden"
 msgstr "Мінімапа вимкнена"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "Мінімапа в режимі радар. Наближення х1"
+msgstr "Мінімапа в режимі радара. Наближення x%d"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "Мінімапа в режимі поверхня. Наближення х1"
+msgstr "Мінімапа в режимі поверхні. Наближення x%d"
 
 #: src/client/minimap.cpp
 #, fuzzy
@@ -2212,13 +2202,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr ""
+msgstr "Додавати часточки при копанні блока."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Налаштувати dpi на вашому екрані (тільки не X11/Android), напр. для "
+"4k-екранів."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2229,6 +2221,13 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Налаштувати щільність плавучого шару.\n"
+"Збільшуйте значення, щоб збільшити щільність. Може бути позитивним або "
+"негативним.\n"
+"Значення = 0.0: 50% від обсягу плавучого острова.\n"
+"Значення = 2.0 (можна збільшувати залежно від 'mgv7_np_floatland', завжди "
+"перевіряйте,\n"
+"щоб бути певними) створює твердий шар плавучої землі."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2242,10 +2241,15 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
+"Змінює криву світла застосовуючи до неї 'гамма-корекцію'.\n"
+"Більше значення робить середній і нижчий рівень яскравості освітлення.\n"
+"Значення '1.0' залишає криву світла незмінною.\n"
+"Це впливає лише на денне і штучне світло,\n"
+"воно мало впливає на природне нічне світло."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Завжди літає і швидко"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2253,7 +2257,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
-msgstr ""
+msgstr "К-сть повідомлень, які гравець може надіслати протягом 10 секунд."
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -2273,29 +2277,31 @@ msgstr "Анонсувати сервер в цей перелік сервер�
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr ""
+msgstr "Додавати назви предметів"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr ""
+msgstr "Додавати назви предметів до підказок."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
-msgstr ""
+msgstr "Шум яблунь"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
-msgstr ""
+msgstr "Інерція руки"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
+"Інерція руки забезпечує реалістичніші рухи\n"
+"під час руху камери."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Запитувати про перезʼєднання під час збою"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2319,11 +2325,11 @@ msgstr "Клавіша автоматичного руху вперед"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr ""
+msgstr "Автоматично стрибати на блок вище."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
-msgstr ""
+msgstr "Автоматично звітувати у список серверів."
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
@@ -2331,7 +2337,7 @@ msgstr "Зберігати розмір вікна"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
-msgstr ""
+msgstr "Режим автомасштабування"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2339,7 +2345,7 @@ msgstr "Назад"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
-msgstr ""
+msgstr "Базовий рівень землі"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
@@ -2347,7 +2353,7 @@ msgstr "Висота основної поверхні."
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Основи"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2355,11 +2361,11 @@ msgstr "Стандартні права"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
-msgstr ""
+msgstr "Шум пляжу"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise threshold"
-msgstr ""
+msgstr "Поріг пляжного шуму"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -2375,11 +2381,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
-msgstr ""
+msgstr "Шум біому"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Бітів на піксель (глибина кольору) в повноекранному режимі."
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2387,20 +2393,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
-msgstr ""
+msgstr "Шлях до жирного і курсивного шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic monospace font path"
-msgstr ""
+msgstr "Шлях до жирного і курсивного моноширного шрифту"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold font path"
-msgstr "Шлях до шрифту"
+msgstr "Шлях до жирного шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Bold monospace font path"
-msgstr ""
+msgstr "Шлях до жирного моноширного шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2432,35 +2437,35 @@ msgstr "Контроль оновлення камери"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr ""
+msgstr "Шум печери"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Шум печери #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Шум печери #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "Ширина печери"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr ""
+msgstr "Шум для Печера1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr ""
+msgstr "Шум для Печера2"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
-msgstr ""
+msgstr "Обмеження каверни"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr ""
+msgstr "Шум каверни"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -2472,7 +2477,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
-msgstr ""
+msgstr "Верхнє обмеження каверни"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2486,20 +2491,19 @@ msgstr "Розмір шрифту чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr "Чат"
+msgstr "Клавіша чату"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Чат"
+msgstr "Рівень журналу чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
-msgstr ""
+msgstr "Обмеження к-сті повідомлень чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message format"
-msgstr ""
+msgstr "Формат повідомлень чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2507,7 +2511,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Максимальна довжина повідомлення чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
