@@ -1389,7 +1389,7 @@ bool Game::createClient(const GameStartData &start_data)
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
 
-	hud = new Hud(guienv, client, player, &player->inventory);
+	hud = new Hud(client, player, &player->inventory);
 
 	mapper = client->getMinimap();
 

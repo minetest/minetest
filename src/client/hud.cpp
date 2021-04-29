@@ -45,11 +45,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define OBJECT_CROSSHAIR_LINE_SIZE 8
 #define CROSSHAIR_LINE_SIZE 10
 
-Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
+Hud::Hud(Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
 	driver            = RenderingEngine::get_video_driver();
-	this->guienv      = guienv;
 	this->client      = client;
 	this->player      = player;
 	this->inventory   = inventory;
@@ -315,7 +314,7 @@ bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *p
 {
 	v3f w_pos = e->world_pos * BS;
 	scene::ICameraSceneNode* camera =
-		RenderingEngine::get_scene_manager()->getActiveCamera();
+		client->getSceneManager()->getActiveCamera();
 	w_pos -= intToFloat(camera_offset, BS);
 	core::matrix4 trans = camera->getProjectionMatrix();
 	trans *= camera->getViewMatrix();
@@ -475,7 +474,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 
 				// Angle according to camera view
 				v3f fore(0.f, 0.f, 1.f);
-				scene::ICameraSceneNode *cam = RenderingEngine::get_scene_manager()->getActiveCamera();
+				scene::ICameraSceneNode *cam = client->getSceneManager()->getActiveCamera();
 				cam->getAbsoluteTransformation().rotateVect(fore);
 				int angle = - fore.getHorizontalAngle().Y;
 
