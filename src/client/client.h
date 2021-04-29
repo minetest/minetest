@@ -355,6 +355,7 @@ public:
 	void setCamera(Camera* camera) { m_camera = camera; }
 
 	Camera* getCamera () { return m_camera; }
+	irr::scene::ISceneManager *getSceneManager();
 
 	bool shouldShowMinimap() const;
 
