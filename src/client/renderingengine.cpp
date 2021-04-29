@@ -493,7 +493,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	Text will be removed when the screen is drawn the next time.
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
-void RenderingEngine::_draw_load_screen(const std::wstring &text,
+void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
 		int percent, bool clouds)
 {
