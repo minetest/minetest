@@ -22,7 +22,7 @@
 
 #    If clickable_chat_weblinks is enabled, specify the color (as 24-bit hexadecimal) of weblinks in chat.
 #    type: string
-# chat_weblink_color = 8888FF
+# chat_weblink_color = #8888FF
 
 #    If clickable_chat_weblinks is enabled, specify the keys held down to treat left-click as middle-click.
 #    type: string (comma-delimited)

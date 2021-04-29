@@ -135,4 +135,6 @@ private:
 	bool m_cache_clickable_chat_weblinks;
 	// Set of "control" keys for weblink mouseclicks
 	std::vector<irr::EKEY_CODE> m_cache_chat_weblink_ctrl_keys;
+	// Track if a ctrl key is currently held down
+	bool m_is_ctrl_down;
 };

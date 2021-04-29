@@ -36,22 +36,16 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
 
+	m_cache_clickable_chat_weblinks = false;
 	// Curses mode cannot access g_settings here
 	if(g_settings != NULL)
 	{
 		m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
 		if(m_cache_clickable_chat_weblinks)
 		{
-			std::string hexcode = g_settings->get("chat_weblink_color");
-			u32 colorval = strtol(hexcode.c_str(), NULL, 16);
-			u32 redval,greenval,blueval;
-			blueval = colorval % 256;
-			colorval /= 256;
-			greenval = colorval % 256;
-			colorval /= 256;
-			redval = colorval % 256;
-			// discard alpha, if included
-			m_cache_chat_weblink_color = irr::video::SColor(255,redval,greenval,blueval);
+			std::string colorval = g_settings->get("chat_weblink_color");
+			parseColorString(colorval, m_cache_chat_weblink_color, false, 255);
+			m_cache_chat_weblink_color.setAlpha(255);
 		}
 	}
 }
@@ -293,7 +287,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			ChatFormattedFragment& frag = next_frags[0];
 
 			// Force text_processing on this frag. hacky.
-			if(frag.column == u32(INT_MAX))
+			if(frag.column == (u32)INT_MAX)
 				text_processing = true;
 
 			if (frag.text.size() <= cols - out_column)
@@ -310,7 +304,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				// So split it up
 				temp_frag.text = frag.text.substr(0, cols - out_column);
 				temp_frag.column = out_column;
-				temp_frag.meta = frag.meta;
+				temp_frag.weblink = frag.weblink;
 
 				next_line.fragments.push_back(temp_frag);
 				frag.text = frag.text.substr(cols - out_column);
@@ -363,7 +357,8 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			// Unless weblinks are enabled. Then it's slightly more complex
 			else
 			{
-				u32 http_pos = u32(std::wstring::npos);
+				std::wstring linestring = line.text.getString();
+				u32 http_pos = (u32)(std::wstring::npos);
 				text_processing = false;  // set FALSE at end of this block
 				bool halt_fragloop = false;
 				while(!halt_fragloop)
@@ -373,46 +368,46 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 					space_pos = 0;
 
 					// Note: unsigned(-1) on fail
-					http_pos = u32(line.text.getString().find(L"https://", std::size_t(in_pos)));
-					if(http_pos == u32(std::wstring::npos))
-						http_pos = u32(line.text.getString().find(L"http://", std::size_t(in_pos)));
-					if(http_pos != u32(std::wstring::npos))
+					http_pos = linestring.find(L"https://", in_pos);
+					if(http_pos == (u32)std::wstring::npos)
+						http_pos = linestring.find(L"http://", in_pos);
+					if(http_pos != (u32)std::wstring::npos)
 						http_pos -= in_pos;
 
 					while (frag_length < remaining_in_input &&
 							frag_length < remaining_in_output)
 					{
-						if (iswspace(line.text.getString()[in_pos + frag_length]))
+						if (iswspace(linestring[in_pos + frag_length]))
 							space_pos = frag_length;
 						++frag_length;
 					}
 
 					// Http not in range, grab until space or EOL, halt as normal.
-					if(http_pos > remaining_in_output)  // sufficient unless screen is infinitely wide
+					if(http_pos > remaining_in_output)  // ok unless screen is infinitely wide
 					{
-						halt_fragloop = true;
 						// force text processing on THIS frag
 						text_processing = true;
+						halt_fragloop = true;
 					}
 					// At http, grab ALL until FIRST whitespace or end marker. loop.
-					// If at end of string, next loop will be empty string to mark end of weblink. This is intentional.
+					// If at end of string, next loop will be empty string to mark end of weblink.
 					else if(http_pos == 0)
 					{
 						frag_length = 6;
+
 						// TODO? replace this with a safer (slower) regex whitelist?
-						wchar_t tempchar = line.text.getString()[in_pos+frag_length];
+						std::wstring delim_chars = L"\'\");,";
+						wchar_t tempchar = linestring[in_pos+frag_length];
 						while (frag_length < remaining_in_input &&
 								!iswspace(tempchar) &&
-								tempchar != L'\'' &&
-								tempchar != L'\"' &&
-								tempchar != L')' &&
-								tempchar != L';'
+								delim_chars.find(tempchar) == std::wstring::npos
 							)
 						{
 							++frag_length;
-							tempchar = line.text.getString()[in_pos+frag_length];
+							tempchar = linestring[in_pos+frag_length];
 						}
 						space_pos = frag_length - 1;
+						// This frag will need to be force-wrapped. That's ok.
 						if(frag_length >= remaining_in_output)
 						{
 							// Force text processing on THIS frag
@@ -431,16 +426,19 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 						frag_length = space_pos + 1;
 
 					temp_frag.text = line.text.substr(in_pos, frag_length);
-					temp_frag.column = text_processing ? u32(INT_MAX) : 0;
+					// A hack so this frag remembers text_processing for the layout phase
+					temp_frag.column = text_processing ? (u32)INT_MAX : 0;
 					if(http_pos == 0)
 					{
-						temp_frag.meta = wide_to_utf8(temp_frag.text.getString());
+						// Set weblink in the frag meta
+						temp_frag.weblink = wide_to_utf8(temp_frag.text.getString());
+						// Discard color stuff from the source frag
 						temp_frag.text = EnrichedString(temp_frag.text.getString());
 						temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
 					}
 					else
 					{
-						temp_frag.meta = "";
+						temp_frag.weblink = "";
 					}
 					next_frags.push_back(temp_frag);
 					in_pos += frag_length;

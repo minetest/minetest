@@ -91,14 +91,16 @@ GUIChatConsole::GUIChatConsole(
 	// set default cursor options
 	setCursor(true, true, 2.0, 0.1);
 
+	// track this for mouse event
+	m_is_ctrl_down = false;
 	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
-	if(m_cache_clickable_chat_weblinks)
+	if (m_cache_clickable_chat_weblinks)
 	{
 		std::string ctrlkeystoparse = g_settings->get("chat_weblink_ctrl_keys");
-		if(setupChatClickCtrlKeys(ctrlkeystoparse) == 0)
+		if (setupChatClickCtrlKeys(ctrlkeystoparse) == 0)
 		{
 			// if fail then try again w hardcoded string
-			g_logger.log(LL_WARNING, "Failed to parse chat_weblink_ctrl_keys. Using hardcoded default.");
+			warningstream<<"Failed to parse chat_weblink_ctrl_keys. Using hardcoded default."<<std::endl;
 			ctrlkeystoparse = "KEY_CONTROL,KEY_LCONTROL,KEY_RCONTROL";
 			setupChatClickCtrlKeys(ctrlkeystoparse);
 		}
@@ -417,22 +419,21 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 {
 
 	ChatPrompt &prompt = m_chat_backend->getPrompt();
-	static bool isctrldown;  // track this for mouse event
 
-	if(event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)
+	if (event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)
 	{
 		// CTRL up
-		if(isInCtrlKeys(event.KeyInput.Key))
+		if (isInCtrlKeys(event.KeyInput.Key))
 		{
-			isctrldown = false;
+			m_is_ctrl_down = false;
 		}
 	}
 	else if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// CTRL down
-		if(isInCtrlKeys(event.KeyInput.Key))
+		if (isInCtrlKeys(event.KeyInput.Key))
 		{
-			isctrldown = true;
+			m_is_ctrl_down = true;
 		}
 
 		// Key input
@@ -652,15 +653,16 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			s32 rows = myround(-3.0 * event.MouseInput.Wheel);
 			m_chat_backend->scroll(rows);
 		}
-		// Middle click opens weblink, if enabled in config
+		// Middle click or ctrl-click opens weblink, if enabled in config
 		else if(m_cache_clickable_chat_weblinks && (
 				event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN ||
-				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && isctrldown)
+				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && m_is_ctrl_down)
 			))
 		{
-			// because console prompt and hardcoded margins
-			if(event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 )
+			// If clicked within console output region
+			if (event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 )
 			{
+				// Translate pixel position to font position
 				middleClick(event.MouseInput.X / m_fontsize.X, event.MouseInput.Y / m_fontsize.Y);
 			}
 		}
@@ -709,8 +711,10 @@ int GUIChatConsole::setupChatClickCtrlKeys(std::string inputline)
 			}
 			else
 			{
-				stemp = "Ignoring unknown keycode '" + stemp + "' for chat_weblink_ctrl_keys, check your conf";
-				g_logger.log(LL_WARNING, stemp);
+				stemp = "Ignoring unknown keycode '" + stemp +
+						"' for chat_weblink_ctrl_keys, check your conf";
+				//g_logger.log(LL_WARNING, stemp);
+				warningstream << stemp << std::endl;
 			}
 		}
 		startpos = endpos;
@@ -722,9 +726,9 @@ int GUIChatConsole::setupChatClickCtrlKeys(std::string inputline)
 bool GUIChatConsole::isInCtrlKeys(const irr::EKEY_CODE& kc)
 {
 	// To avoid including <algorithm>
-	for(size_t i=0; i<m_cache_chat_weblink_ctrl_keys.size(); ++i)
+	for (size_t i=0; i<m_cache_chat_weblink_ctrl_keys.size(); ++i)
 	{
-		if(m_cache_chat_weblink_ctrl_keys.at(i) == kc)
+		if (m_cache_chat_weblink_ctrl_keys.at(i) == kc)
 			return true;
 	}
 	return false;
@@ -733,29 +737,36 @@ bool GUIChatConsole::isInCtrlKeys(const irr::EKEY_CODE& kc)
 void GUIChatConsole::middleClick(s32 col, s32 row)
 {
 	// Prevent accidental rapid clicking
-	static u32 oldtime = 0;
-	// seriously..
-	u32 newtime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	static u64 s_oldtime = 0;
+	u64 newtime = porting::getTimeMs();
 
 	// 0.6 seconds should suffice
-	if(newtime - oldtime < 600)
+	if(newtime - s_oldtime < 600)
 		return;
-	oldtime = newtime;
+	s_oldtime = newtime;
 
-	const std::vector<ChatFormattedFragment> & frags = m_chat_backend->getConsoleBuffer().getFormattedLine(row).fragments;
+	const std::vector<ChatFormattedFragment> &
+			frags = m_chat_backend->getConsoleBuffer().getFormattedLine(row).fragments;
 	std::string weblink = "";         // from frag meta
 
 	// Identify targetted fragment, if exists
 	int ind = frags.size() - 1;
-	while(u32(col - 1) < frags[ind].column)
+	if (ind < 0)
+	{
+		// Invalid row, frags is empty
+		return;
+	}
+	// Minus 1 because the left margin of 1 font space
+	while ((u32)(col - 1) < frags[ind].column)
 	{
 		--ind;
 	}
-	if(ind > -1)
+	if (ind > -1)
 	{
-		weblink = frags[ind].meta;
+		weblink = frags[ind].weblink;
 	}
 
+/*
 	// Debug help
 	std::string ws;
 	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
@@ -766,14 +777,16 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 		ws += std::to_string(frags.at(i).column) + '('
 			+ std::to_string(frags.at(i).text.size()) + "),";
 	}
-	g_logger.log(LL_VERBOSE, ws);
+	//g_logger.log(LL_VERBOSE, ws);
+	verbosestream << ws << std::endl;
+*/
 
 	// User notification
 	std::string mesg;
-	if(weblink.size() != 0)
+	if (weblink.size() != 0)
 	{
 		mesg = " * ";
-		if(porting::open_url(weblink))
+		if (porting::open_url(weblink))
 		{
 			mesg += gettext("Opening webpage");
 		}

@@ -57,8 +57,8 @@ struct ChatFormattedFragment
 	EnrichedString text;
 	// starting column
 	u32 column;
-	// web link for now. maybe future use?
-	std::string meta;
+	// web link is empty for most frags
+	std::string weblink;
 	// formatting
 	//u8 bold:1;
 };
