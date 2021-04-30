@@ -91,20 +91,9 @@ GUIChatConsole::GUIChatConsole(
 	// set default cursor options
 	setCursor(true, true, 2.0, 0.1);
 
-	// track this for mouse event
+	// track ctrl keys for mouse event
 	m_is_ctrl_down = false;
 	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
-	if (m_cache_clickable_chat_weblinks)
-	{
-		std::string ctrlkeystoparse = g_settings->get("chat_weblink_ctrl_keys");
-		if (setupChatClickCtrlKeys(ctrlkeystoparse) == 0)
-		{
-			// if fail then try again w hardcoded string
-			warningstream<<"Failed to parse chat_weblink_ctrl_keys. Using hardcoded default."<<std::endl;
-			ctrlkeystoparse = "KEY_CONTROL,KEY_LCONTROL,KEY_RCONTROL";
-			setupChatClickCtrlKeys(ctrlkeystoparse);
-		}
-	}
 }
 
 GUIChatConsole::~GUIChatConsole()
@@ -681,57 +670,9 @@ void GUIChatConsole::setVisible(bool visible)
 	}
 }
 
-// Return how many "ctrl" keycodes successfully found in string, or 0 on fail
-int GUIChatConsole::setupChatClickCtrlKeys(std::string inputline)
-{
-	m_cache_chat_weblink_ctrl_keys.clear();
-
-	irr::EKEY_CODE kc;
-	std::string stemp;
-	size_t startpos = 0, endpos = 0;
-	while(startpos < inputline.size())
-	{
-		// Foreach delimited string,
-		endpos = inputline.find(',', startpos);
-		endpos = std::min(endpos, inputline.find(' ', startpos));
-		// Ignore space/comma
-		if(endpos == startpos)
-		{
-			++endpos;
-		}
-		// Ignore consecutive space/comma
-		else if(endpos - startpos > 1)
-		{
-			// If valid keycode, add it to cached list
-			stemp = inputline.substr(startpos, endpos - startpos);
-			kc = keyname_to_keycode_safemode(stemp.c_str());
-			if(kc != irr::KEY_KEY_CODES_COUNT)
-			{
-				m_cache_chat_weblink_ctrl_keys.push_back(kc);
-			}
-			else
-			{
-				stemp = "Ignoring unknown keycode '" + stemp +
-						"' for chat_weblink_ctrl_keys, check your conf";
-				//g_logger.log(LL_WARNING, stemp);
-				warningstream << stemp << std::endl;
-			}
-		}
-		startpos = endpos;
-	}
-
-	return m_cache_chat_weblink_ctrl_keys.size();
-}
-
 bool GUIChatConsole::isInCtrlKeys(const irr::EKEY_CODE& kc)
 {
-	// To avoid including <algorithm>
-	for (size_t i=0; i<m_cache_chat_weblink_ctrl_keys.size(); ++i)
-	{
-		if (m_cache_chat_weblink_ctrl_keys.at(i) == kc)
-			return true;
-	}
-	return false;
+	return kc == KEY_LCONTROL || kc == KEY_RCONTROL || kc == KEY_CONTROL;
 }
 
 void GUIChatConsole::middleClick(s32 col, s32 row)
@@ -750,29 +691,31 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 	std::string weblink = "";         // from frag meta
 
 	// Identify targetted fragment, if exists
-	int ind = frags.size() - 1;
-	if (ind < 0)
+	int indx = frags.size() - 1;
+	if (indx < 0)
 	{
 		// Invalid row, frags is empty
 		return;
 	}
 	// Minus 1 because the left margin of 1 font space
-	while ((u32)(col - 1) < frags[ind].column)
+	while ((u32)(col - 1) < frags[indx].column)
 	{
-		--ind;
+		--indx;
 	}
-	if (ind > -1)
+	if (indx > -1)
 	{
-		weblink = frags[ind].weblink;
+		weblink = frags[indx].weblink;
 	}
 
 /*
 	// Debug help
 	std::string ws;
 	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
+	// show all frags <position>(<length>) for the clicked row
 	for(u32 i=0;i<frags.size();++i)
 	{
 		if(ind == int(i))
+			// tag the actual clicked frag
 			ws += '*';
 		ws += std::to_string(frags.at(i).column) + '('
 			+ std::to_string(frags.at(i).text.size()) + "),";

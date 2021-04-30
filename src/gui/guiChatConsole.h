@@ -83,7 +83,6 @@ private:
 	void drawPrompt();
 
 	// Clickable weblink stuff
-	int setupChatClickCtrlKeys(std::string inputline);
 	bool isInCtrlKeys(const irr::EKEY_CODE& kc);
 	// If clicked fragment has a web url, send it to the system default web browser
 	void middleClick(s32 col, s32 row);
@@ -133,8 +132,6 @@ private:
 
 	// Enable clickable chat weblinks
 	bool m_cache_clickable_chat_weblinks;
-	// Set of "control" keys for weblink mouseclicks
-	std::vector<irr::EKEY_CODE> m_cache_chat_weblink_ctrl_keys;
 	// Track if a ctrl key is currently held down
 	bool m_is_ctrl_down;
 };
