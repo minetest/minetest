@@ -61,7 +61,7 @@ static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
 MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
-	irr::scene::IMeshManipulator *mm):
+	scene::IMeshManipulator *mm):
 	data(input),
 	collector(output),
 	nodedef(data->m_client->ndef()),

@@ -188,7 +188,7 @@ public:
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
-	void addToScene(ITextureSource *tsrc, irr::scene::ISceneManager *smgr);
+	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 	void removeFromScene(bool permanent);
 	void updateLight(u32 day_night_ratio);
 	void updateNodePos();
@@ -219,7 +219,7 @@ ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
 	return new TestCAO(client, env);
 }
 
-void TestCAO::addToScene(ITextureSource *tsrc, irr::scene::ISceneManager *smgr)
+void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 {
 	if(m_node != NULL)
 		return;
@@ -590,7 +590,7 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_client->getMinimap()->removeMarker(&m_marker);
 }
 
-void GenericCAO::addToScene(ITextureSource *tsrc, irr::scene::ISceneManager *smgr)
+void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 {
 	m_smgr = smgr;
 
@@ -1484,10 +1484,10 @@ void GenericCAO::updateBonePosition()
 	if (m_bone_position.empty() || !m_animated_meshnode)
 		return;
 
-	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
+	m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL); // To write positions to the mesh on render
 	for (auto &it : m_bone_position) {
 		std::string bone_name = it.first;
-		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
+		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
 		if (bone) {
 			bone->setPosition(it.second.X);
 			bone->setRotation(it.second.Y);
@@ -1496,7 +1496,7 @@ void GenericCAO::updateBonePosition()
 
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
 	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
-		irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
+		scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
 		if (!bone)
 			continue;
 
@@ -1924,7 +1924,7 @@ void GenericCAO::updateMeshCulling()
 		return;
 	}
 
-	irr::scene::ISceneNode *node = getSceneNode();
+	scene::ISceneNode *node = getSceneNode();
 	if (!node)
 		return;
 

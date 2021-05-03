@@ -839,7 +839,7 @@ private:
 	MapDrawControl *draw_control = nullptr;
 	Camera *camera = nullptr;
 	Clouds *clouds = nullptr;	                  // Free using ->Drop()
-	Sky *m_sky = nullptr;                         // Free using ->Drop()
+	Sky *sky = nullptr;                         // Free using ->Drop()
 	Hud *hud = nullptr;
 	Minimap *mapper = nullptr;
 
@@ -1159,8 +1159,8 @@ void Game::shutdown()
 	if (gui_chat_console)
 		gui_chat_console->drop();
 
-	if (m_sky)
-		m_sky->drop();
+	if (sky)
+		sky->drop();
 
 	/* cleanup menus */
 	while (g_menumgr.menuCount() > 0) {
@@ -1346,8 +1346,8 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Skybox
 	 */
-	m_sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
-	scsf->setSky(m_sky);
+	sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
+	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
 
 	/* Pre-calculated values
@@ -2754,23 +2754,23 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 
 void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 {
-	m_sky->setVisible(false);
+	sky->setVisible(false);
 	// Whether clouds are visible in front of a custom skybox.
-	m_sky->setCloudsEnabled(event->set_sky->clouds);
+	sky->setCloudsEnabled(event->set_sky->clouds);
 
 	if (skybox) {
 		skybox->remove();
 		skybox = NULL;
 	}
 	// Clear the old textures out in case we switch rendering type.
-	m_sky->clearSkyboxTextures();
+	sky->clearSkyboxTextures();
 	// Handle according to type
 	if (event->set_sky->type == "regular") {
 		// Shows the mesh skybox
-		m_sky->setVisible(true);
+		sky->setVisible(true);
 		// Update mesh based skybox colours if applicable.
-		m_sky->setSkyColors(event->set_sky->sky_color);
-		m_sky->setHorizonTint(
+		sky->setSkyColors(event->set_sky->sky_color);
+		sky->setHorizonTint(
 			event->set_sky->fog_sun_tint,
 			event->set_sky->fog_moon_tint,
 			event->set_sky->fog_tint_type
@@ -2778,27 +2778,27 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	} else if (event->set_sky->type == "skybox" &&
 			event->set_sky->textures.size() == 6) {
 		// Disable the dyanmic mesh skybox:
-		m_sky->setVisible(false);
+		sky->setVisible(false);
 		// Set fog colors:
-		m_sky->setFallbackBgColor(event->set_sky->bgcolor);
+		sky->setFallbackBgColor(event->set_sky->bgcolor);
 		// Set sunrise and sunset fog tinting:
-		m_sky->setHorizonTint(
+		sky->setHorizonTint(
 			event->set_sky->fog_sun_tint,
 			event->set_sky->fog_moon_tint,
 			event->set_sky->fog_tint_type
 		);
 		// Add textures to skybox.
 		for (int i = 0; i < 6; i++)
-			m_sky->addTextureToSkybox(event->set_sky->textures[i], i, texture_src);
+			sky->addTextureToSkybox(event->set_sky->textures[i], i, texture_src);
 	} else {
 		// Handle everything else as plain color.
 		if (event->set_sky->type != "plain")
 			infostream << "Unknown sky type: "
 				<< (event->set_sky->type) << std::endl;
-		m_sky->setVisible(false);
-		m_sky->setFallbackBgColor(event->set_sky->bgcolor);
+		sky->setVisible(false);
+		sky->setFallbackBgColor(event->set_sky->bgcolor);
 		// Disable directional sun/moon tinting on plain or invalid skyboxes.
-		m_sky->setHorizonTint(
+		sky->setHorizonTint(
 			event->set_sky->bgcolor,
 			event->set_sky->bgcolor,
 			"custom"
@@ -2810,30 +2810,30 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 
 void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
 {
-	m_sky->setSunVisible(event->sun_params->visible);
-	m_sky->setSunTexture(event->sun_params->texture,
+	sky->setSunVisible(event->sun_params->visible);
+	sky->setSunTexture(event->sun_params->texture,
 		event->sun_params->tonemap, texture_src);
-	m_sky->setSunScale(event->sun_params->scale);
-	m_sky->setSunriseVisible(event->sun_params->sunrise_visible);
-	m_sky->setSunriseTexture(event->sun_params->sunrise, texture_src);
+	sky->setSunScale(event->sun_params->scale);
+	sky->setSunriseVisible(event->sun_params->sunrise_visible);
+	sky->setSunriseTexture(event->sun_params->sunrise, texture_src);
 	delete event->sun_params;
 }
 
 void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
 {
-	m_sky->setMoonVisible(event->moon_params->visible);
-	m_sky->setMoonTexture(event->moon_params->texture,
+	sky->setMoonVisible(event->moon_params->visible);
+	sky->setMoonTexture(event->moon_params->texture,
 		event->moon_params->tonemap, texture_src);
-	m_sky->setMoonScale(event->moon_params->scale);
+	sky->setMoonScale(event->moon_params->scale);
 	delete event->moon_params;
 }
 
 void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam)
 {
-	m_sky->setStarsVisible(event->star_params->visible);
-	m_sky->setStarCount(event->star_params->count, false);
-	m_sky->setStarColor(event->star_params->starcolor);
-	m_sky->setStarScale(event->star_params->scale);
+	sky->setStarsVisible(event->star_params->visible);
+	sky->setStarCount(event->star_params->count, false);
+	sky->setStarColor(event->star_params->starcolor);
+	sky->setStarScale(event->star_params->scale);
 	delete event->star_params;
 }
 
@@ -3710,7 +3710,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {
-		float old_brightness = m_sky->getBrightness();
+		float old_brightness = sky->getBrightness();
 		direct_brightness = client->getEnv().getClientMap()
 				.getBackgroundBrightness(MYMIN(runData.fog_range * 1.2, 60 * BS),
 					daynight_ratio, (int)(old_brightness * 255.5), &sunlight_seen)
@@ -3737,7 +3737,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	runData.time_of_day_smooth = time_of_day_smooth;
 
-	m_sky->update(time_of_day_smooth, time_brightness, direct_brightness,
+	sky->update(time_of_day_smooth, time_brightness, direct_brightness,
 			sunlight_seen, camera->getCameraMode(), player->getYaw(),
 			player->getPitch());
 
@@ -3745,7 +3745,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Update clouds
 	*/
 	if (clouds) {
-		if (m_sky->getCloudsVisible()) {
+		if (sky->getCloudsVisible()) {
 			clouds->setVisible(true);
 			clouds->step(dtime);
 			// camera->getPosition is not enough for 3rd person views
@@ -3755,14 +3755,14 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 			camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 			clouds->update(camera_node_position,
-					m_sky->getCloudColor());
+					sky->getCloudColor());
 			if (clouds->isCameraInsideCloud() && m_cache_enable_fog) {
 				// if inside clouds, and fog enabled, use that as sky
 				// color(s)
 				video::SColor clouds_dark = clouds->getColor()
 						.getInterpolated(video::SColor(255, 0, 0, 0), 0.9);
-				m_sky->overrideColors(clouds_dark, clouds->getColor());
-				m_sky->setInClouds(true);
+				sky->overrideColors(clouds_dark, clouds->getColor());
+				sky->setInClouds(true);
 				runData.fog_range = std::fmin(runData.fog_range * 0.5f, 32.0f * BS);
 				// do not draw clouds after all
 				clouds->setVisible(false);
@@ -3783,7 +3783,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	if (m_cache_enable_fog) {
 		driver->setFog(
-				m_sky->getBgColor(),
+				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
 				runData.fog_range * m_cache_fog_start,
 				runData.fog_range * 1.0,
@@ -3793,7 +3793,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		);
 	} else {
 		driver->setFog(
-				m_sky->getBgColor(),
+				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
 				100000 * BS,
 				110000 * BS,
@@ -3873,7 +3873,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Drawing begins
 	*/
-	const video::SColor &skycolor = m_sky->getSkyColor();
+	const video::SColor &skycolor = sky->getSkyColor();
 
 	TimeTaker tt_draw("Draw scene");
 	driver->beginScene(true, true, skycolor);
