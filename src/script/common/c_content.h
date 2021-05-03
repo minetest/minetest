@@ -39,6 +39,8 @@ extern "C" {
 #include "itemgroup.h"
 #include "itemdef.h"
 #include "c_types.h"
+// We do a explicit path include because by default c_content.h include src/client/hud.h
+// prior to the src/hud.h, which is not good on server only build
 #include "../../hud.h"
 
 namespace Json { class Value; }

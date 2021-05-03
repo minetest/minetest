@@ -173,7 +173,7 @@ public:
 
 public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
-			irr::scene::IMeshManipulator *mm);
+			scene::IMeshManipulator *mm);
 	void generate();
 	void renderSingle(content_t node, u8 param2 = 0x00);
 };

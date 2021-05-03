@@ -225,7 +225,7 @@ bool RenderingEngine::print_video_modes()
 	return videomode_list != NULL;
 }
 
-void RenderingEngine::removeMesh(const irr::scene::IMesh* mesh)
+void RenderingEngine::removeMesh(const scene::IMesh* mesh)
 {
 	m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
 }
