@@ -176,7 +176,7 @@ std::map<std::string, ModSpec> getModsInPath(
 		// Also ignore all directories beginning with a "_", to allow
 		// special directories which does not contains mods, i.e.
 		// documentations and test files
-		if (modname[0] == '.' || modname[0] == "_")
+		if (modname[0] == '.' || modname[0] == '_')
 			continue;
 
 		modpath.clear();
