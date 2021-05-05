@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2021-04-25 11:27+0000\n"
-"Last-Translator: phlostically <phlostically@mailinator.com>\n"
+"PO-Revision-Date: 2021-05-06 18:32+0000\n"
+"Last-Translator: telmo bruno silva seabra <telmoseabra@petalmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -2001,7 +2001,7 @@ msgid ""
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
 "(X,Y,Z) deŝovo de fraktalo for de la centro de la mondo en unuoj\n"
-"de «scale».\n"
+"de 'scale'.\n"
 "Utilas por movo de volata punkto proksimen al (0, 0) por krei taŭgan\n"
 "naskiĝejon, aŭ por permeso «zomi» al volata punkto per pligrandigo\n"
 "de la skalo.\n"
@@ -2168,7 +2168,7 @@ msgstr "Akcelo en aero"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr "Akcelo de pezforto, en monderoj sekunde sekunde."
+msgstr "Akcelo de pezforto, en monderoj sekunde post sekunde."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2220,7 +2220,7 @@ msgstr ""
 "Alĝustigas densecon de la fluginsula tavolo.\n"
 "Plialtigu la valoron por pliigi densecon. Eblas plusa aŭ minusa.\n"
 "Valoro = 0.0: 50% de volumeno estas fluginsuloj.\n"
-"Valoro = 2.0 (povas esti pli alta, depende de «mgv7_np_floatland»; ĉiam\n"
+"Valoro = 2.0 (povas esti pli alta, depende de 'mgv7_np_floatland'; ĉiam\n"
 "kontrolu certige) kreas solidan tavolon de fluginsulaĵo."
 
 #: src/settings_translation_file.cpp
@@ -3617,8 +3617,8 @@ msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
-"Horizontala akcelo en aero dum saltado aŭ falado,\n"
-"en monderoj sekunde sekunde."
+"Horizontala akcelo en aero dum saltado aŭ falado, \n"
+"en monderoj sekunde post sekunde."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3626,7 +3626,7 @@ msgid ""
 "in nodes per second per second."
 msgstr ""
 "Horizontala kaj vertikala akcelo en rapida reĝimo,\n"
-"en monderoj sekunde sekunde."
+"en monderoj sekunde post sekunde."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3634,7 +3634,7 @@ msgid ""
 "in nodes per second per second."
 msgstr ""
 "Horizontala kaj vertikala akcelo sur tero aŭ dum grimpado,\n"
-"en monderoj sekunde sekunde."
+"en monderoj sekunde post sekunde."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3863,7 +3863,7 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
-"Ŝaltite, klavo «uzi» estas uzata anstataŭ klavo «kaŝiri» por malsupreniro."
+"Ŝaltite, klavo 'uzi' estas uzata anstataŭ klavo «kaŝiri» por malsupreniro."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6218,7 +6218,7 @@ msgid ""
 msgstr ""
 "Ombrigiloj ebligas specialaj vidajn efektojn kaj povas plibonigi efikecon je "
 "kelkaj vidkartoj.\n"
-"Ĉi tio funkcias nur kun la bildiga internaĵo de «OpenGL»."
+"Ĉi tio funkcias nur kun la bildiga internaĵo de 'OpenGL'."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6902,7 +6902,7 @@ msgid ""
 msgstr ""
 "Variigas krudecon de tereno.\n"
 "Difinas la valoron de «persistence» (persisto) por la bruoj «terrain_base»\n"
-"kaj «terrain_alt»."
+"kaj 'terrain_alt'."
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
