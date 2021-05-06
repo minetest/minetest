@@ -384,8 +384,6 @@ public:
 	bool loadMedia(const std::string &data, const std::string &filename,
 		bool from_media_push = false);
 
-	bool extractZipFile(const char *filename, const std::string &destination);
-
 	// Send a request for conventional media transfer
 	void request_media(const std::vector<std::string> &file_requests);
 
