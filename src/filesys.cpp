@@ -727,6 +727,70 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	return true;
 }
 
+bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string &destination)
+{
+	if (!fs->addFileArchive(filename, false, false, io::EFAT_ZIP)) {
+		return false;
+	}
+
+	sanity_check(fs->getFileArchiveCount() > 0);
+
+	/**********************************************************************/
+	/* WARNING this is not threadsafe!!                                   */
+	/**********************************************************************/
+	io::IFileArchive* opened_zip = fs->getFileArchive(fs->getFileArchiveCount() - 1);
+
+	const io::IFileList* files_in_zip = opened_zip->getFileList();
+
+	unsigned int number_of_files = files_in_zip->getFileCount();
+
+	for (unsigned int i=0; i < number_of_files; i++) {
+		std::string fullpath = destination;
+		fullpath += DIR_DELIM;
+		fullpath += files_in_zip->getFullFileName(i).c_str();
+		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
+
+		if (!files_in_zip->isDirectory(i)) {
+			if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir)) {
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+				return false;
+			}
+
+			io::IReadFile* toread = opened_zip->createAndOpenFile(i);
+
+			FILE *targetfile = fopen(fullpath.c_str(),"wb");
+
+			if (targetfile == NULL) {
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+				return false;
+			}
+
+			char read_buffer[1024];
+			long total_read = 0;
+
+			while (total_read < toread->getSize()) {
+
+				unsigned int bytes_read =
+						toread->read(read_buffer,sizeof(read_buffer));
+				if ((bytes_read == 0 ) ||
+					(fwrite(read_buffer, 1, bytes_read, targetfile) != bytes_read))
+				{
+					fclose(targetfile);
+					fs->removeFileArchive(fs->getFileArchiveCount() - 1);
+					return false;
+				}
+				total_read += bytes_read;
+			}
+
+			fclose(targetfile);
+		}
+
+	}
+
+	fs->removeFileArchive(fs->getFileArchiveCount() - 1);
+	return true;
+}
+
 bool ReadFile(const std::string &path, std::string &out)
 {
 	std::ifstream is(path, std::ios::binary | std::ios::ate);

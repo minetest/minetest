@@ -628,8 +628,9 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
 
 	if (ModApiMainMenu::mayModifyPath(absolute_destination)) {
+		auto rendering_engine = getGuiEngine(L)->m_rendering_engine;
 		fs::CreateAllDirs(absolute_destination);
-		lua_pushboolean(L, getClient(L)->extractZipFile(zipfile, destination));
+		lua_pushboolean(L, fs::extractZipFile(rendering_engine->get_filesystem(), zipfile, destination));
 		return 1;
 	}
 
