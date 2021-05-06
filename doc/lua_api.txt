@@ -1112,8 +1112,20 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * Invisible, uses no texture.
 * `liquid`
     * The cubic source node for a liquid.
+    * Faces bordering to the same node are never rendered.
+    * Connects to node specified in `liquid_alternative_flowing`.
+    * Use `backface_culling = false` for the tiles you want to make
+      visible when inside the node.
 * `flowingliquid`
     * The flowing version of a liquid, appears with various heights and slopes.
+    * Faces bordering to the same node are never rendered.
+    * Connects to node specified in `liquid_alternative_source`.
+    * Node textures are defined with `special_tiles` where the first tile
+      is for the top and bottom faces and the second tile is for the side
+      faces.
+    * `tiles` is used for the item/inventory/wield image rendering.
+    * Use `backface_culling = false` for the special tiles you want to make
+      visible when inside the node
 * `glasslike`
     * Often used for partially-transparent nodes.
     * Only external sides of textures are visible.
@@ -7453,7 +7465,16 @@ Used by `minetest.register_node`.
         -- If true, liquids flow into and replace this node.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
-        liquidtype = "none",  -- "none" / "source" / "flowing"
+        liquidtype = "none",  -- specifies liquid physics
+        -- * "none":    no liquid physics
+        -- * "source":  spawns flowing liquid nodes at all 4 sides and below;
+        --              recommended drawtype: "liquid".
+        -- * "flowing": spawned from source, spawns more flowing liquid nodes
+        --              around it until `liquid_range` is reached;
+        --              will drain out without a source;
+        --              recommended drawtype: "flowingliquid".
+        -- If it's "source" or "flowing" and `liquid_range > 0`, then
+        -- both `liquid_alternative_*` fields must be specified
 
         liquid_alternative_flowing = "",  -- Flowing version of source liquid
 
@@ -7476,7 +7497,10 @@ Used by `minetest.register_node`.
         -- `minetest.set_node_level` and `minetest.add_node_level`.
 		-- Values above 124 might causes collision detection issues.
 
-        liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
+        liquid_range = 8,
+        -- Maximum distance that flowing liquid nodes can spread around
+        -- source on flat land;
+        -- maximum = 8; set to 0 to disable liquid flow
 
         drowning = 0,
         -- Player will take this amount of damage if no bubbles are left
