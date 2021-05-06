@@ -5849,6 +5849,19 @@ Misc.
     * If `transient` is `false` or absent, frees a persistent forceload.
       If `true`, frees a transient forceload.
 
+* `minetest.compare_block_status(pos, condition)`
+    * Checks whether the mapblock at positition `pos` is in the wanted condition.
+    * `condition` may be one of the following values:
+        * `"unknown"`: not in memory
+        * `"loaded"`: in memory but inactive (no ABMs are executed)
+        * `"active"`: in memory and active
+        * Other values are reserved for future functionality extensions
+    * Return value, the comparison status:
+        * `-1`: Condition is not met. Mapblock is not ready
+        * `0`: Mapblock is exactly in the wanted condition
+        * `1`: The mapblock surpasses the given condition (i.e. rather ready)
+        * `nil`: Unsupported `condition` value
+
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the
   `secure.trusted_mods` setting or security is disabled, otherwise returns

@@ -46,10 +46,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #endif
 
-struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
+const EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 {
 	{CLEAR_OBJECTS_MODE_FULL,  "full"},
 	{CLEAR_OBJECTS_MODE_QUICK, "quick"},
+	{0, NULL},
+};
+
+const EnumString ModApiEnvMod::es_BlockStatusType[] =
+{
+	{ServerEnvironment::BS_UNKNOWN, "unknown"},
+	{ServerEnvironment::BS_LOADED,  "loaded"},
+	{ServerEnvironment::BS_ACTIVE,  "active"},
 	{0, NULL},
 };
 
@@ -1389,6 +1397,26 @@ int ModApiEnvMod::l_forceload_block(lua_State *L)
 	return 0;
 }
 
+// get_block_status(nodepos)
+int ModApiEnvMod::l_compare_block_status(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 nodepos = check_v3s16(L, 1);
+	std::string condition_s = luaL_checkstring(L, 2);
+	auto status = env->getBlockStatus(getNodeBlockPos(nodepos));
+	
+	int condition_i = -1;
+	if (!string_to_enum(es_BlockStatusType, condition_i, condition_s))
+		return 0;
+
+	// Convert difference to -1 (diff < 0), 0 and 1 (diff > 0)
+	int diff = (int)status - condition_i;
+	lua_pushnumber(L, (diff > 0) - (diff < 0));
+	return 1;
+}
+
+
 // forceload_free_block(blockpos)
 // blockpos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_forceload_free_block(lua_State *L)
@@ -1462,6 +1490,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(compare_block_status);
 	API_FCT(get_translated_string);
 }
 

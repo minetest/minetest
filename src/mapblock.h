@@ -140,7 +140,7 @@ public:
 	//// Flags
 	////
 
-	inline bool isDummy()
+	inline bool isDummy() const
 	{
 		return !data;
 	}
