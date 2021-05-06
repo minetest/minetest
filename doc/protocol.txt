@@ -1,17 +1,116 @@
-Minetest protocol (incomplete, early draft):
-Updated 2011-06-18
+Minetest protocol reference
+===========================
+Updated 2021-05-6
 
-A custom protocol over UDP.
-Integers are big endian.
-Refer to connection.{h,cpp} for further reference.
+Introduction
+------------
+
+Minetest uses a custom protocol over UDP for multiplayer servers. Integers are 
+big endian. Refer to connection.h and connection.cpp for further reference.
+
+Packets
+========
+each packet has the same basic headers:
+
+protocol_id
+-----------
+
+The protocol ID is in a u32 format and always is 0x4f457403.
+
+sender_peer_id
+--------------
+
+sender_peer_id is in a u16 format. In packets sent by the servers, it always 
+equals 1 (`0x0001`). In the initialiation process a peer ID is assigned to the
+client.
+
+channels
+------------
+The channel is in a u8-format. Different channels are used for different 
+purposes.
+
+### Packets sent from server
+
+* channel=2: volume-data
+* channel=1: HUD-data
+* channel=0: everything else
+
+### Packets sent from client
+
+* channel=2: replies to the server, mainly ACK packets
+* channel=1: connection and authentication
+* channel=0: everything else
+
+type
+----
+The type is sent in a u8 format. There are 4 types of packets:
+* type=0: Control packet
+* type=1: Original packet
+* type=2: Split packet
+* type=3: Reliable packet
+
+Different Packet Types
+=====================
+How different types are used
+
+Control packet
+--------------
+Control packets are used to control the connection. They have a type in u8 format.
+
+### Control packet: Type=0 ACK
+
+Ack packets are sent following a reliable packet. They include the seqnum of the reliable 
+packet in an u16 format.
+
+Example hex dump of ACK packet: `4f457403585e0200000119`
+
+### Control packet: Type=1 SET_PEER_ID
+
+This packet is sent by the server during the initialization. It includes the peer id in a u16
+format.
+
+Example hex dump of ACK packet: `4f45740300000000010055`
+
+### Control packet: Type=2 PING
+
+Ping packets have no content.
+
+Example hex dump of ACK packet: `4f4574030000000002`
+
+### Control packet: Type=3 Disconnect
+
+Disconnect packets have no content.
+
+Example hex dump of ACK packet: `4f4574030000000003`
+
+Original Packet
+-------------------
+Original packets include commands. They start with the command id in a u16 format.
+Every command uses different types. A full, machine-readable reference can be found here: https://github.com/numberZero/minetest-proto
+
+Example hex dump of chat message packet: `4f457403000000010032000548656c6c6f`
+
+split packets
+----------------
+split packets contain the seqnum (u16), the total amount of packets (u16) and number
+of the current packet, and the data. After it is put together, it is interpreted as a original packet.
+
+Reliable packet
+-------------------
+
+Reliable packets need to be ACKed by the receiver. They can contain control,
+original and split packets. The packet starts with a seqnum in u16 format. The
+rest of the packet is a packet without basic headers.
 
 Initialization:
+==============
 - A dummy reliable packet with peer_id=PEER_ID_INEXISTENT=0 is sent to the server:
 	- Actually this can be sent without the reliable packet header, too, i guess,
 	  but the sequence number in the header allows the sender to re-send the
 	  packet without accidentally getting a double initialization.
 	- Packet content:
-		# Basic header
+```		
+                # Basic header
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
 		u8 channel = 0
@@ -21,8 +120,10 @@ Initialization:
 		# Original packet header
 		u8 type = TYPE_ORIGINAL = 1
 		# And no actual payload.
+```
 - Server responds with something like this:
 	- Packet content:
+```
 		# Basic header
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
@@ -34,8 +135,10 @@ Initialization:
 		u8 type = TYPE_CONTROL = 0
 		u8 controltype = CONTROLTYPE_SET_PEER_ID = 1
 		u16 peer_id_new = assigned peer id to client (other than 0 or 1)
+```
 - Then the connection can be disconnected by sending:
 	- Packet content:
+```
 		# Basic header
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = whatever was gotten in CONTROLTYPE_SET_PEER_ID
@@ -43,8 +146,9 @@ Initialization:
 		# Control packet header
 		u8 type = TYPE_CONTROL = 0
 		u8 controltype = CONTROLTYPE_DISCO = 3
-
+```
 - Here's a quick untested connect-disconnect done in PHP:
+```
 # host: ip of server (use gethostbyname(hostname) to get from a dns name)
 # port: port of server
 function check_if_minetestserver_up($host, $port)
@@ -69,9 +173,10 @@ function check_if_minetestserver_up($host, $port)
 	}
 	return false;
 }
-
+```
 - Here's a Python script for checking if a minetest server is up, confirmed working
 
+```
 #!/usr/bin/env python3
 import sys, time, socket
 
@@ -108,3 +213,4 @@ try:
         print("%s seems to be down " % sys.argv[1])
 except Exception as err:
     print("%s seems to be down (%s) " % (sys.argv[1], str(err)))
+```
