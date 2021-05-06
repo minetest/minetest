@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <vector>
 #include <set>
+#include <memory>
 #include <mutex>
 
 class MapBlock;
