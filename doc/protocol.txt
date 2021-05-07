@@ -21,8 +21,7 @@ sender_peer_id
 --------------
 
 sender_peer_id is in a u16 format. In packets sent by the servers, it always 
-equals 1 (`0x0001`). In the initialiation process a peer ID is assigned to the
-client.
+equals 1. In the initialiation process a peer ID is assigned to the client.
 
 channels
 ------------
@@ -69,19 +68,19 @@ Example hex dump of ACK packet: `4f457403585e0200000119`
 This packet is sent by the server during the initialization. It includes the peer id in a u16
 format.
 
-Example hex dump of ACK packet: `4f45740300000000010055`
+Example hex dump of SET_PEER_ID packet: `4f45740300000000010055`
 
 ### Control packet: Type=2 PING
 
 Ping packets have no content.
 
-Example hex dump of ACK packet: `4f4574030000000002`
+Example hex dump of PING packet: `4f4574030000000002`
 
 ### Control packet: Type=3 Disconnect
 
 Disconnect packets have no content.
 
-Example hex dump of ACK packet: `4f4574030000000003`
+Example hex dump of disconnect packet: `4f4574030000000003`
 
 Original Packet
 -------------------
@@ -93,7 +92,7 @@ Example hex dump of chat message packet: `4f457403000000010032000548656c6c6f`
 split packets
 ----------------
 split packets contain the seqnum (u16), the total amount of packets (u16) and number
-of the current packet, and the data. After it is put together, it is interpreted as a original packet.
+of the current packet (u16), and the data. After it is put together, it is interpreted as a original packet.
 
 Reliable packet
 -------------------
