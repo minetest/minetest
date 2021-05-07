@@ -91,8 +91,13 @@ Example hex dump of chat message packet: `4f457403000000010032000548656c6c6f`
 
 split packets
 ----------------
-split packets contain the seqnum (u16), the total amount of packets (u16) and number
-of the current packet (u16), and the data. After it is put together, it is interpreted as a original packet.
+split packets contain the following headers:
+```
+	u16 seqnum
+	u16 total_num
+	u16 current_num
+```
+The rest of the packet is the data. After it is put together, it is interpreted as a original packet.
 
 Reliable packet
 -------------------
