@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/minimap.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
+#include "client/gui/touchscreengui.h"
 #endif
 
 #define OBJECT_CROSSHAIR_LINE_SIZE 8

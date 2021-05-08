@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
+#include "client/gui/touchscreengui.h"
 #endif
 
 class InputHandler;

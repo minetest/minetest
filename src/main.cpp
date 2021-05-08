@@ -48,7 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/gui/mainmenumanager.h"
 #endif
 #ifdef HAVE_TOUCHSCREENGUI
-	#include "gui/touchscreengui.h"
+	#include "client/gui/touchscreengui.h"
 #endif
 
 // for version information only
