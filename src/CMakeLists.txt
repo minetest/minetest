@@ -366,7 +366,6 @@ add_custom_target(GenerateVersion
 add_subdirectory(threading)
 add_subdirectory(content)
 add_subdirectory(database)
-add_subdirectory(gui)
 add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
@@ -522,6 +521,7 @@ endif()
 
 if(BUILD_CLIENT)
 	add_subdirectory(client)
+	add_subdirectory(gui)
 	set(client_SRCS
 		${client_SRCS}
 		${common_SRCS}
