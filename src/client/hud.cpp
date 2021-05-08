@@ -997,6 +997,8 @@ void drawItemStack(
 
 	const ItemDefinition &def = item.getDefinition(client->idef());
 
+	bool draw_overlay = false;
+
 	// Render as mesh if animated or no inventory image
 	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
 		ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
@@ -1089,6 +1091,8 @@ void drawItemStack(
 		driver->setTransform(video::ETS_VIEW, oldViewMat);
 		driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 		driver->setViewPort(oldViewPort);
+
+		draw_overlay = def.type == ITEM_NODE && def.inventory_image.empty();
 	} else { // Otherwise just draw as 2D
 		video::ITexture *texture = client->idef()->getInventoryTexture(def.name, client);
 		if (!texture)
@@ -1100,11 +1104,12 @@ void drawItemStack(
 		draw2DImageFilterScaled(driver, texture, rect,
 			core::rect<s32>({0, 0}, core::dimension2di(texture->getOriginalSize())),
 			clip, colors, true);
+
+		draw_overlay = true;
 	}
 
 	// draw the inventory_overlay
-	if (def.type == ITEM_NODE && def.inventory_image.empty() &&
-			!def.inventory_overlay.empty()) {
+	if (!def.inventory_overlay.empty() && draw_overlay) {
 		ITextureSource *tsrc = client->getTextureSource();
 		video::ITexture *overlay_texture = tsrc->getTexture(def.inventory_overlay);
 		core::dimension2d<u32> dimens = overlay_texture->getOriginalSize();
