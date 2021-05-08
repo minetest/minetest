@@ -248,7 +248,6 @@ public:
 
 	ClientEnvironment& getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }
-	ISoundManager *sound() { return getSoundManager(); }
 	static const std::string &getBuiltinLuaPath();
 	static const std::string &getClientModsLuaPath();
 
