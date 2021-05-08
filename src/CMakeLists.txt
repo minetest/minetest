@@ -474,27 +474,6 @@ if(WIN32)
 	endif(MINGW)
 endif()
 
-
-# Client sources
-if (BUILD_CLIENT)
-	add_subdirectory(client)
-endif(BUILD_CLIENT)
-
-set(client_SRCS
-	${client_SRCS}
-	${common_SRCS}
-	${gui_SRCS}
-	${client_network_SRCS}
-	${client_irrlicht_changes_SRCS}
-	${client_SCRIPT_SRCS}
-)
-
-if(BUILD_UNITTESTS)
-	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
-endif()
-
-list(SORT client_SRCS)
-
 # Server sources
 set(server_SRCS
 	${common_SRCS}
@@ -504,7 +483,6 @@ list(SORT server_SRCS)
 # Avoid source_group on broken CMake version.
 # see issue #7074 #7075
 if (CMAKE_VERSION VERSION_GREATER 3.8.1)
-	source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${client_SRCS})
 	source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${server_SRCS})
 endif()
 
@@ -543,6 +521,28 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 if(BUILD_CLIENT)
+	add_subdirectory(client)
+	set(client_SRCS
+		${client_SRCS}
+		${common_SRCS}
+		${gui_SRCS}
+		${client_network_SRCS}
+		${client_irrlicht_changes_SRCS}
+		${client_SCRIPT_SRCS}
+	)
+
+	if(BUILD_UNITTESTS)
+		set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
+	endif()
+
+	list(SORT client_SRCS)
+
+	# Avoid source_group on broken CMake version.
+	# see issue #7074 #7075
+	if (CMAKE_VERSION VERSION_GREATER 3.8.1)
+		source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${client_SRCS})
+	endif()
+
 	add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	target_link_libraries(
