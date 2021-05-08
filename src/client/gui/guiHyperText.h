@@ -27,7 +27,7 @@ class ISimpleTextureSource;
 class Client;
 
 #if USE_FREETYPE
-#include "irrlicht_changes/CGUITTFont.h"
+#include "client/irrlicht_changes/CGUITTFont.h"
 #endif
 
 class ParsedText

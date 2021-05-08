@@ -371,7 +371,6 @@ add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
 add_subdirectory(util)
-add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
 
 set(common_SRCS
@@ -525,7 +524,6 @@ if(BUILD_CLIENT)
 		${client_SRCS}
 		${common_SRCS}
 		${client_network_SRCS}
-		${client_irrlicht_changes_SRCS}
 		${client_SCRIPT_SRCS}
 	)
 

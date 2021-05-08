@@ -11,7 +11,7 @@
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
 #include "IGUIFont.h"
-#include "irrlicht_changes/static_text.h"
+#include "client/irrlicht_changes/static_text.h"
 #include "porting.h"
 #include "StyleSpec.h"
 #include "util/numeric.h"

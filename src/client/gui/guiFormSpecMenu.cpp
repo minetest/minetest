@@ -53,7 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
-#include "irrlicht_changes/static_text.h"
+#include "client/irrlicht_changes/static_text.h"
 #include "client/guiscalingfilter.h"
 #include "guiAnimatedImage.h"
 #include "guiBackgroundImage.h"

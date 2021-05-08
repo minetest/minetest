@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "gameui.h"
-#include <irrlicht_changes/static_text.h>
+#include "client/irrlicht_changes/static_text.h"
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"

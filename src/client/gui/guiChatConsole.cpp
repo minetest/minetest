@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #if USE_FREETYPE
-	#include "irrlicht_changes/CGUITTFont.h"
+	#include "client/irrlicht_changes/CGUITTFont.h"
 #endif
 
 inline u32 clamp_u8(s32 value)
@@ -330,7 +330,7 @@ void GUIChatConsole::drawText()
 					false,
 					false,
 					&AbsoluteClippingRect);
-			} else 
+			} else
 #endif
 			{
 				// Otherwise use standard text

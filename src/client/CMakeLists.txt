@@ -1,4 +1,5 @@
 add_subdirectory(gui)
+add_subdirectory(irrlicht_changes)
 
 set(sound_SRCS  ${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
 
@@ -18,6 +19,7 @@ endif()
 
 set(client_SRCS
 	${gui_SRCS}
+	${client_irrlicht_changes_SRCS}
 	${sound_SRCS}
 	${CMAKE_CURRENT_SOURCE_DIR}/meshgen/collector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/anaglyph.cpp
