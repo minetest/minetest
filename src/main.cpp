@@ -42,10 +42,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "terminal_chat_console.h"
 #endif
 #ifndef SERVER
-#include "gui/guiMainMenu.h"
+#include "client/gui/guiMainMenu.h"
 #include "client/clientlauncher.h"
-#include "gui/guiEngine.h"
-#include "gui/mainmenumanager.h"
+#include "client/gui/guiEngine.h"
+#include "client/gui/mainmenumanager.h"
 #endif
 #ifdef HAVE_TOUCHSCREENGUI
 	#include "gui/touchscreengui.h"

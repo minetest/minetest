@@ -1,3 +1,5 @@
+add_subdirectory(gui)
+
 set(sound_SRCS  ${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
 
 if(USE_SOUND)
@@ -15,6 +17,7 @@ if(USE_SOUND)
 endif()
 
 set(client_SRCS
+	${gui_SRCS}
 	${sound_SRCS}
 	${CMAKE_CURRENT_SOURCE_DIR}/meshgen/collector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/anaglyph.cpp

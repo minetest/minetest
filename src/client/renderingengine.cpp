@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
-#include "../gui/guiSkin.h"
+#include "gui/guiSkin.h"
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
 		!defined(SERVER) && !defined(__HAIKU__)
