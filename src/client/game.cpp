@@ -2569,10 +2569,10 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 	if (client->modsLoaded())
 		client->getScript()->on_damage_taken(event->player_damage.amount);
 
-	// Damage flash and hurt tilt are not used at death
-	if (client->getHP() > 0) {
-		LocalPlayer *player = client->getEnv().getLocalPlayer();
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
+	// Damage flash and hurt tilt are not used at death
+	if (player->hp > 0) {
 		f32 hp_max = player->getCAO() ?
 			player->getCAO()->getProperties().hp_max : PLAYER_MAX_HP_DEFAULT;
 		f32 damage_ratio = event->player_damage.amount / hp_max;

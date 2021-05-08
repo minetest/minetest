@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "map.h"
 #include "nodedef.h"
-#include "gamedef.h"
 #ifndef SERVER
 #include "client/clientenvironment.h"
 #include "client/localplayer.h"
@@ -153,7 +152,7 @@ CollisionAxis axisAlignedCollision(
 						(std::max(movingbox.MaxEdge.Z + speed.Z * time, staticbox.MaxEdge.Z)
 							- std::min(movingbox.MinEdge.Z + speed.Z * time, staticbox.MinEdge.Z)
 							- relbox.MinEdge.Z < 0)
-					) 
+					)
 					return COLLISION_AXIS_X;
 			}
 		} else {
@@ -180,7 +179,7 @@ CollisionAxis axisAlignedCollision(
 						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
 							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
 							- relbox.MinEdge.Y < 0)
-					) 
+					)
 					return COLLISION_AXIS_Z;
 			}
 		}
@@ -222,7 +221,7 @@ static inline void getNeighborConnectingFace(const v3s16 &p,
 		*neighbors |= v;
 }
 
-collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
+collisionMoveResult collisionMoveSimple(Environment *env, const NodeDefManager *nodedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,
@@ -297,7 +296,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Object collides into walkable nodes
 
 			any_position_valid = true;
-			const NodeDefManager *nodedef = gamedef->getNodeDefManager();
 			const ContentFeatures &f = nodedef->get(n);
 
 			if (!f.walkable)
@@ -334,7 +332,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
 			}
 			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+			n.getCollisionBoxes(nodedef, &nodeboxes, neighbors);
 
 			// Calculate float position only once
 			v3f posf = intToFloat(p, BS);

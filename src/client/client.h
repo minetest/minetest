@@ -288,8 +288,6 @@ public:
 	v3s16 getCrackPos();
 	void setCrack(int level, v3s16 pos);
 
-	u16 getHP();
-
 	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }
 
@@ -400,7 +398,7 @@ public:
 
 	void pushToEventQueue(ClientEvent *event);
 
-	void showMinimap(bool show = true);
+	GameUI *getGameUI() { return m_game_ui; }
 
 	const Address getServerAddress();
 

@@ -294,7 +294,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	const v3f initial_position = position;
 	const v3f initial_speed = m_speed;
 
-	collisionMoveResult result = collisionMoveSimple(env, m_client,
+	collisionMoveResult result = collisionMoveSimple(env, m_client->ndef(),
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
 
@@ -902,7 +902,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	const v3f initial_position = position;
 	const v3f initial_speed = m_speed;
 
-	collisionMoveResult result = collisionMoveSimple(env, m_client,
+	collisionMoveResult result = collisionMoveSimple(env, m_client->ndef(),
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
 
@@ -1155,8 +1155,8 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	v3f jump_speed = initial_speed;
 
 	// try at peak of jump, zero step height
-	collisionMoveResult jump_result = collisionMoveSimple(env, m_client, pos_max_d,
-		m_collisionbox, 0.0f, dtime, &jump_pos, &jump_speed, v3f(0.0f));
+	collisionMoveResult jump_result = collisionMoveSimple(env, m_client->ndef(),
+		pos_max_d, m_collisionbox, 0.0f, dtime, &jump_pos, &jump_speed, v3f(0.0f));
 
 	// see if we can get a little bit farther horizontally if we had
 	// jumped

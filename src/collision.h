@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 class Map;
-class IGameDef;
+class NodeDefManager;
 class Environment;
 class ActiveObject;
 
@@ -65,7 +65,7 @@ struct collisionMoveResult
 };
 
 // Moves using a single iteration; speed should not exceed pos_max_d/dtime
-collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
+collisionMoveResult collisionMoveSimple(Environment *env, const NodeDefManager *nodedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,

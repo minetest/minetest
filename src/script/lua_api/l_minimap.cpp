@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "client/client.h"
+#include "client/gameui.h"
 #include "client/minimap.h"
 #include "settings.h"
 
@@ -144,7 +145,7 @@ int LuaMinimap::l_show(lua_State *L)
 	if (m->getModeIndex() == 0 && m->getMaxModeIndex() > 0)
 		m->setModeIndex(1);
 
-	client->showMinimap(true);
+	client->getGameUI()->showMinimap(true);
 	return 1;
 }
 
@@ -162,7 +163,7 @@ int LuaMinimap::l_hide(lua_State *L)
 	if (m->getModeIndex() != 0)
 		m->setModeIndex(0);
 
-	client->showMinimap(false);
+	client->getGameUI()->showMinimap(false);
 	return 1;
 }
 

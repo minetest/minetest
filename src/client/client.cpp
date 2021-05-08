@@ -1509,13 +1509,6 @@ void Client::setCrack(int level, v3s16 pos)
 	}
 }
 
-u16 Client::getHP()
-{
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
-	return player->hp;
-}
-
 bool Client::getChatMessage(std::wstring &res)
 {
 	if (m_chat_queue.empty())
@@ -1847,11 +1840,6 @@ bool Client::shouldShowMinimap() const
 void Client::pushToEventQueue(ClientEvent *event)
 {
 	m_client_event_queue.push(event);
-}
-
-void Client::showMinimap(const bool show)
-{
-	m_game_ui->showMinimap(show);
 }
 
 // IGameDef interface
