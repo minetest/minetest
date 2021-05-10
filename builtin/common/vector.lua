@@ -3,6 +3,9 @@ Vector helpers
 Note: The vector.*-functions must be able to accept old vectors that had no metatables
 ]]
 
+-- localize functions
+local setmetatable = setmetatable
+
 vector = {}
 
 local metatable = {}
@@ -23,8 +26,7 @@ end
 -- constructors
 
 local function fast_new(x, y, z)
-	local v = setmetatable({x = x, y = y, z = z}, metatable)
-	return v
+	return setmetatable({x = x, y = y, z = z}, metatable)
 end
 
 function vector.new(a, b, c)
