@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <sstream>
+#include <memory>
 #include "clientiface.h"
 #include "network/connection.h"
 #include "network/serveropcodes.h"
