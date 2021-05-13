@@ -173,10 +173,10 @@ std::map<std::string, ModSpec> getModsInPath(
 		const std::string &modname = dln.name;
 		// Ignore all directories beginning with a ".", especially
 		// VCS directories like ".git" or ".svn"
-		// Also ignore all directories beginning with a "_", to allow
+		// Also ignore all directories beginning with a "~", to allow
 		// special directories which does not contains mods, i.e.
 		// documentations and test files
-		if (modname[0] == '.' || modname[0] == '_')
+		if (modname[0] == '.' || modname[0] == '~')
 			continue;
 
 		modpath.clear();
