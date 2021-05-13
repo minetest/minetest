@@ -758,7 +758,16 @@ else()
 		check_c_source_compiles("#ifndef __aarch64__\n#error\n#endif\nint main(){}" IS_AARCH64)
 		if(IS_AARCH64)
 			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
-			SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
+			if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+				# FreeBSD uses lld, and lld does not support -Ttext-segment, suggesting
+				# --image-base instead. Not sure if it's equivalent change for the purpose 
+				# but at least if fixes build on FreeBSD/aarch64
+				# XXX: the condition should also be changed to check for lld regardless of
+				# os, bit CMake doesn't have anything like CMAKE_LINKER_IS_LLD yet
+				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--image-base=0x200000000")
+			else()
+				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
+			endif()
 		endif()
 	endif()
 
