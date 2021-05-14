@@ -174,6 +174,8 @@ public:
 		EmergeCompletionCallback callback,
 		void *callback_param);
 
+	bool isBlockInQueue(v3s16 pos);
+
 	v3s16 getContainingChunk(v3s16 blockpos);
 
 	Mapgen *getCurrentMapgen();

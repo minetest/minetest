@@ -1547,9 +1547,12 @@ ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
 	if (m_active_blocks.contains(blockpos))
 		return BS_ACTIVE;
 
-	const MapBlock *block = getMap().getBlockNoCreateNoEx(blockpos);
+	const MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
 	if (block && !block->isDummy())
 		return BS_LOADED;
+
+	if (m_map->isBlockInQueue(blockpos))
+		return BS_EMERGING;
 
 	return BS_UNKNOWN;
 }

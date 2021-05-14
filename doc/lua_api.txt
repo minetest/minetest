@@ -5853,13 +5853,13 @@ Misc.
     * Checks whether the mapblock at positition `pos` is in the wanted condition.
     * `condition` may be one of the following values:
         * `"unknown"`: not in memory
+        * `"emerging"`: in the queue for generating
         * `"loaded"`: in memory but inactive (no ABMs are executed)
         * `"active"`: in memory and active
         * Other values are reserved for future functionality extensions
     * Return value, the comparison status:
-        * `-1`: Condition is not met. Mapblock is not ready
-        * `0`: Mapblock is exactly in the wanted condition
-        * `1`: The mapblock surpasses the given condition (i.e. rather ready)
+        * `false`: Mapblock does not fulfil the wanted condition
+        * `true`: Mapblock meets the requirement
         * `nil`: Unsupported `condition` value
 
 * `minetest.request_insecure_environment()`: returns an environment containing

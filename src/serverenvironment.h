@@ -347,6 +347,7 @@ public:
 	// Sorted by how ready a mapblock is
 	enum BlockStatus {
 		BS_UNKNOWN,
+		BS_EMERGING,
 		BS_LOADED,
 		BS_ACTIVE // always highest value
 	};

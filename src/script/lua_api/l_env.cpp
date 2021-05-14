@@ -56,6 +56,7 @@ const EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 const EnumString ModApiEnvMod::es_BlockStatusType[] =
 {
 	{ServerEnvironment::BS_UNKNOWN, "unknown"},
+	{ServerEnvironment::BS_EMERGING, "emerging"},
 	{ServerEnvironment::BS_LOADED,  "loaded"},
 	{ServerEnvironment::BS_ACTIVE,  "active"},
 	{0, NULL},
@@ -1397,7 +1398,7 @@ int ModApiEnvMod::l_forceload_block(lua_State *L)
 	return 0;
 }
 
-// get_block_status(nodepos)
+// compare_block_status(nodepos)
 int ModApiEnvMod::l_compare_block_status(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -1408,11 +1409,9 @@ int ModApiEnvMod::l_compare_block_status(lua_State *L)
 	
 	int condition_i = -1;
 	if (!string_to_enum(es_BlockStatusType, condition_i, condition_s))
-		return 0;
+		return 0; // Unsupported
 
-	// Convert difference to -1 (diff < 0), 0 and 1 (diff > 0)
-	int diff = (int)status - condition_i;
-	lua_pushnumber(L, (diff > 0) - (diff < 0));
+	lua_pushboolean(L, status >= condition_i);
 	return 1;
 }
 
