@@ -24,18 +24,21 @@ AppDir:
       - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-security main universe
 
     include:
-      - libirrlicht1.8
-      - libxxf86vm1
-      - libgl1-mesa-glx
-      - libsqlite3-0
-      - libogg0
-      - libvorbis0a
-      - libopenal1
+      - libc6
       - libcurl3-gnutls
       - libfreetype6
-      - zlib1g
-      - libgmp10
+      - libgl1
+      - libjpeg-turbo8
       - libjsoncpp1
+      - libleveldb1v5
+      - libopenal1
+      - libpng16-16
+      - libsqlite3-0
+      - libstdc++6
+      - libvorbisfile3
+      - libx11-6
+      - libxxf86vm1
+      - zlib1g
 
   files:
     exclude:

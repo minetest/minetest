@@ -275,7 +275,7 @@ package:appimage-client:
     - build:ubuntu-18.04
   before_script:
     - apt-get update -y
-    - apt-get install -y git wget
+    - apt-get install -y git
     # Collect files
     - mkdir AppDir
     - cp -a artifact/minetest/usr/ AppDir/usr/
