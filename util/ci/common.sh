@@ -19,6 +19,9 @@ install_linux_deps() {
 
 	sudo apt-get update
 	sudo apt-get install -y --no-install-recommends ${pkgs[@]} "$@"
+
+	# workaround for bug with Github Actions' ubuntu-18.04 image
+	sudo apt-get remove -y libgcc-11-dev gcc-11 || :
 }
 
 # Mac OSX build only
