@@ -31,6 +31,10 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
+
+inspect = dofile(basepath .. "common" .. DIR_DELIM .. "lib" .. DIR_DELIM .. "inspect" .. DIR_DELIM .. "3_1_1" .. DIR_DELIM .. "inspect.lua")
+dofile(basepath .. "common" .. DIR_DELIM .. "lib" .. DIR_DELIM .. "lualinq" .. DIR_DELIM .. "1_4_3" .. DIR_DELIM .. "lualinq.lua")
+
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
@@ -44,6 +48,8 @@ dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_content.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
+
+
 
 local tabs = {}
 

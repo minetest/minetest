@@ -176,25 +176,24 @@ local function handle_buttons(this, fields)
 		core.settings:set("world_config_selected_mod", event.row)
 
 		if event.type == "DCL" then
-			pkgmgr.enable_mod(this)
+			pkgmgr.mod_or_modpack_selected_toggle(this)
 		end
 
 		return true
 	end
 
 	if fields.key_enter then
-		pkgmgr.enable_mod(this)
+		pkgmgr.mod_or_modpack_selected_toggle(this)
 		return true
 	end
 
 	if fields.cb_mod_enable ~= nil then
-		pkgmgr.enable_mod(this, core.is_yes(fields.cb_mod_enable))
+		pkgmgr.mod_or_modpack_selected_set_enabled(this, core.is_yes(fields.cb_mod_enable))
 		return true
 	end
 
-	if fields.btn_mp_enable ~= nil or
-			fields.btn_mp_disable then
-		pkgmgr.enable_mod(this, fields.btn_mp_enable ~= nil)
+	if fields.btn_mp_enable ~= nil or fields.btn_mp_disable then
+		pkgmgr.mod_or_modpack_selected_set_enabled(this, fields.btn_mp_enable ~= nil)
 		return true
 	end
 

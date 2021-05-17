@@ -1,3 +1,4 @@
+local inspect = require "builtin.common.lib.inspect.3_1_1.inspect"
 --Minetest
 --Copyright (C) 2013 sapier
 --
@@ -398,6 +399,8 @@ function pkgmgr.get_dependencies(path)
 	end
 
 	local info = core.get_content_info(path)
+	print("pkgmgr.get_dependencies info for " .. path)
+	print(inspect(info))
 	return info.depends or {}, info.optional_depends or {}
 end
 
@@ -412,108 +415,198 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 	return true
 end
 
----------- toggles or en/disables a mod or modpack and its dependencies --------
-local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
-	if not mod.is_modpack then
-		-- Toggle or en/disable the mod
-		if toset == nil then
-			toset = not mod.enabled
-		end
-		if mod.enabled ~= toset then
-			mod.enabled = toset
-			toggled_mods[#toggled_mods+1] = mod.name
-		end
-		if toset then
-			-- Mark this mod for recursive dependency traversal
-			enabled_mods[mod.name] = true
-		end
+function pkgmgr.mod_or_modpack_selected_toggle(this)
+	local list_of_all_mod_objs = this.data.list:get_list()
+	local mod_or_modpack_obj = list_of_all_mod_objs[this.data.selected_mod]
+	local mod_dependency_table = build_mod_dependency_table(list_of_all_mod_objs)
+	print("Built mod dependency table: " .. inspect(mod_dependency_table))
+
+	if mod_or_modpack_obj.is_modpack then
+		modpack_toggle_with_deps(mod_or_modpack_obj, list_of_all_mod_objs, mod_dependency_table)
 	else
-		-- Toggle or en/disable every mod in the modpack,
-		-- interleaved unsupported
-		for i = 1, #list do
-			if list[i].modpack == mod.name then
-				toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, list[i])
-			end
-		end
+		mod_toggle_with_deps(mod_or_modpack_obj, mod_dependency_table)
 	end
 end
 
-function pkgmgr.enable_mod(this, toset)
-	local list = this.data.list:get_list()
-	local mod = list[this.data.selected_mod]
+function pkgmgr.mod_or_modpack_selected_set_enabled(this, enabled)
+	local list_of_all_mod_objs = this.data.list:get_list()
+	local mod_or_modpack_obj = list_of_all_mod_objs[this.data.selected_mod]
+	local mod_dependency_table = build_mod_dependency_table(list_of_all_mod_objs)
+	print("Built mod dependency table: " .. inspect(mod_dependency_table))
 
-	-- Game mods can't be enabled or disabled
-	if mod.is_game_content then
-		return
+	if mod_or_modpack_obj.is_modpack then
+		modpack_set_enabled_with_deps(mod_or_modpack_obj, list_of_all_mod_objs, enabled, mod_dependency_table)
+	else
+		mod_set_enabled_with_deps(mod_or_modpack_obj, enabled, mod_dependency_table)
+	end
+end
+
+function modpack_toggle_with_deps(modpack_obj, list_of_all_mod_objs, mod_dependency_table)
+	local mods = get_mod_objs_of_modpack(modpack_obj.name, list_of_all_mod_objs)
+	list_of_mods_set_enabled_with_deps(mods, should_modpack_be_toggle_enabled_if_its_mods_are(mods), mod_dependency_table)
+end
+
+function modpack_set_enabled_with_deps(modpack_obj, list_of_all_mod_objs, enabled, mod_dependency_table)
+	list_of_mods_set_enabled_with_deps(get_mod_objs_of_modpack(modpack_obj.name, list_of_all_mod_objs), enabled, mod_dependency_table)
+end
+
+
+function list_of_mods_set_enabled_with_deps(list_of_mod_objs, enable, mod_dependency_table) 
+	for _, mod_obj in pairs(list_of_mod_objs) do
+		mod_set_enabled_with_deps(mod_obj, enable, mod_dependency_table)
+	end
+end
+
+function mod_set_enabled_with_deps(mod_obj, enable, mod_dependency_table)
+	mod_set_enable(mod_obj, enable)
+	local dep_mods
+
+	if enable then
+		dep_mods = get_list_of_missing_dependency_mod_objs_to_be_enabled_recursively(mod_obj, mod_dependency_table)
+		core.log("info", "Enabling dependencies for mod " .. mod_obj.name)		
+	else
+		dep_mods = get_list_of_no_longer_satisfied_dependency_mod_objs_to_be_disabled_recursively(mod_obj, mod_dependency_table)
+		core.log("info", "Disabling dependent mods of mod " .. mod_obj.name)
 	end
 
-	local toggled_mods = {}
-	local enabled_mods = {}
-	toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
+	print(inspect(dep_mods))
 
-	if not toset then
-		-- Mod(s) were disabled, so no dependencies need to be enabled
-		table.sort(toggled_mods)
-		core.log("info", "Following mods were disabled: " ..
-			table.concat(toggled_mods, ", "))
-		return
+	for _, dep_mod in pairs(dep_mods) do
+		mod_set_enable(dep_mod, enable)
+	end
+end
+
+function mod_toggle_with_deps(mod_obj, mod_dependency_table)
+	mod_set_enabled_with_deps(mod_obj, not mod_obj.enabled, mod_dependency_table)
+end
+
+function mod_toggle(mod_obj)
+	mod_obj.enabled = not mod_obj.enabled
+	log_mod_enabled(mod_obj.name, mod_obj.enabled)
+end
+
+function mod_set_enable(mod_obj, enable)
+	print(inspect(mod_obj))
+	mod_obj.enabled = enable
+	log_mod_enabled(mod_obj.name, enable)	
+end
+
+function should_modpack_be_toggle_enabled_if_its_mods_are(list_of_modpack_mods)
+	if list_of_modpack_mods[1] then
+		return not list_of_modpack_mods[1].enabled
+	end
+end
+
+function log_mod_enabled(mod_name, enabled)
+	if enabled then
+		core.log("info", "Enabled mod: " .. mod_name)
+	else
+		core.log("info", "Disabled mod: " .. mod_name)
+	end
+end
+
+function get_list_of_missing_dependency_mod_objs_to_be_enabled_recursively(recently_enabled_mod_obj, mod_dependency_table)
+	print("Mod dependency table")
+	print(inspect(mod_dependency_table))
+	return traverse_dependency_table_into_list(recently_enabled_mod_obj, "dependency", mod_dependency_table)
+end
+
+function get_list_of_no_longer_satisfied_dependency_mod_objs_to_be_disabled_recursively(recently_disabled_mod_obj, mod_dependency_table)
+	return traverse_dependency_table_into_list(recently_disabled_mod_obj, "dependent", mod_dependency_table)
+end
+
+function traverse_dependency_table_into_list(mod_obj_to_visit, direction, mod_dependency_table)
+	local traversed_mod_objs = {}
+
+	visit_dependency_table_recursively(mod_obj_to_visit, { mod_obj_to_visit }, direction, mod_dependency_table, function(mod_obj)
+		table.insert(traversed_mod_objs, mod_obj)
+	end)
+
+	return traversed_mod_objs
+end
+
+--- mod_obj_to_visit: next node to traverse ---
+--- skip_list: a list of nodes not to traverse, overriding to_visit ---
+--- direction: either "dependency" or "dependent"
+--- mod_dependency_table: expects a table with the following structure: 
+-- { "mod1_obj": "[direction_string]": {mod2_obj, mod3_obj, etc.}, "mod4_obj": ... }
+--- fn: passes each mod_obj visited into fn 
+function visit_dependency_table_recursively(mod_obj_to_visit, skip_mod_obj_list, direction, mod_dependency_table, mod_obj_fn)
+		
+	mod_obj_fn(mod_obj_to_visit)
+	table.insert(skip_mod_obj_list, mod_obj_to_visit)
+	
+	if mod_dependency_table[mod_obj_to_visit] and mod_dependency_table[mod_obj_to_visit][direction] then
+		from(mod_dependency_table[mod_obj_to_visit][direction])
+			:where(function (a_related_mod_obj_of_the_current_one)
+					return not from(skip_mod_obj_list):contains(a_related_mod_obj_of_the_current_one)
+			end)
+			:foreach(function (next_mod_obj_to_visit)
+				visit_dependency_table_recursively(next_mod_obj_to_visit, skip_mod_obj_list, direction, mod_dependency_table, mod_obj_fn)
+			end)
 	end
 
-	-- Enable mods' depends after activation
+end
 
-	-- Make a list of mod ids indexed by their names
-	local mod_ids = {}
-	for id, mod2 in pairs(list) do
-		if mod2.type == "mod" and not mod2.is_modpack then
-			mod_ids[mod2.name] = id
+-- Returns a table similar to this. It is referred as mod_dependency_table in this file.
+-- { 1: { dependency: { 2; 3; 4 }                                },
+--   2: { dependency: { 4 }          dependent:  { 1 }           },
+--   3: { dependency: { 4 }          dependent:  { 1 }           }
+--   4. {                            dependent:  { 1; 2; 3 }     }
+-- numbers in the example are mod_obj references actually
+function build_mod_dependency_table(list_of_all_mod_objs)
+	local mod_dependency_table = {}
+	print("Building mod_dependency_table")
+
+	for _, mod_obj in pairs(list_of_all_mod_objs) do
+		local dependency_mod_names = get_names_of_dependencies_of_mod_obj(mod_obj, list_of_all_mod_objs)
+		print("Deps of " .. mod_obj.name .. ": " .. inspect(dependency_mod_names))
+
+		for _, dep_mod_name in pairs(dependency_mod_names) do
+			local dep_mod_obj, _ = find_mod_by_name(dep_mod_name, list_of_all_mod_objs)
+
+			register_connection(mod_dependency_table, mod_obj, dep_mod_obj, "dependency")
+			register_connection(mod_dependency_table, dep_mod_obj, mod_obj, "dependent")
 		end
 	end
 
-	-- to_enable is used as a DFS stack with sp as stack pointer
-	local to_enable = {}
-	local sp = 0
-	for name in pairs(enabled_mods) do
-		local depends = pkgmgr.get_dependencies(list[mod_ids[name]].path)
-		for i = 1, #depends do
-			local dependency_name = depends[i]
-			if not enabled_mods[dependency_name] then
-				sp = sp+1
-				to_enable[sp] = dependency_name
-			end
-		end
-	end
-	-- If sp is 0, every dependency is already activated
-	while sp > 0 do
-		local name = to_enable[sp]
-		sp = sp-1
+	return mod_dependency_table
+end
 
-		if not enabled_mods[name] then
-			enabled_mods[name] = true
-			local mod_to_enable = list[mod_ids[name]]
-			if not mod_to_enable then
-				core.log("warning", "Mod dependency \"" .. name ..
-					"\" not found!")
-			else
-				if mod_to_enable.enabled == false then
-					mod_to_enable.enabled = true
-					toggled_mods[#toggled_mods+1] = mod_to_enable.name
-				end
-				-- Push the dependencies of the dependency onto the stack
-				local depends = pkgmgr.get_dependencies(mod_to_enable.path)
-				for i = 1, #depends do
-					if not enabled_mods[name] then
-						sp = sp+1
-						to_enable[sp] = depends[i]
-					end
-				end
-			end
-		end
+function register_connection(dependency_table, obj, target_obj, relation)
+	if not(dependency_table[obj]) then
+		dependency_table[obj] = {}
 	end
 
-	-- Log the list of enabled mods
-	table.sort(toggled_mods)
-	core.log("info", "Following mods were enabled: " ..
-		table.concat(toggled_mods, ", "))
+	if not dependency_table[obj][relation] then
+		dependency_table[obj][relation] = {}
+	end
+
+	if not from(dependency_table[obj][relation]):contains(target_obj) then
+		table.insert(dependency_table[obj][relation], target_obj)
+	end
+end
+
+function get_names_of_dependencies_of_mod_obj(mod_obj, list_of_all_mod_objects)
+	print("Getting dependencies for " .. tostring(mod_obj.name))
+	return pkgmgr.get_dependencies(mod_obj.path)
+end
+
+function find_mod_by_name(mod_name, list_of_all_mod_objects)
+	for _, mod in pairs(list_of_all_mod_objects) do
+		if mod.type == "mod" and not mod.is_modpack and mod.name == mod_name then
+			return mod
+		end
+	end
+	error("No mod with name " .. mod_name)
+end
+
+
+function get_mod_objs_of_modpack(modpack_name, list_of_all_mod_objs)
+	return from(list_of_all_mod_objs)
+	:where(function(mod_obj) 
+		return mod_obj.modpack and mod_obj.modpack == modpack_name; end)
+	:toArray()
 end
 
 --------------------------------------------------------------------------------
