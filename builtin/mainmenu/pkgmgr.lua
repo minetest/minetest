@@ -399,8 +399,6 @@ function pkgmgr.get_dependencies(path)
 	end
 
 	local info = core.get_content_info(path)
-	print("pkgmgr.get_dependencies info for " .. path)
-	print(inspect(info))
 	return info.depends or {}, info.optional_depends or {}
 end
 
@@ -419,7 +417,6 @@ function pkgmgr.mod_or_modpack_selected_toggle(this)
 	local list_of_all_mod_objs = this.data.list:get_list()
 	local mod_or_modpack_obj = list_of_all_mod_objs[this.data.selected_mod]
 	local mod_dependency_table = build_mod_dependency_table(list_of_all_mod_objs)
-	print("Built mod dependency table: " .. inspect(mod_dependency_table))
 
 	if mod_or_modpack_obj.is_modpack then
 		modpack_toggle_with_deps(mod_or_modpack_obj, list_of_all_mod_objs, mod_dependency_table)
@@ -432,7 +429,6 @@ function pkgmgr.mod_or_modpack_selected_set_enabled(this, enabled)
 	local list_of_all_mod_objs = this.data.list:get_list()
 	local mod_or_modpack_obj = list_of_all_mod_objs[this.data.selected_mod]
 	local mod_dependency_table = build_mod_dependency_table(list_of_all_mod_objs)
-	print("Built mod dependency table: " .. inspect(mod_dependency_table))
 
 	if mod_or_modpack_obj.is_modpack then
 		modpack_set_enabled_with_deps(mod_or_modpack_obj, list_of_all_mod_objs, enabled, mod_dependency_table)
@@ -469,8 +465,6 @@ function mod_set_enabled_with_deps(mod_obj, enable, mod_dependency_table)
 		core.log("info", "Disabling dependent mods of mod " .. mod_obj.name)
 	end
 
-	print(inspect(dep_mods))
-
 	for _, dep_mod in pairs(dep_mods) do
 		mod_set_enable(dep_mod, enable)
 	end
@@ -486,7 +480,6 @@ function mod_toggle(mod_obj)
 end
 
 function mod_set_enable(mod_obj, enable)
-	print(inspect(mod_obj))
 	mod_obj.enabled = enable
 	log_mod_enabled(mod_obj.name, enable)	
 end
@@ -506,8 +499,6 @@ function log_mod_enabled(mod_name, enabled)
 end
 
 function get_list_of_missing_dependency_mod_objs_to_be_enabled_recursively(recently_enabled_mod_obj, mod_dependency_table)
-	print("Mod dependency table")
-	print(inspect(mod_dependency_table))
 	return traverse_dependency_table_into_list(recently_enabled_mod_obj, "dependency", mod_dependency_table)
 end
 
@@ -556,11 +547,9 @@ end
 -- numbers in the example are mod_obj references actually
 function build_mod_dependency_table(list_of_all_mod_objs)
 	local mod_dependency_table = {}
-	print("Building mod_dependency_table")
 
 	for _, mod_obj in pairs(list_of_all_mod_objs) do
 		local dependency_mod_names = get_names_of_dependencies_of_mod_obj(mod_obj, list_of_all_mod_objs)
-		print("Deps of " .. mod_obj.name .. ": " .. inspect(dependency_mod_names))
 
 		for _, dep_mod_name in pairs(dependency_mod_names) do
 			local dep_mod_obj, _ = find_mod_by_name(dep_mod_name, list_of_all_mod_objs)
@@ -588,7 +577,6 @@ function register_connection(dependency_table, obj, target_obj, relation)
 end
 
 function get_names_of_dependencies_of_mod_obj(mod_obj, list_of_all_mod_objects)
-	print("Getting dependencies for " .. tostring(mod_obj.name))
 	return pkgmgr.get_dependencies(mod_obj.path)
 end
 
