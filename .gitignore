@@ -106,3 +106,6 @@ CMakeDoxy*
 compile_commands.json
 *.apk
 *.zip
+
+# Optional user provided library folder
+lib/irrlichtmt
