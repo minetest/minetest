@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/serialize.h"
 
-#include "zlib.h"
-#include "zstd.h"
+#include <zlib.h>
+#include <zstd.h>
 
 /* report a zlib or i/o error */
 void zerr(int ret)
@@ -288,7 +288,7 @@ void decompressZstd(std::istream &is, std::ostream &os)
 		}
 	} while (ret != 0);
 
-	// Unget all the data that inflate didn't take
+	// Unget all the data that ZSTD_decompressStream didn't take
 	is.clear(); // Just in case EOF is set
 	for (u32 i = 0; i < input.size - input.pos; i++) {
 		is.unget();
@@ -297,35 +297,34 @@ void decompressZstd(std::istream &is, std::ostream &os)
 	}
 }
 
-void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int level)
+void compress(u8 *data, u32 size, std::ostream &os, u8 version, int level)
 {
 	if(version >= 29)
 	{
-		// map the zlib levels [-1,9]
-		// the range 1-10 is good enough, 0 is the default (currently 3)
-		compressZstd(*data, data.getSize(), os, level + 1);
+		// map the zlib levels [0,9] to [1,10]. -1 becomes 0 which indicates the default (currently 3)
+		compressZstd(data, size, os, level + 1);
 		return;
 	}
 
 	if(version >= 11)
 	{
-		compressZlib(*data, data.getSize(), os, level);
+		compressZlib(data, size, os, level);
 		return;
 	}
 
-	if(data.getSize() == 0)
+	if(size == 0)
 		return;
 
 	// Write length (u32)
 
 	u8 tmp[4];
-	writeU32(tmp, data.getSize());
+	writeU32(tmp, size);
 	os.write((char*)tmp, 4);
 
 	// We will be writing 8-bit pairs of more_count and byte
 	u8 more_count = 0;
 	u8 current_byte = data[0];
-	for(u32 i=1; i<data.getSize(); i++)
+	for(u32 i=1; i<size; i++)
 	{
 		if(
 			data[i] != current_byte
@@ -348,10 +347,14 @@ void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int le
 	os.write((char*)&current_byte, 1);
 }
 
+void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int level)
+{
+	compress(*data, data.getSize(), os, version, level);
+}
+
 void compress(const std::string &data, std::ostream &os, u8 version, int level)
 {
-	SharedBuffer<u8> databuf((u8*)data.c_str(), data.size());
-	compress(databuf, os, version, level);
+	compress((u8*)data.c_str(), data.size(), os, version, level);
 }
 
 void decompress(std::istream &is, std::ostream &os, u8 version)

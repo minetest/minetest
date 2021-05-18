@@ -528,7 +528,7 @@ void MapBlock::deSerialize(std::istream &in, u8 version, bool disk)
 			m_node_metadata.deSerialize(is, m_gamedef->idef());
 		} else {
 			// resuse iss
-			iss.str(std::string());
+			iss.str("");
 			iss.clear();
 			decompress(is, iss, version);
 			if (version >= 23)
