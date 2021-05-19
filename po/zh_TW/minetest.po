@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-23 19:03+0100\n"
-"PO-Revision-Date: 2020-12-24 05:29+0000\n"
-"Last-Translator: Man Ho Yiu <yiufamily.hh@gmail.com>\n"
+"PO-Revision-Date: 2021-05-20 14:34+0000\n"
+"Last-Translator: Yiu Man Ho <yiufamily.hh@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,7 +23,6 @@ msgid "You died"
 msgstr "您已死亡"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-#, fuzzy
 msgid "OK"
 msgstr "OK"
 
@@ -152,34 +151,35 @@ msgstr "已啟用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "“$1”已經存在。您要覆蓋它嗎？"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "$1 和他的 $2 個依賴將會被安裝。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 作者： $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 個正在下載，\n"
+"$2 個正在等待"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "正在載入..."
+msgstr "正在下載 $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "找不到 $1 所需的依賴項。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "將安裝 $1，並且將跳過他的 $2 個依賴項。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -205,9 +205,8 @@ msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr "在沒有cURL的情況下編譯Minetest時，ContentDB不可用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "正在載入..."
+msgstr "正在下載..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -223,19 +222,17 @@ msgid "Install"
 msgstr "安裝"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "安裝"
+msgstr "安裝 $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "可選相依元件："
+msgstr "安裝缺少的依賴"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Mod"
+msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -246,25 +243,24 @@ msgid "No results"
 msgstr "無結果"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "更新"
+msgstr "無更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "找不到"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "覆蓋"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "請檢查基礎遊戲是否正確。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "已排程"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -280,20 +276,19 @@ msgstr "更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "全部更新 [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "在網絡瀏覽器中查看更多信息"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "名為「$1」的世界已存在"
+msgstr "名為「$1」的世界已經存在"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Additional terrain"
-msgstr "其他地形"
+msgstr "更多地形"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -315,23 +310,20 @@ msgid "Biomes"
 msgstr "生物雜訊"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "洞穴雜訊"
+msgstr "大洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "倍頻程"
+msgstr "洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "建立"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "迭代"
+msgstr "裝飾物"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -342,14 +334,12 @@ msgid "Download one from minetest.net"
 msgstr "從 minetest.net 下載一個"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "地城雜訊"
+msgstr "地牢"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Flat terrain"
-msgstr "平坦世界"
+msgstr "超平坦世界"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -357,9 +347,8 @@ msgid "Floating landmasses in the sky"
 msgstr "浮地山密度"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "浮地高度"
+msgstr "空島（實驗性）"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -398,17 +387,15 @@ msgstr "地圖產生器"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Mapgen 旗標"
+msgstr "地圖產生器旗標"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Mapgen v5 特別旗標"
+msgstr "v5 地圖產生器特別旗標"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "山雜訊"
+msgstr "山脈"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -432,9 +419,8 @@ msgid "Reduces humidity with altitude"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "河流大小"
+msgstr "河流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
@@ -443,7 +429,7 @@ msgstr "生成在海平面的河流"
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "種子"
+msgstr "種子碼"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -456,9 +442,8 @@ msgid ""
 msgstr "出現在地形上的結構（對v6地圖生成器創建的樹木和叢林草無影響）"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr "出現在地形上的結構，通常是樹木和植物"
+msgstr "出現在世界上的結構，通常是樹木和植物"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -480,7 +465,7 @@ msgstr "地形基礎高度"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "樹木和叢林草"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -492,9 +477,8 @@ msgid "Very large caverns deep in the underground"
 msgstr "地下深處的巨大洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr "警告：最小化的開發測試僅供開發者使用。"
+msgstr "警告：Development Test 僅供開發者使用。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -502,7 +486,7 @@ msgstr "世界名稱"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr "您未安裝遊戲。"
+msgstr "您未安裝任何遊戲。"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -520,11 +504,11 @@ msgstr "pkgmgr：無法刪除「$1」"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "pkgmgr：「%1」路徑無效"
+msgstr "pkgmgr：「$1」路徑無效"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "刪除「$1」世界？"
+msgstr "刪除世界「$1」？"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -546,7 +530,7 @@ msgstr "（未提供設定描述）"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D 雜訊值"
+msgstr "二維雜訊值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -593,7 +577,7 @@ msgstr "請輸入有效的整數。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "請輸入有效的數字。"
+msgstr "請輸入一個有效的數字。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
@@ -727,9 +711,8 @@ msgid "Loading..."
 msgstr "正在載入..."
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "已停用用戶端指令稿"
+msgstr "已停用公開伺服器列表"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -788,15 +771,16 @@ msgid "Credits"
 msgstr "感謝"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "選擇目錄"
+msgstr "打開用戶資料目錄"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"在文件管理器/文件瀏覽器中打開包含\n"
+"用戶提供的世界、遊戲、mod、材質包的目錄。"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -848,9 +832,8 @@ msgid "No world created or selected!"
 msgstr "未建立或選取世界！"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Password"
-msgstr "新密碼"
+msgstr "密碼"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -861,9 +844,8 @@ msgid "Port"
 msgstr "連線埠"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "選取世界："
+msgstr "選擇模組："
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -916,7 +898,7 @@ msgstr "Ping"
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "PvP enabled"
-msgstr "已啟用 PvP"
+msgstr "已啟用玩家對戰"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -924,7 +906,7 @@ msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr "3D 雲朵"
+msgstr "三維雲朵"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
@@ -963,10 +945,12 @@ msgid "Fancy Leaves"
 msgstr "華麗葉子"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Mipmap"
 msgstr "Mip 貼圖"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Mipmap + Aniso. Filter"
 msgstr "Mip 貼圖 + Aniso. 過濾器"
 
@@ -975,16 +959,17 @@ msgid "No Filter"
 msgstr "沒有過濾器"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "No Mipmap"
 msgstr "沒有 Mip 貼圖"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "突顯節點"
+msgstr "突顯方塊"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "加入節點外框"
+msgstr "加入方塊外框"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -1015,9 +1000,8 @@ msgid "Shaders"
 msgstr "著色器"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "浮地高度"
+msgstr "著色器（實驗性）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
