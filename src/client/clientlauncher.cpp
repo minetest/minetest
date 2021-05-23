@@ -277,14 +277,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				chat_backend,
 				&reconnect_requested
 			);
-			m_rendering_engine->get_scene_manager()->clear();
-
-#ifdef HAVE_TOUCHSCREENGUI
-			delete g_touchscreengui;
-			g_touchscreengui = NULL;
-			receiver->m_touchscreengui = NULL;
-#endif
-
 		} //try
 		catch (con::PeerNotFoundException &e) {
 			error_message = gettext("Connection error (timed out?)");
@@ -298,6 +290,14 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			error_message += "\"";
 			errorstream << error_message << std::endl;
 		}
+#endif
+
+		m_rendering_engine->get_scene_manager()->clear();
+
+#ifdef HAVE_TOUCHSCREENGUI
+		delete g_touchscreengui;
+		g_touchscreengui = NULL;
+		receiver->m_touchscreengui = NULL;
 #endif
 
 		// If no main menu, show error and exit
