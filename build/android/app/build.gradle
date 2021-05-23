@@ -38,7 +38,7 @@ android {
 	// for multiple APKs
 	splits {
 		abi {
-			enable true
+			// enable true
 			reset()
 			include 'armeabi-v7a', 'arm64-v8a'
 		}
