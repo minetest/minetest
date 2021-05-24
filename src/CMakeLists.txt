@@ -511,7 +511,6 @@ endif()
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
-	${IRRLICHT_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
 	${PNG_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
@@ -548,7 +547,7 @@ if(BUILD_CLIENT)
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
-		${IRRLICHT_LIBRARY}
+		IrrlichtMt::IrrlichtMt
 		${JPEG_LIBRARIES}
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
@@ -632,6 +631,7 @@ if(BUILD_SERVER)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
+		IrrlichtMt::IrrlichtMt
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_LIBRARY}

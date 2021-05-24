@@ -56,7 +56,6 @@ endif()
 # Included stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-
 # This is done here so that relative search paths are more reasonable
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
@@ -73,32 +72,18 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	set(IRRLICHT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
 	set(IRRLICHT_LIBRARY IrrlichtMt)
 else()
-	find_package(Irrlicht)
-	if(BUILD_CLIENT AND NOT IRRLICHT_FOUND)
-		message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.")
-	elseif(NOT IRRLICHT_INCLUDE_DIR)
-		message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
+	find_package(IrrlichtMt QUIET)
+	if(NOT TARGET IrrlichtMt::IrrlichtMt)
+		if(BUILD_CLIENT)
+			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.")
+		elseif(NOT IRRLICHT_INCLUDE_DIR)
+			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
+		else()
+			add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+			target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE "${IRRLICHT_INCLUDE_DIR}")
+		endif()
 	endif()
 endif()
-
-include(CheckSymbolExists)
-set(CMAKE_REQUIRED_INCLUDES ${IRRLICHT_INCLUDE_DIR})
-unset(HAS_FORKED_IRRLICHT CACHE)
-check_symbol_exists(IRRLICHT_VERSION_MT "IrrCompileConfig.h" HAS_FORKED_IRRLICHT)
-if(NOT HAS_FORKED_IRRLICHT)
-	string(CONCAT EXPLANATION_MSG
-		"Irrlicht found, but it is not IrrlichtMt (Minetest's Irrlicht fork). "
-		"The Minetest team has forked Irrlicht to make their own customizations. "
-		"It can be found here: https://github.com/minetest/irrlicht")
-	if(BUILD_CLIENT)
-		message(FATAL_ERROR "${EXPLANATION_MSG}\n"
-			"Building the client with upstream Irrlicht is no longer possible.")
-	else()
-		message(WARNING "${EXPLANATION_MSG}\n"
-			"The server can still be built with upstream Irrlicht but this is DISCOURAGED.")
-	endif()
-endif()
-
 
 # Installation
 
