@@ -122,7 +122,7 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+	luaL_register(L, nullptr, methods);
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -380,7 +380,7 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+	luaL_register(L, nullptr, methods);
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -485,7 +485,7 @@ void LuaPseudoRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+	luaL_register(L, nullptr, methods);
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -584,7 +584,7 @@ void LuaPcgRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+	luaL_register(L, nullptr, methods);
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -699,7 +699,7 @@ void LuaSecureRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+	luaL_register(L, nullptr, methods);
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
