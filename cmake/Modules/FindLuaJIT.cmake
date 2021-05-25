@@ -1,8 +1,8 @@
 # Locate LuaJIT library
 # This module defines
 #  LUAJIT_FOUND, if false, do not try to link to Lua
+#  LUA_LIBRARY, where to find the lua library
 #  LUA_INCLUDE_DIR, where to find lua.h
-#  LUA_VERSION_STRING, the version of Lua found (since CMake 2.8.8)
 #
 # This module is similar to FindLua51.cmake except that it finds LuaJit instead.
 
@@ -44,19 +44,10 @@ else()
 	)
 endif()
 
-
-IF(LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/luajit.h")
-	FILE(STRINGS "${LUA_INCLUDE_DIR}/luajit.h" lua_version_str REGEX "^#define[ \t]+LUA_RELEASE[ \t]+\"LuaJIT .+\"")
-
-	STRING(REGEX REPLACE "^#define[ \t]+LUA_RELEASE[ \t]+\"LuaJIT ([^\"]+)\".*" "\\1" LUA_VERSION_STRING "${lua_version_str}")
-	UNSET(lua_version_str)
-ENDIF()
-
 INCLUDE(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LUAJIT_FOUND to TRUE if
-# all listed variables are TRUE
+# all listed variables exist
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LuaJIT
-	REQUIRED_VARS LUA_LIBRARY LUA_INCLUDE_DIR
-	VERSION_VAR LUA_VERSION_STRING)
+	REQUIRED_VARS LUA_LIBRARY LUA_INCLUDE_DIR)
 
-MARK_AS_ADVANCED(LUA_INCLUDE_DIR LUA_LIBRARY LUA_MATH_LIBRARY)
+MARK_AS_ADVANCED(LUA_INCLUDE_DIR LUA_LIBRARY)
