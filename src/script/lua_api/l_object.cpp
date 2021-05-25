@@ -2311,7 +2311,7 @@ void ObjectRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_register(L, nullptr, methods);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 
