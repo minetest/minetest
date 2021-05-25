@@ -276,19 +276,21 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 	//EnrichedString line_text(line.text);
 
 	next_line.first = true;
-	bool text_processing = false;
+	bool mark_newline = false;
 
 	// Produce fragments and layout them into lines
 	while (!next_frags.empty() || in_pos < line.text.size())
 	{
+		mark_newline = false; // now using this to USE line-end frag
+
 		// Layout fragments into lines
 		while (!next_frags.empty())
 		{
 			ChatFormattedFragment& frag = next_frags[0];
 
-			// Force text_processing on this frag. hacky.
+			// Force newline after this frag, if marked
 			if(frag.column == (u32)INT_MAX)
-				text_processing = true;
+				mark_newline = true;
 
 			if (frag.text.size() <= cols - out_column)
 			{
@@ -311,7 +313,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				frag.column = 0;
 				out_column = cols;
 			}
-			if (out_column == cols || text_processing)
+			if (out_column == cols || mark_newline)
 			{
 				// End the current line
 				destination.push_back(next_line);
@@ -319,134 +321,105 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				next_line.fragments.clear();
 				next_line.first = false;
 
-				out_column = text_processing ? hanging_indentation : 0;
-				text_processing = false;
+				out_column = hanging_indentation;
+				mark_newline = false;
 			}
 		}
 
 		// Produce fragment(s) for next formatted line
-		if (in_pos < line.text.size())
-		{
-			u32 remaining_in_input = line.text.size() - in_pos;
-			u32 remaining_in_output = cols - out_column;
+		if (!(in_pos < line.text.size()))
+			continue;
 
+		std::wstring linestring = line.text.getString();
+		u32 remaining_in_output = cols - out_column;
+		u32 http_pos = (u32)(std::wstring::npos);
+		mark_newline = false;  // now using this to SET line-end frag
+
+		// Construct all frags for next output line
+		while(!mark_newline)
+		{
 			// Determine a fragment length <= the minimum of
 			// remaining_in_{in,out}put. Try to end the fragment
 			// on a word boundary.
-			u32 frag_length = 1, space_pos = 0;
+			u32 frag_length = 0, space_pos = 0;
+			u32 remaining_in_input = line.text.size() - in_pos;
 
-			if(!m_cache_clickable_chat_weblinks)
+			if(m_cache_clickable_chat_weblinks)
 			{
-				while (frag_length < remaining_in_input &&
-						frag_length < remaining_in_output)
-				{
-					if (iswspace(line.text.getString()[in_pos + frag_length]))
-						space_pos = frag_length;
-					++frag_length;
-				}
-				if (space_pos != 0 && frag_length < remaining_in_input)
-					frag_length = space_pos + 1;
-
-				temp_frag.text = line.text.substr(in_pos, frag_length);
-				temp_frag.column = 0;
-				//temp_frag.bold = 0;
-				next_frags.push_back(temp_frag);
-				in_pos += frag_length;
-				text_processing = true;
+				// Note: unsigned(-1) on fail
+				http_pos = linestring.find(L"https://", in_pos);
+				if(http_pos == (u32)std::wstring::npos)
+					http_pos = linestring.find(L"http://", in_pos);
+				if(http_pos != (u32)std::wstring::npos)
+					http_pos -= in_pos;
 			}
-			// Unless weblinks are enabled. Then it's slightly more complex
+
+			while (frag_length < remaining_in_input &&
+					frag_length < remaining_in_output)
+			{
+				if (iswspace(linestring[in_pos + frag_length]))
+					space_pos = frag_length;
+				++frag_length;
+			}
+
+			// Http not in range, grab until space or EOL, halt as normal.
+			if(http_pos > remaining_in_output)  // ok unless screen is infinitely wide
+			{
+				mark_newline = true;
+			}
+			// At http, grab ALL until FIRST whitespace or end marker. loop.
+			// If at end of string, next loop will be empty string to mark end of weblink.
+			else if(http_pos == 0)
+			{
+				frag_length = 6;
+
+				// TODO? replace this with a safer (slower) regex whitelist?
+				std::wstring delim_chars = L"\'\");,";
+				wchar_t tempchar = linestring[in_pos+frag_length];
+				while (frag_length < remaining_in_input &&
+						!iswspace(tempchar) &&
+						delim_chars.find(tempchar) == std::wstring::npos
+					)
+				{
+					++frag_length;
+					tempchar = linestring[in_pos+frag_length];
+				}
+				space_pos = frag_length - 1;
+				// This frag will need to be force-wrapped. That's ok.
+				if(frag_length >= remaining_in_output)
+				{
+					mark_newline = true;
+				}
+			}
+			// Http in range, grab until http, loop
 			else
 			{
-				std::wstring linestring = line.text.getString();
-				u32 http_pos = (u32)(std::wstring::npos);
-				text_processing = false;  // set FALSE at end of this block
-				bool halt_fragloop = false;
-				while(!halt_fragloop)
-				{
-					remaining_in_input = line.text.size() - in_pos;
-					frag_length = 0;
-					space_pos = 0;
-
-					// Note: unsigned(-1) on fail
-					http_pos = linestring.find(L"https://", in_pos);
-					if(http_pos == (u32)std::wstring::npos)
-						http_pos = linestring.find(L"http://", in_pos);
-					if(http_pos != (u32)std::wstring::npos)
-						http_pos -= in_pos;
-
-					while (frag_length < remaining_in_input &&
-							frag_length < remaining_in_output)
-					{
-						if (iswspace(linestring[in_pos + frag_length]))
-							space_pos = frag_length;
-						++frag_length;
-					}
-
-					// Http not in range, grab until space or EOL, halt as normal.
-					if(http_pos > remaining_in_output)  // ok unless screen is infinitely wide
-					{
-						// force text processing on THIS frag
-						text_processing = true;
-						halt_fragloop = true;
-					}
-					// At http, grab ALL until FIRST whitespace or end marker. loop.
-					// If at end of string, next loop will be empty string to mark end of weblink.
-					else if(http_pos == 0)
-					{
-						frag_length = 6;
-
-						// TODO? replace this with a safer (slower) regex whitelist?
-						std::wstring delim_chars = L"\'\");,";
-						wchar_t tempchar = linestring[in_pos+frag_length];
-						while (frag_length < remaining_in_input &&
-								!iswspace(tempchar) &&
-								delim_chars.find(tempchar) == std::wstring::npos
-							)
-						{
-							++frag_length;
-							tempchar = linestring[in_pos+frag_length];
-						}
-						space_pos = frag_length - 1;
-						// This frag will need to be force-wrapped. That's ok.
-						if(frag_length >= remaining_in_output)
-						{
-							// Force text processing on THIS frag
-							text_processing = true;
-							halt_fragloop = true;
-						}
-					}
-					// Http in range, grab until http, loop
-					else
-					{
-						space_pos = http_pos - 1;
-						frag_length = http_pos;
-					}
-
-					if (space_pos != 0 && frag_length < remaining_in_input)
-						frag_length = space_pos + 1;
-
-					temp_frag.text = line.text.substr(in_pos, frag_length);
-					// A hack so this frag remembers text_processing for the layout phase
-					temp_frag.column = text_processing ? (u32)INT_MAX : 0;
-					if(http_pos == 0)
-					{
-						// Set weblink in the frag meta
-						temp_frag.weblink = wide_to_utf8(temp_frag.text.getString());
-						// Discard color stuff from the source frag
-						temp_frag.text = EnrichedString(temp_frag.text.getString());
-						temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
-					}
-					else
-					{
-						temp_frag.weblink = "";
-					}
-					next_frags.push_back(temp_frag);
-					in_pos += frag_length;
-					remaining_in_output -= std::min(frag_length, remaining_in_output);
-				}
-				// handled for fragments individually
-				text_processing = false;
+				space_pos = http_pos - 1;
+				frag_length = http_pos;
 			}
+			// Include trailing space in current frag
+			if (space_pos != 0 && frag_length < remaining_in_input)
+				frag_length = space_pos + 1;
+
+			temp_frag.text = line.text.substr(in_pos, frag_length);
+			// A hack so this frag remembers mark_newline for the layout phase
+			temp_frag.column = mark_newline ? (u32)INT_MAX : 0;
+			if(http_pos == 0)
+			{
+				// Discard color stuff from the source frag
+				temp_frag.text = EnrichedString(temp_frag.text.getString());
+				temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
+				// Set weblink in the frag meta
+				temp_frag.weblink = wide_to_utf8(temp_frag.text.getString());
+				std::cout << "link: " << temp_frag.weblink << std::endl;
+			}
+			else
+			{
+				temp_frag.weblink.clear();
+			}
+			next_frags.push_back(temp_frag);
+			in_pos += frag_length;
+			remaining_in_output -= std::min(frag_length, remaining_in_output);
 		}
 	}
 

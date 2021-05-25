@@ -707,22 +707,22 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 		weblink = frags[indx].weblink;
 	}
 
-/*
+	/*
 	// Debug help
 	std::string ws;
 	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
 	// show all frags <position>(<length>) for the clicked row
 	for(u32 i=0;i<frags.size();++i)
 	{
-		if(ind == int(i))
+		if(indx == int(i))
 			// tag the actual clicked frag
 			ws += '*';
 		ws += std::to_string(frags.at(i).column) + '('
 			+ std::to_string(frags.at(i).text.size()) + "),";
 	}
 	//g_logger.log(LL_VERBOSE, ws);
-	verbosestream << ws << std::endl;
-*/
+	actionstream << ws << std::endl;
+	*/
 
 	// User notification
 	std::string mesg;
