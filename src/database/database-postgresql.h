@@ -29,7 +29,7 @@ class Settings;
 class Database_PostgreSQL: public Database
 {
 public:
-	Database_PostgreSQL(const std::string &connect_string);
+	Database_PostgreSQL(const std::string &connect_string, const char *type);
 	~Database_PostgreSQL();
 
 	void beginSave();
