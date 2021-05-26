@@ -6314,6 +6314,8 @@ object you are working with still exists.
       Default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
        should appear in first person. Default `false`.
+    * This command may fail silently (do nothing) when it would result
+      in circular attachments.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible,
     or nil if it isn't attached.
 * `get_children()`: returns a list of ObjectRefs that are attached to the

@@ -129,8 +129,11 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 		// Do checks to avoid circular references
 		// The chain of wanted parent must not refer or contain "this"
 		for (obj = obj->getParent(); obj; obj = obj->getParent()) {
-			if (obj == this)
+			if (obj == this) {
+				warningstream << "Mod bug: Attempted to attach object " << m_id << " to parent "
+					<< parent_id << " but former is an (in)direct parent of latter." << std::endl;
 				return;
+			}
 		}
 	}
 
