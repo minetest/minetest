@@ -5853,7 +5853,7 @@ Misc.
     * Checks whether the mapblock at positition `pos` is in the wanted condition.
     * `condition` may be one of the following values:
         * `"unknown"`: not in memory
-        * `"emerging"`: in the queue for generating
+        * `"emerging"`: in the queue for loading from disk or generating
         * `"loaded"`: in memory but inactive (no ABMs are executed)
         * `"active"`: in memory and active
         * Other values are reserved for future functionality extensions
