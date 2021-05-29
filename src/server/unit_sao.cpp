@@ -124,6 +124,19 @@ void UnitSAO::sendOutdatedData()
 void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position,
 		v3f rotation, bool force_visible)
 {
+	auto *obj = parent_id ? m_env->getActiveObject(parent_id) : nullptr;
+	if (obj) {
+		// Do checks to avoid circular references
+		// The chain of wanted parent must not refer or contain "this"
+		for (obj = obj->getParent(); obj; obj = obj->getParent()) {
+			if (obj == this) {
+				warningstream << "Mod bug: Attempted to attach object " << m_id << " to parent "
+					<< parent_id << " but former is an (in)direct parent of latter." << std::endl;
+				return;
+			}
+		}
+	}
+
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent.
 	// Attachments are still sent to clients at an interval so players might see them
