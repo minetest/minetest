@@ -346,18 +346,6 @@ void GenericCAO::initialize(const std::string &data)
 	infostream<<"GenericCAO: Got init data"<<std::endl;
 	processInitData(data);
 
-	if (m_is_player) {
-		// Check if it's the current player
-		LocalPlayer *player = m_env->getLocalPlayer();
-		if (player && strcmp(player->getName(), m_name.c_str()) == 0) {
-			m_is_local_player = true;
-			m_is_visible = false;
-			player->setCAO(this);
-
-			m_prop.show_on_minimap = false;
-		}
-	}
-
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 }
 
@@ -379,6 +367,16 @@ void GenericCAO::processInitData(const std::string &data)
 	m_position = readV3F32(is);
 	m_rotation = readV3F32(is);
 	m_hp = readU16(is);
+
+	if (m_is_player) {
+		// Check if it's the current player
+		LocalPlayer *player = m_env->getLocalPlayer();
+		if (player && strcmp(player->getName(), m_name.c_str()) == 0) {
+			m_is_local_player = true;
+			m_is_visible = false;
+			player->setCAO(this);
+		}
+	}
 
 	const u8 num_messages = readU8(is);
 
