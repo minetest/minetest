@@ -358,6 +358,13 @@ bool EmergeManager::enqueueBlockEmergeEx(
 }
 
 
+bool EmergeManager::isBlockInQueue(v3s16 pos)
+{
+	MutexAutoLock queuelock(m_queue_mutex);
+	return m_blocks_enqueued.find(pos) != m_blocks_enqueued.end();
+}
+
+
 //
 // Mapgen-related helper functions
 //

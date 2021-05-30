@@ -342,7 +342,16 @@ public:
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
 
-	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; };
+	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; }
+
+	// Sorted by how ready a mapblock is
+	enum BlockStatus {
+		BS_UNKNOWN,
+		BS_EMERGING,
+		BS_LOADED,
+		BS_ACTIVE // always highest value
+	};
+	BlockStatus getBlockStatus(v3s16 blockpos);
 
 	// Sets the static object status all the active objects in the specified block
 	// This is only really needed for deleting blocks from the map
