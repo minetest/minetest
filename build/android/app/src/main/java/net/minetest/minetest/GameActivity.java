@@ -99,6 +99,7 @@ public class GameActivity extends NativeActivity {
 			editText = new CustomEditText(this);
 		}
 		container.addView(editText);
+		editText.setMaxLines(8);
 		editText.requestFocus();
 		editText.setHint(hint);
 		editText.setText(current);
