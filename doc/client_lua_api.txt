@@ -910,7 +910,9 @@ Call these functions only at load time!
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string
+* `minetest.decode_base64(string)`: returns string or nil on failure
+    * Padding characters are only supported starting at version 5.4.0, where
+      5.5.0 and newer perform proper checks.
     * Decodes a string encoded in base64.
 * `minetest.gettext(string)` : returns string
     * look up the translation of a string in the gettext message catalog
