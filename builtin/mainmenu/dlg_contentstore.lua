@@ -583,8 +583,14 @@ function store.update_paths()
 	local mod_hash = {}
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
-		if mod.author and mod.release > 0 then
-			mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
+		if mod.author then
+			if mod.release then
+				if mod.release > 0 then
+					mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
+				end
+			else
+				core.log("error", "Bad global mod in package manager: " .. dump(mod))
+			end
 		end
 	end
 
@@ -715,7 +721,7 @@ function store.get_formspec(dlgdata)
 			"container[0,", H - 0.8 - 0.375, "]",
 			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
 
-			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
+			"container[", W - 0.375 - 0.8*4 - 2, ",0]",
 			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
 			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
 			"style[pagenum;border=false]",
