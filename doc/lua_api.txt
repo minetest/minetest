@@ -158,6 +158,7 @@ Mod directory structure
     │   ├── mod.conf
     │   ├── screenshot.png
     │   ├── settingtypes.txt
+    │   ├── icon.png
     │   ├── init.lua
     │   ├── models
     │   ├── textures
@@ -203,6 +204,11 @@ Note: to support 0.4.x, please also provide depends.txt.
 
 A screenshot shown in the mod manager within the main menu. It should
 have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
+
+### `icon.png`
+
+An icon image shown in the mod manager within the main menu if screenshot
+image is not found. Same requirements as screenshot.
 
 ### `depends.txt`
 

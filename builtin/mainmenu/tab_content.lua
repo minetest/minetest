@@ -71,6 +71,12 @@ local function get_formspec(tabview, name, tabdata)
 		local screenshotfilename = selected_pkg.path .. DIR_DELIM .. "screenshot.png"
 		local screenshotfile, error = io.open(screenshotfilename, "r")
 
+		if error then
+			-- check for icon if screenshot not available
+			screenshotfilename = selected_pkg.path .. DIR_DELIM .. "icon.png"
+			screenshotfile, error = io.open(screenshotfilename, "r")
+		end
+
 		local modscreenshot
 		if error == nil then
 			screenshotfile:close()
