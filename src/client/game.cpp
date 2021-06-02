@@ -739,6 +739,8 @@ protected:
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
 
+	void updateShadows(float _timeoftheday);
+
 	// Misc
 	void limitFps(FpsControl *fps_timings, f32 *dtime);
 
@@ -1347,6 +1349,8 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Skybox
 	 */
 	sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
+	if (g_settings->getBool("enable_dynamic_shadows"))
+		sky->setSkyBodyOrbitTilt(rangelim(g_settings->getFloat("shadow_sky_body_orbit_tilt"), 0.0f, 60.0f));
 	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
 
@@ -3831,13 +3835,20 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	*/
 	runData.update_draw_list_timer += dtime;
 
+	float update_draw_list_delta = 0.2f;
+	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer())
+		update_draw_list_delta = shadow->getUpdateDelta();
+
 	v3f camera_direction = camera->getDirection();
-	if (runData.update_draw_list_timer >= 0.2
+	if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
 			|| m_camera_offset_changed) {
+
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
+
+		updateShadows(runData.time_of_day_smooth);
 	}
 
 	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
@@ -3968,7 +3979,34 @@ inline void Game::updateProfilerGraphs(ProfilerGraph *graph)
 	graph->put(values);
 }
 
+/****************************************************************************
+ * Shadows
+ *****************************************************************************/
+void Game::updateShadows(float in_timeoftheday)
+{
+	ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer();
+	if (!shadow)
+		return;
 
+	in_timeoftheday = fmod(in_timeoftheday, 1.0f);
+
+	float timeoftheday = fmod(getWickedTimeOfDay(in_timeoftheday) + 0.75f, 0.5f) + 0.25f;
+	const float offset_constant = 10000.0f;
+
+	v3f light(0.0f, 0.0f, -1.0f);
+	light.rotateXZBy(90);
+	light.rotateXYBy(timeoftheday * 360 - 90);
+	light.rotateYZBy(sky->getSkyBodyOrbitTilt());
+
+	v3f sun_pos = light * offset_constant;
+
+	if (shadow->getDirectionalLightCount() == 0)
+		shadow->addDirectionalLight();
+	shadow->getDirectionalLight().setDirection(sun_pos);
+	shadow->setTimeOfDay(in_timeoftheday);
+
+	shadow->getDirectionalLight().update_frustum(camera, client);
+}
 
 /****************************************************************************
  Misc

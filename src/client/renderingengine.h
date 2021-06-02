@@ -25,6 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
+#include "client/render/core.h"
+// include the shadow mapper classes too
+#include "client/shadows/dynamicshadowsrender.h"
+
 
 class ITextureSource;
 class Camera;
@@ -113,6 +117,13 @@ public:
 		return m_device->run();
 	}
 
+	// FIXME: this is still global when it shouldn't be
+	static ShadowRenderer *get_shadow_renderer()
+	{
+		if (s_singleton && s_singleton->core)
+			return s_singleton->core->get_shadow_renderer();
+		return nullptr;
+	}
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
