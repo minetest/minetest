@@ -1,4 +1,5 @@
-FROM alpine:3.13
+ARG DOCKER_IMAGE=alpine:3.13
+FROM $DOCKER_IMAGE AS builder
 
 ENV MINETEST_GAME_VERSION master
 ENV IRRLICHT_VERSION master
@@ -20,7 +21,7 @@ COPY textures /usr/src/minetest/textures
 WORKDIR /usr/src/minetest
 
 RUN apk add --no-cache git build-base cmake sqlite-dev curl-dev zlib-dev \
-		gmp-dev jsoncpp-dev postgresql-dev luajit-dev ca-certificates && \
+		gmp-dev jsoncpp-dev postgresql-dev ninja luajit-dev ca-certificates && \
 	git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/minetest_game.git ./games/minetest_game && \
 	rm -fr ./games/minetest_game/.git
 
@@ -31,9 +32,10 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
 	cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DENABLE_TESTING=0 && \
-	make -j2 && \
-	make install
+		-DENABLE_TESTING=0 \
+		-GNinja && \
+	ninja && \
+	ninja install
 
 RUN git clone --depth=1 https://github.com/minetest/irrlicht/ -b ${IRRLICHT_VERSION} && \
 	cp -r irrlicht/include /usr/include/irrlichtmt
@@ -47,11 +49,13 @@ RUN mkdir build && \
 		-DBUILD_SERVER=TRUE \
 		-DENABLE_PROMETHEUS=TRUE \
 		-DBUILD_UNITTESTS=FALSE \
-		-DBUILD_CLIENT=FALSE && \
-	make -j2 && \
-	make install
+		-DBUILD_CLIENT=FALSE \
+		-GNinja && \
+	ninja && \
+	ninja install
 
-FROM alpine:3.13
+ARG DOCKER_IMAGE=alpine:3.13
+FROM $DOCKER_IMAGE AS runtime
 
 RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
@@ -59,9 +63,9 @@ RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncp
 
 WORKDIR /var/lib/minetest
 
-COPY --from=0 /usr/local/share/minetest /usr/local/share/minetest
-COPY --from=0 /usr/local/bin/minetestserver /usr/local/bin/minetestserver
-COPY --from=0 /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
+COPY --from=builder /usr/local/share/minetest /usr/local/share/minetest
+COPY --from=builder /usr/local/bin/minetestserver /usr/local/bin/minetestserver
+COPY --from=builder /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
 
 USER minetest:minetest
 
