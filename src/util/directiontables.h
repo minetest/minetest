@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2021 SFENCE <sfence.software@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -32,6 +33,9 @@ extern const v3s16 g_26dirs[26];
 extern const v3s16 g_27dirs[27];
 
 extern const u8 wallmounted_to_facedir[6];
+
+// convert facedir to index in g_6dirs array (similar to minetest.facedir_to_dir lua function)
+extern const u8 facedir_to_dir[24];
 
 /// Direction in the 6D format. g_27dirs contains corresponding vectors.
 /// Here P means Positive, N stands for Negative.

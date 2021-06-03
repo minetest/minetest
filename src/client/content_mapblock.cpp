@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2021 SFENCE <sfence.software@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -940,6 +941,20 @@ void MapblockMeshGenerator::drawSignlikeNode()
 void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
+	u8 facedir = 0;
+
+	if (f->param_type_2 == CPT2_FACEDIR ||
+			f->param_type_2 == CPT2_COLORED_FACEDIR) {
+		facedir = n.getFaceDir(nodedef);
+	} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
+			f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+		// Convert wallmounted to 6dfacedir.
+		// When cache enabled, it is already converted.
+		facedir = n.getWallMounted(nodedef);
+		if (!enable_mesh_cache)
+			facedir = wallmounted_to_facedir[facedir];
+	}
+	
 	v3f vertices[4] = {
 		v3f(-scale, -BS / 2 + 2.0 * scale * plant_height, 0),
 		v3f( scale, -BS / 2 + 2.0 * scale * plant_height, 0),
@@ -958,6 +973,27 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		vertex.rotateXZBy(rotation + rotate_degree);
 		vertex += offset;
 	}
+	
+	// rotate when facedir is used
+	if (facedir) {
+	  int axisdir = facedir >> 2;
+		facedir &= 0x03;
+		for (v3f &vertex : vertices) {
+			switch(facedir) {
+				case 1: vertex.rotateXZBy( -90); break;
+				case 2: vertex.rotateXZBy( 180); break;
+				case 3: vertex.rotateXZBy( 90); break;
+			}
+			switch(axisdir) {
+				case 1: vertex.rotateYZBy( 90); break;
+				case 2: vertex.rotateYZBy( -90); break;
+				case 3: vertex.rotateXYBy( -90); break;
+				case 4: vertex.rotateXYBy( 90); break;
+				case 5: vertex.rotateXYBy( -180); break;
+			}
+		}
+	}
+	
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 
@@ -1039,8 +1075,23 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 
 void MapblockMeshGenerator::drawPlantlikeRootedNode()
 {
+	u8 facedir = 0;
+
+	if (f->param_type_2 == CPT2_FACEDIR ||
+			f->param_type_2 == CPT2_COLORED_FACEDIR) {
+		facedir = n.getFaceDir(nodedef);
+	} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
+			f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+		// Convert wallmounted to 6dfacedir.
+		// When cache enabled, it is already converted.
+		facedir = n.getWallMounted(nodedef);
+		if (!enable_mesh_cache)
+			facedir = wallmounted_to_facedir[facedir];
+	}
+	
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
-	origin += v3f(0.0, BS, 0.0);
+	v3s16 dir = g_6dirs[facedir_to_dir[facedir%32]];
+	origin += v3f(dir.X*BS,dir.Y*BS,dir.Z*BS);
 	p.Y++;
 	if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
