@@ -50,13 +50,13 @@ local dialog_metatable = {
 }
 dialog_metatable.__index = dialog_metatable
 
-function dialog_create(name,get_formspec,buttonhandler,eventhandler)
+function dialog_create(name,get_formspec,buttonhandler,eventhandler,data)
 	local self = {}
 
 	self.name = name
 	self.type = "toplevel"
 	self.hidden = true
-	self.data = {}
+	self.data = data or {}
 
 	self.formspec      = get_formspec
 	self.buttonhandler = buttonhandler
