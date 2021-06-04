@@ -1165,7 +1165,7 @@ void drawItemStack(
 		v2s32 sdim(dim.X, dim.Y);
 
 		const s32 horizontal_padding = 3; //px
-		core::position2d<s32> offset(-2,-2);
+		core::position2d<s32> offset(-4,-2);
 
 		core::rect<s32> background_rect(
 			rect.LowerRightCorner - sdim + core::position2d<s32>(-horizontal_padding,0) + offset,
