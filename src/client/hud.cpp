@@ -1164,15 +1164,18 @@ void drawItemStack(
 		v2u32 dim = font->getDimension(utf8_to_wide(text).c_str());
 		v2s32 sdim(dim.X, dim.Y);
 
-		core::rect<s32> rect2(
-			/*rect.UpperLeftCorner,
-			core::dimension2d<u32>(rect.getWidth(), 15)*/
-			rect.LowerRightCorner - sdim,
-			sdim
+		core::rect<s32> background_rect(
+			rect.LowerRightCorner - sdim - core::position2d<s32>(3,0),
+			rect.LowerRightCorner + core::position2d<s32>(3,0)
 		);
 
 		video::SColor bgcolor(128, 0, 0, 0);
-		driver->draw2DRectangle(bgcolor, rect2, clip);
+		driver->draw2DRectangle(bgcolor, background_rect, clip);
+
+		core::rect<s32> rect2(
+			rect.LowerRightCorner - sdim,
+			rect.LowerRightCorner
+		);
 
 		video::SColor color(255, 255, 255, 255);
 		font->draw(text.c_str(), rect2, color, false, false, clip);
