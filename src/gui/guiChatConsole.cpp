@@ -420,8 +420,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	else if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// CTRL down
-		if (isInCtrlKeys(event.KeyInput.Key))
-		{
+		if (isInCtrlKeys(event.KeyInput.Key)) {
 			m_is_ctrl_down = true;
 		}
 
@@ -697,18 +696,19 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 		// Invalid row, frags is empty
 		return;
 	}
-	// Minus 1 because the left margin of 1 font space
-	while ((u32)(col - 1) < frags[indx].column)
+	// Scan from right to left, offset by 1 font space because left margin
+	while (indx > -1 && (u32)col < frags[indx].column + 1)
 	{
 		--indx;
 	}
 	if (indx > -1)
 	{
 		weblink = frags[indx].weblink;
+		// Note if(indx < 0) then a frag somehow had a corrupt column field
 	}
 
 	/*
-	// Debug help
+	// Debug help. Please keep this in case adjustments are made later.
 	std::string ws;
 	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
 	// show all frags <position>(<length>) for the clicked row
@@ -720,24 +720,24 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 		ws += std::to_string(frags.at(i).column) + '('
 			+ std::to_string(frags.at(i).text.size()) + "),";
 	}
-	//g_logger.log(LL_VERBOSE, ws);
 	actionstream << ws << std::endl;
 	*/
 
 	// User notification
-	std::string mesg;
 	if (weblink.size() != 0)
 	{
-		mesg = " * ";
+		std::ostringstream mesg;
+		mesg << " * ";
 		if (porting::open_url(weblink))
 		{
-			mesg += gettext("Opening webpage");
+			mesg << gettext("Opening webpage");
 		}
 		else
 		{
-			mesg += gettext("Failed to open webpage");
+			mesg << gettext("Failed to open webpage");
 		}
-		mesg += " '" + weblink + "'";
-		m_chat_backend->addUnparsedMessage(utf8_to_wide(mesg));
+		mesg << " '" << weblink << "'";
+		mesg.flush();
+		m_chat_backend->addUnparsedMessage(utf8_to_wide(mesg.str()));
 	}
 }

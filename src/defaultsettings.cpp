@@ -284,7 +284,6 @@ void set_default_settings()
 	settings->setDefault("joystick_deadzone", "2048");
 	settings->setDefault("clickable_chat_weblinks", "false");
 	settings->setDefault("chat_weblink_color", "#8888FF");
-	//settings->setDefault("chat_weblink_ctrl_keys", "KEY_LCONTROL,KEY_RCONTROL,KEY_CONTROL");
 
 	// Main menu
 	settings->setDefault("main_menu_path", "");
