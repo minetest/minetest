@@ -1164,17 +1164,20 @@ void drawItemStack(
 		v2u32 dim = font->getDimension(utf8_to_wide(text).c_str());
 		v2s32 sdim(dim.X, dim.Y);
 
+		const s32 horizontal_padding = 3; //px
+		core::position2d<s32> offset(-2,-2);
+
 		core::rect<s32> background_rect(
-			rect.LowerRightCorner - sdim - core::position2d<s32>(3,0),
-			rect.LowerRightCorner + core::position2d<s32>(3,0)
+			rect.LowerRightCorner - sdim + core::position2d<s32>(-horizontal_padding,0) + offset,
+			rect.LowerRightCorner + core::position2d<s32>(horizontal_padding,0) + offset
 		);
 
 		video::SColor bgcolor(128, 0, 0, 0);
 		driver->draw2DRectangle(bgcolor, background_rect, clip);
 
 		core::rect<s32> rect2(
-			rect.LowerRightCorner - sdim,
-			rect.LowerRightCorner
+			rect.LowerRightCorner - sdim + offset,
+			rect.LowerRightCorner + offset
 		);
 
 		video::SColor color(255, 255, 255, 255);
