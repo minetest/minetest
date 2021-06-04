@@ -39,7 +39,7 @@ local gravity = tonumber(core.settings:get("movement_gravity")) or 9.81
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "item",
-		visual_size = {x = SCALE, y = SCALE, z = SCALE},
+		visual_size = vector.new(SCALE, SCALE, SCALE),
 		textures = {},
 		physical = true,
 		is_visible = false,
@@ -96,7 +96,7 @@ core.register_entity(":__builtin:falling_node", {
 			local vsize
 			if def.visual_scale then
 				local s = def.visual_scale
-				vsize = {x = s, y = s, z = s}
+				vsize = vector.new(s, s, s)
 			end
 			self.object:set_properties({
 				is_visible = true,
@@ -114,7 +114,7 @@ core.register_entity(":__builtin:falling_node", {
 			local vsize
 			if def.visual_scale then
 				local s = def.visual_scale * SCALE
-				vsize = {x = s, y = s, z = s}
+				vsize = vector.new(s, s, s)
 			end
 			self.object:set_properties({
 				is_visible = true,
@@ -227,7 +227,7 @@ core.register_entity(":__builtin:falling_node", {
 
 	on_activate = function(self, staticdata)
 		self.object:set_armor_groups({immortal = 1})
-		self.object:set_acceleration({x = 0, y = -gravity, z = 0})
+		self.object:set_acceleration(vector.new(0, -gravity, 0))
 
 		local ds = core.deserialize(staticdata)
 		if ds and ds.node then
@@ -303,7 +303,7 @@ core.register_entity(":__builtin:falling_node", {
 		if self.floats then
 			local pos = self.object:get_pos()
 
-			local bcp = vector.round({x = pos.x, y = pos.y - 0.7, z = pos.z})
+			local bcp = pos:offset(0, -0.7, 0):round()
 			local bcn = core.get_node(bcp)
 
 			local bcd = core.registered_nodes[bcn.name]
@@ -344,13 +344,12 @@ core.register_entity(":__builtin:falling_node", {
 				-- TODO: this hack could be avoided in the future if objects
 				--       could choose who to collide with
 				local vel = self.object:get_velocity()
-				self.object:set_velocity({
-					x = vel.x,
-					y = player_collision.old_velocity.y,
-					z = vel.z
-				})
-				self.object:set_pos(vector.add(self.object:get_pos(),
-					{x = 0, y = -0.5, z = 0}))
+				self.object:set_velocity(vector.new(
+					vel.x,
+					player_collision.old_velocity.y,
+					vel.z
+				))
+				self.object:set_pos(self.object:get_pos():offset(0, -0.5, 0))
 			end
 			return
 		elseif bcn.name == "ignore" then
@@ -430,7 +429,7 @@ local function drop_attached_node(p)
 	if def and def.preserve_metadata then
 		local oldmeta = core.get_meta(p):to_table().fields
 		-- Copy pos and node because the callback can modify them.
-		local pos_copy = {x=p.x, y=p.y, z=p.z}
+		local pos_copy = vector.new(p)
 		local node_copy = {name=n.name, param1=n.param1, param2=n.param2}
 		local drop_stacks = {}
 		for k, v in pairs(drops) do
@@ -455,14 +454,14 @@ end
 
 function builtin_shared.check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
-	local d = {x = 0, y = 0, z = 0}
+	local d = vector.new()
 	if def.paramtype2 == "wallmounted" or
 			def.paramtype2 == "colorwallmounted" then
 		-- The fallback vector here is in case 'wallmounted to dir' is nil due
 		-- to voxelmanip placing a wallmounted node without resetting a
 		-- pre-existing param2 value that is out-of-range for wallmounted.
 		-- The fallback vector corresponds to param2 = 0.
-		d = core.wallmounted_to_dir(n.param2) or {x = 0, y = 1, z = 0}
+		d = core.wallmounted_to_dir(n.param2) or vector.new(0, 1, 0)
 	else
 		d.y = -1
 	end
@@ -482,7 +481,7 @@ end
 function core.check_single_for_falling(p)
 	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
-		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
+		local p_bottom = vector.offset(p, 0, -1, 0)
 		-- Only spawn falling node if node below is loaded
 		local n_bottom = core.get_node_or_nil(p_bottom)
 		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
@@ -521,17 +520,17 @@ end
 -- Down first as likely case, but always before self. The same with sides.
 -- Up must come last, so that things above self will also fall all at once.
 local check_for_falling_neighbors = {
-	{x = -1, y = -1, z = 0},
-	{x = 1, y = -1, z = 0},
-	{x = 0, y = -1, z = -1},
-	{x = 0, y = -1, z = 1},
-	{x = 0, y = -1, z = 0},
-	{x = -1, y = 0, z = 0},
-	{x = 1, y = 0, z = 0},
-	{x = 0, y = 0, z = 1},
-	{x = 0, y = 0, z = -1},
-	{x = 0, y = 0, z = 0},
-	{x = 0, y = 1, z = 0},
+	vector.new(-1, -1,  0),
+	vector.new( 1, -1,  0),
+	vector.new( 0, -1, -1),
+	vector.new( 0, -1,  1),
+	vector.new( 0, -1,  0),
+	vector.new(-1,  0,  0),
+	vector.new( 1,  0,  0),
+	vector.new( 0,  0,  1),
+	vector.new( 0,  0, -1),
+	vector.new( 0,  0,  0),
+	vector.new( 0,  1,  0),
 }
 
 function core.check_for_falling(p)

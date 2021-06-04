@@ -4,14 +4,20 @@ dofile("builtin/common/vector.lua")
 describe("vector", function()
 	describe("new()", function()
 		it("constructs", function()
-			assert.same({ x = 0, y = 0, z = 0 }, vector.new())
-			assert.same({ x = 1, y = 2, z = 3 }, vector.new(1, 2, 3))
-			assert.same({ x = 3, y = 2, z = 1 }, vector.new({ x = 3, y = 2, z = 1 }))
+			assert.same({x = 0, y = 0, z = 0}, vector.new())
+			assert.same({x = 1, y = 2, z = 3}, vector.new(1, 2, 3))
+			assert.same({x = 3, y = 2, z = 1}, vector.new({x = 3, y = 2, z = 1}))
+
+			assert.is_true(vector.check(vector.new()))
+			assert.is_true(vector.check(vector.new(1, 2, 3)))
+			assert.is_true(vector.check(vector.new({x = 3, y = 2, z = 1})))
 
 			local input = vector.new({ x = 3, y = 2, z = 1 })
 			local output = vector.new(input)
 			assert.same(input, output)
-			assert.are_not.equal(input, output)
+			assert.equal(input, output)
+			assert.is_false(rawequal(input, output))
+			assert.equal(input, input:new())
 		end)
 
 		it("throws on invalid input", function()
@@ -25,7 +31,89 @@ describe("vector", function()
 		end)
 	end)
 
-	it("equal()", function()
+	it("indexes", function()
+		local some_vector = vector.new(24, 42, 13)
+		assert.equal(24, some_vector[1])
+		assert.equal(24, some_vector.x)
+		assert.equal(42, some_vector[2])
+		assert.equal(42, some_vector.y)
+		assert.equal(13, some_vector[3])
+		assert.equal(13, some_vector.z)
+
+		some_vector[1] = 100
+		assert.equal(100, some_vector.x)
+		some_vector.x = 101
+		assert.equal(101, some_vector[1])
+
+		some_vector[2] = 100
+		assert.equal(100, some_vector.y)
+		some_vector.y = 102
+		assert.equal(102, some_vector[2])
+
+		some_vector[3] = 100
+		assert.equal(100, some_vector.z)
+		some_vector.z = 103
+		assert.equal(103, some_vector[3])
+	end)
+
+	it("direction()", function()
+		local a = vector.new(1, 0, 0)
+		local b = vector.new(1, 42, 0)
+		assert.equal(vector.new(0, 1, 0), vector.direction(a, b))
+		assert.equal(vector.new(0, 1, 0), a:direction(b))
+	end)
+
+	it("distance()", function()
+		local a = vector.new(1, 0, 0)
+		local b = vector.new(3, 42, 9)
+		assert.is_true(math.abs(43 - vector.distance(a, b)) < 1.0e-12)
+		assert.is_true(math.abs(43 - a:distance(b)) < 1.0e-12)
+		assert.equal(0, vector.distance(a, a))
+		assert.equal(0, b:distance(b))
+	end)
+
+	it("length()", function()
+		local a = vector.new(0, 0, -23)
+		assert.equal(0, vector.length(vector.new()))
+		assert.equal(23, vector.length(a))
+		assert.equal(23, a:length())
+	end)
+
+	it("normalize()", function()
+		local a = vector.new(0, 0, -23)
+		assert.equal(vector.new(0, 0, -1), vector.normalize(a))
+		assert.equal(vector.new(0, 0, -1), a:normalize())
+		assert.equal(vector.new(), vector.normalize(vector.new()))
+	end)
+
+	it("floor()", function()
+		local a = vector.new(0.1, 0.9, -0.5)
+		assert.equal(vector.new(0, 0, -1), vector.floor(a))
+		assert.equal(vector.new(0, 0, -1), a:floor())
+	end)
+
+	it("round()", function()
+		local a = vector.new(0.1, 0.9, -0.5)
+		assert.equal(vector.new(0, 1, -1), vector.round(a))
+		assert.equal(vector.new(0, 1, -1), a:round())
+	end)
+
+	it("apply()", function()
+		local i = 0
+		local f = function(x)
+			i = i + 1
+			return x + i
+		end
+		local a = vector.new(0.1, 0.9, -0.5)
+		assert.equal(vector.new(1, 1, 0), vector.apply(a, math.ceil))
+		assert.equal(vector.new(1, 1, 0), a:apply(math.ceil))
+		assert.equal(vector.new(0.1, 0.9, 0.5), vector.apply(a, math.abs))
+		assert.equal(vector.new(0.1, 0.9, 0.5), a:apply(math.abs))
+		assert.equal(vector.new(1.1, 2.9, 2.5), vector.apply(a, f))
+		assert.equal(vector.new(4.1, 5.9, 5.5), a:apply(f))
+	end)
+
+	it("equals()", function()
 			local function assertE(a, b)
 				assert.is_true(vector.equals(a, b))
 			end
@@ -35,22 +123,164 @@ describe("vector", function()
 
 			assertE({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 			assertE({x = -1, y = 0, z = 1}, {x = -1, y = 0, z = 1})
-			local a = { x = 2, y = 4, z = -10 }
+			assertE({x = -1, y = 0, z = 1}, vector.new(-1, 0, 1))
+			local a = {x = 2, y = 4, z = -10}
 			assertE(a, a)
 			assertNE({x = -1, y = 0, z = 1}, a)
+
+			assert.equal(vector.new(1, 2, 3), vector.new(1, 2, 3))
+			assert.is_true(vector.new(1, 2, 3):equals(vector.new(1, 2, 3)))
+			assert.not_equal(vector.new(1, 2, 3), vector.new(1, 2, 4))
+			assert.is_true(vector.new(1, 2, 3) == vector.new(1, 2, 3))
+			assert.is_false(vector.new(1, 2, 3) == vector.new(1, 3, 3))
 	end)
 
-	it("add()", function()
-		assert.same({ x = 2, y = 4, z = 6 }, vector.add(vector.new(1, 2, 3), { x = 1, y = 2, z = 3 }))
+	it("metatable is same", function()
+		local a = vector.new()
+		local b = vector.new(1, 2, 3)
+
+		assert.equal(true, vector.check(a))
+		assert.equal(true, vector.check(b))
+
+		assert.equal(vector.metatable, getmetatable(a))
+		assert.equal(vector.metatable, getmetatable(b))
+		assert.equal(vector.metatable, a.metatable)
+	end)
+
+	it("sort()", function()
+		local a = vector.new(1, 2, 3)
+		local b = vector.new(0.5, 232, -2)
+		local sorted = {vector.new(0.5, 2, -2), vector.new(1, 232, 3)}
+		assert.same(sorted, {vector.sort(a, b)})
+		assert.same(sorted, {a:sort(b)})
+	end)
+
+	it("angle()", function()
+		assert.equal(math.pi, vector.angle(vector.new(-1, -2, -3), vector.new(1, 2, 3)))
+		assert.equal(math.pi/2, vector.new(0, 1, 0):angle(vector.new(1, 0, 0)))
+	end)
+
+	it("dot()", function()
+		assert.equal(-14, vector.dot(vector.new(-1, -2, -3), vector.new(1, 2, 3)))
+		assert.equal(0, vector.new():dot(vector.new(1, 2, 3)))
+	end)
+
+	it("cross()", function()
+		local a = vector.new(-1, -2, 0)
+		local b = vector.new(1, 2, 3)
+		assert.equal(vector.new(-6, 3, 0), vector.cross(a, b))
+		assert.equal(vector.new(-6, 3, 0), a:cross(b))
 	end)
 
 	it("offset()", function()
-		assert.same({ x = 41, y = 52, z = 63 }, vector.offset(vector.new(1, 2, 3), 40, 50, 60))
+		assert.same({x = 41, y = 52, z = 63}, vector.offset(vector.new(1, 2, 3), 40, 50, 60))
+		assert.equal(vector.new(41, 52, 63), vector.offset(vector.new(1, 2, 3), 40, 50, 60))
+		assert.equal(vector.new(41, 52, 63), vector.new(1, 2, 3):offset(40, 50, 60))
+	end)
+
+	it("is()", function()
+		local some_table1 = {foo = 13, [42] = 1, "bar", 2}
+		local some_table2 = {1, 2, 3}
+		local some_table3 = {x = 1, 2, 3}
+		local some_table4 = {1, 2, z = 3}
+		local old = {x = 1, y = 2, z = 3}
+		local real = vector.new(1, 2, 3)
+
+		assert.is_false(vector.check(nil))
+		assert.is_false(vector.check(1))
+		assert.is_false(vector.check(true))
+		assert.is_false(vector.check("foo"))
+		assert.is_false(vector.check(some_table1))
+		assert.is_false(vector.check(some_table2))
+		assert.is_false(vector.check(some_table3))
+		assert.is_false(vector.check(some_table4))
+		assert.is_false(vector.check(old))
+		assert.is_true(vector.check(real))
+		assert.is_true(real:check())
+	end)
+
+	it("global pairs", function()
+		local out = {}
+		local vec = vector.new(10, 20, 30)
+		for k, v in pairs(vec) do
+			out[k] = v
+		end
+		assert.same({x = 10, y = 20, z = 30}, out)
+	end)
+
+	it("abusing works", function()
+		local v = vector.new(1, 2, 3)
+		v.a = 1
+		assert.equal(1, v.a)
+
+		local a_is_there = false
+		for key, value in pairs(v) do
+			if key == "a" then
+				a_is_there = true
+				assert.equal(value, 1)
+				break
+			end
+		end
+		assert.is_true(a_is_there)
+	end)
+
+	it("add()", function()
+		local a = vector.new(1, 2, 3)
+		local b = vector.new(1, 4, 3)
+		local c = vector.new(2, 6, 6)
+		assert.equal(c, vector.add(a, {x = 1, y = 4, z = 3}))
+		assert.equal(c, vector.add(a, b))
+		assert.equal(c, a:add(b))
+		assert.equal(c, a + b)
+		assert.equal(c, b + a)
+	end)
+
+	it("subtract()", function()
+		local a = vector.new(1, 2, 3)
+		local b = vector.new(2, 4, 3)
+		local c = vector.new(-1, -2, 0)
+		assert.equal(c, vector.subtract(a, {x = 2, y = 4, z = 3}))
+		assert.equal(c, vector.subtract(a, b))
+		assert.equal(c, a:subtract(b))
+		assert.equal(c, a - b)
+		assert.equal(c, -b + a)
+	end)
+
+	it("multiply()", function()
+		local a = vector.new(1, 2, 3)
+		local b = vector.new(2, 4, 3)
+		local c = vector.new(2, 8, 9)
+		local s = 2
+		local d = vector.new(2, 4, 6)
+		assert.equal(c, vector.multiply(a, {x = 2, y = 4, z = 3}))
+		assert.equal(c, vector.multiply(a, b))
+		assert.equal(d, vector.multiply(a, s))
+		assert.equal(d, a:multiply(s))
+		assert.equal(d, a * s)
+		assert.equal(d, s * a)
+		assert.equal(-a, -1 * a)
+	end)
+
+	it("divide()", function()
+		local a = vector.new(1, 2, 3)
+		local b = vector.new(2, 4, 3)
+		local c = vector.new(0.5, 0.5, 1)
+		local s = 2
+		local d = vector.new(0.5, 1, 1.5)
+		assert.equal(c, vector.divide(a, {x = 2, y = 4, z = 3}))
+		assert.equal(c, vector.divide(a, b))
+		assert.equal(d, vector.divide(a, s))
+		assert.equal(d, a:divide(s))
+		assert.equal(d, a / s)
+		assert.equal(d, 1/s * a)
+		assert.equal(-a, a / -1)
 	end)
 
 	it("to_string()", function()
 		local v = vector.new(1, 2, 3.14)
 		assert.same("(1, 2, 3.14)", vector.to_string(v))
+		assert.same("(1, 2, 3.14)", v:to_string())
+		assert.same("(1, 2, 3.14)", tostring(v))
 	end)
 
 	it("from_string()", function()

@@ -1505,6 +1505,9 @@ Position/vector
 
     {x=num, y=num, z=num}
 
+    Note: it is highly recommended to construct a vector using the helper function:
+    vector.new(num, num, num)
+
 For helper functions see [Spatial Vectors].
 
 `pointed_thing`
@@ -3168,15 +3171,35 @@ no particular point.
 
 Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
+However, one should *never* create a vector manually as above, such misbehavior
+is deprecated. The vector helpers set a metatable for the created vectors which
+allows indexing with numbers, calling functions directly on vectors and using
+operators (like `+`). Furthermore, the internal implementation might change in
+the future.
+Old code might still use vectors without metatables, be aware of this!
+
+All these forms of addressing a vector `v` are valid:
+`v[1]`, `v[3]`, `v.x`, `v[1] = 42`, `v.y = 13`
+
+Where `v` is a vector and `foo` stands for any function name, `v:foo(...)` does
+the same as `vector.foo(v, ...)`, apart from deprecated functionality.
+
+The metatable that is used for vectors can be accessed via `vector.metatable`.
+Do not modify it!
+
+All `vector.*` functions allow vectors `{x = X, y = Y, z = Z}` without metatables.
+Returned vectors always have a metatable set.
 
 For the following functions, `v`, `v1`, `v2` are vectors,
 `p1`, `p2` are positions,
-`s` is a scalar (a number):
+`s` is a scalar (a number),
+vectors are written like this: `(x, y, z)`:
 
-* `vector.new(a[, b, c])`:
+* `vector.new([a[, b, c]])`:
     * Returns a vector.
     * A copy of `a` if `a` is a vector.
-    * `{x = a, y = b, z = c}`, if all of `a`, `b`, `c` are defined numbers.
+    * `(a, b, c)`, if all of `a`, `b`, `c` are defined numbers.
+    * `(0, 0, 0)`, if no arguments are given.
 * `vector.from_string(s[, init])`:
     * Returns `v, np`, where `v` is a vector read from the given string `s` and
       `np` is the next position in the string after the vector.
@@ -3189,14 +3212,14 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns a string of the form `"(x, y, z)"`.
 * `vector.direction(p1, p2)`:
     * Returns a vector of length 1 with direction `p1` to `p2`.
-    * If `p1` and `p2` are identical, returns `{x = 0, y = 0, z = 0}`.
+    * If `p1` and `p2` are identical, returns `(0, 0, 0)`.
 * `vector.distance(p1, p2)`:
     * Returns zero or a positive number, the distance between `p1` and `p2`.
 * `vector.length(v)`:
     * Returns zero or a positive number, the length of vector `v`.
 * `vector.normalize(v)`:
     * Returns a vector of length 1 with direction of vector `v`.
-    * If `v` has zero length, returns `{x = 0, y = 0, z = 0}`.
+    * If `v` has zero length, returns `(0, 0, 0)`.
 * `vector.floor(v)`:
     * Returns a vector, each dimension rounded down.
 * `vector.round(v)`:
@@ -3216,7 +3239,11 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 * `vector.cross(v1, v2)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.offset(v, x, y, z)`:
-    * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.
+    * Returns the sum of the vectors `v` and `(x, y, z)`.
+* `vector.check()`:
+    * Returns a boolean value indicating whether `v` is a real vector, eg. created
+      by a `vector.*` function.
+    * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -3235,14 +3262,30 @@ For the following functions `x` can be either a vector or a number:
     * Returns a scaled vector.
     * Deprecated: If `s` is a vector: Returns the Schur quotient.
 
+Operators can be used if all of the involved vectors have metatables:
+* `v1 == v2`:
+    * Returns whether `v1` and `v2` are identical.
+* `-v`:
+    * Returns the additive inverse of v.
+* `v1 + v2`:
+    * Returns the sum of both vectors.
+    * Note: `+` can not be used together with scalars.
+* `v1 - v2`:
+    * Returns the difference of `v1` subtracted by `v2`.
+    * Note: `-` can not be used together with scalars.
+* `v * s` or `s * v`:
+    * Returns `v` scaled by `s`.
+* `v / s`:
+    * Returns `v` scaled by `1 / s`.
+
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
 angles in radians.
 
 * `vector.rotate(v, r)`:
     * Applies the rotation `r` to `v` and returns the result.
-    * `vector.rotate({x = 0, y = 0, z = 1}, r)` and
-      `vector.rotate({x = 0, y = 1, z = 0}, r)` return vectors pointing
+    * `vector.rotate(vector.new(0, 0, 1), r)` and
+      `vector.rotate(vector.new(0, 1, 0), r)` return vectors pointing
       forward and up relative to an entity's rotation `r`.
 * `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
