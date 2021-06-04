@@ -30,7 +30,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -85,9 +87,19 @@ public class GameActivity extends NativeActivity {
 
 	private void showDialogUI(String hint, String current, int editType) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		EditText editText = new CustomEditText(this);
-		builder.setView(editText);
+		LinearLayout container = new LinearLayout(this);
+		container.setOrientation(LinearLayout.VERTICAL);
+		builder.setView(container);
 		AlertDialog alertDialog = builder.create();
+		EditText editText;
+		// For multi-line, do not close the dialog after pressing back button
+		if (editType == 1) {
+			editText = new EditText(this);
+		} else {
+			editText = new CustomEditText(this);
+		}
+		container.addView(editText);
+		editText.setMaxLines(8);
 		editText.requestFocus();
 		editText.setHint(hint);
 		editText.setText(current);
@@ -103,8 +115,9 @@ public class GameActivity extends NativeActivity {
 		else
 			editText.setInputType(InputType.TYPE_CLASS_TEXT);
 		editText.setSelection(editText.getText().length());
-		editText.setOnKeyListener((view, KeyCode, event) -> {
-			if (KeyCode == KeyEvent.KEYCODE_ENTER) {
+		editText.setOnKeyListener((view, keyCode, event) -> {
+			// For multi-line, do not submit the text after pressing Enter key
+			if (keyCode == KeyEvent.KEYCODE_ENTER && editType != 1) {
 				imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 				messageReturnCode = 0;
 				messageReturnValue = editText.getText().toString();
@@ -113,6 +126,18 @@ public class GameActivity extends NativeActivity {
 			}
 			return false;
 		});
+		// For multi-line, add Done button since Enter key does not submit text
+		if (editType == 1) {
+			Button doneButton = new Button(this);
+			container.addView(doneButton);
+			doneButton.setText(R.string.ime_dialog_done);
+			doneButton.setOnClickListener((view -> {
+				imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+				messageReturnCode = 0;
+				messageReturnValue = editText.getText().toString();
+				alertDialog.dismiss();
+			}));
+		}
 		alertDialog.show();
 		alertDialog.setOnCancelListener(dialog -> {
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
