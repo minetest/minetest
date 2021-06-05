@@ -65,6 +65,3 @@ KeyPress getKeySetting(const char *settingname);
 void clearKeyCache();
 
 irr::EKEY_CODE keyname_to_keycode(const char *name);
-
-// Now with exception handling. return irr::KEY_KEY_CODES_COUNT on fail
-irr::EKEY_CODE keyname_to_keycode_safemode(const char *name);

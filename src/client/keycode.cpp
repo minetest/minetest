@@ -386,12 +386,3 @@ irr::EKEY_CODE keyname_to_keycode(const char *name)
 {
 	return lookup_keyname(name).Key;
 }
-
-irr::EKEY_CODE keyname_to_keycode_safemode(const char *name)
-{
-	try {
-		return lookup_keyname(name).Key;
-	} catch (UnknownKeycode &e) {
-		return irr::KEY_KEY_CODES_COUNT;
-	}
-}
