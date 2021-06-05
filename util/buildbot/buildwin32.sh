@@ -64,7 +64,7 @@ download () {
 
 # Get stuff
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
+download "http://minetest.kitsunemimi.pw/temp/win32.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win32.zip"
