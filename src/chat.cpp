@@ -38,11 +38,9 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 
 	m_cache_clickable_chat_weblinks = false;
 	// Curses mode cannot access g_settings here
-	if(g_settings != NULL)
-	{
+	if (g_settings != NULL) {
 		m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
-		if(m_cache_clickable_chat_weblinks)
-		{
+		if (m_cache_clickable_chat_weblinks) {
 			std::string colorval = g_settings->get("chat_weblink_color");
 			parseColorString(colorval, m_cache_chat_weblink_color, false, 255);
 			m_cache_chat_weblink_color.setAlpha(255);
@@ -290,19 +288,17 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			ChatFormattedFragment& frag = next_frags[0];
 
 			// Force newline after this frag, if marked
-			if(frag.column == INT_MAX)
+			if (frag.column == INT_MAX)
 				mark_newline = true;
 
-			if (frag.text.size() <= cols - out_column)
-			{
+			if (frag.text.size() <= cols - out_column) {
 				// Fragment fits into current line
 				frag.column = out_column;
 				next_line.fragments.push_back(frag);
 				out_column += frag.text.size();
 				next_frags.erase(next_frags.begin());
 			}
-			else
-			{
+			else {
 				// Fragment does not fit into current line
 				// So split it up
 				temp_frag.text = frag.text.substr(0, cols - out_column);
@@ -314,8 +310,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				frag.column = 0;
 				out_column = cols;
 			}
-			if (out_column == cols || mark_newline)
-			{
+			if (out_column == cols || mark_newline) {
 				// End the current line
 				destination.push_back(next_line);
 				num_added++;
@@ -337,7 +332,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		mark_newline = false;  // now using this to SET line-end frag
 
 		// Construct all frags for next output line
-		while(!mark_newline)
+		while (!mark_newline)
 		{
 			// Determine a fragment length <= the minimum of
 			// remaining_in_{in,out}put. Try to end the fragment
@@ -345,13 +340,12 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			u32 frag_length = 0, space_pos = 0;
 			u32 remaining_in_input = line.text.size() - in_pos;
 
-			if(m_cache_clickable_chat_weblinks)
-			{
+			if (m_cache_clickable_chat_weblinks) {
 				// Note: unsigned(-1) on fail
 				http_pos = linestring.find(L"https://", in_pos);
-				if(http_pos == std::wstring::npos)
+				if (http_pos == std::wstring::npos)
 					http_pos = linestring.find(L"http://", in_pos);
-				if(http_pos != std::wstring::npos)
+				if (http_pos != std::wstring::npos)
 					http_pos -= in_pos;
 			}
 
@@ -365,14 +359,12 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 
 			// Http not in range, grab until space or EOL, halt as normal.
 			// Note this works because (http_pos = npos) is unsigned(-1)
-			if(http_pos >= remaining_in_output)
-			{
+			if (http_pos >= remaining_in_output) {
 				mark_newline = true;
 			}
 			// At http, grab ALL until FIRST whitespace or end marker. loop.
 			// If at end of string, next loop will be empty string to mark end of weblink.
-			else if(http_pos == 0)
-			{
+			else if (http_pos == 0) {
 				frag_length = 6;  // Frag is at least "http://"
 
 				// Chars to mark end of weblink
@@ -388,14 +380,12 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				}
 				space_pos = frag_length - 1;
 				// This frag may need to be force-split. That's ok, urls aren't "words"
-				if(frag_length >= remaining_in_output)
-				{
+				if (frag_length >= remaining_in_output) {
 					mark_newline = true;
 				}
 			}
 			// Http in range, grab until http, loop
-			else
-			{
+			else {
 				space_pos = http_pos - 1;
 				frag_length = http_pos;
 			}
@@ -408,16 +398,14 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			// A hack so this frag remembers mark_newline for the layout phase
 			temp_frag.column = mark_newline ? INT_MAX : 0;
 
-			if(http_pos == 0)
-			{
+			if (http_pos == 0) {
 				// Discard color stuff from the source frag
 				temp_frag.text = EnrichedString(temp_frag.text.getString());
 				temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
 				// Set weblink in the frag meta
 				temp_frag.weblink = wide_to_utf8(temp_frag.text.getString());
 			}
-			else
-			{
+			else {
 				temp_frag.weblink.clear();
 			}
 			next_frags.push_back(temp_frag);

@@ -636,7 +636,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	}
 	else if(event.EventType == EET_MOUSE_INPUT_EVENT)
 	{
-		if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
+		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL)
 		{
 			s32 rows = myround(-3.0 * event.MouseInput.Wheel);
 			m_chat_backend->scroll(rows);
@@ -645,7 +645,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		else if(m_cache_clickable_chat_weblinks && (
 				event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN ||
 				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && m_is_ctrl_down)
-			))
+				))
 		{
 			// If clicked within console output region
 			if (event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 )
@@ -681,28 +681,25 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 	u64 newtime = porting::getTimeMs();
 
 	// 0.6 seconds should suffice
-	if(newtime - s_oldtime < 600)
+	if (newtime - s_oldtime < 600)
 		return;
 	s_oldtime = newtime;
 
 	const std::vector<ChatFormattedFragment> &
 			frags = m_chat_backend->getConsoleBuffer().getFormattedLine(row).fragments;
-	std::string weblink = "";         // from frag meta
+	std::string weblink = ""; // from frag meta
 
 	// Identify targetted fragment, if exists
 	int indx = frags.size() - 1;
-	if (indx < 0)
-	{
+	if (indx < 0) {
 		// Invalid row, frags is empty
 		return;
 	}
 	// Scan from right to left, offset by 1 font space because left margin
-	while (indx > -1 && (u32)col < frags[indx].column + 1)
-	{
+	while (indx > -1 && (u32)col < frags[indx].column + 1) {
 		--indx;
 	}
-	if (indx > -1)
-	{
+	if (indx > -1) {
 		weblink = frags[indx].weblink;
 		// Note if(indx < 0) then a frag somehow had a corrupt column field
 	}
@@ -712,9 +709,8 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 	std::string ws;
 	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
 	// show all frags <position>(<length>) for the clicked row
-	for(u32 i=0;i<frags.size();++i)
-	{
-		if(indx == int(i))
+	for (u32 i=0;i<frags.size();++i) {
+		if (indx == int(i))
 			// tag the actual clicked frag
 			ws += '*';
 		ws += std::to_string(frags.at(i).column) + '('
@@ -724,16 +720,13 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 	*/
 
 	// User notification
-	if (weblink.size() != 0)
-	{
+	if (weblink.size() != 0) {
 		std::ostringstream mesg;
 		mesg << " * ";
-		if (porting::open_url(weblink))
-		{
+		if (porting::open_url(weblink)) {
 			mesg << gettext("Opening webpage");
 		}
-		else
-		{
+		else {
 			mesg << gettext("Failed to open webpage");
 		}
 		mesg << " '" << weblink << "'";
