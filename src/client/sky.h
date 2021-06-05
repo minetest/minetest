@@ -105,7 +105,6 @@ public:
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
 
-	void setSkyBodyOrbitTilt(float tilt) { m_sky_body_orbit_tilt = tilt; }
 	float getSkyBodyOrbitTilt() const { return m_sky_body_orbit_tilt; }
 
 private:

@@ -558,7 +558,7 @@ void GenericCAO::removeFromScene(bool permanent)
 		clearParentAttachment();
 	}
 
-	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) // remove mesh from shadow caster
+	if (auto shadow = RenderingEngine::get_shadow_renderer())
 		shadow->removeNodeFromShadowList(getSceneNode());
 
 	if (m_meshnode) {
@@ -809,13 +809,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	if (m_reset_textures_timer < 0)
 		updateTextures(m_current_texture_modifier);
 
-	if(scene::ISceneNode *node = getSceneNode()){
+	if (scene::ISceneNode *node = getSceneNode()) {
 		if (m_matrixnode)
 			node->setParent(m_matrixnode);
 
-		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) // Add mesh to shadow caster
+		if (auto shadow = RenderingEngine::get_shadow_renderer())
 			shadow->addNodeToShadowList(node);
 	}
+
 	updateNametag();
 	updateMarker();
 	updateNodePos();

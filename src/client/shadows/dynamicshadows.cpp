@@ -124,8 +124,6 @@ void DirectionalLight::setDirection(v3f dir)
 	direction.normalize();
 }
 
-
-
 v3f DirectionalLight::getPosition() const
 {
 	return shadow_frustum.position;
@@ -145,7 +143,3 @@ m4f DirectionalLight::getViewProjMatrix()
 {
 	return shadow_frustum.ProjOrthMat * shadow_frustum.ViewMat;
 }
-
-
-
-

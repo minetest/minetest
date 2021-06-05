@@ -125,8 +125,7 @@ void ClientMap::OnRegisterSceneNode()
 
 	if (!m_added_to_shadow_renderer) {
 		m_added_to_shadow_renderer = true;
-		auto shadows = m_rendering_engine->get_shadow_renderer();
-		if (shadows)
+		if (auto shadows = m_rendering_engine->get_shadow_renderer())
 			shadows->addNodeToShadowList(this);
 	}
 }
@@ -691,13 +690,13 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	// Render all layers in order
 	for (auto &lists : drawbufs.lists) {
-		// Check and abort if the machine is swapping a lot
+		for (MeshBufList &list : lists) {
+			// Check and abort if the machine is swapping a lot
 			if (draw.getTimerTime() > 1000) {
 				infostream << "ClientMap::renderMapShadows(): Rendering "
 						"took >1s, returning." << std::endl;
 				break;
 			}
-		for (MeshBufList &list : lists) {
 			for (auto &pair : list.bufs) {
 				scene::IMeshBuffer *buf = pair.second;
 
@@ -754,7 +753,7 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 
 	// We need to append the blocks from the camera POV because sometimes
 	// they are not inside the light frustum and it creates glitches.
-	// This could potentially be removed if we figure out why they are missing
+	// FIXME: This could be removed if we figure out why they are missing
 	// from the light frustum.
 	for (auto &i : m_drawlist) {
 		i.second->refGrab();
@@ -814,7 +813,6 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 		}
 	}
 
-	// @Liso check these measurements
 	g_profiler->avg("SHADOW MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
