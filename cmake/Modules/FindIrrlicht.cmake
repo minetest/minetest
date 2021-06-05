@@ -38,7 +38,7 @@ if(IRRLICHT_INCLUDE_DIR AND (NOT IS_DIRECTORY "${IRRLICHT_INCLUDE_DIR}" OR
 endif()
 if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux" OR APPLE)
 	# (only on systems where we're sure how a valid library looks like)
-	if(IRRLICHT_LIBRARY AND (IS_DIRECTORY "${IRRLICHT_LIBRARY}" OR
+	if(IRRLICHT_LIBRARY AND (NOT EXISTS "${IRRLICHT_LIBRARY}" OR
 		NOT IRRLICHT_LIBRARY MATCHES "\\.(a|so|dylib|lib)([.0-9]+)?$"))
 		message(WARNING "IRRLICHT_LIBRARY was set to ${IRRLICHT_LIBRARY} "
 			"but is not a valid library file. The path will not be used.")
