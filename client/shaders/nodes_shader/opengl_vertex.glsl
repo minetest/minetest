@@ -1,5 +1,4 @@
 uniform mat4 mWorld;
-
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
@@ -8,6 +7,7 @@ uniform vec3 eyePosition;
 uniform vec3 cameraOffset;
 uniform float animationTimer;
 
+varying vec3 vNormal;
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
 // This can be used for many shader effects without loss of precision.
@@ -24,12 +24,37 @@ varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
 #endif
-varying vec3 eyeVec;
+#ifdef ENABLE_DYNAMIC_SHADOWS
+	// shadow uniforms
+	uniform vec3 v_LightDirection;
+	uniform float f_textureresolution;
+	uniform mat4 m_ShadowViewProj;
+	uniform float f_shadowfar;
+	uniform float f_shadow_strength;
+	uniform float f_timeofday;
+	varying float cosLight;
+	varying float normalOffsetScale;
+	varying float adj_shadow_strength;
+	varying float f_normal_length;
+#endif
 
+
+varying vec3 eyeVec;
+varying float nightRatio;
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
+
+#ifdef ENABLE_DYNAMIC_SHADOWS
+// custom smoothstep implementation because it's not defined in glsl1.2
+// https://docs.gl/sl4/smoothstep
+float mtsmoothstep(in float edge0, in float edge1, in float x)
+{
+	float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+	return t * t * (3.0 - 2.0 * t);
+}
+#endif
 
 
 float smoothCurve(float x)
@@ -86,6 +111,9 @@ float snoise(vec3 p)
 
 #endif
 
+
+
+
 void main(void)
 {
 	varTexCoord = inTexCoord0.st;
@@ -136,10 +164,9 @@ void main(void)
 	gl_Position = mWorldViewProj * inVertexPosition;
 #endif
 
-
 	vPosition = gl_Position.xyz;
-
 	eyeVec = -(mWorldView * inVertexPosition).xyz;
+	vNormal = inVertexNormal;
 
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
@@ -152,7 +179,7 @@ void main(void)
 	vec4 color = inVertexColor;
 #endif
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1.0 - color.a;
+	nightRatio = 1.0 - color.a;
 	color.rgb = color.rgb * (color.a * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2.0;
 	color.a = 1.0;
@@ -164,4 +191,26 @@ void main(void)
 		0.07 * brightness);
 
 	varColor = clamp(color, 0.0, 1.0);
+
+#ifdef ENABLE_DYNAMIC_SHADOWS
+	vec3 nNormal = normalize(vNormal);
+	cosLight = dot(nNormal, -v_LightDirection);
+	float texelSize = 767.0 / f_textureresolution;
+	float slopeScale = clamp(1.0 - abs(cosLight), 0.0, 1.0);
+	normalOffsetScale = texelSize * slopeScale;
+	
+	if (f_timeofday < 0.2) {
+		adj_shadow_strength = f_shadow_strength * 0.5 *
+			(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
+	} else if (f_timeofday >= 0.8) {
+		adj_shadow_strength = f_shadow_strength * 0.5 *
+			mtsmoothstep(0.8, 0.83, f_timeofday);
+	} else {
+		adj_shadow_strength = f_shadow_strength *
+			mtsmoothstep(0.20, 0.25, f_timeofday) *
+			(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
+	}
+	f_normal_length = length(vNormal);
+#endif
+
 }

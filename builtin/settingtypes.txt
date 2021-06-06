@@ -582,6 +582,58 @@ enable_waving_leaves (Waving leaves) bool false
 #    Requires shaders to be enabled.
 enable_waving_plants (Waving plants) bool false
 
+[***Dynamic shadows]
+
+#    Set to true to enable Shadow Mapping.
+#    Requires shaders to be enabled.
+enable_dynamic_shadows (Dynamic shadows) bool false
+
+#    Set the shadow strength.
+#    Lower value means lighter shadows, higher value means darker shadows.
+shadow_strength (Shadow strength) float 0.2 0.05 1.0
+
+#    Maximum distance to render shadows.
+shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 120.0 10.0 1000.0
+
+#    Texture size to render the shadow map on.
+#    This must be a power of two.
+#    Bigger numbers create better shadowsbut it is also more expensive.
+shadow_map_texture_size (Shadow map texture size) int 1024 128 8192
+
+#    Sets shadow texture quality to 32 bits.
+#    On false, 16 bits texture will be used.
+#    This can cause much more artifacts in the shadow.
+shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
+
+#    Enable poisson disk filtering.
+#    On true uses poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+shadow_poisson_filter (Poisson filtering) bool true
+
+#   Define shadow filtering quality
+#   This simulates the soft shadows effect by applying a PCF or poisson disk
+#   but also uses more resources.
+shadow_filters (Shadow filter quality) enum 1 0,1,2
+
+#    Enable colored shadows. 
+#    On true translucent nodes cast colored shadows. This is expensive.
+shadow_map_color (Colored shadows) bool false
+
+
+#    Set the shadow update time.
+#    Lower value means shadows and map updates faster, but it consume more resources.
+#    Minimun value 0.001 seconds max value 0.2 seconds
+shadow_update_time (Map update time) float 0.2 0.001 0.2
+
+#    Set the soft shadow radius size.
+#    Lower values mean sharper shadows bigger values softer.
+#    Minimun value 1.0 and max value 10.0
+shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
+
+#    Set the tilt of Sun/Moon orbit in degrees
+#    Value of 0 means no tilt / vertical orbit.
+#    Minimun value 0.0 and max value 60.0
+shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 0.0 60.0
+
 [**Advanced]
 
 #    Arm inertia, gives a more realistic movement of
