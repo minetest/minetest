@@ -105,6 +105,19 @@ core.register_entity(":__builtin:falling_node", {
 				textures = textures,
 				glow = def.light_source,
 			})
+		elseif def.drawtype == "mesh" then
+			local itemstring = node.name
+			if core.is_colored_paramtype(def.paramtype2) then
+				itemstring = core.itemstring_with_palette(itemstring, node.param2)
+			end
+			local s = (def.visual_scale or 1) * SCALE * 0.5
+			local vsize = vector.new(s, s, s)
+			self.object:set_properties({
+				is_visible = true,
+				wield_item = itemstring,
+				visual_size = vsize,
+				glow = def.light_source,
+			})
 		elseif def.drawtype ~= "airlike" then
 			local itemstring = node.name
 			if core.is_colored_paramtype(def.paramtype2) then
