@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "porting.h"
 #include "network/socket.h"
+#include "mapblock.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
@@ -111,6 +112,8 @@ static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
+static bool decompresstimes_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
 
 /**********************************************************************/
 
@@ -302,6 +305,10 @@ static void set_allowed_options(OptionList *allowed_options)
 		_("Migrate from current auth backend to another (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
+	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
+			_("Recompress the given database."))));
+	allowed_options->insert(std::make_pair("decompresstimes", ValueSpec(VALUETYPE_FLAG,
+			_("Measure data de-compression times."))));
 #ifndef SERVER
 	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));
@@ -875,7 +882,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return false;
 	}
 
-	// Database migration
+	// Database migration/compression
 	if (cmd_args.exists("migrate"))
 		return migrate_map_database(game_params, cmd_args);
 
@@ -884,6 +891,12 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	if (cmd_args.exists("migrate-auth"))
 		return ServerEnvironment::migrateAuthDatabase(game_params, cmd_args);
+
+	if (cmd_args.getFlag("recompress"))
+		return recompress_map_database(game_params, cmd_args, bind_addr);
+
+	if (cmd_args.getFlag("decompresstimes"))
+		return decompresstimes_database(game_params, cmd_args, bind_addr);
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
@@ -1031,6 +1044,137 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		errorstream << "Failed to update world.mt!" << std::endl;
 	else
 		actionstream << "world.mt updated" << std::endl;
+
+	return true;
+}
+
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
+{
+	float comptime = 0.0;
+	u32 decompdata = 0;
+
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt at " << world_mt_path << std::endl;
+		return false;
+	}
+	std::string backend = world_mt.get("backend");
+	Server server(game_params.world_path, game_params.game_spec, false, addr, false);
+	MapDatabase *db = ServerMap::createDatabase(backend, game_params.world_path, world_mt);
+
+	u32 count = 0;
+	time_t last_update_time = 0;
+	bool &kill = *porting::signal_handler_killstatus();
+	const u8 serialize_as_ver = SER_FMT_VER_HIGHEST_WRITE;
+
+	// This is ok because the server doesn't actually run
+	std::vector<v3s16> blocks;
+	// this will ignore the read-only db
+	db->listAllLoadableBlocks(blocks);
+	db->beginSave();
+	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
+		if (kill) return false;
+
+		std::string data;
+		db->loadBlock(*it, &data);
+		if (data.empty()) {
+			errorstream << "Failed to load block " << PP(*it) << std::endl;
+			return false;
+		}
+
+		std::istringstream iss(data);
+		u8 ver = readU8(iss);
+		decompdata += data.size();
+
+		MapBlock mb(NULL, v3s16(0,0,0), &server);
+		mb.deSerialize(iss, ver, true);
+
+		std::ostringstream oss;
+		writeU8(oss, serialize_as_ver);
+		clock_t t = clock();
+		mb.serialize(oss, serialize_as_ver, true, -1);
+		comptime += (float)(clock() - t) / CLOCKS_PER_SEC;
+
+		db->saveBlock(*it, oss.str());
+
+		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
+			std::cerr << " Recompressed " << count << " blocks, "
+				<< (100.0 * count / blocks.size()) << "% completed.\r";
+			db->endSave();
+			db->beginSave();
+			last_update_time = time(NULL);
+		}
+	}
+	std::cerr << std::endl;
+	db->endSave();
+
+	actionstream << "############" << std::endl;
+	actionstream << "Recompressed blocks:            " << count << std::endl;
+	actionstream << "Total data (before comp.):      " << (decompdata / 1024 / 1024) << " MB" << std::endl;
+	actionstream << "Total compression CPU time:     " << comptime << "s" << std::endl;
+	actionstream << "Compression CPU time per block: " << (comptime / count * 1000 * 1000) << "us" << std::endl;
+	actionstream << "Compression speed:              " << (decompdata / comptime / 1024) << " KB/s" << std::endl;
+	actionstream << "############" << std::endl;
+	return true;
+}
+
+static bool decompresstimes_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
+{
+	float decomptime = 0.0;
+	u32 compdata = 0;
+
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+	std::string backend = world_mt.get("backend");
+	Server server(game_params.world_path, game_params.game_spec, false, addr, false);
+	MapDatabase *db = ServerMap::createDatabase(backend, game_params.world_path, world_mt);
+
+	u32 count = 0;
+	time_t last_update_time = 0;
+	bool &kill = *porting::signal_handler_killstatus();
+
+	// This is ok because the server doesn't actually run
+	std::vector<v3s16> blocks;
+	db->listAllLoadableBlocks(blocks);
+	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
+		if (kill) return false;
+
+		std::string data;
+		db->loadBlock(*it, &data);
+		if (data.empty()) {
+			errorstream << "Failed to load block " << PP(*it) << std::endl;
+			return false;
+		}
+
+		std::istringstream iss(data, std::ios_base::binary);
+		compdata += data.size();
+		u8 ver = readU8(iss);
+		MapBlock mb(NULL, *it, &server);
+
+		clock_t t = clock();
+		mb.deSerialize(iss, ver, true);
+		decomptime += (float)(clock() - t) / CLOCKS_PER_SEC;
+
+		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 2) {
+			std::cerr << (100.0 * count / blocks.size()) << "% completed\r";
+			last_update_time = time(NULL);
+		}
+	}
+	std::cerr << std::endl;
+
+	actionstream << "############" << std::endl;
+	actionstream << "Total blocks:                     " << count << std::endl;
+	actionstream << "Total data (comp.):               " << (compdata / 1024 / 1024) << " MB" << std::endl;
+	actionstream << "Total decompression CPU time:     " << decomptime << "s" << std::endl;
+	actionstream << "Decompression CPU time per block: " << (decomptime / count * CLOCKS_PER_SEC) << "us" << std::endl;
+	actionstream << "Decompression speed:              " << (compdata / decomptime / 1024) << " KB/s" << std::endl;
+	actionstream << "############" << std::endl;
 
 	return true;
 }
