@@ -1379,7 +1379,7 @@ msgstr "俯仰移动模式已禁用"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr "俯仰移动模式已禁用"
+msgstr "俯仰移动模式已启用"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
