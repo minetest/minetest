@@ -212,9 +212,14 @@ core.register_chatcommand("haspriv", {
 				table.insert(players_with_priv, player_name)
 			end
 		end
-		return true, S("Players online with the \"@1\" privilege: @2",
-				param,
-				table.concat(players_with_priv, ", "))
+		if #players_with_priv == 0 then
+			return true, S("No online player has the \"@1\" privilege.",
+					param)
+		else
+			return true, S("Players online with the \"@1\" privilege: @2",
+					param,
+					table.concat(players_with_priv, ", "))
+		end
 	end
 })
 
@@ -737,7 +742,12 @@ core.register_chatcommand("mods", {
 	description = S("List mods installed on the server"),
 	privs = {},
 	func = function(name, param)
-		return true, table.concat(core.get_modnames(), ", ")
+		local mods = core.get_modnames()
+		if #mods == 0 then
+			return true, S("No mods installed.")
+		else
+			return true, table.concat(core.get_modnames(), ", ")
+		end
 	end,
 })
 
