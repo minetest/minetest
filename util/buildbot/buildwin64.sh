@@ -113,7 +113,7 @@ cmake -S $sourcedir -B . \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DCMAKE_PREFIX_PATH=$libdir
+	-DCMAKE_PREFIX_PATH=$libdir/irrlicht
 	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
