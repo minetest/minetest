@@ -91,6 +91,9 @@ fi
 
 git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 
+# Move Irrlicht DLL to where CMake expects it
+mv $libdir/irrlicht/{bin,lib}/IrrlichtMt.dll
+
 # Build the thing
 cd $builddir
 [ -d build ] && rm -rf build
@@ -113,8 +116,7 @@ cmake -S $sourcedir -B . \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DCMAKE_PREFIX_PATH=$libdir/irrlicht
-	-DIRRLICHT_DLL="$irr_dlls" \
+	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
