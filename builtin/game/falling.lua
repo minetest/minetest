@@ -111,15 +111,14 @@ core.register_entity(":__builtin:falling_node", {
 				itemstring = core.itemstring_with_palette(itemstring, node.param2)
 			end
 			-- FIXME: solution needed for paramtype2 == "leveled"
-			local vsize
-			if def.visual_scale then
-				local s = def.visual_scale * SCALE
-				vsize = vector.new(s, s, s)
+			local s = (def.visual_scale or 1) * SCALE
+			if def.drawtype == "mesh" then
+				s = s * 0.5
 			end
 			self.object:set_properties({
 				is_visible = true,
 				wield_item = itemstring,
-				visual_size = vsize,
+				visual_size = vector.new(s, s, s),
 				glow = def.light_source,
 			})
 		end
