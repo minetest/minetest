@@ -354,6 +354,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		Settings conf;
 
 		conf.set("world_name", name);
+		conf.set("world_uuid", generate_uuid4());
 		conf.set("gameid", gamespec.id);
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");

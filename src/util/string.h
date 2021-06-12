@@ -761,3 +761,8 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
  * brackets (e.g. "a\x1eb" -> "a<1e>b").
  */
 void safe_print_string(std::ostream &os, const std::string &str);
+
+/**
+ * Generate a version 4 (random) UUID based on RFC4122
+ */
+std::string generate_uuid4();

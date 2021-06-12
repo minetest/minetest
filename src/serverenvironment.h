@@ -343,6 +343,8 @@ public:
 
 	u32 getGameTime() const { return m_game_time; }
 
+	std::string getWorldUuid() const { return m_world_uuid; }
+
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
 
@@ -459,6 +461,8 @@ private:
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time = 0;
+	// Unique ID for the world
+	std::string m_world_uuid;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter = 0.0f;
 	// Time of last clearObjects call (game time).

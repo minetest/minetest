@@ -32,6 +32,7 @@ namespace ServerList
 {
 #if USE_CURL
 void sendAnnounce(AnnounceAction action,
+		const std::string &world_uuid,
 		const u16 port,
 		const std::vector<std::string> &clients_names,
 		const double uptime,
@@ -44,6 +45,7 @@ void sendAnnounce(AnnounceAction action,
 {
 	static const char *aa_names[] = {"start", "update", "delete"};
 	Json::Value server;
+	server["world_uuid"] = world_uuid;
 	server["action"] = aa_names[action];
 	server["port"] = port;
 	if (g_settings->exists("server_address")) {

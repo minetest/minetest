@@ -415,32 +415,39 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 		// Read those values before setting defaults
 		bool player_backend_exists = conf.exists("player_backend");
 		bool auth_backend_exists = conf.exists("auth_backend");
+		bool uuid_exists = conf.exists("world_uuid");
+		bool dirty = false;
 
 		// player backend is not set, assume it's legacy file backend.
 		if (!player_backend_exists) {
 			// fall back to files
 			conf.set("player_backend", "files");
 			player_backend_name = "files";
-
-			if (!conf.updateConfigFile(conf_path.c_str())) {
-				errorstream << "ServerEnvironment::ServerEnvironment(): "
-						<< "Failed to update world.mt!" << std::endl;
-			}
+			dirty = true;
 		} else {
-			conf.getNoEx("player_backend", player_backend_name);
+			player_backend_name = conf.get("player_backend");
 		}
 
 		// auth backend is not set, assume it's legacy file backend.
 		if (!auth_backend_exists) {
 			conf.set("auth_backend", "files");
 			auth_backend_name = "files";
+			dirty = true;
+		} else {
+			auth_backend_name = conf.get("auth_backend");
+		}
 
-			if (!conf.updateConfigFile(conf_path.c_str())) {
+		if (!uuid_exists) {
+			m_world_uuid = generate_uuid4();
+			conf.set("world_uuid", m_world_uuid);
+			dirty = true;
+		} else {
+			m_world_uuid = conf.get("world_uuid");
+		}
+
+		if (dirty && !conf.updateConfigFile(conf_path.c_str())) {
 				errorstream << "ServerEnvironment::ServerEnvironment(): "
 						<< "Failed to update world.mt!" << std::endl;
-			}
-		} else {
-			conf.getNoEx("auth_backend", auth_backend_name);
 		}
 	}
 
