@@ -110,18 +110,26 @@ struct ItemStack
 		return itemdef->get(name);
 	}
 
-	// Get tool digging properties, or those of the hand if not a tool
+	// Get tool digging properties, or the default caps if not a tool.
+	// If the defaults are not specified (nullptr),
+	// use the hand's (item "").
 	const ToolCapabilities& getToolCapabilities(
-			IItemDefManager *itemdef) const
+			IItemDefManager *itemdef, const ToolCapabilities *default_caps = nullptr) const
 	{
 		const ToolCapabilities *item_cap =
 			itemdef->get(name).tool_capabilities;
 
-		if (item_cap == NULL)
-			// Fall back to the hand's tool capabilities
+		if (item_cap == nullptr)
+		{
+			// Fall back to the specified default.
+			item_cap = default_caps;
+		}
+
+		if (item_cap == nullptr)
+			// Fall back to the default hand's tool capabilities
 			item_cap = itemdef->get("").tool_capabilities;
 
-		assert(item_cap != NULL);
+		assert(item_cap != nullptr);
 		return metadata.getToolCapabilities(*item_cap); // Check for override
 	}
 

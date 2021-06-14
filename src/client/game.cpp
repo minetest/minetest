@@ -3556,15 +3556,19 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
-	// Get digging parameters
-	DigParams params = getDigParams(nodedef_manager->get(n).groups,
-			&selected_item.getToolCapabilities(itemdef_manager));
 
-	// If can't dig, try hand
-	if (!params.diggable) {
-		params = getDigParams(nodedef_manager->get(n).groups,
-				&hand_item.getToolCapabilities(itemdef_manager));
+	// Get digging parameters for the selected item.
+	ToolCapabilities dig_tool_caps;
+	if(selected_item.name == "") {
+		// Empty slot means go straight to the hand,
+		// otherwise the empty ("") item might still override it with its own capabilities
+		dig_tool_caps = hand_item.getToolCapabilities(itemdef_manager);
 	}
+	else {
+		// Otherwise just get the selected item's capabilities, defaulting to the hand.
+		dig_tool_caps = selected_item.getToolCapabilities(itemdef_manager, &hand_item.getToolCapabilities(itemdef_manager));
+	}
+	DigParams params = getDigParams(nodedef_manager->get(n).groups, &dig_tool_caps);
 
 	if (!params.diggable) {
 		// I guess nobody will wait for this long
