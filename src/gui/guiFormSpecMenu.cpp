@@ -698,11 +698,12 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		spec.ftype = f_ScrollBar;
 		spec.send  = true;
 		GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
-				spec.fid, rect, is_horizontal, true);
+				spec.fid, rect, is_horizontal, true, m_tsrc);
 
-		auto style = getDefaultStyleForElement("scrollbar", name);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setArrowsVisible(data->scrollbar_options.arrow_visiblity);
+
+		auto style = getStyleForElement("scrollbar", name);
+		e->setStyles(style);
 
 		s32 max = data->scrollbar_options.max;
 		s32 min = data->scrollbar_options.min;

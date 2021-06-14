@@ -57,6 +57,9 @@ public:
 		SOUND,
 		SPACING,
 		SIZE,
+		UP_ARROW_BGIMG,
+		DOWN_ARROW_BGIMG,
+		THUMB_BGIMG,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -125,6 +128,12 @@ public:
 			return SPACING;
 		} else if (name == "size") {
 			return SIZE;
+		} else if (name == "up_arrow_bgimg") {
+			return UP_ARROW_BGIMG;
+		} else if (name == "down_arrow_bgimg") {
+			return DOWN_ARROW_BGIMG;
+		} else if (name == "thumb_bgimg") {
+			return THUMB_BGIMG;
 		} else {
 			return NONE;
 		}

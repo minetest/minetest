@@ -12,13 +12,14 @@ the arrow buttons where there is insufficient space.
 
 #include "guiScrollBar.h"
 #include <IGUIButton.h>
-#include <IGUISkin.h>
+#include <IGUIImage.h>
 
 GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
-		core::rect<s32> rectangle, bool horizontal, bool auto_scale) :
+		core::rect<s32> rectangle, bool horizontal, bool auto_scale,
+		ISimpleTextureSource *tsrc) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
 		up_button(nullptr), down_button(nullptr), is_dragging(false),
-		is_horizontal(horizontal), is_auto_scaling(auto_scale),
+		is_horizontal(horizontal), is_auto_scaling(auto_scale), m_tsrc(tsrc),
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
 		large_step(50), drag_offset(0), page_size(100), border_size(0)
@@ -208,8 +209,22 @@ void GUIScrollBar::draw()
 		refreshControls();
 
 	slider_rect = AbsoluteRect;
-	skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), slider_rect,
-			&AbsoluteClippingRect);
+
+	if (m_bg_texture) {
+		s32 w = RelativeRect.getWidth();
+		s32 h = RelativeRect.getHeight();
+		core::rect<s32> rect{0, w, w, h - w};
+
+		if (is_horizontal)
+			rect = {h, 0, w - h, h};
+
+		gui::IGUIImage *e = Environment->addImage(rect, this);
+		e->setImage(m_bg_texture);
+		e->setScaleImage(true);
+	} else {
+		skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR),
+			slider_rect, &AbsoluteClippingRect);
+	}
 
 	if (core::isnotzero(range())) {
 		if (is_horizontal) {
@@ -223,9 +238,52 @@ void GUIScrollBar::draw()
 			slider_rect.LowerRightCorner.Y =
 					slider_rect.UpperLeftCorner.Y + thumb_size;
 		}
-		skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
+
+		if (m_thumb_texture) {
+			s32 w = slider_rect.getWidth();
+			s32 h = slider_rect.getHeight();
+			core::rect<s32> rect{0, draw_center - (h / 2), w, draw_center + h - (h / 2)};
+
+			if (is_horizontal)
+				rect = {draw_center - (w / 2), 0, draw_center + w - (w / 2), h};
+
+			if (m_thumb)
+				m_thumb->remove();
+
+			m_thumb = Environment->addImage(core::rect<s32>(rect), this);
+			m_thumb->setImage(m_thumb_texture);
+			m_thumb->setScaleImage(true);
+		} else {
+			skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
+		}
 	}
+
 	IGUIElement::draw();
+}
+
+void GUIScrollBar::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &styles)
+{
+	StyleSpec::State state = StyleSpec::STATE_DEFAULT;
+	StyleSpec style = StyleSpec::getStyleFromStatePropagation(styles, state);
+
+	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
+	if (!m_tsrc)
+		return;
+
+	if (style.isNotDefault(StyleSpec::UP_ARROW_BGIMG))
+		m_up_arrow_texture = style.getTexture(StyleSpec::UP_ARROW_BGIMG, getTextureSource());
+
+	if (style.isNotDefault(StyleSpec::DOWN_ARROW_BGIMG))
+		m_down_arrow_texture = style.getTexture(StyleSpec::DOWN_ARROW_BGIMG, getTextureSource());
+
+	if (style.isNotDefault(StyleSpec::THUMB_BGIMG))
+		m_thumb_texture = style.getTexture(StyleSpec::THUMB_BGIMG, getTextureSource());
+
+	if (style.isNotDefault(StyleSpec::BGIMG))
+		m_bg_texture = style.getTexture(StyleSpec::BGIMG, getTextureSource());
+
+	refreshControls();
 }
 
 void GUIScrollBar::updateAbsolutePosition()
@@ -339,16 +397,24 @@ void GUIScrollBar::refreshControls()
 				skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL
 							   : EGDC_GRAY_WINDOW_SYMBOL);
 	}
+
 	if (is_horizontal) {
+		s32 w = RelativeRect.getWidth();
 		s32 h = RelativeRect.getHeight();
-		border_size = RelativeRect.getWidth() < h * 4 ? 0 : h;
+		border_size = w < h * 4 ? 0 : h;
+
 		if (!up_button) {
-			up_button = Environment->addButton(
-					core::rect<s32>(0, 0, h, h), this);
+			up_button = Environment->addButton(core::rect<s32>(0, 0, h, h), this);
 			up_button->setSubElement(true);
 			up_button->setTabStop(false);
 		}
-		if (sprites) {
+
+		if (m_up_arrow_texture) {
+			up_button->setImage(m_up_arrow_texture);
+			up_button->setScaleImage(true);
+			up_button->setUseAlphaChannel(true);
+			up_button->setDrawBorder(false);
+		} else if (sprites) {
 			up_button->setSpriteBank(sprites);
 			up_button->setSprite(EGBS_BUTTON_UP,
 					s32(skin->getIcon(EGDI_CURSOR_LEFT)),
@@ -357,18 +423,25 @@ void GUIScrollBar::refreshControls()
 					s32(skin->getIcon(EGDI_CURSOR_LEFT)),
 					current_icon_color);
 		}
+
 		up_button->setRelativePosition(core::rect<s32>(0, 0, h, h));
 		up_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT,
 				EGUIA_LOWERRIGHT);
+
 		if (!down_button) {
 			down_button = Environment->addButton(
 					core::rect<s32>(RelativeRect.getWidth() - h, 0,
-							RelativeRect.getWidth(), h),
-					this);
+							RelativeRect.getWidth(), h), this);
 			down_button->setSubElement(true);
 			down_button->setTabStop(false);
 		}
-		if (sprites) {
+
+		if (m_down_arrow_texture) {
+			down_button->setImage(m_down_arrow_texture);
+			down_button->setScaleImage(true);
+			down_button->setUseAlphaChannel(true);
+			down_button->setDrawBorder(false);
+		} else if (sprites) {
 			down_button->setSpriteBank(sprites);
 			down_button->setSprite(EGBS_BUTTON_UP,
 					s32(skin->getIcon(EGDI_CURSOR_RIGHT)),
@@ -377,6 +450,7 @@ void GUIScrollBar::refreshControls()
 					s32(skin->getIcon(EGDI_CURSOR_RIGHT)),
 					current_icon_color);
 		}
+
 		down_button->setRelativePosition(
 				core::rect<s32>(RelativeRect.getWidth() - h, 0,
 						RelativeRect.getWidth(), h));
@@ -384,42 +458,53 @@ void GUIScrollBar::refreshControls()
 				EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	} else {
 		s32 w = RelativeRect.getWidth();
-		border_size = RelativeRect.getHeight() < w * 4 ? 0 : w;
+		s32 h = RelativeRect.getHeight();
+		border_size = h < w * 4 ? 0 : w;
+
 		if (!up_button) {
-			up_button = Environment->addButton(
-					core::rect<s32>(0, 0, w, w), this);
+			up_button = Environment->addButton(core::rect<s32>(0, 0, w, w), this);
 			up_button->setSubElement(true);
 			up_button->setTabStop(false);
 		}
-		if (sprites) {
+
+		if (m_up_arrow_texture) {
+			up_button->setImage(m_up_arrow_texture);
+			up_button->setScaleImage(true);
+			up_button->setUseAlphaChannel(true);
+			up_button->setDrawBorder(false);
+		} else if (sprites) {
 			up_button->setSpriteBank(sprites);
 			up_button->setSprite(EGBS_BUTTON_UP,
-					s32(skin->getIcon(EGDI_CURSOR_UP)),
-					current_icon_color);
+					s32(skin->getIcon(EGDI_CURSOR_UP)), current_icon_color);
 			up_button->setSprite(EGBS_BUTTON_DOWN,
-					s32(skin->getIcon(EGDI_CURSOR_UP)),
-					current_icon_color);
+					s32(skin->getIcon(EGDI_CURSOR_UP)), current_icon_color);
 		}
+
 		up_button->setRelativePosition(core::rect<s32>(0, 0, w, w));
 		up_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
-				EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
+					EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
+
 		if (!down_button) {
 			down_button = Environment->addButton(
 					core::rect<s32>(0, RelativeRect.getHeight() - w,
-							w, RelativeRect.getHeight()),
-					this);
+							w, RelativeRect.getHeight()), this);
 			down_button->setSubElement(true);
 			down_button->setTabStop(false);
 		}
-		if (sprites) {
+
+		if (m_down_arrow_texture) {
+			down_button->setImage(m_down_arrow_texture);
+			down_button->setScaleImage(true);
+			down_button->setUseAlphaChannel(true);
+			down_button->setDrawBorder(false);
+		} else if (sprites) {
 			down_button->setSpriteBank(sprites);
 			down_button->setSprite(EGBS_BUTTON_UP,
-					s32(skin->getIcon(EGDI_CURSOR_DOWN)),
-					current_icon_color);
+					s32(skin->getIcon(EGDI_CURSOR_DOWN)), current_icon_color);
 			down_button->setSprite(EGBS_BUTTON_DOWN,
-					s32(skin->getIcon(EGDI_CURSOR_DOWN)),
-					current_icon_color);
+					s32(skin->getIcon(EGDI_CURSOR_DOWN)), current_icon_color);
 		}
+
 		down_button->setRelativePosition(
 				core::rect<s32>(0, RelativeRect.getHeight() - w, w,
 						RelativeRect.getHeight()));
