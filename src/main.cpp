@@ -304,8 +304,6 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 #ifndef SERVER
-	allowed_options->insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
-			_("Show available video modes"))));
 	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));
 	allowed_options->insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,

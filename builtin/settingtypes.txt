@@ -660,10 +660,10 @@ viewing_range (Viewing range) int 190 20 4000
 #   0.1 = Default, 0.25 = Good value for weaker tablets.
 near_plane (Near plane) float 0.1 0 0.25
 
-#    Width component of the initial window size.
+#    Width component of the initial window size. Ignored in fullscreen mode.
 screen_w (Screen width) int 1024 1
 
-#    Height component of the initial window size.
+#    Height component of the initial window size. Ignored in fullscreen mode.
 screen_h (Screen height) int 600 1
 
 #    Save window size automatically when modified.
@@ -671,9 +671,6 @@ autosave_screensize (Autosave screen size) bool true
 
 #    Fullscreen mode.
 fullscreen (Full screen) bool false
-
-#    Bits per pixel (aka color depth) in fullscreen mode.
-fullscreen_bpp (Full screen BPP) int 24
 
 #    Vertical screen synchronization.
 vsync (VSync) bool false
@@ -1476,9 +1473,6 @@ curl_parallel_limit (cURL parallel limit) int 8
 
 #    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
 curl_file_download_timeout (cURL file download timeout) int 300000
-
-#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
-high_precision_fpu (High-precision FPU) bool true
 
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
