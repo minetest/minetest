@@ -5,6 +5,7 @@ uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
 
+
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 worldPosition;
@@ -30,12 +31,18 @@ const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 	uniform vec3 v_LightDirection;
 	uniform float f_textureresolution;
 	uniform mat4 m_ShadowViewProj;
+	uniform mat4 m_InvProj;
+	uniform mat4 m_InvView;
 	uniform float f_shadowfar;
+	uniform float f_shadownear;
 	uniform float f_timeofday;
+	uniform vec2 v_screen_size;
 	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
+	varying vec4 v_LightSpace;
+
 #endif
 
 #if ENABLE_TONE_MAPPING
@@ -71,14 +78,16 @@ vec4 applyToneMapping(vec4 color)
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 const float bias0 = 0.9;
-const float zPersFactor = 0.5;
-const float bias1 = 1.0 - bias0;
+const float zPersFactor = 1.0/4.0;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
-{
-	float pDistance = length(shadowPosition.xy);
-	float pFactor = pDistance * bias0 + bias1;
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPersFactor);
+{   
+	float lnz = sqrt(shadowPosition.x*shadowPosition.x+shadowPosition.y*shadowPosition.y);
+
+	float pf=mix(1.0, lnz * 1.165, bias0);
+	
+	float pFactor =1.0/pf;
+	shadowPosition.xyz *= vec3(vec2(pFactor), zPersFactor);
 
 	return shadowPosition;
 }
@@ -86,16 +95,39 @@ vec4 getPerspectiveFactor(in vec4 shadowPosition)
 // assuming near is always 1.0
 float getLinearDepth()
 {
-	return 2.0 * f_shadowfar / (f_shadowfar + 1.0 - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - 1.0));
-}
 
+	return 2.0 * f_shadownear*f_shadowfar / (f_shadowfar + f_shadownear - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - f_shadownear));
+}
+vec4 getWorldSpacePosition() {
+
+     // Convert screen coordinates to normalized device coordinates (NDC)
+    vec4 ndc = vec4(
+        (gl_FragCoord.x / v_screen_size.x * 0.5) +0.5,
+        (gl_FragCoord.y / v_screen_size.y  * 0.5) +0.5,
+        (gl_FragCoord.z * 0.5) +0.5,
+        1.0);
+
+    // Convert NDC throuch inverse clip coordinates to view coordinates
+    vec4 clip = m_InvProj* m_InvView  *  ndc;
+    vec4 vertex = vec4((clip / clip.w).xyz,1.0);
+  	return vertex;
+}
 vec3 getLightSpacePosition()
 {
 	vec4 pLightSpace;
-	float normalBias = 0.0005 * getLinearDepth() * cosLight + normalOffsetScale;
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalBias * normalize(vNormal), 1.0);
+	vec3 normalBias = normalOffsetScale * normalize(vNormal)  + vec3(0.0005);;
+	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalBias, 1.0);
 	pLightSpace = getPerspectiveFactor(pLightSpace);
 	return pLightSpace.xyz * 0.5 + 0.5;
+}
+
+
+// custom smoothstep implementation because it's not defined in glsl1.2
+// https://docs.gl/sl4/smoothstep
+float mtsmoothstep(in float edge0, in float edge1, in float x)
+{
+	float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+	return t * t * (3.0 - 2.0 * t);
 }
 
 #ifdef COLORED_SHADOWS
@@ -124,10 +156,10 @@ vec4 getHardShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 {
 	vec4 texDepth = texture2D(shadowsampler, smTexCoord.xy).rgba;
 
-	float visibility = step(0.0, (realDistance-2e-5) - texDepth.r);
+	float visibility = step(0.0, (realDistance ) - texDepth.r);
 	vec4 result = vec4(visibility, vec3(0.0,0.0,0.0));//unpackColor(texDepth.g));
 	if (visibility < 0.1) {
-		visibility = step(0.0, (realDistance-2e-5) - texDepth.r);
+		visibility = step(0.0, (realDistance ) - texDepth.b);
 		result = vec4(visibility, unpackColor(texDepth.a));
 	}
 	return result;
@@ -137,8 +169,8 @@ vec4 getHardShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 
 float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
-	float texDepth = texture2D(shadowsampler, smTexCoord.xy).r;
-	float visibility = step(0.0, (realDistance-2e-5) - texDepth);
+	float texDepth = texture2D(shadowsampler, smTexCoord.xy,1.0).r;
+	float visibility = step(0.0,  realDistance - texDepth);
 
 	return visibility;
 }
@@ -341,11 +373,11 @@ void main(void)
 	vec4 col = vec4(color.rgb, base.a);
 	col.rgb *= varColor.rgb;
 	col.rgb *= emissiveColor.rgb * vIDiff;
-
+#if (DRAW_TYPE!=NDT_WIELD)
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	float shadow_int = 0.0;
 	vec3 shadow_color = vec3(0.0, 0.0, 0.0);
-	vec3 posLightSpace = getLightSpacePosition();
+	vec3 posLightSpace = v_LightSpace.xyz ;//getLightSpacePosition(); //
 
 #ifdef COLORED_SHADOWS
 	vec4 visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
@@ -354,16 +386,19 @@ void main(void)
 #else
 	shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 #endif
+ 
+	if (f_normal_length != 0 && cosLight <  0.0 ) {
+		shadow_int = mix(shadow_int,1.0,mtsmoothstep(.01,.07,abs(cosLight))) ;
+	} 
+ 
 
-	if (f_normal_length != 0 && cosLight <= 0.001) {
-		shadow_int = clamp(shadow_int + 0.5 * abs(cosLight), 0.0, 1.0);
-	}
-
+	
 	shadow_int = 1.0 - (shadow_int * adj_shadow_strength);
 
 	col.rgb = mix(shadow_color, col.rgb, shadow_int) * shadow_int;
 #endif
 
+#endif
 
 
 #if ENABLE_TONE_MAPPING
@@ -382,6 +417,6 @@ void main(void)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
-
+	//col.rgb = vec3(cosLight);	
 	gl_FragColor = vec4(col.rgb, base.a);
 }

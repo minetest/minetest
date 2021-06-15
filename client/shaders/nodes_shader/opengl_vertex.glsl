@@ -30,12 +30,15 @@ centroid varying vec2 varTexCoord;
 	uniform float f_textureresolution;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
+	uniform float f_shadownear;
 	uniform float f_shadow_strength;
 	uniform float f_timeofday;
 	varying float cosLight;
 	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float f_normal_length;
+	varying vec4 v_LightSpace;
+
 #endif
 
 
@@ -110,10 +113,22 @@ float snoise(vec3 p)
 }
 
 #endif
+const float bias0 = 0.9;
+const float zPersFactor = 1.0/4.0;
 
+vec4 getPerspectiveFactor(in vec4 shadowPosition)
+{   
+	float lnz = sqrt(shadowPosition.x*shadowPosition.x+shadowPosition.y*shadowPosition.y);
 
+	float pf=mix(1.0, lnz * 1.165, bias0);
+	
+	float pFactor =1.0/pf;
+	shadowPosition.xyz *= vec3(vec2(pFactor), zPersFactor);
 
+	return shadowPosition;
+}
 
+ 
 void main(void)
 {
 	varTexCoord = inTexCoord0.st;
@@ -193,10 +208,10 @@ void main(void)
 	varColor = clamp(color, 0.0, 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-	vec3 nNormal = normalize(vNormal);
-	cosLight = dot(nNormal, -v_LightDirection);
-	float texelSize = 767.0 / f_textureresolution;
-	float slopeScale = clamp(1.0 - abs(cosLight), 0.0, 1.0);
+	vNormal = normalize( mWorld* vec4(gl_Normal,0.0)).xyz;
+	cosLight = max(0.0,dot( -v_LightDirection,vNormal));
+	float texelSize =  f_shadowfar/f_textureresolution;
+	float slopeScale = clamp(1.0 - cosLight, 0.0, 1.0);
 	normalOffsetScale = texelSize * slopeScale;
 	
 	if (f_timeofday < 0.2) {
@@ -210,7 +225,17 @@ void main(void)
 			mtsmoothstep(0.20, 0.25, f_timeofday) *
 			(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
 	}
-	f_normal_length = length(vNormal);
-#endif
+	f_normal_length = length(gl_Normal);
+	
+	vec3 adjustedBias = vec3(0.005);
+	if(f_normal_length>0.0){
+		adjustedBias = (20.0 * max(0.0,(length(eyeVec) / f_shadowfar )  )
+		+ normalOffsetScale )*vNormal ;
+	}
+ 	v_LightSpace = m_ShadowViewProj * vec4(worldPosition.xyz +adjustedBias , 1.0);
+	v_LightSpace = getPerspectiveFactor(v_LightSpace);
+	v_LightSpace.xyz = v_LightSpace.xyz* 0.5 + 0.5;
+ #endif	
 
+ 	 
 }

@@ -228,12 +228,17 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 
 	// Shadow-related
 	CachedPixelShaderSetting<float, 16> m_shadow_view_proj;
+	CachedPixelShaderSetting<float, 16> m_inv_proj;
+	CachedPixelShaderSetting<float, 16> m_inv_view;
 	CachedPixelShaderSetting<float, 3> m_light_direction;
 	CachedPixelShaderSetting<float> m_texture_res;
 	CachedPixelShaderSetting<float> m_shadow_strength;
 	CachedPixelShaderSetting<float> m_time_of_day;
 	CachedPixelShaderSetting<float> m_shadowfar;
+	CachedPixelShaderSetting<float> m_shadownear;	
 	CachedPixelShaderSetting<s32> m_shadow_texture;
+	CachedPixelShaderSetting<float,2> m_screen_size;
+	
 
 #if ENABLE_GLES
 	// Modelview matrix
@@ -259,7 +264,11 @@ public:
 		, m_shadow_strength("f_shadow_strength")
 		, m_time_of_day("f_timeofday")
 		, m_shadowfar("f_shadowfar")
+		, m_shadownear("f_shadownear")
 		, m_shadow_texture("ShadowMapSampler")
+		, m_inv_proj("m_InvProj")
+		, m_inv_view("m_InvView")
+		, m_screen_size("v_screen_size")
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -302,8 +311,24 @@ public:
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
 			const auto &light = shadow->getDirectionalLight();
 
+			core::matrix4 invView = driver->getTransform(video::ETS_VIEW);
+			if (invView.makeInverse()) {
+				m_inv_view.set(invView.pointer(), services);
+			}
+			core::matrix4 invProj = driver->getTransform(video::ETS_PROJECTION);
+			if (invProj.makeInverse()) {
+				m_inv_proj.set(invProj.pointer(), services);
+			}
+
+			core::dimension2du screen = driver->getScreenSize();
+			float vscreen[2];
+			vscreen[0] = screen.Width;
+			vscreen[1] = screen.Height;
+			m_screen_size.set(vscreen, services);
+
 			core::matrix4 shadowViewProj = light.getProjectionMatrix();
 			shadowViewProj *= light.getViewMatrix();
+			//shadowViewProj[12] *= -1.0f;
 			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
 
 			float v_LightDirection[3];
@@ -321,6 +346,11 @@ public:
 
 			float shadowFar = shadow->getMaxShadowFar();
 			m_shadowfar.set(&shadowFar, services);
+
+			float shadowNear = shadow->getNearValue();
+			m_shadownear.set(&shadowNear, services);
+
+			
 
 			// I dont like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
@@ -696,6 +726,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	PROVIDE(NDT_FIRELIKE);
 	PROVIDE(NDT_GLASSLIKE_FRAMED_OPTIONAL);
 	PROVIDE(NDT_PLANTLIKE_ROOTED);
+	PROVIDE(NDT_WIELD);
 
 	PROVIDE(TILE_MATERIAL_BASIC);
 	PROVIDE(TILE_MATERIAL_ALPHA);

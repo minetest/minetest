@@ -371,7 +371,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	scene::SMesh *mesh = nullptr;
 
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_WIELD);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 

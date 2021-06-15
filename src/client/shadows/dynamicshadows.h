@@ -67,6 +67,11 @@ public:
 		return farPlane;
 	}
 
+	f32 getNearValue() const
+	{
+		return nearPlane;
+	}
+
 
 	/// Gets the light's color.
 	const video::SColorf &getLightColor() const
@@ -94,6 +99,7 @@ private:
 	video::SColorf diffuseColor;
 
 	f32 farPlane;
+	f32 nearPlane;
 	u32 mapRes;
 
 	v3f pos;

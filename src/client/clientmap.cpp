@@ -415,7 +415,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				layer.Texture = shadow->get_texture();
 				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
-				layer.TrilinearFilter = true;
+				layer.LODBias = 4.0f;
+				layer.AnisotropicFilter = 3.0f;
+				layer.BilinearFilter = true;
 			}
 
 			driver->setMaterial(list.m);

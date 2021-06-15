@@ -266,7 +266,7 @@ void set_default_settings()
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
 	settings->setDefault("shadow_strength", "0.2");
-	settings->setDefault("shadow_map_max_distance", "200.0");
+	settings->setDefault("shadow_map_max_distance", "60.0");
 	settings->setDefault("shadow_map_texture_size", "2048");
 	settings->setDefault("shadow_map_texture_32bit", "true");
 	settings->setDefault("shadow_map_color", "false");

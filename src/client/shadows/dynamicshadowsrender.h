@@ -63,6 +63,7 @@ public:
 	DirectionalLight &getDirectionalLight(u32 index = 0);
 	size_t getDirectionalLightCount() const;
 	f32 getMaxShadowFar() const;
+	f32 getNearValue() const;
 
 	float getUpdateDelta() const;
 	/// Adds a shadow to the scene node.

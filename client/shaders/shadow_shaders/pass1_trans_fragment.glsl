@@ -18,11 +18,16 @@ const vec3 black = vec3(0.0);
 
 void main()
 {
-	vec4 col = texture2D(ColorMapSampler, gl_TexCoord[0].st);
+	if(tPos.x<-1.0 || tPos.x>1.0 || 
+		tPos.y<-1.0 ||  tPos.y>1.0)
+			discard;
+	vec4 col = texture2D(ColorMapSampler, gl_TexCoord[0].st,1.0);
 #ifndef COLORED_SHADOWS
 	if (col.a < 0.5)
 		discard;
 #endif
+
+
 
 	float depth = 0.5 + tPos.z * 0.5;
 	// ToDo: Liso: Apply movement on waving plants
