@@ -92,7 +92,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
-	u16 bits = g_settings->getU16("fullscreen_bpp");
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// stereo buffer required for pageflip stereo
@@ -122,15 +121,13 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 		params.LoggingLevel = irr::ELL_DEBUG;
 	params.DriverType = driverType;
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
-	params.Bits = bits;
 	params.AntiAlias = fsaa;
 	params.Fullscreen = fullscreen;
 	params.Stencilbuffer = false;
 	params.Stereobuffer = stereo_buffer;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
-	params.ZBufferBits = 24;
+	params.HighPrecisionFPU = true;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
@@ -169,60 +166,6 @@ v2u32 RenderingEngine::_getWindowSize() const
 void RenderingEngine::setResizable(bool resize)
 {
 	m_device->setResizable(resize);
-}
-
-bool RenderingEngine::print_video_modes()
-{
-	IrrlichtDevice *nulldevice;
-
-	bool vsync = g_settings->getBool("vsync");
-	u16 fsaa = g_settings->getU16("fsaa");
-	MyEventReceiver *receiver = new MyEventReceiver();
-
-	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
-	params.DriverType = video::EDT_NULL;
-	params.WindowSize = core::dimension2d<u32>(640, 480);
-	params.Bits = 24;
-	params.AntiAlias = fsaa;
-	params.Fullscreen = false;
-	params.Stencilbuffer = false;
-	params.Vsync = vsync;
-	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
-
-	nulldevice = createDeviceEx(params);
-
-	if (!nulldevice) {
-		delete receiver;
-		return false;
-	}
-
-	std::cout << _("Available video modes (WxHxD):") << std::endl;
-
-	video::IVideoModeList *videomode_list = nulldevice->getVideoModeList();
-
-	if (videomode_list != NULL) {
-		s32 videomode_count = videomode_list->getVideoModeCount();
-		core::dimension2d<u32> videomode_res;
-		s32 videomode_depth;
-		for (s32 i = 0; i < videomode_count; ++i) {
-			videomode_res = videomode_list->getVideoModeResolution(i);
-			videomode_depth = videomode_list->getVideoModeDepth(i);
-			std::cout << videomode_res.Width << "x" << videomode_res.Height
-				  << "x" << videomode_depth << std::endl;
-		}
-
-		std::cout << _("Active video mode (WxHxD):") << std::endl;
-		videomode_res = videomode_list->getDesktopResolution();
-		videomode_depth = videomode_list->getDesktopDepth();
-		std::cout << videomode_res.Width << "x" << videomode_res.Height << "x"
-			  << videomode_depth << std::endl;
-	}
-
-	nulldevice->drop();
-	delete receiver;
-
-	return videomode_list != NULL;
 }
 
 void RenderingEngine::removeMesh(const scene::IMesh* mesh)
@@ -580,25 +523,6 @@ void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
 
 	guienv->drawAll();
 	get_video_driver()->endScene();
-}
-
-std::vector<core::vector3d<u32>> RenderingEngine::getSupportedVideoModes()
-{
-	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
-	sanity_check(nulldevice);
-
-	std::vector<core::vector3d<u32>> mlist;
-	video::IVideoModeList *modelist = nulldevice->getVideoModeList();
-
-	s32 num_modes = modelist->getVideoModeCount();
-	for (s32 i = 0; i != num_modes; i++) {
-		core::dimension2d<u32> mode_res = modelist->getVideoModeResolution(i);
-		u32 mode_depth = (u32)modelist->getVideoModeDepth(i);
-		mlist.emplace_back(mode_res.Width, mode_res.Height, mode_depth);
-	}
-
-	nulldevice->drop();
-	return mlist;
 }
 
 std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()

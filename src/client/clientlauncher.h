@@ -46,7 +46,6 @@ private:
 
 	void speed_tests();
 
-	bool list_video_modes = false;
 	bool skip_main_menu = false;
 	bool random_input = false;
 	RenderingEngine *m_rendering_engine = nullptr;

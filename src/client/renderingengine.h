@@ -124,7 +124,6 @@ public:
 			return s_singleton->core->get_shadow_renderer();
 		return nullptr;
 	}
-	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
 private:
