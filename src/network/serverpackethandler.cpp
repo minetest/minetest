@@ -1184,18 +1184,21 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			ItemStack selected_item, hand_item;
 			playersao->getPlayer()->getWieldedItem(&selected_item, &hand_item);
 
-			// Get diggability and expected digging time
-			ToolCapabilities dig_tool_caps;
-			if(selected_item.name == "") {
-				// Empty slot means go straight to the hand,
-				// otherwise the empty ("") item might still override it with its own capabilities
-				dig_tool_caps = hand_item.getToolCapabilities(m_itemdef);
+			// Get digging parameters for the selected item.
+			ToolCapabilities tool_caps = selected_item.getToolCapabilities(m_itemdef,
+					&hand_item.getToolCapabilities(m_itemdef));
+			DigParams params = getDigParams(m_nodedef->get(n).groups, &tool_caps);
+
+			// And for the hand.
+			ToolCapabilities hand_caps = hand_item.getToolCapabilities(m_itemdef);
+			DigParams hand_params = getDigParams(m_nodedef->get(n).groups, &hand_caps);
+
+			// If the tool can't dig, use the hand instead.
+			// Empty slot also means go straight to the hand,
+			// otherwise the empty ("") item might still override it with its own capabilities
+			if(!params.diggable || selected_item.name == "") {
+				params = hand_params;
 			}
-			else {
-				// Otherwise just get the selected item's capabilities, defaulting to the hand.
-				dig_tool_caps = selected_item.getToolCapabilities(m_itemdef, &hand_item.getToolCapabilities(m_itemdef));
-			}
-			DigParams params = getDigParams(m_nodedef->get(n).groups, &dig_tool_caps);
 
 			// If can't dig, ignore dig
 			if (!params.diggable) {
