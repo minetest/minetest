@@ -223,13 +223,13 @@ private:
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 	bool m_simple_catch_up;
-	int m_min_y;
-	int m_max_y;
+	s16 m_min_y;
+	s16 m_max_y;
 public:
 	LuaABM(lua_State *L, int id,
 			const std::vector<std::string> &trigger_contents,
 			const std::vector<std::string> &required_neighbors,
-			float trigger_interval, u32 trigger_chance, bool simple_catch_up, int min_y, int max_y):
+			float trigger_interval, u32 trigger_chance, bool simple_catch_up, s16 min_y, s16 max_y):
 		m_id(id),
 		m_trigger_contents(trigger_contents),
 		m_required_neighbors(required_neighbors),
@@ -260,11 +260,11 @@ public:
 	{
 		return m_simple_catch_up;
 	}
-	virtual int getMinY()
+	virtual s16 getMinY()
 	{
 		return m_min_y;
 	}
-	virtual int getMaxY()
+	virtual s16 getMaxY()
 	{
 		return m_max_y;
 	}

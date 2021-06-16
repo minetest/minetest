@@ -729,8 +729,8 @@ struct ActiveABM
 	int chance;
 	std::vector<content_t> required_neighbors;
 	bool check_required_neighbors; // false if required_neighbors is known to be empty
-	int min_y;
-	int max_y;
+	s16 min_y;
+	s16 max_y;
 };
 
 class ABMHandler

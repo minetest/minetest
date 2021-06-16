@@ -151,10 +151,10 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		bool simple_catch_up = true;
 		getboolfield(L, current_abm, "catch_up", simple_catch_up);
 		
-		int min_y = -31000;
+		s16 min_y = INT16_MIN;
 		getintfield(L, current_abm, "min_y", min_y);
 		
-		int max_y = 31000;
+		s16 max_y = INT16_MAX;
 		getintfield(L, current_abm, "max_y", max_y);
 
 		lua_getfield(L, current_abm, "action");
