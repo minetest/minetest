@@ -20,6 +20,7 @@ core.features = {
 	direct_velocity_on_players = true,
 	use_texture_alpha_string_modes = true,
 	degrotate_240_steps = true,
+	abm_min_max_y = true,
 }
 
 function core.has_feature(arg)

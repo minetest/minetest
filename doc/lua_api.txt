@@ -4441,6 +4441,8 @@ Utilities
           -- degrotate param2 rotates in units of 1.5° instead of 2°
           -- thus changing the range of values from 0-179 to 0-240 (5.5.0)
           degrotate_240_steps = true,
+          -- ABM supports min_y and max_y fields in definition (5.5.0)
+          abm_min_max_y = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
