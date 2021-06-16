@@ -60,12 +60,20 @@ enum SettingsParseEvent {
 	SPE_MULTILINE,
 };
 
+// Describes the global setting layers, SL_GLOBAL is where settings are read from
 enum SettingsLayer {
 	SL_DEFAULTS,
 	SL_GAME,
 	SL_GLOBAL,
-	SL_MAP,
 	SL_TOTAL_COUNT
+};
+
+// Implements a hierarchy a settings object may be part of
+class SettingsHierarchy {
+public:
+	virtual Settings *getParent(const Settings *obj) const = 0;
+	virtual void layerCreated(int layer, Settings *obj) = 0;
+	virtual void layerRemoved(int layer) = 0;
 };
 
 struct ValueSpec {
@@ -100,13 +108,15 @@ typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
+	/* These functions operate on the global hierarchy! */
 	static Settings *createLayer(SettingsLayer sl, const std::string &end_tag = "");
 	static Settings *getLayer(SettingsLayer sl);
-	SettingsLayer getLayerType() const { return m_settingslayer; }
+	/**/
 
 	Settings(const std::string &end_tag = "") :
 		m_end_tag(end_tag)
 	{}
+	Settings(const std::string &end_tag, SettingsHierarchy *h, int settings_layer);
 	~Settings();
 
 	Settings & operator += (const Settings &other);
@@ -200,9 +210,9 @@ public:
 	// remove a setting
 	bool remove(const std::string &name);
 
-	/**************
-	 * Miscellany *
-	 **************/
+	/*****************
+	 * Miscellaneous *
+	 *****************/
 
 	void setDefault(const std::string &name, const FlagDesc *flagdesc, u32 flags);
 	const FlagDesc *getFlagDescFallback(const std::string &name) const;
@@ -213,6 +223,10 @@ public:
 		SettingsChangedCallback cbf, void *userdata = NULL);
 
 	void removeSecureSettings();
+
+	// Returns the settings layer this object is.
+	// If within the global hierarchy you can cast this to enum SettingsLayer
+	inline int getLayer() const { return m_settingslayer; }
 
 private:
 	/***********************
@@ -257,7 +271,8 @@ private:
 	// All methods that access m_settings/m_defaults directly should lock this.
 	mutable std::mutex m_mutex;
 
-	static Settings *s_layers[SL_TOTAL_COUNT];
-	SettingsLayer m_settingslayer = SL_TOTAL_COUNT;
+	SettingsHierarchy *m_hierarchy = nullptr;
+	int m_settingslayer = -1;
+
 	static std::unordered_map<std::string, const FlagDesc *> s_flags;
 };

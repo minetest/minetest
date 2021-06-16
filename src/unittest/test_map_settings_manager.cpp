@@ -148,6 +148,11 @@ void TestMapSettingsManager::testMapSettingsManager()
 		check_noise_params(&dummy, &script_np_factor);
 	}
 
+	// The settings manager MUST leave user settings alone
+	mgr.setMapSetting("testname", "1");
+	mgr.setMapSetting("testname", "1", true);
+	UASSERT(!Settings::getLayer(SL_GLOBAL)->exists("testname"));
+
 	// Now make our Params and see if the values are correctly sourced
 	MapgenParams *params = mgr.makeMapgenParams();
 	UASSERT(params->mgtype == MAPGEN_V5);
