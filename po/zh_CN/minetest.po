@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-06-17 23:42+0000\n"
-"Last-Translator: Yangjun Wang <yangjunw50@outlook.com>\n"
+"PO-Revision-Date: 2021-06-21 11:33+0000\n"
+"Last-Translator: Riceball LEE <snowyu.lee@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -15,46 +15,41 @@ msgstr ""
 "X-Generator: Weblate 4.7\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "显示最大聊天记录的行度"
+msgstr "清除聊天发送队列"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
 msgid "Empty command."
-msgstr "聊天命令"
+msgstr "空命令."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "退出至菜单"
+msgstr "退出至主菜单"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "本地命令"
+msgstr "无效命令 "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "发送的命令 "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "单人游戏"
+msgstr "列出联机玩家"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "单人游戏"
+msgstr "联机游戏: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "聊天发送队列现在为空。"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "服务器已禁用该命令."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -65,36 +60,33 @@ msgid "You died"
 msgstr "您已经死亡"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "您已经死亡"
+msgstr "您已经死亡."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "本地命令"
+msgstr "可用命令:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "本地命令"
+msgstr "可用命令: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "命令不可用： "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "获取命令帮助"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
-msgstr ""
+msgstr "使用 '.help <cmd>' 获取该命令的更多信息，或使用 '.help all' 列出所有内容。"
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <命令>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -110,7 +102,7 @@ msgstr "发生了错误："
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "主单"
+msgstr "主菜单"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -249,7 +241,7 @@ msgstr "正在下载 $1 ……"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr "无法找到$1个依赖项。"
+msgstr "有$1个依赖项没有找到。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
@@ -779,16 +771,15 @@ msgstr "请尝试重新启用公共服务器列表并检查您的网络连接。
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "关于"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
 msgstr "积极贡献者"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "活动目标发送范围"
+msgstr "主动渲染器:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -803,6 +794,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"在文件(资源)管理器中打开含有用户提供的世界，游戏，mods\n"
+"和纹理包的目录。"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -954,7 +947,7 @@ msgstr "收藏项"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "不兼容的服务器"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -971,7 +964,7 @@ msgstr "公开服务器"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "刷新"
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1019,13 +1012,12 @@ msgid "Connected Glass"
 msgstr "连通玻璃"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dynamic shadows"
-msgstr "字体阴影"
+msgstr "动态阴影"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "动态阴影: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1033,15 +1025,15 @@ msgstr "华丽树叶"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "高"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "低"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "中"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
