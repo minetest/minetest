@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-06-01 18:49+0000\n"
-"Last-Translator: David Leal <halfpacho@gmail.com>\n"
+"PO-Revision-Date: 2021-06-21 11:33+0000\n"
+"Last-Translator: Jordan Irwin <antumdeluge@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,41 +12,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.7\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "Tamaño máximo de la cola de salida del chat"
+msgstr "Vaciar la cola de chat de salida"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Comandos de Chat"
+msgstr "Comando vacío."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Salir al menú"
+msgstr "Salir al menú principal"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Comando local"
+msgstr "Comando inválido: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Comando emitido: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Un jugador"
+msgstr "Listar jugadores conectados"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Un jugador"
+msgstr "Jugadores conectados: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -65,27 +59,24 @@ msgid "You died"
 msgstr "Has muerto"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Has muerto"
+msgstr "Has muerto."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Comando local"
+msgstr "Comandos disponibles:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Comando local"
+msgstr "Comandos disponibles: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Comando no disponible: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Obtener ayuda para los comandos"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -791,16 +782,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Acerca de"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
 msgstr "Colaboradores activos"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "Rango de envío en objetos activos"
+msgstr "Renderizador activo:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -935,9 +925,8 @@ msgid "Start Game"
 msgstr "Empezar juego"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Dirección: "
+msgstr "Dirección"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -953,22 +942,20 @@ msgstr "Modo creativo"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Daño"
+msgstr "Daño / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Borrar Fav."
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Favorito"
+msgstr "Favoritos"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Servidores Incompatibles"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -979,18 +966,16 @@ msgid "Ping"
 msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Anunciar servidor"
+msgstr "Servidores Públicos"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Actualizar"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "Descripción del servidor"
+msgstr "Descripción del Servidor"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1033,13 +1018,12 @@ msgid "Connected Glass"
 msgstr "Vidrio conectado"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dynamic shadows"
-msgstr "Sombra de la fuente"
+msgstr "Sombras dinámicas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Sombras dinámicas: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1470,9 +1454,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "El minimapa se encuentra actualmente desactivado por el juego o un mod"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Un jugador"
+msgstr "Multijugador"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1908,9 +1891,8 @@ msgid "Proceed"
 msgstr "Continuar"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Especial\" = Descender"
+msgstr "\"Aux1\" = bajar"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -1930,7 +1912,7 @@ msgstr "Atrás"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Límites de bloque"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2488,9 +2470,8 @@ msgid "Autoscaling mode"
 msgstr "Modo de autoescalado"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key"
-msgstr "Tecla Saltar"
+msgstr "Tecla Aux1"
 
 #: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
@@ -2748,9 +2729,8 @@ msgid "Colored fog"
 msgstr "Niebla colorida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Niebla colorida"
+msgstr "Sombras coloridas"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3371,12 +3351,11 @@ msgid "Fast movement"
 msgstr "Movimiento rápido"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Movimiento rápido (por medio de tecla de \"Uso\").\n"
+"Movimiento rápido (por medio de tecla de \"Aux1\").\n"
 "Requiere privilegio \"fast\" (rápido) en el servidor."
 
 #: src/settings_translation_file.cpp
@@ -4002,14 +3981,13 @@ msgstr ""
 "a fin de no malgastar potencia de CPU sin beneficio."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If disabled, \"Aux1\" key is used to fly fast if both fly and fast mode are\n"
 "enabled."
 msgstr ""
-"Si está desactivado, la tecla \"especial\" se utiliza para volar rápido si "
-"tanto el modo de vuelo como el modo rápido están\n"
-"habilitados."
+"Si está desactivado, la tecla \"Aux1\" se utiliza para volar rápido si el "
+"modo\n"
+"de vuelo y el modo rápido están habilitados."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5338,11 +5316,11 @@ msgid ""
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
-"Atributos de generación de mapas específicos del generador de mapas "
-"Valleys.\n"
+"Atributos de generación de mapas específicos del generador de mapas Valleys."
+"\n"
 "'altitude_chill': Reduce el calor con la altitud.\n"
 "'humid_rivers': Aumenta la humedad alrededor de ríos.\n"
-"'vary_river_depth': Si está activo, la baja humedad y alto calor causan que "
+"'vary_river_depth': Si está activo, la baja humedad y alto calor causan que\n"
 "los ríos sean poco profundos y ocasionalmente secos.\n"
 "'altitude_dry': Reduce la humedad con la altitud."
 
@@ -5351,40 +5329,29 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Atributos de generación de mapas específicos al generador de mapas v5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
+"Atributos específicos para la generación de Mapgen v6.\n"
+"La opción 'snowbiomes' activa el nuevo sistema de generación de 5 biomas.\n"
+"Cuando la opción 'snowbiomes' está activada, las junglas se activan "
+"automáticamente y\n"
+"la opción 'jungles' es ignorada."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges': Rivers.\n"
 "'floatlands': Floating land masses in the atmosphere.\n"
 "'caverns': Giant caves deep underground."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
+"Atributos específicos para la generación de Mapgen v7.\n"
+"'ridges': Rios.\n"
+"'floatlands': Masas de tierra flotantes en la atmósfera.\n"
+"'caverns': Cavernas gigantes subterráneo profundo."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5395,9 +5362,8 @@ msgid "Map save interval"
 msgstr "Intervalo de guardado de mapa"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Map update time"
-msgstr "Tick de actualización de los líquidos"
+msgstr "Tiempo de actualización de mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -5512,7 +5478,7 @@ msgstr "FPS máximo cuando el juego está pausado."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr ""
+msgstr "Distancia máxima para renderizar las sombras."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5601,18 +5567,17 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
-"Número máximo de paquetes enviados por paso de envío. Si tiene una conexión "
-"lenta, intente reducirlo, pero no lo reduzca a un número menor al doble del "
+"Número máximo de paquetes enviados por paso de envío. Si tiene una conexión\n"
+"lenta, intente reducirlo, pero no lo reduzca a un número menor al doble del\n"
 "número de cliente objetivo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum number of players that can be connected simultaneously."
-msgstr "Cantidad de bloques que flotan simultáneamente por cliente."
+msgstr "Número máximo de jugadores que se pueden conectar simultáneamente."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of recent chat messages to show"
-msgstr "Número máximo de mensajes del chat recientes a mostrar."
+msgstr "Número máximo de mensajes del chat recientes a mostrar"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
@@ -5620,7 +5585,7 @@ msgstr "Número máximo de objetos almacenados estáticamente en un bloque."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
-msgstr "Objetos máximos por bloque."
+msgstr "Objetos máximos por bloque"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5650,19 +5615,20 @@ msgstr ""
 "ilimitado."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum time a file download (e.g. a mod download) may take, stated in "
 "milliseconds."
 msgstr ""
-"Tiempo máximo en ms que puede demorar una descarga (por ejemplo, la descarga "
-"de un mod)."
+"Tiempo máximo que puede tardar la descarga de archivo (p.ej. una descarga de "
+"mod) en milisegundos."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum time an interactive request (e.g. server list fetch) may take, "
 "stated in milliseconds."
 msgstr ""
+"Tiempo máximo que puede tardar la solicitud interactiva (p.ej. una búsqueda "
+"de lista de servidores) en milisegundos."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
@@ -5752,7 +5718,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mountain zero level"
-msgstr ""
+msgstr "Nivel cero de montañas"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
@@ -5806,7 +5772,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Near plane"
-msgstr ""
+msgstr "Plano cercano"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5992,6 +5958,8 @@ msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
+"Puerto de conectarse (UDP).\n"
+"Nota que el campo de puerto en el menú principal anula esta configuración."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6001,7 +5969,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
+msgstr "Evitar que mods hagan cosas inseguras como ejecutar comandos de shell."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6015,7 +5983,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "Perfilador"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
@@ -6054,7 +6022,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Entrada aleatoria"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
@@ -6065,17 +6033,16 @@ msgid "Recent Chat Messages"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "Ruta de fuentes"
+msgstr "Ruta de fuente regular"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "Medios remotos"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Puerto remoto"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6085,7 +6052,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "Sustituye el menú principal por defecto con uno personalizado."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
