@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-04-28 01:32+0000\n"
+"PO-Revision-Date: 2021-07-25 23:36+0000\n"
 "Last-Translator: Nicolae Crefelean <kneekoo@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
@@ -13,48 +13,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Golește coada mesajelor de chat"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Comenzi de chat"
+msgstr "Comenzi de chat."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Ieși în Meniu"
+msgstr "Ieși în meniul principal"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Comandă locală"
+msgstr "Comandă greșită: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Comanda dată: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Jucător singur"
+msgstr "Arată jucătorii conectați"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Jucător singur"
+msgstr "Jucători conectați: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Coada mesajelor de chat a fost golită."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Această comandă este dezactivată de server."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -65,36 +60,35 @@ msgid "You died"
 msgstr "Ai murit"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Ai murit"
+msgstr "Ai murit."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Comandă locală"
+msgstr "Comenzi disponibile:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Comandă locală"
+msgstr "Comenzi disponibile: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Comandă indisponibilă: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Obține ajutor pentru comenzi"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Folosește „.help <cmd>” pentru detalii sau „.help all” pentru informații "
+"complete."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -235,7 +229,7 @@ msgstr "Dependențele $1 și $2 vor fi instalate."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1, de $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -349,11 +343,11 @@ msgstr "Actualizare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Actualizează tot [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Vezi detalii într-un navigator web"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -788,16 +782,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Despre"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
 msgstr "Contribuitori activi"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "Interval de trimitere obiect e activ"
+msgstr "Tipul curent de randare:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -812,6 +805,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Deschide într-un manager de fișiere directorul care conține lumile,\n"
+"jocurile, modificările și texturile furnizate de utilizator."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -891,7 +886,7 @@ msgstr "Instalarea jocurilor din ContentDB"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -930,9 +925,8 @@ msgid "Start Game"
 msgstr "Începe Jocul"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Adresa: "
+msgstr "Adresă"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -948,22 +942,20 @@ msgstr "Modul Creativ"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Daune"
+msgstr "Daune / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Şterge Favorit"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Favorit"
+msgstr "Favorite"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Servere incompatibile"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -974,16 +966,14 @@ msgid "Ping"
 msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Anunțare server"
+msgstr "Servere publice"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Actualizează"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
 msgstr "Descrierea serverului"
 
@@ -1029,15 +1019,15 @@ msgstr "Sticlă conectată"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
-msgstr ""
+msgstr "Umbre dinamice"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Umbre dinamice: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr "Frunze luxsoase"
+msgstr "Frunze detaliate"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
@@ -2785,7 +2775,7 @@ msgstr "Se conectează la server media extern"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Unește sticla dacă nodul permite asta."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -2805,7 +2795,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Maximul de descărcări simultane din ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
