@@ -930,7 +930,7 @@ mute_sound (Mute sound) bool false
 
 [Client]
 
-#    Clickable weblinks enabled in chat console output.
+#    Clickable weblinks (middle-click or ctrl-left-click) enabled in chat console output.
 clickable_chat_weblinks (Chat weblinks) bool false
 
 #    Optional override for chat weblink color.
