@@ -65,6 +65,8 @@ void set_default_settings()
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("enable_register_confirmation", "true");
+	settings->setDefault("clickable_chat_weblinks", "false");
+	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");
@@ -282,8 +284,6 @@ void set_default_settings()
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 	settings->setDefault("joystick_deadzone", "2048");
-	settings->setDefault("clickable_chat_weblinks", "false");
-	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Main menu
 	settings->setDefault("main_menu_path", "");

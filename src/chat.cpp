@@ -38,7 +38,7 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 
 	m_cache_clickable_chat_weblinks = false;
 	// Curses mode cannot access g_settings here
-	if (g_settings != NULL) {
+	if (g_settings != nullptr) {
 		m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
 		if (m_cache_clickable_chat_weblinks) {
 			std::string colorval = g_settings->get("chat_weblink_color");

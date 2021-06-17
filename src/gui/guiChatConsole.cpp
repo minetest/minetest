@@ -40,6 +40,10 @@ inline u32 clamp_u8(s32 value)
 	return (u32) MYMIN(MYMAX(value, 0), 255);
 }
 
+inline bool isInCtrlKeys(const irr::EKEY_CODE& kc)
+{
+	return kc == KEY_LCONTROL || kc == KEY_RCONTROL || kc == KEY_CONTROL;
+}
 
 GUIChatConsole::GUIChatConsole(
 		gui::IGUIEnvironment* env,
@@ -669,11 +673,6 @@ void GUIChatConsole::setVisible(bool visible)
 	}
 }
 
-bool GUIChatConsole::isInCtrlKeys(const irr::EKEY_CODE& kc)
-{
-	return kc == KEY_LCONTROL || kc == KEY_RCONTROL || kc == KEY_CONTROL;
-}
-
 void GUIChatConsole::middleClick(s32 col, s32 row)
 {
 	// Prevent accidental rapid clicking
@@ -721,16 +720,16 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 
 	// User notification
 	if (weblink.size() != 0) {
-		std::ostringstream mesg;
-		mesg << " * ";
+		std::ostringstream msg;
+		msg << " * ";
 		if (porting::open_url(weblink)) {
-			mesg << gettext("Opening webpage");
+			msg << gettext("Opening webpage");
 		}
 		else {
-			mesg << gettext("Failed to open webpage");
+			msg << gettext("Failed to open webpage");
 		}
-		mesg << " '" << weblink << "'";
-		mesg.flush();
-		m_chat_backend->addUnparsedMessage(utf8_to_wide(mesg.str()));
+		msg << " '" << weblink << "'";
+		msg.flush();
+		m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
 	}
 }

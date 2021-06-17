@@ -82,8 +82,6 @@ private:
 	void drawText();
 	void drawPrompt();
 
-	// Clickable weblink stuff
-	bool isInCtrlKeys(const irr::EKEY_CODE& kc);
 	// If clicked fragment has a web url, send it to the system default web browser
 	void middleClick(s32 col, s32 row);
 

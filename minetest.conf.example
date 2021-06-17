@@ -16,14 +16,6 @@
 # Controls
 #
 
-#    If enabled, http links in chat can be middle-clicked or ctrl-left-clicked to open the link in the OS's default web browser.
-#    type: bool
-# clickable_chat_weblinks = false
-
-#    If clickable_chat_weblinks is enabled, specify the color (as 24-bit hexadecimal) of weblinks in chat.
-#    type: string
-# chat_weblink_color = #8888FF
-
 #    If enabled, you can place blocks at the position (feet + eye level) where you stand.
 #    This is helpful when working with nodeboxes in small areas.
 #    type: bool
@@ -1112,6 +1104,14 @@
 #
 # Client
 #
+
+#    If enabled, http links in chat can be middle-clicked or ctrl-left-clicked to open the link in the OS's default web browser.
+#    type: bool
+# clickable_chat_weblinks = false
+
+#    If clickable_chat_weblinks is enabled, specify the color (as 24-bit hexadecimal) of weblinks in chat.
+#    type: string
+# chat_weblink_color = #8888FF
 
 ## Network
 
