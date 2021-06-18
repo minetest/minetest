@@ -219,16 +219,14 @@ void ItemDefinition::deSerialize(std::istream &is)
 	inventory_overlay = deSerializeString16(is);
 	wield_overlay = deSerializeString16(is);
 
-	try {
-		light_source = readU8(is);
-	} catch(SerializationError &e) {};
-
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try {
 		short_description = deSerializeString16(is);
 
 		place_param2 = readU8(is); // 0 if missing
+
+		light_source = readU8(is);
 	} catch(SerializationError &e) {};
 }
 
