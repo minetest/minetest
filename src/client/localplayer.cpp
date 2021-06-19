@@ -360,7 +360,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_standing_node = m_sneak_node;
 
 		// (BS * 0.6f) is the basic stepheight while standing on ground
-		if (y_diff < BS * 0.6f) {
+		if (y_diff < BS * 0.6f && m_speed.Y <= 0.0f) {
 			// Only center player when they're on the node
 			position.X = rangelim(position.X,
 				bmin.X - sneak_max.X, bmax.X + sneak_max.X);
