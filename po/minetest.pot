@@ -6551,3 +6551,12 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+
+#: src/gui/guiChatConsole.cpp
+msgid "Opening webpage"
+msgstr ""
+
+#: src/gui/guiChatConsole.cpp
+msgid "Failed to open webpage"
+msgstr ""
+

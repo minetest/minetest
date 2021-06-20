@@ -1155,6 +1155,14 @@
 # Client
 #
 
+#    If enabled, http links in chat can be middle-clicked or ctrl-left-clicked to open the link in the OS's default web browser.
+#    type: bool
+# clickable_chat_weblinks = false
+
+#    If clickable_chat_weblinks is enabled, specify the color (as 24-bit hexadecimal) of weblinks in chat.
+#    type: string
+# chat_weblink_color = #8888FF
+
 ## Network
 
 #    Address to connect to.
