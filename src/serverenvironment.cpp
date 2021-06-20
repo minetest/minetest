@@ -729,6 +729,8 @@ struct ActiveABM
 	int chance;
 	std::vector<content_t> required_neighbors;
 	bool check_required_neighbors; // false if required_neighbors is known to be empty
+	s16 min_y;
+	s16 max_y;
 };
 
 class ABMHandler
@@ -773,6 +775,9 @@ public:
 			} else {
 				aabm.chance = chance;
 			}
+			// y limits
+			aabm.min_y = abm->getMinY();
+			aabm.max_y = abm->getMaxY();
 
 			// Trigger neighbors
 			const std::vector<std::string> &required_neighbors_s =
@@ -885,6 +890,9 @@ public:
 
 			v3s16 p = p0 + block->getPosRelative();
 			for (ActiveABM &aabm : *m_aabms[c]) {
+				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
+					continue;
+				
 				if (myrand() % aabm.chance != 0)
 					continue;
 

@@ -67,6 +67,10 @@ public:
 	virtual u32 getTriggerChance() = 0;
 	// Whether to modify chance to simulate time lost by an unnattended block
 	virtual bool getSimpleCatchUp() = 0;
+	// get min Y for apply abm
+	virtual s16 getMinY() = 0;
+	// get max Y for apply abm
+	virtual s16 getMaxY() = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
