@@ -1082,9 +1082,9 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	}
 	
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
-	v3s16 dir = g_6dirs[facedir_to_dir[facedir%32]];
+	v3s16 dir = g_6dirs[facedir_to_dir[facedir>>2]];
 	origin += v3f(dir.X*BS,dir.Y*BS,dir.Z*BS);
-	p.Y++;
+	p+=dir;
 	if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
 	} else {
@@ -1092,7 +1092,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		light = LightPair(getInteriorLight(ntop, 1, nodedef));
 	}
 	drawPlantlike();
-	p.Y--;
+	p-=dir;
 }
 
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
