@@ -1029,7 +1029,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The value denotes at which direction the node is "mounted":
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
 * `paramtype2 = "facedir"`
-    * Supported drawtypes: "normal", "nodebox", "mesh"
+    * Supported drawtypes: "normal", "nodebox", "mesh", "plantlike", "plantlike_rooted"
     * The rotation of the node is stored in `param2`. Furnaces and chests are
       rotated this way. Can be made by using `minetest.dir_to_facedir()`.
     * Values range 0 - 23
