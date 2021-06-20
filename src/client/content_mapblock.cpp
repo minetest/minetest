@@ -1079,13 +1079,6 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	if (f->param_type_2 == CPT2_FACEDIR ||
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
 		facedir = n.getFaceDir(nodedef);
-	} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
-			f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		// Convert wallmounted to 6dfacedir.
-		// When cache enabled, it is already converted.
-		facedir = n.getWallMounted(nodedef);
-		if (!enable_mesh_cache)
-			facedir = wallmounted_to_facedir[facedir];
 	}
 	
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
