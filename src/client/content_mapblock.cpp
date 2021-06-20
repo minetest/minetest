@@ -1082,6 +1082,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	}
 	
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
+  const static u8 facedir_to_dir[6] = {1, 0, 3, 2, 5, 4};
 	v3s16 dir = g_6dirs[facedir_to_dir[facedir>>2]];
 	origin += v3f(dir.X*BS,dir.Y*BS,dir.Z*BS);
 	p+=dir;

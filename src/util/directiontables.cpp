@@ -118,8 +118,3 @@ const u8 wallmounted_to_facedir[6] = {
 	8,
 	4 + 2
 };
-
-const u8 facedir_to_dir[6] = {
-	1, 0, 3, 2, 5, 4
-};
-
