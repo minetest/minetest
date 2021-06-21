@@ -897,7 +897,8 @@ void Client::handleCommand_Privileges(NetworkPacket* pkt)
 		infostream << priv << " ";
 	}
 
-	if(m_proto_ver < 40)
+	// Enable basic_debug on server versions before it was added
+	if (m_proto_ver < 40)
 		m_privileges.insert("basic_debug");
 
 	infostream << std::endl;
