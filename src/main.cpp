@@ -91,6 +91,7 @@ static void list_worlds(bool print_name, bool print_path);
 static bool setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
+static void uninit_common();
 static void startup_message();
 static bool read_config_file(const Settings &cmd_args);
 static void init_log_streams(const Settings &cmd_args);
@@ -196,12 +197,15 @@ int main(int argc, char *argv[])
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
 #if BUILD_UNITTESTS
-		return run_tests();
+		retval = run_tests();
 #else
 		errorstream << "Unittest support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
 			<< std::endl;
+		retval = 1;
 #endif
+		uninit_common();
+		return retval;
 	}
 #endif
 
@@ -236,8 +240,7 @@ int main(int argc, char *argv[])
 
 	print_modified_quicktune_values();
 
-	// Stop httpfetch thread (if started)
-	httpfetch_cleanup();
+	uninit_common();
 
 	END_DEBUG_EXCEPTION_HANDLER
 
@@ -490,7 +493,6 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 
 	// Initialize sockets
 	sockets_init();
-	atexit(sockets_cleanup);
 
 	// Initialize g_settings
 	Settings::createLayer(SL_GLOBAL);
@@ -511,6 +513,17 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 		g_settings->get("language"), argc, argv);
 
 	return true;
+}
+
+static void uninit_common()
+{
+	httpfetch_cleanup();
+
+	sockets_cleanup();
+
+	// It'd actually be okay to leak these but we want to please valgrind...
+	for (int i = 0; i < (int)SL_TOTAL_COUNT; i++)
+		delete Settings::getLayer((SettingsLayer)i);
 }
 
 static void startup_message()
