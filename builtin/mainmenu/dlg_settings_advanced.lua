@@ -620,7 +620,7 @@ local function create_change_setting_formspec(dialogdata)
 
 		-- Third row
 		add_field(0.3, "te_octaves", fgettext("Octaves"),     t[7])
-		add_field(3.6, "te_persist", fgettext("Persistance"), t[8])
+		add_field(3.6, "te_persist", fgettext("Persistence"), t[8])
 		add_field(6.9, "te_lacun",   fgettext("Lacunarity"),  t[9])
 		height = height + 1.1
 
