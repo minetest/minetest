@@ -946,7 +946,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
 		facedir = n.getFaceDir(nodedef);
 	}
-	
+
 	v3f vertices[4] = {
 		v3f(-scale, -BS / 2 + 2.0 * scale * plant_height, 0),
 		v3f( scale, -BS / 2 + 2.0 * scale * plant_height, 0),
@@ -960,19 +960,19 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	int offset_count = offset_top_only ? 2 : 4;
 	for (int i = 0; i < offset_count; i++)
 		vertices[i].Z += quad_offset;
-	
+
 	// add facedir rotation
 	switch (facedir & 0x3) {
 		case 1: rotation += -90; break;
 		case 2: rotation +=  180; break;
 		case 3: rotation +=  90; break;
 	}
-	
+
 	for (v3f &vertex : vertices) {
 		vertex.rotateXZBy(rotation + rotate_degree);
 		vertex += offset;
 	}
-	
+
 	// rotate when facedir is used
 	if (int axisdir = facedir >> 2) {
 		for (v3f &vertex : vertices) {
@@ -985,7 +985,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 			}
 		}
 	}
-	
+
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 
@@ -1073,7 +1073,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
 		facedir = n.getFaceDir(nodedef);
 	}
-	
+
 	const static u8 facedir_to_dir[6] = {1, 0, 3, 2, 5, 4};
 	v3s16 dir = g_6dirs[facedir_to_dir[facedir >> 2]];
 	origin += v3f(dir.X * BS, dir.Y * BS, dir.Z * BS);
