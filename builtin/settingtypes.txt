@@ -513,7 +513,7 @@ texture_clean_transparent (Clean transparent textures) bool false
 #    can be blurred, so automatically upscale them with nearest-neighbor
 #    interpolation to preserve crisp pixels. This sets the minimum texture size
 #    for the upscaled textures; higher values look sharper, but require more
-#    memory.  Powers of 2 are recommended. This setting is ONLY applies if
+#    memory. Powers of 2 are recommended. This setting is ONLY applied if
 #    bilinear/trilinear/anisotropic filtering is enabled.
 #    This is also used as the base node texture size for world-aligned
 #    texture autoscaling.
@@ -597,7 +597,7 @@ shadow_map_max_distance (Shadow map max distance in nodes to render shadows) flo
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
-#    Bigger numbers create better shadowsbut it is also more expensive.
+#    Bigger numbers create better shadows but it is also more expensive.
 shadow_map_texture_size (Shadow map texture size) int 1024 128 8192
 
 #    Sets shadow texture quality to 32 bits.
@@ -605,12 +605,12 @@ shadow_map_texture_size (Shadow map texture size) int 1024 128 8192
 #    This can cause much more artifacts in the shadow.
 shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
 
-#    Enable poisson disk filtering.
-#    On true uses poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+#    Enable Poisson disk filtering.
+#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
 shadow_poisson_filter (Poisson filtering) bool true
 
 #   Define shadow filtering quality
-#   This simulates the soft shadows effect by applying a PCF or poisson disk
+#   This simulates the soft shadows effect by applying a PCF or Poisson disk
 #   but also uses more resources.
 shadow_filters (Shadow filter quality) enum 1 0,1,2
 
@@ -619,19 +619,19 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 shadow_map_color (Colored shadows) bool false
 
 
-#    Set the shadow update time.
-#    Lower value means shadows and map updates faster, but it consume more resources.
-#    Minimun value 0.001 seconds max value 0.2 seconds
+#    Set the shadow update time, in seconds.
+#    Lower value means shadows and map updates faster, but it consumes more resources.
+#    Minimum value: 0.001; maximum value: 0.2
 shadow_update_time (Map update time) float 0.2 0.001 0.2
 
 #    Set the soft shadow radius size.
-#    Lower values mean sharper shadows bigger values softer.
-#    Minimun value 1.0 and max value 10.0
+#    Lower values mean sharper shadows, bigger values mean softer shadows.
+#    Minimum value: 1.0; maxiumum value: 10.0
 shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
 
 #    Set the tilt of Sun/Moon orbit in degrees
 #    Value of 0 means no tilt / vertical orbit.
-#    Minimun value 0.0 and max value 60.0
+#    Minimum value: 0.0; maximum value: 60.0
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 0.0 60.0
 
 [**Advanced]
@@ -776,7 +776,7 @@ selectionbox_width (Selection box width) int 2 1 5
 crosshair_color (Crosshair color) string (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
-#    Also controls the object crosshair color
+#    This also applies to the object crosshair.
 crosshair_alpha (Crosshair alpha) int 255 0 255
 
 #    Maximum number of recent chat messages to show
@@ -991,9 +991,9 @@ address (Server address) string
 remote_port (Remote port) int 30000 1 65535
 
 #    Prometheus listener address.
-#    If minetest is compiled with ENABLE_PROMETHEUS option enabled,
+#    If Minetest is compiled with ENABLE_PROMETHEUS option enabled,
 #    enable metrics listener for Prometheus on that address.
-#    Metrics can be fetch on http://127.0.0.1:30000/metrics
+#    Metrics can be fetched on http://127.0.0.1:30000/metrics
 prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
 
 #    Save the map received by the client on disk.
