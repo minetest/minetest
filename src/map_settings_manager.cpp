@@ -26,10 +26,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map_settings_manager.h"
 
 MapSettingsManager::MapSettingsManager(const std::string &map_meta_path):
-	m_map_meta_path(map_meta_path)
+	m_map_meta_path(map_meta_path),
+	m_hierarchy(g_settings)
 {
-	m_defaults = new Settings("", this, 2);
-	m_map_settings = new Settings("[end_of_params]", this, 3);
+	/*
+	 * We build our own hierarchy which falls back to the global one.
+	 * It looks as follows: (lowest prio first)
+	 * 0: whatever is picked up from g_settings (incl. engine defaults)
+	 * 1: defaults set by scripts (override_meta = false)
+	 * 2: settings present in map_meta.txt or overriden by scripts
+	 */
+	m_defaults = new Settings("", &m_hierarchy, 2);
+	m_map_settings = new Settings("[end_of_params]", &m_hierarchy, 3);
 }
 
 

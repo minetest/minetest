@@ -42,7 +42,7 @@ struct MapgenParams;
 	  to whichever Map-related objects that may require it.
 	- Save these active settings to the metadata file when requested
 */
-class MapSettingsManager : public SettingsHierarchy {
+class MapSettingsManager {
 public:
 	MapSettingsManager(const std::string &map_meta_path);
 	~MapSettingsManager();
@@ -68,26 +68,10 @@ public:
 	bool saveMapMeta();
 	MapgenParams *makeMapgenParams();
 
-	/*
-	 * We build our own Settings hierarchy, which sits "on top" of the global one.
-	 * It looks as follows: (lowest prio first)
-	 * 1) whatever is picked up from g_settings (incl. engine defaults)
-	 * 2) defaults set by scripts (override_meta = false)
-	 * 3) settings present in map_meta.txt or overriden by scripts
-	 */
-	virtual Settings *getParent(const Settings *obj) const
-	{
-		if (obj == m_map_settings)
-			return m_defaults;
-		assert(obj == m_defaults);
-		return g_settings;
-	}
-
-	virtual void layerCreated(int layer, Settings *obj) {}
-	virtual void layerRemoved(int layer) {}
-
 private:
 	std::string m_map_meta_path;
+
+	SettingsHierarchy m_hierarchy;
 	Settings *m_defaults;
 	Settings *m_map_settings;
 };

@@ -34,61 +34,64 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 
 Settings *g_settings = nullptr;
+static SettingsHierarchy g_hierarchy;
 std::string g_settings_path;
 
 std::unordered_map<std::string, const FlagDesc *> Settings::s_flags;
 
-/* The global hierarchy of settings objects */
+/* Settings hierarchy implementation */
 
-class GlobalHierarchy : public SettingsHierarchy {
-public:
-	virtual Settings *getParent(const Settings *obj) const;
-
-	virtual void layerCreated(int layer, Settings *obj);
-
-	virtual void layerRemoved(int layer);
-
-	static Settings *s_layers[SL_TOTAL_COUNT];
-};
-
-Settings *GlobalHierarchy::s_layers[SL_TOTAL_COUNT] = {0};
-static GlobalHierarchy g_hierarchy;
-
-
-Settings *GlobalHierarchy::getParent(const Settings *obj) const
+SettingsHierarchy::SettingsHierarchy(Settings *fallback)
 {
-	int layer = obj->getLayer();
-	assert(layer >= 0 && layer < SL_TOTAL_COUNT);
+	layers.resize(1);
+	layers[0] = fallback;
+}
+
+
+Settings *SettingsHierarchy::getLayer(int layer) const
+{
+	if (layer < 0 || layer >= layers.size())
+		throw BaseException("Invalid settings layer");
+	return layers[layer];
+}
+
+
+Settings *SettingsHierarchy::getParent(int layer) const
+{
+	assert(layer >= 0 && layer < layers.size());
 	// iterate towards the origin (0) to find the next fallback layer
 	for (int i = layer - 1; i >= 0; --i) {
-		if (s_layers[i])
-			return s_layers[i];
+		if (layers[i])
+			return layers[i];
 	}
 
 	return nullptr;
 }
 
 
-void GlobalHierarchy::layerCreated(int layer, Settings *obj)
+void SettingsHierarchy::layerCreated(int layer, Settings *obj)
 {
-	if (layer < 0 || layer >= SL_TOTAL_COUNT)
+	if (layer < 0)
 		throw BaseException("Invalid settings layer");
+	if (layers.size() < layer+1)
+		layers.resize(layer+1);
 
-	Settings *&pos = s_layers[layer];
+	Settings *&pos = layers[layer];
 	if (pos)
 		throw BaseException("Setting layer " + itos(layer) + " already exists");
 
 	pos = obj;
-	if (layer == SL_GLOBAL)
+	// This feels bad
+	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
 		g_settings = obj;
 }
 
 
-void GlobalHierarchy::layerRemoved(int layer)
+void SettingsHierarchy::layerRemoved(int layer)
 {
-	assert(layer >= 0 && layer < SL_TOTAL_COUNT);
-	s_layers[layer] = nullptr;
-	if (layer == SL_GLOBAL)
+	assert(layer >= 0 && layer < layers.size());
+	layers[layer] = nullptr;
+	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
 		g_settings = nullptr;
 }
 
@@ -103,7 +106,7 @@ Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 Settings *Settings::getLayer(SettingsLayer sl)
 {
 	sanity_check((int)sl >= 0 && sl < SL_TOTAL_COUNT);
-	return g_hierarchy.s_layers[(int)sl];
+	return g_hierarchy.layers[(int)sl];
 }
 
 
@@ -459,7 +462,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 
 Settings *Settings::getParent() const
 {
-	return m_hierarchy ? m_hierarchy->getParent(this) : nullptr;
+	return m_hierarchy ? m_hierarchy->getParent(m_settingslayer) : nullptr;
 }
 
 

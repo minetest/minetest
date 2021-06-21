@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
+#include "util/basic_macros.h"
 #include <string>
 #include <list>
 #include <set>
@@ -68,12 +69,26 @@ enum SettingsLayer {
 	SL_TOTAL_COUNT
 };
 
-// Implements a hierarchy a settings object may be part of
+// Implements the hierarchy a settings object may be part of
 class SettingsHierarchy {
 public:
-	virtual Settings *getParent(const Settings *obj) const = 0;
-	virtual void layerCreated(int layer, Settings *obj) = 0;
-	virtual void layerRemoved(int layer) = 0;
+	/*
+	 * A settings object that may be part of another hierarchy can
+	 * occupy the index 0 as a fallback. If not set you can use 0 on your own.
+	 */
+	SettingsHierarchy(Settings *fallback = nullptr);
+
+	DISABLE_CLASS_COPY(SettingsHierarchy)
+
+	Settings *getLayer(int layer) const;
+
+private:
+	friend class Settings;
+	Settings *getParent(int layer) const;
+	void layerCreated(int layer, Settings *obj);
+	void layerRemoved(int layer);
+
+	std::vector<Settings*> layers;
 };
 
 struct ValueSpec {
