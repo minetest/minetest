@@ -205,9 +205,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Updated set_sky packet
 		Adds new sun, moon and stars packets
 		Minimap modes
+	PROTOCOL VERSION 40:
+		Added 'basic_debug' privilege
 */
 
-#define LATEST_PROTOCOL_VERSION 39
+#define LATEST_PROTOCOL_VERSION 40
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range

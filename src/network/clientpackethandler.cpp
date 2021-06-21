@@ -896,6 +896,10 @@ void Client::handleCommand_Privileges(NetworkPacket* pkt)
 		m_privileges.insert(priv);
 		infostream << priv << " ";
 	}
+
+	if(m_proto_ver < 40)
+		m_privileges.insert("basic_debug");
+
 	infostream << std::endl;
 }
 
