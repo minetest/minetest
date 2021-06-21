@@ -36,8 +36,8 @@ MapSettingsManager::MapSettingsManager(const std::string &map_meta_path):
 	 * 1: defaults set by scripts (override_meta = false)
 	 * 2: settings present in map_meta.txt or overriden by scripts
 	 */
-	m_defaults = new Settings("", &m_hierarchy, 2);
-	m_map_settings = new Settings("[end_of_params]", &m_hierarchy, 3);
+	m_defaults = new Settings("", &m_hierarchy, 1);
+	m_map_settings = new Settings("[end_of_params]", &m_hierarchy, 2);
 }
 
 
