@@ -31,6 +31,10 @@ end
 
 -- returns error message, or nil
 local function parse_setting_line(settings, line, read_all, base_level, allow_secure)
+
+	-- strip carriage returns (CR, /r)
+	line = line:gsub("\r", "")
+
 	-- comment
 	local comment = line:match("^#" .. CHAR_CLASSES.SPACE .. "*(.*)$")
 	if comment then
