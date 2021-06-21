@@ -945,13 +945,6 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	if (f->param_type_2 == CPT2_FACEDIR ||
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
 		facedir = n.getFaceDir(nodedef);
-	} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
-			f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		// Convert wallmounted to 6dfacedir.
-		// When cache enabled, it is already converted.
-		facedir = n.getWallMounted(nodedef);
-		if (!enable_mesh_cache)
-			facedir = wallmounted_to_facedir[facedir];
 	}
 	
 	v3f vertices[4] = {
@@ -969,10 +962,10 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		vertices[i].Z += quad_offset;
 	
 	// add facedir rotation
-	switch(facedir & 0x3) {
+	switch (facedir & 0x3) {
 		case 1: rotation += -90; break;
-		case 2: rotation += 180; break;
-		case 3: rotation += 90; break;
+		case 2: rotation +=  180; break;
+		case 3: rotation +=  90; break;
 	}
 	
 	for (v3f &vertex : vertices) {
@@ -985,10 +978,10 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		for (v3f &vertex : vertices) {
 			switch(axisdir) {
 				case 1: vertex.rotateYZBy( 90); break;
-				case 2: vertex.rotateYZBy( -90); break;
-				case 3: vertex.rotateXYBy( -90); break;
+				case 2: vertex.rotateYZBy(-90); break;
+				case 3: vertex.rotateXYBy(-90); break;
 				case 4: vertex.rotateXYBy( 90); break;
-				case 5: vertex.rotateXYBy( -180); break;
+				case 5: vertex.rotateXYBy(-180); break;
 			}
 		}
 	}
@@ -1081,11 +1074,12 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		facedir = n.getFaceDir(nodedef);
 	}
 	
-	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	const static u8 facedir_to_dir[6] = {1, 0, 3, 2, 5, 4};
-	v3s16 dir = g_6dirs[facedir_to_dir[facedir>>2]];
-	origin += v3f(dir.X*BS,dir.Y*BS,dir.Z*BS);
-	p+=dir;
+	v3s16 dir = g_6dirs[facedir_to_dir[facedir >> 2]];
+	origin += v3f(dir.X * BS, dir.Y * BS, dir.Z * BS);
+	p += dir;
+
+	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
 	} else {
@@ -1093,7 +1087,8 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		light = LightPair(getInteriorLight(ntop, 1, nodedef));
 	}
 	drawPlantlike();
-	p-=dir;
+
+	p -= dir;
 }
 
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
