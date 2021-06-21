@@ -870,6 +870,11 @@ void Hud::toggleBlockBounds()
 	}
 }
 
+void Hud::disableBlockBounds()
+{
+	m_block_bounds_mode = BLOCK_BOUNDS_OFF;
+}
+
 void Hud::drawBlockBounds()
 {
 	if (m_block_bounds_mode == BLOCK_BOUNDS_OFF) {

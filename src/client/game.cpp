@@ -694,6 +694,7 @@ protected:
 	void toggleFast();
 	void toggleNoClip();
 	void toggleCinematic();
+	void toggleBlockBounds();
 	void toggleAutoforward();
 
 	void toggleMinimap(bool shift_pressed);
@@ -1731,6 +1732,7 @@ void Game::updateBasicDebugState()
 	if (m_game_ui->m_flags.show_basic_debug) {
 		if (!client->checkPrivilege("basic_debug")) {
 			m_game_ui->m_flags.show_basic_debug = false;
+			hud->disableBlockBounds();
 		}
 	} else if (m_game_ui->m_flags.show_minimal_debug) {
 		if (client->checkPrivilege("basic_debug")) {
@@ -1950,7 +1952,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
 		client->makeScreenshot();
 	} else if (wasKeyDown(KeyType::TOGGLE_BLOCK_BOUNDS)) {
-		hud->toggleBlockBounds();
+		toggleBlockBounds();
 	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
 		m_game_ui->toggleHud();
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
@@ -2186,6 +2188,15 @@ void Game::toggleCinematic()
 		m_game_ui->showTranslatedStatusText("Cinematic mode enabled");
 	else
 		m_game_ui->showTranslatedStatusText("Cinematic mode disabled");
+}
+
+void Game::toggleBlockBounds()
+{
+	if (client->checkPrivilege("basic_debug")) {
+		hud->toggleBlockBounds();
+	} else {
+		m_game_ui->showTranslatedStatusText("Can't show block bounds (need 'basic_debug' privilege)");
+	}
 }
 
 // Autoforward by toggling continuous forward.

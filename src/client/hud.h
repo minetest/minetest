@@ -52,6 +52,7 @@ public:
 	~Hud();
 
 	void toggleBlockBounds();
+	void disableBlockBounds();
 	void drawBlockBounds();
 
 	void drawHotbar(u16 playeritem);
