@@ -676,6 +676,7 @@ protected:
 	bool handleCallbacks();
 	void processQueues();
 	void updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime);
+	void updateBasicDebugState();
 	void updateStats(RunStats *stats, const FpsControl &draw_times, f32 dtime);
 	void updateProfilerGraphs(ProfilerGraph *graph);
 
@@ -1108,6 +1109,7 @@ void Game::run()
 		m_game_ui->clearInfoText();
 		hud->resizeHotbar();
 
+
 		updateProfilers(stats, draw_times, dtime);
 		processUserInput(dtime);
 		// Update camera before player movement to avoid camera lag of one frame
@@ -1119,6 +1121,7 @@ void Game::run()
 		updatePlayerControl(cam_view);
 		step(&dtime);
 		processClientEvents(&cam_view_target);
+		updateBasicDebugState();
 		updateCamera(draw_times.busy_time, dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud,
@@ -1723,6 +1726,18 @@ void Game::processQueues()
 	shader_src->processQueue();
 }
 
+void Game::updateBasicDebugState()
+{
+	if (m_game_ui->m_flags.show_basic_debug) {
+		if (!client->checkPrivilege("basic_debug")) {
+			m_game_ui->m_flags.show_basic_debug = false;
+		}
+	} else if (m_game_ui->m_flags.show_minimal_debug) {
+		if (client->checkPrivilege("basic_debug")) {
+			m_game_ui->m_flags.show_basic_debug = true;
+		}
+	}
+}
 
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 		f32 dtime)
