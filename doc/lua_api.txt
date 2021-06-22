@@ -1022,8 +1022,8 @@ The function of `param2` is determined by `paramtype2` in node definition.
       to access/manipulate the content of this field
     * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
-    * Supported drawtypes:
-      "torchlike", "signlike", "plantlike", "normal", "nodebox", "mesh"
+    * Supported drawtypes: "torchlike", "signlike", "plantlike",
+      "plantlike_rooted", "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`
     * You can make this value by using `minetest.dir_to_wallmounted()`
     * Values range 0 - 5

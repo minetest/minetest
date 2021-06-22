@@ -989,7 +989,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 
-void MapblockMeshGenerator::drawPlantlike()
+void MapblockMeshGenerator::drawPlantlike(bool is_rooted)
 {
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
@@ -1024,6 +1024,22 @@ void MapblockMeshGenerator::drawPlantlike()
 
 	default:
 		break;
+	}
+
+	if (is_rooted) {
+		u8 wall = n.getWallMounted(nodedef);
+		switch (wall) {
+			case DWM_YP:
+				offset.Y += BS*2;
+				break;
+			case DWM_XN:
+			case DWM_XP:
+			case DWM_ZN:
+			case DWM_ZP:
+				offset.X += -BS;
+				offset.Y +=  BS;
+				break;
+		}
 	}
 
 	switch (draw_style) {
@@ -1076,7 +1092,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		light = LightPair(getInteriorLight(ntop, 1, nodedef));
 	}
-	drawPlantlike();
+	drawPlantlike(true);
 	p.Y--;
 }
 

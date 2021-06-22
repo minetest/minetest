@@ -333,6 +333,20 @@ minetest.register_node("testnodes:plantlike_rooted", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:plantlike_rooted_wallmounted", {
+	description = S("Wallmounted Rooted Plantlike Drawtype Test Node"),
+	drawtype = "plantlike_rooted",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	tiles = {
+		"testnodes_plantlike_rooted_base.png",
+		"testnodes_plantlike_rooted_base.png",
+		"testnodes_plantlike_rooted_base_side_wallmounted.png" },
+	special_tiles = { "testnodes_plantlike_rooted_wallmounted.png" },
+
+	groups = { dig_immediate = 3 },
+})
+
 minetest.register_node("testnodes:plantlike_rooted_waving", {
 	description = S("Waving Rooted Plantlike Drawtype Test Node"),
 	drawtype = "plantlike_rooted",
