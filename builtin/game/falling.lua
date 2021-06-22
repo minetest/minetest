@@ -142,7 +142,9 @@ core.register_entity(":__builtin:falling_node", {
 		end
 
 		-- Rotate entity
-		if def.drawtype == "torchlike" then
+		if def.drawtype == "plantlike" or def.drawtype == "plantlike_rooted" then
+			-- No rotation
+		elseif def.drawtype == "torchlike" then
 			self.object:set_yaw(math.pi*0.25)
 		elseif ((node.param2 ~= 0 or def.drawtype == "nodebox" or def.drawtype == "mesh")
 				and (def.wield_image == "" or def.wield_image == nil))
