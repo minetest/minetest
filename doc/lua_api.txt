@@ -77,8 +77,16 @@ The game directory can contain the following files:
       `disallowed_mapgens`.
     * `disallowed_mapgen_settings= <comma-separated mapgen settings>`
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
-      These settings are hidden for this game in the world creation
+      These mapgen settings are hidden for this game in the world creation
       dialog and game start menu.
+    * `disabled_settings = <comma-separated settings>`
+      e.g. `disabled_settings = enable_damage, creative_mode`
+      These settings are hidden for this game in the "Start game" tab
+      and will be initialized as `false` when the game is started.
+      Prepend a setting name with an exclamation mark to initialize it to `true`
+      (this does not work for `enable_server`).
+      Only these settings are supported:
+          `enable_damage`, `creative_mode`, `enable_server`.
     * `author`: The author of the game. It only appears when downloaded from
                 ContentDB.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
