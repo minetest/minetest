@@ -958,6 +958,34 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		vertex.rotateXZBy(rotation + rotate_degree);
 		vertex += offset;
 	}
+
+	u8 wall = n.getWallMounted(nodedef);
+	if (wall != DWM_YN) {
+		for (v3f &vertex : vertices) {
+			switch (wall) {
+				case DWM_YP:
+					vertex.rotateYZBy(180);
+					vertex.rotateXZBy(180);
+					break;
+				case DWM_XP:
+					vertex.rotateXYBy(90);
+					break;
+				case DWM_XN:
+					vertex.rotateXYBy(-90);
+					vertex.rotateYZBy(180);
+					break;
+				case DWM_ZP:
+					vertex.rotateYZBy(-90);
+					vertex.rotateXYBy(90);
+					break;
+				case DWM_ZN:
+					vertex.rotateYZBy(90);
+					vertex.rotateXYBy(90);
+					break;
+			}
+		}
+	}
+
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 

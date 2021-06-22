@@ -161,7 +161,8 @@ u8 MapNode::getWallMounted(const NodeDefManager *nodemgr) const
 	if (f.param_type_2 == CPT2_WALLMOUNTED ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		return getParam2() & 0x07;
-	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE) {
+	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE ||
+		f.drawtype == NDT_PLANTLIKE) {
 		return 1;
 	}
 	return 0;
