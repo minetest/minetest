@@ -208,7 +208,6 @@ void ClientEnvironment::step(float dtime)
 				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
 
 			// Movement resistance
-			bool in_liquid_stable = lplayer->in_liquid_stable || lplayer->in_liquid;
 			if (lplayer->move_resistance > 0) {
 				// How much the node's move_resistance blocks movement, ranges
 				// between 0 and 1. Should match the scale at which liquid_viscosity
@@ -216,6 +215,7 @@ void ClientEnvironment::step(float dtime)
 				static const f32 resistance_factor = 0.3f;
 
 				v3f d_wanted;
+				bool in_liquid_stable = lplayer->in_liquid_stable || lplayer->in_liquid;
 				if (in_liquid_stable) {
 					d_wanted = -speed / lplayer->movement_liquid_fluidity;
 				} else {

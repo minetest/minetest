@@ -1033,7 +1033,7 @@ Methods:
 * `get_liquid_viscosity()`
     * returns liquid viscosity (liquid flow speed)
 * `get_move_resistance()`
-    * returns move resistance of current node, the higher, the slower the player moves
+    * returns move resistance of current node, the higher the slower the player moves
 * `is_climbing()`
     * returns true if player is climbing
 * `swimming_vertical()`
