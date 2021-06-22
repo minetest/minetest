@@ -197,15 +197,13 @@ int main(int argc, char *argv[])
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
 #if BUILD_UNITTESTS
-		retval = run_tests();
+		return run_tests();
 #else
 		errorstream << "Unittest support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
 			<< std::endl;
-		retval = 1;
+		return 1;
 #endif
-		uninit_common();
-		return retval;
 	}
 #endif
 
@@ -491,11 +489,13 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	startup_message();
 	set_default_settings();
 
-	// Initialize sockets
 	sockets_init();
 
 	// Initialize g_settings
 	Settings::createLayer(SL_GLOBAL);
+
+	// Set cleanup callback(s) to run at process exit
+	atexit(uninit_common);
 
 	if (!read_config_file(cmd_args))
 		return false;

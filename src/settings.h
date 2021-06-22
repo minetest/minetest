@@ -85,8 +85,8 @@ public:
 private:
 	friend class Settings;
 	Settings *getParent(int layer) const;
-	void layerCreated(int layer, Settings *obj);
-	void layerRemoved(int layer);
+	void onLayerCreated(int layer, Settings *obj);
+	void onLayerRemoved(int layer);
 
 	std::vector<Settings*> layers;
 };

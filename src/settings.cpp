@@ -43,8 +43,7 @@ std::unordered_map<std::string, const FlagDesc *> Settings::s_flags;
 
 SettingsHierarchy::SettingsHierarchy(Settings *fallback)
 {
-	layers.resize(1);
-	layers[0] = fallback;
+	layers.push_back(fallback);
 }
 
 
@@ -69,7 +68,7 @@ Settings *SettingsHierarchy::getParent(int layer) const
 }
 
 
-void SettingsHierarchy::layerCreated(int layer, Settings *obj)
+void SettingsHierarchy::onLayerCreated(int layer, Settings *obj)
 {
 	if (layer < 0)
 		throw BaseException("Invalid settings layer");
@@ -87,7 +86,7 @@ void SettingsHierarchy::layerCreated(int layer, Settings *obj)
 }
 
 
-void SettingsHierarchy::layerRemoved(int layer)
+void SettingsHierarchy::onLayerRemoved(int layer)
 {
 	assert(layer >= 0 && layer < layers.size());
 	layers[layer] = nullptr;
@@ -117,7 +116,7 @@ Settings::Settings(const std::string &end_tag, SettingsHierarchy *h,
 	m_settingslayer(settings_layer)
 {
 	if (m_hierarchy)
-		m_hierarchy->layerCreated(m_settingslayer, this);
+		m_hierarchy->onLayerCreated(m_settingslayer, this);
 }
 
 
@@ -126,7 +125,7 @@ Settings::~Settings()
 	MutexAutoLock lock(m_mutex);
 
 	if (m_hierarchy)
-		m_hierarchy->layerRemoved(m_settingslayer);
+		m_hierarchy->onLayerRemoved(m_settingslayer);
 
 	clearNoLock();
 }
