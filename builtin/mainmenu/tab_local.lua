@@ -18,6 +18,11 @@
 
 local enable_gamebar = PLATFORM ~= "Android"
 local current_game, singleplayer_refresh_gamebar
+local valid_disabled_settings = {
+	["enable_damage"]=true,
+	["creative_mode"]=true,
+	["enable_server"]=true,
+}
 
 if enable_gamebar then
 	function current_game()
@@ -107,29 +112,71 @@ else
 	end
 end
 
+local function get_disabled_settings(game)
+	if not game then
+		game = current_game()
+	end
+	local gameconfig
+	if game ~= nil then
+		local gamepath = game.path
+		gameconfig = Settings(gamepath.."/game.conf")
+	end
+	local disabled_settings = {}
+	if gameconfig then
+		local disabled_settings_str = (gameconfig:get("disabled_settings") or ""):split()
+		for _, value in pairs(disabled_settings_str) do
+			local state = false
+			value = value:trim()
+			if string.sub(value, 1, 1) == "!" then
+				state = true
+				value = string.sub(value, 2)
+			end
+			if valid_disabled_settings[value] then
+				disabled_settings[value] = state
+			else
+				core.log("error", "Invalid disabled setting in game.conf: "..tostring(value))
+			end
+		end
+	end
+	return disabled_settings
+end
+
 local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 
 	local index = filterlist.get_current_index(menudata.worldlist,
 				tonumber(core.settings:get("mainmenu_last_selected_world"))
 				)
+	local disabled_settings = get_disabled_settings()
+
+	local creative, damage, host = "", "", ""
+
+	if disabled_settings["creative_mode"] == nil then
+		creative = "checkbox[0,-0.20;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
+			dump(core.settings:get_bool("creative_mode")) .. "]"
+	end
+	if disabled_settings["enable_damage"] == nil then
+		damage = "checkbox[0,0.25;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
+			dump(core.settings:get_bool("enable_damage")) .. "]"
+	end
+	if disabled_settings["enable_server"] == nil then
+		host = "checkbox[0,0.7;cb_server;".. fgettext("Host Server") ..";" ..
+			dump(core.settings:get_bool("enable_server")) .. "]"
+	end
 
 	retval = retval ..
 			"button[3.9,3.8;2.8,1;world_delete;".. fgettext("Delete") .. "]" ..
 			"button[6.55,3.8;2.8,1;world_configure;".. fgettext("Select Mods") .. "]" ..
 			"button[9.2,3.8;2.8,1;world_create;".. fgettext("New") .. "]" ..
 			"label[3.9,-0.05;".. fgettext("Select World:") .. "]"..
-			"checkbox[0,-0.20;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
-			"checkbox[0,0.25;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"..
-			"checkbox[0,0.7;cb_server;".. fgettext("Host Server") ..";" ..
-			dump(core.settings:get_bool("enable_server")) .. "]" ..
+			creative ..
+			damage ..
+			host ..
 			"textlist[3.9,0.4;7.9,3.45;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]"
 
-	if core.settings:get_bool("enable_server") then
+	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
 		retval = retval ..
 				"button[7.9,4.75;4.1,1;play;".. fgettext("Host Game") .. "]" ..
 				"checkbox[0,1.15;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
@@ -227,9 +274,21 @@ local function main_button_handler(this, fields, name, tabdata)
 
 		-- Update last game
 		local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
+		local game_obj
 		if world then
-			local game = pkgmgr.find_by_gameid(world.gameid)
-			core.settings:set("menu_last_game", game.id)
+			game_obj = pkgmgr.find_by_gameid(world.gameid)
+			core.settings:set("menu_last_game", game_obj.id)
+		end
+
+		local disabled_settings = get_disabled_settings(game_obj)
+		for k, _ in pairs(valid_disabled_settings) do
+			local v = disabled_settings[k]
+			if v ~= nil then
+				if k == "enable_server" and v == true then
+					error("Setting 'enable_server' cannot be force-enabled! The game.conf needs to be fixed.")
+				end
+				core.settings:set_bool(k, disabled_settings[k])
+			end
 		end
 
 		if core.settings:get_bool("enable_server") then
