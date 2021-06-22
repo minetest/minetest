@@ -238,8 +238,6 @@ int main(int argc, char *argv[])
 
 	print_modified_quicktune_values();
 
-	uninit_common();
-
 	END_DEBUG_EXCEPTION_HANDLER
 
 	return retval;
