@@ -558,7 +558,27 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 			boxes_pushed++;
 		}
 		if (boxes_pushed == 0) {
-			BOXESPUSHBACK(nodebox.multiface_noface);
+
+			const std::vector<aabb3f> &noface = nodebox.multiface_noface;
+
+			for (aabb3f box : noface) {
+				switch (param2 / 64) {
+					case 1:
+						box.MinEdge.rotateXZBy(90);
+						box.MaxEdge.rotateXZBy(90);
+						break;
+					case 2:
+						box.MinEdge.rotateXZBy(180);
+						box.MaxEdge.rotateXZBy(180);
+						break;
+					case 3:
+						box.MinEdge.rotateXZBy(-90);
+						box.MaxEdge.rotateXZBy(-90);
+						break;
+				}
+				box.repair();
+				boxes.push_back(box);
+                        }
 		}
 	}
 	else // NODEBOX_REGULAR

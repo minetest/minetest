@@ -89,7 +89,7 @@ minetest.register_node("testnodes:nodebox_multiface", {
 	node_box = {
 		type = "multiface",
 		fixed = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
-		multiface_noface = { -1/16, -0.5, -1/16, 1/16, 0.5, 1/16 },
+		multiface_noface = { -1/32, -3/16, -3/16, 1/32, 3/16, 3/16 },
 
 		multiface_top = { -0.5, 0.5-2/16, -0.5, 0.5, 0.5, 0.5 },
 		multiface_bottom = { -0.5, -0.5, -0.5, 0.5, -0.5+2/16, 0.5 },

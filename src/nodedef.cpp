@@ -70,8 +70,9 @@ void NodeBox::reset()
 	multiface_back.push_back(box_wall_back);
 	multiface_right.clear();
 	multiface_right.push_back(box_wall_right);
-	// no default for other parts
 	multiface_noface.clear();
+	multiface_noface.push_back(aabb3f(-BS/32., -BS/2, -BS/2, BS/32., BS/2, BS/2));
+	// no default for other parts
 	connect_top.clear();
 	connect_bottom.clear();
 	connect_front.clear();
@@ -193,6 +194,8 @@ void NodeBox::deSerialize(std::istream &is)
 	{
 #define READBOXES(box) { \
 		count = readU16(is); \
+		if (count > 0) \
+			(box).clear(); \
 		(box).reserve(count); \
 		while (count--) { \
 			v3f min = readV3F32(is); \
