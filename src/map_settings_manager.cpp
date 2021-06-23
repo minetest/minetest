@@ -26,15 +26,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map_settings_manager.h"
 
 MapSettingsManager::MapSettingsManager(const std::string &map_meta_path):
-	m_map_meta_path(map_meta_path)
+	m_map_meta_path(map_meta_path),
+	m_hierarchy(g_settings)
 {
-	m_map_settings = Settings::createLayer(SL_MAP, "[end_of_params]");
-	Mapgen::setDefaultSettings(Settings::getLayer(SL_DEFAULTS));
+	/*
+	 * We build our own hierarchy which falls back to the global one.
+	 * It looks as follows: (lowest prio first)
+	 * 0: whatever is picked up from g_settings (incl. engine defaults)
+	 * 1: defaults set by scripts (override_meta = false)
+	 * 2: settings present in map_meta.txt or overriden by scripts
+	 */
+	m_defaults = new Settings("", &m_hierarchy, 1);
+	m_map_settings = new Settings("[end_of_params]", &m_hierarchy, 2);
 }
 
 
 MapSettingsManager::~MapSettingsManager()
 {
+	delete m_defaults;
 	delete m_map_settings;
 	delete mapgen_params;
 }
@@ -43,14 +52,13 @@ MapSettingsManager::~MapSettingsManager()
 bool MapSettingsManager::getMapSetting(
 	const std::string &name, std::string *value_out)
 {
-	// Get from map_meta.txt, then try from all other sources
+	// Try getting it normally first
 	if (m_map_settings->getNoEx(name, *value_out))
 		return true;
 
-	// Compatibility kludge
+	// If not we may have to resolve some compatibility kludges
 	if (name == "seed")
 		return Settings::getLayer(SL_GLOBAL)->getNoEx("fixed_map_seed", *value_out);
-
 	return false;
 }
 
@@ -72,7 +80,7 @@ bool MapSettingsManager::setMapSetting(
 	if (override_meta)
 		m_map_settings->set(name, value);
 	else
-		Settings::getLayer(SL_GLOBAL)->set(name, value);
+		m_defaults->set(name, value);
 
 	return true;
 }
@@ -87,7 +95,7 @@ bool MapSettingsManager::setMapSettingNoiseParams(
 	if (override_meta)
 		m_map_settings->setNoiseParams(name, *value);
 	else
-		Settings::getLayer(SL_GLOBAL)->setNoiseParams(name, *value);
+		m_defaults->setNoiseParams(name, *value);
 
 	return true;
 }
@@ -146,15 +154,8 @@ MapgenParams *MapSettingsManager::makeMapgenParams()
 	if (mapgen_params)
 		return mapgen_params;
 
-	assert(m_map_settings != NULL);
-
-	// At this point, we have (in order of precedence):
-	// 1). SL_MAP containing map_meta.txt settings or
-	//     explicit overrides from scripts
-	// 2). SL_GLOBAL containing all user-specified config file
-	//     settings
-	// 3). SL_DEFAULTS containing any low-priority settings from
-	//     scripts, e.g. mods using Lua as an enhanced config file)
+	assert(m_map_settings);
+	assert(m_defaults);
 
 	// Now, get the mapgen type so we can create the appropriate MapgenParams
 	std::string mg_name;
