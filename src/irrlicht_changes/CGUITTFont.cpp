@@ -478,7 +478,7 @@ CGUITTGlyphPage* CGUITTFont::getLastGlyphPage() const
 CGUITTGlyphPage* CGUITTFont::createGlyphPage(const u8& pixel_mode)
 {
 	CGUITTGlyphPage* page = 0;
-	
+
 	// Name of our page.
 	io::path name("TTFontGlyphPage_");
 	name += tt_face->family_name;
@@ -1245,6 +1245,57 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	return container;
 }
+
+#define FT_FLOOR(X) (((X) & -64) / 64)
+#define FT_CEIL(X)  ((((X) + 63) & -64) / 64)
+
+CGUITTFont::Metrics CGUITTFont::getMetrics() const
+{
+	// Oddly, FT_Face seems to act somewhat like an opaque pointer that is shared by all font
+	// sizes for that face. This function seems to change the metrics of the face for the
+	// specified font size.
+	FT_Set_Pixel_Sizes(tt_face, 0, size);
+
+	// The following code adapted from SDL_ttf
+	Metrics metrics;
+
+	s32 underline_middle;
+
+	if (FT_IS_SCALABLE(tt_face)) {
+		FT_Fixed scale = tt_face->size->metrics.y_scale;
+		metrics.height = FT_CEIL(FT_MulFix(tt_face->ascender - tt_face->descender, scale));
+		metrics.line_height = FT_CEIL(FT_MulFix(tt_face->height, scale));
+		metrics.baseline = FT_CEIL(FT_MulFix(tt_face->ascender, scale));
+		underline_middle = metrics.baseline -
+				FT_FLOOR(FT_MulFix(tt_face->underline_position, scale));
+		metrics.line_thickness = FT_FLOOR(FT_MulFix(tt_face->underline_thickness, scale));
+
+		if (metrics.line_thickness < 1)
+			metrics.line_thickness = 1;
+	} else {
+		metrics.height = FT_CEIL(tt_face->size->metrics.height);
+		metrics.line_height = metrics.height;
+		metrics.baseline = FT_CEIL(tt_face->size->metrics.ascender);
+		// FT_Face::underline_position and FT_Face::underline_height only have values for
+		// scalable fonts, so use values that are as good as possible.
+		underline_middle = metrics.baseline - FT_CEIL(tt_face->size->metrics.descender) / 2;
+		metrics.line_thickness = 1;
+	}
+
+	metrics.underline_pos = underline_middle - metrics.line_thickness / 2;
+	if (metrics.underline_pos < 0)
+		metrics.underline_pos = 0;
+
+	// There is no consensus on strikethrough position, but this calculation, which
+	// approximates a line through the center line of an "e", seems to work pretty well for
+	// the fonts bundled with Minetest.
+	metrics.strike_pos = metrics.baseline * 13 / 20;
+
+	return metrics;
+}
+
+#undef FT_FLOOR
+#undef FT_CEIL
 
 } // end namespace gui
 } // end namespace irr

@@ -401,25 +401,27 @@ core::recti read_rel_rect(lua_State *L, int index, const core::vector2di &parent
 	return r;
 }
 
-core::vector2di read_rel_pos(lua_State *L, int index, const core::vector2di &parent_size)
+core::vector2di read_rel_pos(lua_State *L, int index, const core::vector2di &parent_size, bool flip)
 {
 	CHECK_TYPE(index, "position", LUA_TTABLE);
 	core::vector2di p;
 
 	lua_getfield(L, index, "x");
 	lua_getfield(L, index, "nx");
-	if (lua_isnumber(L, -1))
-		p.X = parent_size.X - lua_tonumber(L, -1);
-	else
+	if (lua_isnumber(L, -1)) {
+		p.X = parent_size.X - lua_tonumber(L, -1) - (s32)flip;
+	} else {
 		p.X = lua_tonumber(L, -2);
+	}
 	lua_pop(L, 2);
 
 	lua_getfield(L, index, "y");
 	lua_getfield(L, index, "ny");
-	if (lua_isnumber(L, -1))
-		p.Y = parent_size.Y - lua_tonumber(L, -1);
-	else
+	if (lua_isnumber(L, -1)) {
+		p.Y = parent_size.Y - lua_tonumber(L, -1) - (s32)flip;
+	} else {
 		p.Y = lua_tonumber(L, -2);
+	}
 	lua_pop(L, 2);
 
 	return p;

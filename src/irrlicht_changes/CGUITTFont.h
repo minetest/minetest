@@ -249,6 +249,9 @@ namespace gui
 			//! The font can either be a 256 color grayscale font, or a 2 color monochrome font.
 			virtual bool useMonochrome()  const { return use_monochrome; }
 
+			//! Get the font shadow offset
+			u32 getShadowOffset() const { return shadow_offset; }
+
 			//! Tells the font to allow transparency when rendering.
 			//! Default: true.
 			//! \param flag If true, the font draws using transparency.
@@ -258,6 +261,9 @@ namespace gui
 			//! Default: false.
 			//! \param flag If true, the font draws using a monochrome image.  If false, the font uses a grayscale image.
 			virtual void setMonochrome(const bool flag);
+
+			//! Set the font shadow offset
+			void setShadowOffset(u32 val) { shadow_offset = val; }
 
 			//! Enables or disables font hinting.
 			//! Default: Hinting and auto-hinting true.
@@ -317,6 +323,9 @@ namespace gui
 			//! Set font that should be used for glyphs not present in ours
 			void setFallback(gui::IGUIFont* font) { fallback = font; }
 
+			//! Get font that should be used for glyphs not present in ours
+			gui::IGUIFont *getFallback() { return fallback; }
+
 			//! Create corresponding character's software image copy from the font,
 			//! so you can use this data just like any ordinary video::IImage.
 			//! \param ch The character you need
@@ -330,6 +339,25 @@ namespace gui
 			virtual core::array<scene::ISceneNode*> addTextSceneNode
 				(const wchar_t* text, scene::ISceneManager* smgr, scene::ISceneNode* parent = 0,
 				 const video::SColor& color = video::SColor(255, 0, 0, 0), bool center = false );
+
+			//! Font metrics in pixels independent of, and better than, `getDimension(L"").Height`.
+			struct Metrics {
+				//! The height of the font.
+				s32 height;
+				//! The distance from one baseline to the baseline on the next line.
+				s32 line_height;
+				//! The baseline of the font relative to the top of the text.
+				s32 baseline;
+				//! The thickness of the underline/strikethrough.
+				s32 line_thickness;
+				//! The top pixel of the underline relative to the top of the text.
+				s32 underline_pos;
+				//! The top pixel of the strikethrough relative to the top of the text.
+				s32 strike_pos;
+			};
+
+			//! Gets Freetype's information on font metrics in pixels.
+			Metrics getMetrics() const;
 
 			inline s32 getAscender() const { return font_metrics.ascender; }
 

@@ -593,8 +593,11 @@ Relative Positions and Rectangles
 ---------------------------------
 
 A relative position/rectangle is a position/rectangle that is relative to a parent rectangle.
-The internal representation can vary depending on what part of the parent rectangle the
-position/rectangle should be relative to.
+It is a table, but the internal representation of this table can vary depending on what part
+of the parent rectangle the position/rectangle should be relative to.
+
+Relative positions/rectangles are based on zero, i.e. `{x=0, y=0}` is the top left position,
+not `{x=1, y=1}`, as might be assumed with Lua.
 
 The internal representation of a relative position table:
 * For the X axis, either:
@@ -603,6 +606,8 @@ The internal representation of a relative position table:
 * For the Y axis, either:
     * `y`: Relative to the top side of the parent rectangle.
     * `ny`: Relative to the bottom side of the parent rectangle.
+
+A position that uses the components `x` and `y` is called a "standard position".
 
 Examples: Positions relative to a rectangle with a width of 15 and a height of 6:
 * `{x=5, y=3}`:
@@ -638,6 +643,9 @@ The internal representation of a relative rectangle table:
     * `ny`: Defines the bottom side of the rectangle as relative to the bottom side of the
       parent rectangle.
 
+A rectangle that uses the components `x`, `y`, `w`, and `h` is called a "standard rectangle".
+A rectangle that uses the components `x`, `y`, `nx`, and `ny` is called an "offset rectangle".
+
 Examples: Rectangles relative to another rectangle with a width of 15 and a height of 6:
 * `{x=3, y=1, w=4, h=3}`:
 ```
@@ -648,14 +656,14 @@ Examples: Rectangles relative to another rectangle with a width of 15 and a heig
    |
    |
 ```
-* `{x=4, nx=4, y=1, ny=2}`:
+* `{x=4, nx=4, y=1, ny=0}`:
 ```
     1
 --4-XXXXXXX-4--
     X     X
+	X     X
+	X     X
     XXXXXXX
-    2
-    |
 ```
 
 Helper functions
@@ -890,9 +898,9 @@ Call these functions only at load time!
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
-### Drawing
+### Rendering
 
-Functions for drawing to and getting informtion about the window and textures.
+Functions for texture drawing and rendering related functions.
 
 * `minetest.register_on_predraw(function(dtime))`
     * Called every frame right before the engine has started drawing. Code used here must be
@@ -915,36 +923,41 @@ Functions for drawing to and getting informtion about the window and textures.
     * Useful if something needs to be done inside a drawing callback once, e.g. drawing to a
       `Texture`.
     * `dtime`: Time in seconds since the previous frame.
-* `minetest.get_text_size(text[, style])` -> size: Gets the size of the text if it were to be
-  drawn.
-    * `text`: The text to get the size of. Newlines and '\0' are converted to spaces. Color
-      escape codes are stripped.
-    * `style`: A `FontSpec`. This can affect the space the font takes on the screen.
-    * The text height will always be the same for each `FontSpec` regardless of the string
-      provided.
-* `minetest.get_font_size(font)` -> size: Gets the user-set font size.
-    * `font` (optional): One of the fonts in the `font` key of `FontSpec`. Defaults to
-      `FontSpec`'s default value.
 * `minetest.get_driver_info()` -> info: Returns a table containing information about and the
   limitations of the current video driver.
-    * On lower end graphics cards, e.g. Android, many features may not be available. OpenGL
-      supports all these features.
+    * On lower end graphics cards, e.g. Android, some features may not be available. OpenGL,
+      the recommended driver for desktop computers, supports all these features.
     * `info`: A table containing the information. Contains the following keys:
         * `name`: Name of the current video driver. This string is the current `video_driver`
-          setting value.
+          setting value. Possible values are "null", "software", "burningsvideo", "direct3d8",
+          "direct3d9", "opengl", "ogles1", or "ogles2".
         * `friendly_name`: A more human readable name of the current driver.
         * `render_textures`: True if the driver supports true hardware rendering to textures,
           i.e. all the drawing and modification functions of `Texture`.
-        * `npot_textures`: True if the driver supports textures that are not powers of two,
-          e.g. not just 16, 32, 64, 128, etc.
-        * `non_square_textures`: True if the driver supports non-square textures.
-        * `shaders`: True if the driver supports shaders.
-        * `max_texture_size`: A size denoting the maximum texture size that can be used. If x
-          or y is zero, there is no limit.
+        * `npot_textures`: True if the driver supports textures with dimensions that are not
+          powers of two, i.e. not just 16, 32, 64, 128, etc.
+        * `non_square_textures`: True if the driver supports non-square textures, i.e.
+          rectangular textures.
+        * `max_texture_size`: A 2D vector denoting the maximum texture size that can be used. If
+          `x` or `y` is `math.huge`, there is no limit.
+* `minetest.get_optimal_texture_size(size[, pot][, square][, max_size][, smaller])` -> optimal_size:
+  Gets the best possible texture size given the specified driver limitations for textures.
+	* Unless otherwise specified, all optional arguments, if not provided or nil, default to
+	  the current driver limitations found in `minetest.get_driver_info()`.
+	* `size`: A 2D vector that is the preferred texture size that will be modified.
+	* `pot` (optional): Whether the texture dimensions must be powers of two.
+	* `square` (optional): Whether the texture must be a square.
+	* `max_size` (optional): A 2D vector defining the maximum size that this texture may be. If
+	  either dimension is `math.huge`, there is no limit.
+	* `smaller` (optional): If true and any texture dimensions do have to be changed, the texture
+	  dimensions will be reduced instead of enlarged. Defaults to false. However, if the size
+	  provided is larger than the maximum size, it will be reduced regardless of this setting.
+	* `optimal_value`: The optimal texture value given the provided constraints. If either
+	  resulting dimension is zero, it will default to one.
 * `minetest.window`: A special `Texture` that points to the Minetest window.
-    * This texture is write-only and cannot contain alpha pixels.
+    * The window is write-only and cannot contain alpha pixels.
     * The screen supports all functions in `Texture` regardless of any driver limitations in
-    `minetest.get_driver_info` unless documented as otherwise.
+      `minetest.get_driver_info` unless documented as otherwise.
 
 ### Privileges
 * `minetest.get_privilege_list()`
@@ -1297,10 +1310,10 @@ drawn to. See [Relative Positions and Rectangles].
       `minetest.get_driver_info`.
     * Returns nil if the texture could not be created for some reason.
 * `Texture.copy(texture)` -> texture: Returns a copy of another texture.
-    * `texture`: Either an in game texture string or a `Texture` to copy. Must be readable.
+    * `texture`: Either an in-game texture string or a `Texture` to copy. Must be readable.
     * Returns nil if the texture could not be created for some reason.
 * `Texture.ref(texture)` -> texture: Returns a reference to a texture.
-    * `texture`: Either an in game texture string or a `Texture`.
+    * `texture`: Either an in-game texture string or a `Texture`.
     * The resulting `Texture` object will point to the texture. Since it does not hold full
       access to the texture, it is read-only.
     * This is useful for getting attributes about any texture, e.g. the size, without making a full
@@ -1309,16 +1322,23 @@ drawn to. See [Relative Positions and Rectangles].
 ### Methods
 
 * `is_readable()` -> bool: Returns whether the texture can be read from.
-    * `minetest.window` is write-only.
+    * `minetest.window` can not be read from.
 * `is_writable()` -> bool: Returns whether the texture can be written to.
-    * Texture references are read-only.
+    * Texture references cannot be written to.
 * `get_size()` -> size: Returns a 2D vector of the size of the texture.
+    * This may not be the same as the provided size to `Texture.new` if the driver doesn't
+      support the specified texture size.
 * `fill(color)`: Fills the entire texture with a certain color.
     * Unlike `draw_rect`, this replaces the pixels completely instead of adding the alpha.
     * `color`: The color to fill the texture with.
     * The texture being filled must be writable.
-* `draw_pixel(pos, color[, clip_rect])`: Draws one or more pixels.
-    * `pos`: A position to draw the pixel at.
+* `draw_pixel(pos, color[, clip_rect])`: Draws a pixel.
+    * `pos`: A position to draw the pixel at. Where the pixel will be positioned from depends
+	  on the relative position provided:
+		* `x`:  Horizontal is positioned from left edge of pixel
+		* `nx`: Horizontal is positioned from right edge of pixel
+		* `y`:  Vertical is positioned from top edge of pixel
+		* `ny`: Vertical is positioned from bottom edge of pixel
     * `color`: Color of the pixel to draw.
     * `clip_rect` (optional): If specified, the pixel will only be drawn if it is inside this
       rectangle.
@@ -1333,57 +1353,75 @@ drawn to. See [Relative Positions and Rectangles].
     * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
       of this rectangle will not be drawn.
     * The texture being drawn to must be writable.
-* `draw_texture(rect, texture[, clip_rect][, source_rect][, middle_rect][, recolor][, use_alpha])`:
-  Draws a 2D texture.
+* `draw_texture(rect, texture[, clip_rect][, source_rect][, recolor])`: Draws a 2D texture.
     * `rect`: The rectangle to draw the texture in. The texture will be stretched to fit.
     * `texture`: Either the name of the texture with optional texture modifiers or the
-      `Texture` object to draw. Must be readable.
+      `Texture` object to draw. Must be readable. A texture may not draw itself to itself.
     * `clip_rect` (optional): If specified, any part of the texture that extends out of this
       rectangle will not be drawn.
     * `source_rect` (optional): Defines a rectangular sub-texture of the texture which will be
       drawn instead of the entire texture. If nil, the whole texture is drawn. This rectangle
       is relative to the rectangle of the texture being drawn to.
-    * `middle_rect` (optional): Defines the 9-slice rectangle for the texture. If nil, the
-      texture will be drawn normally. This rectangle is relative to `source_rect`.
-      See https://en.wikipedia.org/wiki/9-slice_scaling for more information.
     * `recolor` (optional): The color to recolor the texture to when drawing. This uses
       hardware coloring, so it uses color multiplication and is fast.
-    * `no_alpha` (optional): Whether alpha should not be used when drawing the texture.
-      Default false.
     * The texture being drawn to must be writable.
-* `draw_text(pos, text[, clip_rect][, style])`: Draws text.
+* `draw_text(pos, text[, clip_rect][, font][, color])`: Draws text.
+    * Font shadows are not drawn for versatility's sake and must be drawn manually if desired.
     * `pos`: The position of the top left of the text.
-    * `text`: The text to draw. Newlines and '\0' are converted to spaces. Color escape codes
+    * `text`: The text to draw. Newlines and `'\0'` are converted to spaces. Color escape codes
       are stripped.
     * `clip_rect` (optional): If specified, any part of the text that extends out of this
       rectangle will not be drawn.
-    * `style` (optional): A `FontSpec`.
-    * The texture being drawn to must be writable.
-* `draw_item(rect, item[, clip_rect][, angle])`: Draws an item(stack)
-    * `rect`: The rectangle to fit the item inside. Note that items with certain angles that
-      extend past this rectangle will be clipped to it.
-    * `item`: The itemstring of the item to draw. The item count will not be drawn.
-    * `clip_rect` (optional): If specified, any part of the item that extends out of this
-      rectangle will not be drawn.
-    * `angle` (optional): Sets the 3D angle of the item along each axis.
+    * `font` (optional): The `Font` to draw with. Defaults to the default font.
+    * `color` (optional): The color to make the text. Default white.
     * The texture being drawn to must be writable.
 
-`FontSpec`
-----------
+`Font`
+------
 
-A table describing a font.
+A Lua representation of a font. This only includes data relevant to the font itself, and any
+other effects, such as color, underlining, and font shadows, must be handled elsewhere.
 
-### Keys
-* `color`: The color of the text. Default white.
-* `font`: What font to use. Can be "normal" or "mono". Default "normal". If the fallback font
-  is used for the current locale, this option will be overridden.
-* `size`: What size the font should be. The default is user-set.
-	* **Note**: It is recommended to make the size relative to the user-set font size which
-	  can be gotten with `minetest.get_font_size`.
-* `bold`: Whether the text should be bold. Default false.
-* `italic`: Whether the text should be italicized. Default false.
-* `underline`: Whether the text should be underlined. Default false.
-* `strikethrough`: Whether the text should be crossed out. Default false.
+### Constructor
+
+* `Font([from])` -> font: Creates a font from another `Font` or a font table.
+    * `from`: Either another `Font`, a font table, or nothing.
+    * A font table has the following keys:
+        * `face`: The font face to use.
+            * Can be one of the following:
+                * "normal" (default): The default user-set font.
+                * "mono": A monospace font.
+            * If a client's locale requires the fallback font, the fallback font will be used
+              regardless of the font specified here.
+            * In general, the fallback font should only be explicitly specified if it is known
+              that characters not supported in many fonts will be used.
+        * `size`: What size the font should be. The default is user-set.
+            * It is highly recommended to make the font size relative to the user-set font size
+              to respect preferences and accessibility concerns.
+        * `bold`: Whether the text should be bold. Default false.
+            * Some fonts may not support bolded styles, in which case it falls back to not
+              bolded.
+        * `italic`: Whether the text should be italicized. Default false.
+            * Some fonts may not support italicized styles, in which case it falls back to not
+              italicized.
+
+### Methods
+
+* `get_metrics()` -> metrics: Get global font metrics in pixels.
+    * `metrics`: A table containing font metrics. It has the following keys:
+		* `height`: The height of text in this font.
+		* `line_height`: The distance from one baseline to the baseline on the next line.
+		* `baseline`: The distance to the baseline from the top of the text.
+		* `line_thickness`: The thickness of underlines and strikethroughs.
+		* `underline_pos`: The distance to the top of the underline from the top of the text.
+		* `strike_pos`: The distance to the top of the strikethrough from the top of the text.
+* `get_text_width(text)` -> width: Gets the width of the specified text in pixels.
+    * `text`: The text to get the width of. Newlines and `'\0'` are converted to spaces. Color
+      escape codes are stripped.
+* `to_table()` -> font_table: Returns this font as a font table.
+    * See the `Font` constructor for the keys in a font table.
+    * To get default user-set values for a font, do `Font():to_table()`, optionally specifying
+      the font face in the constructor to get the default values for that face.
 
 ### `Raycast`
 

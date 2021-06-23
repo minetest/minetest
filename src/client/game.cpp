@@ -737,7 +737,7 @@ protected:
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
-	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
+	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime, f32 drawing_dtime,
 			const CameraOrientation &cam);
 
 	// Misc
@@ -1115,13 +1115,14 @@ void Game::run()
 		cam_view.camera_pitch += (cam_view_target.camera_pitch -
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
+		f32 drawing_dtime = dtime; // Preserve for later before potential set to zero
 		step(&dtime);
 		processClientEvents(&cam_view_target);
 		updateCamera(draw_times.busy_time, dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud,
 			m_game_ui->m_flags.show_debug);
-		updateFrame(&graph, &stats, dtime, cam_view);
+		updateFrame(&graph, &stats, dtime, drawing_dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
@@ -3678,7 +3679,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	camera->setDigging(0);  // Dig animation
 }
 
-void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
+void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime, f32 drawing_dtime,
 		const CameraOrientation &cam)
 {
 	TimeTaker tt_update("Game::updateFrame()");
@@ -3875,7 +3876,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	driver->beginScene(true, true, skycolor);
 
 	if (client->modsLoaded())
-		client->getScript()->on_predraw(dtime);
+		client->getScript()->on_predraw(drawing_dtime);
 
 	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
 			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
@@ -3893,7 +3894,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
 
 	if (client->modsLoaded())
-		client->getScript()->on_draw(dtime);
+		client->getScript()->on_draw(drawing_dtime);
 
 	/*
 		Profiler graph

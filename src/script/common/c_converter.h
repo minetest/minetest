@@ -113,7 +113,7 @@ bool                read_color          (lua_State *L, int index,
 bool                is_color_table      (lua_State *L, int index);
 
 core::recti    read_rel_rect(lua_State *L, int index, const core::vector2di &parent_size);
-core::vector2di read_rel_pos(lua_State *L, int index, const core::vector2di &parent_size);
+core::vector2di read_rel_pos(lua_State *L, int index, const core::vector2di &parent_size, bool flip = false);
 
 aabb3f              read_aabb3f         (lua_State *L, int index, f32 scale);
 v3s16               read_v3s16          (lua_State *L, int index);

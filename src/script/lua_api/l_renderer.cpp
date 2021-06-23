@@ -1,14 +1,17 @@
 /*
 Minetest
-Copyright (C) 2020 Vincent Robinson (v-rob) <robinsonvincent89@gmail.com>
+Copyright (C) 2021 Vincent Robinson (v-rob) <robinsonvincent89@gmail.com>
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
+
 You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -16,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <string>
-#include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
 #include "client/hud.h"
 #include "client/renderingengine.h"
@@ -31,96 +33,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/CGUITTFont.h"
 #endif
 
+// Rendering singleton where all rendering APIs can store and read global state information.
 ModApiRenderer s_renderer;
 
-gui::IGUIFont *ModApiRenderer::get_font(lua_State *L, int index)
-{
-	FontSpec spec(FONT_SIZE_UNSPECIFIED, FM_Standard, false, false);
-
-	if (is_yes(gettext("needs_fallback_font"))) {
-		spec.mode = FM_Fallback;
-	} else if (lua_istable(L, index)) {
-		lua_getfield(L, index, "font");
-		std::string font = readParam<std::string>(L, -1, "");
-		if (font == "mono")
-			spec.mode = FM_Mono;
-		lua_pop(L, 1);
-	}
-
-	if (lua_istable(L, index)) {
-		lua_getfield(L, index, "bold");
-		if (lua_toboolean(L, -1))
-			spec.bold = true;
-		lua_pop(L, 1);
-
-		lua_getfield(L, index, "italic");
-		if (lua_toboolean(L, -1))
-			spec.italic = true;
-		lua_pop(L, 1);
-
-		lua_getfield(L, index, "size");
-		if (lua_isnumber(L, -1)) {
-			spec.size = std::min(std::max((int)lua_tointeger(L, -1), 1), 999);
-		} else {
-			if (spec.mode == FM_Standard)
-				spec.size = g_settings->getU16("font_size");
-			else if (spec.mode == FM_Mono)
-				spec.size = g_settings->getU16("mono_font_size");
-			else
-				spec.size = g_settings->getU16("fallback_font_size");
-		}
-		lua_pop(L, 1);
-	}
-
-	return g_fontengine->getFont(spec);
-}
-
-// get_text_size(text[, font]) -> size
-int ModApiRenderer::l_get_text_size(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	std::wstring text = utf8_to_wide(
-		unescape_enriched(readParam<std::string>(L, 1)));
-	for (size_t i = 0; i < text.size(); i++) {
-		if (text[i] == L'\n' || text[i] == L'\0')
-			text[i] = L' ';
-	}
-
-	gui::IGUIFont *font = get_font(L, 2);
-
-	core::dimension2du size = font->getDimension(text.c_str());
-	size.Height += font->getKerningHeight();
-	push_v2s32(L, v2s32(size.Width, size.Height));
-
-	return 1;
-}
-
-// get_font_size(font) -> size
-int ModApiRenderer::l_get_font_size(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (is_yes(gettext("needs_fallback_font"))) {
-		lua_pushinteger(L, g_settings->getU16("fallback_font_size"));
-	} else {
-		if (lua_isstring(L, 1) && readParam<std::string>(L, 1) == "mono")
-			lua_pushinteger(L, g_settings->getU16("mono_font_size"));
-		else
-			lua_pushinteger(L, g_settings->getU16("font_size"));
-	}
-
-	return 1;
-}
-
-// get_driver_info() -> features
+// get_driver_info() -> info
 int ModApiRenderer::l_get_driver_info(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
-	lua_createtable(L, 0, 2);
+	lua_createtable(L, 0, 6);
 
 	video::E_DRIVER_TYPE driver_type = driver->getDriverType();
 	lua_pushstring(L, RenderingEngine::getVideoDriverName(driver_type));
@@ -138,9 +61,6 @@ int ModApiRenderer::l_get_driver_info(lua_State *L)
 	lua_pushboolean(L, driver->queryFeature(video::EVDF_TEXTURE_NSQUARE));
 	lua_setfield(L, -2, "non_square_textures");
 
-	lua_pushboolean(L, driver_type == video::EDT_OPENGL);
-	lua_setfield(L, -2, "shaders");
-
 	core::dimension2du max_size = driver->getMaxTextureSize();
 	push_v2f(L, v2f(max_size.Width == 0 ? HUGE_VAL : max_size.Width,
 			max_size.Height == 0 ? HUGE_VAL : max_size.Height));
@@ -149,40 +69,79 @@ int ModApiRenderer::l_get_driver_info(lua_State *L)
 	return 1;
 }
 
-void ModApiRenderer::Initialize(lua_State *L, int top)
+// get_optimal_texture_size(size[, pot][, square][, max_size][, smaller]) -> optimal_size
+int ModApiRenderer::l_get_optimal_texture_size(lua_State *L)
 {
-	API_FCT(get_text_size);
-	API_FCT(get_font_size);
-	API_FCT(get_driver_info);
+	NO_MAP_LOCK_REQUIRED;
 
-	LuaTexture::create_window(L);
-	lua_setfield(L, top, "window");
-};
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
+	core::vector2di isize = read_v2s32(L, 1);
+	core::dimension2du size(isize.X, isize.Y);
+
+	bool pot;
+	if (lua_isnoneornil(L, 2))
+		pot = !driver->queryFeature(video::EVDF_TEXTURE_NPOT);
+	else
+		pot = lua_toboolean(L, 2);
+
+	bool square;
+	if (lua_isnoneornil(L, 3))
+		square = !driver->queryFeature(video::EVDF_TEXTURE_NSQUARE);
+	else
+		square = lua_toboolean(L, 3);
+
+	core::vector2df max_size;
+	if (lua_isnoneornil(L, 4)) {
+		core::dimension2du max_usize = driver->getMaxTextureSize();
+		max_size = core::vector2df(max_usize.Width, max_usize.Height);
+	} else {
+		max_size = read_v2f(L, 4);
+	}
+
+	bool larger = !lua_toboolean(L, 5);
+
+	size = size.getOptimalSize(pot, square, larger);
+
+	if (size.Width > max_size.X)
+		size.Width = max_size.X;
+	if (size.Height > max_size.Y)
+		size.Height = max_size.Y;
+
+	// In case the maximum value was not a valid size for some reason, do it again, but make
+	// sure it can't overflow the maximum size now by forcing it to go smaller.
+	size = size.getOptimalSize(pot, square, false);
+
+	if (size.Width == 0)
+		size.Width = 1;
+	if (size.Height == 0)
+		size.Height = 1;
+
+	push_v2s32(L, core::vector2di(size.Width, size.Height));
+
+	return 1;
+}
 
 bool ModApiRenderer::set_render_target(video::IVideoDriver *driver,
 		video::ITexture *texture, bool clear, video::SColor color)
 {
+	if (!s_renderer.in_callback)
+		throw LuaError("Attempt to draw to texture outside of a drawing callback");
+
 	if (texture != s_renderer.current_target) {
 		if (texture == nullptr) {
-			driver->setRenderTarget(video::ERT_FRAME_BUFFER, clear, clear, color);
+			driver->setRenderTarget(nullptr, clear ? video::ECBF_ALL : video::ECBF_NONE, color);
 			s_renderer.current_target = nullptr;
-
-			// Irrlicht (annoyingly) doesn't use setViewPort in setRenderTarget, so
-			// getViewPort returns an incorrect result, messing up the actual viewport
-			// if viewports are changed temporarily (like in drawItemStack). So, we have
-			// to change the viewport manually so getViewPort will reflect the actual
-			// value.
-			core::dimension2du size = driver->getCurrentRenderTargetSize();
-			driver->setViewPort(core::recti(0, 0, size.Width, size.Height));
 		} else {
-			if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) &&
-					driver->setRenderTarget(texture, clear, clear, color)) {
+			if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
+				if (!driver->setRenderTarget(
+						texture, clear ? video::ECBF_ALL : video::ECBF_NONE, color)) {
+					warningstream << "Unable to set texture as render target" << std::endl;
+					return true;
+				}
 				s_renderer.current_target = texture;
-
-				core::dimension2du size = driver->getCurrentRenderTargetSize();
-				driver->setViewPort(core::recti(0, 0, size.Width, size.Height));
 			} else {
-				errorstream << "Unable to set texture as render target" << std::endl;
+				warningstream << "Unable to set texture as render target" << std::endl;
 				return true;
 			}
 		}
@@ -205,13 +164,20 @@ void ModApiRenderer::end_callback()
 bool LuaTexture::set_as_target(LuaTexture *t, video::IVideoDriver *driver,
 		bool clear, video::SColor color)
 {
-	if (!s_renderer.in_callback)
-		throw LuaError("Attempt to draw to texture outside of a drawing callback");
 	if (t->is_ref)
 		throw LuaError("Attempt to write to a texture reference");
 
 	return ModApiRenderer::set_render_target(driver, t->texture, clear, color);
 }
+
+void ModApiRenderer::Initialize(lua_State *L, int top)
+{
+	API_FCT(get_driver_info);
+	API_FCT(get_optimal_texture_size);
+
+	LuaTexture::create_window(L);
+	lua_setfield(L, top, "window");
+};
 
 // is_readable() -> bool
 int LuaTexture::l_is_readable(lua_State *L)
@@ -238,8 +204,7 @@ int LuaTexture::l_get_size(lua_State *L)
 
 	LuaTexture *t = read_object(L, 1, true);
 
-	core::vector2di size = t->getSize();
-	push_v2s32(L, v2s32(size.X, size.Y));
+	push_v2s32(L, t->getSize());
 
 	return 1;
 }
@@ -256,18 +221,17 @@ int LuaTexture::l_fill(lua_State *L)
 	video::SColor color(0x0);
 	read_color(L, 2, &color);
 
-	// setRenderTarget is the only way to fill a texture with a pixel using color
-	// replacement instead of adding. We change the target to the window before
-	// setting it to the actual texture because Irrlicht ignores setRenderTarget
-	// if the texture is already set as the target.
-	if (ModApiRenderer::set_render_target(driver, nullptr) ||
-			set_as_target(t, driver, true, color))
-		return 0;
-
-	// The window requires special treatment since it can have no alpha.
 	if (t->texture == nullptr) {
+		// The window requires special treatment since it can have no alpha.
 		color.setAlpha(0xFF);
 		driver->draw2DRectangle(color, core::recti(core::vector2di(0, 0), t->getSize()));
+	} else {
+		// setRenderTarget is the only way to fill a texture with a pixel using color
+		// replacement instead of adding. We change the target to the window before
+		// setting it to the actual texture because Irrlicht ignores setRenderTarget
+		// if the texture is already set as the target.
+		ModApiRenderer::set_render_target(driver, nullptr);
+		set_as_target(t, driver, true, color);
 	}
 
 	return 0;
@@ -283,7 +247,7 @@ int LuaTexture::l_draw_pixel(lua_State *L)
 	if (set_as_target(t, driver))
 		return 0;
 
-	core::vector2di pos = read_rel_pos(L, 2, t->getSize());
+	core::vector2di pos = read_rel_pos(L, 2, t->getSize(), true);
 
 	video::SColor color(0x0);
 	read_color(L, 3, &color);
@@ -340,8 +304,7 @@ int LuaTexture::l_draw_rect(lua_State *L)
 	return 0;
 }
 
-// draw_texture(self, rect, texture[, clip_rect][, source_rect][, middle_rect][, recolor]
-//     [, no_alpha])
+// draw_texture(self, rect, texture[, clip_rect][, source_rect][, recolor])
 int LuaTexture::l_draw_texture(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -373,23 +336,16 @@ int LuaTexture::l_draw_texture(lua_State *L)
 		from_rect = core::recti(core::vector2di(0, 0), size);
 
 	video::SColor color(0xFFFFFFFF);
-	if (!lua_isnil(L, 7))
-		read_color(L, 7, &color);
+	if (!lua_isnoneornil(L, 6))
+		read_color(L, 6, &color);
 	const video::SColor colors[] = {color, color, color, color};
 
-	bool use_alpha = !lua_toboolean(L, 8);
-
-	if (lua_istable(L, 6)) {
-		draw2DImage9Slice(driver, texture, rect, from_rect,
-				read_rel_rect(L, 6, from_rect.getSize()), clip_ptr, colors, use_alpha);
-	} else {
-		driver->draw2DImage(texture, rect, from_rect, clip_ptr, colors, use_alpha);
-	}
+	driver->draw2DImage(texture, rect, from_rect, clip_ptr, colors, true);
 
 	return 0;
 }
 
-// draw_text(self, pos, text[, clip_rect][, font])
+// draw_text(self, pos, text[, clip_rect][, font][, color])
 int LuaTexture::l_draw_text(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -416,97 +372,40 @@ int LuaTexture::l_draw_text(lua_State *L)
 		clip_ptr = &clip_rect;
 	}
 
-	gui::IGUIFont *font = ModApiRenderer::get_font(L, 5);
+	gui::IGUIFont *font = LuaFont::read_font(L, 5);
 
 	video::SColor color(0xFFFFFFFF);
-	bool underline = false;
-	bool strike = false;
-	if (lua_istable(L, 5)) {
-		lua_getfield(L, 5, "color");
-		read_color(L, -1, &color);
-		lua_pop(L, 1);
+	if (!lua_isnoneornil(L, 6))
+		read_color(L, 6, &color);
 
-		lua_getfield(L, 5, "underline");
-		underline = lua_toboolean(L, -1);
-		lua_pop(L, 1);
+#if USE_FREETYPE
+	// We don't want the font shadow, so temporarily disable it. Once the formspec replacement
+	// is complete, font shadows can be removed from the engine entirely.
+	u32 shadow_offset;
+	gui::IGUIFont *fallback = nullptr;
+	u32 fallback_offset;
+	if (font->getType() == gui::EGFT_CUSTOM) {
+		gui::CGUITTFont *tt_font = (gui::CGUITTFont *)font;
+		shadow_offset = tt_font->getShadowOffset();
+		tt_font->setShadowOffset(0);
 
-		lua_getfield(L, 5, "strike");
-		strike = lua_toboolean(L, -1);
-		lua_pop(L, 1);
+		fallback = tt_font->getFallback();
+		if (fallback && fallback->getType() == gui::EGFT_CUSTOM) {
+			tt_font = (gui::CGUITTFont *)fallback;
+			fallback_offset = tt_font->getShadowOffset();
+			tt_font->setShadowOffset(0);
+		}
 	}
+#endif
 
 	font->draw(text.c_str(), rect, color, false, false, clip_ptr);
 
-	if (!underline && !strike)
-		return 0;
-
-	core::dimension2du size = font->getDimension(text.c_str());
-	rect.LowerRightCorner = rect.UpperLeftCorner +
-		core::vector2di(size.Width, size.Height);
-
-	s32 baseline = 0;
 #if USE_FREETYPE
 	if (font->getType() == gui::EGFT_CUSTOM)
-		baseline = size.Height - 1 - ((gui::CGUITTFont *)font)->getAscender() / 64;
+		((gui::CGUITTFont *)font)->setShadowOffset(shadow_offset);
+	if (fallback && fallback->getType() == gui::EGFT_CUSTOM)
+		((gui::CGUITTFont *)fallback)->setShadowOffset(fallback_offset);
 #endif
-
-	if (underline) {
-		s32 line_pos = rect.LowerRightCorner.Y - (baseline >> 1);
-		core::recti line_rect(
-			rect.UpperLeftCorner.X,
-			line_pos - (baseline >> 3) - 1,
-			rect.LowerRightCorner.X,
-			line_pos + (baseline >> 3)
-		);
-
-		driver->draw2DRectangle(color, line_rect, clip_ptr);
-	}
-
-	if (strike) {
-		s32 line_pos = rect.UpperLeftCorner.Y + size.Height * 6 / 11;
-		core::recti line_rect(
-			rect.UpperLeftCorner.X,
-			line_pos - (baseline >> 3) - 1,
-			rect.LowerRightCorner.X,
-			line_pos + (baseline >> 3)
-		);
-
-		driver->draw2DRectangle(color, line_rect, clip_ptr);
-	}
-
-	return 0;
-}
-
-// draw_item(self, rect, item[, clip_rect][, angle])
-int LuaTexture::l_draw_item(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_writable_object(L, 1, true);
-	if (set_as_target(t, driver))
-		return 0;
-
-	core::recti rect = read_rel_rect(L, 2, t->getSize());
-
-	Client *client = getClient(L);
-	ItemStack item;
-	item.deSerialize(readParam<std::string>(L, 3), client->idef());
-	item.count = 1; // No item count; drawn manually to be configurable
-
-	core::recti clip_rect;
-	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 4)) {
-		clip_rect = read_rel_rect(L, 4, t->getSize());
-		clip_ptr = &clip_rect;
-	}
-
-	v3s16 angle;
-	if (lua_istable(L, 5))
-		angle = read_v3s16(L, 5);
-
-	drawItemStack(RenderingEngine::get_video_driver(), g_fontengine->getFont(), item,
-		rect, clip_ptr, client, IT_ROT_NONE, angle, v3s16(0, 0, 0));
 
 	return 0;
 }
@@ -521,7 +420,7 @@ int LuaTexture::l_new(lua_State *L)
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
-		errorstream << "Unable to set texture as render target" << std::endl;
+		warningstream << "Unable to set texture as render target" << std::endl;
 		lua_pushnil(L);
 		return 1;
 	}
@@ -532,17 +431,17 @@ int LuaTexture::l_new(lua_State *L)
 	core::vector2di size = read_v2s32(L, 1);
 
 	t->texture = driver->addRenderTargetTexture(
-		core::dimension2du(size.X, size.Y), "", video::ECF_A8R8G8B8);
+			core::dimension2du(size.X, size.Y), "custom", video::ECF_A8R8G8B8);
 	if (t->texture == nullptr) {
-		errorstream << "Unable to create custom texture" << std::endl;
+		warningstream << "Unable to create custom texture" << std::endl;
 		delete t;
 		lua_pushnil(L);
 		return 1;
 	}
 
 	// Clear texture
-	driver->setRenderTarget(t->texture, true, true);
-	driver->setRenderTarget(nullptr, false, false);
+	driver->setRenderTarget(t->texture, video::ECBF_ALL, video::SColor(0x0));
+	driver->setRenderTarget(nullptr, video::ECBF_NONE);
 
 	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
 	luaL_getmetatable(L, class_name);
@@ -560,7 +459,7 @@ int LuaTexture::l_copy(lua_State *L)
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
-		errorstream << "Unable to set texture as render target" << std::endl;
+		warningstream << "Unable to set texture as render target" << std::endl;
 		lua_pushnil(L);
 		return 1;
 	}
@@ -571,21 +470,21 @@ int LuaTexture::l_copy(lua_State *L)
 	video::ITexture *to_copy = read_texture(L, 1, false);
 
 	t->texture = driver->addRenderTargetTexture(
-		to_copy->getOriginalSize(), "", video::ECF_A8R8G8B8);
+			to_copy->getOriginalSize(), "custom", video::ECF_A8R8G8B8);
 	if (t->texture == nullptr) {
-		errorstream << "Unable to create render target texture" << std::endl;
+		warningstream << "Unable to create render target texture" << std::endl;
 		delete t;
 		lua_pushnil(L);
 		return 1;
 	}
-	if (!driver->setRenderTarget(t->texture, true, true)) {
-		errorstream << "Unable to set texture as render target" << std::endl;
+	if (!driver->setRenderTarget(t->texture, video::ECBF_ALL, video::SColor(0x0))) {
+		warningstream << "Unable to set texture as render target" << std::endl;
 		delete t;
 		lua_pushnil(L);
 		return 1;
 	}
 	driver->draw2DImage(to_copy, core::vector2di(0, 0));
-	driver->setRenderTarget(nullptr, false, false);
+	driver->setRenderTarget(nullptr, video::ECBF_NONE);
 
 	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
 	luaL_getmetatable(L, class_name);
@@ -599,11 +498,6 @@ int LuaTexture::l_ref(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
-		errorstream << "Unable to set texture as render target" << std::endl;
-		lua_pushnil(L);
-		return 1;
-	}
 
 	LuaTexture *t = new LuaTexture;
 	t->is_ref = true;
@@ -621,6 +515,24 @@ int LuaTexture::l_ref(lua_State *L)
 	luaL_getmetatable(L, class_name);
 	lua_setmetatable(L, -2);
 	return 1;
+}
+
+int LuaTexture::gc_object(lua_State *L)
+{
+	LuaTexture *t = *(LuaTexture **)lua_touserdata(L, 1);
+	if (t->texture != nullptr) {
+		// Only drop reference textures, and only remove non-reference textures
+		if (t->is_ref) {
+			t->texture->drop();
+		} else {
+			video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+			if (t->is_target)
+				ModApiRenderer::set_render_target(driver, nullptr);
+			driver->removeTexture(t->texture);
+		}
+	}
+	delete t;
+	return 0;
 }
 
 int LuaTexture::create_window(lua_State *L)
@@ -687,24 +599,6 @@ core::vector2di LuaTexture::getSize()
 	return core::vector2di(size.Width, size.Height);
 }
 
-int LuaTexture::gc_object(lua_State *L)
-{
-	LuaTexture *t = *(LuaTexture **)lua_touserdata(L, 1);
-	if (t->texture != nullptr) {
-		// Only drop reference textures, and only remove non-reference textures
-		if (t->is_ref) {
-			t->texture->drop();
-		} else {
-			video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-			if (t->is_target)
-				ModApiRenderer::set_render_target(driver, nullptr);
-			driver->removeTexture(t->texture);
-		}
-	}
-	delete t;
-	return 0;
-}
-
 void LuaTexture::Register(lua_State *L)
 {
 	lua_newtable(L);
@@ -748,6 +642,196 @@ const luaL_Reg LuaTexture::methods[] =
 	luamethod(LuaTexture, draw_rect),
 	luamethod(LuaTexture, draw_texture),
 	luamethod(LuaTexture, draw_text),
-	luamethod(LuaTexture, draw_item),
+	{0, 0}
+};
+
+// get_metrics(self) -> metrics
+int LuaFont::l_get_metrics(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	gui::IGUIFont *font = read_object(L, 1)->font;
+
+	lua_createtable(L, 0, 6);
+
+#if USE_FREETYPE
+	if (font->getType() == gui::EGFT_CUSTOM) {
+		gui::CGUITTFont::Metrics metrics = ((gui::CGUITTFont *)font)->getMetrics();
+
+		setintfield(L, -1, "height",         metrics.height);
+		setintfield(L, -1, "line_height",    metrics.line_height);
+		setintfield(L, -1, "baseline",       metrics.baseline);
+		setintfield(L, -1, "line_thickness", metrics.line_thickness);
+		setintfield(L, -1, "underline_pos",  metrics.underline_pos);
+		setintfield(L, -1, "strike_pos",     metrics.strike_pos);
+	} else {
+#endif
+		// A lot of approximations must be made since we know little about the font.
+		s32 height = font->getDimension(L"").Height;
+
+		setintfield(L, -1, "height",         height);
+		setintfield(L, -1, "line_height",    height);
+		setintfield(L, -1, "baseline",       height - 1);
+		setintfield(L, -1, "line_thickness", 1);
+		setintfield(L, -1, "underline_pos",  height - 1);
+		setintfield(L, -1, "strike_pos",     height / 2 - 1);
+#if USE_FREETYPE
+	}
+#endif
+
+	return 1;
+}
+
+// get_text_width(self, text) -> width
+int LuaFont::l_get_text_width(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::wstring text = utf8_to_wide(
+		unescape_enriched(readParam<std::string>(L, 2)));
+	for (size_t i = 0; i < text.size(); i++) {
+		if (text[i] == L'\n' || text[i] == L'\0')
+			text[i] = L' ';
+	}
+
+	lua_pushinteger(L, read_object(L, 1)->font->getDimension(text.c_str()).Width);
+	return 1;
+}
+
+// to_table(self) -> font_table
+int LuaFont::l_to_table(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaFont *f = read_object(L, 1);
+
+	lua_createtable(L, 0, 4);
+
+	const char *face;
+	if (f->face == FM_Standard)
+		face = "normal";
+	else
+		face = "mono";
+	lua_pushstring(L, face);
+	lua_setfield(L, -2, "face");
+
+	lua_pushinteger(L, f->size);
+	lua_setfield(L, -2, "size");
+
+	lua_pushboolean(L, f->bold);
+	lua_setfield(L, -2, "bold");
+
+	lua_pushboolean(L, f->italic);
+	lua_setfield(L, -2, "italic");
+
+	return 1;
+}
+
+// Font([from]) -> font
+int LuaFont::l_create(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaFont *f = new LuaFont;
+
+	if (lua_isnoneornil(L, 1) || lua_istable(L, 1)) {
+		if (lua_istable(L, 1)) {
+			lua_getfield(L, 1, "face");
+			std::string font = readParam<std::string>(L, -1, "");
+			if (font == "mono")
+				f->face = FM_Mono;
+			else
+				f->face = FM_Standard;
+			lua_pop(L, 1);
+
+			lua_getfield(L, 1, "size");
+			if (lua_isnumber(L, -1)) {
+				f->size = std::min(std::max((int)lua_tointeger(L, -1), 1), 999);
+			} else {
+				f->size = g_fontengine->getFontSize(f->face);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, 1, "bold");
+			f->bold = lua_toboolean(L, -1);
+			lua_pop(L, 1);
+
+			lua_getfield(L, 1, "italic");
+			f->italic = lua_toboolean(L, -1);
+			lua_pop(L, 1);
+		} else {
+			f->face = FM_Standard;
+			f->size = g_fontengine->getFontSize(f->face);
+			f->bold = false;
+			f->italic = false;
+		}
+
+		f->font = g_fontengine->getFont(FontSpec(f->size, f->face, f->bold, f->italic));
+	} else {
+		*f = *read_object(L, 1);
+	}
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = f;
+	luaL_getmetatable(L, class_name);
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+int LuaFont::gc_object(lua_State *L)
+{
+	delete *(LuaFont **)lua_touserdata(L, 1);
+	return 0;
+}
+
+LuaFont *LuaFont::read_object(lua_State *L, int index)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	return *(LuaFont **)luaL_checkudata(L, index, class_name);
+}
+
+gui::IGUIFont *LuaFont::read_font(lua_State *L, int index)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (lua_isnoneornil(L, index))
+		return g_fontengine->getFont();
+	else
+		return read_object(L, index)->getFont();
+}
+
+void LuaFont::Register(lua_State *L)
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, class_name);
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_openlib(L, 0, methods, 0);
+	lua_pop(L, 1);
+
+	lua_register(L, class_name, l_create);
+}
+
+const char LuaFont::class_name[] = "Font";
+const luaL_Reg LuaFont::methods[] =
+{
+	luamethod(LuaFont, get_metrics),
+	luamethod(LuaFont, get_text_width),
+	luamethod(LuaFont, to_table),
 	{0, 0}
 };
