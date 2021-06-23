@@ -66,6 +66,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_COLORED_WALLMOUNTED, "colorwallmounted"},
 		{CPT2_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
 		{CPT2_COLORED_DEGROTATE, "colordegrotate"},
+		{CPT2_MULTIFACE, "multiface"},
 		{0, NULL},
 	};
 
@@ -91,6 +92,7 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
 		{NODEBOX_LEVELED, "leveled"},
 		{NODEBOX_CONNECTED, "connected"},
+		{NODEBOX_MULTIFACE, "multiface"},
 		{0, NULL},
 	};
 

@@ -1071,6 +1071,17 @@ The function of `param2` is determined by `paramtype2` in node definition.
         * values 64 and 128 (bits 6-7) are reserved for future use.
     * Example: `param2 = 0` selects a normal "x" shaped plant
     * Example: `param2 = 17` selects a "+" shaped plant, 1.4x larger (1+16)
+* `paramtype2 = "multiface"`
+    * Valid for `signlike` and `nodebox` drawtypes
+    * One or multiple faces will be rendered (one for each of the 6 sides
+      of a cube) by applying a bitmask ranging from 0 to 63.
+    * To activate a face, set the corrseponding bit to 1:
+      0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+    * If no faces are activated, the fallback rendering is activated.
+      For `signlike`, it's a single vertical face in the center.
+      For `nodebox`, it's the optional `multiface_noface` nodebox.
+    * Each multiple of 64 is a different rotation of that fallback
+      rendering.
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
@@ -1162,10 +1173,12 @@ Look for examples in `games/devtest` or `games/minetest_game`.
         * Will be rendered as if placed on top of a node (see
           above) and only the first texture is used.
 * `signlike`
-    * A single texture parallel to, and mounted against, the top, underside or
-      side of a node.
-    * If `paramtype2="[color]wallmounted", it rotates according to `param2`
-    * If `paramtype2="none"`, it will always be on the floor.
+    * A single or multiple textures parallel to, and mounted against, the top,
+      underside or side of a node.
+    * If `paramtype2="[color]wallmounted", it's a single texture that
+      rotates according to `param2`
+    * If `paramtype2="multiface"`, it will be multiple faces
+    * If `paramtype2="none"`, it will always be a single texture on the floor.
 * `plantlike`
     * Two vertical and diagonal textures at right-angles to each other.
     * See `paramtype2 = "meshoptions"` above for other options.
@@ -1263,6 +1276,23 @@ A nodebox is defined as any of:
         disconnected = box OR {box1, box2, ...} -- when there is *no* neighbour
         disconnected_sides = box OR {box1, box2, ...} -- when there are *no*
                                                       -- neighbours to the sides
+    }
+    {
+        -- A node that has optional boxes for each of the 6 sides of a cube,
+        -- depending on a 'multiface' param2. This requires paramtype2 to be
+        -- "multiface".
+        type = "multiface",
+        -- This box will always be there
+        fixed = box OR {box1, box2, ...},
+        -- These boxes get activated depending on param2
+        multiface_top = box OR {box1, box2, ...},
+        multiface_bottom = box OR {box1, box2, ...},
+        multiface_front = box OR {box1, box2, ...},
+        multiface_left = box OR {box1, box2, ...},
+        multiface_back = box OR {box1, box2, ...},
+        multiface_right = box OR {box1, box2, ...},
+        -- This box only appears if none of the faces was activated
+        multiface_noface = box OR {box1, box2, ...},
     }
 
 A `box` is defined as:

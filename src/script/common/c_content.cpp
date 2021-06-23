@@ -996,6 +996,24 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			push_box(L, box.connect_right);
 			lua_setfield(L, -2, "connect_right");
 			break;
+		case NODEBOX_MULTIFACE:
+			lua_pushstring(L, "multiface");
+			lua_setfield(L, -2, "type");
+			push_box(L, box.multiface_top);
+			lua_setfield(L, -2, "multiface_top");
+			push_box(L, box.multiface_bottom);
+			lua_setfield(L, -2, "multiface_bottom");
+			push_box(L, box.multiface_front);
+			lua_setfield(L, -2, "multiface_front");
+			push_box(L, box.multiface_back);
+			lua_setfield(L, -2, "multiface_back");
+			push_box(L, box.multiface_left);
+			lua_setfield(L, -2, "multiface_left");
+			push_box(L, box.multiface_right);
+			lua_setfield(L, -2, "multiface_right");
+			push_box(L, box.multiface_noface);
+			lua_setfield(L, -2, "multiface_noface");
+			break;
 		default:
 			FATAL_ERROR("Invalid box.type");
 			break;
@@ -1137,6 +1155,13 @@ NodeBox read_nodebox(lua_State *L, int index)
 	NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
 	NODEBOXREADVEC(nodebox.disconnected, "disconnected");
 	NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
+	NODEBOXREADVEC(nodebox.multiface_top, "multiface_top");
+	NODEBOXREADVEC(nodebox.multiface_bottom, "multiface_bottom");
+	NODEBOXREADVEC(nodebox.multiface_front, "multiface_front");
+	NODEBOXREADVEC(nodebox.multiface_left, "multiface_left");
+	NODEBOXREADVEC(nodebox.multiface_back, "multiface_back");
+	NODEBOXREADVEC(nodebox.multiface_right, "multiface_right");
+	NODEBOXREADVEC(nodebox.multiface_noface, "multiface_noface");
 
 	return nodebox;
 }

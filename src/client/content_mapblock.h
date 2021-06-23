@@ -159,6 +159,7 @@ public:
 	void drawAllfacesNode();
 	void drawTorchlikeNode();
 	void drawSignlikeNode();
+	void drawVinelikeNode();
 	void drawPlantlikeNode();
 	void drawPlantlikeRootedNode();
 	void drawFirelikeNode();

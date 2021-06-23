@@ -526,6 +526,41 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		}
 
 	}
+	else if(nodebox.type == NODEBOX_MULTIFACE)
+	{
+		BOXESPUSHBACK(nodebox.fixed);
+
+		// TODO: Check if paramtype2 == multiface
+		u8 param2 = n.getParam2();
+		u8 boxes_pushed = 0;
+		if (param2 & 1) {
+			BOXESPUSHBACK(nodebox.multiface_top);
+			boxes_pushed++;
+		}
+		if (param2 & 2) {
+			BOXESPUSHBACK(nodebox.multiface_bottom);
+			boxes_pushed++;
+		}
+		if (param2 & 4) {
+			BOXESPUSHBACK(nodebox.multiface_front);
+			boxes_pushed++;
+		}
+		if (param2 & 8) {
+			BOXESPUSHBACK(nodebox.multiface_back);
+			boxes_pushed++;
+		}
+		if (param2 & 16) {
+			BOXESPUSHBACK(nodebox.multiface_left);
+			boxes_pushed++;
+		}
+		if (param2 & 32) {
+			BOXESPUSHBACK(nodebox.multiface_right);
+			boxes_pushed++;
+		}
+		if (boxes_pushed == 0) {
+			BOXESPUSHBACK(nodebox.multiface_noface);
+		}
+	}
 	else // NODEBOX_REGULAR
 	{
 		boxes.emplace_back(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);

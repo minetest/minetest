@@ -906,35 +906,77 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 
 void MapblockMeshGenerator::drawSignlikeNode()
 {
-	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 	static const float offset = BS / 16;
 	float size = BS / 2 * f->visual_scale;
 	// Wall at X+ of node
-	v3f vertices[4] = {
+	v3f default_vertices[4] = {
 		v3f(BS / 2 - offset,  size,  size),
 		v3f(BS / 2 - offset,  size, -size),
 		v3f(BS / 2 - offset, -size, -size),
 		v3f(BS / 2 - offset, -size,  size),
 	};
-
-	for (v3f &vertex : vertices) {
-		switch (wall) {
-			case DWM_YP:
-				vertex.rotateXYBy( 90); break;
-			case DWM_YN:
-				vertex.rotateXYBy(-90); break;
-			case DWM_XP:
-				vertex.rotateXZBy(  0); break;
-			case DWM_XN:
-				vertex.rotateXZBy(180); break;
-			case DWM_ZP:
-				vertex.rotateXZBy( 90); break;
-			case DWM_ZN:
-				vertex.rotateXZBy(-90); break;
-		}
+	v3f vertices[4];
+	for (int v=0; v<4; v++) {
+		vertices[v] = default_vertices[v];
 	}
-	drawQuad(vertices);
+	int faces_drawn = 0;
+
+	u8 param2 = 0;
+	u8 min_w, max_w;
+	bool multiface = false;
+	if (f->param_type_2 == CPT2_MULTIFACE) {
+		param2 = n.getParam2();
+		min_w = 0;
+		max_w = 6;
+		multiface = true;
+	} else {
+		param2 = n.getWallMounted(nodedef);
+		min_w = param2;
+		max_w = min_w + 1;
+	}
+
+	for (int w = min_w; w < max_w; w++) {
+	if ((!multiface) || ((param2 & (1 << w)) != 0)) {
+		for (int v=0; v<4; v++) {
+			vertices[v] = default_vertices[v];
+		}
+		for (v3f &vertex : vertices) {
+			switch (w) {
+				case DWM_YP:
+					vertex.rotateXYBy( 90); break;
+				case DWM_YN:
+					vertex.rotateXYBy(-90); break;
+				case DWM_XP:
+					vertex.rotateXZBy(  0); break;
+				case DWM_XN:
+					vertex.rotateXZBy(180); break;
+				case DWM_ZP:
+					vertex.rotateXZBy( 90); break;
+				case DWM_ZN:
+					vertex.rotateXZBy(-90); break;
+			}
+		}
+		drawQuad(vertices);
+		faces_drawn++;
+	}
+	}
+
+	// If no faces were drawn, draw a single vertical face in the center
+	if (faces_drawn == 0 && (param2 == 0 || (param2 % 64) == 0)) {
+		for (v3f &vertex : vertices) {
+			vertex.X += -BS/2 + offset;
+			switch (param2 / 64) {
+				case 1:
+					vertex.rotateXZBy(90); break;
+				case 2:
+					vertex.rotateXZBy(180); break;
+				case 3:
+					vertex.rotateXZBy(-90); break;
+			}
+		}
+		drawQuad(vertices);
+	}
 }
 
 void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,

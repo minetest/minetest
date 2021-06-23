@@ -79,3 +79,24 @@ minetest.register_node("testnodes:nodebox_connected", {
 	},
 })
 
+minetest.register_node("testnodes:nodebox_multiface", {
+	description = S("Multiface Nodebox Test Node"),
+	tiles = {"testnodes_nodebox.png"},
+	groups = {dig_immediate=3},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "multiface",
+	node_box = {
+		type = "multiface",
+		fixed = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
+		multiface_noface = { -1/16, -0.5, -1/16, 1/16, 0.5, 1/16 },
+
+		multiface_top = { -0.5, 0.5-2/16, -0.5, 0.5, 0.5, 0.5 },
+		multiface_bottom = { -0.5, -0.5, -0.5, 0.5, -0.5+2/16, 0.5 },
+		multiface_back = { -0.5, -0.5, -0.5, -0.5+2/16, 0.5, 0.5 },
+		multiface_front = { 0.5-2/16, -0.5, -0.5, 0.5, 0.5, 0.5 },
+		multiface_right = { -0.5, -0.5, -0.5, 0.5, 0.5, -0.5+2/16 },
+		multiface_left = { -0.5, -0.5, 0.5-2/16, 0.5, 0.5, 0.5 },
+	},
+})
+

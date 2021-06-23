@@ -183,6 +183,21 @@ minetest.register_node("testnodes:signlike_wallmounted", {
 	sunlight_propagates = true,
 })
 
+minetest.register_node("testnodes:signlike_multiface", {
+	description = S("Multiface Signlike Drawtype Test Node"),
+	drawtype = "signlike",
+	paramtype2 = "multiface",
+	paramtype = "light",
+	tiles = { "testnodes_vines.png" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+	sunlight_propagates = true,
+})
+
+
+
 minetest.register_node("testnodes:plantlike", {
 	description = S("Plantlike Drawtype Test Node"),
 	drawtype = "plantlike",

@@ -157,6 +157,8 @@ core.register_entity(":__builtin:falling_node", {
 				if euler then
 					self.object:set_rotation(euler)
 				end
+			elseif (def.paramtype2 == "multiface") then
+				self.object:set_yaw(math.pi/2)
 			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike") then
 				local rot = node.param2 % 8
 				if (def.drawtype == "signlike" and def.paramtype2 ~= "wallmounted" and def.paramtype2 ~= "colorwallmounted") then

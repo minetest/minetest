@@ -136,7 +136,8 @@ local function place_nodes(param)
 			elseif def.paramtype2 == "colorfacedir" or
 				def.paramtype2 == "colorwallmounted" or
 				def.paramtype2 == "colordegrotate" or
-				def.paramtype2 == "color" then
+				def.paramtype2 == "color" or
+				def.paramtype2 == "multiface" then
 				p2_max = 255
 			end
 		end

@@ -81,6 +81,8 @@ enum ContentParamType2
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
 	// 3 bits of palette index, then degrotate
 	CPT2_COLORED_DEGROTATE,
+	// Render 1 or multiple faces
+	CPT2_MULTIFACE,
 };
 
 enum LiquidType
@@ -97,6 +99,7 @@ enum NodeBoxType
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
+	NODEBOX_MULTIFACE, // draws nodeboxes depending on "activated" sides (for multiface paramtype2)
 };
 
 struct NodeBox
@@ -124,6 +127,14 @@ struct NodeBox
 	std::vector<aabb3f> disconnected_right;
 	std::vector<aabb3f> disconnected;
 	std::vector<aabb3f> disconnected_sides;
+	// NODEBOX_MULTIFACE
+	std::vector<aabb3f> multiface_top;
+	std::vector<aabb3f> multiface_bottom;
+	std::vector<aabb3f> multiface_front;
+	std::vector<aabb3f> multiface_left;
+	std::vector<aabb3f> multiface_back;
+	std::vector<aabb3f> multiface_right;
+	std::vector<aabb3f> multiface_noface;
 
 	NodeBox()
 	{ reset(); }

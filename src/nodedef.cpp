@@ -54,7 +54,24 @@ void NodeBox::reset()
 	wall_top = aabb3f(-BS/2, BS/2-BS/16., -BS/2, BS/2, BS/2, BS/2);
 	wall_bottom = aabb3f(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2);
 	wall_side = aabb3f(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2);
+	aabb3f box_wall_front = aabb3f(BS/2-BS/16., -BS/2, -BS/2, BS/2, BS/2, BS/2);
+	aabb3f box_wall_right = aabb3f(-BS/2, -BS/2, -BS/2, BS/2, BS/2, -BS/2+BS/16.);
+	aabb3f box_wall_back = aabb3f(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2);
+	aabb3f box_wall_left = aabb3f(-BS/2, -BS/2, BS/2-BS/16., BS/2, BS/2, BS/2);
+	multiface_top.clear();
+	multiface_top.push_back(wall_top);
+	multiface_bottom.clear();
+	multiface_bottom.push_back(wall_bottom);
+	multiface_front.clear();
+	multiface_front.push_back(box_wall_front);
+	multiface_left.clear();
+	multiface_left.push_back(box_wall_left);
+	multiface_back.clear();
+	multiface_back.push_back(box_wall_back);
+	multiface_right.clear();
+	multiface_right.push_back(box_wall_right);
 	// no default for other parts
+	multiface_noface.clear();
 	connect_top.clear();
 	connect_bottom.clear();
 	connect_front.clear();
@@ -124,6 +141,18 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 		WRITEBOX(disconnected);
 		WRITEBOX(disconnected_sides);
 		break;
+	case NODEBOX_MULTIFACE:
+		writeU8(os, type);
+
+		WRITEBOX(fixed);
+		WRITEBOX(multiface_top);
+		WRITEBOX(multiface_bottom);
+		WRITEBOX(multiface_front);
+		WRITEBOX(multiface_left);
+		WRITEBOX(multiface_back);
+		WRITEBOX(multiface_right);
+		WRITEBOX(multiface_noface);
+		break;
 	default:
 		writeU8(os, type);
 		break;
@@ -187,6 +216,19 @@ void NodeBox::deSerialize(std::istream &is)
 		READBOXES(disconnected_right);
 		READBOXES(disconnected);
 		READBOXES(disconnected_sides);
+	}
+	else if (type == NODEBOX_MULTIFACE)
+	{
+		u16 count;
+
+		READBOXES(fixed);
+		READBOXES(multiface_top);
+		READBOXES(multiface_bottom);
+		READBOXES(multiface_front);
+		READBOXES(multiface_left);
+		READBOXES(multiface_back);
+		READBOXES(multiface_right);
+		READBOXES(multiface_noface);
 	}
 }
 
@@ -1253,6 +1295,16 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			boxVectorUnion(nodebox.disconnected,        box_union);
 			boxVectorUnion(nodebox.disconnected_sides,  box_union);
 			break;
+		}
+		case NODEBOX_MULTIFACE: {
+			// Add all possible connected boxes
+			boxVectorUnion(nodebox.fixed,               box_union);
+			boxVectorUnion(nodebox.multiface_top,       box_union);
+			boxVectorUnion(nodebox.multiface_bottom,    box_union);
+			boxVectorUnion(nodebox.multiface_front,     box_union);
+			boxVectorUnion(nodebox.multiface_left,      box_union);
+			boxVectorUnion(nodebox.multiface_back,      box_union);
+			boxVectorUnion(nodebox.multiface_right,     box_union);
 		}
 		default: {
 			// NODEBOX_REGULAR
