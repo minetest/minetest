@@ -294,12 +294,9 @@ void GameUI::toggleProfiler()
 	updateProfiler();
 
 	if (m_profiler_current_page != 0) {
-		wchar_t buf[255];
-		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
-			m_profiler_current_page, m_profiler_max_page);
-		delete[] str;
-		showStatusText(buf);
+		std::wstring msg = fwgettext("Profiler shown (page %d of %d)",
+				m_profiler_current_page, m_profiler_max_page);
+		showStatusText(msg);
 	} else {
 		showTranslatedStatusText("Profiler hidden");
 	}

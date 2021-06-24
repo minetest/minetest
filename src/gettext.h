@@ -59,3 +59,21 @@ inline std::string strgettext(const std::string &text)
 {
 	return text.empty() ? "" : gettext(text.c_str());
 }
+
+/**
+ * Returns translated string with format args applied
+ *
+ * @tparam Args Template parameter for format args
+ * @param src Translation source string
+ * @param args Variable format args
+ * @return translated string
+ */
+template <typename ...Args>
+inline std::wstring fwgettext(const char *src, Args&&... args)
+{
+	wchar_t buf[255];
+	const wchar_t* str = wgettext(src);
+	swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, std::forward<Args>(args)...);
+	delete[] str;
+	return std::wstring(buf);
+}
