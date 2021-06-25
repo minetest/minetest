@@ -327,23 +327,36 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 
 #ifdef COLORED_SHADOWS
 
+
 vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
 	vec2 clampedpos;
 	vec4 visibility = vec4(0.0);
-	float sradius=0.0;
-	if( PCFBOUND>0)
-		sradius = SOFTSHADOWRADIUS / PCFBOUND;  
-	float texture_size = 2.0 / f_textureresolution;
-	float y, x;
-	// basic PCF filter
-	for (y = -PCFBOUND; y <= PCFBOUND; y += 1.0)
-	for (x = -PCFBOUND; x <= PCFBOUND; x += 1.0) {
-		clampedpos = vec2(x,y) * texture_size* sradius +  smTexCoord.xy;
-		visibility += getHardShadowColor(shadowsampler, clampedpos.xy, realDistance);
+	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance, 1.0);
+	if (radius < 0.1) {
+		// we are in the middle of even brightness, no need for filtering
+		return getHardShadowColor(shadowsampler, smTexCoord.xy, realDistance);
 	}
 
-	return visibility / PCFSAMPLES;
+	float baseLength = getBaseLength(smTexCoord);
+	float perspectiveFactor;
+
+	float texture_size = 2.0 / f_textureresolution;
+	float y, x;
+	float bound = clamp(PCFBOUND * (1 - baseLength), 0.5, PCFBOUND);
+	int n = 0;
+
+	// basic PCF filter
+	for (y = -bound; y <= bound; y += 1.0)
+	for (x = -bound; x <= bound; x += 1.0) {
+		clampedpos = vec2(x,y);     // screen offset
+		perspectiveFactor = getDeltaPerspectiveFactor(baseLength + length(clampedpos) * texture_size * radius / bound);
+		clampedpos =  clampedpos * texture_size * perspectiveFactor * radius * perspectiveFactor / bound + smTexCoord.xy; // both dx,dy and radius are adjusted
+		visibility += getHardShadowColor(shadowsampler, clampedpos.xy, realDistance);
+		n += 1;
+	}
+
+	return visibility / n;
 }
 
 #else
