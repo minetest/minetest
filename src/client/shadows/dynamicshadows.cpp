@@ -34,8 +34,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	float fovy = cam->getFovY();
 	float adaptPOV = 0.05f;
-	
-	const float Rad2Grad = 180.f / 3.1415f;
+
 	
 	v3f look = cam->getDirection();
 	look.normalize();

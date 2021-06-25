@@ -31,8 +31,6 @@ const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 	uniform vec3 v_LightDirection;
 	uniform float f_textureresolution;
 	uniform mat4 m_ShadowViewProj;
-	uniform mat4 m_InvProj;
-	uniform mat4 m_InvView;
 	uniform float f_shadowfar;
 	uniform float f_shadownear;
 	uniform float f_timeofday;
@@ -77,50 +75,6 @@ vec4 applyToneMapping(vec4 color)
 #endif
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-const float bias0 = 0.9;
-const float zPersFactor = 1.0/4.0;
-
-vec4 getPerspectiveFactor(in vec4 shadowPosition)
-{   
-	float lnz = sqrt(shadowPosition.x*shadowPosition.x+shadowPosition.y*shadowPosition.y);
-
-	float pf=mix(1.0, lnz * 1.165, bias0);
-	
-	float pFactor =1.0/pf;
-	shadowPosition.xyz *= vec3(vec2(pFactor), zPersFactor);
-
-	return shadowPosition;
-}
-
-// assuming near is always 1.0
-float getLinearDepth()
-{
-
-	return 2.0 * f_shadownear*f_shadowfar / (f_shadowfar + f_shadownear - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - f_shadownear));
-}
-vec4 getWorldSpacePosition() {
-
-     // Convert screen coordinates to normalized device coordinates (NDC)
-    vec4 ndc = vec4(
-        (gl_FragCoord.x / v_screen_size.x * 0.5) +0.5,
-        (gl_FragCoord.y / v_screen_size.y  * 0.5) +0.5,
-        (gl_FragCoord.z * 0.5) +0.5,
-        1.0);
-
-    // Convert NDC throuch inverse clip coordinates to view coordinates
-    vec4 clip = m_InvProj* m_InvView  *  ndc;
-    vec4 vertex = vec4((clip / clip.w).xyz,1.0);
-  	return vertex;
-}
-vec3 getLightSpacePosition()
-{
-	vec4 pLightSpace;
-	vec3 normalBias = normalOffsetScale * normalize(vNormal)  + vec3(0.0005);;
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalBias, 1.0);
-	pLightSpace = getPerspectiveFactor(pLightSpace);
-	return pLightSpace.xyz * 0.5 + 0.5;
-}
-
 
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
