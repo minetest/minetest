@@ -119,6 +119,20 @@ minetest.register_node("testnodes:firelike", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:firelike_multiface", {
+	description = S("Multiface Firelike Drawtype Test Node"),
+	drawtype = "firelike",
+	paramtype = "light",
+	paramtype2 = "multiface",
+	tiles = { "testnodes_firelike.png^[brighten" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+})
+
+
+
 minetest.register_node("testnodes:fencelike", {
 	description = S("Fencelike Drawtype Test Node"),
 	drawtype = "fencelike",

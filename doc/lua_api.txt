@@ -1072,14 +1072,15 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Example: `param2 = 0` selects a normal "x" shaped plant
     * Example: `param2 = 17` selects a "+" shaped plant, 1.4x larger (1+16)
 * `paramtype2 = "multiface"`
-    * Valid for `signlike` and `nodebox` drawtypes
-    * One or multiple faces will be rendered (one for each of the 6 sides
+    * Valid for `signlike`, `nodebox` and `firelike` drawtypes
+    * One or multiple sides will be rendered (one for each of the 6 sides
       of a cube) by applying a bitmask ranging from 0 to 63.
-    * To activate a face, set the corrseponding bit to 1:
+    * To activate a side, set the corrseponding bit to 1:
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
-    * If no faces are activated, the fallback rendering is activated.
+    * If no sides are activated, the fallback rendering is activated.
       For `signlike`, it's a single vertical face in the center.
       For `nodebox`, it's the optional `multiface_noface` nodebox.
+      For `firelike`, it's the same as the floor rendering.
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
@@ -1185,6 +1186,8 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       `plantlike` plus 4 more surrounding those.
     * If not above a surface the central 2 do not appear, but the texture
       appears against the faces of surrounding nodes if they are present.
+    * For `paramtype2="multiface"`, the rendered sides are controlled
+      by `param2` instead
 * `fencelike`
     * A 3D model suitable for a wooden fence.
     * One placed node appears as a single vertical post.

@@ -1110,17 +1110,45 @@ void MapblockMeshGenerator::drawFirelikeNode()
 	useTile();
 	scale = BS / 2 * f->visual_scale;
 
-	// Check for adjacent nodes
 	bool neighbors = false;
 	bool neighbor[6] = {0, 0, 0, 0, 0, 0};
-	content_t current = n.getContent();
-	for (int i = 0; i < 6; i++) {
-		v3s16 n2p = blockpos_nodes + p + g_6dirs[i];
-		MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
-		content_t n2c = n2.getContent();
-		if (n2c != CONTENT_IGNORE && n2c != CONTENT_AIR && n2c != current) {
-			neighbor[i] = true;
+	if (f->param_type_2 == CPT2_MULTIFACE) {
+		u8 param2 = n.getParam2();
+		if (param2 & 1) {
+			neighbor[1] = true;
 			neighbors = true;
+		}
+		if (param2 & 2) {
+			neighbor[4] = true;
+			neighbors = true;
+		}
+		if (param2 & 4) {
+			neighbor[2] = true;
+			neighbors = true;
+		}
+		if (param2 & 8) {
+			neighbor[5] = true;
+			neighbors = true;
+		}
+		if (param2 & 16) {
+			neighbor[0] = true;
+			neighbors = true;
+		}
+		if (param2 & 32) {
+			neighbor[3] = true;
+			neighbors = true;
+		}
+	} else {
+		// Check for adjacent nodes
+		content_t current = n.getContent();
+		for (int i = 0; i < 6; i++) {
+			v3s16 n2p = blockpos_nodes + p + g_6dirs[i];
+			MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
+			content_t n2c = n2.getContent();
+			if (n2c != CONTENT_IGNORE && n2c != CONTENT_AIR && n2c != current) {
+				neighbor[i] = true;
+				neighbors = true;
+			}
 		}
 	}
 	bool drawBasicFire = neighbor[D6D_YN] || !neighbors;

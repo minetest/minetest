@@ -329,7 +329,11 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 			n.setParam2(4);
 		}
 	} else if (f.param_type_2 == CPT2_MULTIFACE) {
-		n.setParam2(16);
+		if (f.drawtype == NDT_FIRELIKE) {
+			n.setParam2(2);
+		} else {
+			n.setParam2(16);
+		}
 	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE) {
 		n.setParam2(1);
 	}
