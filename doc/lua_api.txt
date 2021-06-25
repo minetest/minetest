@@ -1080,8 +1080,6 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * If no faces are activated, the fallback rendering is activated.
       For `signlike`, it's a single vertical face in the center.
       For `nodebox`, it's the optional `multiface_noface` nodebox.
-    * Each multiple of 64 is a different rotation of that fallback
-      rendering.
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.

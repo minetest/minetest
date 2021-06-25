@@ -966,14 +966,6 @@ void MapblockMeshGenerator::drawSignlikeNode()
 	if (faces_drawn == 0 && (param2 == 0 || (param2 % 64) == 0)) {
 		for (v3f &vertex : vertices) {
 			vertex.X += -BS/2 + offset;
-			switch (param2 / 64) {
-				case 1:
-					vertex.rotateXZBy(90); break;
-				case 2:
-					vertex.rotateXZBy(180); break;
-				case 3:
-					vertex.rotateXZBy(-90); break;
-			}
 		}
 		drawQuad(vertices);
 	}
