@@ -720,6 +720,13 @@ appropriate `paramtype2`:
       first (= 0 + 1) pixel will be picked from the palette.
     * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
       second (= 1 + 1) pixel will be picked from the palette.
+* `paramtype2 = "colormultiface"` for nodes which use the first
+  two bits of `param2` for palette indexing. The remaining
+  six bits are describing the activated sides, as in `multiface`
+  paramtype2. Division by 64 yields the palette index (without
+  stretching the palette). These nodes can have 4 different colors,
+  and the palette should contain 4 pixels.
+
 
 To colorize a node on the map, set its `param2` value (according
 to the node's paramtype2).
@@ -1092,6 +1099,10 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Same as `wallmounted`, but with colors.
     * The first five bits of `param2` tells which color is picked from the
       palette. The palette should have 32 pixels.
+* `paramtype2 = "colormultiface"`
+    * Same as `multiface`, but with colors.
+    * The first two bits of `param2` tells which color is picked from the
+      palette. The palette should have 4 pixels.
 * `paramtype2 = "glasslikeliquidlevel"`
     * Only valid for "glasslike_framed" or "glasslike_framed_optional"
       drawtypes.
@@ -5402,7 +5413,8 @@ Item handling
     * Convert yaw (angle) to a vector
 * `minetest.is_colored_paramtype(ptype)`
     * Returns a boolean. Returns `true` if the given `paramtype2` contains
-      color information (`color`, `colorwallmounted` or `colorfacedir`).
+      color information (`color`, `colorwallmounted`, `colorfacedir`,
+      `colordegrotate`, `colormultiface`).
 * `minetest.strip_param2_color(param2, paramtype2)`
     * Removes everything but the color information from the
       given `param2` value.
@@ -7364,7 +7376,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- You can set the currently used color as the "palette_index" field of
         -- the item stack metadata.
         -- The palette is always stretched to fit indices between 0 and 255, to
-        -- ensure compatibility with "colorfacedir" and "colorwallmounted" nodes.
+        -- ensure compatibility with "colorfacedir", "colorwallmounted", etc.
+        -- nodes.
 
         color = "0xFFFFFFFF",
         -- The color of the item. The palette overrides this.

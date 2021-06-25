@@ -925,7 +925,8 @@ void MapblockMeshGenerator::drawSignlikeNode()
 	u8 param2 = 0;
 	u8 min_w, max_w;
 	bool multiface = false;
-	if (f->param_type_2 == CPT2_MULTIFACE) {
+	if (f->param_type_2 == CPT2_MULTIFACE ||
+			f->param_type_2 == CPT2_COLORED_MULTIFACE) {
 		param2 = n.getParam2();
 		min_w = 0;
 		max_w = 6;
@@ -1112,7 +1113,8 @@ void MapblockMeshGenerator::drawFirelikeNode()
 
 	bool neighbors = false;
 	bool neighbor[6] = {0, 0, 0, 0, 0, 0};
-	if (f->param_type_2 == CPT2_MULTIFACE) {
+	if (f->param_type_2 == CPT2_MULTIFACE ||
+			f->param_type_2 == CPT2_COLORED_MULTIFACE) {
 		u8 param2 = n.getParam2();
 		if (param2 & 1) {
 			neighbor[1] = true;

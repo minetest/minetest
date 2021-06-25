@@ -210,6 +210,19 @@ minetest.register_node("testnodes:signlike_multiface", {
 	sunlight_propagates = true,
 })
 
+minetest.register_node("testnodes:signlike_colormultiface", {
+	description = S("Color Multiface Signlike Drawtype Test Node"),
+	drawtype = "signlike",
+	paramtype2 = "colormultiface",
+	paramtype = "light",
+	palette = "testnodes_palette_multiface.png",
+	tiles = { "testnodes_vines_gray.png" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+	sunlight_propagates = true,
+})
 
 
 minetest.register_node("testnodes:plantlike", {

@@ -328,7 +328,8 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 				f.drawtype == NDT_MESH) {
 			n.setParam2(4);
 		}
-	} else if (f.param_type_2 == CPT2_MULTIFACE) {
+	} else if (f.param_type_2 == CPT2_MULTIFACE ||
+			f.param_type_2 == CPT2_COLORED_MULTIFACE) {
 		if (f.drawtype == NDT_FIRELIKE) {
 			n.setParam2(2);
 		} else {

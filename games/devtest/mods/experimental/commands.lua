@@ -125,7 +125,7 @@ local function place_nodes(param)
 				p2_max = 5
 			elseif def.paramtype2 == "facedir" then
 				p2_max = 23
-			elseif def.paramtype2 == "glasslikeliquidlevel" then
+			elseif def.paramtype2 == "glasslikeliquidlevel" or def.paramtype2 == "multiface" then
 				p2_max = 63
 			elseif def.paramtype2 == "meshoptions" and def.drawtype == "plantlike" then
 				p2_max = 63
@@ -136,8 +136,8 @@ local function place_nodes(param)
 			elseif def.paramtype2 == "colorfacedir" or
 				def.paramtype2 == "colorwallmounted" or
 				def.paramtype2 == "colordegrotate" or
-				def.paramtype2 == "color" or
-				def.paramtype2 == "multiface" then
+				def.paramtype2 == "colormultiface" or
+				def.paramtype2 == "color" then
 				p2_max = 255
 			end
 		end

@@ -83,6 +83,8 @@ enum ContentParamType2
 	CPT2_COLORED_DEGROTATE,
 	// Render 1 or multiple faces
 	CPT2_MULTIFACE,
+	// 2 bits of palette index, then multiface
+	CPT2_COLORED_MULTIFACE,
 };
 
 enum LiquidType

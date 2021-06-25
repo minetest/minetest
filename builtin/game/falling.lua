@@ -98,6 +98,7 @@ core.register_entity(":__builtin:falling_node", {
 				local s = def.visual_scale
 				vsize = vector.new(s, s, s)
 			end
+			-- FIXME: colored nodes are not supported
 			self.object:set_properties({
 				is_visible = true,
 				visual = "upright_sprite",
@@ -157,7 +158,7 @@ core.register_entity(":__builtin:falling_node", {
 				if euler then
 					self.object:set_rotation(euler)
 				end
-			elseif (def.paramtype2 == "multiface") then
+			elseif (def.paramtype2 == "multiface" or def.paramtype2 == "colormultiface") then
 				self.object:set_yaw(math.pi/2)
 			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike") then
 				local rot = node.param2 % 8
