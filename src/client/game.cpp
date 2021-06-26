@@ -3878,8 +3878,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	runData.update_shadows_timer += dtime;
 
 	float update_draw_list_delta = 0.2f;
-	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer())
-		update_draw_list_delta = shadow->getUpdateDelta();
+	bool draw_list_updated = false;
 
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= update_draw_list_delta
@@ -3889,15 +3888,15 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
+		draw_list_updated = true;
 	}
 
 	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer())
 		update_draw_list_delta = shadow->getUpdateDelta();
 
-	if (runData.update_shadows_timer > update_draw_list_delta)
-	{
+	if (runData.update_shadows_timer > update_draw_list_delta &&
+			(!draw_list_updated || RenderingEngine::get_shadow_renderer()->getDirectionalLightCount() == 0)) {
 		runData.update_shadows_timer = 0;
-
 		updateShadows();
 	}
 
