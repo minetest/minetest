@@ -609,6 +609,7 @@ struct GameRunData {
 	float jump_timer;
 	float damage_flash;
 	float update_draw_list_timer;
+	float update_shadows_timer;
 
 	f32 fog_range;
 
@@ -3874,6 +3875,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		changed much
 	*/
 	runData.update_draw_list_timer += dtime;
+	runData.update_shadows_timer += dtime;
 
 	float update_draw_list_delta = 0.2f;
 	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer())
@@ -3887,6 +3889,14 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
+	}
+
+	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer())
+		update_draw_list_delta = shadow->getUpdateDelta();
+
+	if (runData.update_shadows_timer > update_draw_list_delta)
+	{
+		runData.update_shadows_timer = 0;
 
 		updateShadows();
 	}
