@@ -151,17 +151,24 @@ local function get_formspec(tabview, name, tabdata)
 
 	local creative, damage, host = "", "", ""
 
+	-- Y offsets for game settings checkboxes
+	local y = -0.2
+	local yo = 0.45
+
 	if disabled_settings["creative_mode"] == nil then
-		creative = "checkbox[0,-0.20;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
+		creative = "checkbox[0,"..y..";cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
 			dump(core.settings:get_bool("creative_mode")) .. "]"
+		y = y + yo
 	end
 	if disabled_settings["enable_damage"] == nil then
-		damage = "checkbox[0,0.25;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
+		damage = "checkbox[0,"..y..";cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
 			dump(core.settings:get_bool("enable_damage")) .. "]"
+		y = y + yo
 	end
 	if disabled_settings["enable_server"] == nil then
-		host = "checkbox[0,0.7;cb_server;".. fgettext("Host Server") ..";" ..
+		host = "checkbox[0,"..y..";cb_server;".. fgettext("Host Server") ..";" ..
 			dump(core.settings:get_bool("enable_server")) .. "]"
+		y = y + yo
 	end
 
 	retval = retval ..
@@ -179,7 +186,7 @@ local function get_formspec(tabview, name, tabdata)
 	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
 		retval = retval ..
 				"button[7.9,4.75;4.1,1;play;".. fgettext("Host Game") .. "]" ..
-				"checkbox[0,1.15;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
+				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]" ..
 				"field[0.3,2.85;3.8,0.5;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(core.settings:get("name")) .. "]" ..
