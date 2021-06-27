@@ -3891,13 +3891,14 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		draw_list_updated = true;
 	}
 
-	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer())
+	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
 		update_draw_list_delta = shadow->getUpdateDelta();
 
-	if (runData.update_shadows_timer > update_draw_list_delta &&
-			(!draw_list_updated || RenderingEngine::get_shadow_renderer()->getDirectionalLightCount() == 0)) {
-		runData.update_shadows_timer = 0;
-		updateShadows();
+		if (runData.update_shadows_timer > update_draw_list_delta &&
+				(!draw_list_updated || shadow->getDirectionalLightCount() == 0)) {
+			runData.update_shadows_timer = 0;
+			updateShadows();
+		}
 	}
 
 	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
