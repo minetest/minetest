@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-05-03 07:32+0000\n"
-"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
+"PO-Revision-Date: 2021-06-29 10:33+0000\n"
+"Last-Translator: Чтабс <chtabs2k19@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -21,9 +21,8 @@ msgid "Clear the out chat queue"
 msgstr "Максимальный размер очереди исходящих сообщений"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Команды в чате"
+msgstr "Пустая команда."
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -31,23 +30,20 @@ msgid "Exit to main menu"
 msgstr "Выход в меню"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Локальная команда"
+msgstr "Неверная команда: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
 msgstr ""
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Одиночная игра"
+msgstr "Список онлайн игроков"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Одиночная игра"
+msgstr "Онлайн игроки: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -55,7 +51,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Эта команда отключена сервером."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -66,32 +62,31 @@ msgid "You died"
 msgstr "Вы умерли"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Вы умерли"
+msgstr "Ты умер."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Локальная команда"
+msgstr "Доступные команды:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Локальная команда"
+msgstr "Доступные команды: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Команда недоступна: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Получить справку по командам"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Используйте '.help <cmd>' для получения дополнительной информации, или "
+"'.help all' для перечисления всего списка."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
