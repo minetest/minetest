@@ -177,7 +177,7 @@ Download minetest_game (otherwise only the "Development Test" game is available)
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
-Download Minetest specific Irrlicht fork named IrrlichtMt. If the folder is available it will be used to satisfy the IrrlichtMt dependency:
+Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
 
     git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 
