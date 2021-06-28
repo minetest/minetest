@@ -521,14 +521,15 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 {
 	// Only check these drivers.
 	// We do not support software and D3D in any capacity.
-	static const irr::video::E_DRIVER_TYPE glDrivers[3] = {
+	static const irr::video::E_DRIVER_TYPE glDrivers[4] = {
+		irr::video::EDT_NULL,
 		irr::video::EDT_OPENGL,
 		irr::video::EDT_OGLES1,
 		irr::video::EDT_OGLES2,
 	};
 	std::vector<irr::video::E_DRIVER_TYPE> drivers;
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		if (irr::IrrlichtDevice::isDriverSupported(glDrivers[i]))
 			drivers.push_back(glDrivers[i]);
 	}
