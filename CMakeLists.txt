@@ -58,11 +58,27 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
 # This is done here so that relative search paths are more reasonable
-find_package(Irrlicht)
-if(BUILD_CLIENT AND NOT IRRLICHT_FOUND)
-	message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.")
-elseif(NOT IRRLICHT_INCLUDE_DIR)
-	message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
+	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
+	# tell IrrlichtMt to create a static library
+	set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
+	add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
+	unset(BUILD_SHARED_LIBS CACHE)
+
+	if(NOT TARGET IrrlichtMt)
+		message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+	endif()
+
+	# set include dir the way it would normally be
+	set(IRRLICHT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
+	set(IRRLICHT_LIBRARY IrrlichtMt)
+else()
+	find_package(Irrlicht)
+	if(BUILD_CLIENT AND NOT IRRLICHT_FOUND)
+		message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.")
+	elseif(NOT IRRLICHT_INCLUDE_DIR)
+		message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
+	endif()
 endif()
 
 include(CheckSymbolExists)
