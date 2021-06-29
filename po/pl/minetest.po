@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-03-28 20:29+0000\n"
+"PO-Revision-Date: 2021-06-29 18:23+0000\n"
 "Last-Translator: ResuUman <aparat2@wp.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -545,7 +545,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Biocenozy klimatu umiakowanego, pustynie, dżungla, taiga i tundra."
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
