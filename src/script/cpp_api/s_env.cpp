@@ -267,3 +267,43 @@ void ScriptApiEnv::on_emerge_area_completion(
 		luaL_unref(L, LUA_REGISTRYINDEX, state->args_ref);
 	}
 }
+
+void ScriptApiEnv::on_liquid_transformed(
+	std::vector<std::pair<v3s16, MapNode> > &list)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_liquid_transformed
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_liquid_transformed");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_remove(L, -2);
+
+	// Skip converting list and calling hook if there are
+	// no registered callbacks.
+	if(lua_objlen(L, -1) < 1) return;
+
+	// Convert the list of pos/node pairs into lua format
+	int index = 1;
+	const NodeDefManager *ndef = getEnv()->getGameDef()->ndef();
+	lua_createtable(L, list.size(), 0);
+	for(std::pair<v3s16, MapNode> p : list) {
+		lua_pushnumber(L, index++);
+		lua_createtable(L, 2, 0);
+		lua_pushstring(L, "pos");
+		push_v3s16(L, p.first);
+		lua_rawset(L, -3);
+		lua_pushstring(L, "oldnode");
+		lua_createtable(L, 0, 3);
+		lua_pushstring(L, ndef->get(p.second).name.c_str());
+		lua_setfield(L, -2, "name");
+		lua_pushinteger(L, p.second.getParam1());
+		lua_setfield(L, -2, "param1");
+		lua_pushinteger(L, p.second.getParam2());
+		lua_setfield(L, -2, "param2");
+		lua_rawset(L, -3);
+		lua_rawset(L, -3);
+	}
+
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+}

@@ -4859,6 +4859,12 @@ Call these functions only at load time!
     * Called when an incoming mod channel message is received
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
+* `minetest.register_on_liquid_transformed(function(list))`
+    * Called after liquid nodes are modified by the engine's liquid transformation
+      process.
+    * `list` is an array of all nodes modified.  Each entry will contain:
+      * `pos`: the position of the modified node.
+      * `oldnode`: the old node that was replaced at that position.
 
 Setting-related
 ---------------
