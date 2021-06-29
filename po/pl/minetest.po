@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
 "PO-Revision-Date: 2021-06-29 18:23+0000\n"
-"Last-Translator: ResuUman <aparat2@wp.pl>\n"
+"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -36,8 +36,9 @@ msgid "Invalid command: "
 msgstr "Lokalne polecenie"
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "Issued command: "
-msgstr ""
+msgstr "Wydane komenda: "
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -50,12 +51,14 @@ msgid "Online players: "
 msgstr "Pojedynczy gracz"
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Kolejka czatu jest teraz pusta."
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Ta komenda jest dezaktywowana przez serwer."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -81,21 +84,27 @@ msgid "Available commands: "
 msgstr "Lokalne polecenie"
 
 #: builtin/common/chatcommands.lua
+#, fuzzy
 msgid "Command not available: "
-msgstr ""
+msgstr "Komenda nie jest dostępna: "
 
 #: builtin/common/chatcommands.lua
+#, fuzzy
 msgid "Get help for commands"
-msgstr ""
+msgstr "Uzyskaj pomoc dotyczącą komend"
 
 #: builtin/common/chatcommands.lua
+#, fuzzy
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Użyj '.help <cmd>' aby uzyskać więcej informacji lub '.help all' aby "
+"wyświetlić wszystko."
 
 #: builtin/common/chatcommands.lua
+#, fuzzy
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -486,8 +495,9 @@ msgid "Mountains"
 msgstr "Góry"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Mud flow"
-msgstr ""
+msgstr "Strumień błota"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
@@ -511,8 +521,9 @@ msgid "Rivers"
 msgstr "Rozmiar rzeki"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Rzeki na poziomie morza"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -532,16 +543,19 @@ msgstr ""
 "dżungli stworzone przez v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Struktury pojawiające się na terenie, zazwyczaj drzewa i rośliny"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Umiarkowany, pustynny"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Umiarkowany, pustynny, dżunglowy"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
