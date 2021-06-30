@@ -75,7 +75,7 @@ else()
 			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.")
 		endif()
 
-		find_package(Irrlicht QUIET)
+		include(MinetestFindIrrlichtHeaders)
 		if(NOT IRRLICHT_INCLUDE_DIR)
 			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
 		endif()
