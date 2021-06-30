@@ -1359,9 +1359,9 @@ void read_inventory_list(lua_State *L, int tableindex,
 
 	// Get Lua-specified items to insert into the list
 	std::vector<ItemStack> items = read_items(L, tableindex,srv);
-	size_t listsize = (forcesize > 0) ? forcesize : items.size();
+	size_t listsize = (forcesize >= 0) ? forcesize : items.size();
 
-	// Create or clear list
+	// Create or resize/clear list
 	InventoryList *invlist = inv->addList(name, listsize);
 	if (!invlist) {
 		luaL_error(L, "inventory list: cannot create list named '%s'", name);
