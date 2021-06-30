@@ -91,8 +91,6 @@ fi
 
 git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 
-# Move Irrlicht DLL to where CMake expects it
-mv $libdir/irrlicht/{bin,lib}/IrrlichtMt.dll
 
 # Build the thing
 cd $builddir
@@ -100,7 +98,7 @@ cd $builddir
 mkdir build
 cd build
 
-irr_dlls=$(echo $libdir/irrlicht/bin/*.dll | tr ' ' ';')
+irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
 vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
 gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
