@@ -293,31 +293,7 @@ else()
 		if(NOT HAIKU AND NOT APPLE)
 			find_package(X11 REQUIRED)
 		endif(NOT HAIKU AND NOT APPLE)
-
-		##
-		# The following dependencies are transitive dependencies from Irrlicht.
-		# Minetest itself does not use them, but we link them so that statically
-		# linking Irrlicht works.
-		if(NOT HAIKU AND NOT APPLE)
-			# This way Xxf86vm is found on OpenBSD too
-			find_library(XXF86VM_LIBRARY Xxf86vm)
-			mark_as_advanced(XXF86VM_LIBRARY)
-			set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
-		endif(NOT HAIKU AND NOT APPLE)
-
-		if(APPLE)
-			find_library(CARBON_LIB Carbon REQUIRED)
-			find_library(COCOA_LIB Cocoa REQUIRED)
-			find_library(IOKIT_LIB IOKit REQUIRED)
-			mark_as_advanced(
-				CARBON_LIB
-				COCOA_LIB
-				IOKIT_LIB
-			)
-			SET(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${CARBON_LIB} ${COCOA_LIB} ${IOKIT_LIB})
-		endif(APPLE)
-		##
-	endif(BUILD_CLIENT)
+	endif()
 
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
@@ -545,7 +521,6 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		IrrlichtMt::IrrlichtMt
-		${BZIP2_LIBRARIES}
 		${X11_LIBRARIES}
 		${SOUND_LIBRARIES}
 		${SQLITE3_LIBRARY}
@@ -553,7 +528,6 @@ if(BUILD_CLIENT)
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
 		${PLATFORM_LIBS}
-		${CLIENT_PLATFORM_LIBS}
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
