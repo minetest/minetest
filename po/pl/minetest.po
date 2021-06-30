@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-06-29 18:24+0000\n"
-"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"PO-Revision-Date: 2021-06-30 17:24+0000\n"
+"Last-Translator: ResuUman <aparat2@wp.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -563,9 +563,8 @@ msgid "Temperate, Desert, Jungle, Tundra, Taiga"
 msgstr "Biocenozy klimatu umiarkowanego, pustynie, dżungla, tajga i tundra"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "Szum podłoża"
+msgstr "Erozja powierzchni terenu."
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
