@@ -68,9 +68,6 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 		message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
 	endif()
 
-	# set include dir the way it would normally be
-	set(IRRLICHT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
-	set(IRRLICHT_LIBRARY IrrlichtMt)
 else()
 	find_package(IrrlichtMt QUIET)
 	if(NOT TARGET IrrlichtMt::IrrlichtMt)
