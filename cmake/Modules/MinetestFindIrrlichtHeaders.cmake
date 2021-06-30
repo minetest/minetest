@@ -12,15 +12,7 @@ foreach(libname IN ITEMS IrrlichtMt Irrlicht)
 		PATH_SUFFIXES "include/${libname2}"
 	)
 
-	find_library(IRRLICHT_LIBRARY NAMES lib${libname} ${libname}
-		DOC "Path to the IrrlichtMt library file"
-		PATHS
-		/usr/local/lib
-		/usr/lib
-		/system/develop/lib # Haiku
-	)
-
-	if(IRRLICHT_INCLUDE_DIR OR IRRLICHT_LIBRARY)
+	if(IRRLICHT_INCLUDE_DIR)
 		break()
 	endif()
 endforeach()
