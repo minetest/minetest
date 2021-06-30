@@ -159,7 +159,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	return true;
 }
 
-s16 adjustDist(s16 dist, float zoom_fov)
+inline float adjustDist(float dist, float zoom_fov)
 {
 	// 1.775 ~= 72 * PI / 180 * 1.4, the default FOV on the client.
 	// The heuristic threshold for zooming is half of that.
@@ -167,8 +167,13 @@ s16 adjustDist(s16 dist, float zoom_fov)
 	if (zoom_fov < 0.001f || zoom_fov > threshold_fov)
 		return dist;
 
-	return std::round(dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
-		(1.0f - std::cos(zoom_fov / 2.0f))));
+	return dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
+		(1.0f - std::cos(zoom_fov / 2.0f)));
+}
+
+s16 adjustDist(s16 dist, float zoom_fov)
+{
+	return std::round(adjustDist((float)dist, zoom_fov));
 }
 
 void setPitchYawRollRad(core::matrix4 &m, const v3f &rot)

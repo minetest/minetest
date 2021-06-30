@@ -29,7 +29,6 @@ using m4f = core::matrix4;
 
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
-	const float TAN_36_DEG = 0.726542528006F; // Half of default FOV
 	float radius;
 	v3f newCenter;
 	v3f look = cam->getDirection();
@@ -40,7 +39,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	// adjusted frustum boundaries
 	float sfNear = shadow_frustum.zNear;
-	float sfFar = shadow_frustum.zFar * TAN_36_DEG / tanFovY;
+	float sfFar = adjustDist(shadow_frustum.zFar, cam->getFovY());
 
 	// adjusted camera positions
 	v3f camPos2 = cam->getPosition();
