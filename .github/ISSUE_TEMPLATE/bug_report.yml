@@ -5,12 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-
-  - type: markdown
-    attributes:
-      value: >-
-        # Minetest Version
+        ## Thanks for taking the time to fill out this bug report!
 
   - type: input
     id: minetest_version
@@ -22,11 +17,6 @@ body:
       placeholder: "ex: 5.4.1"
     validations:
       required: true
-
-  - type: markdown
-    attributes:
-      value: >-
-        # OS / Hardware
 
   - type: input
     id: env_os
@@ -56,11 +46,6 @@ body:
         OpenGL version:
     validations:
       required: false
-
-  - type: markdown
-    attributes:
-      value: >-
-        # The Bug
 
   - type: textarea
     id: summary
