@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
 "PO-Revision-Date: 2021-06-30 17:24+0000\n"
-"Last-Translator: ResuUman <aparat2@wp.pl>\n"
+"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -18,40 +18,36 @@ msgstr ""
 #: builtin/client/chatcommands.lua
 #, fuzzy
 msgid "Clear the out chat queue"
-msgstr "Maksymalny rozmiar kolejki wiadomości czatu"
+msgstr "Wyczyść kolejkę wiadomości czatu"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
 msgid "Empty command."
-msgstr "Komenda"
+msgstr "Puste komenda."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
 msgstr "Wyjście do menu"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Lokalne polecenie"
+msgstr "Błędna komenda: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Issued command: "
-msgstr "Wydane komenda: "
+msgstr "Wydana komenda: "
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
 msgid "List online players"
-msgstr "Pojedynczy gracz"
+msgstr "Lista graczy sieciowych"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
 msgid "Online players: "
-msgstr "Pojedynczy gracz"
+msgstr "Gracze sieciowi: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "The out chat queue is now empty."
 msgstr "Kolejka czatu jest teraz pusta."
 
@@ -69,19 +65,18 @@ msgid "You died"
 msgstr "Umarłeś"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Umarłeś"
+msgstr "Umarłeś."
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
 msgid "Available commands:"
-msgstr "Lokalne polecenie"
+msgstr "Dostępne komendy:"
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
 msgid "Available commands: "
-msgstr "Lokalne polecenie"
+msgstr "Dostępne komendy: "
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
@@ -260,14 +255,12 @@ msgstr ""
 "$2 w kolejce"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Ładowanie..."
+msgstr "Pobieranie $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 required dependencies could not be found."
-msgstr "$1 wymaga zależności, których nie można znaleźć."
+msgstr "$1 wymaga zależności, które nie zostały znalezione."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
@@ -278,9 +271,8 @@ msgid "All packages"
 msgstr "Wszystkie zasoby"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Klawisz już zdefiniowany"
+msgstr "Już zainstalowany"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -295,9 +287,8 @@ msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr "ContentDB nie jest dostępne gdy Minetest był zbudowany bez cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Ładowanie..."
+msgstr "Pobieranie..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -313,9 +304,8 @@ msgid "Install"
 msgstr "Instaluj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Instaluj"
+msgstr "Zainstaluj $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
@@ -335,14 +325,12 @@ msgid "No results"
 msgstr "Brak Wyników"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Aktualizacja"
+msgstr "Brak aktualizacji"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "Wycisz dźwięk"
+msgstr "Nie znaleziono"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
@@ -385,7 +373,6 @@ msgid "Additional terrain"
 msgstr "Dodatkowy teren"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
 msgstr "Wysokość mrozu"
 
@@ -394,24 +381,20 @@ msgid "Altitude dry"
 msgstr "Wysokość suchości"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Szum biomu"
+msgstr "Mieszanie biomów"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Szum biomu"
+msgstr "Biomy"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Szum jaskini #1"
+msgstr "jaskinie"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Oktawy"
+msgstr "Jaskinie"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -438,9 +421,8 @@ msgid "Flat terrain"
 msgstr "Płaski teren"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr "Gęstość gór na latających wyspach"
+msgstr "Masywy lądowe unoszące się na niebie"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
@@ -459,9 +441,8 @@ msgid "Hills"
 msgstr "Wzgórza"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "Sterownik graficzny"
+msgstr "Wilgotne rzeki"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
@@ -486,9 +467,8 @@ msgid "Mapgen flags"
 msgstr "Flagi generatora mapy"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Generator mapy flat flagi"
+msgstr "Flagi specyficzne dla Mapgena"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -516,12 +496,10 @@ msgid "Reduces humidity with altitude"
 msgstr "Spadek wilgotności wraz ze wzrostem wysokości"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Rozmiar rzeki"
+msgstr "Rzeki"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Sea level rivers"
 msgstr "Rzeki na poziomie morza"
 
@@ -577,8 +555,9 @@ msgid "Vary river depth"
 msgstr "Głębokość rzeki"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Very large caverns deep in the underground"
-msgstr "Ogromne jaskinie na dużych głębokościach."
+msgstr "Ogromne jaskinie na dużych głębokościach"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -828,8 +807,9 @@ msgstr ""
 "z siecią Internet."
 
 #: builtin/mainmenu/tab_about.lua
+#, fuzzy
 msgid "About"
-msgstr ""
+msgstr "O grze"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -850,10 +830,14 @@ msgid "Open User Data Directory"
 msgstr "Wybierz katalog"
 
 #: builtin/mainmenu/tab_about.lua
+#, fuzzy
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Otwiera katalog, który zawiera światy, gry, mody i tekstury dostarczone "
+"przez użytkownika \n"
+"oraz pakiety tekstur w menedżerze plików / eksploratorze."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -928,12 +912,14 @@ msgid "Host Server"
 msgstr "Udostępnij serwer"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Instaluj gry z ContentDB"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
+#, fuzzy
 msgid "Name"
-msgstr ""
+msgstr "Nazwa"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1005,8 +991,9 @@ msgid "Favorites"
 msgstr "Ulubione"
 
 #: builtin/mainmenu/tab_online.lua
+#, fuzzy
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Niekompatybilne serwery"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -1022,8 +1009,9 @@ msgid "Public Servers"
 msgstr "Rozgłoś serwer"
 
 #: builtin/mainmenu/tab_online.lua
+#, fuzzy
 msgid "Refresh"
-msgstr ""
+msgstr "Odśwież"
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1076,24 +1064,28 @@ msgid "Dynamic shadows"
 msgstr "Cień czcionki"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Cienie dynamiczne: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "Ozdobne liście"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "High"
-msgstr ""
+msgstr "Wysokie"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Low"
-msgstr ""
+msgstr "Niskie"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Medium"
-msgstr ""
+msgstr "Średnie"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1185,12 +1177,14 @@ msgid "Trilinear Filter"
 msgstr "Filtrowanie trójliniowe"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Ultra High"
-msgstr ""
+msgstr "Bardzo wysokie"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Very Low"
-msgstr ""
+msgstr "Bardzo niskie"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1572,12 +1566,14 @@ msgid "Sound muted"
 msgstr "Głośność wyciszona"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "System dźwiękowy jest wyłączony"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "System dźwiękowy nie jest obsługiwany w tej kompilacji"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1959,16 +1955,18 @@ msgid "Automatic jumping"
 msgstr "Automatyczne skoki"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Tył"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Block bounds"
-msgstr ""
+msgstr "Granice bloków"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2251,12 +2249,18 @@ msgstr ""
 "Określa również strukturę wznoszącego się terenu górzystego."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D noise defining structure of floatlands.\n"
 "If altered from the default, the noise 'scale' (0.7 by default) may need\n"
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"Szum 3D określający strukturę terenów pływających.\n"
+"Jeśli wartość domyślna zostanie zmieniona, konieczne będzie dostosowanie "
+"\"skali\" szumu (domyślnie 0,7), \n"
+"ponieważ zwężanie terenów pływających działa najlepiej, \n"
+"gdy wartość szumu jest z zakresu od około -2,0 do 2,0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2324,8 +2328,9 @@ msgid "ABM interval"
 msgstr "Interwał zapisu mapy"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "ABM time budget"
-msgstr ""
+msgstr "Budżet czasowy ABM"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2379,7 +2384,7 @@ msgstr ""
 "ekranów 4k."
 
 #: src/settings_translation_file.cpp
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Adjusts the density of the floatland layer.\n"
 "Increase value to increase density. Can be positive or negative.\n"
@@ -2387,6 +2392,12 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Dostosowuje gęstość warstwy pływających wysp.\n"
+"Aby zwiększyć gęstość, ustaw wyższą wartość. Może być dodatnia lub ujemna.\n"
+"Wartość = 0,0: 50% objętości to pływająca wyspa.\n"
+"Wartość = 2,0 (może być wyższa w zależności od 'mgv7_np_floatland', aby mieć "
+"pewność,\n"
+"zawsze sprawdzaj) tworzy stałą warstwę pływającej wyspy."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2665,10 +2676,13 @@ msgid "Cavern upper limit"
 msgstr "Szerokość jaskini"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Środek zakresu wzmocnienia krzywej światła.\n"
+"0,0 to minimalny poziom światła, 1,0 to maksymalny poziom światła."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2783,6 +2797,7 @@ msgid "Colored shadows"
 msgstr "Kolorowa mgła"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
@@ -2792,6 +2807,13 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Oddzielona przecinkami lista flag do ukrycia w repozytorium zawartości.\n"
+"\"nonfree\" mogą być używane do ukrywania pakietów, które nie kwalifikują "
+"się jako \"wolne oprogramowanie\",\n"
+"zgodnie z definicją Fundacji Wolnego Oprogramowania.\n"
+"Można również określić klasyfikacje zawartości.\n"
+"Flagi te są niezależne od wersji Minetesta zobacz, więc pełną listę na "
+"stronie https://content.minetest.net/help/content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2842,8 +2864,9 @@ msgid "ContentDB Flag Blacklist"
 msgstr "Flaga czarnej listy ContentDB"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Maksymalna liczba jednoczesnych pobrań ContentDB"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2892,11 +2915,15 @@ msgid "Controls steepness/height of hills."
 msgstr "Kontroluje stromość/wysokość gór."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Controls width of tunnels, a smaller value creates wider tunnels.\n"
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
 "intensive noise calculations."
 msgstr ""
+"Wpływa na szerokość tuneli, mniejsza wartość tworzy szersze tunele.\n"
+"Wartość >= 10,0 całkowicie wyłącza tworzenie tuneli i pozwala na uniknięcie\n"
+"intensywnych obliczeń hałasu."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2924,10 +2951,13 @@ msgid "Crosshair color"
 msgstr "Kolor celownika"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Kolor celownika (R, G,B).\n"
+"Wpływa również na kolor celownika"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2997,11 +3027,15 @@ msgid "Default stack size"
 msgstr "Domyślna gra"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Define shadow filtering quality\n"
 "This simulates the soft shadows effect by applying a PCF or poisson disk\n"
 "but also uses more resources."
 msgstr ""
+"Określa jakość filtrowania cieni\n"
+"Symuluje to efekt miękkich cieni, stosując dysk PCF lub poisson\n"
+"ale także zużywa więcej zasobów."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3034,8 +3068,9 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Określa położenie oraz teren z dodatkowymi górami i jeziorami."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines the base ground level."
-msgstr ""
+msgstr "Określa podstawowy poziom podłoża."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3162,8 +3197,9 @@ msgid "Dungeon minimum Y"
 msgstr "Minimalna wartość Y lochu"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Dungeon noise"
-msgstr ""
+msgstr "Hałas lochu"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3182,10 +3218,14 @@ msgstr ""
 "To wsparcie jest eksperymentalne i API może ulec zmianie."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable colored shadows. \n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
+"Włącza kolorowe cienie. \n"
+"Na rzeczywistych półprzezroczystych węzłach rzuca kolorowe cienie. To "
+"kosztowne."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3213,11 +3253,15 @@ msgid "Enable players getting damage and dying."
 msgstr "Włącz obrażenia i umieranie graczy."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable poisson disk filtering.\n"
 "On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
+"Włącz filtrowanie dysku poisson.\n"
+"Jeśli włączone, to używa dysku poisson do \"miękkich cieni\". W przeciwnym "
+"razie używa filtrowania PCF."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3229,10 +3273,13 @@ msgid "Enable register confirmation"
 msgstr "Włącz potwierdzanie rejestracji"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable register confirmation when connecting to server.\n"
 "If disabled, new account will be registered automatically."
 msgstr ""
+"Włącz potwierdzanie rejestracji podczas łączenia się z serwerem.\n"
+"Jeśli wyłączone, to nowe konto zostanie zarejestrowane automatycznie."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3317,12 +3364,18 @@ msgid "Enables minimap."
 msgstr "Włącz minimapę."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enables the sound system.\n"
 "If disabled, this completely disables all sounds everywhere and the in-game\n"
 "sound controls will be non-functional.\n"
 "Changing this setting requires a restart."
 msgstr ""
+"Włącza dźwięk.\n"
+"Jeśli wyłączone, całkowicie wyłącza wszystkie dźwięki wszędzie oraz "
+"sterowanie dźwiękiem \n"
+"w grze nie będzie działać.\n"
+"Zmiana tego ustawienia wymaga ponownego uruchomienia."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
