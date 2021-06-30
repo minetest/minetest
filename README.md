@@ -223,6 +223,8 @@ Run it:
   - Debug build is slower, but gives much more useful output in a debugger.
 - If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
+- IrrlichtMt can still be installed somewhere that is not a standard root install path.
+  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`.
 
 ### CMake options
 
