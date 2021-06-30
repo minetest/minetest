@@ -284,14 +284,6 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
 	switch (driver->getDriverType()) {
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-	case video::EDT_DIRECT3D8:
-		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
-		break;
-#endif
-	case video::EDT_DIRECT3D9:
-		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
-		break;
 #if ENABLE_GLES
 	case video::EDT_OGLES1:
 	case video::EDT_OGLES2:
@@ -527,11 +519,19 @@ void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
 
 std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 {
+	// Only check these drivers.
+	// We do not support software and D3D in any capacity.
+	static const irr::video::E_DRIVER_TYPE glDrivers[4] = {
+		irr::video::EDT_NULL,
+		irr::video::EDT_OPENGL,
+		irr::video::EDT_OGLES1,
+		irr::video::EDT_OGLES2,
+	};
 	std::vector<irr::video::E_DRIVER_TYPE> drivers;
 
-	for (int i = 0; i != irr::video::EDT_COUNT; i++) {
-		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE)i))
-			drivers.push_back((irr::video::E_DRIVER_TYPE)i);
+	for (int i = 0; i < 4; i++) {
+		if (irr::IrrlichtDevice::isDriverSupported(glDrivers[i]))
+			drivers.push_back(glDrivers[i]);
 	}
 
 	return drivers;
@@ -557,34 +557,26 @@ void RenderingEngine::draw_scene(video::SColor skycolor, bool show_hud,
 
 const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)
 {
-	static const char *driver_ids[] = {
-			"null",
-			"software",
-			"burningsvideo",
-			"direct3d8",
-			"direct3d9",
-			"opengl",
-			"ogles1",
-			"ogles2",
+	static const std::unordered_map<irr::video::E_DRIVER_TYPE,const std::string> driver_ids = {
+		{irr::video::EDT_NULL, "null"},
+		{irr::video::EDT_OPENGL, "opengl"},
+		{irr::video::EDT_OGLES1, "ogles1"},
+		{irr::video::EDT_OGLES2, "ogles2"},
 	};
 
-	return driver_ids[type];
+	return driver_ids.at(type).c_str();
 }
 
 const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type)
 {
-	static const char *driver_names[] = {
-			"NULL Driver",
-			"Software Renderer",
-			"Burning's Video",
-			"Direct3D 8",
-			"Direct3D 9",
-			"OpenGL",
-			"OpenGL ES1",
-			"OpenGL ES2",
+	static const std::unordered_map<irr::video::E_DRIVER_TYPE,const std::string> driver_names = {
+		{irr::video::EDT_NULL, "NULL Driver"},
+		{irr::video::EDT_OPENGL, "OpenGL"},
+		{irr::video::EDT_OGLES1, "OpenGL ES1"},
+		{irr::video::EDT_OGLES2, "OpenGL ES2"},
 	};
 
-	return driver_names[type];
+	return driver_names.at(type).c_str();
 }
 
 #ifndef __ANDROID__
