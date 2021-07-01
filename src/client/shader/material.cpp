@@ -19,63 +19,63 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/shader/material.h"
 
-void Material::SetFloat( s32 index, float v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT )
+void Material::SetFloat( s32 index, const float v ){
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT )
 		SetUniformUnsafe( index, &v );
 }
-void Material::SetFloat2( s32 index, float *const v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC2 )
+void Material::SetFloat2( s32 index, const float *v ){
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC2 )
+		SetUniformUnsafe( index, v );
+}
+void Material::SetFloat2( s32 index, const v2f &v ){
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC2 )
 		SetUniformUnsafe( index, &v );
 }
-void Material::SetFloat2( s32 index, v2f v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC2 )
-		SetUniformUnsafe( index, &v );
-}
-void Material::SetFloat2( s32 index, v2s16 v ){
-	v2f tmp = v;
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC2 )
+void Material::SetFloat2( s32 index, const v2s16 &v ){
+	v2f tmp = { (float)v.X, (float)v.Y };
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC2 )
 		SetUniformUnsafe( index, &tmp );
 }
 void Material::SetFloat3( s32 index, const float *v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC3 )
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC3 )
+		SetUniformUnsafe( index, v );
+}
+void Material::SetFloat3( s32 index, const v3f &v ){
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC3 )
 		SetUniformUnsafe( index, &v );
 }
-void Material::SetFloat3( s32 index, v3f v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC3 )
-		SetUniformUnsafe( index, &v );
-}
-void Material::SetFloat3( s32 index, v3s16 v ){
-	v3f tmp = v;
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC3 )
+void Material::SetFloat3( s32 index, const v3s16 &v ){
+	v3f tmp = { (float)v.X, (float)v.Y, (float)v.Z };
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC3 )
 		SetUniformUnsafe( index, &tmp );
 }
 void Material::SetFloat4( s32 index, const float *v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_VEC4 )
-		SetUniformUnsafe( index, &v );
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_VEC4 )
+		SetUniformUnsafe( index, v );
 }
 void Material::SetMatrix( s32 index, const float *v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_MAT4 )
-		SetUniformUnsafe( index, &v );
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_MAT4 )
+		SetUniformUnsafe( index, v );
 }
-void Material::SetMatrix( s32 index, const Matrix4f &v ){
-	if ( index > -1 && index < uniformCount && uniformTypes[index] == GL_FLOAT_MAT4 )
+void Material::SetMatrix( s32 index, const irr::core::matrix4 &v ){
+	if ( index > -1 && index < (s32)uniformCount && shader->uniformTypes[index] == GL_FLOAT_MAT4 )
 		SetUniformUnsafe( index, v.pointer() );
 }
-void Material::SetTexture( s32 index, u32 texture ){
-	if ( index > -1 && index < uniformCount && (
-		uniformTypes[index] == GL_SAMPLER_2D ||
-		uniformTypes[index] == GL_SAMPLER_3D ||
-		uniformTypes[index] == GL_SAMPLER_CUBE ) )
+void Material::SetTexture( s32 index, const u32 texture ){
+	if ( index > -1 && index < (s32)uniformCount && (
+		shader->uniformTypes[index] == GL_SAMPLER_2D ||
+		shader->uniformTypes[index] == GL_SAMPLER_3D ||
+		shader->uniformTypes[index] == GL_SAMPLER_CUBE ) )
 	{
-		SetUniformUnsafe( index, v.pointer() );
+		SetUniformUnsafe( index, &texture );
 	}
 }
-void Material::SetUniformUnsafe( const uint i, const void *value ) {
-	uintptr_t destAddress = ((uintptr_t)uniformMemory) + uniformMemoryOffsets[i];
-	std::memcpy( (void*)destAddress, value, shader->uniformTypeStrides[shader->uniformTypes[i]] );
+void Material::SetUniformUnsafe( const s32 i, const void *value ) {
+	uintptr_t destAddress = ((uintptr_t)uniformMemory) + shader->uniformMemoryOffsets[i];
+	std::memcpy( (void*)destAddress, value, uniformTypeStrides.at(shader->uniformTypes[i]) );
 }
 void Material::BindForRendering( u32 passId ) {
-	auto &program = shader->GetProgram( passId, currentVariants[passId] );
+	// NYI
 }
 void Material::SetShader( const Shader *newShader ) {
 	u8 *newUniformMemory = new u8[newShader->GetUniformBufferSize()];
@@ -93,7 +93,7 @@ void Material::SetShader( const Shader *newShader ) {
 					std::memcpy(
 						newUniformMemory + newShader->uniformMemoryOffsets[pair.second],
 						uniformMemory + shader->uniformMemoryOffsets[oldIndex],
-						uniformTypeStrides[oldT]
+						uniformTypeStrides.at(oldT)
 					);
 				}
 			}
@@ -108,7 +108,7 @@ void Material::SetShader( const Shader *newShader ) {
 
 	// todo: Preserve variants the same way uniforms are
 	currentVariants.clear();
-	for( int i = 0; i < shader->variantCount; i++ ) {
+	for( u32 i = 0; i < shader->GetPassCount(); i++ ) {
 		currentVariants.push_back( 0ULL );
 	}
 }

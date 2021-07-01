@@ -18,6 +18,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/shader/shader.h"
+#include "log.h"
+
+const std::unordered_map< u32, u32 > uniformTypeStrides = {
+	{ GL_FLOAT, 		sizeof( GLfloat ) },
+	{ GL_FLOAT_VEC2,	sizeof( GLfloat ) * 2 },
+	{ GL_FLOAT_VEC3,	sizeof( GLfloat ) * 3 },
+	{ GL_FLOAT_VEC4,	sizeof( GLfloat ) * 4 },
+	{ GL_FLOAT_MAT2,	sizeof( GLfloat ) * 4 },
+	{ GL_FLOAT_MAT3,	sizeof( GLfloat ) * 9 },
+	{ GL_FLOAT_MAT4,	sizeof( GLfloat ) * 16 },
+	{ GL_INT, 			sizeof( GLint ) },
+	{ GL_INT_VEC2,		sizeof( GLint ) * 2 },
+	{ GL_INT_VEC3,		sizeof( GLint ) * 3 },
+	{ GL_INT_VEC4,		sizeof( GLint ) * 4 },
+	{ GL_BOOL, 			sizeof( GLboolean ) },
+	{ GL_BOOL_VEC2,		sizeof( GLboolean ) * 2 },
+	{ GL_BOOL_VEC3,		sizeof( GLboolean ) * 3 },
+	{ GL_BOOL_VEC4,		sizeof( GLboolean ) * 4 },
+	{ GL_SAMPLER_2D,	sizeof( GLuint ) },
+	{ GL_SAMPLER_3D,	sizeof( GLuint ) },
+	{ GL_SAMPLER_CUBE,	sizeof( GLuint ) },
+};
 
 void Shader::BuildUniformData() {
 
@@ -29,23 +51,23 @@ void Shader::BuildUniformData() {
 	std::vector<std::vector<std::unordered_map<std::string,ProgramUniform> > > allProgramUniforms;
 
 	for ( auto &pass : passes ) {
-		std::vector<std::vector<ProgramUniform> > passUniforms;
-		for ( int i = 0; i < pass.GetVariantCount(); i++ ) {
-			std::vector<ProgramUniform> programUniforms;
+		std::vector<std::unordered_map<std::string,ProgramUniform> > passUniforms;
+		for ( u32 i = 0; i < pass.GetVariantCount(); i++ ) {
+			std::unordered_map<std::string,ProgramUniform> programUniforms;
 			auto &program = pass.GetProgram( i );
 			programUniforms = program.GetUniforms();
-			for ( auto &uniform : programUniforms ) {
-				if ( !STL_CONTAINS( allUniformTypes, uniform.first ) ) {
-					allUniformTypes[uniform.first] = uniform.second.type;
-					allArrayLengths[uniform.first] = uniform.second.arrayLength;
+			for ( auto &pair : programUniforms ) {
+				if ( !STL_CONTAINS( allUniformTypes, pair.first ) ) {
+					allUniformTypes[pair.first] = pair.second.type;
+					allArrayLengths[pair.first] = pair.second.arrayLength;
 				} else {
-					if ( allUniformTypes[uniform.first] != uniform.second.type
-						&& !STL_CONTAINS( alreadyWarned, uniform.first ) ) {
-						warningstream << "Type of uniform " << uniform.first
+					if ( allUniformTypes[pair.first] != pair.second.type
+						&& !STL_CONTAINS( alreadyWarned, pair.first ) ) {
+						warningstream << "Type of uniform " << pair.first
 							<< " is not the same between passes or variants."
 							<< " This is unsupported and may result"
 							<< " in undefined behavior.\n";
-						alreadyWarned.insert(uniform.first);
+						alreadyWarned.insert(pair.first);
 					}
 				}
 			}
@@ -66,17 +88,17 @@ void Shader::BuildUniformData() {
 	}
 
 	// Iterate over all uniforms again.
-	for ( int i = 0; i < passes.size(); i++ ) {
+	for ( u32 i = 0; i < passes.size(); i++ ) {
 		auto &pass = passes[i];
 		std::vector<std::vector<s32> > locationColumn;
-		for ( int j = 0; j < pass.GetVariantCount(); j++ ) {
+		for ( u32 j = 0; j < pass.GetVariantCount(); j++ ) {
 			std::vector<s32> locationRow;
-			auto &uniforms = allProgramUniforms[i][j];
-			for ( int k = 0; k < uniformTypes.size(); k++ ) {
+			auto &programUniforms = allProgramUniforms[i][j];
+			for ( u32 k = 0; k < uniformNames.size(); k++ ) {
 				s32 uniformLocation;
-				if ( STL_CONTAINS( allProgramUniforms[i][j], uniformNames[k] ) ) {
+				if ( STL_CONTAINS( programUniforms, uniformNames[k] ) ) {
 					// The uniform with this name has the following location in this program:
-					uniformLocation = allProgramUniforms[i][j].at( uniformNames[k] ).location;
+					uniformLocation = programUniforms.at( uniformNames[k] ).location;
 				} else {
 					// A uniform with this name is not present in this particular program.
 					uniformLocation = -1;
@@ -94,16 +116,18 @@ void Shader::BuildUniformData() {
 	u32 position = 0;
 	for ( u32 i = 0; i < uniformCount ; i++ ) {
 		uniformMemoryOffsets.push_back( position );
-		position += uniformTypeStrides[uniformTypes[i]];
+		position += uniformTypeStrides.at(uniformTypes[i]);
 	}
-	uniformMemorySize = position;
+	uniformBufferSize = position;
 }
 
-Shader::Shader( const std::unordered_map<std::string,PassSources> &sources ) {
+Shader::Shader( const std::unordered_map<std::string,ShaderSource> &sources ) {
+	u32 i = 0;
 	for ( auto &pair : sources ) {
 		auto &name = pair.first;
 		auto &src = pair.second;
-
+		passes.push_back( ShaderPass( src, {} ) );
+		passMap[name] = i++;
 	}
 	BuildUniformData();
 }

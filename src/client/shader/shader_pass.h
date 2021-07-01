@@ -23,15 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader/shader_program.h"
 
 /*
-	Sources for a single pass.
-*/
-struct PassSources {
-	std::string header; // Common header pasted right above each shader stage.
-
-	std::string stages[5];
-}
-
-/*
 	A single utility pass of a shader.
 	Utility passes allow a shader to provide
 	different shader programs for a given rendering technique.
@@ -44,7 +35,7 @@ struct PassSources {
 	- Damage overlay or similar
 */
 class ShaderPass {
-	PassSources sources;
+	ShaderSource sources;
 
 	// Each shader feature is assigned a bit position for use in a bitmask.
 	// Then, each unique bitmask is a key to a map of variant programs.
@@ -58,19 +49,23 @@ class ShaderPass {
 	bool buildFailed;
 
 	// Generate all variants recursively from a list of features.
-	void GenVariants( std::vector<std::string> &featureStack );
+	void GenVariants( const ShaderSource &sources, const std::vector<std::string> &features );
 public:
 
 	FixedFunctionState fixedState;
 
-	inline u32 GetVariantCount() { return variantCount; }
+	inline u32 GetVariantCount() const {
+		return variantCount;
+	}
 
-	inline bool IsValid() { return !buildFailed; }
+	inline bool IsValid() const {
+		return !buildFailed;
+	}
 
 	// Build a bitmask based on a list of features.
-	const u64 GetVariantKey( std::vector<std::string> featuresUsed ) const;
+	u64 GetVariantKey( const std::vector<std::string> featuresUsed ) const;
 	// Get a program based on a variant bitmask obtained from GetVariantKey.
 	const ShaderProgram& GetProgram( const u64 programKey ) const;
 
-	ShaderPass( const PassSources sources, const std::vector<std::string> features );
+	ShaderPass( const ShaderSource &sources, const std::vector<std::string> &features );
 };

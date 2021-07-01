@@ -23,7 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader/shader_program.h"
 #include "client/shader/shader_pass.h"
 
+extern const std::unordered_map< u32, u32 > uniformTypeStrides;
+
 class Shader {
+	friend class Material;
 	std::unordered_map<std::string, u32> passMap;
 	std::vector<ShaderPass> passes;
 
@@ -68,17 +71,22 @@ class Shader {
 	u64 disableMask;
 
 public:
-	inline u32 GetUniformCount() {
+	inline u32 GetUniformCount() const {
 		return uniformCount;
 	}
-	inline s32 GetUniformIndex( const std::string &name ) {
+	inline u32 GetPassCount() const {
+		return passes.size();
+	}
+	inline s32 GetUniformIndex( const std::string &name ) const {
 		return STL_AT_OR( uniformIndexMap, name, -1 );
 	}
-	inline size_t GetUniformBufferSize() { return uniformBufferSize; }
-	inline ShaderProgram &GetProgram( u32 passId, u64 variant, u64 &outActualVariant ) {
+	inline size_t GetUniformBufferSize() const {
+		return uniformBufferSize;
+	}
+	inline const ShaderProgram &GetProgram( u32 passId, u64 variant, u64 &outActualVariant ) const {
 		outActualVariant = (variant & disableMask ) | enableMask;
 		return passes[passId].GetProgram( outActualVariant );
 	}
 
-	Shader( const std::unordered_map<std::string,PassSources> &sources );
+	Shader( const std::unordered_map<std::string,ShaderSource> &sources );
 };

@@ -18,15 +18,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/shader/shader_program.h"
+#include "log.h"
 
 // Is 'ext' an extension supported by the current device?
 bool ExtensionPresent( const std::string &ext ) {
 	return true; // dummy
 }
+// Extensions that introduced each stage.
+std::string stageExtensions[5] = {
+	"ARB_shader_object",
+	"ARB_tessellation_shader",
+	"ARB_tessellation_shader",
+	"ARB_geometry_shader"
+	"ARB_shader_object",
+};
+// GL enums to select each stage.
+const u32 stageTypes[5] = {
+	GL_VERTEX_SHADER,
+	GL_TESS_CONTROL_SHADER,
+	GL_TESS_EVALUATION_SHADER,
+	GL_GEOMETRY_SHADER,
+	GL_FRAGMENT_SHADER,
+};
 
-ShaderProgram::ShaderProgram( PassSources sources, std::string extraHeader = "" ) {
+ShaderProgram::ShaderProgram( const ShaderSource sources, const std::string extraHeader ) {
 	u32 stages[5];
-	handle = glCreateProgram();
+	programHandle = glCreateProgram();
 
 	if ( sources.stages[static_cast<u32>(StageIndex::Vertex)].length() == 0 ) {
 		errorstream << "Vertex shader source missing.";
@@ -37,23 +54,26 @@ ShaderProgram::ShaderProgram( PassSources sources, std::string extraHeader = "" 
 		return;
 	}
 
-	for ( int i = 0; i < 5; i++ ) {
-		if ( sources.stages[i].length() > 0 && ExtensionPresent( stageExtension[i] ) ) {
+
+	for ( u32 i = 0; i < 5; i++ ) {
+		if ( sources.stages[i].length() > 0 && ExtensionPresent( stageExtensions[i] ) ) {
 			stages[i] = glCreateShader( stageTypes[i] );
 			if ( glIsShader( stages[i] ) ) {
-				glShaderSource(
-					stages[i], 3,
-					{
-						globalHeader.str(),
-						sources.header.c_str(),
-						sources.stages[i].c_str()
-					},
-					{ -1, -1, -1 } ); // C-strings need no lengths.
+				static const int lengths[3] = { -1, -1, -1 };
+				const char* strings[] = {
+					globalHeader.str().c_str(),
+					sources.header.c_str(),
+					extraHeader.c_str(),
+					sources.stages[i].c_str(),
+				};
+				glShaderSource( stages[i], 3, strings, lengths );
 				glCompileShader( stages[i] );
-				glGetShaderiv( stages[i], GL_COMPILE_STATUS, &compileStatus[i] );
+				GLint status;
+				glGetShaderiv( stages[i], GL_COMPILE_STATUS, &status );
+				compileStatus[i] = static_cast<StageCompileStatus>(status);
 			}
 			if ( compileStatus[i] == StageCompileStatus::Success ) {
-				glAttachShader( handle, stages[i] );
+				glAttachShader( programHandle, stages[i] );
 			}
 		} else {
 			compileStatus[i] = StageCompileStatus::NoSource;
@@ -61,12 +81,12 @@ ShaderProgram::ShaderProgram( PassSources sources, std::string extraHeader = "" 
 	}
 
 	glLinkProgram( programHandle );
-	glGetProgramiv( programHandle, GL_LINK_STATUS, &linked );
-
-
+	GLint linkStatus;
+	glGetProgramiv( programHandle, GL_LINK_STATUS, &linkStatus );
+	linked = static_cast<bool>(linkStatus);
 
 	// Regardless of how linking went, the shaders can be discarded now.
-	for (int i = 0; i < 5; i++ ) {
+	for ( u32 i = 0; i < 5; i++ ) {
 		if ( stages[i] ) {
 			if ( programHandle )
 				glDetachShader( programHandle, stages[i] );
@@ -74,30 +94,32 @@ ShaderProgram::ShaderProgram( PassSources sources, std::string extraHeader = "" 
 		}
 	}
 }
+
 std::unordered_map<std::string,ProgramUniform>ShaderProgram::GetUniforms() const {
 	std::unordered_map<std::string,ProgramUniform> uniforms;
 	if ( linked ) {
-		u32 uniformCount;
+		GLint uniformCount;
 		glGetProgramiv( programHandle, GL_ACTIVE_UNIFORMS, &uniformCount );
 
-		u32 nameLength;
-		glGetProgramiv( programHandle, ACTIVE_UNIFORM_MAX_LENGTH, &nameLength );
+		GLsizei nameLength;
+		glGetProgramiv( programHandle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &nameLength );
 
-		u8 *nameBuffer = new u8[nameLength];
-		for ( int i = 0; i < uniformCount ; i++ ) {
-			u32 arrayLength;
+		char *nameBuffer = new char[nameLength];
+		for ( u32 i = 0; i < (u32)uniformCount ; i++ ) {
+			s32 arrayLength;
 			u32 type;
-			u32 actualNameLength;
-			glGetActiveUniform( programHandle, i, nameLength, &actualNameLength, &type, &arrayLength, nameBuffer );
+			GLsizei actualNameLength;
+			glGetActiveUniform( programHandle, i, nameLength, &actualNameLength, &arrayLength, &type, nameBuffer );
 
-			u32 location;
-			glGetUniformLocation( programHandle, nameBuffer );
+			s32 location = glGetUniformLocation( programHandle, nameBuffer );
 
-			uniforms[std::string( nameBuffer )] = {
-				type,
-				arrayLength,
-				location,
-			};
+			if ( location > -1 ) {
+				uniforms[std::string( nameBuffer )] = {
+					type,
+					(u32)arrayLength,
+					(u32)location,
+				};
+			}
 		}
 	}
 	return uniforms;

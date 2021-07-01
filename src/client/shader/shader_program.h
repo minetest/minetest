@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ProgramUniform {
 	u32				type;
 	u32				arrayLength;
-	s32				location;
+	u32				location;
 };
 
 // There are five shader stage types in OpenGL and there likely won't be more any soon.
@@ -37,22 +37,7 @@ enum class StageIndex : u8 {
 	Geometry		= 3,	// since GL3.2 or GLES3.2
 	Fragment		= 4,
 };
-// Extensions that introduced each stage.
-std::string stageExtensions[5] = {
-	"ARB_shader_object",
-	"ARB_tessellation_shader",
-	"ARB_tessellation_shader",
-	"ARB_geometry_shader"
-	"ARB_shader_object",
-};
-// GL enums to select each stage.
-u32 stageTypes[5] = {
-	GL_VERTEX_SHADER,
-	GL_TESS_CONTROL_SHADER,
-	GL_TESS_EVALUATION_SHADER,
-	GL_GEOMETRY_SHADER,
-	GL_FRAGMENT_SHADER,
-};
+
 enum class StageCompileStatus : u32 {
 	Failure = 0,	// Stage failed to compile.
 	Success = 1,	// Stage compiled successfully.
@@ -76,14 +61,19 @@ class ShaderProgram {
 
 	u32 programHandle;
 
-	static u32 lastBoundProgram = 0;
+	static u32 lastBoundProgram;
 public:
 	// This blob of text prefixes every single shader source.
 	// Use it to set platform specific or init-time defines.
+	// (for example, the #version line)
 	static std::stringstream globalHeader;
 
+	inline const std::string GetCompileLog( StageIndex i ) {
+		return compileLog[static_cast<u32>(i)];
+	}
+
 	inline StageCompileStatus GetCompileStatus( StageIndex i ) {
-		return compileStatus[i];
+		return compileStatus[static_cast<u32>(i)];
 	}
 	inline bool IsLinked() { return linked; }
 
@@ -98,8 +88,9 @@ public:
 	std::unordered_map<std::string,ProgramUniform> GetUniforms() const;
 
 	/* Programs are compiled and analyzed on construction. */
-	ShaderProgram( PassSources sources );
+	ShaderProgram( const ShaderSource sources, const std::string extraHeader = "" );
+
 	inline ~ShaderProgram() {
-		glDeleteProgram( programHandle )
+		glDeleteProgram( programHandle );
 	}
 };

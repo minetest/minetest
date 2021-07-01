@@ -31,11 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <sstream>
 
-#ifdef __ANDROID__
-	#include <gl3.h>
-#else
-	#include <glcorearb.h>
-#endif
+#define GL_GLEXT_PROTOTYPES
+#include <GL/glcorearb.h>
 
 // Replacement for .contains(y) which requires c++20
 #define STL_CONTAINS(x,y) ( x .find( y ) != x .end() )
@@ -62,8 +59,8 @@ enum class BlendOp : u32 {
 	Add				= GL_FUNC_ADD,
 	Subtract		= GL_FUNC_SUBTRACT,
 	RevSubtract		= GL_FUNC_REVERSE_SUBTRACT,
-	Min				= GL_FUNC_MIN,
-	Max				= GL_FUNC_MAX,
+	Min				= GL_MIN,
+	Max				= GL_MAX,
 };
 enum class BlendFactor : u32 {
 	DontCare		= SHADER_DONT_CARE,
@@ -118,23 +115,8 @@ struct FixedFunctionState {
 	float		brightness;
 };
 
-std::unordered_map< u32, u32 > uniformTypeStrides = {
-	{ GL_FLOAT, 		sizeof( GLfloat ) },
-	{ GL_FLOAT_VEC2,	sizeof( GLfloat ) * 2 },
-	{ GL_FLOAT_VEC3,	sizeof( GLfloat ) * 3 },
-	{ GL_FLOAT_VEC4,	sizeof( GLfloat ) * 4 },
-	{ GL_FLOAT_MAT2,	sizeof( GLfloat ) * 4 },
-	{ GL_FLOAT_MAT3,	sizeof( GLfloat ) * 9 },
-	{ GL_FLOAT_MAT4,	sizeof( GLfloat ) * 16 },
-	{ GL_INT, 			sizeof( GLint ) },
-	{ GL_INT_VEC2,		sizeof( GLint ) * 2 },
-	{ GL_INT_VEC3,		sizeof( GLint ) * 3 },
-	{ GL_INT_VEC4,		sizeof( GLint ) * 4 },
-	{ GL_BOOL, 			sizeof( GLbool ) },
-	{ GL_BOOL_VEC2,		sizeof( GLbool ) * 2 },
-	{ GL_BOOL_VEC3,		sizeof( GLbool ) * 3 },
-	{ GL_BOOL_VEC4,		sizeof( GLbool ) * 4 },
-	{ GL_SAMPLER_2D,	sizeof( GLuint ) },
-	{ GL_SAMPLER_3D,	sizeof( GLuint ) },
-	{ GL_SAMPLER_CUBE,	sizeof( GLuint ) },
+struct ShaderSource {
+	std::string header; // Common header pasted right above each shader stage.
+
+	std::string stages[5];
 };

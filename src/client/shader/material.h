@@ -20,9 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "client/shader/shader.h"
+#include <matrix4.h>
 
 class Material {
-	Shader *shader;
+	const Shader *shader;
 
 	// Contiguous buffer of memory for all the uniforms.
 	u8 *uniformMemory;
@@ -31,7 +32,7 @@ class Material {
 	// This function assumes that all the necessary safety checks
 	// have already been performed, and 'value' is a pointer to an
 	// appropriate value for the uniform with the index 'i'.
-	void SetUniformUnsafe( const uint i, const void *value );
+	void SetUniformUnsafe( const s32 i, const void *value );
 
 	// Variant state for each pass.
 	std::vector<u64> currentVariants;
@@ -39,7 +40,7 @@ class Material {
 	u32 uniformCount;
 
 public:
-	std::unordered_map<std::string, std::bool> features;
+	std::unordered_map<std::string, bool> features;
 
 	// Get the index for the uniform 'name', or -1 if not present.
 	// Please keep in mind that this index is only valid for a
@@ -58,9 +59,9 @@ public:
 	void SetFloat3( s32 index, const v3s16 &v );
 	void SetFloat4( s32 index, const float *v );
 	void SetMatrix( s32 index, const float *v );
-	void SetMatrix( s32 index, const Matrix4f &v );
+	void SetMatrix( s32 index, const irr::core::matrix4 &v );
 	void SetTexture( s32 index, u32 texture );
-	inline void SetFloat( const std::string &name, float v ){
+	inline void SetFloat( const std::string &name, const float v ){
 		SetFloat( GetUniformIndex( name ), v );
 	}
 	inline void SetFloat2( const std::string &name, const float *v ){
@@ -87,18 +88,18 @@ public:
 	inline void SetMatrix( const std::string &name, const float *v ){
 		SetMatrix( GetUniformIndex( name ), v );
 	}
-	inline void SetMatrix( const std::string &name, const Matrix4f &v ){
+	inline void SetMatrix( const std::string &name, const irr::core::matrix4 &v ){
 		SetMatrix( GetUniformIndex( name ), v );
 	}
-	inline void SetTexture( const std::string &name, u32 texture ){
-		SetTexture( GetUniformIndex( name ), v );
+	inline void SetTexture( const std::string &name, const u32 texture ){
+		SetTexture( GetUniformIndex( name ), texture );
 	}
 
 	// Give the Material a new shader.
-	void SetShader( const Shader &shader );
+	void SetShader( const Shader *newShader );
 
 	// Retrieve the program, bind it and set the relevant uniforms.
 	void BindForRendering( u32 passId );
 
-	Material( const Shader &shader ) { SetShader( shader ); }
+	Material( const Shader *shader ) { SetShader( shader ); }
 };

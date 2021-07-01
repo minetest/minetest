@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/shader/shader_pass.h"
+#include "log.h"
 
 u64 ShaderPass::GetVariantKey( const std::vector<std::string> featuresUsed ) const {
 	u64 r = 0;
@@ -29,18 +30,19 @@ u64 ShaderPass::GetVariantKey( const std::vector<std::string> featuresUsed ) con
 	return r;
 }
 
-const std::string const stageNames[5] = {
+// Stage names for error printing.
+const std::string stageNames[5] = {
 	"vertex",
 	"tess control",
 	"tess eval",
 	"geometry",
 	"fragment",
 };
-void ShaderPass::GenVariants( const std::vector<const std::string> &features ) {
+void ShaderPass::GenVariants( const ShaderSource &sources, const std::vector<std::string> &features ) {
 	// Since variants can be expressed as bitmasks where each bit is a feature,
 	// it follows that each variant can be enumerated by simply iterating all the
 	// numbers from 0 to 2^n where n is the feature count.
-	int featureCount = features.size();
+	u32 featureCount = features.size();
 	variantCount = 1 << featureCount;
 	for ( u64 i = 0 ; i < variantCount ; i++ ) {
 		// Then, for each number/bitmask representing a variant,
@@ -51,50 +53,44 @@ void ShaderPass::GenVariants( const std::vector<const std::string> &features ) {
 			if ( ( 1 << j ) & i )
 				variantFeatures << "#define " << features[j] << " = 1\n";
 		}
-		PassSources variantSources = sources; // Copy-assign
-		variantSources.header = variantFeatures.str();
-		auto *program = new ShaderProgram( variantSources );
-		if ( !program->IsLinked() ) {
+		// ShaderSource variantSources = sources; // Copy-assign
+		// variantSources.header = variantFeatures.str();
+		ShaderProgram program = ShaderProgram( sources, variantFeatures.str() );
+		if ( !program.IsLinked() ) {
 			errorLog << "GLSL shader pass build failure.\n";
 			errorLog << "Compiling with features:\n\n";
 			errorLog << variantFeatures.str();
 			errorLog << "\n";
-			for ( int i = 0; i < 5; i++ ) {
-				if ( program->GetCompileStatus(static_cast<StageIndex>(i)) == StageCompileStatus::Failure ) {
+			for ( u32 i = 0; i < 5; i++ ) {
+				if ( program.GetCompileStatus(static_cast<StageIndex>(i)) == StageCompileStatus::Failure ) {
 					errorLog
 						<< "\tError log for " << stageNames[i] << " shader:\n\n"
-						<< program->compileLog[i] << "\n";
+						<<  program.GetCompileLog(static_cast<StageIndex>(i)) << "\n";
 				}
 			}
 			errorstream << errorLog.str();
 			buildFailed = true;
-			delete program;
 			variants.clear();
 			return;
 		}
-		variants.push_back( std::make_unique( program ) );
+		variants.push_back( program );
 	}
 }
 
-ShaderPass::ShaderPass( const PassSources sources, const std::vector<std::string> &features ) {
-	this->sources = sources;
-	int i = 0;
-	if ( features.size() > 12 ) {
+const u32 maxShaderFeatures = 64; // bits of a u64
+const u32 shaderFeatureWarnThreshold = 12;
+
+ShaderPass::ShaderPass( const ShaderSource &sources, const std::vector<std::string> &features ) {
+	if ( features.size() > maxShaderFeatures ) {
+		errorstream << "Shader pass feature count exceeds 64, the pass may not be compiled.\n";
+		return;
+	}
+	if ( features.size() > shaderFeatureWarnThreshold ) {
 		warningstream << "Shader pass has " << features.size() << " features. "
 			<< "This will result in " << ( 1 << features.size() ) << " generated variants! "
 			<< "Consider reducing the feature count.";
 	}
-	for ( const std::string &str : features ) {
-		featureMap[str] = i++;
-		if ( 64 < i ) {
-			errorstream << "Shader pass feature count exceeds 64, the pass may not be compiled.\n";
-			return;
-		}
-	}
-	GenVariants( features );
-	if ( !buildFailed ) {
-		AggregateUniforms();
-	}
+	GenVariants( sources, features );
 }
 const ShaderProgram& ShaderPass::GetProgram( const u64 programKey ) const {
 	return variants[programKey];
