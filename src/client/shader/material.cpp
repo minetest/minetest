@@ -82,16 +82,18 @@ void Material::SetShader( const Shader *newShader ) {
 	if ( uniformMemory ) {
 		// Copy what we can from the old shader
 		for ( auto &pair : newShader->uniformIndexMap ) {
+			auto &name = pair.first;
+			auto &index = pair.second;
 			// Does the old shader have a uniform with this name?
-			if ( STL_CONTAINS( shader->uniformIndexMap, pair.first ) ) {
-				auto &oldIndex = shader->uniformIndexMap.at( pair.first );
+			if ( STL_CONTAINS( shader->uniformIndexMap, name ) ) {
+				auto &oldIndex = shader->uniformIndexMap.at( name );
 				// Is it the same type?
 				auto oldT = shader->uniformTypes[oldIndex];
-				auto newT = newShader->uniformTypes[pair.second];
+				auto newT = newShader->uniformTypes[index];
 				if ( oldT == newT ) {
 					// Blit the value
 					std::memcpy(
-						newUniformMemory + newShader->uniformMemoryOffsets[pair.second],
+						newUniformMemory + newShader->uniformMemoryOffsets[index],
 						uniformMemory + shader->uniformMemoryOffsets[oldIndex],
 						uniformTypeStrides.at(oldT)
 					);
