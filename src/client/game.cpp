@@ -676,7 +676,7 @@ protected:
 	bool handleCallbacks();
 	void processQueues();
 	void updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime);
-	void updateBasicDebugState();
+	void updateDebugState();
 	void updateStats(RunStats *stats, const FpsControl &draw_times, f32 dtime);
 	void updateProfilerGraphs(ProfilerGraph *graph);
 
@@ -1122,7 +1122,7 @@ void Game::run()
 		updatePlayerControl(cam_view);
 		step(&dtime);
 		processClientEvents(&cam_view_target);
-		updateBasicDebugState();
+		updateDebugState();
 		updateCamera(draw_times.busy_time, dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud,
@@ -1727,18 +1727,24 @@ void Game::processQueues()
 	shader_src->processQueue();
 }
 
-void Game::updateBasicDebugState()
+void Game::updateDebugState()
 {
+	bool has_basic_debug = client->checkPrivilege("basic_debug");
+	bool has_debug = client->checkPrivilege("debug");
+
 	if (m_game_ui->m_flags.show_basic_debug) {
-		if (!client->checkPrivilege("basic_debug")) {
+		if (!has_basic_debug) {
 			m_game_ui->m_flags.show_basic_debug = false;
-			hud->disableBlockBounds();
 		}
 	} else if (m_game_ui->m_flags.show_minimal_debug) {
-		if (client->checkPrivilege("basic_debug")) {
+		if (has_basic_debug) {
 			m_game_ui->m_flags.show_basic_debug = true;
 		}
 	}
+	if (!has_basic_debug)
+		hud->disableBlockBounds();
+	if (!has_debug)
+		draw_control->show_wireframe = false;
 }
 
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
