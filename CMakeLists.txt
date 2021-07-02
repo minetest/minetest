@@ -10,12 +10,12 @@ set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 5)
+set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
-set(DEVELOPMENT_BUILD TRUE)
+set(DEVELOPMENT_BUILD FALSE)
 
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
@@ -79,9 +79,11 @@ else()
 		if(NOT IRRLICHT_INCLUDE_DIR)
 			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
 		endif()
-		message(STATUS "Building with old Irrlicht headers.")
+		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
 		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE "${IRRLICHT_INCLUDE_DIR}")
+	else()
+		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}.")
 	endif()
 endif()
 
