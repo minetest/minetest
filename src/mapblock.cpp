@@ -355,7 +355,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &out, u8 version, bool disk, int compression_level)
+void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int compression_level)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -365,8 +365,8 @@ void MapBlock::serialize(std::ostream &out, u8 version, bool disk, int compressi
 
 	FATAL_ERROR_IF(version < SER_FMT_VER_LOWEST_WRITE, "Serialisation version error");
 
-	std::ostringstream oss(std::ios_base::binary);
-	std::ostream &os = version >= 29 ? oss : out;
+	std::ostringstream os_raw(std::ios_base::binary);
+	std::ostream &os = version >= 29 ? os_raw : os_compressed;
 	// First byte
 	u8 flags = 0;
 	if(is_underground)
@@ -383,8 +383,8 @@ void MapBlock::serialize(std::ostream &out, u8 version, bool disk, int compressi
 	/*
 		Bulk node data
 	*/
-	u8 content_width = 2;
-	u8 params_width = 2;
+	const u8 content_width = 2;
+	const u8 params_width = 2;
 	writeU8(os, content_width);
 	writeU8(os, params_width);
 	NameIdMapping nimap;
@@ -418,10 +418,10 @@ void MapBlock::serialize(std::ostream &out, u8 version, bool disk, int compressi
 	if (version >= 29) {
 		m_node_metadata.serialize(os, version, disk);
 	} else {
-		// use oss from above to avoid allocating another stream object
-		m_node_metadata.serialize(oss, version, disk);
+		// use os_raw from above to avoid allocating another stream object
+		m_node_metadata.serialize(os_raw, version, disk);
 		// prior to 29 node data was compressed individually
-		compress(oss.str(), os, version, compression_level);
+		compress(os_raw.str(), os, version, compression_level);
 	}
 
 	/*
@@ -451,7 +451,7 @@ void MapBlock::serialize(std::ostream &out, u8 version, bool disk, int compressi
 
 	if(version >= 29) {
 		// now compress the whole thing
-		compress(oss.str(), out, version, compression_level);
+		compress(os_raw.str(), os_compressed, version, compression_level);
 	}
 }
 
@@ -464,7 +464,7 @@ void MapBlock::serializeNetworkSpecific(std::ostream &os)
 	writeU8(os, 2); // version
 }
 
-void MapBlock::deSerialize(std::istream &in, u8 version, bool disk)
+void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -475,16 +475,16 @@ void MapBlock::deSerialize(std::istream &in, u8 version, bool disk)
 
 	if(version <= 21)
 	{
-		deSerialize_pre22(in, version, disk);
+		deSerialize_pre22(in_compressed, version, disk);
 		return;
 	}
 
-	std::stringstream iss(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
+	std::stringstream in_raw(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
 	if (version >= 29) {
 		// decompress the whole thing
-		decompress(in, iss, version);
+		decompress(in_compressed, in_raw, version);
 	}
-	std::istream &is = version >= 29 ? iss : in;
+	std::istream &is = version >= 29 ? in_raw : in_compressed;
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
@@ -511,9 +511,9 @@ void MapBlock::deSerialize(std::istream &in, u8 version, bool disk)
 		MapNode::deSerializeBulk(is, version, data, nodecount,
 			content_width, params_width);
 	} else {
-		// use iss from above to avoid allocating another stream object
-		decompress(is, iss, version);
-		MapNode::deSerializeBulk(iss, version, data, nodecount,
+		// use in_raw from above to avoid allocating another stream object
+		decompress(is, in_raw, version);
+		MapNode::deSerializeBulk(in_raw, version, data, nodecount,
 			content_width, params_width);
 	}
 
@@ -527,14 +527,14 @@ void MapBlock::deSerialize(std::istream &in, u8 version, bool disk)
 		if (version >= 29) {
 			m_node_metadata.deSerialize(is, m_gamedef->idef());
 		} else {
-			// resuse iss
-			iss.str("");
-			iss.clear();
-			decompress(is, iss, version);
+			// resuse in_raw
+			in_raw.str("");
+			in_raw.clear();
+			decompress(is, in_raw, version);
 			if (version >= 23)
-				m_node_metadata.deSerialize(iss, m_gamedef->idef());
+				m_node_metadata.deSerialize(in_raw, m_gamedef->idef());
 			else
-				content_nodemeta_deserialize_legacy(iss,
+				content_nodemeta_deserialize_legacy(in_raw,
 					&m_node_metadata, &m_node_timers,
 					m_gamedef->idef());
 		}

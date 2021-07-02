@@ -1100,7 +1100,7 @@ full_block_send_enable_min_time_from_building (Delay in sending blocks after bui
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024
 
-#    compression level to use when sending mapblocks to the client.
+#    Compression level to use when sending mapblocks to the client.
 #    -1 - use default compression level
 #     0 - least compresson, fastest
 #     9 - best compression, slowest
@@ -1302,7 +1302,7 @@ max_objects_per_block (Maximum objects per block) int 64
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
-#    compression level to use when sending mapblocks to the client.
+#    Compression level to use when saving mapblocks to disk.
 #    -1 - use default compression level
 #     0 - least compresson, fastest
 #     9 - best compression, slowest
