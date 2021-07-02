@@ -44,7 +44,7 @@ public:
 		ScriptCallbackState *state);
 
 	// Called after liquid transform changes
-	void on_liquid_transformed(std::vector<std::pair<v3s16, MapNode> > &list);
+	void on_liquid_transformed(const std::vector<std::pair<v3s16, MapNode> > &list);
 
 	void initializeEnvironment(ServerEnvironment *env);
 };

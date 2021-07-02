@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mapgen.h"
 #include "lua_api/l_env.h"
 #include "server.h"
+#include "script/common/c_content.h"
+
 
 void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	u32 blockseed)
@@ -269,7 +271,7 @@ void ScriptApiEnv::on_emerge_area_completion(
 }
 
 void ScriptApiEnv::on_liquid_transformed(
-	std::vector<std::pair<v3s16, MapNode> > &list)
+	const std::vector<std::pair<v3s16, MapNode> > &list)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -294,13 +296,7 @@ void ScriptApiEnv::on_liquid_transformed(
 		push_v3s16(L, p.first);
 		lua_rawset(L, -3);
 		lua_pushstring(L, "oldnode");
-		lua_createtable(L, 0, 3);
-		lua_pushstring(L, ndef->get(p.second).name.c_str());
-		lua_setfield(L, -2, "name");
-		lua_pushinteger(L, p.second.getParam1());
-		lua_setfield(L, -2, "param1");
-		lua_pushinteger(L, p.second.getParam2());
-		lua_setfield(L, -2, "param2");
+		pushnode(L, p.second, ndef);
 		lua_rawset(L, -3);
 		lua_rawset(L, -3);
 	}
