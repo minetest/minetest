@@ -271,7 +271,7 @@ void ScriptApiEnv::on_emerge_area_completion(
 }
 
 void ScriptApiEnv::on_liquid_transformed(
-	const std::vector<std::pair<v3s16, MapNode> > &list)
+	const std::vector<std::pair<v3s16, MapNode>> &list)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
