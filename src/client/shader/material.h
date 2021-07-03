@@ -37,6 +37,12 @@ class Material {
 	// Variant state for each pass.
 	std::vector<u64> currentVariants;
 
+	// Fixed state for each pass.
+	// Fixed function state is not preserved between shader reassigns!
+	// (this may be changed if requested, but it's a lot of API)
+	// For now, this is initialized with the values in the respective passes,
+	std::vector<FixedFunctionState> fixedStates;
+
 	u32 uniformCount;
 
 public:
@@ -98,8 +104,18 @@ public:
 	// Give the Material a new shader.
 	void SetShader( const Shader *newShader );
 
-	// Retrieve the program, bind it and set the relevant uniforms.
+	// Get the pass index or -1 if not
+	inline s32 GetPassID( const std::string &passName ) {
+		return STL_AT_OR( shader->passMap, passName, -1 );
+	}
+
+	// Retrieve the program, bind it, set all necessary uniforms,
+	// and any other state
 	void BindForRendering( u32 passId );
+	inline void BindForRendering( const std::string &passName ) {
+		if ( STL_CONTAINS( shader->passMap, passName ) )
+			BindForRendering( shader->passMap.at( passName ) );
+	}
 
 	Material( const Shader *shader ) { SetShader( shader ); }
 };

@@ -75,6 +75,10 @@ void Material::SetUniformUnsafe( const s32 i, const void *value ) {
 	std::memcpy( (void*)destAddress, value, uniformTypeStrides.at(shader->uniformTypes[i]) );
 }
 void Material::BindForRendering( u32 passId ) {
+	if ( passId < 0 || passId > shader->passCount ) {
+			warningstream << "Material::BindForRendering was asked to use a nonexistent pass\n";
+			return;
+	}
 	u64 actualVariantId = 0;
 	auto &program = shader->GetProgram( passId, currentVariants[passId], actualVariantId );
 	program.Bind();
@@ -86,31 +90,33 @@ void Material::BindForRendering( u32 passId ) {
 		s32 loc = locations[i];
 		// Does this particular program have this uniform? (otherwise location is -1)
 		if ( 0 <= loc ) {
-			void *uPtr = static_cast<void*>( uniformMemory + shader->uniformMemoryOffsets[i] );
+			void *uPtr = reinterpret_cast<void*>( uniformMemory + shader->uniformMemoryOffsets[i] );
 			u32 type = shader->uniformTypes[i];
 			s32 len = shader->uniformWidths[i];
 			switch( type ) {
 				case GL_FLOAT:
-					glUniform1fv( loc, len, static_cast<float*>(uPtr) );
+					glUniform1fv( loc, len, reinterpret_cast<float*>(uPtr) );
 					break;
 				case GL_INT:
-					glUniform1iv( loc, len, static_cast<s32*>(uPtr) );
+					glUniform1iv( loc, len, reinterpret_cast<s32*>(uPtr) );
 					break;
 				case GL_TEXTURE_CUBE_MAP:
 				case GL_TEXTURE_3D:
 				case GL_TEXTURE_2D:
 					// Without ARB_bindless_texture we have to select
-					// a texture hardware unit, bind the actual texture,
+					// a hardware texture unit, bind the actual texture,
 					// and then point the uniform to said hardware unit.
 					// Dumb, I know.
 					glActiveTexture( GL_TEXTURE0 + gpuTextureUnit );
-					glBindTexture( type, *(static_cast<s32*>(uPtr)) );
+					glBindTexture( type, *(reinterpret_cast<s32*>(uPtr)) );
 					glUniform1i( loc, gpuTextureUnit++ );
 					break;
 				default:
 			}
 		}
 	}
+	// Set fixed function state.
+	fixedStates[passId].Set();
 }
 void Material::SetShader( const Shader *newShader ) {
 	u8 *newUniformMemory = new u8[newShader->uniformBufferSize()];

@@ -29,6 +29,7 @@ class Shader {
 	// Eliminates the need for a lot of ugly accessors.
 	friend class Material;
 
+	u32 passCount;
 	std::unordered_map<std::string, u32> passMap;
 	std::vector<ShaderPass> passes;
 

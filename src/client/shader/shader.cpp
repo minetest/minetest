@@ -132,5 +132,6 @@ Shader::Shader( const std::unordered_map<std::string,ShaderSource> &sources ) {
 		passes.push_back( ShaderPass( src, {} ) );
 		passMap[name] = i++;
 	}
+	passCount = passes.size();
 	BuildUniformData();
 }
