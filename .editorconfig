@@ -1,0 +1,6 @@
+[*]
+end_of_line = lf
+
+[*.{cpp,h,lua,txt}]
+indent_size = 4
+indent_style = tab
