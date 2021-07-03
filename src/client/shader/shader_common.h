@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "irr_v3d.h"
+#include <SColor.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -41,10 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Similar to nil-or short circuit in Lua
 #define STL_AT_OR(x,y,z) ( ( x .find( y ) != x .end() ) ? x .at( y ) : z )
 
-const u32 SHADER_DONT_CARE = 0xFFFFFFFF;
-
-enum class CompareTest : u32 {
-	DontCare		= SHADER_DONT_CARE,
+enum class CompareTest : u32 { // Shared by depth and stencil
 	Never			= GL_NEVER,
 	Always			= GL_ALWAYS,
 	Less			= GL_LESS,
@@ -55,7 +53,6 @@ enum class CompareTest : u32 {
 	NotEqual		= GL_NOTEQUAL,
 };
 enum class BlendOp : u32 {
-	DontCare		= SHADER_DONT_CARE,
 	Add				= GL_FUNC_ADD,
 	Subtract		= GL_FUNC_SUBTRACT,
 	RevSubtract		= GL_FUNC_REVERSE_SUBTRACT,
@@ -63,7 +60,6 @@ enum class BlendOp : u32 {
 	Max				= GL_MAX,
 };
 enum class BlendFactor : u32 {
-	DontCare		= SHADER_DONT_CARE,
 	Zero			= GL_ZERO,
 	One				= GL_ONE,
 	Source			= GL_SRC_COLOR,
@@ -76,7 +72,6 @@ enum class BlendFactor : u32 {
 	NegDest			= GL_ONE_MINUS_DST_COLOR,
 };
 enum class StencilOp : u32 {
-	DontCare 		= SHADER_DONT_CARE,
 	Keep			= GL_KEEP,
 	Zero			= GL_ZERO,
 	Replace			= GL_REPLACE,
@@ -90,30 +85,50 @@ enum class StencilOp : u32 {
 // Non-programmable state of a shader or material.
 // This struct is simple enough to allow easy hashing and equality comparison.
 struct FixedFunctionState {
-	bool		useBlending;
-	BlendFactor	srcBlend;
-	BlendFactor	dstBlend;
+	static FixedFunctionState currentState;
+
+	bool		useBlending = false;
+	BlendOp		blendEquationColor;
+	BlendOp		blendEquationAlpha;
+	BlendFactor	srcBlendColor;
+	BlendFactor	srcBlendAlpha;
+	BlendFactor	dstBlendColor;
+	BlendFactor	dstBlendAlpha;
+	u32			blendConstantColor = 0xFFFFFFFF; // ARGB-8888
 
 	// Alpha clip/test.
 	// Note that it must be emulated with discard on some obscure drivers,
 	// and thus we have to add a variant for that.
-	bool		alphaTest;
+	bool		alphaTest = false;
 
 	// See GLES 2.0 reference 4.1.4 "Stencil Test"
-	CompareTest stencilTest;
-	StencilOp	stencilFail;
-	StencilOp	stencilZFail;
-	StencilOp	stencilPass;
+	bool		useStencilTest = false;
+	CompareTest stencilFrontFunc;
+	StencilOp	stencilFrontFail;
+	StencilOp	stencilFrontZFail;
+	StencilOp	stencilFrontPass;
+	u32			stencilFrontRef;
+	u32			stencilFrontMask;
+	u32			stencilFrontWriteMask = 0xFFFFFFFF;
+	CompareTest stencilBackFunc;
+	StencilOp	stencilBackFail;
+	StencilOp	stencilBackZFail;
+	StencilOp	stencilBackPass;
+	u32			stencilBackRef;
+	u32			stencilBackMask;
+	u32			stencilBackWriteMask = 0xFFFFFFFF;
 
-	// Disable for passes that should never apply AA,
-	// like deferred rendering data.
-	bool		allowAntiAliasing = true;
-
-	CompareTest	depthTest;
+	bool		useDepthTest = true;
+	CompareTest	depthFunc = GL_LEQUAL;
 	bool		depthWrite = true; // Disable for transparent shaders.
 
-	float		brightness;
+	inline void SetConstantBlendColor( const irr::video::SColor &col ) {
+		col.getData( &blendConstantColor, ECOLOR_FORMAT(irr::video::A8R8G8B8) )
+	}
+
+	void Set();
 };
+
 
 struct ShaderSource {
 	std::string header; // Common header pasted right above each shader stage.

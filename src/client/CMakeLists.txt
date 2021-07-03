@@ -66,5 +66,6 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_pass.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shader/material.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/shader/fixed_state.cpp
 	PARENT_SCOPE
 )
