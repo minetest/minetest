@@ -832,7 +832,6 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 		PlayerHPChangeReason reason(PlayerHPChangeReason::FALL);
 		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason);
-		SendPlayerHPOrDie(playersao, reason);
 	}
 }
 
@@ -1117,9 +1116,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		float time_from_last_punch =
 			playersao->resetTimeFromLastPunch();
 
-		u16 src_original_hp = pointed_object->getHP();
-		u16 dst_origin_hp = playersao->getHP();
-
 		u16 wear = pointed_object->punch(dir, &toolcap, playersao,
 				time_from_last_punch);
 
@@ -1128,18 +1124,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		bool changed = selected_item.addWear(wear, m_itemdef);
 		if (changed)
 			playersao->setWieldedItem(selected_item);
-
-		// If the object is a player and its HP changed
-		if (src_original_hp != pointed_object->getHP() &&
-				pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			SendPlayerHPOrDie((PlayerSAO *)pointed_object,
-					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
-		}
-
-		// If the puncher is a player and its HP changed
-		if (dst_origin_hp != playersao->getHP())
-			SendPlayerHPOrDie(playersao,
-					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
 
 		return;
 	} // action == INTERACT_START_DIGGING

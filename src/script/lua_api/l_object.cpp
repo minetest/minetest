@@ -172,27 +172,11 @@ int ObjectRef::l_punch(lua_State *L)
 	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
 	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
-
 	dir.normalize();
-	u16 src_original_hp = sao->getHP();
-	u16 dst_origin_hp = puncher->getHP();
 
 	u16 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
 	lua_pushnumber(L, wear);
 
-	// If the punched is a player, and its HP changed
-	if (src_original_hp != sao->getHP() &&
-			sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)sao,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
-	}
-
-	// If the puncher is a player, and its HP changed
-	if (dst_origin_hp != puncher->getHP() &&
-			puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, sao));
-	}
 	return 1;
 }
 
@@ -238,8 +222,6 @@ int ObjectRef::l_set_hp(lua_State *L)
 	}
 
 	sao->setHP(hp, reason);
-	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
 	if (reason.hasLuaReference())
 		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
 	return 0;
