@@ -109,14 +109,43 @@ std::unordered_map<std::string,ProgramUniform>ShaderProgram::GetUniforms() const
 			s32 arrayLength;
 			u32 type;
 			GLsizei actualNameLength;
-			glGetActiveUniform( programHandle, i, nameLength, &actualNameLength, &arrayLength, &type, nameBuffer );
+			glGetActiveUniform( programHandle, i, nameLength,
+				&actualNameLength, &arrayLength, &type, nameBuffer );
 
 			s32 location = glGetUniformLocation( programHandle, nameBuffer );
 
+			// Here we do a little trick:
+			// We unroll aggregate types into arrays of primitive types,
+			// reducing the complexity of the uniform setter code in material.cpp
+			// Hopefully GL won't care.
+			u32 unrolledType;
+			u32 width;
+			switch( type ) {
+				case GL_FLOAT:		width = 1;	unrolledType = GL_FLOAT;	break;
+				case GL_FLOAT_VEC2:	width = 2;	unrolledType = GL_FLOAT;	break;
+				case GL_FLOAT_VEC3:	width = 3;	unrolledType = GL_FLOAT;	break;
+				case GL_FLOAT_VEC4:	width = 4;	unrolledType = GL_FLOAT;	break;
+				case GL_FLOAT_MAT4:	width = 16;	unrolledType = GL_FLOAT;	break;
+				case GL_INT:		width = 1;	unrolledType = GL_INT;		break;
+				case GL_INT_VEC2:	width = 2;	unrolledType = GL_INT;		break;
+				case GL_INT_VEC3:	width = 3;	unrolledType = GL_INT;		break;
+				case GL_INT_VEC4:	width = 4;	unrolledType = GL_INT;		break;
+				case GL_BOOL:		width = 1;	unrolledType = GL_INT;		break;
+				case GL_BOOL_VEC2:	width = 2;	unrolledType = GL_INT;		break;
+				case GL_BOOL_VEC3:	width = 3;	unrolledType = GL_INT;		break;
+				case GL_BOOL_VEC4:	width = 4;	unrolledType = GL_INT;		break;
+				case GL_SAMPLER_2D:		width = 1;	unrolledType = GL_TEXTURE_2D;		break;
+				case GL_SAMPLER_3D:		width = 1;	unrolledType = GL_TEXTURE_3D;		break;
+				case GL_SAMPLER_CUBE:	width = 1;	unrolledType = GL_TEXTURE_CUBE_MAP;	break;
+				default:
+					unrolledType = type;
+					width = 1;
+			}
+
 			if ( location > -1 ) {
 				uniforms[std::string( nameBuffer )] = {
-					type,
-					(u32)arrayLength,
+					unrolledType,
+					(u32)arrayLength * width,
 					(u32)location,
 				};
 			}

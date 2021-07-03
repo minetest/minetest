@@ -26,7 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern const std::unordered_map< u32, u32 > uniformTypeStrides;
 
 class Shader {
+	// Eliminates the need for a lot of ugly accessors.
 	friend class Material;
+
 	std::unordered_map<std::string, u32> passMap;
 	std::vector<ShaderPass> passes;
 
@@ -37,8 +39,8 @@ class Shader {
 	std::vector<std::string> uniformNames;
 	// Type of each uniform, as understood by GL
 	std::vector<u32> uniformTypes;
-	// Length of a uniform array returned by GL.
-	std::vector<u32> uniformArrayLengths;
+	// Amount of each primitive in a uniform. This is array lengths * vector widths;
+	std::vector<u32> uniformWidths;
 	// Size in bytes of a contiguous buffer that can store all the uniform state
 	// required by this shader. It is a sum of all strides.
 	size_t uniformBufferSize;
@@ -71,17 +73,8 @@ class Shader {
 	u64 disableMask;
 
 public:
-	inline u32 GetUniformCount() const {
-		return uniformCount;
-	}
-	inline u32 GetPassCount() const {
-		return passes.size();
-	}
 	inline s32 GetUniformIndex( const std::string &name ) const {
 		return STL_AT_OR( uniformIndexMap, name, -1 );
-	}
-	inline size_t GetUniformBufferSize() const {
-		return uniformBufferSize;
 	}
 	inline const ShaderProgram &GetProgram( u32 passId, u64 variant, u64 &outActualVariant ) const {
 		outActualVariant = (variant & disableMask ) | enableMask;

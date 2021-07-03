@@ -75,10 +75,45 @@ void Material::SetUniformUnsafe( const s32 i, const void *value ) {
 	std::memcpy( (void*)destAddress, value, uniformTypeStrides.at(shader->uniformTypes[i]) );
 }
 void Material::BindForRendering( u32 passId ) {
-	// NYI
+	u64 actualVariantId = 0;
+	auto &program = shader->GetProgram( passId, currentVariants[passId], actualVariantId );
+	program.Bind();
+	u32 gpuTextureUnit = 0;
+	auto &locations = shader->locationMatrix[passId][actualVariantId];
+	// Iterate over *all* the uniforms known to this shader, in all passes
+	// see locationMatrix declaration in shader.h
+	for ( u32 i = 0; i < shader->uniformCount; i++ ) {
+		s32 loc = locations[i];
+		// Does this particular program have this uniform? (otherwise location is -1)
+		if ( 0 <= loc ) {
+			void *uPtr = static_cast<void*>( uniformMemory + shader->uniformMemoryOffsets[i] );
+			u32 type = shader->uniformTypes[i];
+			s32 len = shader->uniformWidths[i];
+			switch( type ) {
+				case GL_FLOAT:
+					glUniform1fv( loc, len, static_cast<float*>(uPtr) );
+					break;
+				case GL_INT:
+					glUniform1iv( loc, len, static_cast<s32*>(uPtr) );
+					break;
+				case GL_TEXTURE_CUBE_MAP:
+				case GL_TEXTURE_3D:
+				case GL_TEXTURE_2D:
+					// Without ARB_bindless_texture we have to select
+					// a texture hardware unit, bind the actual texture,
+					// and then point the uniform to said hardware unit.
+					// Dumb, I know.
+					glActiveTexture( GL_TEXTURE0 + gpuTextureUnit );
+					glBindTexture( type, *(static_cast<s32*>(uPtr)) );
+					glUniform1i( loc, gpuTextureUnit++ );
+					break;
+				default:
+			}
+		}
+	}
 }
 void Material::SetShader( const Shader *newShader ) {
-	u8 *newUniformMemory = new u8[newShader->GetUniformBufferSize()];
+	u8 *newUniformMemory = new u8[newShader->uniformBufferSize()];
 	if ( uniformMemory ) {
 		// Copy what we can from the old shader
 		for ( auto &pair : newShader->uniformIndexMap ) {
@@ -106,11 +141,11 @@ void Material::SetShader( const Shader *newShader ) {
 	uniformMemory = newUniformMemory;
 	this->shader = newShader;
 
-	uniformCount = shader->GetUniformCount();
+	uniformCount = shader->uniformCount;
 
 	// todo: Preserve variants the same way uniforms are
 	currentVariants.clear();
-	for( u32 i = 0; i < shader->GetPassCount(); i++ ) {
+	for( u32 i = 0; i < shader->passes.size(); i++ ) {
 		currentVariants.push_back( 0ULL );
 	}
 }

@@ -22,23 +22,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 const std::unordered_map< u32, u32 > uniformTypeStrides = {
 	{ GL_FLOAT, 		sizeof( GLfloat ) },
-	{ GL_FLOAT_VEC2,	sizeof( GLfloat ) * 2 },
-	{ GL_FLOAT_VEC3,	sizeof( GLfloat ) * 3 },
-	{ GL_FLOAT_VEC4,	sizeof( GLfloat ) * 4 },
-	{ GL_FLOAT_MAT2,	sizeof( GLfloat ) * 4 },
-	{ GL_FLOAT_MAT3,	sizeof( GLfloat ) * 9 },
-	{ GL_FLOAT_MAT4,	sizeof( GLfloat ) * 16 },
+	// { GL_FLOAT_VEC2,	sizeof( GLfloat ) * 2 },
+	// { GL_FLOAT_VEC3,	sizeof( GLfloat ) * 3 },
+	// { GL_FLOAT_VEC4,	sizeof( GLfloat ) * 4 },
+	// { GL_FLOAT_MAT2,	sizeof( GLfloat ) * 4 },
+	// { GL_FLOAT_MAT3,	sizeof( GLfloat ) * 9 },
+	// { GL_FLOAT_MAT4,	sizeof( GLfloat ) * 16 },
 	{ GL_INT, 			sizeof( GLint ) },
-	{ GL_INT_VEC2,		sizeof( GLint ) * 2 },
-	{ GL_INT_VEC3,		sizeof( GLint ) * 3 },
-	{ GL_INT_VEC4,		sizeof( GLint ) * 4 },
-	{ GL_BOOL, 			sizeof( GLboolean ) },
-	{ GL_BOOL_VEC2,		sizeof( GLboolean ) * 2 },
-	{ GL_BOOL_VEC3,		sizeof( GLboolean ) * 3 },
-	{ GL_BOOL_VEC4,		sizeof( GLboolean ) * 4 },
-	{ GL_SAMPLER_2D,	sizeof( GLuint ) },
-	{ GL_SAMPLER_3D,	sizeof( GLuint ) },
-	{ GL_SAMPLER_CUBE,	sizeof( GLuint ) },
+	// { GL_INT_VEC2,		sizeof( GLint ) * 2 },
+	// { GL_INT_VEC3,		sizeof( GLint ) * 3 },
+	// { GL_INT_VEC4,		sizeof( GLint ) * 4 },
+	{ GL_BOOL, 			sizeof( GLint ) },
+	// { GL_BOOL_VEC2,		sizeof( GL ) * 2 },
+	// { GL_BOOL_VEC3,		sizeof( GL ) * 3 },
+	// { GL_BOOL_VEC4,		sizeof( GL ) * 4 },
+
+	// Note: enums below are intentionally "wrong";
+	// see ShaderProgram::GetUniforms( )
+	{ GL_TEXTURE_2D,		sizeof( GLint ) },
+	{ GL_TEXTURE_3D,		sizeof( GLint ) },
+	{ GL_TEXTURE_CUBE_MAP,	sizeof( GLint ) },
 };
 
 void Shader::BuildUniformData() {
@@ -82,7 +85,7 @@ void Shader::BuildUniformData() {
 		// Indices are fixed from now on.
 		uniformTypes.push_back( pair.second );
 		uniformNames.push_back( pair.first );
-		uniformArrayLengths.push_back( allArrayLengths.at(pair.first) );
+		uniformWidths.push_back( allArrayLengths.at(pair.first) );
 		uniformIndexMap[pair.first] = uniformCount;
 		uniformCount++;
 	}
@@ -116,7 +119,7 @@ void Shader::BuildUniformData() {
 	u32 position = 0;
 	for ( u32 i = 0; i < uniformCount ; i++ ) {
 		uniformMemoryOffsets.push_back( position );
-		position += uniformTypeStrides.at(uniformTypes[i]);
+		position += uniformTypeStrides.at(uniformTypes[i]) * uniformWidths[i];
 	}
 	uniformBufferSize = position;
 }
