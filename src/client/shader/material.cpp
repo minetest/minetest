@@ -145,13 +145,16 @@ void Material::SetShader( const Shader *newShader ) {
 	}
 
 	uniformMemory = newUniformMemory;
-	this->shader = newShader;
-
-	uniformCount = shader->uniformCount;
+	uniformCount = newShader->uniformCount;
 
 	// todo: Preserve variants the same way uniforms are
 	currentVariants.clear();
-	for( u32 i = 0; i < shader->passes.size(); i++ ) {
+	fixedStates.clear();
+	for( u32 i = 0; i < newShader->passes.size(); i++ ) {
 		currentVariants.push_back( 0ULL );
+		// Init fixed state with what's in the pass.
+		fixedStates.push_back( newShader->passes[i].fixedState );
 	}
+
+	this->shader = newShader;
 }
