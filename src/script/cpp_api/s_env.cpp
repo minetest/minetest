@@ -285,21 +285,19 @@ void ScriptApiEnv::on_liquid_transformed(
 	// no registered callbacks.
 	if(lua_objlen(L, -1) < 1) return;
 
-	// Convert the list of pos/node pairs into lua format
+	// Convert the list to a pos array and a node array for lua
 	int index = 1;
 	const NodeDefManager *ndef = getEnv()->getGameDef()->ndef();
 	lua_createtable(L, list.size(), 0);
+	lua_createtable(L, list.size(), 0);
 	for(std::pair<v3s16, MapNode> p : list) {
-		lua_pushnumber(L, index++);
-		lua_createtable(L, 2, 0);
-		lua_pushstring(L, "pos");
+		lua_pushnumber(L, index);
 		push_v3s16(L, p.first);
-		lua_rawset(L, -3);
-		lua_pushstring(L, "oldnode");
+		lua_rawset(L, -4);
+		lua_pushnumber(L, index++);
 		pushnode(L, p.second, ndef);
-		lua_rawset(L, -3);
 		lua_rawset(L, -3);
 	}
 
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
