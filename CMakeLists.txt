@@ -56,6 +56,7 @@ endif()
 # Included stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+
 # This is done here so that relative search paths are more reasonable
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
@@ -83,9 +84,10 @@ else()
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
 		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE "${IRRLICHT_INCLUDE_DIR}")
 	else()
-		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}.")
+		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 	endif()
 endif()
+
 
 # Installation
 
