@@ -130,6 +130,8 @@ Shader::Shader( const std::unordered_map<std::string,ShaderSource> &sources ) {
 		auto &name = pair.first;
 		auto &src = pair.second;
 		passes.push_back( ShaderPass( src, {} ) );
+		enableMask.push_back(0ULL);
+		disableMask.push_back(~0ULL);
 		passMap[name] = i++;
 	}
 	passCount = passes.size();

@@ -117,5 +117,16 @@ public:
 			BindForRendering( shader->passMap.at( passName ) );
 	}
 
+	inline void EnableFeature( std::string feature ) {
+		for ( u32 i = 0; i < shader->passCount; i++ ) {
+			shader->passes[i].EnableFeature( feature, currentVariants.data() + i )
+		}
+	}
+	inline void DisableFeature( std::string feature ) {
+		for ( u32 i = 0; i < shader->passCount; i++ ) {
+			shader->passes[i].DisableFeature( feature, currentVariants.data() + i )
+		}
+	}
+
 	Material( const Shader *shader ) { SetShader( shader ); }
 };

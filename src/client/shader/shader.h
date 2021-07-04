@@ -69,17 +69,34 @@ class Shader {
 	void BuildUniformData();
 
 	// For force-enabling features globally
-	u64 enableMask;
+	std::vector<u64> enableMask;
 	// For force-disabling features globally
-	u64 disableMask;
+	std::vector<u64> disableMask;
 
 public:
 	inline s32 GetUniformIndex( const std::string &name ) const {
 		return STL_AT_OR( uniformIndexMap, name, -1 );
 	}
 	inline const ShaderProgram &GetProgram( u32 passId, u64 variant, u64 &outActualVariant ) const {
-		outActualVariant = (variant & disableMask ) | enableMask;
+		outActualVariant = (variant & disableMask[passId]) | enableMask[passId];
 		return passes[passId].GetProgram( outActualVariant );
+	}
+
+	inline void SetForceEnableFeature( const std::string &name ) {
+		for ( u32 i=0; i < passCount; i++ )
+			passes[i].EnableFeature( name, enableMask.data + i );
+	}
+	inline void ClearForceEnableFeature( const std::string &name ) {
+		for ( u32 i=0; i < passCount; i++ )
+			passes[i].DisableFeature( name, enableMask.data + i );
+	}
+	inline void SetForceDisableFeature( const std::string &name ) {
+		for ( u32 i=0; i < passCount; i++ )
+			disableMask[i] &= ~passes[i].GetFeatureRingMask( name );
+	}
+	inline void ClearForceDisableFeature( const std::string &name ) {
+		for ( u32 i=0; i < passCount; i++ )
+			disableMask[i] |= passes[i].GetFeatureRingMask( name );
 	}
 
 	Shader( const std::unordered_map<std::string,ShaderSource> &sources );

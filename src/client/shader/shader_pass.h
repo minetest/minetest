@@ -40,11 +40,12 @@ struct ShaderFeatureRing {
 	different shader programs for a given rendering technique.
 
 	Examples of utility passes:
-	- G-buffer setup
-	- Shadow caster
 	- Plain forward render
-	- Outline or other highlight
-	- Damage overlay or similar
+	- Deferred g-buffer setup
+	- Shadow caster
+	- Outline
+	- Debug wire
+	- Damage overlay
 */
 class ShaderPass {
 	ShaderSource sources;
@@ -79,10 +80,17 @@ public:
 	FixedFunctionState fixedState;
 
 	inline void DisableFeature( const std::string &name, u64 *key ) {
-		featureMap.at( name ).DisableFeature( key );
+		if ( STL_CONTAINS( featureMap, name ) )
+			featureMap.at( name ).DisableFeature( key );
 	}
-	inline void EnableFeature( const std::string &name, u64 *key {
-		featureMap.at( name ).EnableFeature( key );
+	inline void EnableFeature( const std::string &name, u64 *key ) {
+		if ( STL_CONTAINS( featureMap, name ) )
+			featureMap.at( name ).EnableFeature( key );
+	}
+	inline u64 GetFeatureRingMask( const std::string &name ) {
+		if ( STL_CONTAINS( featureMap, name ) )
+			return featureMap.at(name).mask;
+		return 0;
 	}
 
 	inline u32 GetVariantCount() const {
