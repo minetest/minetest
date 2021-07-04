@@ -66,18 +66,12 @@ class ShaderPass {
 
 	// Rings are stored implicitly, in the form of
 	// bitmasks and bitshift offsets.
-	std::unordered_map<std::string,ShaderFeatureRing> featureRings;
-	// Since gaps may exist in the u64 space allocated in this way,
-	// the variant collection must be a dictionary.
-	std::unordered_map<u64,ShaderProgram> variants;
-
-	// Not actually an exact variant count, but a limit on iteration.
-	// Some of the variants may not exist!
-	u32 variantCount;
-
-	std::stringstream errorLog;
+	std::unordered_map<std::string,ShaderFeatureRing> featureMap;
+	std::vector<ShaderProgram*> variants;
 
 	bool buildFailed;
+
+	void DeleteVariants();
 
 	// Generate all variants recursively from a list of features.
 	void GenVariants( const ShaderSource &sources, const std::vector<std::string> &features );
@@ -93,7 +87,7 @@ public:
 	FixedFunctionState fixedState;
 
 	inline u32 GetVariantCount() const {
-		return variantCount;
+		return variants.size();
 	}
 
 	inline bool IsValid() const {
@@ -106,4 +100,8 @@ public:
 	const ShaderProgram& GetProgram( const u64 programKey ) const;
 
 	ShaderPass( const ShaderSource &sources, const std::vector<std::string> &features );
+
+	inline ~ShaderPass() {
+		DeleteVariants();
+	}
 };
