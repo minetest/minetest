@@ -23,11 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 u64 ShaderPass::GetVariantKey( const std::vector<std::string> featuresUsed ) const {
 	u64 r = 0;
 	// For each requested feature, light up the appropriate bits in the bitmask.
-	// Warning: submitting mutually exclusive features together will result in nonsense and crashes.
+	// If multiple mutually exclusive features are submitted, which one ends up
+	// enabled is undefined.
 	for ( const auto &str : featuresUsed ) {
 		if ( STL_CONTAINS( featureMap, str ) ) {
-			cosnt auto &bits = featurePositions.at( str );
-			r |= ( bits.index << bits.shift );
+			featurePositions.at( str ).EnableFeature( &r );
 		}
 	}
 	return r;
