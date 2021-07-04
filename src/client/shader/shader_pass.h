@@ -22,6 +22,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader/shader_common.h"
 #include "client/shader/shader_program.h"
 
+struct ShaderFeatureRing {
+	u32 index;	// Number to left-shift
+	u32	shift;	// Bit count to left-shift
+	u64 mask;	// Mask of the place where ring lives
+	inline void DisableFeature( u64 *key ) {
+		*key &= ~mask;
+	}
+	inline void EnableFeature( u64 *key ) {
+		*key = ( *key & ~mask ) | index << shift;
+	}
+}
+
 /*
 	A single utility pass of a shader.
 	Utility passes allow a shader to provide
@@ -37,11 +49,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ShaderPass {
 	ShaderSource sources;
 
-	// Each shader feature is assigned a bit position for use in a bitmask.
-	// Then, each unique bitmask is a key to a map of variant programs.
-	std::unordered_map<std::string,int> featurePositions;
-	std::vector<ShaderProgram> variants;
+	// Variant keys are 64 bit unsigned values.
+	// A variant key maps to a single pass variant.
 
+	// The key is a packed bitfield of several numbers,
+	// which span variable bit widths.
+
+	// A single toggle feature occupies a single bit,
+	// and a ring of mutually exclusive features occupies
+	// the minimum amount of bits needed to store it.
+	// A binary feature is thus a ring with a bit width of 1.
+
+	// Mutex rings always generate a zero variant where none of the
+	// defines are enabled. Mind that when writing shaders.
+	// This variant may be selected by disabling any of the matching keywords.
+
+	// Rings are stored implicitly, in the form of
+	// bitmasks and bitshift offsets.
+	std::unordered_map<std::string,ShaderFeatureRing> featureRings;
+	// Since gaps may exist in the u64 space allocated in this way,
+	// the variant collection must be a dictionary.
+	std::unordered_map<u64,ShaderProgram> variants;
+
+	// Not actually an exact variant count, but a limit on iteration.
+	// Some of the variants may not exist!
 	u32 variantCount;
 
 	std::stringstream errorLog;
@@ -51,6 +82,13 @@ class ShaderPass {
 	// Generate all variants recursively from a list of features.
 	void GenVariants( const ShaderSource &sources, const std::vector<std::string> &features );
 public:
+
+	inline void DisableFeature( const std::string &name, u64 *key ) {
+		featureRings.at( name ).DisableFeature( key );
+	}
+	inline void EnableFeature( const std::string &name, u64 *key {
+		featureRings.at( name ).EnableFeature( key );
+	}
 
 	FixedFunctionState fixedState;
 

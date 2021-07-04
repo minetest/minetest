@@ -39,9 +39,6 @@ const std::string stageNames[5] = {
 	"fragment",
 };
 void ShaderPass::GenVariants( const ShaderSource &sources, const std::vector<std::string> &features ) {
-	// Since variants can be expressed as bitmasks where each bit is a feature,
-	// it follows that each variant can be enumerated by simply iterating all the
-	// numbers from 0 to 2^n where n is the feature count.
 	u32 featureCount = features.size();
 	variantCount = 1 << featureCount;
 	for ( u64 i = 0 ; i < variantCount ; i++ ) {
