@@ -40,7 +40,12 @@ struct MeshCollector
 	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
 
 	// clang-format off
-	void append(const TileSpec &material,
+	inline void append(const TileSpec &material,
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices) {
+		append(material, v3s16(), vertices, numVertices, indices, numIndices);
+	}
+	void append(const TileSpec &material, const v3s16 &pos,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices);
 	void append(const TileSpec &material,
@@ -52,7 +57,7 @@ struct MeshCollector
 	void startNewMeshLayer(bool allow_reuse = true);
 private:
 	// clang-format off
-	void append(const TileLayer &material,
+	void append(const TileLayer &material, const v3s16& pos,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
 			u8 layernum, bool use_scale = false);

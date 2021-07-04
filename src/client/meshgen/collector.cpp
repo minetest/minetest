@@ -23,32 +23,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mesh.h"
 #include "profiler.h"
 
-void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
+void MeshCollector::append(const TileSpec &tile, const v3s16 &pos, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, layernum,
+		append(*layer, pos, vertices, numVertices, indices, numIndices, layernum,
 				tile.world_aligned);
 	}
 }
 
-void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *vertices,
+void MeshCollector::append(const TileLayer &layer, const v3s16 &pos, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices, u8 layernum,
 		bool use_scale)
 {
 	PreMeshBuffer &p = findBuffer(layer, layernum, numVertices);
 
 	f32 scale = 1.0f;
-	if (use_scale)
+	v2f offset = v2f();
+
+	if (use_scale) {
 		scale = 1.0f / layer.scale;
+		offset = v2f((pos.X) % layer.scale, (-pos.Z) % layer.scale);
+	}
 
 	u32 vertex_count = p.vertices.size();
 	for (u32 i = 0; i < numVertices; i++)
 		p.vertices.emplace_back(vertices[i].Pos, vertices[i].Normal,
-				vertices[i].Color, scale * vertices[i].TCoords);
+				vertices[i].Color, scale * (offset + vertices[i].TCoords));
 
 	for (u32 i = 0; i < numIndices; i++)
 		p.indices.push_back(indices[i] + vertex_count);

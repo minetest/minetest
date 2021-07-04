@@ -138,7 +138,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 			applyFacesShading(vertices[j].Color, normal2);
 		vertices[j].TCoords = tcoords[j];
 	}
-	collector->append(tile, vertices, 4, quad_indices, 6);
+	collector->append(tile, p, vertices, 4, quad_indices, 6);
 }
 
 // Create a cuboid.
