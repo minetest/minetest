@@ -76,28 +76,32 @@ class ShaderPass {
 	// Generate all variants recursively from a list of features.
 	void GenVariants( const ShaderSource &sources, const std::vector<std::string> &features );
 public:
+	FixedFunctionState fixedState;
 
 	inline void DisableFeature( const std::string &name, u64 *key ) {
-		featureRings.at( name ).DisableFeature( key );
+		featureMap.at( name ).DisableFeature( key );
 	}
 	inline void EnableFeature( const std::string &name, u64 *key {
-		featureRings.at( name ).EnableFeature( key );
+		featureMap.at( name ).EnableFeature( key );
 	}
-
-	FixedFunctionState fixedState;
 
 	inline u32 GetVariantCount() const {
 		return variants.size();
 	}
-
 	inline bool IsValid() const {
 		return !buildFailed;
 	}
 
 	// Build a bitmask based on a list of features.
 	u64 GetVariantKey( const std::vector<std::string> featuresUsed ) const;
+
 	// Get a program based on a variant bitmask obtained from GetVariantKey.
+	// The bitmask must be valid.
 	const ShaderProgram& GetProgram( const u64 programKey ) const;
+
+	inline bool IsValidKey( u64 programKey ) {
+		return programKey < variants.size() && variants[programKey];
+	}
 
 	ShaderPass( const ShaderSource &sources, const std::vector<std::string> &features );
 

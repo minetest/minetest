@@ -140,6 +140,6 @@ ShaderPass::ShaderPass( const ShaderSource &sources, const std::vector<std::stri
 	GenVariants( sources, features );
 }
 const ShaderProgram& ShaderPass::GetProgram( const u64 programKey ) const {
-	assert( programKey < variants.size() && variants[programKey] );
+	assert( IsValidKey( programKey ) );
 	return *variants[programKey];
 }
