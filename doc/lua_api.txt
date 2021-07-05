@@ -857,10 +857,12 @@ the empty string for no sound.
 
 Table form has the following fields:
 
+{
 * `name`: Sound name
 * `gain`: Volume (`1.0` = 100%)
 * `pitch`: Pitch (`1.0` = 100%)
 * `fade`: Fade (`0.0` = no fade) 
+}
 
 `gain` and `pitch` are optional and default to `1.0`.
 `fade` is optional and defaults to `0.0`, which means no fade is applied.
