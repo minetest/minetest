@@ -882,7 +882,7 @@ Examples:
 `Sound Parameters`
 ------------------
 Basic sound functionality as used within node definitions for placing, breaking, digging, walking, swimming etc. only uses the SimpleSoundSpec.
-But the minetest.play_sound() function takes an optional second table of parameters in addition to SimpleSoundSpec. 
+But the minetest.sound_play() function takes an optional second table of parameters in addition to SimpleSoundSpec. 
 
 This table has the following parameters, all of which are optional, same as the table itself (when omitted, default values are used for the values that have them):
 
@@ -906,7 +906,7 @@ This table has the following parameters, all of which are optional, same as the 
 }
 
 
-NOTE!: While passing a 'pitch' and 'fade' value in Sound Parameters is optional, the SimpleSoundSpec's 'pitch' and 'fade' are ignored by minetest.play_sound(), so if said SimpleSoundSpec's pitch/fade are not the default '1', you will have to pass the same values again in the Sound Parameters table to have identical results to using the SimpleSoundSpec in a node definition.
+NOTE!: While passing a 'pitch' and 'fade' value in Sound Parameters is optional, the SimpleSoundSpec's 'pitch' and 'fade' are ignored by minetest.sound_play(), so if said SimpleSoundSpec's pitch/fade are not the default '1', you will have to pass the same values again in the Sound Parameters table to have identical results to using the SimpleSoundSpec in a node definition.
 
 Several of the parameters conflict when provided simultaneously. In this case, arguments of higher priority result in lower priority arguments being ignored. The table above is ordered in descending priority of arguments overriding each other: 
 to_player,exclude_player,pos,object,max_hear_distance.
