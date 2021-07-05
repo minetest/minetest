@@ -867,7 +867,8 @@ Table form has the following fields:
 
 `gain` is capped at 1.
 
-`fade` values close to 0 make the sound almost inaudible. Large fade values (20+) give no fade and sound similar to 'fade=0'.
+`fade` values close to 0 make the sound almost inaudible. Large fade values (20+) 
+give no fade and sound similar to 'fade=0'.
 
 Examples:
 
@@ -881,10 +882,13 @@ Examples:
 
 `Sound Parameters`
 ------------------
-Basic sound functionality as used within node definitions for placing, breaking, digging, walking, swimming etc. only uses the SimpleSoundSpec.
-But the minetest.sound_play() function takes an optional second table of parameters in addition to SimpleSoundSpec. 
+Basic sound functionality as used within node definitions for placing, breaking, digging, 
+walking, swimming etc. only uses the SimpleSoundSpec.
+But the minetest.sound_play() function takes an optional second table of parameters in 
+addition to SimpleSoundSpec. 
 
-This table has the following parameters, all of which are optional, same as the table itself (when omitted, default values are used for the values that have them):
+This table has the following parameters, all of which are optional, same as the table itself  
+(when omitted, default values are used for the values that have them):
 
 {
 * `to_player=name`,				--play locationless to one player. 
@@ -894,27 +898,40 @@ This table has the following parameters, all of which are optional, same as the 
 * `pos=<some pos>`,				--play at a spot
 * `object = <an ObjectRef>`,    --play connected to an object
 * `max_hear_distance=32`, 		--default, uses an euclidean metric
-* `loop=false`					--default
+* `loop=false`,					--default
 * `gain=1.0`,	 				--default. gets multiplied with
 								--  the SimpleSoundSpec's 'gain' value
 * `pitch=1.0`, 					--default. the SimpleSoundSpec's
 								--  'pitch' value is ignored, 
 								--  so you have use this one instead.
-* `fade=0.0`, 					--default. the SimpleSoundSpec's
+* `fade=0.0` 					--default. the SimpleSoundSpec's
 								--  'fade' value is ignored, 
 								--  so you have use this one instead.
 }
 
 
-NOTE!: While passing a 'pitch' and 'fade' value in Sound Parameters is optional, the SimpleSoundSpec's 'pitch' and 'fade' are ignored by minetest.sound_play(), so if said SimpleSoundSpec's pitch/fade are not the default '1', you will have to pass the same values again in the Sound Parameters table to have identical results to using the SimpleSoundSpec in a node definition.
+NOTE!: While passing a 'pitch' and 'fade' value in Sound Parameters is optional, the 
+SimpleSoundSpec's 'pitch' and 'fade' are ignored by minetest.sound_play(), so if said 
+SimpleSoundSpec's pitch/fade are not the default '1', you will have to pass the same values 
+again in the Sound Parameters table to have identical results to using the SimpleSoundSpec in 
+a node definition.
 
-Several of the parameters conflict when provided simultaneously. In this case, arguments of higher priority result in lower priority arguments being ignored. The table above is ordered in descending priority of arguments overriding each other: 
+Several of the parameters conflict when provided simultaneously. In this case, arguments of 
+higher priority result in lower priority arguments being ignored. The table above is ordered 
+in descending priority of arguments overriding each other: 
 to_player,exclude_player,pos,object,max_hear_distance.
 exclude_player only overrides behavior for the specified player.
 
-loop has several quirks: It does not override max_hear_distance, which decides whether the initial sound is heard. However, players who heard the initial sound will continue to hear the looped sound at a minimum volume even if they leave beyond the max_hear_distance. When they get closer to the 'center spot' again, the sound gets louder at the correct position as expected, while players not in the initial sound's max_hear_distance will never hear the sound when they come closer later.
+loop has several quirks: It does not override max_hear_distance, which decides whether the 
+initial sound is heard. However, players who heard the initial sound will continue to hear the 
+looped sound at a minimum volume even if they leave beyond the max_hear_distance. When they 
+get closer to the 'center spot' again, the sound gets louder at the correct position as   
+expected, while players not in the initial sound's max_hear_distance will never hear the sound 
+when they come closer later.
 
-This is also true for a looped sound played at an object's position. The 'center spot' of the sound will move with the object's position, and remain at the object's last position after it was removed. The looped sound will continue to play at this position afterwards.
+This is also true for a looped sound played at an object's position. The 'center spot' of the 
+sound will move with the object's position, and remain at the object's last position after it 
+was removed. The looped sound will continue to play at this position afterwards.
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
