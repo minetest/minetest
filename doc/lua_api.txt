@@ -845,6 +845,80 @@ from the available ones of the following files:
 * (...)
 * `foomod_foosound.9.ogg`
 
+
+`SimpleSoundSpec`
+-----------------
+
+Specifies a sound name, gain (=volume), pitch and fade.
+This is either a string or a table.
+
+In string form, you just specify the sound name or
+the empty string for no sound.
+
+Table form has the following fields:
+
+* `name`: Sound name
+* `gain`: Volume (`1.0` = 100%)
+* `pitch`: Pitch (`1.0` = 100%)
+* `fade`: Fade (`0.0` = no fade) 
+
+`gain` and `pitch` are optional and default to `1.0`.
+`fade` is optional and defaults to `0.0`, which means no fade is applied.
+
+`gain` is capped at 1.
+
+`fade` values close to 0 make the sound almost inaudible. Large fade values (20+) give no fade and sound similar to 'fade=0'.
+
+Examples:
+
+* `""`: No sound
+* `{}`: No sound
+* `"default_place_node"`: Play e.g. `default_place_node.ogg`
+* `{name = "default_place_node"}`: Same as above
+* `{name = "default_place_node", gain = 0.5}`: 50% volume
+* `{name = "default_place_node", gain = 0.9, pitch = 1.1}`: 90% volume, 110% pitch
+
+
+`Sound Parameters`
+------------------
+Basic sound functionality as used within node definitions for placing, breaking, digging, walking, swimming etc. only uses the SimpleSoundSpec.
+But the minetest.play_sound() function takes an optional second table of parameters in addition to SimpleSoundSpec. 
+
+This table has the following parameters, all of which are optional, same as the table itself (when omitted, default values are used for the values that have them):
+
+{
+* `to_player=name`,				--play locationless to one player. 
+								--  only 1 player can be specified
+* `exclude_player=name`,		--heard by anyone *but* the given player
+								--  only 1 player can be specified
+* `pos=<some pos>`,				--play at a spot
+* `object = <an ObjectRef>`,    --play connected to an object
+* `max_hear_distance=32`, 		--default, uses an euclidean metric
+* `loop=false`					--default
+* `gain=1.0`,	 				--default. gets multiplied with
+								--  the SimpleSoundSpec's 'gain' value
+* `pitch=1.0`, 					--default. the SimpleSoundSpec's
+								--  'pitch' value is ignored, 
+								--  so you have use this one instead.
+* `fade=0.0`, 					--default. the SimpleSoundSpec's
+								--  'fade' value is ignored, 
+								--  so you have use this one instead.
+}
+
+
+NOTE!: While passing a 'pitch' and 'fade' value in Sound Parameters is optional, the SimpleSoundSpec's 'pitch' and 'fade' are ignored by minetest.play_sound(), so if said SimpleSoundSpec's pitch/fade are not the default '1', you will have to pass the same values again in the Sound Parameters table to have identical results to using the SimpleSoundSpec in a node definition.
+
+Several of the parameters conflict when provided simultaneously. In this case, arguments of higher priority result in lower priority arguments being ignored. The table above is ordered in descending priority of arguments overriding each other: 
+to_player,exclude_player,pos,object,max_hear_distance.
+exclude_player only overrides behavior for the specified player.
+
+loop has several quirks: It does not override max_hear_distance, which decides whether the initial sound is heard. However, players who heard the initial sound will continue to hear the looped sound at a minimum volume even if they leave beyond the max_hear_distance. When they get closer to the 'center spot' again, the sound gets louder at the correct position as expected, while players not in the initial sound's max_hear_distance will never hear the sound when they come closer later.
+
+This is also true for a looped sound played at an object's position. The 'center spot' of the sound will move with the object's position, and remain at the object's last position after it was removed. The looped sound will continue to play at this position afterwards.
+
+A positional sound will only be heard by players that are within
+`max_hear_distance` of the sound position, at the start of the sound.
+
 Examples of sound parameter tables:
 
     -- Play locationless on all clients
@@ -886,40 +960,6 @@ Examples of sound parameter tables:
         exclude_player = name,
     }
 
-Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name`.
-
-A positional sound will only be heard by players that are within
-`max_hear_distance` of the sound position, at the start of the sound.
-
-`exclude_player = name` can be applied to locationless, positional and object-
-bound sounds to exclude a single player from hearing them.
-
-`SimpleSoundSpec`
------------------
-
-Specifies a sound name, gain (=volume) and pitch.
-This is either a string or a table.
-
-In string form, you just specify the sound name or
-the empty string for no sound.
-
-Table form has the following fields:
-
-* `name`: Sound name
-* `gain`: Volume (`1.0` = 100%)
-* `pitch`: Pitch (`1.0` = 100%)
-
-`gain` and `pitch` are optional and default to `1.0`.
-
-Examples:
-
-* `""`: No sound
-* `{}`: No sound
-* `"default_place_node"`: Play e.g. `default_place_node.ogg`
-* `{name = "default_place_node"}`: Same as above
-* `{name = "default_place_node", gain = 0.5}`: 50% volume
-* `{name = "default_place_node", gain = 0.9, pitch = 1.1}`: 90% volume, 110% pitch
 
 Special sound files
 -------------------
