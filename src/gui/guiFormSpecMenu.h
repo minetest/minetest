@@ -405,7 +405,6 @@ private:
 		bool key_enter;
 		bool key_escape;
 		bool pending_key_event;
-		KeyPress key_press;
 		SEvent::SKeyInput key_event;
 		bool pending_mouse_event;
 		SEvent::SMouseInput mouse_event;
@@ -415,6 +414,7 @@ private:
 
 	bool m_use_key_event;
 	MouseEvent m_use_mouse_event;
+	u32 m_last_mouse_move_ticks = 0;
 
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;

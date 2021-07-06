@@ -3958,12 +3958,14 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 		}
 
 		if (current_keys_pending.pending_key_event) {
-			std::string name = current_keys_pending.key_press.sym();
+			KeyPress key_press(current_keys_pending.key_event);
+
+			std::string name = key_press.sym();
 			std::string mapped = "";
 
 			std::vector<std::string> keymaps = g_settings->getKeymapNames();
 			for (size_t i = 0; i < keymaps.size(); i++) {
-				if (getKeySetting(keymaps[i].c_str()) == current_keys_pending.key_press) {
+				if (getKeySetting(keymaps[i].c_str()) == key_press) {
 					mapped = keymaps[i].substr(7);
 					break;
 				}
@@ -4216,7 +4218,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		if (m_use_key_event) {
 			current_keys_pending.pending_key_event = true;
-			current_keys_pending.key_press = kp;
 			current_keys_pending.key_event = event.KeyInput;
 		}
 
@@ -4261,13 +4262,26 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		return true;
 	}
 
-	if (event.EventType == EET_MOUSE_INPUT_EVENT && (m_use_mouse_event == MouseEvent::ALL ||
-			(m_use_mouse_event == MouseEvent::NO_MOVE &&
-			event.MouseInput.Event != EMIE_MOUSE_MOVED))) {
+	do { // breakable
+		if (event.EventType != EET_MOUSE_INPUT_EVENT || m_use_mouse_event == MouseEvent::NONE)
+			break;
+
+		if (event.MouseInput.Event == EMIE_MOUSE_MOVED) {
+			if (m_use_mouse_event == MouseEvent::NO_MOVE)
+				break;
+
+			u32 time = RenderingEngine::get_raw_device()->getTimer()->getTime();
+			if (time - m_last_mouse_move_ticks >= 200)
+				m_last_mouse_move_ticks = time;
+			else
+				break;
+		}
+
 		current_keys_pending.pending_mouse_event = true;
 		current_keys_pending.mouse_event = event.MouseInput;
+
 		acceptInput();
-	}
+	} while (0);
 
 	/* Mouse event other than movement, or crossing the border of inventory
 	  field while holding right mouse button

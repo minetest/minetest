@@ -2956,7 +2956,9 @@ The tables returned by each event exploder are as follows:
 }
 ```
 
-The "move" event will not occur if the mouse event is set to `no_move`.
+The "move" event will not occur if the mouse event is set to `no_move`. In addition, the "move"
+event will only be sent once every 200 milliseconds in `all` to prevent it from bogging down
+network traffic.
 
 Migrating to Real Coordinates
 -----------------------------
