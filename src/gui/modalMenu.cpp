@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
+#include "client/renderingengine.h"
 #endif
 
 // clang-format off
@@ -40,8 +41,8 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 		m_remap_dbl_click(remap_dbl_click)
 {
 	m_gui_scale = g_settings->getFloat("gui_scaling");
-#ifdef __ANDROID__
-	float d = porting::getDisplayDensity();
+#ifdef HAVE_TOUCHSCREENGUI
+	float d = RenderingEngine::getDisplayDensity();
 	m_gui_scale *= 1.1 - 0.3 * d + 0.2 * d * d;
 #endif
 	setVisible(true);
@@ -183,7 +184,7 @@ static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 	return false;
 }
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 
 bool GUIModalMenu::simulateMouseEvent(
 		gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event)
@@ -217,6 +218,8 @@ bool GUIModalMenu::simulateMouseEvent(
 
 void GUIModalMenu::enter(gui::IGUIElement *hovered)
 {
+	if (!hovered)
+		return;
 	sanity_check(!m_hovered);
 	m_hovered.grab(hovered);
 	SEvent gui_event{};
@@ -286,7 +289,9 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			return retval;
 		}
 	}
+#endif
 
+#ifdef HAVE_TOUCHSCREENGUI
 	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 		irr_ptr<GUIModalMenu> holder;
 		holder.grab(this); // keep this alive until return (it might be dropped downstream [?])

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 #include "client/guiscalingfilter.h"
+#include "client/renderingengine.h"
 
 #include <iostream>
 #include <algorithm>
@@ -426,7 +427,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	button_size = MYMIN(m_screensize.Y / 4.5f,
-			porting::getDisplayDensity() *
+			RenderingEngine::getDisplayDensity() *
 			g_settings->getFloat("hud_scaling") * 65.0f);
 }
 
