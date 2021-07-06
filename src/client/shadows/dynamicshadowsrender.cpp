@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/client.h"
 #include "client/clientmap.h"
+#include "profiler.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_device(device), m_smgr(device->getSceneManager()),
@@ -64,8 +65,14 @@ ShadowRenderer::~ShadowRenderer()
 	if (shadowMapTextureColors)
 		m_driver->removeTexture(shadowMapTextureColors);
 
+	if (shadowMapTextureColorsFuture)
+		m_driver->removeTexture(shadowMapTextureColorsFuture);
+
 	if (shadowMapClientMap)
 		m_driver->removeTexture(shadowMapClientMap);
+
+	if (shadowMapClientMapFuture)
+		m_driver->removeTexture(shadowMapClientMapFuture);
 }
 
 void ShadowRenderer::initialize()
@@ -152,10 +159,9 @@ void ShadowRenderer::setClearColor(video::SColor ClearColor)
 	m_clear_color = ClearColor;
 }
 
-void ShadowRenderer::update(video::ITexture *outputTarget)
+void ShadowRenderer::updateSMTextures()
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
-		m_smgr->drawAll();
 		return;
 	}
 
@@ -174,9 +180,23 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			true);
 	}
 
+	if (!shadowMapClientMapFuture) {
+		shadowMapClientMapFuture = getSMTexture(
+			std::string("shadow_clientmap_bb_") + itos(m_shadow_map_texture_size),
+			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
+			true);
+	}
+
 	if (m_shadow_map_colored && !shadowMapTextureColors) {
 		shadowMapTextureColors = getSMTexture(
 			std::string("shadow_colored_") + itos(m_shadow_map_texture_size),
+			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
+			true);
+	}
+
+	if (m_shadow_map_colored && !shadowMapTextureColorsFuture) {
+		shadowMapTextureColorsFuture = getSMTexture(
+			std::string("shadow_colored_bb_") + itos(m_shadow_map_texture_size),
 			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
 			true);
 	}
@@ -201,7 +221,18 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 	}
 
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
-		// for every directional light:
+		bool reset_sm_texture = false;
+
+		// detect if SM should be regenerated
+		for (DirectionalLight &light : m_light_list) {
+			if (light.should_update_map_shadow) {
+				light.should_update_map_shadow = false;
+				m_current_section = 0;
+				reset_sm_texture = true;
+			}
+		}
+
+		// Update SM incrementally:
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values.
 			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
@@ -212,21 +243,59 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			// Depth texture is available in irrlicth maybe we
 			// should put some gl* fn here
 
-			if (light.should_update_map_shadow) {
-				light.should_update_map_shadow = false;
 
-				m_driver->setRenderTarget(shadowMapClientMap, true, true,
+			if (m_current_section < total_sections) {
+				m_driver->setRenderTarget(shadowMapClientMapFuture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
-				renderShadowMap(shadowMapClientMap, light);
+				renderShadowMap(shadowMapClientMapFuture, light, m_current_section, total_sections);
 
 				if (m_shadow_map_colored) {
-					m_driver->setRenderTarget(shadowMapTextureColors,
-							true, false, video::SColor(255, 255, 255, 255));
+					m_driver->setRenderTarget(shadowMapTextureColorsFuture,
+							reset_sm_texture, false, video::SColor(255, 255, 255, 255));
 				}
-				renderShadowMap(shadowMapTextureColors, light,
+				renderShadowMap(shadowMapTextureColorsFuture, light, m_current_section, total_sections,
 						scene::ESNRP_TRANSPARENT);
 				m_driver->setRenderTarget(0, false, false);
 			}
+
+			reset_sm_texture = false;
+		} // end for lights
+
+		// move to the next section
+		++m_current_section;
+
+		// pass finished, swap textures and commit light changes
+		if (m_current_section == total_sections) {
+			auto tmp = shadowMapClientMapFuture;
+			shadowMapClientMapFuture = shadowMapClientMap;
+			shadowMapClientMap = tmp;
+
+			tmp = shadowMapTextureColorsFuture;
+			shadowMapTextureColorsFuture = shadowMapTextureColors;
+			shadowMapTextureColors = tmp;
+
+			// Let all lights know that maps are updated
+			for (DirectionalLight &light:m_light_list)
+				light.commitFrustum();
+		}
+	}
+}
+
+void ShadowRenderer::update(video::ITexture *outputTarget)
+{
+	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
+		m_smgr->drawAll();
+		return;
+	}
+
+	updateSMTextures();
+
+	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
+
+		for (DirectionalLight &light : m_light_list) {
+			// Static shader values.
+			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
+			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
@@ -297,10 +366,10 @@ video::ITexture *ShadowRenderer::getSMTexture(const std::string &shadow_map_name
 }
 
 void ShadowRenderer::renderShadowMap(video::ITexture *target,
-		DirectionalLight &light, scene::E_SCENE_NODE_RENDER_PASS pass)
+		DirectionalLight &light, int section, int total_sections, scene::E_SCENE_NODE_RENDER_PASS pass)
 {
-	m_driver->setTransform(video::ETS_VIEW, light.getViewMatrix());
-	m_driver->setTransform(video::ETS_PROJECTION, light.getProjectionMatrix());
+	m_driver->setTransform(video::ETS_VIEW, light.getFutureViewMatrix());
+	m_driver->setTransform(video::ETS_PROJECTION, light.getFutureProjectionMatrix());
 
 	// Operate on the client map
 	for (const auto &shadow_node : m_shadow_node_array) {
@@ -333,7 +402,7 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
 
-		map_node->renderMapShadows(m_driver, material, pass);
+		map_node->renderMapShadows(m_driver, material, pass, section, total_sections);
 		break;
 	}
 }

@@ -31,8 +31,12 @@ void main()
 	//col.rgb = col.a == 1.0 ? vec3(1.0) : col.rgb;
 #ifdef COLORED_SHADOWS
 	float packedColor = packColor(mix(col.rgb, black, col.a));
-	gl_FragColor = vec4(depth, packedColor, 0.0,1.0);
+	if (gl_FragColor.r < depth) {
+		gl_FragColor = vec4(depth, packedColor, 0.0,1.0);
+	}
 #else
-	gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+	if (gl_FragColor.r < depth) {
+		gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+	}
 #endif
 }

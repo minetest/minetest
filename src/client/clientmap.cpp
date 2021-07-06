@@ -636,7 +636,7 @@ void ClientMap::PrintInfo(std::ostream &out)
 }
 
 void ClientMap::renderMapShadows(video::IVideoDriver *driver,
-		const video::SMaterial &material, s32 pass)
+		const video::SMaterial &material, s32 pass, int section, int total_sections)
 {
 	bool is_transparent_pass = pass != scene::ESNRP_SOLID;
 	std::string prefix;
@@ -650,7 +650,15 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	MeshBufListList drawbufs;
 
+	int count = 0;
+	int low_bound = m_drawlist_shadow.size() / total_sections * section;
+	int high_bound = m_drawlist_shadow.size() / total_sections * (section + 1);
+
 	for (auto &i : m_drawlist_shadow) {
+		++count;
+		if (count <= low_bound || count > high_bound)
+			continue;
+
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
 

@@ -97,10 +97,12 @@ private:
 			bool force_creation = false);
 
 	void renderShadowMap(video::ITexture *target, DirectionalLight &light,
+			int section, int total_sections,
 			scene::E_SCENE_NODE_RENDER_PASS pass =
 					scene::ESNRP_SOLID);
 	void renderShadowObjects(video::ITexture *target, DirectionalLight &light);
 	void mixShadowsQuad();
+	void updateSMTextures();
 
 	// a bunch of variables
 	IrrlichtDevice *m_device{nullptr};
@@ -108,10 +110,14 @@ private:
 	video::IVideoDriver *m_driver{nullptr};
 	Client *m_client{nullptr};
 	video::ITexture *shadowMapClientMap{nullptr};
+	video::ITexture *shadowMapClientMapFuture{nullptr};
 	video::ITexture *shadowMapTextureFinal{nullptr};
 	video::ITexture *shadowMapTextureDynamicObjects{nullptr};
 	video::ITexture *shadowMapTextureColors{nullptr};
+	video::ITexture *shadowMapTextureColorsFuture{nullptr};
 	video::SColor m_clear_color{0x0};
+	u16 m_current_section{100};
+	static const u16 total_sections{4}; /* Spread SM update over this number of frames */
 
 	std::vector<DirectionalLight> m_light_list;
 	std::vector<NodeToApply> m_shadow_node_array;

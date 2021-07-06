@@ -59,6 +59,8 @@ public:
 	/// Gets the light's matrices.
 	const core::matrix4 &getViewMatrix() const;
 	const core::matrix4 &getProjectionMatrix() const;
+	const core::matrix4 &getFutureViewMatrix() const;
+	const core::matrix4 &getFutureProjectionMatrix() const;
 	core::matrix4 getViewProjMatrix();
 
 	/// Gets the light's far value.
@@ -88,6 +90,15 @@ public:
 
 	bool should_update_map_shadow{true};
 
+	void commitFrustum()
+	{
+		if (!dirty)
+			return;
+
+		shadow_frustum = future_frustum;
+		dirty = false;
+	}
+
 private:
 	void createSplitMatrices(const Camera *cam);
 
@@ -99,4 +110,6 @@ private:
 	v3f pos;
 	v3f direction{0};
 	shadowFrustum shadow_frustum;
+	shadowFrustum future_frustum;
+	bool dirty = false;
 };
