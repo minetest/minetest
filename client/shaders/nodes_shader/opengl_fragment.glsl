@@ -577,8 +577,8 @@ void main(void)
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
-    	vec4 tmp;
-    	blindnessFilter(tmp, col);    
-    	blindnessVision(col, tmp);
+    vec4 tmp;
+    blindnessFilter(tmp, col);    
+    blindnessVision(col, tmp);
 	gl_FragColor = col;
 }
