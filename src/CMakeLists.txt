@@ -100,12 +100,27 @@ endif()
 
 
 option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
-mark_as_advanced(ENABLE_GLES)
+set(GLES_VERSION "2" CACHE STRING "Specify OpenGL ES Version (1, 2, or BOTH)")
+mark_as_advanced(ENABLE_GLES GLES_VERSION)
+
 if(BUILD_CLIENT)
 	# transitive dependency from Irrlicht (see longer explanation below)
 	if(NOT WIN32)
 		if(ENABLE_GLES)
-			find_package(OpenGLES2 REQUIRED)
+			find_package(EGL REQUIRED)
+
+			set(VALID_GLES FALSE)
+			if("${GLES_VERSION}" STREQUAL "2" OR "${GLES_VERSION}" STREQUAL "BOTH")
+				find_package(OpenGLES2 REQUIRED)
+				set(VALID_GLES TRUE)
+			endif()
+			if("${GLES_VERSION}" STREQUAL "1" OR "${GLES_VERSION}" STREQUAL "BOTH")
+				find_package(OpenGLES1 REQUIRED)
+				set(VALID_GLES TRUE)
+			endif()
+			if(NOT VALID_GLES)
+				message(FATAL_ERROR "Invalid OpenGL ES Version: ${GLES_VERSION}")
+			endif()
 		else()
 			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
 				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
@@ -572,9 +587,20 @@ if(BUILD_CLIENT)
 	if(ENABLE_GLES)
 		target_link_libraries(
 			${PROJECT_NAME}
-			${OPENGLES2_LIBRARIES}
 			${EGL_LIBRARIES}
 		)
+		if("${GLES_VERSION}" STREQUAL "2" OR "${GLES_VERSION}" STREQUAL "BOTH")
+			target_link_libraries(
+				${PROJECT_NAME}
+				${OpenGLES2_LIBRARIES}
+			)
+		endif()
+		if("${GLES_VERSION}" STREQUAL "1" OR "${GLES_VERSION}" STREQUAL "BOTH")
+			target_link_libraries(
+				${PROJECT_NAME}
+				${OpenGLES1_LIBRARIES}
+			)
+		endif()
 	else()
 		target_link_libraries(
 			${PROJECT_NAME}

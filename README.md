@@ -242,6 +242,7 @@ General options and their default values:
     ENABLE_FREETYPE=ON         - Build with FreeType2; Allows using TTF fonts
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
     ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by IrrlichtMt)
+    GLES_VERSION=2             - Specify OpenGL ES Version (1, 2, or BOTH) (requires support by IrrlichtMt)
     ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
@@ -291,8 +292,10 @@ Library specific options:
     OPENAL_DLL                      - Only if building with sound on Windows; path to OpenAL32.dll
     OPENAL_INCLUDE_DIR              - Only if building with sound; directory where al.h is located
     OPENAL_LIBRARY                  - Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
-    OPENGLES2_INCLUDE_DIR           - Only if building with GLES; directory that contains gl2.h
-    OPENGLES2_LIBRARY               - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
+    OpenGLES2_INCLUDE_DIR           - Only if building with GLES2; directory that contains gl2.h
+    OpenGLES2_LIBRARY               - Only if building with GLES2; path to libGLESv2.a/libGLESv2.so
+    OpenGLES1_INCLUDE_DIR           - Only if building with GLES1; directory that contains gl.h
+    OpenGLES1_LIBRARY               - Only if building with GLES1; path to libGLESv1_CM.a/libGLESv1_CM.so
     SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
     SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
     VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
