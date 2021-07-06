@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-07-06 08:26+0000\n"
-"Last-Translator: Liet Kynes <sissi90@gmail.com>\n"
+"PO-Revision-Date: 2021-07-07 09:35+0000\n"
+"Last-Translator: Petter Reinholdtsen <pere-weblate@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -19,9 +19,8 @@ msgid "Clear the out chat queue"
 msgstr ""
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Sludrekommandoer"
+msgstr "Tom kommando."
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -35,7 +34,7 @@ msgstr "Lokal kommando"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Avgitt kommando: "
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -53,7 +52,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Denne kommandoen er utkoblet av tjeneren."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -64,9 +63,8 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Du døde"
+msgstr "Du døde."
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
@@ -80,7 +78,7 @@ msgstr "Lokal kommando"
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Ikke tilgjengelig kommando: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
@@ -1114,7 +1112,7 @@ msgstr "Flytlandene (eksperimentelt)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr "Skyggelegging (ikke tilgjenglig)"
+msgstr "Skyggelegging (ikke tilgjengelig)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -1130,7 +1128,7 @@ msgstr "Teksturering:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "For å skru på skyggeleging, må man bruke OpenGL-driveren."
+msgstr "OpenGL-driveren må brukes for å aktivere skyggelegging."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
@@ -1348,7 +1346,7 @@ msgstr "Oppretter tjener…"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr "Skjuler feilsøkingsinfo og profilgraf"
+msgstr "Skjuler feilsøkingsinfo og profileringsgraf"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
@@ -1356,7 +1354,7 @@ msgstr "Viser feilsøkingsinfo"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr "Skjuler problemsøkerinfo, profilerinsgraf og 3D-gitter"
+msgstr "Skjuler feilsøkingsinfo, profileringsgraf og 3D-gitter"
 
 #: src/client/game.cpp
 msgid ""
@@ -2863,11 +2861,12 @@ msgid "Crosshair alpha"
 msgstr "Trådkors-alpha"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "Trådkors-alpha (ugjennomsiktighet, mellom 0 og 255)."
+msgstr ""
+"Trådkors-alpha (ugjennomsiktighet, mellom 0 og 255).\n"
+"Kontrollerer også objektets trådkorsfarge"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3121,9 +3120,8 @@ msgid "Enable console window"
 msgstr "Skru på konsollvindu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Skru på kreativt modusfor nye opprettede kart."
+msgstr "Aktiver kreativt modus for alle spillere"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -3253,9 +3251,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Maks FPS når spillet står i pause."
+msgstr "Maks FPS når spillet ikke har fokus eller er pauset"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
