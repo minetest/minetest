@@ -927,7 +927,7 @@ in descending priority of arguments overriding each other:
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
 
-`loop` has several quirks: It does not override `max_hear_distance`, which decides whether the 
+The `loop` parameter has several quirks: It does not override `max_hear_distance`, which decides whether the 
 initial sound is heard. However, players who heard the initial sound will continue to hear the 
 looped sound at a minimum volume even if they leave beyond `max_hear_distance`. When they 
 get closer to the 'center spot' again, the sound gets louder at the correct position as   
