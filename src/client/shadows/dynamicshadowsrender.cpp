@@ -244,16 +244,16 @@ void ShadowRenderer::updateSMTextures()
 			// should put some gl* fn here
 
 
-			if (m_current_section < total_sections) {
+			if (m_current_section < TOTAL_SECTIONS) {
 				m_driver->setRenderTarget(shadowMapClientMapFuture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
-				renderShadowMap(shadowMapClientMapFuture, light, m_current_section, total_sections);
+				renderShadowMap(shadowMapClientMapFuture, light);
 
 				if (m_shadow_map_colored) {
 					m_driver->setRenderTarget(shadowMapTextureColorsFuture,
 							reset_sm_texture, false, video::SColor(255, 255, 255, 255));
 				}
-				renderShadowMap(shadowMapTextureColorsFuture, light, m_current_section, total_sections,
+				renderShadowMap(shadowMapTextureColorsFuture, light,
 						scene::ESNRP_TRANSPARENT);
 				m_driver->setRenderTarget(0, false, false);
 			}
@@ -265,14 +265,9 @@ void ShadowRenderer::updateSMTextures()
 		++m_current_section;
 
 		// pass finished, swap textures and commit light changes
-		if (m_current_section == total_sections) {
-			auto tmp = shadowMapClientMapFuture;
-			shadowMapClientMapFuture = shadowMapClientMap;
-			shadowMapClientMap = tmp;
-
-			tmp = shadowMapTextureColorsFuture;
-			shadowMapTextureColorsFuture = shadowMapTextureColors;
-			shadowMapTextureColors = tmp;
+		if (m_current_section == TOTAL_SECTIONS) {
+			std::swap(shadowMapClientMapFuture, shadowMapClientMap);
+			std::swap(shadowMapTextureColorsFuture, shadowMapTextureColors);
 
 			// Let all lights know that maps are updated
 			for (DirectionalLight &light:m_light_list)
@@ -366,7 +361,7 @@ video::ITexture *ShadowRenderer::getSMTexture(const std::string &shadow_map_name
 }
 
 void ShadowRenderer::renderShadowMap(video::ITexture *target,
-		DirectionalLight &light, int section, int total_sections, scene::E_SCENE_NODE_RENDER_PASS pass)
+		DirectionalLight &light, scene::E_SCENE_NODE_RENDER_PASS pass)
 {
 	m_driver->setTransform(video::ETS_VIEW, light.getFutureViewMatrix());
 	m_driver->setTransform(video::ETS_PROJECTION, light.getFutureProjectionMatrix());
@@ -402,7 +397,7 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
 
-		map_node->renderMapShadows(m_driver, material, pass, section, total_sections);
+		map_node->renderMapShadows(m_driver, material, pass, m_current_section, TOTAL_SECTIONS);
 		break;
 	}
 }

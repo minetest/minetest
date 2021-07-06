@@ -655,9 +655,12 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	int high_bound = m_drawlist_shadow.size() / total_sections * (section + 1);
 
 	for (auto &i : m_drawlist_shadow) {
+		// only process specific part of the list & break early
 		++count;
-		if (count <= low_bound || count > high_bound)
+		if (count <= low_bound)
 			continue;
+		if (count > high_bound)
+			break;
 
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
