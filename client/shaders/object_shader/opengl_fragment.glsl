@@ -330,7 +330,7 @@ const int PROTANOPIA = 1;
 const int DEUTERANOPIA = 2;
 const int TRITANOPIA = 3;
 
-const int blindnessType = TRITANOPIA; //example
+const int blindnessType = NONE; //example
 
 void blindnessFilter( out vec4 myoutput, in vec4 myinput )
 {
