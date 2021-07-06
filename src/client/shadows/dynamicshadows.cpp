@@ -95,6 +95,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	future_frustum.ProjOrthMat.buildProjectionMatrixOrthoLH(future_frustum.length,
 			future_frustum.length, -future_frustum.length,
 			future_frustum.length,false);
+	future_frustum.camera_offset = cam->getOffset();
 }
 
 DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
@@ -104,9 +105,9 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {}
 
-void DirectionalLight::update_frustum(const Camera *cam, Client *client)
+void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force)
 {
-	if (dirty)
+	if (dirty && !force)
 		return;
 
 	float zNear = cam->getCameraNode()->getNearValue();
@@ -124,6 +125,24 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client)
 			getPosition(), getDirection(), future_frustum.length);
 	should_update_map_shadow = true;
 	dirty = true;
+
+	// when camera offset changes, adjust the current frustum view matrix to avoid flicker
+	v3s16 cam_offset = cam->getOffset();
+	if (cam_offset != shadow_frustum.camera_offset) {
+		v3f rotated_offset;
+		shadow_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - shadow_frustum.camera_offset, BS));
+		shadow_frustum.ViewMat.setTranslation(shadow_frustum.ViewMat.getTranslation() + rotated_offset);
+		shadow_frustum.camera_offset = cam_offset;
+	}
+}
+
+void DirectionalLight::commitFrustum()
+{
+	if (!dirty)
+		return;
+
+	shadow_frustum = future_frustum;
+	dirty = false;
 }
 
 void DirectionalLight::setDirection(v3f dir)

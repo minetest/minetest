@@ -4062,7 +4062,7 @@ void Game::updateShadows()
 	shadow->getDirectionalLight().setDirection(sun_pos);
 	shadow->setTimeOfDay(in_timeofday);
 
-	shadow->getDirectionalLight().update_frustum(camera, client);
+	shadow->getDirectionalLight().update_frustum(camera, client, m_camera_offset_changed);
 }
 
 /****************************************************************************

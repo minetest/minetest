@@ -34,6 +34,7 @@ struct shadowFrustum
 	core::matrix4 ProjOrthMat;
 	core::matrix4 ViewMat;
 	v3f position;
+	v3s16 camera_offset;
 };
 
 class DirectionalLight
@@ -47,7 +48,7 @@ public:
 
 	//DISABLE_CLASS_COPY(DirectionalLight)
 
-	void update_frustum(const Camera *cam, Client *client);
+	void update_frustum(const Camera *cam, Client *client, bool force = false);
 
 	// when set direction is updated to negative normalized(direction)
 	void setDirection(v3f dir);
@@ -90,14 +91,7 @@ public:
 
 	bool should_update_map_shadow{true};
 
-	void commitFrustum()
-	{
-		if (!dirty)
-			return;
-
-		shadow_frustum = future_frustum;
-		dirty = false;
-	}
+	void commitFrustum();
 
 private:
 	void createSplitMatrices(const Camera *cam);
@@ -111,5 +105,5 @@ private:
 	v3f direction{0};
 	shadowFrustum shadow_frustum;
 	shadowFrustum future_frustum;
-	bool dirty = false;
+	bool dirty{false};
 };
