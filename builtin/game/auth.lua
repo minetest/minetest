@@ -87,6 +87,10 @@ core.builtin_auth_handler = {
 					core.settings:get("default_password")))
 		end
 
+		auth_entry.privileges = privileges
+
+		core_auth.save(auth_entry)
+
 		-- Run grant callbacks
 		for priv, _ in pairs(privileges) do
 			if not auth_entry.privileges[priv] then
@@ -100,9 +104,6 @@ core.builtin_auth_handler = {
 				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end
 		end
-
-		auth_entry.privileges = privileges
-		core_auth.save(auth_entry)
 		core.notify_authentication_modified(name)
 	end,
 	reload = function()

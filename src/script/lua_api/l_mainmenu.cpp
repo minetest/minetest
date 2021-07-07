@@ -34,9 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverlist.h"
 #include "mapgen/mapgen.h"
 #include "settings.h"
-
-#include <IFileArchive.h>
-#include <IFileSystem.h>
+#include "client/client.h"
 #include "client/renderingengine.h"
 #include "network/networkprotocol.h"
 
@@ -399,7 +397,8 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(RenderingEngine::get_gui_env(),
+	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(
+			engine->m_rendering_engine->get_gui_env(),
 			engine->m_parent,
 			-1,
 			engine->m_menumanager,
@@ -629,75 +628,9 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
 
 	if (ModApiMainMenu::mayModifyPath(absolute_destination)) {
+		auto rendering_engine = getGuiEngine(L)->m_rendering_engine;
 		fs::CreateAllDirs(absolute_destination);
-
-		io::IFileSystem *fs = RenderingEngine::get_filesystem();
-
-		if (!fs->addFileArchive(zipfile, false, false, io::EFAT_ZIP)) {
-			lua_pushboolean(L,false);
-			return 1;
-		}
-
-		sanity_check(fs->getFileArchiveCount() > 0);
-
-		/**********************************************************************/
-		/* WARNING this is not threadsafe!!                                   */
-		/**********************************************************************/
-		io::IFileArchive* opened_zip =
-			fs->getFileArchive(fs->getFileArchiveCount()-1);
-
-		const io::IFileList* files_in_zip = opened_zip->getFileList();
-
-		unsigned int number_of_files = files_in_zip->getFileCount();
-
-		for (unsigned int i=0; i < number_of_files; i++) {
-			std::string fullpath = destination;
-			fullpath += DIR_DELIM;
-			fullpath += files_in_zip->getFullFileName(i).c_str();
-			std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
-
-			if (!files_in_zip->isDirectory(i)) {
-				if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir)) {
-					fs->removeFileArchive(fs->getFileArchiveCount()-1);
-					lua_pushboolean(L,false);
-					return 1;
-				}
-
-				io::IReadFile* toread = opened_zip->createAndOpenFile(i);
-
-				FILE *targetfile = fopen(fullpath.c_str(),"wb");
-
-				if (targetfile == NULL) {
-					fs->removeFileArchive(fs->getFileArchiveCount()-1);
-					lua_pushboolean(L,false);
-					return 1;
-				}
-
-				char read_buffer[1024];
-				long total_read = 0;
-
-				while (total_read < toread->getSize()) {
-
-					unsigned int bytes_read =
-							toread->read(read_buffer,sizeof(read_buffer));
-					if ((bytes_read == 0 ) ||
-						(fwrite(read_buffer, 1, bytes_read, targetfile) != bytes_read))
-					{
-						fclose(targetfile);
-						fs->removeFileArchive(fs->getFileArchiveCount()-1);
-						lua_pushboolean(L,false);
-						return 1;
-					}
-					total_read += bytes_read;
-				}
-
-				fclose(targetfile);
-			}
-
-		}
-
-		fs->removeFileArchive(fs->getFileArchiveCount()-1);
-		lua_pushboolean(L,true);
+		lua_pushboolean(L, fs::extractZipFile(rendering_engine->get_filesystem(), zipfile, destination));
 		return 1;
 	}
 
@@ -716,21 +649,24 @@ int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 }
 
 /******************************************************************************/
-bool ModApiMainMenu::mayModifyPath(const std::string &path)
+bool ModApiMainMenu::mayModifyPath(std::string path)
 {
+	path = fs::RemoveRelativePathComponents(path);
+
 	if (fs::PathStartsWith(path, fs::TempPath()))
 		return true;
 
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "games")))
-		return true;
+	std::string path_user = fs::RemoveRelativePathComponents(porting::path_user);
 
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "mods")))
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "client"))
 		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "textures")))
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "games"))
 		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "worlds")))
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "mods"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "textures"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "worlds"))
 		return true;
 
 	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_cache)))
@@ -760,7 +696,7 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 	bool is_file_select = readParam<bool>(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
-		new GUIFileSelectMenu(RenderingEngine::get_gui_env(),
+		new GUIFileSelectMenu(engine->m_rendering_engine->get_gui_env(),
 				engine->m_parent,
 				-1,
 				engine->m_menumanager,
@@ -817,28 +753,6 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_video_modes(lua_State *L)
-{
-	std::vector<core::vector3d<u32> > videomodes
-		= RenderingEngine::getSupportedVideoModes();
-
-	lua_newtable(L);
-	for (u32 i = 0; i != videomodes.size(); i++) {
-		lua_newtable(L);
-		lua_pushnumber(L, videomodes[i].X);
-		lua_setfield(L, -2, "w");
-		lua_pushnumber(L, videomodes[i].Y);
-		lua_setfield(L, -2, "h");
-		lua_pushnumber(L, videomodes[i].Z);
-		lua_setfield(L, -2, "depth");
-
-		lua_rawseti(L, -2, i + 1);
-	}
-
-	return 1;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_gettext(lua_State *L)
 {
 	std::string text = strgettext(std::string(luaL_checkstring(L, 1)));
@@ -856,7 +770,7 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 	lua_pushnumber(L,RenderingEngine::getDisplayDensity());
 	lua_settable(L, top);
 
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	lua_pushstring(L,"window_width");
 	lua_pushnumber(L, window_size.X);
 	lua_settable(L, top);
@@ -959,7 +873,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(download_file);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
-	API_FCT(get_video_modes);
 	API_FCT(get_screen_info);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);

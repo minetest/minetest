@@ -60,18 +60,16 @@ static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
-MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output)
+MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
+	scene::IMeshManipulator *mm):
+	data(input),
+	collector(output),
+	nodedef(data->m_client->ndef()),
+	meshmanip(mm),
+	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE)
 {
-	data      = input;
-	collector = output;
-
-	nodedef   = data->m_client->ndef();
-	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
-
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
-
-	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
 
 void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, bool special)

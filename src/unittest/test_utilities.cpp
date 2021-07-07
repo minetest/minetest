@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include "util/base64.h"
 
 class TestUtilities : public TestBase {
 public:
@@ -56,6 +57,7 @@ public:
 	void testMyround();
 	void testStringJoin();
 	void testEulerConversion();
+	void testBase64();
 };
 
 static TestUtilities g_test_instance;
@@ -87,6 +89,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testMyround);
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
+	TEST(testBase64);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -536,4 +539,94 @@ void TestUtilities::testEulerConversion()
 	// ... however the rotation matrix is the same for both
 	setPitchYawRoll(m2, v2);
 	UASSERT(within(m1, m2, tolL));
+}
+
+void TestUtilities::testBase64()
+{
+	// Test character set
+	UASSERT(base64_is_valid("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+/") == true);
+	UASSERT(base64_is_valid("/+9876543210"
+		"zyxwvutsrqponmlkjihgfedcba"
+		"ZYXWVUTSRQPONMLKJIHGFEDCBA") == true);
+	UASSERT(base64_is_valid("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+.") == false);
+	UASSERT(base64_is_valid("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789 /") == false);
+
+	// Test empty string
+	UASSERT(base64_is_valid("") == true);
+
+	// Test different lengths, with and without padding,
+	// with correct and incorrect padding
+	UASSERT(base64_is_valid("A") == false);
+	UASSERT(base64_is_valid("AA") == true);
+	UASSERT(base64_is_valid("AAA") == true);
+	UASSERT(base64_is_valid("AAAA") == true);
+	UASSERT(base64_is_valid("AAAAA") == false);
+	UASSERT(base64_is_valid("AAAAAA") == true);
+	UASSERT(base64_is_valid("AAAAAAA") == true);
+	UASSERT(base64_is_valid("AAAAAAAA") == true);
+	UASSERT(base64_is_valid("A===") == false);
+	UASSERT(base64_is_valid("AA==") == true);
+	UASSERT(base64_is_valid("AAA=") == true);
+	UASSERT(base64_is_valid("AAAA") == true);
+	UASSERT(base64_is_valid("AAAA====") == false);
+	UASSERT(base64_is_valid("AAAAA===") == false);
+	UASSERT(base64_is_valid("AAAAAA==") == true);
+	UASSERT(base64_is_valid("AAAAAAA=") == true);
+	UASSERT(base64_is_valid("AAAAAAA==") == false);
+	UASSERT(base64_is_valid("AAAAAAA===") == false);
+	UASSERT(base64_is_valid("AAAAAAA====") == false);
+	UASSERT(base64_is_valid("AAAAAAAA") == true);
+	UASSERT(base64_is_valid("AAAAAAAA=") == false);
+	UASSERT(base64_is_valid("AAAAAAAA==") == false);
+	UASSERT(base64_is_valid("AAAAAAAA===") == false);
+	UASSERT(base64_is_valid("AAAAAAAA====") == false);
+
+	// Test if canonical encoding
+	// Last character limitations, length % 4 == 3
+	UASSERT(base64_is_valid("AAB") == false);
+	UASSERT(base64_is_valid("AAE") == true);
+	UASSERT(base64_is_valid("AAQ") == true);
+	UASSERT(base64_is_valid("AAB=") == false);
+	UASSERT(base64_is_valid("AAE=") == true);
+	UASSERT(base64_is_valid("AAQ=") == true);
+	UASSERT(base64_is_valid("AAAAAAB=") == false);
+	UASSERT(base64_is_valid("AAAAAAE=") == true);
+	UASSERT(base64_is_valid("AAAAAAQ=") == true);
+	// Last character limitations, length % 4 == 2
+	UASSERT(base64_is_valid("AB") == false);
+	UASSERT(base64_is_valid("AE") == false);
+	UASSERT(base64_is_valid("AQ") == true);
+	UASSERT(base64_is_valid("AB==") == false);
+	UASSERT(base64_is_valid("AE==") == false);
+	UASSERT(base64_is_valid("AQ==") == true);
+	UASSERT(base64_is_valid("AAAAAB==") == false);
+	UASSERT(base64_is_valid("AAAAAE==") == false);
+	UASSERT(base64_is_valid("AAAAAQ==") == true);
+
+	// Extraneous character present
+	UASSERT(base64_is_valid(".") == false);
+	UASSERT(base64_is_valid("A.") == false);
+	UASSERT(base64_is_valid("AA.") == false);
+	UASSERT(base64_is_valid("AAA.") == false);
+	UASSERT(base64_is_valid("AAAA.") == false);
+	UASSERT(base64_is_valid("AAAAA.") == false);
+	UASSERT(base64_is_valid("A.A") == false);
+	UASSERT(base64_is_valid("AA.A") == false);
+	UASSERT(base64_is_valid("AAA.A") == false);
+	UASSERT(base64_is_valid("AAAA.A") == false);
+	UASSERT(base64_is_valid("AAAAA.A") == false);
+	UASSERT(base64_is_valid("\xE1""AAA") == false);
+
+	// Padding in wrong position
+	UASSERT(base64_is_valid("A=A") == false);
+	UASSERT(base64_is_valid("AA=A") == false);
+	UASSERT(base64_is_valid("AAA=A") == false);
+	UASSERT(base64_is_valid("AAAA=A") == false);
+	UASSERT(base64_is_valid("AAAAA=A") == false);
 }

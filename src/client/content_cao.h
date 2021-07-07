@@ -236,7 +236,7 @@ public:
 
 	void removeFromScene(bool permanent);
 
-	void addToScene(ITextureSource *tsrc);
+	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 
 	inline void expireVisuals()
 	{

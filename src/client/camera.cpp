@@ -43,11 +43,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
-Camera::Camera(MapDrawControl &draw_control, Client *client):
+Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
 	m_client(client)
 {
-	scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
+	auto smgr = rendering_engine->get_scene_manager();
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
@@ -541,7 +541,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, 160.0f);
 
 	// FOV and aspect ratio
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)

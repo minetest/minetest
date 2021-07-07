@@ -35,6 +35,17 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	if (m_scrollback == 0)
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
+
+	m_cache_clickable_chat_weblinks = false;
+	// Curses mode cannot access g_settings here
+	if (g_settings != nullptr) {
+		m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+		if (m_cache_clickable_chat_weblinks) {
+			std::string colorval = g_settings->get("chat_weblink_color");
+			parseColorString(colorval, m_cache_chat_weblink_color, false, 255);
+			m_cache_chat_weblink_color.setAlpha(255);
+		}
+	}
 }
 
 void ChatBuffer::addLine(const std::wstring &name, const std::wstring &text)
@@ -263,78 +274,144 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 	//EnrichedString line_text(line.text);
 
 	next_line.first = true;
-	bool text_processing = false;
+	// Set/use forced newline after the last frag in each line
+	bool mark_newline = false;
 
 	// Produce fragments and layout them into lines
-	while (!next_frags.empty() || in_pos < line.text.size())
-	{
+	while (!next_frags.empty() || in_pos < line.text.size()) {
+		mark_newline = false; // now using this to USE line-end frag
+
 		// Layout fragments into lines
-		while (!next_frags.empty())
-		{
+		while (!next_frags.empty()) {
 			ChatFormattedFragment& frag = next_frags[0];
-			if (frag.text.size() <= cols - out_column)
-			{
+
+			// Force newline after this frag, if marked
+			if (frag.column == INT_MAX)
+				mark_newline = true;
+
+			if (frag.text.size() <= cols - out_column) {
 				// Fragment fits into current line
 				frag.column = out_column;
 				next_line.fragments.push_back(frag);
 				out_column += frag.text.size();
 				next_frags.erase(next_frags.begin());
-			}
-			else
-			{
+			} else {
 				// Fragment does not fit into current line
 				// So split it up
 				temp_frag.text = frag.text.substr(0, cols - out_column);
 				temp_frag.column = out_column;
-				//temp_frag.bold = frag.bold;
+				temp_frag.weblink = frag.weblink;
+
 				next_line.fragments.push_back(temp_frag);
 				frag.text = frag.text.substr(cols - out_column);
+				frag.column = 0;
 				out_column = cols;
 			}
-			if (out_column == cols || text_processing)
-			{
+
+			if (out_column == cols || mark_newline) {
 				// End the current line
 				destination.push_back(next_line);
 				num_added++;
 				next_line.fragments.clear();
 				next_line.first = false;
 
-				out_column = text_processing ? hanging_indentation : 0;
+				out_column = hanging_indentation;
+				mark_newline = false;
 			}
 		}
 
-		// Produce fragment
-		if (in_pos < line.text.size())
-		{
-			u32 remaining_in_input = line.text.size() - in_pos;
-			u32 remaining_in_output = cols - out_column;
+		// Produce fragment(s) for next formatted line
+		if (!(in_pos < line.text.size()))
+			continue;
 
+		const std::wstring &linestring = line.text.getString();
+		u32 remaining_in_output = cols - out_column;
+		size_t http_pos = std::wstring::npos;
+		mark_newline = false;  // now using this to SET line-end frag
+
+		// Construct all frags for next output line
+		while (!mark_newline) {
 			// Determine a fragment length <= the minimum of
 			// remaining_in_{in,out}put. Try to end the fragment
 			// on a word boundary.
-			u32 frag_length = 1, space_pos = 0;
+			u32 frag_length = 0, space_pos = 0;
+			u32 remaining_in_input = line.text.size() - in_pos;
+
+			if (m_cache_clickable_chat_weblinks) {
+				// Note: unsigned(-1) on fail
+				http_pos = linestring.find(L"https://", in_pos);
+				if (http_pos == std::wstring::npos)
+					http_pos = linestring.find(L"http://", in_pos);
+				if (http_pos != std::wstring::npos)
+					http_pos -= in_pos;
+			}
+
 			while (frag_length < remaining_in_input &&
-					frag_length < remaining_in_output)
-			{
-				if (iswspace(line.text.getString()[in_pos + frag_length]))
+					frag_length < remaining_in_output) {
+				if (iswspace(linestring[in_pos + frag_length]))
 					space_pos = frag_length;
 				++frag_length;
 			}
+
+			if (http_pos >= remaining_in_output) {
+				// Http not in range, grab until space or EOL, halt as normal.
+				// Note this works because (http_pos = npos) is unsigned(-1)
+
+				mark_newline = true;
+			} else if (http_pos == 0) {
+				// At http, grab ALL until FIRST whitespace or end marker. loop.
+				// If at end of string, next loop will be empty string to mark end of weblink.
+
+				frag_length = 6;  // Frag is at least "http://"
+
+				// Chars to mark end of weblink
+				// TODO? replace this with a safer (slower) regex whitelist?
+				static const std::wstring delim_chars = L"\'\");,";
+				wchar_t tempchar = linestring[in_pos+frag_length];
+				while (frag_length < remaining_in_input &&
+						!iswspace(tempchar) &&
+						delim_chars.find(tempchar) == std::wstring::npos) {
+					++frag_length;
+					tempchar = linestring[in_pos+frag_length];
+				}
+
+				space_pos = frag_length - 1;
+				// This frag may need to be force-split. That's ok, urls aren't "words"
+				if (frag_length >= remaining_in_output) {
+					mark_newline = true;
+				}
+			} else {
+				// Http in range, grab until http, loop
+
+				space_pos = http_pos - 1;
+				frag_length = http_pos;
+			}
+
+			// Include trailing space in current frag
 			if (space_pos != 0 && frag_length < remaining_in_input)
 				frag_length = space_pos + 1;
 
 			temp_frag.text = line.text.substr(in_pos, frag_length);
-			temp_frag.column = 0;
-			//temp_frag.bold = 0;
+			// A hack so this frag remembers mark_newline for the layout phase
+			temp_frag.column = mark_newline ? INT_MAX : 0;
+
+			if (http_pos == 0) {
+				// Discard color stuff from the source frag
+				temp_frag.text = EnrichedString(temp_frag.text.getString());
+				temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
+				// Set weblink in the frag meta
+				temp_frag.weblink = wide_to_utf8(temp_frag.text.getString());
+			} else {
+				temp_frag.weblink.clear();
+			}
 			next_frags.push_back(temp_frag);
 			in_pos += frag_length;
-			text_processing = true;
+			remaining_in_output -= std::min(frag_length, remaining_in_output);
 		}
 	}
 
 	// End the last line
-	if (num_added == 0 || !next_line.fragments.empty())
-	{
+	if (num_added == 0 || !next_line.fragments.empty()) {
 		destination.push_back(next_line);
 		num_added++;
 	}

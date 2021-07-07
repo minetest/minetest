@@ -29,6 +29,7 @@ public:
 	TestClientActiveObject() : ClientActiveObject(0, nullptr, nullptr) {}
 	~TestClientActiveObject() = default;
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_TEST; }
+	virtual void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr) {}
 };
 
 class TestClientActiveObjectMgr : public TestBase

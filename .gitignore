@@ -76,6 +76,7 @@ doc/mkdocs/docs/*.md
 doc/mkdocs/mkdocs.yml
 
 ## Build files
+build/
 CMakeFiles
 Makefile
 cmake_install.cmake
@@ -105,3 +106,6 @@ CMakeDoxy*
 compile_commands.json
 *.apk
 *.zip
+
+# Optional user provided library folder
+lib/irrlichtmt

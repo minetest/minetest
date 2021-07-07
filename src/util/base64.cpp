@@ -33,18 +33,39 @@ static const std::string base64_chars =
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
 
+static const std::string base64_chars_padding_1 = "AEIMQUYcgkosw048";
+static const std::string base64_chars_padding_2 = "AQgw";
 
 static inline bool is_base64(unsigned char c)
 {
-	return isalnum(c) || c == '+' || c == '/' || c == '=';
+	return (c >= '0' && c <= '9')
+			|| (c >= 'A' && c <= 'Z')
+			|| (c >= 'a' && c <= 'z')
+			|| c == '+' || c == '/';
 }
 
 bool base64_is_valid(std::string const& s)
 {
-	for (char i : s)
-		if (!is_base64(i))
+	size_t i = 0;
+	for (; i < s.size(); ++i)
+		if (!is_base64(s[i]))
+			break;
+	unsigned char padding = 3 - ((i + 3) % 4);
+	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == std::string::npos)
+			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == std::string::npos)
+			|| padding == 3)
+		return false;
+	int actual_padding = s.size() - i;
+	// omission of padding characters is allowed
+	if (actual_padding == 0)
+		return true;
+
+	// remaining characters (max. 2) may only be padding
+	for (; i < s.size(); ++i)
+		if (s[i] != '=')
 			return false;
-	return true;
+	// number of padding characters needs to match
+	return padding == actual_padding;
 }
 
 std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {

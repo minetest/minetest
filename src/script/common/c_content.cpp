@@ -1350,26 +1350,28 @@ void read_inventory_list(lua_State *L, int tableindex,
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
+
 	// If nil, delete list
 	if(lua_isnil(L, tableindex)){
 		inv->deleteList(name);
 		return;
 	}
-	// Otherwise set list
+
+	// Get Lua-specified items to insert into the list
 	std::vector<ItemStack> items = read_items(L, tableindex,srv);
-	int listsize = (forcesize != -1) ? forcesize : items.size();
+	size_t listsize = (forcesize >= 0) ? forcesize : items.size();
+
+	// Create or resize/clear list
 	InventoryList *invlist = inv->addList(name, listsize);
-	int index = 0;
-	for(std::vector<ItemStack>::const_iterator
-			i = items.begin(); i != items.end(); ++i){
-		if(forcesize != -1 && index == forcesize)
-			break;
-		invlist->changeItem(index, *i);
-		index++;
+	if (!invlist) {
+		luaL_error(L, "inventory list: cannot create list named '%s'", name);
+		return;
 	}
-	while(forcesize != -1 && index < forcesize){
-		invlist->deleteItem(index);
-		index++;
+
+	for (size_t i = 0; i < items.size(); ++i) {
+		if (i == listsize)
+			break; // Truncate provided list of items
+		invlist->changeItem(i, items[i]);
 	}
 }
 

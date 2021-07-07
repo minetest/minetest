@@ -491,7 +491,8 @@ video::ITexture *Minimap::getMinimapTexture()
 		// Want to use texture source, to : 1 find texture, 2 cache it
 		video::ITexture* texture = m_tsrc->getTexture(data->mode.texture);
 		video::IImage* image = driver->createImageFromData(
-			 texture->getColorFormat(), texture->getSize(), texture->lock(), true, false);
+			 texture->getColorFormat(), texture->getSize(),
+			 texture->lock(video::ETLM_READ_ONLY), true, false);
 		texture->unlock();
 
 		auto dim = image->getDimension();
@@ -576,7 +577,7 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 void Minimap::drawMinimap()
 {
 	// Non hud managed minimap drawing (legacy minimap)
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
+	v2u32 screensize = RenderingEngine::getWindowSize();
 	const u32 size = 0.25 * screensize.Y;
 
 	drawMinimap(core::rect<s32>(

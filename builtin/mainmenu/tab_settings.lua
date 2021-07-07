@@ -43,6 +43,14 @@ local labels = {
 		fgettext("2x"),
 		fgettext("4x"),
 		fgettext("8x")
+	},
+	shadow_levels = {
+		fgettext("Disabled"),
+		fgettext("Very Low"),
+		fgettext("Low"),
+		fgettext("Medium"),
+		fgettext("High"),
+		fgettext("Ultra High")
 	}
 }
 
@@ -66,6 +74,10 @@ local dd_options = {
 	antialiasing = {
 		table.concat(labels.antialiasing, ","),
 		{"0", "2", "4", "8"}
+	},
+	shadow_levels = {
+		table.concat(labels.shadow_levels, ","),
+		{ "0", "1", "2", "3", "4", "5" }
 	}
 }
 
@@ -106,6 +118,15 @@ local getSettingIndex = {
 		local antialiasing_setting = core.settings:get("fsaa")
 		for i = 1, #dd_options.antialiasing[2] do
 			if antialiasing_setting == dd_options.antialiasing[2][i] then
+				return i
+			end
+		end
+		return 1
+	end,
+	ShadowMapping = function()
+		local shadow_setting = core.settings:get("shadow_levels")
+		for i = 1, #dd_options.shadow_levels[2] do
+			if shadow_setting == dd_options.shadow_levels[2][i] then
 				return i
 			end
 		end
@@ -197,7 +218,10 @@ local function formspec(tabview, name, tabdata)
 			"checkbox[8.25,1.5;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
+					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"..
+			"label[8.25,3.0;" .. fgettext("Dynamic shadows: ") .. "]" ..
+			"dropdown[8.25,3.5;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
+					.. getSettingIndex.ShadowMapping() .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
@@ -207,7 +231,9 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,1.7;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
 			"label[8.38,2.2;" .. core.colorize("#888888",
-					fgettext("Waving Plants")) .. "]"
+					fgettext("Waving Plants")) .. "]"..
+			"label[8.38,2.7;" .. core.colorize("#888888",
+					fgettext("Dynamic shadows")) .. "]"
 	end
 
 	return tab_string
@@ -331,6 +357,34 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_touchthreshold"] then
 		core.settings:set("touchscreen_threshold", fields["dd_touchthreshold"])
 		ddhandled = true
+	end
+
+	for i = 1, #labels.shadow_levels do
+		if fields["dd_shadows"] == labels.shadow_levels[i] then
+			core.settings:set("shadow_levels", dd_options.shadow_levels[2][i])
+			ddhandled = true
+		end
+	end
+
+	if fields["dd_shadows"] == labels.shadow_levels[1] then
+		core.settings:set("enable_dynamic_shadows", "false")
+	else
+		local shadow_presets = {
+			[2] = { 80,  512,  "true", 0, "false" },
+			[3] = { 120, 1024, "true", 1, "false" },
+			[4] = { 350, 2048, "true", 1, "false" },
+			[5] = { 350, 2048, "true", 2,  "true" },
+			[6] = { 450, 4096, "true", 2,  "true" },
+		}
+		local s = shadow_presets[table.indexof(labels.shadow_levels, fields["dd_shadows"])]
+		if s then
+			core.settings:set("enable_dynamic_shadows", "true")
+			core.settings:set("shadow_map_max_distance", s[1])
+			core.settings:set("shadow_map_texture_size", s[2])
+			core.settings:set("shadow_map_texture_32bit", s[3])
+			core.settings:set("shadow_filters", s[4])
+			core.settings:set("shadow_map_color", s[5])
+		end
 	end
 
 	return ddhandled

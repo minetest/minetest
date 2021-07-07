@@ -342,8 +342,9 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 			(spec.mode == FM_SimpleMono) ? "mono_font_path" : "font_path");
 
 	size_t pos_dot = font_path.find_last_of('.');
-	std::string basename = font_path;
-	std::string ending = lowercase(font_path.substr(pos_dot));
+	std::string basename = font_path, ending;
+	if (pos_dot != std::string::npos)
+		ending = lowercase(font_path.substr(pos_dot));
 
 	if (ending == ".ttf") {
 		errorstream << "FontEngine: Found font \"" << font_path

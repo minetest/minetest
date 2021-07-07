@@ -6,5 +6,6 @@
 	<string name="not_granted">Required permission wasn\'t granted, Minetest can\'t run without it</string>
 	<string name="notification_title">Loading Minetest</string>
 	<string name="notification_description">Less than 1 minute&#8230;</string>
+	<string name="ime_dialog_done">Done</string>
 
 </resources>

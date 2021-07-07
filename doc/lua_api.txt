@@ -1112,8 +1112,20 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * Invisible, uses no texture.
 * `liquid`
     * The cubic source node for a liquid.
+    * Faces bordering to the same node are never rendered.
+    * Connects to node specified in `liquid_alternative_flowing`.
+    * Use `backface_culling = false` for the tiles you want to make
+      visible when inside the node.
 * `flowingliquid`
     * The flowing version of a liquid, appears with various heights and slopes.
+    * Faces bordering to the same node are never rendered.
+    * Connects to node specified in `liquid_alternative_source`.
+    * Node textures are defined with `special_tiles` where the first tile
+      is for the top and bottom faces and the second tile is for the side
+      faces.
+    * `tiles` is used for the item/inventory/wield image rendering.
+    * Use `backface_culling = false` for the special tiles you want to make
+      visible when inside the node
 * `glasslike`
     * Often used for partially-transparent nodes.
     * Only external sides of textures are visible.
@@ -1140,14 +1152,20 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       used to compensate for how `glasslike` reduces visual thickness.
 * `torchlike`
     * A single vertical texture.
-    * If placed on top of a node, uses the first texture specified in `tiles`.
-    * If placed against the underside of a node, uses the second texture
-      specified in `tiles`.
-    * If placed on the side of a node, uses the third texture specified in
-      `tiles` and is perpendicular to that node.
+    * If `paramtype2="[color]wallmounted":
+        * If placed on top of a node, uses the first texture specified in `tiles`.
+        * If placed against the underside of a node, uses the second texture
+          specified in `tiles`.
+        * If placed on the side of a node, uses the third texture specified in
+          `tiles` and is perpendicular to that node.
+    * If `paramtype2="none"`:
+        * Will be rendered as if placed on top of a node (see
+          above) and only the first texture is used.
 * `signlike`
     * A single texture parallel to, and mounted against, the top, underside or
       side of a node.
+    * If `paramtype2="[color]wallmounted", it rotates according to `param2`
+    * If `paramtype2="none"`, it will always be on the floor.
 * `plantlike`
     * Two vertical and diagonal textures at right-angles to each other.
     * See `paramtype2 = "meshoptions"` above for other options.
@@ -1487,6 +1505,9 @@ Position/vector
 
     {x=num, y=num, z=num}
 
+    Note: it is highly recommended to construct a vector using the helper function:
+    vector.new(num, num, num)
+
 For helper functions see [Spatial Vectors].
 
 `pointed_thing`
@@ -1730,7 +1751,15 @@ to games.
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
   or if their feet are in the node. Note: not supported for `new_move = false`
-* `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
+* `fall_damage_add_percent`: modifies the fall damage suffered when hitting
+  the top of this node. There's also an armor group with the same name.
+  The final player damage is determined by the following formula:
+    damage =
+      collision speed
+      * ((node_fall_damage_add_percent   + 100) / 100) -- node group
+      * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
+      - (14)                                           -- constant tolerance
+  Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids
 * `level`: Can be used to give an additional sense of progression in the game.
@@ -1750,12 +1779,15 @@ to games.
   `"toolrepair"` crafting recipe
 
 
-### `ObjectRef` groups
+### `ObjectRef` armor groups
 
 * `immortal`: Skips all damage and breath handling for an object. This group
   will also hide the integrated HUD status bars for players. It is
   automatically set to all players when damage is disabled on the server and
   cannot be reset (subject to change).
+* `fall_damage_add_percent`: Modifies the fall damage suffered by players
+  when they hit the ground. It is analog to the node group with the same
+  name. See the node group above for the exact calculation.
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
@@ -2948,6 +2980,9 @@ Some tags can enclose text, they open with `<tagname>` and close with `</tagname
 Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs. Attribute values should not be quoted.
 
+If you want to insert a literal greater-than sign or a backslash into the text,
+you must escape it by preceding it with a backslash.
+
 These are the technically basic tags but see below for usual tags. Base tags are:
 
 `<style color=... font=... size=...>...</style>`
@@ -3083,9 +3118,8 @@ Colors
 
 Named colors are also supported and are equivalent to
 [CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
-To specify the value of the alpha channel, append `#AA` to the end of the color
-name (e.g. `colorname#08`). For named colors the hexadecimal string
-representing the alpha value must (always) be two hexadecimal digits.
+To specify the value of the alpha channel, append `#A` or `#AA` to the end of
+the color name (e.g. `colorname#08`).
 
 `ColorSpec`
 -----------
@@ -3140,15 +3174,35 @@ no particular point.
 
 Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
+However, one should *never* create a vector manually as above, such misbehavior
+is deprecated. The vector helpers set a metatable for the created vectors which
+allows indexing with numbers, calling functions directly on vectors and using
+operators (like `+`). Furthermore, the internal implementation might change in
+the future.
+Old code might still use vectors without metatables, be aware of this!
+
+All these forms of addressing a vector `v` are valid:
+`v[1]`, `v[3]`, `v.x`, `v[1] = 42`, `v.y = 13`
+
+Where `v` is a vector and `foo` stands for any function name, `v:foo(...)` does
+the same as `vector.foo(v, ...)`, apart from deprecated functionality.
+
+The metatable that is used for vectors can be accessed via `vector.metatable`.
+Do not modify it!
+
+All `vector.*` functions allow vectors `{x = X, y = Y, z = Z}` without metatables.
+Returned vectors always have a metatable set.
 
 For the following functions, `v`, `v1`, `v2` are vectors,
 `p1`, `p2` are positions,
-`s` is a scalar (a number):
+`s` is a scalar (a number),
+vectors are written like this: `(x, y, z)`:
 
-* `vector.new(a[, b, c])`:
+* `vector.new([a[, b, c]])`:
     * Returns a vector.
     * A copy of `a` if `a` is a vector.
-    * `{x = a, y = b, z = c}`, if all of `a`, `b`, `c` are defined numbers.
+    * `(a, b, c)`, if all of `a`, `b`, `c` are defined numbers.
+    * `(0, 0, 0)`, if no arguments are given.
 * `vector.from_string(s[, init])`:
     * Returns `v, np`, where `v` is a vector read from the given string `s` and
       `np` is the next position in the string after the vector.
@@ -3161,14 +3215,14 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns a string of the form `"(x, y, z)"`.
 * `vector.direction(p1, p2)`:
     * Returns a vector of length 1 with direction `p1` to `p2`.
-    * If `p1` and `p2` are identical, returns `{x = 0, y = 0, z = 0}`.
+    * If `p1` and `p2` are identical, returns `(0, 0, 0)`.
 * `vector.distance(p1, p2)`:
     * Returns zero or a positive number, the distance between `p1` and `p2`.
 * `vector.length(v)`:
     * Returns zero or a positive number, the length of vector `v`.
 * `vector.normalize(v)`:
     * Returns a vector of length 1 with direction of vector `v`.
-    * If `v` has zero length, returns `{x = 0, y = 0, z = 0}`.
+    * If `v` has zero length, returns `(0, 0, 0)`.
 * `vector.floor(v)`:
     * Returns a vector, each dimension rounded down.
 * `vector.round(v)`:
@@ -3188,7 +3242,11 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 * `vector.cross(v1, v2)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.offset(v, x, y, z)`:
-    * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.
+    * Returns the sum of the vectors `v` and `(x, y, z)`.
+* `vector.check()`:
+    * Returns a boolean value indicating whether `v` is a real vector, eg. created
+      by a `vector.*` function.
+    * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -3207,14 +3265,30 @@ For the following functions `x` can be either a vector or a number:
     * Returns a scaled vector.
     * Deprecated: If `s` is a vector: Returns the Schur quotient.
 
+Operators can be used if all of the involved vectors have metatables:
+* `v1 == v2`:
+    * Returns whether `v1` and `v2` are identical.
+* `-v`:
+    * Returns the additive inverse of v.
+* `v1 + v2`:
+    * Returns the sum of both vectors.
+    * Note: `+` can not be used together with scalars.
+* `v1 - v2`:
+    * Returns the difference of `v1` subtracted by `v2`.
+    * Note: `-` can not be used together with scalars.
+* `v * s` or `s * v`:
+    * Returns `v` scaled by `s`.
+* `v / s`:
+    * Returns `v` scaled by `1 / s`.
+
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
 angles in radians.
 
 * `vector.rotate(v, r)`:
     * Applies the rotation `r` to `v` and returns the result.
-    * `vector.rotate({x = 0, y = 0, z = 1}, r)` and
-      `vector.rotate({x = 0, y = 1, z = 0}, r)` return vectors pointing
+    * `vector.rotate(vector.new(0, 0, 1), r)` and
+      `vector.rotate(vector.new(0, 1, 0), r)` return vectors pointing
       forward and up relative to an entity's rotation `r`.
 * `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
@@ -4413,6 +4487,8 @@ Utilities
           -- degrotate param2 rotates in units of 1.5° instead of 2°
           -- thus changing the range of values from 0-179 to 0-240 (5.5.0)
           degrotate_240_steps = true,
+          -- ABM supports min_y and max_y fields in definition (5.5.0)
+          abm_min_max_y = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4472,6 +4548,9 @@ Utilities
 * `minetest.sha1(data, [raw])`: returns the sha1 hash of data
     * `data`: string of data to hash
     * `raw`: return raw bytes instead of hex digits, default: false
+* `minetest.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
+  ColorString. If the ColorSpec is invalid, returns `nil`.
+    * `colorspec`: The ColorSpec to convert
 
 Logging
 -------
@@ -4916,7 +4995,7 @@ Environment access
     * Punch node with the same effects that a player would cause
 * `minetest.spawn_falling_node(pos)`
     * Change node into falling node
-    * Returns `true` if successful, `false` on failure
+    * Returns `true` and the ObjectRef of the spawned entity if successful, `false` on failure
 
 * `minetest.find_nodes_with_meta(pos1, pos2)`
     * Get a table of positions of nodes that have metadata within a region
@@ -5742,7 +5821,9 @@ Misc.
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string or nil for invalid base64
+* `minetest.decode_base64(string)`: returns string or nil on failure
+    * Padding characters are only supported starting at version 5.4.0, where
+      5.5.0 and newer perform proper checks.
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returning `true` restricts the player `name` from modifying (i.e. digging,
@@ -5829,6 +5910,19 @@ Misc.
     * stops forceloading the position `pos`
     * If `transient` is `false` or absent, frees a persistent forceload.
       If `true`, frees a transient forceload.
+
+* `minetest.compare_block_status(pos, condition)`
+    * Checks whether the mapblock at positition `pos` is in the wanted condition.
+    * `condition` may be one of the following values:
+        * `"unknown"`: not in memory
+        * `"emerging"`: in the queue for loading from disk or generating
+        * `"loaded"`: in memory but inactive (no ABMs are executed)
+        * `"active"`: in memory and active
+        * Other values are reserved for future functionality extensions
+    * Return value, the comparison status:
+        * `false`: Mapblock does not fulfil the wanted condition
+        * `true`: Mapblock meets the requirement
+        * `nil`: Unsupported `condition` value
 
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the
@@ -6283,6 +6377,8 @@ object you are working with still exists.
       Default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
        should appear in first person. Default `false`.
+    * This command may fail silently (do nothing) when it would result
+      in circular attachments.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible,
     or nil if it isn't attached.
 * `get_children()`: returns a list of ObjectRefs that are attached to the
@@ -7096,6 +7192,11 @@ Used by `minetest.register_abm`.
         chance = 1,
         -- Chance of triggering `action` per-node per-interval is 1.0 / this
         -- value
+        
+        min_y = -32768,
+        max_y = 32767,
+        -- min and max height levels where ABM will be processed
+        -- can be used to reduce CPU usage
 
         catch_up = true,
         -- If true, catch-up behaviour is enabled: The `chance` value is
@@ -7434,7 +7535,16 @@ Used by `minetest.register_node`.
         -- If true, liquids flow into and replace this node.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
-        liquidtype = "none",  -- "none" / "source" / "flowing"
+        liquidtype = "none",  -- specifies liquid physics
+        -- * "none":    no liquid physics
+        -- * "source":  spawns flowing liquid nodes at all 4 sides and below;
+        --              recommended drawtype: "liquid".
+        -- * "flowing": spawned from source, spawns more flowing liquid nodes
+        --              around it until `liquid_range` is reached;
+        --              will drain out without a source;
+        --              recommended drawtype: "flowingliquid".
+        -- If it's "source" or "flowing" and `liquid_range > 0`, then
+        -- both `liquid_alternative_*` fields must be specified
 
         liquid_alternative_flowing = "",  -- Flowing version of source liquid
 
@@ -7457,7 +7567,10 @@ Used by `minetest.register_node`.
         -- `minetest.set_node_level` and `minetest.add_node_level`.
 		-- Values above 124 might causes collision detection issues.
 
-        liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
+        liquid_range = 8,
+        -- Maximum distance that flowing liquid nodes can spread around
+        -- source on flat land;
+        -- maximum = 8; set to 0 to disable liquid flow
 
         drowning = 0,
         -- Player will take this amount of damage if no bubbles are left

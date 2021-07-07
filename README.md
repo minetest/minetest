@@ -133,8 +133,8 @@ Compiling
 | Dependency | Version | Commentary |
 |------------|---------|------------|
 | GCC        | 4.9+    | Can be replaced with Clang 3.4+ |
-| CMake      | 2.6+    |            |
-| Irrlicht   | -       | Custom version required, see https://github.com/minetest/irrlicht |
+| CMake      | 3.5+    |            |
+| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | SQLite3    | 3.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
@@ -177,6 +177,10 @@ Download minetest_game (otherwise only the "Development Test" game is available)
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
+Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
+
+    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+
 Download source, without using Git:
 
     wget https://github.com/minetest/minetest/archive/master.tar.gz
@@ -189,6 +193,14 @@ Download minetest_game, without using Git:
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
     tar xf master.tar.gz
     mv minetest_game-master minetest_game
+    cd ..
+
+Download IrrlichtMt, without using Git:
+
+    cd lib/
+    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
+    tar xf master.tar.gz
+    mv irrlicht-master irrlichtmt
     cd ..
 
 #### Build
@@ -209,7 +221,7 @@ Run it:
 - You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
   - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to have the Irrlicht library installed.
+- If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
 
 ### CMake options
@@ -229,7 +241,7 @@ General options and their default values:
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
     ENABLE_FREETYPE=ON         - Build with FreeType2; Allows using TTF fonts
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
-    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by Irrlicht)
+    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by IrrlichtMt)
     ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend

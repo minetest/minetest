@@ -87,7 +87,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Irrlicht
 ---------------
 
-This program uses the Irrlicht Engine. http://irrlicht.sourceforge.net/
+This program uses IrrlichtMt, Minetest's fork of
+the Irrlicht Engine. http://irrlicht.sourceforge.net/
 
  The Irrlicht Engine License
 

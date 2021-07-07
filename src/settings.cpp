@@ -33,35 +33,90 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <algorithm>
 
-Settings *g_settings = nullptr; // Populated in main()
+Settings *g_settings = nullptr;
+static SettingsHierarchy g_hierarchy;
 std::string g_settings_path;
 
-Settings *Settings::s_layers[SL_TOTAL_COUNT] = {0}; // Zeroed by compiler
 std::unordered_map<std::string, const FlagDesc *> Settings::s_flags;
 
+/* Settings hierarchy implementation */
+
+SettingsHierarchy::SettingsHierarchy(Settings *fallback)
+{
+	layers.push_back(fallback);
+}
+
+
+Settings *SettingsHierarchy::getLayer(int layer) const
+{
+	if (layer < 0 || layer >= layers.size())
+		throw BaseException("Invalid settings layer");
+	return layers[layer];
+}
+
+
+Settings *SettingsHierarchy::getParent(int layer) const
+{
+	assert(layer >= 0 && layer < layers.size());
+	// iterate towards the origin (0) to find the next fallback layer
+	for (int i = layer - 1; i >= 0; --i) {
+		if (layers[i])
+			return layers[i];
+	}
+
+	return nullptr;
+}
+
+
+void SettingsHierarchy::onLayerCreated(int layer, Settings *obj)
+{
+	if (layer < 0)
+		throw BaseException("Invalid settings layer");
+	if (layers.size() < layer+1)
+		layers.resize(layer+1);
+
+	Settings *&pos = layers[layer];
+	if (pos)
+		throw BaseException("Setting layer " + itos(layer) + " already exists");
+
+	pos = obj;
+	// This feels bad
+	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
+		g_settings = obj;
+}
+
+
+void SettingsHierarchy::onLayerRemoved(int layer)
+{
+	assert(layer >= 0 && layer < layers.size());
+	layers[layer] = nullptr;
+	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
+		g_settings = nullptr;
+}
+
+/* Settings implementation */
 
 Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 {
-	if ((int)sl < 0 || sl >= SL_TOTAL_COUNT)
-		throw BaseException("Invalid settings layer");
-
-	Settings *&pos = s_layers[(size_t)sl];
-	if (pos)
-		throw BaseException("Setting layer " + std::to_string(sl) + " already exists");
-
-	pos = new Settings(end_tag);
-	pos->m_settingslayer = sl;
-
-	if (sl == SL_GLOBAL)
-		g_settings = pos;
-	return pos;
+	return new Settings(end_tag, &g_hierarchy, (int)sl);
 }
 
 
 Settings *Settings::getLayer(SettingsLayer sl)
 {
 	sanity_check((int)sl >= 0 && sl < SL_TOTAL_COUNT);
-	return s_layers[(size_t)sl];
+	return g_hierarchy.layers[(int)sl];
+}
+
+
+Settings::Settings(const std::string &end_tag, SettingsHierarchy *h,
+		int settings_layer) :
+	m_end_tag(end_tag),
+	m_hierarchy(h),
+	m_settingslayer(settings_layer)
+{
+	if (m_hierarchy)
+		m_hierarchy->onLayerCreated(m_settingslayer, this);
 }
 
 
@@ -69,12 +124,8 @@ Settings::~Settings()
 {
 	MutexAutoLock lock(m_mutex);
 
-	if (m_settingslayer < SL_TOTAL_COUNT)
-		s_layers[(size_t)m_settingslayer] = nullptr;
-
-	// Compatibility
-	if (m_settingslayer == SL_GLOBAL)
-		g_settings = nullptr;
+	if (m_hierarchy)
+		m_hierarchy->onLayerRemoved(m_settingslayer);
 
 	clearNoLock();
 }
@@ -86,8 +137,8 @@ Settings & Settings::operator = (const Settings &other)
 		return *this;
 
 	// TODO: Avoid copying Settings objects. Make this private.
-	FATAL_ERROR_IF(m_settingslayer != SL_TOTAL_COUNT && other.m_settingslayer != SL_TOTAL_COUNT,
-		("Tried to copy unique Setting layer " + std::to_string(m_settingslayer)).c_str());
+	FATAL_ERROR_IF(m_hierarchy || other.m_hierarchy,
+		"Cannot copy or overwrite Settings object that belongs to a hierarchy");
 
 	MutexAutoLock lock(m_mutex);
 	MutexAutoLock lock2(other.m_mutex);
@@ -410,18 +461,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 
 Settings *Settings::getParent() const
 {
-	// If the Settings object is within the hierarchy structure,
-	// iterate towards the origin (0) to find the next fallback layer
-	if (m_settingslayer >= SL_TOTAL_COUNT)
-		return nullptr;
-
-	for (int i = (int)m_settingslayer - 1; i >= 0; --i) {
-		if (s_layers[i])
-			return s_layers[i];
-	}
-
-	// No parent
-	return nullptr;
+	return m_hierarchy ? m_hierarchy->getParent(m_settingslayer) : nullptr;
 }
 
 
@@ -823,6 +863,8 @@ bool Settings::set(const std::string &name, const std::string &value)
 // TODO: Remove this function
 bool Settings::setDefault(const std::string &name, const std::string &value)
 {
+	FATAL_ERROR_IF(m_hierarchy != &g_hierarchy, "setDefault is only valid on "
+		"global settings");
 	return getLayer(SL_DEFAULTS)->set(name, value);
 }
 

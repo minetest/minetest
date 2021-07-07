@@ -35,14 +35,6 @@ struct ItemStack;
 class Hud
 {
 public:
-	video::IVideoDriver *driver;
-	scene::ISceneManager *smgr;
-	gui::IGUIEnvironment *guienv;
-	Client *client;
-	LocalPlayer *player;
-	Inventory *inventory;
-	ITextureSource *tsrc;
-
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
 
@@ -55,9 +47,13 @@ public:
 
 	bool pointing_at_object = false;
 
-	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
+	Hud(Client *client, LocalPlayer *player,
 			Inventory *inventory);
 	~Hud();
+
+	void toggleBlockBounds();
+	void disableBlockBounds();
+	void drawBlockBounds();
 
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
@@ -103,6 +99,12 @@ private:
 	void drawCompassRotate(HudElement *e, video::ITexture *texture,
 			const core::rect<s32> &rect, int way);
 
+	Client *client = nullptr;
+	video::IVideoDriver *driver = nullptr;
+	LocalPlayer *player = nullptr;
+	Inventory *inventory = nullptr;
+	ITextureSource *tsrc = nullptr;
+
 	float m_hud_scaling; // cached minetest setting
 	float m_scale_factor;
 	v3s16 m_camera_offset;
@@ -124,6 +126,14 @@ private:
 	video::SMaterial m_selection_material;
 
 	scene::SMeshBuffer m_rotation_mesh_buffer;
+
+	enum BlockBoundsMode
+	{
+		BLOCK_BOUNDS_OFF,
+		BLOCK_BOUNDS_CURRENT,
+		BLOCK_BOUNDS_ALL,
+		BLOCK_BOUNDS_MAX
+	} m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 
 	enum
 	{

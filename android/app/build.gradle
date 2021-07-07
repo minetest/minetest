@@ -52,7 +52,7 @@ android {
 
 task prepareAssets() {
 	def assetsFolder = "build/assets"
-	def projRoot = "../../.."
+	def projRoot = "../.."
 	def gameToCopy = "minetest_game"
 
 	copy {

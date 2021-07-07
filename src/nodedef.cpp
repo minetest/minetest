@@ -1435,9 +1435,7 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 	}
 }
 
-void NodeDefManager::updateTextures(IGameDef *gamedef,
-	void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
-	void *progress_callback_args)
+void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_args)
 {
 #ifndef SERVER
 	infostream << "NodeDefManager::updateTextures(): Updating "
@@ -1446,8 +1444,8 @@ void NodeDefManager::updateTextures(IGameDef *gamedef,
 	Client *client = (Client *)gamedef;
 	ITextureSource *tsrc = client->tsrc();
 	IShaderSource *shdsrc = client->getShaderSource();
-	scene::IMeshManipulator *meshmanip =
-		RenderingEngine::get_scene_manager()->getMeshManipulator();
+	auto smgr = client->getSceneManager();
+	scene::IMeshManipulator *meshmanip = smgr->getMeshManipulator();
 	TextureSettings tsettings;
 	tsettings.readSettings();
 
@@ -1456,7 +1454,7 @@ void NodeDefManager::updateTextures(IGameDef *gamedef,
 	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &(m_content_features[i]);
 		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
-		progress_callback(progress_callback_args, i, size);
+		client->showUpdateProgressTexture(progress_callback_args, i, size);
 	}
 #endif
 }

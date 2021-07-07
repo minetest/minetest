@@ -860,6 +860,9 @@ static void updateFastFaceRow(
 		g_settings->getBool("enable_shaders") &&
 		g_settings->getBool("enable_waving_water");
 
+	static thread_local const bool force_not_tiling =
+			g_settings->getBool("enable_dynamic_shadows");
+
 	v3s16 p = startpos;
 
 	u16 continuous_tiles_count = 1;
@@ -898,7 +901,8 @@ static void updateFastFaceRow(
 					waving,
 					next_tile);
 
-			if (next_makes_face == makes_face
+			if (!force_not_tiling
+					&& next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, sizeof(lights)) == 0
@@ -1072,8 +1076,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	*/
 
 	{
-		MapblockMeshGenerator generator(data, &collector);
-		generator.generate();
+		MapblockMeshGenerator(data, &collector,
+			data->m_client->getSceneManager()->getMeshManipulator()).generate();
 	}
 
 	/*

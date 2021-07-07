@@ -34,15 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
 
-
-#if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-#include <GLES/gl.h>
-#else
-#include <GLES2/gl2.h>
-#endif
-#endif
-
 /*
 	A cache from texture name to texture path
 */
@@ -427,6 +418,7 @@ private:
 	std::unordered_map<std::string, Palette> m_palettes;
 
 	// Cached settings needed for making textures from meshes
+	bool m_setting_mipmap;
 	bool m_setting_trilinear_filter;
 	bool m_setting_bilinear_filter;
 };
@@ -447,6 +439,7 @@ TextureSource::TextureSource()
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
 	// for these settings to take effect
+	m_setting_mipmap = g_settings->getBool("mip_map");
 	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
 	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
 }
@@ -667,7 +660,7 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
 	static thread_local bool filter_needed =
-		g_settings->getBool("texture_clean_transparent") ||
+		g_settings->getBool("texture_clean_transparent") || m_setting_mipmap ||
 		((m_setting_trilinear_filter || m_setting_bilinear_filter) &&
 		g_settings->getS32("texture_min_size") > 1);
 	// Avoid duplicating texture if it won't actually change
@@ -1011,42 +1004,19 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 
 #if ENABLE_GLES
 
-
-static inline u16 get_GL_major_version()
-{
-	const GLubyte *gl_version = glGetString(GL_VERSION);
-	return (u16) (gl_version[0] - '0');
-}
-
-/**
- * Check if hardware requires npot2 aligned textures
- * @return true if alignment NOT(!) requires, false otherwise
- */
-
-bool hasNPotSupport()
-{
-	// Only GLES2 is trusted to correctly report npot support
-	// Note: we cache the boolean result, the GL context will never change.
-	static const bool supported = get_GL_major_version() > 1 &&
-		glGetString(GL_EXTENSIONS) &&
-		strstr((char *)glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
-	return supported;
-}
-
 /**
  * Check and align image to npot2 if required by hardware
  * @param image image to check for npot2 alignment
  * @param driver driver to use for image operations
  * @return image or copy of image aligned to npot2
  */
-
-video::IImage * Align2Npot2(video::IImage * image,
-		video::IVideoDriver* driver)
+video::IImage *Align2Npot2(video::IImage *image,
+		video::IVideoDriver *driver)
 {
 	if (image == NULL)
 		return image;
 
-	if (hasNPotSupport())
+	if (driver->queryFeature(video::EVDF_TEXTURE_NPOT))
 		return image;
 
 	core::dimension2d<u32> dim = image->getDimension();
@@ -1636,8 +1606,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				return false;
 			}
 
-			// Apply the "clean transparent" filter, if configured.
-			if (g_settings->getBool("texture_clean_transparent"))
+			// Apply the "clean transparent" filter, if needed
+			if (m_setting_mipmap || g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make

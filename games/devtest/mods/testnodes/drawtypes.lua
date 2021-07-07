@@ -129,14 +129,10 @@ minetest.register_node("testnodes:fencelike", {
 })
 
 minetest.register_node("testnodes:torchlike", {
-	description = S("Torchlike Drawtype Test Node"),
+	description = S("Floor Torchlike Drawtype Test Node"),
 	drawtype = "torchlike",
 	paramtype = "light",
-	tiles = {
-		"testnodes_torchlike_floor.png",
-		"testnodes_torchlike_ceiling.png",
-		"testnodes_torchlike_wall.png",
-	},
+	tiles = { "testnodes_torchlike_floor.png^[colorize:#FF0000:64" },
 
 
 	walkable = false,
@@ -161,9 +157,20 @@ minetest.register_node("testnodes:torchlike_wallmounted", {
 	groups = { dig_immediate = 3 },
 })
 
-
-
 minetest.register_node("testnodes:signlike", {
+	description = S("Floor Signlike Drawtype Test Node"),
+	drawtype = "signlike",
+	paramtype = "light",
+	tiles = { "testnodes_signlike.png^[colorize:#FF0000:64" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+	sunlight_propagates = true,
+})
+
+
+minetest.register_node("testnodes:signlike_wallmounted", {
 	description = S("Wallmounted Signlike Drawtype Test Node"),
 	drawtype = "signlike",
 	paramtype = "light",
@@ -247,11 +254,11 @@ minetest.register_node("testnodes:mesh_degrotate", {
 	drawtype = "mesh",
 	paramtype = "light",
 	paramtype2 = "degrotate",
-	mesh = "testnodes_pyramid.obj",
+	mesh = "testnodes_ocorner.obj",
 	tiles = { "testnodes_mesh_stripes2.png" },
 
 	on_rightclick = rotate_on_rightclick,
-	place_param2 = 7,
+	place_param2 = 10, -- 15°
 	sunlight_propagates = true,
 	groups = { dig_immediate = 3 },
 })
@@ -259,14 +266,15 @@ minetest.register_node("testnodes:mesh_degrotate", {
 minetest.register_node("testnodes:mesh_colordegrotate", {
 	description = S("Color Degrotate Mesh Drawtype Test Node"),
 	drawtype = "mesh",
+	paramtype = "light",
 	paramtype2 = "colordegrotate",
 	palette = "testnodes_palette_facedir.png",
-	mesh = "testnodes_pyramid.obj",
-	tiles = { "testnodes_mesh_stripes2.png" },
+	mesh = "testnodes_ocorner.obj",
+	tiles = { "testnodes_mesh_stripes3.png" },
 
 	on_rightclick = rotate_on_rightclick,
-	-- color index 1, 7 steps rotated
-	place_param2 = 1 * 2^5 + 7,
+	-- color index 1, 1 step (=15°) rotated
+	place_param2 = 1 * 2^5 + 1,
 	sunlight_propagates = true,
 	groups = { dig_immediate = 3 },
 })
@@ -583,7 +591,7 @@ scale("plantlike",
 scale("torchlike_wallmounted",
 	S("Double-sized Wallmounted Torchlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Torchlike Drawtype Test Node"))
-scale("signlike",
+scale("signlike_wallmounted",
 	S("Double-sized Wallmounted Signlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Signlike Drawtype Test Node"))
 scale("firelike",

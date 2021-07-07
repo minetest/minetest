@@ -39,7 +39,7 @@ public:
 	ClientActiveObject(u16 id, Client *client, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
-	virtual void addToScene(ITextureSource *tsrc) {}
+	virtual void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr) = 0;
 	virtual void removeFromScene(bool permanent) {}
 
 	virtual void updateLight(u32 day_night_ratio) {}

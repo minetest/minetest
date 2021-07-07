@@ -19,62 +19,133 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "util/numeric.h"
 #include <cmath>
+#include <cassert>
+#include <vector>
+
+// Simple 2D bitmap class with just the functionality needed here
+class Bitmap {
+	u32 linesize, lines;
+	std::vector<u8> data;
+
+	static inline u32 bytepos(u32 index) { return index >> 3; }
+	static inline u8 bitpos(u32 index) { return index & 7; }
+
+public:
+	Bitmap(u32 width, u32 height) :  linesize(width), lines(height),
+		data(bytepos(width * height) + 1) {}
+
+	inline bool get(u32 x, u32 y) const {
+		u32 index = y * linesize + x;
+		return data[bytepos(index)] & (1 << bitpos(index));
+	}
+
+	inline void set(u32 x, u32 y) {
+		u32 index = y * linesize + x;
+		data[bytepos(index)] |= 1 << bitpos(index);
+	}
+
+	inline bool all() const {
+		for (u32 i = 0; i < data.size() - 1; i++) {
+			if (data[i] != 0xff)
+				return false;
+		}
+		// last byte not entirely filled
+		for (u8 i = 0; i < bitpos(linesize * lines); i++) {
+			bool value_of_bit = data.back() & (1 << i);
+			if (!value_of_bit)
+				return false;
+		}
+		return true;
+	}
+
+	inline void copy(Bitmap &to) const {
+		assert(to.linesize == linesize && to.lines == lines);
+		to.data = data;
+	}
+};
 
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
  * like to discard RGB values of transparent pixels, but when blending then
- * with non-transparent neighbors, their RGB values will shpw up nonetheless.
+ * with non-transparent neighbors, their RGB values will show up nonetheless.
  *
  * This function modifies the original image in-place.
  *
  * Parameter "threshold" is the alpha level below which pixels are considered
- * transparent.  Should be 127 for 3d where alpha is threshold, but 0 for
- * 2d where alpha is blended.
+ * transparent. Should be 127 when the texture is used with ALPHA_CHANNEL_REF,
+ * 0 when alpha blending is used.
  */
 void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
 	core::dimension2d<u32> dim = src->getDimension();
 
-	// Walk each pixel looking for fully transparent ones.
+	Bitmap bitmap(dim.Width, dim.Height);
+
+	// First pass: Mark all opaque pixels
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
+		if (src->getPixel(ctrx, ctry).getAlpha() > threshold)
+			bitmap.set(ctrx, ctry);
+	}
 
-		// Ignore opaque pixels.
-		irr::video::SColor c = src->getPixel(ctrx, ctry);
-		if (c.getAlpha() > threshold)
+	// Exit early if all pixels opaque
+	if (bitmap.all())
+		return;
+
+	Bitmap newmap = bitmap;
+
+	// Then repeatedly look for transparent pixels, filling them in until
+	// we're finished (capped at 50 iterations).
+	for (u32 iter = 0; iter < 50; iter++) {
+
+	for (u32 ctry = 0; ctry < dim.Height; ctry++)
+	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
+		// Skip pixels we have already processed
+		if (bitmap.get(ctrx, ctry))
 			continue;
 
-		// Sample size and total weighted r, g, b values.
+		video::SColor c = src->getPixel(ctrx, ctry);
+
+		// Sample size and total weighted r, g, b values
 		u32 ss = 0, sr = 0, sg = 0, sb = 0;
 
-		// Walk each neighbor pixel (clipped to image bounds).
+		// Walk each neighbor pixel (clipped to image bounds)
 		for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
 				sy <= (ctry + 1) && sy < dim.Height; sy++)
 		for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
 				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
-
-			// Ignore transparent pixels.
-			irr::video::SColor d = src->getPixel(sx, sy);
-			if (d.getAlpha() <= threshold)
+			// Ignore pixels we haven't processed
+			if (!bitmap.get(sx, sy))
 				continue;
-
-			// Add RGB values weighted by alpha.
-			u32 a = d.getAlpha();
+	
+			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
+			// use full weight since we want to propagate colors.
+			video::SColor d = src->getPixel(sx, sy);
+			u32 a = d.getAlpha() <= threshold ? 255 : d.getAlpha();
 			ss += a;
 			sr += a * d.getRed();
 			sg += a * d.getGreen();
 			sb += a * d.getBlue();
 		}
 
-		// If we found any neighbor RGB data, set pixel to average
-		// weighted by alpha.
+		// Set pixel to average weighted by alpha
 		if (ss > 0) {
 			c.setRed(sr / ss);
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);
 			src->setPixel(ctrx, ctry, c);
+			newmap.set(ctrx, ctry);
 		}
+	}
+
+	if (newmap.all())
+		return;
+
+	// Apply changes to bitmap for next run. This is done so we don't introduce
+	// a bias in color propagation in the direction pixels are processed.
+	newmap.copy(bitmap);
+
 	}
 }
 

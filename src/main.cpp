@@ -91,6 +91,7 @@ static void list_worlds(bool print_name, bool print_path);
 static bool setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
+static void uninit_common();
 static void startup_message();
 static bool read_config_file(const Settings &cmd_args);
 static void init_log_streams(const Settings &cmd_args);
@@ -201,6 +202,7 @@ int main(int argc, char *argv[])
 		errorstream << "Unittest support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
 			<< std::endl;
+		return 1;
 #endif
 	}
 #endif
@@ -225,8 +227,7 @@ int main(int argc, char *argv[])
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
 #ifndef SERVER
-	ClientLauncher launcher;
-	retval = launcher.run(game_params, cmd_args) ? 0 : 1;
+	retval = ClientLauncher().run(game_params, cmd_args) ? 0 : 1;
 #else
 	retval = 0;
 #endif
@@ -236,9 +237,6 @@ int main(int argc, char *argv[])
 		g_settings->updateConfigFile(g_settings_path.c_str());
 
 	print_modified_quicktune_values();
-
-	// Stop httpfetch thread (if started)
-	httpfetch_cleanup();
 
 	END_DEBUG_EXCEPTION_HANDLER
 
@@ -305,8 +303,6 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 #ifndef SERVER
-	allowed_options->insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
-			_("Show available video modes"))));
 	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));
 	allowed_options->insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
@@ -489,12 +485,13 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	startup_message();
 	set_default_settings();
 
-	// Initialize sockets
 	sockets_init();
-	atexit(sockets_cleanup);
 
 	// Initialize g_settings
 	Settings::createLayer(SL_GLOBAL);
+
+	// Set cleanup callback(s) to run at process exit
+	atexit(uninit_common);
 
 	if (!read_config_file(cmd_args))
 		return false;
@@ -512,6 +509,17 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 		g_settings->get("language"), argc, argv);
 
 	return true;
+}
+
+static void uninit_common()
+{
+	httpfetch_cleanup();
+
+	sockets_cleanup();
+
+	// It'd actually be okay to leak these but we want to please valgrind...
+	for (int i = 0; i < (int)SL_TOTAL_COUNT; i++)
+		delete Settings::getLayer((SettingsLayer)i);
 }
 
 static void startup_message()

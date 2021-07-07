@@ -3001,6 +3001,9 @@ std::wstring Server::handleChat(const std::string &name,
 	}
 
 	auto message = trim(wide_to_utf8(wmessage));
+	if (message.empty())
+		return L"";
+
 	if (message.find_first_of("\n\r") != std::wstring::npos) {
 		return L"Newlines are not permitted in chat messages";
 	}
