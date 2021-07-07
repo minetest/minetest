@@ -50,7 +50,6 @@ RUN mkdir build && \
 		-DENABLE_PROMETHEUS=TRUE \
 		-DBUILD_UNITTESTS=FALSE \
 		-DBUILD_CLIENT=FALSE \
-		-DIRRLICHT_INCLUDE_DIR=/usr/include/irrlichtmt \
 		-GNinja && \
 	ninja && \
 	ninja install
