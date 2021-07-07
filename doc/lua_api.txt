@@ -1088,6 +1088,8 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * facedir modulo 4 = rotation around that axis
     * By default, on placement the param2 is automatically set to the
       horizondal direction the player was looking at (values 0-3)
+    * Special case: If the node is a connected nodebox, the nodebox
+      will NOT rotate, only the textures will.
 * `paramtype2 = "4dir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`.
