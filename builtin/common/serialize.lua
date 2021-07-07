@@ -57,7 +57,7 @@ local function serialize(value, write)
     local to_fill = {}
     for object, count in pairs(count_objects(value)) do
         local type_ = type(object)
-        if count >= 2 and (type_ ~= "string" or #reference + 2 >= #object) then
+        if count >= 2 and (type_ ~= "string" or #reference + 2 < #object) then
             local ref = table_concat(reference)
             write(ref)
             write"="
