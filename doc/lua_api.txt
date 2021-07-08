@@ -954,9 +954,6 @@ the sound will be played 'globally', i.e. locationless and to all players.
 max_hear_distance only sets a 'true/false' cutoff regarding hearing the sound:
 It has no effect on the distance-based lowering of volume of the sound.
 
-`max_hear_distance` only sets a 'true/false' cutoff regarding hearing the sound:
-It has no effect on the distance-based lowering of volume of the sound.
-
 The `loop` parameter has several quirks: It does not override `max_hear_distance`, which 
 decides whether the initial sound is heard. However, players who heard the initial sound 
 will continue to hear the looped sound at a low volume according to their distance from it,
