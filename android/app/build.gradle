@@ -76,10 +76,13 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
 	}
-	/*copy {
-		// ToDo: fix broken locales
-		from "${projRoot}/po" into "${assetsFolder}/po"
-	}*/
+	fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
+		def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
+		file(moPath).mkdirs()
+		exec {
+			commandLine 'msgfmt', '-o', "${moPath}/minetest.mo", poFile
+		}
+	}
 	copy {
 		from "${projRoot}/textures" into "${assetsFolder}/textures"
 	}

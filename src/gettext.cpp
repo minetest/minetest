@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "util/string.h"
 #include "log.h"
+#include "porting.h"
 
 #if USE_GETTEXT && defined(_MSC_VER)
 #include <windows.h>
@@ -127,6 +128,10 @@ void init_gettext(const char *path, const std::string &configured_language,
 		// Add user specified locale to environment
 		setenv("LANGUAGE", configured_language.c_str(), 1);
 
+#ifdef __ANDROID__
+		setenv("LANG", configured_language.c_str(), 1);
+#endif
+
 		// Reload locale with changed environment
 		setlocale(LC_ALL, "");
 #elif defined(_MSC_VER)
@@ -202,7 +207,12 @@ void init_gettext(const char *path, const std::string &configured_language,
 #endif // ifndef _WIN32
 	}
 	else {
+#ifdef __ANDROID__
+		char lang[3] = {0};
 		 /* set current system default locale */
+		AConfiguration_getLanguage(porting::app_global->config, lang);
+		setenv("LANG", lang, 1);
+#endif
 		setlocale(LC_ALL, "");
 	}
 
