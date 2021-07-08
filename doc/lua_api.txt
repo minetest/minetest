@@ -943,13 +943,16 @@ If no to_player parameter was passed:
 
 pos overrides any given object. If no pos is given and an object is given, the object's 
 position will be retrieved and used instead as the pos argument. If a pos value is supplied 
-but invalid, for example if the object has since been removed, the sound will not be played. 
-If a valid pos has been found, the sound will be played at it, audible to all players within
-the given max_hear_distance. If no max_hear_distance is supplied, the default value of '32' 
-is used.
+but invalid, the sound will not be played. If a valid pos has been found, the sound will be 
+played at it, audible to all players within the given max_hear_distance. If no max_hear_distance 
+is supplied, the default value of '32' is used.
 
 If no to_player,pos,object was passed:
 the sound will be played 'globally', i.e. locationless and to all players.
+NOTE!: If a function that is supposed to return a position failed and only returned nil to
+a value which is used to call minetest.play_sound with this `pos`, this does not count as 
+'invalid position of positional sound'; it acts as if no pos was specified at all, leading to 
+the sound being unintentionally played to all players.
 
 max_hear_distance only sets a 'true/false' cutoff regarding hearing the sound:
 It has no effect on the distance-based lowering of volume of the sound.
