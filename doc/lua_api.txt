@@ -893,22 +893,22 @@ This table has the following parameters, all of which are optional, same as the 
 (when omitted, default values are used for the values that have them):
 
 {
-* `to_player=name`,				--play locationless to one player. 
-								--  only 1 player can be specified
-* `exclude_player=name`,		--heard by anyone *but* the given player
-								--  only 1 player can be specified
-* `pos=<some pos>`,				--play at a spot
+* `to_player=name`,             --play locationless to one player. 
+                                --  only 1 player can be specified
+* `exclude_player=name`,        --heard by anyone *but* the given player
+                                --  only 1 player can be specified
+* `pos=<some pos>`,             --play at a spot
 * `object = <an ObjectRef>`,    --play connected to an object
-* `max_hear_distance=32`, 		--default, uses an euclidean metric
-* `loop=false`,					--default
-* `gain=1.0`,	 				--default. gets multiplied with
-								--  the SimpleSoundSpec's 'gain' value
-* `pitch=1.0`, 					--default. the SimpleSoundSpec's
-								--  'pitch' value is ignored, 
-								--  so you have use this one instead.
-* `fade=0.0` 					--default. the SimpleSoundSpec's
-								--  'fade' value is ignored, 
-								--  so you have use this one instead.
+* `max_hear_distance=32`,       --default, uses an euclidean metric
+* `loop=false`,                 --default
+* `gain=1.0`,                   --default. gets multiplied with
+                                --  the SimpleSoundSpec's 'gain' value
+* `pitch=1.0`,                  --default. the SimpleSoundSpec's
+                                --  'pitch' value is ignored, 
+                                --  so you have use this one instead.
+* `fade=0.0`                    --default. the SimpleSoundSpec's
+                                --  'fade' value is ignored, 
+                                --  so you have use this one instead.
 }
 
 
