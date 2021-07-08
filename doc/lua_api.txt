@@ -930,7 +930,7 @@ above is ordered in descending priority of arguments overriding each other:
 `to_player`,`exclude_player`,`pos`,`object`,`max_hear_distance`.
 
 `exclude_player` only overrides behavior for the specified player.
-The only parameter overriding `max_distance` is `to_player`.
+The only parameter overriding `max_hear_distance` is `to_player`.
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
