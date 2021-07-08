@@ -918,25 +918,41 @@ table itself (when omitted, default values are used for the values that have the
 }
 
 
+Regarding conflicting parameters between the sound parameter table and the SimpleSoundSpec:
+
 NOTE!: While passing a `pitch` and `fade` value in Sound Parameters is optional, the 
 SimpleSoundSpec's `pitch` and `fade` are ignored by minetest.sound_play(), so if said 
 values are not the default '1','0' then it is required to pass the same values 
 again in the Sound Parameters table, to have identical results to using the 
 SimpleSoundSpec in a node definition.
 
-Several of the parameters conflict when provided simultaneously. In this case, 
-arguments of higher priority result in lower priority arguments being ignored. The table 
-above is ordered in descending priority of arguments overriding each other: 
-`to_player`,`exclude_player`,`pos`,`object`,`max_hear_distance`.
 
-`exclude_player` only overrides behavior for the specified player.
-The only parameter overriding `max_hear_distance` is `to_player`.
+Regarding conflicting parameters within the sound parameter table:
 
-A positional sound will only be heard by players that are within
-`max_hear_distance` of the sound position, at the start of the sound.
+Several of the parameters conflict when provided simultaneously. In this case,
+arguments of higher priority result in lower priority arguments being ignored 
+if they conflict. The table above is ordered in descending priority of arguments 
+overriding each other:
+to_player,exclude_player,pos,object,max_hear_distance.
 
-When providing neither of `to_player`,`pos`,`object` then the sound will be played 
-'globally', i.e. locationless and to all players.
+to_player overrides all other arguments.
+exclude_player overrides all other arguments for the given player,
+unless they are also specified as to_player.
+
+If no to_player parameter was passed:
+
+pos overrides any given object. If no pos is given and an object is given, the object's 
+position will be retrieved and used instead as the pos argument. If a pos value is supplied 
+but invalid, for example if the object has since been removed, the sound will not be played. 
+If a valid pos has been found, the sound will be played at it, audible to all players within
+the given max_hear_distance. If no max_hear_distance is supplied, the default value of '32' 
+is used.
+
+If no to_player,pos,object was passed:
+the sound will be played 'globally', i.e. locationless and to all players.
+
+max_hear_distance only sets a 'true/false' cutoff regarding hearing the sound:
+It has no effect on the distance-based lowering of volume of the sound.
 
 `max_hear_distance` only sets a 'true/false' cutoff regarding hearing the sound:
 It has no effect on the distance-based lowering of volume of the sound.
