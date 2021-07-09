@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-06-21 11:33+0000\n"
-"Last-Translator: Riceball LEE <snowyu.lee@gmail.com>\n"
+"PO-Revision-Date: 2021-07-10 09:32+0000\n"
+"Last-Translator: Lin Happy 666 <mumu-lhl@tuta.io>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,16 +12,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
 msgstr "清除聊天发送队列"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "空命令."
+msgstr "空命令。"
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -224,8 +223,9 @@ msgid "$1 and $2 dependencies will be installed."
 msgstr "$1 和 $2 依赖项将被安装."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 比 $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -914,9 +914,8 @@ msgid "Start Game"
 msgstr "启动游戏"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- 地址： "
+msgstr "地址"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -932,9 +931,8 @@ msgstr "创造模式"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "伤害"
+msgstr "伤害 / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
@@ -1125,11 +1123,11 @@ msgstr "三线性过滤"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "超出高度限制"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "过于低"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
