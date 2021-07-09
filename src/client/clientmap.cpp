@@ -650,20 +650,15 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	MeshBufListList drawbufs;
 
-	int count = 0;
-	int low_bound = m_drawlist_shadow.size() / total_sections * section;
-	int high_bound = m_drawlist_shadow.size() / total_sections * (section + 1);
 
 	for (auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
-		++count;
-		if (count <= low_bound)
-			continue;
-		if (count > high_bound)
-			break;
 
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
+
+		if (block->light_space_section % total_sections != section)
+			continue;
 
 		// If the mesh of the block happened to get deleted, ignore it
 		if (!block->mesh)
@@ -828,4 +823,17 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
+}
+
+void ClientMap::updateLightSpaceSections(const DirectionalLight &light)
+{
+	ScopeProfiler sp(g_profiler, "CM::updateLightSpaceSections()", SPT_AVG);
+
+	const core::matrix4 &lightMatrix = light.getProjectionMatrix();
+	for (auto &i : m_drawlist_shadow) {
+		v3s16 block_pos = i.first;
+		v3f block_pos_f = intToFloat(block_pos, BS);
+		lightMatrix.transformVect(block_pos_f);
+		i.second->light_space_section = (int(2 * (block_pos_f.X + 1.0)) * 4 + int(2 * (block_pos_f.Y + 1.0)));
+	}
 }

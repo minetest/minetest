@@ -92,7 +92,7 @@ public:
 	float getTimeOfDay() const { return m_time_day; }
 
 private:
-	static constexpr u16 TOTAL_SECTIONS{4}; /* Spread SM update over this number of frames */
+	static constexpr u16 TOTAL_SECTIONS{8}; // Sections of shadow map during update. Needs to be a power of 2, max 16.
 	video::ITexture *getSMTexture(const std::string &shadow_map_name,
 			video::ECOLOR_FORMAT texture_format,
 			bool force_creation = false);

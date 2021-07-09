@@ -232,26 +232,25 @@ void ShadowRenderer::updateSMTextures()
 			}
 		}
 
-		// Update SM incrementally:
-		for (DirectionalLight &light : m_light_list) {
-			// Static shader values.
-			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
-			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
+		if (m_current_section < TOTAL_SECTIONS) {
+			// Update SM incrementally:
+			for (DirectionalLight &light : m_light_list) {
+				// Static shader values.
+				m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
+				m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 
-			// set the Render Target
-			// right now we can only render in usual RTT, not
-			// Depth texture is available in irrlicth maybe we
-			// should put some gl* fn here
+				// set the Render Target
+				// right now we can only render in usual RTT, not
+				// Depth texture is available in irrlicth maybe we
+				// should put some gl* fn here
 
-
-			if (m_current_section < TOTAL_SECTIONS) {
 				m_driver->setRenderTarget(shadowMapClientMapFuture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
 				renderShadowMap(shadowMapClientMapFuture, light);
 
 				if (m_shadow_map_colored) {
 					m_driver->setRenderTarget(shadowMapTextureColorsFuture,
-							reset_sm_texture, false, video::SColor(255, 255, 255, 255));
+							reset_sm_texture, true, video::SColor(255, 255, 255, 255));
 				}
 				renderShadowMap(shadowMapTextureColorsFuture, light,
 						scene::ESNRP_TRANSPARENT);

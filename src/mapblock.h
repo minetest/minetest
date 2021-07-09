@@ -511,6 +511,7 @@ public:
 
 #ifndef SERVER // Only on client
 	MapBlockMesh *mesh = nullptr;
+	short light_space_section{0}; // section of light space the block belongs to (0 to 15)
 #endif
 
 	NodeMetadataList m_node_metadata;
