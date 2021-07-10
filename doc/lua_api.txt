@@ -3676,7 +3676,7 @@ For 2D or 3D perlin noise or perlin noise maps:
         spread = {x = 500, y = 500, z = 500},
         seed = 571347,
         octaves = 5,
-        persist = 0.63,
+        persistence = 0.63,
         lacunarity = 2.0,
         flags = "defaults, absvalue",
     }
@@ -3766,7 +3766,7 @@ The following is a decent set of parameters to work from:
         spread  = {x=200, y=200, z=200},
         seed    = 5390,
         octaves = 4,
-        persist = 0.5,
+        persistence = 0.5,
         lacunarity = 2.0,
         flags = "eased",
     },
@@ -7943,7 +7943,7 @@ See [Ores] section above for essential information.
             spread = {x = 100, y = 100, z = 100},
             seed = 23,
             octaves = 3,
-            persist = 0.7
+            persistence = 0.7
         },
         -- NoiseParams structure describing one of the perlin noises used for
         -- ore distribution.
@@ -7972,7 +7972,7 @@ See [Ores] section above for essential information.
             spread = {x = 100, y = 100, z = 100},
             seed = 47,
             octaves = 3,
-            persist = 0.7
+            persistence = 0.7
         },
         np_puff_bottom = {
             offset = 4,
@@ -7980,7 +7980,7 @@ See [Ores] section above for essential information.
             spread = {x = 100, y = 100, z = 100},
             seed = 11,
             octaves = 3,
-            persist = 0.7
+            persistence = 0.7
         },
 
         -- vein
@@ -7993,7 +7993,7 @@ See [Ores] section above for essential information.
             spread = {x = 100, y = 100, z = 100},
             seed = 17,
             octaves = 3,
-            persist = 0.7
+            persistence = 0.7
         },
         stratum_thickness = 8,
     }
@@ -8120,7 +8120,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
             spread = {x = 100, y = 100, z = 100},
             seed = 354,
             octaves = 3,
-            persist = 0.7,
+            persistence = 0.7,
             lacunarity = 2.0,
             flags = "absvalue"
         },
