@@ -374,7 +374,6 @@ struct PrioritySortedMod
 			std::unordered_map<std::string, PrioritySortedMod> &mods_by_name);
 
 	std::unordered_set<std::string> deps_chain;
-	bool is_circular = false;
 	ModSpec *spec;
 };
 
@@ -390,7 +389,7 @@ bool PrioritySortedMod::addDependingMod(const std::string &modname,
 			warningstream << "Detected circular dependencies in mod '" <<
 					modname << "'" << std::endl;
 			// clang-format on
-			is_circular = true;
+
 			return false;
 		}
 		return true; // The dependency trees merge. Nothing unusual
@@ -404,21 +403,26 @@ bool PrioritySortedMod::addDependingMod(const std::string &modname,
 	// mod which is required by 'modname'
 	for (const std::string &dependency : spec->depends) {
 		const auto &mod = mods_by_name.find(dependency);
-		if (mod != map_end) {
-			mod->second.addDependingMod(modname, mods_by_name);
-		} else if (modname == spec->name) {
-			// Missing hard dependency
-			spec->unsatisfied_depends.emplace(dependency);
+		if (mod == map_end) {
+			// Hard dependency not found
+			if (modname == spec->name)
+				spec->unsatisfied_depends.emplace(dependency);
 			return false;
 		}
+
+		// Attempt to add "modname" to the depending mods
+		if (!mod->second.addDependingMod(modname, mods_by_name))
+			return false;
 	}
 
 	for (const std::string &dependency : spec->optdepends) {
 		const auto &mod = mods_by_name.find(dependency);
+		// It does not matter whether optional dependencies can be added,
+		// hence ignore the return value.
 		if (mod != map_end)
 			mod->second.addDependingMod(modname, mods_by_name);
 	}
-	return !is_circular;
+	return true;
 }
 
 void ModConfiguration::resolveDependencies()
@@ -446,9 +450,7 @@ void ModConfiguration::resolveDependencies()
 
 			// If the dependencies are given:
 			// Step 1: Recursively add the name to its dependency mods
-			if (!mod_it->second.is_circular &&
-					mod_it->second.addDependingMod(
-							mod.name, mods_by_name)) {
+			if (mod_it->second.addDependingMod(mod.name, mods_by_name)) {
 				// Steps 3-4: See 'addDependingMod()'
 				++mod_it;
 			} else {
