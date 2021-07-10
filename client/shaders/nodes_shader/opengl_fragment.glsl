@@ -187,7 +187,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	// Return fast if sharp shadows are requested
 	if (SOFTSHADOWRADIUS <= 1.0) {
 		perspectiveFactor = getDeltaPerspectiveFactor(baseLength);
-		return max(length(smTexCoord.xy) * 2 / pow(perspectiveFactor, 3), SOFTSHADOWRADIUS);
+		return max(2 * length(smTexCoord.xy) * 2048 / f_textureresolution / pow(perspectiveFactor, 3), SOFTSHADOWRADIUS);
 	}
 
 	vec2 clampedpos;
@@ -217,7 +217,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	depth = pow(clamp(depth, 0.0, 1000.0), 1.6) / 0.001;
 
 	perspectiveFactor = getDeltaPerspectiveFactor(baseLength);
-	return max(length(smTexCoord.xy) * 2 / pow(perspectiveFactor, 3), depth * maxRadius);
+	return max(length(smTexCoord.xy) * 2 * 2048 / f_textureresolution / pow(perspectiveFactor, 3), depth * maxRadius);
 }
 
 #ifdef POISSON_FILTER
