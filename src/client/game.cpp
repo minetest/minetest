@@ -3895,7 +3895,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		update_draw_list_delta = shadow->getUpdateDelta();
 
 		if (m_camera_offset_changed ||
-				(runData.update_shadows_timer > update_draw_list_delta && (!draw_list_updated || shadow->getDirectionalLightCount() == 0))) {
+				(runData.update_shadows_timer > update_draw_list_delta &&
+				(!draw_list_updated || shadow->getDirectionalLightCount() == 0))) {
 			runData.update_shadows_timer = 0;
 			updateShadows();
 		}
