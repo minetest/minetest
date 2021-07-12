@@ -142,9 +142,7 @@ core.register_entity(":__builtin:falling_node", {
 		end
 
 		-- Rotate entity
-		if def.drawtype == "plantlike" or def.drawtype == "plantlike_rooted" then
-			-- No rotation
-		elseif def.drawtype == "torchlike" then
+		if def.drawtype == "torchlike" then
 			self.object:set_yaw(math.pi*0.25)
 		elseif ((node.param2 ~= 0 or def.drawtype == "nodebox" or def.drawtype == "mesh")
 				and (def.wield_image == "" or def.wield_image == nil))
@@ -159,7 +157,8 @@ core.register_entity(":__builtin:falling_node", {
 				if euler then
 					self.object:set_rotation(euler)
 				end
-			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike") then
+			elseif (def.drawtype ~= "plantlike" and def.drawtype ~= "plantlike_rooted" and
+					(def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike")) then
 				local rot = node.param2 % 8
 				if (def.drawtype == "signlike" and def.paramtype2 ~= "wallmounted" and def.paramtype2 ~= "colorwallmounted") then
 					-- Change rotation to "floor" by default for non-wallmounted paramtype2
