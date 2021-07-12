@@ -204,6 +204,7 @@ private:
 	IntervalLimiter m_node_hurt_interval;
 
 	bool m_position_not_sent = false;
+	PlayerHPChangeReason *m_death_reason = nullptr;
 
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;

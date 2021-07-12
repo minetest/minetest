@@ -226,6 +226,16 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_env->getScriptIface()->player_event(this, "properties_changed");
 	}
 
+	// Death messages must be handled outside of callbacks
+	// to ensure proper return value handling from Lua
+	if (m_death_reason) {
+		if (isDead())
+			m_env->getGameDef()->SendPlayerHPOrDie(this, *m_death_reason);
+
+		delete m_death_reason;
+		m_death_reason = nullptr;
+	}
+
 	// If attached, check that our parent is still there. If it isn't, detach.
 	if (m_attachment_parent_id && !isAttached()) {
 		// This is handled when objects are removed from the map
@@ -490,7 +500,11 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	if ((hp == 0) != (oldhp == 0))
 		m_properties_sent = false;
 
-	m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
+	// Send normal HP updates instantly, but delay death messages
+	if (hp > 0)
+		m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
+	else if (!m_death_reason)
+		m_death_reason = new PlayerHPChangeReason(reason);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)
