@@ -222,8 +222,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 	}
 
 	sao->setHP(hp, reason);
-	if (reason.hasLuaReference())
-		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
+	getScriptApiBase(L)->popPlayerHPChangeReason(reason);
 	return 0;
 }
 

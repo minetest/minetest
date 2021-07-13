@@ -52,7 +52,7 @@ public:
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
-	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	void setHP(s32 hp, PlayerHPChangeReason &reason);
 	u16 getHP() const;
 
 	/* LuaEntitySAO-specific */

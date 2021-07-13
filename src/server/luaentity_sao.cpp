@@ -328,8 +328,8 @@ u16 LuaEntitySAO::punch(v3f dir,
 
 	if (!damage_handled) {
 		if (result.did_punch) {
-			setHP((s32)getHP() - result.damage,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
+			PlayerHPChangeReason reason(PlayerHPChangeReason::PLAYER_PUNCH, puncher);
+			setHP((s32)getHP() - result.damage, reason);
 
 			// create message and add to list
 			sendPunchCommand();
@@ -392,7 +392,7 @@ std::string LuaEntitySAO::getDescription()
 	return oss.str();
 }
 
-void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
+void LuaEntitySAO::setHP(s32 hp, PlayerHPChangeReason &reason)
 {
 	m_hp = rangelim(hp, 0, U16_MAX);
 }

@@ -230,7 +230,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	// to ensure proper return value handling from Lua
 	if (m_death_reason) {
 		if (isDead())
-			m_env->getGameDef()->SendPlayerHPOrDie(this, *m_death_reason);
+			m_env->getGameDef()->SendPlayerDie(m_peer_id, *m_death_reason);
+
+		m_env->getScriptIface()->popPlayerHPChangeReason(*m_death_reason);
 
 		delete m_death_reason;
 		m_death_reason = nullptr;
@@ -449,8 +451,8 @@ u16 PlayerSAO::punch(v3f dir,
 				hitparams.hp);
 
 	if (!damage_handled) {
-		setHP((s32)getHP() - (s32)hitparams.hp,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
+		PlayerHPChangeReason reason(PlayerHPChangeReason::PLAYER_PUNCH, puncher);
+		setHP((s32)getHP() - (s32)hitparams.hp, reason);
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// create message and add to list
@@ -472,7 +474,7 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
 }
 
-void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
+void PlayerSAO::setHP(s32 hp, PlayerHPChangeReason &reason)
 {
 	if (hp == (s32)m_hp)
 		return; // Nothing to do
@@ -502,9 +504,12 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 
 	// Send normal HP updates instantly, but delay death messages
 	if (hp > 0)
-		m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
-	else if (!m_death_reason)
+		m_env->getGameDef()->SendPlayerHP(m_peer_id);
+	else if (!m_death_reason) {
 		m_death_reason = new PlayerHPChangeReason(reason);
+		// Invalidate reference. It will be used in the delayed call
+		reason.lua_reference = -1;
+	}
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)
@@ -559,10 +564,21 @@ void PlayerSAO::disconnected()
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);
+
+	if (m_death_reason) {
+		ServerScripting *script = m_env->getScriptIface();
+		if (script)
+			script->popPlayerHPChangeReason(*m_death_reason);
+
+		delete m_death_reason;
+		m_death_reason = nullptr;
+	}
+
 	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
 	m_player->setPlayerSAO(NULL);
 	m_env->removePlayer(m_player);
+
 }
 
 std::string PlayerSAO::getPropertyPacket()

@@ -429,13 +429,24 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 	lua_setfield(L, -2, "from");
 
 	if (reason.object) {
-		objectrefGetOrCreate(L, reason.object);
+		objectrefGetOrCreate(L, getServer()->getEnv().getActiveObject(reason.object));
 		lua_setfield(L, -2, "object");
 	}
 	if (!reason.node.empty()) {
 		lua_pushstring(L, reason.node.c_str());
 		lua_setfield(L, -2, "node");
 	}
+}
+
+void ScriptApiBase::popPlayerHPChangeReason(PlayerHPChangeReason &reason)
+{
+	if (!reason.hasLuaReference())
+		return;
+
+	SCRIPTAPI_PRECHECKHEADER
+
+	luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
+	reason.lua_reference = -1;
 }
 
 Server* ScriptApiBase::getServer()

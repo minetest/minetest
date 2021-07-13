@@ -1345,20 +1345,6 @@ void Server::SendMovement(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
-{
-	if (playersao->isImmortal())
-		return;
-
-	session_t peer_id = playersao->getPeerID();
-	bool is_alive = !playersao->isDead();
-
-	if (is_alive)
-		SendPlayerHP(peer_id);
-	else
-		DiePlayer(peer_id, reason);
-}
-
 void Server::SendHP(session_t peer_id, u16 hp)
 {
 	NetworkPacket pkt(TOCLIENT_HP, 1, peer_id);
@@ -1800,6 +1786,25 @@ void Server::SendPlayerHP(session_t peer_id)
 
 	// Send to other clients
 	playersao->sendPunchCommand();
+}
+
+void Server::SendPlayerDie(session_t peer_id, PlayerHPChangeReason &reason)
+{
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+
+	infostream << "Server::SendPlayerDie(): Player "
+			<< playersao->getPlayer()->getName()
+			<< " dies" << std::endl;
+
+	playersao->setHP(0, reason);
+	playersao->clearParentAttachment();
+
+	// Trigger scripted stuff
+	m_script->on_dieplayer(playersao, reason);
+
+	SendPlayerHP(peer_id);
+	SendDeathscreen(peer_id, false, v3f(0,0,0));
 }
 
 void Server::SendPlayerBreath(PlayerSAO *sao)
@@ -2722,25 +2727,6 @@ void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 	Something random
 */
 
-void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
-{
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	infostream << "Server::DiePlayer(): Player "
-			<< playersao->getPlayer()->getName()
-			<< " dies" << std::endl;
-
-	playersao->setHP(0, reason);
-	playersao->clearParentAttachment();
-
-	// Trigger scripted stuff
-	m_script->on_dieplayer(playersao, reason);
-
-	SendPlayerHP(peer_id);
-	SendDeathscreen(peer_id, false, v3f(0,0,0));
-}
-
 void Server::RespawnPlayer(session_t peer_id)
 {
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
@@ -2750,8 +2736,8 @@ void Server::RespawnPlayer(session_t peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
-	playersao->setHP(playersao->accessObjectProperties()->hp_max,
-			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	PlayerHPChangeReason reason(PlayerHPChangeReason::RESPAWN);
+	playersao->setHP(playersao->accessObjectProperties()->hp_max, reason);
 	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);

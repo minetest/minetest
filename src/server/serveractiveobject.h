@@ -153,7 +153,7 @@ public:
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
-	virtual void setHP(s32 hp, const PlayerHPChangeReason &reason)
+	virtual void setHP(s32 hp, PlayerHPChangeReason &reason)
 	{}
 	virtual u16 getHP() const
 	{ return 0; }

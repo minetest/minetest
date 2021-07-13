@@ -1828,7 +1828,7 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 
 		if (m_hp == 0) {
-			// Same as 'Server::DiePlayer'
+			// Same as 'Server::SendPlayerDie'
 			clearParentAttachment();
 			// Same as 'ObjectRef::l_remove'
 			if (!m_is_player)

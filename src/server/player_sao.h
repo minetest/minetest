@@ -112,7 +112,7 @@ public:
 	u16 punch(v3f dir, const ToolCapabilities *toolcap, ServerActiveObject *puncher,
 			float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
-	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	void setHP(s32 hp, PlayerHPChangeReason &reason);
 	void setHPRaw(u16 hp) { m_hp = hp; }
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
@@ -244,7 +244,7 @@ struct PlayerHPChangeReason
 	int lua_reference = -1;
 
 	// For PLAYER_PUNCH
-	ServerActiveObject *object = nullptr;
+	u16 object = 0;
 	// For NODE_DAMAGE
 	std::string node;
 
@@ -293,7 +293,7 @@ struct PlayerHPChangeReason
 	PlayerHPChangeReason(Type type) : type(type) {}
 
 	PlayerHPChangeReason(Type type, ServerActiveObject *object) :
-			type(type), object(object)
+			type(type), object(object->getId())
 	{
 	}
 

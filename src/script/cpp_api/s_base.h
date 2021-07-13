@@ -99,6 +99,7 @@ public:
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
+	void popPlayerHPChangeReason(PlayerHPChangeReason &reason);
 
 	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
@@ -144,7 +145,7 @@ protected:
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
-	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
+	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason);
 
 	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;
