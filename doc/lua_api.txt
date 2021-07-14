@@ -6621,9 +6621,9 @@ object you are working with still exists.
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table containing the following values, alpha is ignored:
             * `day_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during the day. (default: `#8cbafa`)
+              sky during the day. (default: `#61b5f5`)
             * `day_horizon`: ColorSpec, for the bottom half of the
-              `"regular"` sky during the day. (default: `#9bc1f0`)
+              `"regular"` sky during the day. (default: `#90d3f6`)
             * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
               sky during dawn/sunset. (default: `#b4bafa`)
               The resulting sky color will be a darkened version of the ColorSpec.
@@ -6633,7 +6633,7 @@ object you are working with still exists.
               The resulting sky color will be a darkened version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
             * `night_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during the night. (default: `#006aff`)
+              sky during the night. (default: `#006bff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
             * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
