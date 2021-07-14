@@ -463,7 +463,15 @@ const int PROTANOPIA = 1;
 const int DEUTERANOPIA = 2;
 const int TRITANOPIA = 3;
 
-const int blindnessType = NONE; //example
+#if COLOUR_BLIND_SHADERS==1
+	const int blindnessType = PROTANOPIA;
+#elif COLOUR_BLIND_SHADERS==2
+	const int blindnessType = DEUTERANOPIA;
+#elif COLOUR_BLIND_SHADERS==3
+	const int blindnessType = TRITANOPIA;
+#else
+	const int blindnessType = NONE;
+#endif
 
 void blindnessFilter( out vec4 myoutput, in vec4 myinput )
 {

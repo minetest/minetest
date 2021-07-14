@@ -13,7 +13,15 @@ const int PROTANOPIA = 1;
 const int DEUTERANOPIA = 2;
 const int TRITANOPIA = 3;
 
-const int blindnessType = NONE; //example
+#if COLOUR_BLIND_SHADERS==1
+	const int blindnessType = PROTANOPIA;
+#elif COLOUR_BLIND_SHADERS==2
+	const int blindnessType = DEUTERANOPIA;
+#elif COLOUR_BLIND_SHADERS==3
+	const int blindnessType = TRITANOPIA;
+#else
+	const int blindnessType = NONE;
+#endif
 
 void blindnessFilter( out vec4 myoutput, in vec4 myinput )
 {
@@ -21,18 +29,18 @@ void blindnessFilter( out vec4 myoutput, in vec4 myinput )
 			vec3 opponentColor = RGBtoOpponentMat * vec3(myinput.r, myinput.g, myinput.b);
 			opponentColor.x -= opponentColor.y * 1.5; // reds (y <= 0) become lighter, greens (y >= 0) become darker
 			vec3 rgbColor = OpponentToRGBMat * opponentColor;
-			myoutput = vec4(rgbColor.r, rgbColor.g, rgbColor.b, myinput.a);
+				myoutput = vec4(rgbColor.r, rgbColor.g, rgbColor.b, myinput.a);
 	} else if (blindnessType == DEUTERANOPIA) {
 			vec3 opponentColor = RGBtoOpponentMat * vec3(myinput.r, myinput.g, myinput.b);
 			opponentColor.x -= opponentColor.y * 1.5; // reds (y <= 0) become lighter, greens (y >= 0) become darker
 			vec3 rgbColor = OpponentToRGBMat * opponentColor;
-			myoutput = vec4(rgbColor.r, rgbColor.g, rgbColor.b, myinput.a);
+				myoutput = vec4(rgbColor.r, rgbColor.g, rgbColor.b, myinput.a);
 	} else if (blindnessType == TRITANOPIA) {
 			vec3 opponentColor = RGBtoOpponentMat * vec3(myinput.r, myinput.g, myinput.b);
 			opponentColor.x -= ((3.0 * opponentColor.z) - opponentColor.y) * 0.25;
 			vec3 rgbColor = OpponentToRGBMat * opponentColor;
 			myoutput = vec4(rgbColor.r, rgbColor.g, rgbColor.b, myinput.a);
-    } else {
+    	} else {
 			myoutput = myinput;
 	}	
 }
@@ -55,7 +63,7 @@ void blindnessVision( out vec4 myoutput, in vec4 myinput )
 			blindVisionG = vec4( 0.02,  0.82,  0.16, 0.0 );
 			blindVisionB = vec4(-0.06,  0.88,  0.18, 0.0 );
 	} else {
-        	blindVisionR = vec4(1.0,  0.0,  0.0, 0.0 );
+      	  	blindVisionR = vec4(1.0,  0.0,  0.0, 0.0 );
         	blindVisionG = vec4(0.0,  1.0,  0.0, 0.0 );
         	blindVisionB = vec4(0.0,  0.0,  1.0, 0.0 );			
 	}
