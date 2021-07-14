@@ -544,6 +544,14 @@ enable_shaders (Shaders) bool true
 #    Path to shader directory. If no path is defined, default location will be used.
 shader_path (Shader path) path
 
+#    Set the colour blind correction shader.
+#    Value of 0 means no colour blind correection shaders.
+#    Value of 1 means protanopia correction shaders.
+#    Value of 2 means deuteranopia correction shaders.
+#    Value of 3 means tritanopia correction shaders.
+colour_blind_correction (Colour blind correction shaders) int 0 0 3
+
+
 [***Tone Mapping]
 
 #    Enables Hable's 'Uncharted 2' filmic tone mapping.
