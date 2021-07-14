@@ -105,7 +105,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
 		if (!strcasecmp(driverstring.c_str(),
-				RenderingEngine::getVideoDriverName(drivers[i]))) {
+				RenderingEngine::getVideoDriverInfo(drivers[i]).name.c_str())) {
 			driverType = drivers[i];
 			break;
 		}
@@ -555,28 +555,15 @@ void RenderingEngine::draw_scene(video::SColor skycolor, bool show_hud,
 	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 }
 
-const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)
+const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_TYPE type)
 {
-	static const std::unordered_map<irr::video::E_DRIVER_TYPE,const std::string> driver_ids = {
-		{irr::video::EDT_NULL, "null"},
-		{irr::video::EDT_OPENGL, "opengl"},
-		{irr::video::EDT_OGLES1, "ogles1"},
-		{irr::video::EDT_OGLES2, "ogles2"},
+	static const std::unordered_map<int, VideoDriverInfo> driver_info_map = {
+		{(int)video::EDT_NULL,   {"null",   "NULL Driver"}},
+		{(int)video::EDT_OPENGL, {"opengl", "OpenGL"}},
+		{(int)video::EDT_OGLES1, {"ogles1", "OpenGL ES1"}},
+		{(int)video::EDT_OGLES2, {"ogles2", "OpenGL ES2"}},
 	};
-
-	return driver_ids.at(type).c_str();
-}
-
-const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type)
-{
-	static const std::unordered_map<irr::video::E_DRIVER_TYPE,const std::string> driver_names = {
-		{irr::video::EDT_NULL, "NULL Driver"},
-		{irr::video::EDT_OPENGL, "OpenGL"},
-		{irr::video::EDT_OGLES1, "OpenGL ES1"},
-		{irr::video::EDT_OGLES2, "OpenGL ES2"},
-	};
-
-	return driver_names.at(type).c_str();
+	return driver_info_map.at((int)type);
 }
 
 #ifndef __ANDROID__

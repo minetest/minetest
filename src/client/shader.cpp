@@ -740,7 +740,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		s32 shadow_filter = g_settings->getS32("shadow_filters");
 		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";
 
-		float shadow_soft_radius = g_settings->getS32("shadow_soft_radius");
+		float shadow_soft_radius = g_settings->getFloat("shadow_soft_radius");
 		if (shadow_soft_radius < 1.0f)
 			shadow_soft_radius = 1.0f;
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
