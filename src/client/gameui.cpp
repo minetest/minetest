@@ -71,11 +71,14 @@ void GameUI::init()
 			chat_font_size, FM_Unspecified));
 	}
 
-	// At the middle of the screen
-	// Object infos are shown in this
+
+	// Infotext of nodes and objects.
+	// If in debug mode, object debug infos shown here, too.
+	// Located on the left on the screen, below chat.
 	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
 	m_guitext_info = gui::StaticText::add(guienv, L"",
-		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
+		// Size is limited; text will be truncated after 6 lines.
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 6) +
 			v2s32(100, chat_font_height *
 			(g_settings->getU16("recent_chat_messages") + 3)),
 			false, true, guiroot);
