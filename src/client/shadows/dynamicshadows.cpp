@@ -123,7 +123,6 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	// get the draw list for shadows
 	client->getEnv().getClientMap().updateDrawListShadow(
 			getPosition(), getDirection(), future_frustum.length);
-	client->getEnv().getClientMap().updateLightSpaceSections(*this);
 	should_update_map_shadow = true;
 	dirty = true;
 

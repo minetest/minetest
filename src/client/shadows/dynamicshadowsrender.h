@@ -92,7 +92,7 @@ public:
 	float getTimeOfDay() const { return m_time_day; }
 
 private:
-	static constexpr u16 TOTAL_SECTIONS{8}; // Sections of shadow map during update. Needs to be a power of 2, max 16.
+	static constexpr u16 TOTAL_SECTIONS{4}; /* Spread SM update over this number of frames */
 	video::ITexture *getSMTexture(const std::string &shadow_map_name,
 			video::ECOLOR_FORMAT texture_format,
 			bool force_creation = false);
@@ -140,6 +140,7 @@ private:
 	std::string readShaderFile(const std::string &path);
 
 	s32 depth_shader{-1};
+	s32 depth_shader_entities{-1};
 	s32 depth_shader_trans{-1};
 	s32 mixcsm_shader{-1};
 

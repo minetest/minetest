@@ -9,5 +9,5 @@ void main()
 		discard;
 
 	float depth = 0.5 + tPos.z * 0.5;
-	gl_FragColor = vec4(max(depth, gl_FragColor.r), 0.0, 0.0, 1.0);
+	gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
 }

@@ -232,28 +232,33 @@ void ShadowRenderer::updateSMTextures()
 			}
 		}
 
-		if (m_current_section < TOTAL_SECTIONS) {
-			// Update SM incrementally:
-			for (DirectionalLight &light : m_light_list) {
-				// Static shader values.
-				m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
-				m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
+		// Update SM incrementally:
+		for (DirectionalLight &light : m_light_list) {
+			// Static shader values.
+			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
+			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 
-				// set the Render Target
-				// right now we can only render in usual RTT, not
-				// Depth texture is available in irrlicth maybe we
-				// should put some gl* fn here
+			// set the Render Target
+			// right now we can only render in usual RTT, not
+			// Depth texture is available in irrlicth maybe we
+			// should put some gl* fn here
 
+
+			if (m_current_section < TOTAL_SECTIONS) {
 				m_driver->setRenderTarget(shadowMapClientMapFuture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
 				renderShadowMap(shadowMapClientMapFuture, light);
 
-				if (m_shadow_map_colored) {
-					m_driver->setRenderTarget(shadowMapTextureColorsFuture,
-							reset_sm_texture, true, video::SColor(255, 255, 255, 255));
+				// Render transparent part in one pass.
+				// This is also handled in ClientMap.
+				if (m_current_section == 0) {
+					if (m_shadow_map_colored) {
+						m_driver->setRenderTarget(shadowMapTextureColorsFuture,
+								reset_sm_texture, false, video::SColor(255, 255, 255, 255));
+					}
+					renderShadowMap(shadowMapTextureColorsFuture, light,
+							scene::ESNRP_TRANSPARENT);
 				}
-				renderShadowMap(shadowMapTextureColorsFuture, light,
-						scene::ESNRP_TRANSPARENT);
 				m_driver->setRenderTarget(0, false, false);
 			}
 
@@ -385,10 +390,13 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		//material.PolygonOffsetDepthBias = 1.0f/4.0f;
 		//material.PolygonOffsetSlopeScale = -1.f;
 
-		if (m_shadow_map_colored && pass != scene::ESNRP_SOLID)
+		if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;
-		else
+		}
+		else {
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader;
+			material.BlendOperation = video::EBO_MIN;
+		}
 
 		// FIXME: I don't think this is needed here
 		map_node->OnAnimate(m_device->getTimer()->getTime());
@@ -417,8 +425,10 @@ void ShadowRenderer::renderShadowObjects(
 		u32 n_node_materials = shadow_node.node->getMaterialCount();
 		std::vector<s32> BufferMaterialList;
 		std::vector<std::pair<bool, bool>> BufferMaterialCullingList;
+		std::vector<video::E_BLEND_OPERATION> BufferBlendOperationList;
 		BufferMaterialList.reserve(n_node_materials);
 		BufferMaterialCullingList.reserve(n_node_materials);
+		BufferBlendOperationList.reserve(n_node_materials);
 
 		// backup materialtype for each material
 		// (aka shader)
@@ -428,12 +438,11 @@ void ShadowRenderer::renderShadowObjects(
 
 			BufferMaterialList.push_back(current_mat.MaterialType);
 			current_mat.MaterialType =
-					(video::E_MATERIAL_TYPE)depth_shader;
-
-			current_mat.setTexture(3, shadowMapTextureFinal);
+					(video::E_MATERIAL_TYPE)depth_shader_entities;
 
 			BufferMaterialCullingList.emplace_back(
 				(bool)current_mat.BackfaceCulling, (bool)current_mat.FrontfaceCulling);
+			BufferBlendOperationList.push_back(current_mat.BlendOperation);
 
 			current_mat.BackfaceCulling = true;
 			current_mat.FrontfaceCulling = false;
@@ -456,6 +465,7 @@ void ShadowRenderer::renderShadowObjects(
 
 			current_mat.BackfaceCulling = BufferMaterialCullingList[m].first;
 			current_mat.FrontfaceCulling = BufferMaterialCullingList[m].second;
+			current_mat.BlendOperation = BufferBlendOperationList[m];
 		}
 
 	} // end for caster shadow nodes
@@ -496,7 +506,7 @@ void ShadowRenderer::createShaders()
 				readShaderFile(depth_shader_vs).c_str(), "vertexMain",
 				video::EVST_VS_1_1,
 				readShaderFile(depth_shader_fs).c_str(), "pixelMain",
-				video::EPST_PS_1_2, m_shadow_depth_cb);
+				video::EPST_PS_1_2, m_shadow_depth_cb, video::EMT_ONETEXTURE_BLEND);
 
 		if (depth_shader == -1) {
 			// upsi, something went wrong loading shader.
@@ -510,6 +520,41 @@ void ShadowRenderer::createShaders()
 		// Grab the material renderer once more so minetest doesn't crash
 		// on exit
 		m_driver->getMaterialRenderer(depth_shader)->grab();
+	}
+
+	// This creates a clone of depth_shader with base material set to EMT_SOLID,
+	// because entities won't render shadows with base material EMP_ONETEXTURE_BLEND
+	if (depth_shader_entities == -1) {
+		std::string depth_shader_vs = getShaderPath("shadow_shaders", "pass1_vertex.glsl");
+		if (depth_shader_vs.empty()) {
+			m_shadows_enabled = false;
+			errorstream << "Error shadow mapping vs shader not found." << std::endl;
+			return;
+		}
+		std::string depth_shader_fs = getShaderPath("shadow_shaders", "pass1_fragment.glsl");
+		if (depth_shader_fs.empty()) {
+			m_shadows_enabled = false;
+			errorstream << "Error shadow mapping fs shader not found." << std::endl;
+			return;
+		}
+
+		depth_shader_entities = gpu->addHighLevelShaderMaterial(
+				readShaderFile(depth_shader_vs).c_str(), "vertexMain",
+				video::EVST_VS_1_1,
+				readShaderFile(depth_shader_fs).c_str(), "pixelMain",
+				video::EPST_PS_1_2, m_shadow_depth_cb);
+
+		if (depth_shader_entities == -1) {
+			// upsi, something went wrong loading shader.
+			m_shadows_enabled = false;
+			errorstream << "Error compiling shadow mapping shader (dynamic)." << std::endl;
+			return;
+		}
+
+		// HACK, TODO: investigate this better
+		// Grab the material renderer once more so minetest doesn't crash
+		// on exit
+		m_driver->getMaterialRenderer(depth_shader_entities)->grab();
 	}
 
 	if (mixcsm_shader == -1) {

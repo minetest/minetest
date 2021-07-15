@@ -650,15 +650,25 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	MeshBufListList drawbufs;
 
+	int count = 0;
+	int low_bound = is_transparent_pass ? 0 : m_drawlist_shadow.size() / total_sections * section;
+	int high_bound = is_transparent_pass ? m_drawlist_shadow.size() : m_drawlist_shadow.size() / total_sections * (section + 1);
+
+	// transparent pass should be rendered in one go
+	if (is_transparent_pass && section != 0) {
+		return;
+	}
 
 	for (auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
+		++count;
+		if (count <= low_bound)
+			continue;
+		if (count > high_bound)
+			break;
 
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
-
-		if (block->light_space_section % total_sections != section)
-			continue;
 
 		// If the mesh of the block happened to get deleted, ignore it
 		if (!block->mesh)
@@ -711,6 +721,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.MaterialType = material.MaterialType;
 				local_material.BackfaceCulling = material.BackfaceCulling;
 				local_material.FrontfaceCulling = material.FrontfaceCulling;
+				local_material.BlendOperation = material.BlendOperation;
 				local_material.Lighting = false;
 				driver->setMaterial(local_material);
 
@@ -726,6 +737,12 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 	}
 
+	// restore the driver material state 
+	video::SMaterial clean;
+	clean.BlendOperation = video::EBO_ADD;
+	driver->setMaterial(clean); // reset material to defaults
+	driver->draw3DLine(v3f(), v3f(), video::SColor(0));
+	
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
@@ -823,17 +840,4 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
-}
-
-void ClientMap::updateLightSpaceSections(const DirectionalLight &light)
-{
-	ScopeProfiler sp(g_profiler, "CM::updateLightSpaceSections()", SPT_AVG);
-
-	const core::matrix4 &lightMatrix = light.getProjectionMatrix();
-	for (auto &i : m_drawlist_shadow) {
-		v3s16 block_pos = i.first;
-		v3f block_pos_f = intToFloat(block_pos, BS);
-		lightMatrix.transformVect(block_pos_f);
-		i.second->light_space_section = (int(2 * (block_pos_f.X + 1.0)) * 4 + int(2 * (block_pos_f.Y + 1.0)));
-	}
 }

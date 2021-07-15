@@ -56,7 +56,6 @@ struct MeshBufListList
 
 class Client;
 class ITextureSource;
-class DirectionalLight;
 
 /*
 	ClientMap
@@ -123,7 +122,6 @@ public:
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
 	void updateDrawList();
 	void updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range);
-	void updateLightSpaceSections(const DirectionalLight &light);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	void renderMapShadows(video::IVideoDriver *driver,
