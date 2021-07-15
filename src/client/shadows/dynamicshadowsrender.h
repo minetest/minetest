@@ -114,7 +114,6 @@ private:
 	video::ITexture *shadowMapTextureFinal{nullptr};
 	video::ITexture *shadowMapTextureDynamicObjects{nullptr};
 	video::ITexture *shadowMapTextureColors{nullptr};
-	video::ITexture *shadowMapTextureColorsFuture{nullptr};
 	video::SColor m_clear_color{0x0};
 	u16 m_current_section{TOTAL_SECTIONS + 1};
 

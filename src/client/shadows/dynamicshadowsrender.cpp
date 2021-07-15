@@ -65,9 +65,6 @@ ShadowRenderer::~ShadowRenderer()
 	if (shadowMapTextureColors)
 		m_driver->removeTexture(shadowMapTextureColors);
 
-	if (shadowMapTextureColorsFuture)
-		m_driver->removeTexture(shadowMapTextureColorsFuture);
-
 	if (shadowMapClientMap)
 		m_driver->removeTexture(shadowMapClientMap);
 
@@ -194,13 +191,6 @@ void ShadowRenderer::updateSMTextures()
 			true);
 	}
 
-	if (m_shadow_map_colored && !shadowMapTextureColorsFuture) {
-		shadowMapTextureColorsFuture = getSMTexture(
-			std::string("shadow_colored_bb_") + itos(m_shadow_map_texture_size),
-			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
-			true);
-	}
-
 	// The merge all shadowmaps texture
 	if (!shadowMapTextureFinal) {
 		video::ECOLOR_FORMAT frt;
@@ -251,12 +241,12 @@ void ShadowRenderer::updateSMTextures()
 
 				// Render transparent part in one pass.
 				// This is also handled in ClientMap.
-				if (m_current_section == 0) {
+				if (m_current_section == TOTAL_SECTIONS - 1) {
 					if (m_shadow_map_colored) {
-						m_driver->setRenderTarget(shadowMapTextureColorsFuture,
-								reset_sm_texture, false, video::SColor(255, 255, 255, 255));
+						m_driver->setRenderTarget(shadowMapTextureColors,
+								true, false, video::SColor(255, 255, 255, 255));
 					}
-					renderShadowMap(shadowMapTextureColorsFuture, light,
+					renderShadowMap(shadowMapTextureColors, light,
 							scene::ESNRP_TRANSPARENT);
 				}
 				m_driver->setRenderTarget(0, false, false);
@@ -271,7 +261,6 @@ void ShadowRenderer::updateSMTextures()
 		// pass finished, swap textures and commit light changes
 		if (m_current_section == TOTAL_SECTIONS) {
 			std::swap(shadowMapClientMapFuture, shadowMapClientMap);
-			std::swap(shadowMapTextureColorsFuture, shadowMapTextureColors);
 
 			// Let all lights know that maps are updated
 			for (DirectionalLight &light:m_light_list)

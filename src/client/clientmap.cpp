@@ -655,7 +655,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	int high_bound = is_transparent_pass ? m_drawlist_shadow.size() : m_drawlist_shadow.size() / total_sections * (section + 1);
 
 	// transparent pass should be rendered in one go
-	if (is_transparent_pass && section != 0) {
+	if (is_transparent_pass && section != total_sections - 1) {
 		return;
 	}
 
