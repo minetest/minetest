@@ -1022,7 +1022,8 @@ The function of `param2` is determined by `paramtype2` in node definition.
       to access/manipulate the content of this field
     * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
-    * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
+    * Supported drawtypes: "torchlike", "signlike", "plantlike",
+      "plantlike_rooted", "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`
     * You can make this value by using `minetest.dir_to_wallmounted()`
     * Values range 0 - 5
@@ -1198,7 +1199,12 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `plantlike_rooted`
     * Enables underwater `plantlike` without air bubbles around the nodes.
     * Consists of a base cube at the co-ordinates of the node plus a
-      `plantlike` extension above with a height of `param2 / 16` nodes.
+      `plantlike` extension above
+    * If `paramtype2="leveled", the `plantlike` extension has a height
+      of `param2 / 16` nodes, otherwise it's the height of 1 node
+    * If `paramtype2="wallmounted"`, the `plantlike` extension
+      will be at one of the corresponding 6 sides of the base cube.
+      Also, the base cube rotates like a `normal` cube would
     * The `plantlike` extension visually passes through any nodes above the
       base cube without affecting them.
     * The base cube texture tiles are defined as normal, the `plantlike`

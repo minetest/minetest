@@ -208,6 +208,19 @@ minetest.register_node("testnodes:plantlike_waving", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:plantlike_wallmounted", {
+	description = S("Wallmounted Plantlike Drawtype Test Node"),
+	drawtype = "plantlike",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	tiles = { "testnodes_plantlike_wallmounted.png" },
+	leveled = 1,
+
+
+	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
 
 
 -- param2 will rotate
@@ -316,6 +329,20 @@ minetest.register_node("testnodes:plantlike_rooted", {
 	paramtype = "light",
 	tiles = { "testnodes_plantlike_rooted_base.png" },
 	special_tiles = { "testnodes_plantlike_rooted.png" },
+
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:plantlike_rooted_wallmounted", {
+	description = S("Wallmounted Rooted Plantlike Drawtype Test Node"),
+	drawtype = "plantlike_rooted",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	tiles = {
+		"testnodes_plantlike_rooted_base.png",
+		"testnodes_plantlike_rooted_base.png",
+		"testnodes_plantlike_rooted_base_side_wallmounted.png" },
+	special_tiles = { "testnodes_plantlike_rooted_wallmounted.png" },
 
 	groups = { dig_immediate = 3 },
 })
@@ -588,6 +615,9 @@ scale("allfaces_optional_waving",
 scale("plantlike",
 	S("Double-sized Plantlike Drawtype Test Node"),
 	S("Half-sized Plantlike Drawtype Test Node"))
+scale("plantlike_wallmounted",
+	S("Double-sized Wallmounted Plantlike Drawtype Test Node"),
+	S("Half-sized Wallmounted Plantlike Drawtype Test Node"))
 scale("torchlike_wallmounted",
 	S("Double-sized Wallmounted Torchlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Torchlike Drawtype Test Node"))
