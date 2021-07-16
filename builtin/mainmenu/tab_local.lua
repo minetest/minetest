@@ -17,7 +17,7 @@
 
 
 local enable_gamebar = PLATFORM ~= "Android"
-local current_game, singleplayer_refresh_gamebar
+local current_game, selected_game, singleplayer_refresh_gamebar
 local valid_disabled_settings = {
 	["enable_damage"]=true,
 	["creative_mode"]=true,
@@ -25,12 +25,16 @@ local valid_disabled_settings = {
 }
 
 if enable_gamebar then
+	-- Currently chosen game in gamebar for theming and filtering
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
 		local game = pkgmgr.find_by_gameid(last_game_id)
 
 		return game
 	end
+
+	-- Game of currently-selected world, assumed always == current_game due to filtering
+	selected_game = current_game
 
 	function singleplayer_refresh_gamebar()
 
@@ -107,14 +111,26 @@ if enable_gamebar then
 		btnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))
 	end
 else
+	-- Currently chosen game in gamebar: no gamebar -> no "current" game
 	function current_game()
 		return nil
+	end
+
+	-- Game of currently-selected world, used for disabling settings
+	function selected_game()
+		local list = menudata.worldlist:get_list()
+		local index = filterlist.get_current_index(menudata.worldlist,
+			tonumber(core.settings:get("mainmenu_last_selected_world")))
+		local world = list and index and list[index]
+		local gameid = world and world.gameid
+		print(dump({world = world, gameid = gameid}))
+		return gameid and pkgmgr.find_by_gameid(gameid)
 	end
 end
 
 local function get_disabled_settings(game)
 	if not game then
-		game = current_game()
+		game = selected_game()
 	end
 	local gameconfig
 	if game ~= nil then
