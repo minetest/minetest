@@ -92,7 +92,6 @@ public:
 	float getTimeOfDay() const { return m_time_day; }
 
 private:
-	static constexpr u16 TOTAL_SECTIONS{4}; /* Spread SM update over this number of frames */
 	video::ITexture *getSMTexture(const std::string &shadow_map_name,
 			video::ECOLOR_FORMAT texture_format,
 			bool force_creation = false);
@@ -115,7 +114,6 @@ private:
 	video::ITexture *shadowMapTextureDynamicObjects{nullptr};
 	video::ITexture *shadowMapTextureColors{nullptr};
 	video::SColor m_clear_color{0x0};
-	u16 m_current_section{TOTAL_SECTIONS + 1};
 
 	std::vector<DirectionalLight> m_light_list;
 	std::vector<NodeToApply> m_shadow_node_array;
@@ -129,6 +127,8 @@ private:
 	bool m_shadow_map_texture_32bit;
 	bool m_shadows_enabled;
 	bool m_shadow_map_colored;
+	u8 m_map_shadow_update_frames; /* Use this number of frames to update map shaodw */
+	u16 m_current_frame{0}; /* Current frame */
 
 	video::ECOLOR_FORMAT m_texture_format{video::ECOLOR_FORMAT::ECF_R16F};
 	video::ECOLOR_FORMAT m_texture_format_color{video::ECOLOR_FORMAT::ECF_R16G16};

@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_device(device), m_smgr(device->getSceneManager()),
-		m_driver(device->getVideoDriver()), m_client(client)
+		m_driver(device->getVideoDriver()), m_client(client), m_current_frame(0)
 {
 	m_shadows_enabled = true;
 
@@ -45,6 +45,7 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 	m_shadow_map_colored = g_settings->getBool("shadow_map_color");
 	m_shadow_samples = g_settings->getS32("shadow_filters");
 	m_update_delta = g_settings->getFloat("shadow_update_time");
+	m_map_shadow_update_frames = g_settings->getS16("shadow_update_frames");
 }
 
 ShadowRenderer::~ShadowRenderer()
@@ -217,7 +218,7 @@ void ShadowRenderer::updateSMTextures()
 		for (DirectionalLight &light : m_light_list) {
 			if (light.should_update_map_shadow) {
 				light.should_update_map_shadow = false;
-				m_current_section = 0;
+				m_current_frame = 0;
 				reset_sm_texture = true;
 			}
 		}
@@ -234,14 +235,14 @@ void ShadowRenderer::updateSMTextures()
 			// should put some gl* fn here
 
 
-			if (m_current_section < TOTAL_SECTIONS) {
+			if (m_current_frame < m_map_shadow_update_frames) {
 				m_driver->setRenderTarget(shadowMapClientMapFuture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
 				renderShadowMap(shadowMapClientMapFuture, light);
 
 				// Render transparent part in one pass.
 				// This is also handled in ClientMap.
-				if (m_current_section == TOTAL_SECTIONS - 1) {
+				if (m_current_frame == m_map_shadow_update_frames - 1) {
 					if (m_shadow_map_colored) {
 						m_driver->setRenderTarget(shadowMapTextureColors,
 								true, false, video::SColor(255, 255, 255, 255));
@@ -256,10 +257,10 @@ void ShadowRenderer::updateSMTextures()
 		} // end for lights
 
 		// move to the next section
-		++m_current_section;
+		++m_current_frame;
 
 		// pass finished, swap textures and commit light changes
-		if (m_current_section == TOTAL_SECTIONS) {
+		if (m_current_frame == m_map_shadow_update_frames) {
 			std::swap(shadowMapClientMapFuture, shadowMapClientMap);
 
 			// Let all lights know that maps are updated
@@ -393,7 +394,7 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
 
-		map_node->renderMapShadows(m_driver, material, pass, m_current_section, TOTAL_SECTIONS);
+		map_node->renderMapShadows(m_driver, material, pass, m_current_frame, m_map_shadow_update_frames);
 		break;
 	}
 }

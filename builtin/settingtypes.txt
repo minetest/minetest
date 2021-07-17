@@ -624,6 +624,12 @@ shadow_map_color (Colored shadows) bool false
 #    Minimum value: 0.001; maximum value: 0.2
 shadow_update_time (Map update time) float 0.2 0.001 0.2
 
+#    Use this number of frames to update map shadows.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+shadow_update_frames (Map shadows update frames) int 8 1 16
+
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
 #    Minimum value: 1.0; maxiumum value: 10.0
