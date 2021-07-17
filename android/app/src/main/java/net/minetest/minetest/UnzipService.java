@@ -27,7 +27,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Environment;
 import android.widget.Toast;
 
 import java.io.File;
@@ -53,12 +52,6 @@ public class UnzipService extends IntentService {
 
 	public UnzipService() {
 		super("net.minetest.minetest.UnzipService");
-	}
-
-	private void isDir(String dir, String location) {
-		File f = new File(location, dir);
-		if (!f.isDirectory())
-			f.mkdirs();
 	}
 
 	@Override
@@ -100,8 +93,8 @@ public class UnzipService extends IntentService {
 
 	private void unzip(Intent intent) {
 		String zip = intent.getStringExtra(EXTRA_KEY_IN_FILE);
-		isDir("Minetest", Environment.getExternalStorageDirectory().toString());
-		String location = Environment.getExternalStorageDirectory() + File.separator + "Minetest" + File.separator;
+		File location = Utils.getUserDataDirectory(this);
+
 		int per = 0;
 		int size = getSummarySize(zip);
 		File zipFile = new File(zip);
@@ -113,10 +106,10 @@ public class UnzipService extends IntentService {
 			while ((ze = zipInputStream.getNextEntry()) != null) {
 				if (ze.isDirectory()) {
 					++per;
-					isDir(ze.getName(), location);
+					Utils.createDirs(location, ze.getName());
 				} else {
 					publishProgress(100 * ++per / size);
-					try (OutputStream outputStream = new FileOutputStream(location + ze.getName())) {
+					try (OutputStream outputStream = new FileOutputStream(new File(location, ze.getName()))) {
 						while ((readLen = zipInputStream.read(readBuffer)) != -1) {
 							outputStream.write(readBuffer, 0, readLen);
 						}
