@@ -44,7 +44,6 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 	m_shadow_map_texture_32bit = g_settings->getBool("shadow_map_texture_32bit");
 	m_shadow_map_colored = g_settings->getBool("shadow_map_color");
 	m_shadow_samples = g_settings->getS32("shadow_filters");
-	m_update_delta = g_settings->getFloat("shadow_update_time");
 	m_map_shadow_update_frames = g_settings->getS16("shadow_update_frames");
 }
 
@@ -97,11 +96,6 @@ void ShadowRenderer::initialize()
 						 : video::ECOLOR_FORMAT::ECF_G16R16F;
 }
 
-
-float ShadowRenderer::getUpdateDelta() const
-{
-	return m_update_delta;
-}
 
 size_t ShadowRenderer::addDirectionalLight()
 {

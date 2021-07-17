@@ -609,7 +609,6 @@ struct GameRunData {
 	float jump_timer;
 	float damage_flash;
 	float update_draw_list_timer;
-	float update_shadows_timer;
 
 	f32 fog_range;
 
@@ -3881,10 +3880,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		changed much
 	*/
 	runData.update_draw_list_timer += dtime;
-	runData.update_shadows_timer += dtime;
 
 	float update_draw_list_delta = 0.2f;
-	bool draw_list_updated = false;
 
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= update_draw_list_delta
@@ -3894,18 +3891,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
-		draw_list_updated = true;
 	}
 
-	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
-		update_draw_list_delta = shadow->getUpdateDelta();
-
-		if (m_camera_offset_changed ||
-				(runData.update_shadows_timer > update_draw_list_delta &&
-				(!draw_list_updated || shadow->getDirectionalLightCount() == 0))) {
-			runData.update_shadows_timer = 0;
-			updateShadows();
-		}
+	if (RenderingEngine::get_shadow_renderer()) {
+		updateShadows();
 	}
 
 	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
