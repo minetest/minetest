@@ -27,7 +27,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Environment;
 import android.widget.Toast;
+
+import androidx.annotation.StringRes;
+
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,9 +47,11 @@ import java.util.zip.ZipInputStream;
 public class UnzipService extends IntentService {
 	public static final String ACTION_UPDATE = "net.minetest.minetest.UPDATE";
 	public static final String ACTION_PROGRESS = "net.minetest.minetest.PROGRESS";
+	public static final String ACTION_PROGRESS_MESSAGE = "net.minetest.minetest.PROGRESS_MESSAGE";
 	public static final String ACTION_FAILURE = "net.minetest.minetest.FAILURE";
 	public static final int SUCCESS = -1;
 	public static final int FAILURE = -2;
+	public static final int INDETERMINATE = -3;
 	private final int id = 1;
 	private NotificationManager mNotifyManager;
 	private boolean isSuccess = true;
@@ -58,29 +65,26 @@ public class UnzipService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		createNotification();
 
-		final File zipName = new File(getCacheDir(), "Minetest.zip");
+		final File zipFile = new File(getCacheDir(), "Minetest.zip");
 		try {
-			copyAsset(zipName.getAbsolutePath());
-			unzip(zipName);
+			File userDataDirectory = Utils.getUserDataDirectory(this);
+			if (userDataDirectory == null) {
+				throw new IOException("Unable to find user data directory");
+			}
+
+			try (InputStream in = this.getAssets().open(zipFile.getName())) {
+				FileUtils.copyToFile(in, zipFile);
+			}
+
+			migrate(userDataDirectory);
+			unzip(zipFile, userDataDirectory);
 		} catch (IOException e) {
 			isSuccess = false;
 			failureMessage = e.getLocalizedMessage();
+		} finally {
+			if (zipFile.isFile())
+				zipFile.delete();
 		}
-	}
-
-	private void copyAsset(String zipName) throws IOException {
-		String filename = zipName.substring(zipName.lastIndexOf("/") + 1);
-		try (InputStream in = this.getAssets().open(filename);
-			 OutputStream out = new FileOutputStream(zipName)) {
-			copyFile(in, out);
-		}
-	}
-
-	private void copyFile(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int read;
-		while ((read = in.read(buffer)) != -1)
-			out.write(buffer, 0, read);
 	}
 
 	private void createNotification() {
@@ -114,11 +118,13 @@ public class UnzipService extends IntentService {
 		mNotifyManager.notify(id, builder.build());
 	}
 
-	private void unzip(File zipFile) throws IOException {
-		File location = Utils.getUserDataDirectory(this);
-
+	private void unzip(File zipFile, File userDataDirectory) throws IOException {
 		int per = 0;
-		int size = getSummarySize(zipFile.getAbsolutePath());
+		int size = 0;
+		try (ZipFile zipSize = new ZipFile(zipFile)) {
+			size += zipSize.size();
+		}
+
 		int readLen;
 		byte[] readBuffer = new byte[8192];
 		try (FileInputStream fileInputStream = new FileInputStream(zipFile);
@@ -127,42 +133,62 @@ public class UnzipService extends IntentService {
 			while ((ze = zipInputStream.getNextEntry()) != null) {
 				if (ze.isDirectory()) {
 					++per;
-					Utils.createDirs(location, ze.getName());
+					Utils.createDirs(userDataDirectory, ze.getName());
 				} else {
-					publishProgress(100 * ++per / size);
-					try (OutputStream outputStream = new FileOutputStream(new File(location, ze.getName()))) {
+					publishProgress(R.string.loading, 100 * ++per / size);
+					try (OutputStream outputStream = new FileOutputStream(
+							new File(userDataDirectory, ze.getName()))) {
 						while ((readLen = zipInputStream.read(readBuffer)) != -1) {
 							outputStream.write(readBuffer, 0, readLen);
 						}
 					}
 				}
-				zipFile.delete();
 			}
 		}
 	}
 
-	private void publishProgress(int progress) {
-		Intent intentUpdate = new Intent(ACTION_UPDATE);
-		intentUpdate.putExtra(ACTION_PROGRESS, progress);
-		if (!isSuccess) intentUpdate.putExtra(ACTION_FAILURE, failureMessage);
-		sendBroadcast(intentUpdate);
+	/**
+	 * Migrates user data from deprecated external storage to app scoped storage
+	 */
+	private void migrate(File newLocation) throws IOException {
+		File oldLocation = new File(Environment.getExternalStorageDirectory(), "Minetest");
+		if (!oldLocation.isDirectory())
+			return;
+
+		publishProgress(R.string.migrating, 0);
+
+		String[] dirs = new String[] { "worlds", "games", "mods", "textures", "client" };
+		for (int i = 0; i < dirs.length; i++) {
+			publishProgress(R.string.migrating, 100 * i / dirs.length);
+			File dir = new File(oldLocation, dirs[i]);
+			if (dir.isDirectory() && !new File(newLocation, dirs[i]).isDirectory()) {
+				FileUtils.moveDirectoryToDirectory(dir, newLocation, true);
+			}
+		}
+
+		for (String filename : new String[] { "minetest.conf" }) {
+			File file = new File(oldLocation, filename);
+			if (file.isFile() && !new File(newLocation, filename).isFile()) {
+				FileUtils.moveFileToDirectory(file, newLocation, true);
+			}
+		}
+
+		FileUtils.deleteDirectory(oldLocation);
 	}
 
-	private int getSummarySize(String zip) {
-		int size = 0;
-		try {
-			ZipFile zipSize = new ZipFile(zip);
-			size += zipSize.size();
-		} catch (IOException e) {
-			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-		}
-		return size;
+	private void publishProgress(@StringRes int message, int progress) {
+		Intent intentUpdate = new Intent(ACTION_UPDATE);
+		intentUpdate.putExtra(ACTION_PROGRESS, progress);
+		intentUpdate.putExtra(ACTION_PROGRESS_MESSAGE, message);
+		if (!isSuccess)
+			intentUpdate.putExtra(ACTION_FAILURE, failureMessage);
+		sendBroadcast(intentUpdate);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		mNotifyManager.cancel(id);
-		publishProgress(isSuccess ? SUCCESS : FAILURE);
+		publishProgress(R.string.loading, isSuccess ? SUCCESS : FAILURE);
 	}
 }

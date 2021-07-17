@@ -29,12 +29,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -45,8 +47,10 @@ import java.util.List;
 
 import static net.minetest.minetest.UnzipService.ACTION_FAILURE;
 import static net.minetest.minetest.UnzipService.ACTION_PROGRESS;
+import static net.minetest.minetest.UnzipService.ACTION_PROGRESS_MESSAGE;
 import static net.minetest.minetest.UnzipService.ACTION_UPDATE;
 import static net.minetest.minetest.UnzipService.FAILURE;
+import static net.minetest.minetest.UnzipService.INDETERMINATE;
 import static net.minetest.minetest.UnzipService.SUCCESS;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,26 +60,40 @@ public class MainActivity extends AppCompatActivity {
 			new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 	private static final String SETTINGS = "MinetestSettings";
 	private static final String TAG_VERSION_CODE = "versionCode";
+
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
 	private SharedPreferences sharedPreferences;
+
 	private final BroadcastReceiver myReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int progress = 0;
-			if (intent != null)
+			@StringRes int message = 0;
+			if (intent != null) {
 				progress = intent.getIntExtra(ACTION_PROGRESS, 0);
-			if (progress >= 0) {
-				if (mProgressBar != null) {
-					mProgressBar.setVisibility(View.VISIBLE);
-					mProgressBar.setProgress(progress);
-				}
-				mTextView.setVisibility(View.VISIBLE);
-			} else if (progress == FAILURE) {
+				message = intent.getIntExtra(ACTION_PROGRESS_MESSAGE, 0);
+			}
+
+			if (progress == FAILURE) {
 				Toast.makeText(MainActivity.this, intent.getStringExtra(ACTION_FAILURE), Toast.LENGTH_LONG).show();
 				finish();
-			} else if (progress == SUCCESS)
+			} else if (progress == SUCCESS) {
 				startNative();
+			} else {
+				if (mProgressBar != null) {
+					mProgressBar.setVisibility(View.VISIBLE);
+					if (progress == INDETERMINATE) {
+						mProgressBar.setIndeterminate(true);
+					} else {
+						mProgressBar.setIndeterminate(false);
+						mProgressBar.setProgress(progress);
+					}
+				}
+				mTextView.setVisibility(View.VISIBLE);
+				if (message != 0)
+					mTextView.setText(message);
+			}
 		}
 	};
 
@@ -120,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 				if (grantResult != PackageManager.PERMISSION_GRANTED) {
 					Toast.makeText(this, R.string.not_granted, Toast.LENGTH_LONG).show();
 					finish();
+					return;
 				}
 			}
 			checkAppVersion();
@@ -127,9 +146,19 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void checkAppVersion() {
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			Toast.makeText(this, R.string.no_external_storage, Toast.LENGTH_LONG).show();
+			finish();
+			return;
+		}
+
 		if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode) {
 			startNative();
 		} else {
+			mProgressBar.setVisibility(View.VISIBLE);
+			mProgressBar.setIndeterminate(true);
+			mTextView.setVisibility(View.VISIBLE);
+
 			Intent intent = new Intent(this, UnzipService.class);
 			startService(intent);
 		}
