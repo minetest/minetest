@@ -165,11 +165,11 @@ EmergeManager::EmergeManager(Server *server)
 	if (nthreads < 1)
 		nthreads = 1;
 
-	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
+	m_qlimit_total = g_settings->getU32("emergequeue_limit_total");
 	// FIXME: these fallback values are probably not good
-	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
+	if (!g_settings->getU32NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
 		m_qlimit_diskonly = nthreads * 5 + 1;
-	if (!g_settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))
+	if (!g_settings->getU32NoEx("emergequeue_limit_generate", m_qlimit_generate))
 		m_qlimit_generate = nthreads + 1;
 
 	// don't trust user input for something very important like this
@@ -425,14 +425,14 @@ bool EmergeManager::pushBlockEmergeData(
 	void *callback_param,
 	bool *entry_already_exists)
 {
-	u16 &count_peer = m_peer_queue_count[peer_requested];
+	u32 &count_peer = m_peer_queue_count[peer_requested];
 
 	if ((flags & BLOCK_EMERGE_FORCE_QUEUE) == 0) {
 		if (m_blocks_enqueued.size() >= m_qlimit_total)
 			return false;
 
 		if (peer_requested != PEER_ID_INEXISTENT) {
-			u16 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
+			u32 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
 				m_qlimit_generate : m_qlimit_diskonly;
 			if (count_peer >= qlimit_peer)
 				return false;
@@ -468,7 +468,7 @@ bool EmergeManager::pushBlockEmergeData(
 bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
 	std::map<v3s16, BlockEmergeData>::iterator it;
-	std::unordered_map<u16, u16>::iterator it2;
+	std::unordered_map<u16, u32>::iterator it2;
 
 	it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
@@ -480,7 +480,8 @@ bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 	if (it2 == m_peer_queue_count.end())
 		return false;
 
-	u16 &count_peer = it2->second;
+	u32 &count_peer = it2->second;
+
 	assert(count_peer != 0);
 	count_peer--;
 
