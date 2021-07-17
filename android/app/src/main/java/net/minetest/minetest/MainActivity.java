@@ -127,10 +127,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void checkAppVersion() {
-		if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode)
+		if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode) {
 			startNative();
-		else
-			new CopyZipTask(this).execute(getCacheDir() + "/Minetest.zip");
+		} else {
+			Intent intent = new Intent(this, UnzipService.class);
+			startService(intent);
+		}
 	}
 
 	private void startNative() {

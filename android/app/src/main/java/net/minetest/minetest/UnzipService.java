@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -42,7 +43,6 @@ public class UnzipService extends IntentService {
 	public static final String ACTION_UPDATE = "net.minetest.minetest.UPDATE";
 	public static final String ACTION_PROGRESS = "net.minetest.minetest.PROGRESS";
 	public static final String ACTION_FAILURE = "net.minetest.minetest.FAILURE";
-	public static final String EXTRA_KEY_IN_FILE = "file";
 	public static final int SUCCESS = -1;
 	public static final int FAILURE = -2;
 	private final int id = 1;
@@ -57,7 +57,30 @@ public class UnzipService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		createNotification();
-		unzip(intent);
+
+		final File zipName = new File(getCacheDir(), "Minetest.zip");
+		try {
+			copyAsset(zipName.getAbsolutePath());
+			unzip(zipName);
+		} catch (IOException e) {
+			isSuccess = false;
+			failureMessage = e.getLocalizedMessage();
+		}
+	}
+
+	private void copyAsset(String zipName) throws IOException {
+		String filename = zipName.substring(zipName.lastIndexOf("/") + 1);
+		try (InputStream in = this.getAssets().open(filename);
+			 OutputStream out = new FileOutputStream(zipName)) {
+			copyFile(in, out);
+		}
+	}
+
+	private void copyFile(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[1024];
+		int read;
+		while ((read = in.read(buffer)) != -1)
+			out.write(buffer, 0, read);
 	}
 
 	private void createNotification() {
@@ -91,13 +114,11 @@ public class UnzipService extends IntentService {
 		mNotifyManager.notify(id, builder.build());
 	}
 
-	private void unzip(Intent intent) {
-		String zip = intent.getStringExtra(EXTRA_KEY_IN_FILE);
+	private void unzip(File zipFile) throws IOException {
 		File location = Utils.getUserDataDirectory(this);
 
 		int per = 0;
-		int size = getSummarySize(zip);
-		File zipFile = new File(zip);
+		int size = getSummarySize(zipFile.getAbsolutePath());
 		int readLen;
 		byte[] readBuffer = new byte[8192];
 		try (FileInputStream fileInputStream = new FileInputStream(zipFile);
@@ -117,9 +138,6 @@ public class UnzipService extends IntentService {
 				}
 				zipFile.delete();
 			}
-		} catch (IOException e) {
-			isSuccess = false;
-			failureMessage = e.getLocalizedMessage();
 		}
 	}
 
