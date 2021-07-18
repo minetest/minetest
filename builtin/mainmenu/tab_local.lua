@@ -17,7 +17,7 @@
 
 
 local enable_gamebar = PLATFORM ~= "Android"
-local current_game, selected_game, singleplayer_refresh_gamebar
+local current_game, singleplayer_refresh_gamebar
 local valid_disabled_settings = {
 	["enable_damage"]=true,
 	["creative_mode"]=true,
@@ -32,9 +32,6 @@ if enable_gamebar then
 
 		return game
 	end
-
-	-- Game of currently-selected world, assumed always == current_game due to filtering
-	selected_game = current_game
 
 	function singleplayer_refresh_gamebar()
 
@@ -115,28 +112,14 @@ else
 	function current_game()
 		return nil
 	end
-
-	-- Game of currently-selected world, used for disabling settings
-	function selected_game()
-		local list = menudata.worldlist:get_list()
-		local index = filterlist.get_current_index(menudata.worldlist,
-			tonumber(core.settings:get("mainmenu_last_selected_world")))
-		local world = list and index and list[index]
-		local gameid = world and world.gameid
-		print(dump({world = world, gameid = gameid}))
-		return gameid and pkgmgr.find_by_gameid(gameid)
-	end
 end
 
 local function get_disabled_settings(game)
 	if not game then
-		game = selected_game()
+		return {}
 	end
-	local gameconfig
-	if game ~= nil then
-		local gamepath = game.path
-		gameconfig = Settings(gamepath.."/game.conf")
-	end
+
+	local gameconfig = Settings(game.path .. "/game.conf")
 	local disabled_settings = {}
 	if gameconfig then
 		local disabled_settings_str = (gameconfig:get("disabled_settings") or ""):split()
@@ -161,9 +144,12 @@ local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 
 	local index = filterlist.get_current_index(menudata.worldlist,
-				tonumber(core.settings:get("mainmenu_last_selected_world"))
-				)
-	local disabled_settings = get_disabled_settings()
+				tonumber(core.settings:get("mainmenu_last_selected_world")))
+	local list = menudata.worldlist:get_list()
+	local world = list and index and list[index]
+	local gameid = world and world.gameid
+	local game = gameid and pkgmgr.find_by_gameid(gameid)
+	local disabled_settings = get_disabled_settings(game)
 
 	local creative, damage, host = "", "", ""
 
