@@ -152,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
 			return;
 		}
 
-		if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode) {
+		if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode &&
+				Utils.isInstallValid(this)) {
 			startNative();
 		} else {
 			mProgressBar.setVisibility(View.VISIBLE);

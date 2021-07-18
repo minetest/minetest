@@ -30,4 +30,13 @@ public class Utils {
 	public static @Nullable File getCacheDirectory(Context context) {
 		return context.getCacheDir();
 	}
+
+	public static boolean isInstallValid(Context context) {
+		File userDataDirectory = getUserDataDirectory(context);
+		return userDataDirectory != null && userDataDirectory.isDirectory() &&
+			new File(userDataDirectory, "games").isDirectory() &&
+			new File(userDataDirectory, "builtin").isDirectory() &&
+			new File(userDataDirectory, "client").isDirectory() &&
+			new File(userDataDirectory, "textures").isDirectory();
+	}
 }
