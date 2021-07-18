@@ -176,9 +176,9 @@ JoystickLayout create_dragonrise_gamecube_layout()
 
 	// Front right buttons
 	JLO_B_PB(KeyType::JUMP,  1 << 2, 1 << 2); // A Button
-	JLO_B_PB(KeyType::AUX1,  1 << 3, 1 << 3); // B Button
+	JLO_B_PB(KeyType::SNEAK, 1 << 3, 1 << 3); // B Button
 	JLO_B_PB(KeyType::DROP,  1 << 0, 1 << 0); // Y Button
-	JLO_B_PB(KeyType::SNEAK, 1 << 0, 1 << 0); // X Button
+	JLO_B_PB(KeyType::AUX1,  1 << 1, 1 << 1); // X Button
 
 	// Triggers
 	JLO_B_PB(KeyType::DIG,       1 << 4, 1 << 4); // L Trigger
