@@ -172,7 +172,7 @@ void ShadowRenderer::updateSMTextures()
 			true);
 	}
 
-	if (!shadowMapClientMapFuture) {
+	if (!shadowMapClientMapFuture && m_map_shadow_update_frames > 1) {
 		shadowMapClientMapFuture = getSMTexture(
 			std::string("shadow_clientmap_bb_") + itos(m_shadow_map_texture_size),
 			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
@@ -217,6 +217,10 @@ void ShadowRenderer::updateSMTextures()
 			}
 		}
 
+		video::ITexture* shadowMapTargetTexture = shadowMapClientMapFuture;
+		if (shadowMapTargetTexture == nullptr)
+			shadowMapTargetTexture = shadowMapClientMap;
+
 		// Update SM incrementally:
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values.
@@ -230,9 +234,9 @@ void ShadowRenderer::updateSMTextures()
 
 
 			if (m_current_frame < m_map_shadow_update_frames) {
-				m_driver->setRenderTarget(shadowMapClientMapFuture, reset_sm_texture, true,
+				m_driver->setRenderTarget(shadowMapTargetTexture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
-				renderShadowMap(shadowMapClientMapFuture, light);
+				renderShadowMap(shadowMapTargetTexture, light);
 
 				// Render transparent part in one pass.
 				// This is also handled in ClientMap.
@@ -255,7 +259,8 @@ void ShadowRenderer::updateSMTextures()
 
 		// pass finished, swap textures and commit light changes
 		if (m_current_frame == m_map_shadow_update_frames) {
-			std::swap(shadowMapClientMapFuture, shadowMapClientMap);
+			if (shadowMapClientMapFuture != nullptr)
+				std::swap(shadowMapClientMapFuture, shadowMapClientMap);
 
 			// Let all lights know that maps are updated
 			for (DirectionalLight &light:m_light_list)
