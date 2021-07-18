@@ -224,7 +224,8 @@ Run it:
 - If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
 - IrrlichtMt can also be installed somewhere that is not a standard install path.
-  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`.
+  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
+  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/IrrlichtMt` exists.
 
 ### CMake options
 
