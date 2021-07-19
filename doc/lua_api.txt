@@ -2035,7 +2035,9 @@ Node metadata contains two things:
 
 Some of the values in the key-value store are handled specially:
 
-* `formspec`: Defines a right-click inventory menu. See [Formspec].
+* `formspec`: Defines an inventory menu that is opened with the
+              'place/use' key. Only works if no `on_rightclick` was
+              defined for the node. See also [Formspec].
 * `infotext`: Text shown on the screen when the node is pointed at
 
 Example:
@@ -4338,6 +4340,9 @@ Callbacks:
     * Called when the object dies.
     * `killer`: an `ObjectRef` (can be `nil`)
 * `on_rightclick(self, clicker)`
+    * Called when `clicker` pressed the 'place/use' key while pointing
+      to the object (not neccessarily an actual rightclick)
+    * `clicker`: an `ObjectRef` (may or may not be a player)
 * `on_attach_child(self, child)`
     * `child`: an `ObjectRef` of the child that attaches
 * `on_detach_child(self, child)`
@@ -4707,9 +4712,10 @@ Call these functions only at load time!
     * `damage`: Number that represents the damage calculated by the engine
     * should return `true` to prevent the default damage mechanism
 * `minetest.register_on_rightclickplayer(function(player, clicker))`
-    * Called when a player is right-clicked
-    * `player`: ObjectRef - Player that was right-clicked
-    * `clicker`: ObjectRef - Object that right-clicked, may or may not be a player
+    * Called when the 'place/use' key was used while pointing a player
+      (not neccessarily an actual rightclick)
+    * `player`: ObjectRef - Player that is acted upon
+    * `clicker`: ObjectRef - Object that acted upon `player`, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
@@ -7414,6 +7420,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         },
 
         on_place = function(itemstack, placer, pointed_thing),
+        -- When the 'place' key was pressed with the item in hand
+        -- and a node was pointed at.
         -- Shall place item and return the leftover itemstack.
         -- The placer may be any ObjectRef or nil.
         -- default: minetest.item_place
@@ -7430,6 +7438,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
+        -- When user pressed the 'punch/mine' key with the item in hand.
         -- Function must return either nil if no item shall be removed from
         -- inventory, or an itemstack to replace the original itemstack.
         -- e.g. itemstack:take_item(); return itemstack
@@ -7780,9 +7789,9 @@ Used by `minetest.register_node`.
 
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
-        -- Called when clicker (an ObjectRef) "rightclicks"
-        -- ("rightclick" here stands for the placement key) while pointing at
-        -- the node at pos with 'node' being the node table.
+        -- Called when clicker (an ObjectRef) used the 'place/build' key
+        -- (not neccessarily an actual rightclick)
+        -- while pointing at the node at pos with 'node' being the node table.
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
         -- Note: pointed_thing can be nil, if a mod calls this function.
