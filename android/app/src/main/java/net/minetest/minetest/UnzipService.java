@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
-import android.widget.Toast;
 
 import androidx.annotation.StringRes;
 
@@ -82,8 +81,7 @@ public class UnzipService extends IntentService {
 			isSuccess = false;
 			failureMessage = e.getLocalizedMessage();
 		} finally {
-			if (zipFile.isFile())
-				zipFile.delete();
+			zipFile.delete();
 		}
 	}
 
@@ -120,9 +118,10 @@ public class UnzipService extends IntentService {
 
 	private void unzip(File zipFile, File userDataDirectory) throws IOException {
 		int per = 0;
-		int size = 0;
+
+		int size;
 		try (ZipFile zipSize = new ZipFile(zipFile)) {
-			size += zipSize.size();
+			size = zipSize.size();
 		}
 
 		int readLen;

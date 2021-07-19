@@ -2,15 +2,12 @@ package net.minetest.minetest;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class Utils {
-	public static File createDirs(File root, String dir) {
+	public static @NonNull File createDirs(File root, String dir) {
 		File f = new File(root, dir);
 		if (!f.isDirectory())
 			f.mkdirs();
