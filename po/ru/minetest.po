@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-07-04 15:44+0000\n"
-"Last-Translator: Er2 <er2@dismail.de>\n"
+"PO-Revision-Date: 2021-07-21 17:34+0000\n"
+"Last-Translator: Чтабс <chtabs2k19@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1814,7 +1814,7 @@ msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr "Sleep"
+msgstr "Спать"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
