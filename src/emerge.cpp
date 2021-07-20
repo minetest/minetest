@@ -173,12 +173,9 @@ EmergeManager::EmergeManager(Server *server)
 		m_qlimit_generate = nthreads + 1;
 
 	// don't trust user input for something very important like this
-	if (m_qlimit_total < 1)
-		m_qlimit_total = 1;
-	if (m_qlimit_diskonly < 1)
-		m_qlimit_diskonly = 1;
-	if (m_qlimit_generate < 1)
-		m_qlimit_generate = 1;
+	m_qlimit_total = rangelim(m_qlimit_total, 1, 1000000);
+	m_qlimit_diskonly = rangelim(m_qlimit_diskonly, 1, 1000000);
+	m_qlimit_generate = rangelim(m_qlimit_generate, 1, 1000000);
 
 	for (s16 i = 0; i < nthreads; i++)
 		m_threads.push_back(new EmergeThread(server, i));
@@ -467,16 +464,13 @@ bool EmergeManager::pushBlockEmergeData(
 
 bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
-	std::map<v3s16, BlockEmergeData>::iterator it;
-	std::unordered_map<u16, u32>::iterator it2;
-
-	it = m_blocks_enqueued.find(pos);
+	auto it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
 		return false;
 
 	*bedata = it->second;
 
-	it2 = m_peer_queue_count.find(bedata->peer_requested);
+	auto it2 = m_peer_queue_count.find(bedata->peer_requested);
 	if (it2 == m_peer_queue_count.end())
 		return false;
 
