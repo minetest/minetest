@@ -107,15 +107,10 @@ public class MainActivity extends AppCompatActivity {
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
 
-		if (UnzipService.getIsRunning()) {
-			mProgressBar.setVisibility(View.VISIBLE);
-			mProgressBar.setIndeterminate(true);
-			mTextView.setVisibility(View.VISIBLE);
-		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 			checkPermission();
-		} else {
+		else
 			checkAppVersion();
-		}
 	}
 
 	private void checkPermission() {
@@ -158,7 +153,11 @@ public class MainActivity extends AppCompatActivity {
 			return;
 		}
 
-		if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode &&
+		if (UnzipService.getIsRunning()) {
+			mProgressBar.setVisibility(View.VISIBLE);
+			mProgressBar.setIndeterminate(true);
+			mTextView.setVisibility(View.VISIBLE);
+		} else if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode &&
 				Utils.isInstallValid(this)) {
 			startNative();
 		} else {

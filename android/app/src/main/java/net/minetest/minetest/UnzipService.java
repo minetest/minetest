@@ -24,11 +24,13 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.apache.commons.io.FileUtils;
@@ -70,10 +72,10 @@ public class UnzipService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		setIsRunning(true);
-		createNotification();
+		Notification.Builder notificationBuilder = createNotification();
 		final File zipFile = new File(getCacheDir(), "Minetest.zip");
 		try {
+			setIsRunning(true);
 			File userDataDirectory = Utils.getUserDataDirectory(this);
 			if (userDataDirectory == null) {
 				throw new IOException("Unable to find user data directory");
@@ -83,8 +85,8 @@ public class UnzipService extends IntentService {
 				FileUtils.copyToFile(in, zipFile);
 			}
 
-			migrate(userDataDirectory);
-			unzip(zipFile, userDataDirectory);
+			migrate(notificationBuilder, userDataDirectory);
+			unzip(notificationBuilder, zipFile, userDataDirectory);
 		} catch (IOException e) {
 			isSuccess = false;
 			failureMessage = e.getLocalizedMessage();
@@ -94,7 +96,7 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	private void createNotification() {
+	private Notification.Builder createNotification() {
 		String name = "net.minetest.minetest";
 		String channelId = "Minetest channel";
 		String description = "notifications from Minetest";
@@ -119,13 +121,25 @@ public class UnzipService extends IntentService {
 		} else {
 			builder = new Notification.Builder(this);
 		}
+
+		Intent notificationIntent = new Intent(this, MainActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		PendingIntent intent = PendingIntent.getActivity(this, 0,
+			notificationIntent, 0);
+
 		builder.setContentTitle(getString(R.string.notification_title))
 				.setSmallIcon(R.mipmap.ic_launcher)
-				.setContentText(getString(R.string.notification_description));
+				.setContentText(getString(R.string.notification_description))
+				.setContentIntent(intent)
+				.setOngoing(true)
+				.setProgress(0, 0, true);
+
 		mNotifyManager.notify(id, builder.build());
+		return builder;
 	}
 
-	private void unzip(File zipFile, File userDataDirectory) throws IOException {
+	private void unzip(Notification.Builder notificationBuilder, File zipFile, File userDataDirectory) throws IOException {
 		int per = 0;
 
 		int size;
@@ -143,7 +157,7 @@ public class UnzipService extends IntentService {
 					++per;
 					Utils.createDirs(userDataDirectory, ze.getName());
 				} else {
-					publishProgress(R.string.loading, 100 * ++per / size);
+					publishProgress(notificationBuilder, R.string.loading, 100 * ++per / size);
 					try (OutputStream outputStream = new FileOutputStream(
 							new File(userDataDirectory, ze.getName()))) {
 						while ((readLen = zipInputStream.read(readBuffer)) != -1) {
@@ -158,45 +172,55 @@ public class UnzipService extends IntentService {
 	/**
 	 * Migrates user data from deprecated external storage to app scoped storage
 	 */
-	private void migrate(File newLocation) throws IOException {
+	private void migrate(Notification.Builder notificationBuilder, File newLocation) throws IOException {
 		File oldLocation = new File(Environment.getExternalStorageDirectory(), "Minetest");
 		if (!oldLocation.isDirectory())
 			return;
 
-		publishProgress(R.string.migrating, 0);
+		publishProgress(notificationBuilder, R.string.migrating, 0);
 
 		String[] dirs = new String[] { "worlds", "games", "mods", "textures", "client" };
 		for (int i = 0; i < dirs.length; i++) {
-			publishProgress(R.string.migrating, 100 * i / dirs.length);
+			publishProgress(notificationBuilder, R.string.migrating, 100 * i / dirs.length);
 			File dir = new File(oldLocation, dirs[i]);
 			if (dir.isDirectory() && !new File(newLocation, dirs[i]).isDirectory()) {
-				FileUtils.copyDirectoryToDirectory(dir, newLocation);
+				FileUtils.moveDirectoryToDirectory(dir, newLocation, true);
 			}
 		}
 
 		for (String filename : new String[] { "minetest.conf" }) {
 			File file = new File(oldLocation, filename);
 			if (file.isFile() && !new File(newLocation, filename).isFile()) {
-				FileUtils.copyFileToDirectory(file, newLocation, true);
+				FileUtils.moveFileToDirectory(file, newLocation, true);
 			}
 		}
 
 		FileUtils.deleteDirectory(oldLocation);
 	}
 
-	private void publishProgress(@StringRes int message, int progress) {
+	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
 		Intent intentUpdate = new Intent(ACTION_UPDATE);
 		intentUpdate.putExtra(ACTION_PROGRESS, progress);
 		intentUpdate.putExtra(ACTION_PROGRESS_MESSAGE, message);
 		if (!isSuccess)
 			intentUpdate.putExtra(ACTION_FAILURE, failureMessage);
 		sendBroadcast(intentUpdate);
+
+		if (notificationBuilder != null) {
+			notificationBuilder.setContentText(getString(message));
+			if (progress == INDETERMINATE) {
+				notificationBuilder.setProgress(100, 50, true);
+			} else {
+				notificationBuilder.setProgress(100, progress, false);
+			}
+			mNotifyManager.notify(id, notificationBuilder.build());
+		}
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		mNotifyManager.cancel(id);
-		publishProgress(R.string.loading, isSuccess ? SUCCESS : FAILURE);
+		publishProgress(null, R.string.loading, isSuccess ? SUCCESS : FAILURE);
 	}
 }
