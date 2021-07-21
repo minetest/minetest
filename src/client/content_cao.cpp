@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include <IBillboardSceneNode.h>
 #include <ICameraSceneNode.h>
-#include <ITextSceneNode.h>
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include "client/client.h"
