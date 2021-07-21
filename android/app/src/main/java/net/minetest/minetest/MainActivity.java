@@ -106,10 +106,16 @@ public class MainActivity extends AppCompatActivity {
 		mProgressBar = findViewById(R.id.progressBar);
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+
+		if (UnzipService.getIsRunning()) {
+			mProgressBar.setVisibility(View.VISIBLE);
+			mProgressBar.setIndeterminate(true);
+			mTextView.setVisibility(View.VISIBLE);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			checkPermission();
-		else
+		} else {
 			checkAppVersion();
+		}
 	}
 
 	private void checkPermission() {

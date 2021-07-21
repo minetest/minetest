@@ -56,14 +56,22 @@ public class UnzipService extends IntentService {
 	private boolean isSuccess = true;
 	private String failureMessage;
 
+	private static boolean isRunning = false;
+	public static synchronized boolean getIsRunning() {
+		return isRunning;
+	}
+	private static synchronized void setIsRunning(boolean v) {
+		isRunning = v;
+	}
+
 	public UnzipService() {
 		super("net.minetest.minetest.UnzipService");
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		setIsRunning(true);
 		createNotification();
-
 		final File zipFile = new File(getCacheDir(), "Minetest.zip");
 		try {
 			File userDataDirectory = Utils.getUserDataDirectory(this);
@@ -81,6 +89,7 @@ public class UnzipService extends IntentService {
 			isSuccess = false;
 			failureMessage = e.getLocalizedMessage();
 		} finally {
+			setIsRunning(false);
 			zipFile.delete();
 		}
 	}
@@ -161,14 +170,14 @@ public class UnzipService extends IntentService {
 			publishProgress(R.string.migrating, 100 * i / dirs.length);
 			File dir = new File(oldLocation, dirs[i]);
 			if (dir.isDirectory() && !new File(newLocation, dirs[i]).isDirectory()) {
-				FileUtils.moveDirectoryToDirectory(dir, newLocation, true);
+				FileUtils.copyDirectoryToDirectory(dir, newLocation);
 			}
 		}
 
 		for (String filename : new String[] { "minetest.conf" }) {
 			File file = new File(oldLocation, filename);
 			if (file.isFile() && !new File(newLocation, filename).isFile()) {
-				FileUtils.moveFileToDirectory(file, newLocation, true);
+				FileUtils.copyFileToDirectory(file, newLocation, true);
 			}
 		}
 
