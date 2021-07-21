@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <IrrlichtDevice.h>
-#include <irrlicht.h>
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
