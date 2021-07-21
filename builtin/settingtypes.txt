@@ -618,7 +618,7 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
-#    Use this number of frames to update map shadows.
+#    Spread a complete update of shadow map over given amount of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
 #    Minimum value: 1; maximum value: 16
