@@ -6,6 +6,8 @@ local states = {
 	{2, "Italic font"},
 	{3, "Bold and italic font"},
 	{4, "Monospace font"},
+	{5, "Bold and monospace font"},
+	{7, "ZOMG all the font styles"},
 }
 
 
