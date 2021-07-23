@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-07-24 00:47+0000\n"
-"Last-Translator: Yangjun Wang <yangjunw50@outlook.com>\n"
+"PO-Revision-Date: 2021-07-27 01:17+0000\n"
+"Last-Translator: Riceball LEE <snowyu.lee@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -40,7 +40,7 @@ msgstr "列出联机玩家"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "联机游戏: "
+msgstr "在线玩家: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -223,9 +223,8 @@ msgid "$1 and $2 dependencies will be installed."
 msgstr "$1 和 $2 依赖项将被安装."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 by $2"
-msgstr "$1 比 $2"
+msgstr "$1  作者： $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -322,7 +321,6 @@ msgid "Please check that the base game is correct."
 msgstr "请查看游戏是否正确。"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Queued"
 msgstr "已加入队列"
 
@@ -939,9 +937,8 @@ msgid "Del. Favorite"
 msgstr "删除收藏项"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "收藏项"
+msgstr "我的收藏"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
@@ -956,7 +953,6 @@ msgid "Ping"
 msgstr "应答速度"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
 msgstr "公开服务器"
 
@@ -965,7 +961,6 @@ msgid "Refresh"
 msgstr "刷新"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
 msgstr "服务器描述"
 
@@ -1283,7 +1278,7 @@ msgid "Continue"
 msgstr "继续"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1305,13 +1300,13 @@ msgstr ""
 "- %s：向后移动\n"
 "- %s：向左移动\n"
 "- %s：向右移动\n"
-"- %s：跳/爬\n"
-"- %s：潜行/向下\n"
+"- %s：跳/向上(攀爬)\n"
+"- %s：挖/打\n"
+"- %s：放/使用\n"
+"- %s：潜行/向下(攀爬)\n"
 "- %s：丢弃物品\n"
 "- %s：物品清单\n"
 "- 鼠标:转身/环顾\n"
-"- 鼠标左键: 挖/打\n"
-"- 鼠标右键: 放/使用\n"
 "- 鼠标滚轮: 选择物品\n"
 "- %s：聊天\n"
 
@@ -1444,9 +1439,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "小地图被当前子游戏或者 mod 禁用"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "单人游戏"
+msgstr "多人游戏"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1841,9 +1835,9 @@ msgid "Minimap hidden"
 msgstr "小地图已隐藏"
 
 #: src/client/minimap.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr "雷达小地图，放大至一倍"
+msgstr "雷达小地图，放大至%d倍"
 
 #: src/client/minimap.cpp
 #, c-format
@@ -1880,9 +1874,8 @@ msgid "Proceed"
 msgstr "继续"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "“特殊” = 向下爬"
+msgstr "“Aux1” = 向下爬"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -1894,7 +1887,7 @@ msgstr "自动跳跃"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -1902,7 +1895,7 @@ msgstr "向后"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "地图块边界"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2078,14 +2071,13 @@ msgstr ""
 "如果禁用，虚拟操纵杆将居中至第一次触摸的位置。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"（安卓）使用虚拟操纵杆触发\"aux\"按钮。\n"
-"如果启用，虚拟操纵杆在主圆圈外会点击\"aux\"按钮。"
+"（安卓）使用虚拟操纵杆触发\"Aux1\"按钮。\n"
+"如果启用，虚拟操纵杆在主圆圈外会点击\"Aux1\"按钮。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2434,14 +2426,12 @@ msgid "Autoscaling mode"
 msgstr "自动缩放模式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key"
-msgstr "跳跃键"
+msgstr "Aux1键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
-msgstr "用于攀登/降落的特殊键"
+msgstr "用于攀登/降落的Aux1键"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2509,7 +2499,7 @@ msgstr "粗体等宽字体路径"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr "在玩家内部搭建"
+msgstr "在玩家站着的地方搭建"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
@@ -2592,9 +2582,8 @@ msgstr ""
 "0.0为最小值时1.0为最大值。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat command time message threshold"
-msgstr "聊天消息踢出阈值"
+msgstr "显示聊天消息执行时间的阀值（秒）"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2693,9 +2682,8 @@ msgid "Colored fog"
 msgstr "彩色雾"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "彩色雾"
+msgstr "彩色阴影"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2831,11 +2819,12 @@ msgid "Crosshair alpha"
 msgstr "准星透明"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "Also controls the object crosshair color"
-msgstr "准星不透明度（0-255）。"
+msgstr ""
+"准星透明度（0-255）。\n"
+"还控制对象准星的颜色"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2846,6 +2835,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"准星颜色(R,G,B).\n"
+"还控制对象准星颜色"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2917,6 +2908,9 @@ msgid ""
 "This simulates the soft shadows effect by applying a PCF or poisson disk\n"
 "but also uses more resources."
 msgstr ""
+"定阴影滤镜的质量\n"
+"通过应用 PCF 或 poisson disk来模拟软阴影效果\n"
+"但这会使用更多的资源。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3021,9 +3015,8 @@ msgid "Desynchronize block animation"
 msgstr "去同步块动画"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dig key"
-msgstr "右方向键"
+msgstr "挖掘键"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3090,6 +3083,8 @@ msgid ""
 "Enable colored shadows. \n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
+"启用彩色阴影。\n"
+"在半透明节点上投射彩色阴影。会消耗超多的资源。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3121,6 +3116,8 @@ msgid ""
 "On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
+"启用poisson disk滤镜.\n"
+"使用poisson disk来产生\"软阴影\"，否则将使用PCF 滤镜."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3291,12 +3288,11 @@ msgid "Fast movement"
 msgstr "快速移动"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"快速移动（通过“特殊”键）。\n"
+"快速移动（通过“Aux1”键）。\n"
 "这需要服务器的“fast”权限。"
 
 #: src/settings_translation_file.cpp
@@ -3329,7 +3325,6 @@ msgid "Filmic tone mapping"
 msgstr "电影色调映射"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 "which PNG optimizers usually discard, often resulting in dark or\n"
@@ -3338,8 +3333,8 @@ msgid ""
 msgstr ""
 "经过滤的材质会与邻近的全透明材质混合RGB值，\n"
 "该值通常会被PNG优化器丢弃，某些时候会给透明材质产生暗色或\n"
-"亮色的边缘。应用该过滤器将在材质加载时\n"
-"移除该效果。"
+"亮色的边缘。应用该过滤器将在材质加载时移除该效果。\n"
+"该过滤器将在启用mipmapping的时候被自动应用。"
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
@@ -3614,7 +3609,6 @@ msgid "HUD toggle key"
 msgstr "HUD启用/禁用键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -3622,9 +3616,9 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "处理已弃用的 Lua API 调用：\n"
-"-    兼容：（尝试）模拟旧的调用（发布版本的默认值）。\n"
-"-    记录：模拟并记录已弃用的调用的回溯（调试的默认值）。\n"
-"-    错误：停止使用已弃用的调用（Mod 开发人员推荐）。"
+"-    none：不记录废弃的调用。\n"
+"-    log：模拟并记录已弃用的调用的回溯（调试的默认值）。\n"
+"-    error：停止使用已弃用的调用（Mod 开发人员推荐）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3648,10 +3642,9 @@ msgid "Heat noise"
 msgstr "热噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
-msgstr "初始窗口高度。"
+msgstr "初始窗口高度，全屏模式下忽略该值。"
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3904,13 +3897,10 @@ msgstr ""
 "节省无效 CPU 功耗。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If disabled, \"Aux1\" key is used to fly fast if both fly and fast mode are\n"
 "enabled."
-msgstr ""
-"如果禁用，当飞行和快速模式同时启用时“特殊”键用于快速\n"
-"飞行。"
+msgstr "如果禁用，“Aux1”键将用于快速飞行(飞行和快速模式同时启用)。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3935,13 +3925,12 @@ msgstr ""
 "这需要服务器的“noclip”权限。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
 msgstr ""
-"如果启用，“特殊”键将代替潜行键的向下攀爬和\n"
+"如果启用，“Aux1”键将代替潜行键的向下攀爬和\n"
 "下降。"
 
 #: src/settings_translation_file.cpp
