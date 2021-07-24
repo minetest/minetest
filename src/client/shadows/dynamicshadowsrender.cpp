@@ -263,7 +263,7 @@ void ShadowRenderer::updateSMTextures()
 				std::swap(shadowMapClientMapFuture, shadowMapClientMap);
 
 			// Let all lights know that maps are updated
-			for (DirectionalLight &light:m_light_list)
+			for (DirectionalLight &light : m_light_list)
 				light.commitFrustum();
 		}
 	}

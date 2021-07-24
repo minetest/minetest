@@ -126,7 +126,7 @@ private:
 	bool m_shadows_enabled;
 	bool m_shadow_map_colored;
 	u8 m_map_shadow_update_frames; /* Use this number of frames to update map shaodw */
-	u16 m_current_frame{0}; /* Current frame */
+	u8 m_current_frame{0}; /* Current frame */
 
 	video::ECOLOR_FORMAT m_texture_format{video::ECOLOR_FORMAT::ECF_R16F};
 	video::ECOLOR_FORMAT m_texture_format_color{video::ECOLOR_FORMAT::ECF_R16G16};
