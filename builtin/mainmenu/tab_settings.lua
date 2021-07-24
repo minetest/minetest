@@ -195,7 +195,7 @@ local function formspec(tabview, name, tabdata)
 	tab_string = tab_string ..
 		"button[8,4.75;3.95,1;btn_change_keys;"
 		.. fgettext("Change Keys") .. "]"
-	
+
 	if core.settings:get_bool("freetype") then
 		tab_string = tab_string ..
 			"button[4,4.75;3.95,1;btn_change_font;"

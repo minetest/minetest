@@ -47,7 +47,7 @@ local function match_font(filepath, fontname, variant)
 	if filepath == fontfile then
 		return true
 	end
-	local p, e = string.find(filepath, DIR_DELIM .. fontfile, 1, true)
+	local _, e = string.find(filepath, DIR_DELIM .. fontfile, 1, true)
 	if e == #filepath then
 		return true
 	end
@@ -152,7 +152,7 @@ local function handle_settings_buttons(this, fields)
 	local has_changes = false
 	if fields["btn_update"] then
 		force_default_fontpath_input = false
-		force_monospace_fontpath_input = false	
+		force_monospace_fontpath_input = false
 		if fields["monospace_font_path"] then
 			local path = fields["monospace_font_path"]
 			if not is_valid_font_path(path) then
