@@ -195,6 +195,12 @@ local function formspec(tabview, name, tabdata)
 	tab_string = tab_string ..
 		"button[8,4.75;3.95,1;btn_change_keys;"
 		.. fgettext("Change Keys") .. "]"
+	
+	if core.settings:get_bool("freetype") then
+		tab_string = tab_string ..
+			"button[4,4.75;3.95,1;btn_change_font;"
+			.. fgettext("Change Font") .. "]"
+	end
 
 	tab_string = tab_string ..
 		"button[0,4.75;3.95,1;btn_advanced_settings;"
@@ -301,6 +307,13 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["btn_change_keys"] then
 		core.show_keys_menu()
+		return true
+	end
+	if fields["btn_change_font"] then
+		local dlg = create_font_settings_dlg()
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
 		return true
 	end
 	if fields["cb_touchscreen_target"] then
