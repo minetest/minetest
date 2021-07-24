@@ -423,7 +423,7 @@ function install_dialog.handle_submit(this, fields)
 		if install_dialog.will_install_deps then
 			for _, dep in pairs(install_dialog.dependencies) do
 				if not dep.is_optional and not dep.installed and dep.package then
-					queue_download(dep.package, "dep")
+					queue_download(dep.package, "dependency")
 				end
 			end
 		end
