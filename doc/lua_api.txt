@@ -6538,16 +6538,17 @@ object you are working with still exists.
       and exist only to preserve backwards compatibility.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys. Bits:
-    * 0 - up
-    * 1 - down
-    * 2 - left
-    * 3 - right
-    * 4 - jump
-    * 5 - aux1
-    * 6 - sneak
-    * 7 - dig
-    * 8 - place
-    * 9 - zoom
+    * 0 - nothing
+    * 1 - up
+    * 2 - down
+    * 4 - left
+    * 8 - right
+    * 16 - jump
+    * 32 - aux1
+    * 64 - sneak
+    * 128 - dig
+    * 256 - place
+    * 512 - zoom
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
