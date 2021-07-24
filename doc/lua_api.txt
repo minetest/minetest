@@ -6564,15 +6564,15 @@ object you are working with still exists.
 
      ```lua
      player:set_physics_modifier("mymod:moon", {
-          gravity = 0.16,
+         gravity = 0.16,
      })
 
-     player:set_physics_modifier("phystest:potion", {
+     player:set_physics_modifier("mymod:potion", {
          type = "add",
          speed = 0.5,
      })
 
-     player:set_physics_modifier("phystest:potion", nil)
+     player:set_physics_modifier("mymod:potion", nil)
      ```
 
 * `get_physics_modifiers()`: returns table of modifier id to modifier table, see above.
