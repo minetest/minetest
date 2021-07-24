@@ -57,6 +57,10 @@ local filter_types_type = {
 	"txp",
 }
 
+local REASON_NEW = "new"
+local REASON_UPDATE = "update"
+local REASON_DEPENDENCY = "dependency"
+
 
 local function get_download_url(package, reason)
 	local base_url = core.settings:get("contentdb_url")
@@ -418,12 +422,12 @@ function install_dialog.handle_submit(this, fields)
 	end
 
 	if fields.install_all then
-		queue_download(install_dialog.package, "new")
+		queue_download(install_dialog.package, REASON_NEW)
 
 		if install_dialog.will_install_deps then
 			for _, dep in pairs(install_dialog.dependencies) do
 				if not dep.is_optional and not dep.installed and dep.package then
-					queue_download(dep.package, "dependency")
+					queue_download(dep.package, REASON_DEPENDENCY)
 				end
 			end
 		end
@@ -922,7 +926,7 @@ function store.handle_submit(this, fields)
 			local package = store.packages_full[i]
 			if package.path and package.installed_release < package.release and
 					not (package.downloading or package.queued) then
-				queue_download(package, "update")
+				queue_download(package, REASON_UPDATE)
 			end
 		end
 		return true
@@ -955,7 +959,7 @@ function store.handle_submit(this, fields)
 					this:hide()
 					dlg:show()
 				else
-					queue_download(package, package.path and "update" or "new")
+					queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
 				end
 			end
 
