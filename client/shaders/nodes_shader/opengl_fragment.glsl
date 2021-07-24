@@ -494,8 +494,8 @@ void main(void)
 
 	}
 
-	if (f_normal_length != 0 && cosLight < 0.09) {
-		shadow_int = max(shadow_int, min(clamp(1.0-nightRatio, 0.0, 1.0), 1 - clamp(cosLight, 0.0, 0.09)/0.09));
+	if (f_normal_length != 0 && cosLight < 0.035) {
+		shadow_int = max(shadow_int, min(clamp(1.0-nightRatio, 0.0, 1.0), 1 - clamp(cosLight, 0.0, 0.035)/0.035));
 	}
 
 	shadow_int = 1.0 - (shadow_int * f_adj_shadow_strength);
