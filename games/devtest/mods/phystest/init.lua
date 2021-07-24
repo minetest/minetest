@@ -106,5 +106,6 @@ minetest.register_chatcommand("physics", {
 		end
 
 		minetest.chat_send_player(name, dump(player:get_effective_physics()))
+		minetest.chat_send_player(name, dump(player:get_physics_modifiers()))
 	end
 })

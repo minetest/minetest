@@ -1520,6 +1520,36 @@ int ObjectRef::l_remove_physics_modifier(lua_State *L)
 	return 0;
 }
 
+int ObjectRef::l_get_physics_modifiers(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *playersao = getplayersao(ref);
+	if (playersao == nullptr)
+		return 0;
+
+	lua_newtable(L);
+
+	const auto &modifiers = playersao->getPhysicsModifiers();
+	for (auto modifier : modifiers) {
+		lua_newtable(L);
+
+		lua_pushstring(L, modifier.second.is_add ? "add" : "multiply");
+		lua_setfield(L, -2, "type");
+
+		lua_pushnumber(L, modifier.second.speed);
+		lua_setfield(L, -2, "speed");
+		lua_pushnumber(L, modifier.second.jump);
+		lua_setfield(L, -2, "jump");
+		lua_pushnumber(L, modifier.second.gravity);
+		lua_setfield(L, -2, "gravity");
+
+		lua_setfield(L, -2, modifier.first.c_str());
+	}
+
+	return 1;
+}
+
 // set_physics_flags(self, override_table)
 int ObjectRef::l_set_physics_flags(lua_State *L)
 {
@@ -2546,6 +2576,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_effective_physics),
 	luamethod(ObjectRef, set_physics_modifier),
 	luamethod(ObjectRef, remove_physics_modifier),
+	luamethod(ObjectRef, get_physics_modifiers),
 	luamethod(ObjectRef, set_physics_flags),
 	luamethod(ObjectRef, get_physics_flags),
 	luamethod(ObjectRef, set_physics_override),

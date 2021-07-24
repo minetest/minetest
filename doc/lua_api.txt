@@ -6575,6 +6575,7 @@ object you are working with still exists.
      player:set_physics_modifier("phystest:potion", nil)
      ```
 * `remove_physics_modifier(id)`: Same as `set_physics_modifier(id, nil)`.
+* `get_physics_modifiers()`: returns table of modifier id to modifier table, see above.
 * `set_physics_flags(flags)`:
     * `sneak`: whether player can sneak (default: `true`)
     * `sneak_glitch`: whether player can use the new move code replications

@@ -200,6 +200,11 @@ public:
 	float getZoomFOV() const;
 
 	bool hasPhysicsModifiers() const { return !m_physics_modifiers.empty(); }
+	const std::unordered_map<std::string, PhysicsModifier> &getPhysicsModifiers() const
+	{
+		return m_physics_modifiers;
+	}
+
 	void setPhysicsModifier(const std::string &key, const PhysicsModifier &modifier);
 	void deletePhysicsModifier(const std::string &key);
 
