@@ -560,6 +560,7 @@ function store.load()
 	end
 
 	store.packages_full = core.parse_json(response.data) or {}
+	store.aliases = {}
 
 	for _, package in pairs(store.packages_full) do
 		package.url = base_url .. "/packages/" ..
@@ -571,6 +572,16 @@ function store.load()
 			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
 		else
 			package.id = package.author:lower() .. "/" .. package.name
+		end
+
+		if package.aliases then
+			for _, alias in ipairs(package.aliases) do
+				-- We currently don't support name changing
+				local suffix = "/" .. package.name
+				if alias:sub(-#suffix) == suffix then
+					store.aliases[alias:lower()] = package.id
+				end
+			end
 		end
 	end
 
@@ -584,7 +595,8 @@ function store.update_paths()
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		if mod.author and mod.release > 0 then
-			mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
+			local id = mod.author:lower() .. "/" .. mod.name
+			mod_hash[store.aliases[id] or id] = mod
 		end
 	end
 
@@ -592,14 +604,16 @@ function store.update_paths()
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
 		if game.author ~= "" and game.release > 0 then
-			game_hash[game.author:lower() .. "/" .. game.id] = game
+			local id = game.author:lower() .. "/" .. game.id
+			game_hash[store.aliases[id] or id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
 		if txp.author and txp.release > 0 then
-			txp_hash[txp.author:lower() .. "/" .. txp.name] = txp
+			local id = txp.author:lower() .. "/" .. txp.name
+			txp_hash[store.aliases[id] or id] = txp
 		end
 	end
 
