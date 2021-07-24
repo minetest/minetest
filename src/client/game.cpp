@@ -4063,6 +4063,8 @@ void Game::updateShadows()
 	shadow->setTimeOfDay(in_timeofday);
 
 	shadow->getDirectionalLight().update_frustum(camera, client);
+
+	m_client->getEnv().getClientMap().updatePointLightList();
 }
 
 /****************************************************************************

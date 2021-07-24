@@ -122,6 +122,9 @@ public:
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
 	void updateDrawList();
 	void updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range);
+	// Update m_pointlight_list vector according to the current m_drawlist_shadow from ClientMap.
+	// It will loop through each MapNode of each MapBlock contained in that list and check if that is a light node, then add it.
+	void updatePointLightList();
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	void renderMapShadows(video::IVideoDriver *driver,

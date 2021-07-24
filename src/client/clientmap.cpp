@@ -739,11 +739,12 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	const f32 camera_fov = m_camera_fov * 1.9f;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
-	v3s16 p_blocks_min;
+	// Actually this code below is unused further, so it should be commented out
+	/*v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, shadow_range);
 
-	std::vector<v2s16> blocks_in_range;
+	std::vector<v2s16> blocks_in_range;*/
 
 	for (auto &i : m_drawlist_shadow) {
 		MapBlock *block = i.second;
@@ -817,4 +818,26 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
+}
+
+// Update m_pointlight_list vector from ShadowRenderer according to the current m_drawlist_shadow.
+// It will loop through each MapNode of each MapBlock contained in that list and check if that is a light node, then add it.
+void ClientMap::updatePointLightList()
+{
+	const u32 node_count = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
+	ShadowRenderer* shadow_renderer = RenderingEngine::get_shadow_renderer();
+
+	shadow_renderer->clearPointLightList();
+	for (auto& mb : m_drawlist_shadow)
+	{
+		auto box = mb.second->getBox();
+
+		for (s16 x = box.MinEdge.X; x <= box.MaxEdge.X; x++)
+			for (s16 y = box.MinEdge.Y; y <= box.MaxEdge.Y; y++)
+				for (s16 z = box.MinEdge.Z; z <= box.MaxEdge.Z; z++)
+				{
+					v3s16 pos(x, y, z);
+					shadow_renderer->addPointLight(pos, &mb.second->getNodeUnsafe(pos));
+				}
+	}
 }

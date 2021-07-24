@@ -48,6 +48,46 @@ struct NodeToApply
 	bool dirty{false};
 };
 
+// Enum class of cube map faces
+
+enum class CubeMapFace : u16
+{
+	POSITIVE_X = 0,
+	NEGATIVE_X,
+	POSITIVE_Y,
+	NEGATIVE_Y,
+	POSITIVE_Z,
+	NEGATIVE_Z,
+	COUNT
+};
+
+// Cube map texture
+
+/*class CubeMapTexture
+{
+public:
+	// Default constructor
+	CubeMapTexture() = default;
+
+	// Constructor of 6 2d textures (+X, -X, +Y, -Y, +Z, -Z) with the same data (name, size and format)
+	CubeMapTexture(std::string name, f32 size, video::E_COLOR_FORMAT format);
+
+	~CubeMapTexture();
+
+	// Getters
+
+	std::array<video::ITexture*, 6> getAllData() const;
+
+	video::ITexture* getTexture(CubeMapFace face) const;
+
+private:
+	std::array<video::ITexture*, 6> m_data;
+
+	std::string m_name;
+	core::dimension2du m_size;
+	video::ECOLOR_FORMAT m_format;
+};*/
+
 class ShadowRenderer
 {
 public:
@@ -64,6 +104,18 @@ public:
 	size_t getDirectionalLightCount() const;
 	f32 getMaxShadowFar() const;
 
+	// Add a point light
+	bool addPointLight(v3s16 light_node_pos, MapNode* light_node=nullptr);
+
+	// Gets a point light with index 'index'
+	PointLight &getPointLight(u32 index) const;
+
+	// Gets a total count of point lights
+	size_t getPointLightCount() const;
+
+	// Clears m_pointlight_list
+	void clearPointLightList();
+
 	float getUpdateDelta() const;
 	/// Adds a shadow to the scene node.
 	/// The shadow mode can be ESM_BOTH, or ESM_RECEIVE.
@@ -76,7 +128,7 @@ public:
 
 	void setClearColor(video::SColor ClearColor);
 
-	void update(video::ITexture *outputTarget = nullptr);
+	void update();
 
 	video::ITexture *get_texture()
 	{
@@ -96,10 +148,12 @@ private:
 			video::ECOLOR_FORMAT texture_format,
 			bool force_creation = false);
 
-	void renderShadowMap(video::ITexture *target, DirectionalLight &light,
+	void genShadowMaps(std::string clientmap_name, std::string dynamic_objects_name, std::string colormap_name, std::string final_name
+			video::ITexture* clientmap, video::ITexture* dynamic_objects_map, video::ITexture* colormap, video::ITexture* finalmap);
+	void renderShadowMap(video::ITexture *target, m4f view_mat, m4f proj_mat
 			scene::E_SCENE_NODE_RENDER_PASS pass =
 					scene::ESNRP_SOLID);
-	void renderShadowObjects(video::ITexture *target, DirectionalLight &light);
+	void renderShadowObjects(video::ITexture *target, m4f view_mat, m4f_proj_mat);
 	void mixShadowsQuad();
 
 	// a bunch of variables
@@ -112,9 +166,16 @@ private:
 	video::ITexture *shadowMapTextureDynamicObjects{nullptr};
 	video::ITexture *shadowMapTextureColors{nullptr};
 	video::SColor m_clear_color{0x0};
+	std::array<video::ITexture*, 6> shadowCubeMapClientMap;
+	std::array<video::ITexture*, 6> shadowCubeMapDynamicObjects;
+	std::array<video::ITexture*, 6> shadowCubeMapColors;
+	std::array<video::ITexture*, 6> shadowCubeMapFinal;
 
 	std::vector<DirectionalLight> m_light_list;
 	std::vector<NodeToApply> m_shadow_node_array;
+
+	// List of all point lights within a viewing range
+	std::vector<PointLight> m_pointlight_list;
 
 	float m_shadow_strength;
 	float m_shadow_map_max_distance;

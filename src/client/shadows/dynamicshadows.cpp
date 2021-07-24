@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientenvironment.h"
 #include "client/clientmap.h"
 #include "client/camera.h"
-
-using m4f = core::matrix4;
+#include "nodedef.h"
 
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
@@ -71,6 +70,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	m4f mLookAt, mLookAtInv;
 
+	// Calculates view matrix with the POV of the light frustum
 	mLookAt.buildCameraLookAtMatrixLH(v3f(0.0f, 0.0f, 0.0f), -direction, v3f(0.0f, 1.0f, 0.0f));
 
 	mLookAt *= mTexelScaling;
@@ -148,3 +148,59 @@ m4f DirectionalLight::getViewProjMatrix()
 {
 	return shadow_frustum.ProjOrthMat * shadow_frustum.ViewMat;
 }
+
+
+///////////////////////////////////////////////////////////////
+
+v3f getDirectionFromEnum(Direction dir)
+{
+	switch (dir)
+	{
+		case POS_X:
+			return v3f(1.0f, 0.0f, 0.0f);
+		case NEG_X:
+			return v3f(-1.0f, 0.0f, 0.0f);
+		case POS_Y:
+			return v3f(0.0f, 1.0f, 0.0f);
+		case NEG_Y:
+			return v3f(0.0f, -1.0f, 0.0f);
+		case POS_Z:
+			return v3f(0.0f, 0.0f, 1.0f);
+		case NEG_Z:
+			return v3f(0.0f, 0.0f, -1.0f);
+		default:
+			return v3f(0.0f)
+	}
+}
+PointLight::PointLight(u32 mapResolution, f32 farPlane, v3f position,
+		video::SColorf diffuseColor, MapNode* lightNode) :
+		m_map_res(mapResolution), m_far_plane(farPlane), m_position(position),
+		m_diffuse_color(diffuseColor), m_light_node(lightNode)
+{
+	// Create frustums
+
+	for (u16 i = 0; i < (u16)Direction::COUNT; i++)
+	{
+		pLShadowFrustum& shadow_frustum = m_shadow_frustums[i];
+
+		pLShadowFrustum.direction = getDirectionFromEnum((Direction)i);
+		pLShadowFrustum.nearPlane = 1.0f;
+		pLShadowFrustum.farPlane = m_far_plane;
+
+		pLShadowFrustum.ViewMat.buildCameraLookAtMatrixLH(m_position, m_position + pLShadowFrustum.direction, v3f(0.0f, 1.0f, 0.0f));
+		pLShadowFrustum.ProjPerspectiveMat.buildProjectionMatrixPerspectiveFovLH(
+			pLShadowFrustum.fov, 1.0f, pLShadowFrustum.nearPlane, pLShadowFrustum.farPlane);
+	}
+}
+
+/*void PointLight::updateShadowDrawList(Client *client) const
+{
+	for (u16 i = 0; (u16)Direction::COUNT; i++)
+	{
+		pLShadowFrustum& shadow_frustum = m_shadow_frustums[i];
+
+		client->getEnv().getClientMap().updateDrawListShadow(
+				m_position, shadow_frustum.direction, m_far_plane);
+	}
+}*/
+
