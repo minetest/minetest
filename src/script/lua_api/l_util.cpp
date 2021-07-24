@@ -556,7 +556,7 @@ int ModApiUtil::l_encode_png(lua_State *L)
 	std::string header_str = header.str();
 	file << header_str;
 
-	u32 crc_header = crc32_z(0,(const u8*)header_str.data(), header_str.size());
+	u32 crc_header = crc32(0,(const u8*)header_str.data(), header_str.size());
 	PNGBS(crc_header)
 	file.write((char const*) &crc_header, 4);
 
@@ -573,7 +573,7 @@ int ModApiUtil::l_encode_png(lua_State *L)
 	PNGBS(zdata_length)
 	file.write((char const*) &zdata_length, 4);
 	file << zdata_str;
-	u32 crc_zdata = crc32_z(0,(const u8*)zdata_str.data(), zdata_str.size());
+	u32 crc_zdata = crc32(0,(const u8*)zdata_str.data(), zdata_str.size());
 	PNGBS(crc_zdata)
 	file.write((char const*) &crc_zdata, 4);
 	file.write("\x00\x00\x00\x00IEND\xae\x42\x60\x82", 12);
