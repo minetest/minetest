@@ -255,7 +255,8 @@ void ShadowRenderer::updateSMTextures()
 		} // end for lights
 
 		// move to the next section
-		++m_current_frame;
+		if (m_current_frame <= m_map_shadow_update_frames)
+			++m_current_frame;
 
 		// pass finished, swap textures and commit light changes
 		if (m_current_frame == m_map_shadow_update_frames) {
