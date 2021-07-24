@@ -116,9 +116,6 @@ private:
 	// set_physics_modifier(self, key, modifier_table)
 	static int l_set_physics_modifier(lua_State *L);
 
-	// remove_physics_modifier(self, key)
-	static int l_remove_physics_modifier(lua_State *L);
-
 	// get_physics_modifiers(self)
 	static int l_get_physics_modifiers(lua_State *L);
 

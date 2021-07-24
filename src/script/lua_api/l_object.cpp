@@ -1504,22 +1504,7 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 	return 0;
 }
 
-// remove_physics_modifier(self, key)
-int ObjectRef::l_remove_physics_modifier(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = getplayersao(ref);
-	if (playersao == nullptr)
-		return 0;
-
-	const std::string key = readParam<std::string>(L, 2);
-
-	playersao->deletePhysicsModifier(key);
-
-	return 0;
-}
-
+// get_physics_modifiers(self)
 int ObjectRef::l_get_physics_modifiers(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1599,6 +1584,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
+	bool had_physics_override_set = playersao->m_physics_override_set;
 	playersao->m_physics_override_set = false;
 
 	if (read_physics_modifier(L, 2, playersao->m_physics_override)) {
@@ -1623,12 +1609,8 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		// No overrides were set, revert to modifier mode
 		playersao->m_physics_override_sent = false;
 		return 0;
-	} else {
-		warningstream << "Use of set_physics_override will disable active ";
-		warningstream << "physics modifiers ";
-		script_log_short_src(L, warningstream);
-		warningstream << std::endl;
-		infostream << script_get_backtrace(L) << std::endl;
+	} else if (!had_physics_override_set) {
+		script_warning(L,"Use of set_physics_override will disable active physics modifiers");
 	}
 
 	return 0;
@@ -2555,7 +2537,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_player_control_bits),
 	luamethod(ObjectRef, get_effective_physics),
 	luamethod(ObjectRef, set_physics_modifier),
-	luamethod(ObjectRef, remove_physics_modifier),
 	luamethod(ObjectRef, get_physics_modifiers),
 	luamethod(ObjectRef, set_physics_flags),
 	luamethod(ObjectRef, get_physics_flags),

@@ -7,7 +7,7 @@ function cmds.moon(player)
 end
 
 function cmds.nomoon(player)
-	player:remove_physics_modifier("phystest:moon")
+	player:set_physics_modifier("phystest:moon", nil)
 end
 
 function cmds.speed(player)
@@ -17,7 +17,7 @@ function cmds.speed(player)
 end
 
 function cmds.nospeed(player)
-	player:remove_physics_modifier("phystest:speed")
+	player:set_physics_modifier("phystest:speed", nil)
 end
 
 function cmds.potion(player)
@@ -28,7 +28,7 @@ function cmds.potion(player)
 end
 
 function cmds.nopotion(player)
-	player:remove_physics_modifier("phystest:potion")
+	player:set_physics_modifier("phystest:potion", nil)
 end
 
 function cmds.jupiter(player)
@@ -38,7 +38,7 @@ function cmds.jupiter(player)
 end
 
 function cmds.nojupiter(player)
-	player:remove_physics_modifier("phystest:jupiter")
+	player:set_physics_modifier("phystest:jupiter", nil)
 end
 
 function cmds.override(player)
