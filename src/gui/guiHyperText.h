@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "client/fontengine.h"
 #include "config.h" // for USE_FREETYPE
 
 using namespace irr;
@@ -96,7 +97,7 @@ public:
 
 		ValignType valign;
 
-		gui::IGUIFont *font;
+		FontSpec fontspec = FontSpec(16, FM_Standard, false, false);
 
 		irr::video::SColor color;
 		irr::video::SColor hovercolor;

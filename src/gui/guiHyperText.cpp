@@ -76,9 +76,9 @@ void ParsedText::Element::setStyle(StyleList &style)
 
 	// TODO: find a way to check font validity
 	// Build a new fontengine ?
-	this->font = g_fontengine->getFont(spec);
+	this->fontspec = spec;
 
-	if (!this->font)
+	if (!g_fontengine->getFont(spec))
 		printf("No font found ! Size=%d, mode=%d, bold=%s, italic=%s\n",
 				font_size, font_mode, style["bold"].c_str(),
 				style["italic"].c_str());
@@ -612,20 +612,22 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 		for (auto &e : p.elements) {
 			switch (e.type) {
 			case ParsedText::ELEMENT_SEPARATOR:
-			case ParsedText::ELEMENT_TEXT:
-				if (e.font) {
-					e.dim.Width = e.font->getDimension(e.text.c_str()).Width;
-					e.dim.Height = e.font->getDimension(L"Yy").Height;
+			case ParsedText::ELEMENT_TEXT: {
+				IGUIFont *font = g_fontengine->getFont(e.fontspec);
+				if (font) {
+					e.dim.Width = font->getDimension(e.text.c_str()).Width;
+					e.dim.Height = font->getDimension(L"Yy").Height;
 #if USE_FREETYPE
-					if (e.font->getType() == irr::gui::EGFT_CUSTOM) {
+					if (font->getType() == irr::gui::EGFT_CUSTOM) {
 						e.baseline = e.dim.Height - 1 -
-							((irr::gui::CGUITTFont *)e.font)->getAscender() / 64;
+							((irr::gui::CGUITTFont *)font)->getAscender() / 64;
 					}
 #endif
 				} else {
 					e.dim = {0, 0};
 				}
 				break;
+			}
 
 			case ParsedText::ELEMENT_IMAGE:
 			case ParsedText::ELEMENT_ITEM:
@@ -937,16 +939,17 @@ void TextDrawer::draw(const core::rect<s32> &clip_rect,
 			case ParsedText::ELEMENT_SEPARATOR:
 			case ParsedText::ELEMENT_TEXT: {
 				irr::video::SColor color = el.color;
+				irr::gui::IGUIFont *font = g_fontengine->getFont(el.fontspec);
 
 				for (auto tag : el.tags)
 					if (&(*tag) == m_hovertag)
 						color = el.hovercolor;
 
-				if (!el.font)
+				if (!font)
 					break;
 
 				if (el.type == ParsedText::ELEMENT_TEXT)
-					el.font->draw(el.text, rect, color, false, true,
+					font->draw(el.text, rect, color, false, true,
 							&clip_rect);
 
 				if (el.underline &&  el.drawwidth) {
