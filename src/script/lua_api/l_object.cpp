@@ -1617,33 +1617,13 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 
 		playersao->m_physics_override_sent = false;
 		playersao->m_physics_override_set = true;
-	} else if (lua_gettop(L) > 2 || !lua_isnil(L, 2)) {
-		// old, non-table format
-		// TODO: Remove this code after version 5.4.0 is released
-		log_deprecated(L, "Deprecated use of set_physics_override(num, num, num)");
-
-		if (!lua_isnoneornil(L, 2)) {
-			playersao->m_physics_override.speed = lua_tonumber(L, 2);
-			playersao->m_physics_override_sent = false;
-			playersao->m_physics_override_set = true;
-		}
-		if (!lua_isnoneornil(L, 3)) {
-			playersao->m_physics_override.jump = lua_tonumber(L, 3);
-			playersao->m_physics_override_sent = false;
-			playersao->m_physics_override_set = true;
-		}
-		if (!lua_isnoneornil(L, 4)) {
-			playersao->m_physics_override.gravity = lua_tonumber(L, 4);
-			playersao->m_physics_override_sent = false;
-			playersao->m_physics_override_set = true;
-		}
 	}
 
 	if (!playersao->m_physics_override_set) {
 		// No overrides were set, revert to modifier mode
 		playersao->m_physics_override_sent = false;
 		return 0;
-	} else if (playersao->hasPhysicsModifiers()) {
+	} else {
 		warningstream << "Use of set_physics_override will disable active ";
 		warningstream << "physics modifiers ";
 		script_log_short_src(L, warningstream);
