@@ -54,10 +54,12 @@ local function match_font(filepath, fontname, variant)
 	return false
 end
 
+--[=[
 local fonttest = string.gsub([[
 	<justify>Regular   <b>Bold</b>   <i>Italic   <b>BoldItalic</b></i></justify>
 	<justify><mono>Mono   <b>Bold</b>   <i>Italic</i>   <b>BoldItalic</b></i></mono></justify>
 ]],"[\t]+","")
+--]=]
 
 local function create_settings_formspec()
 	local default_font_selection, mono_font_selection
@@ -88,9 +90,11 @@ local function create_settings_formspec()
 	end
 	local formspec = "size[12,5.4;true]" ..
 			"label[0,0;" .. fgettext("Default font") .. "]" ..
-			"dropdown[0,0.5;3,1;default_font_preset;" .. table.concat(default_fonts,",") .. ";" .. default_font_selection .. ";true]" ..
+			"dropdown[0,0.5;3,1;default_font_preset;" .. table.concat(default_fonts,",") .. ";" ..
+				default_font_selection .. ";true]" ..
 			"label[0,1.25;" .. fgettext("Monospace font") .. "]" ..
-			"dropdown[0,1.75;3,1;mono_font_preset;" .. table.concat(mono_fonts,",") .. ";" .. mono_font_selection .. ";true]" ..
+			"dropdown[0,1.75;3,1;mono_font_preset;" .. table.concat(mono_fonts,",") .. ";" ..
+				mono_font_selection .. ";true]" ..
 			-- FIXME: font preview with hypertext causes segfault
 			--"label[0,2.5;" .. fgettext("Font preview") .. "]" ..
 			--"box[0,3;11.75,1.5;#999999]" ..
