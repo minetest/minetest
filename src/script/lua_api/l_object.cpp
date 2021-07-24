@@ -1441,14 +1441,13 @@ static bool read_physics_modifier(lua_State *L, int index,
 	if (!lua_istable(L, index))
 		return false;
 
-	auto type = getstringfield_default(L, index, "type", "multiply");
+	std::string type = getstringfield_default(L, index, "type", "multiply");
 	if (type == "add") {
 		modifier.is_add = true;
 	} else if (type != "multiply") {
-		warningstream << "Unknown modifier type " << type << ", defaulting to multiply. ";
-		script_log_short_src(L, warningstream);
-		warningstream << std::endl;
-		infostream << script_get_backtrace(L) << std::endl;
+		std::ostringstream os;
+		os << "Unknown modifier type " << type << ", defaulting to multiply.";
+		script_warning(L, os.str());
 	}
 
 	float def = modifier.is_add ? 0.f : 1.f;
@@ -1465,7 +1464,7 @@ int ObjectRef::l_get_effective_physics(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *)getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 
@@ -1486,17 +1485,21 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *) getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 
 	const std::string key = readParam<std::string>(L, 2);
 
-	PlayerSAO::PhysicsModifier modifier;
-	if (!read_physics_modifier(L, 3, modifier))
-		throw LuaError("set_physics_modifier expects (string, table)");
+	if (lua_isnoneornil(L, 3)) {
+		playersao->deletePhysicsModifier(key);
+	} else {
+		PlayerSAO::PhysicsModifier modifier;
+		if (!read_physics_modifier(L, 3, modifier))
+			throw LuaError("set_physics_modifier expects (string, table)");
 
-	playersao->setPhysicsModifier(key, modifier);
+		playersao->setPhysicsModifier(key, modifier);
+	}
 
 	return 0;
 }
@@ -1506,7 +1509,7 @@ int ObjectRef::l_remove_physics_modifier(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *) getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 
@@ -1522,7 +1525,7 @@ int ObjectRef::l_set_physics_flags(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *) getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 
@@ -1543,7 +1546,7 @@ int ObjectRef::l_get_physics_flags(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *)getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 

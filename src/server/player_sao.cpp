@@ -707,8 +707,7 @@ void PlayerSAO::setPhysicsModifier(
 	updatePhysicsModifiersTotal();
 }
 
-void PlayerSAO::deletePhysicsModifier(
-		const std::string &key)
+void PlayerSAO::deletePhysicsModifier(const std::string &key)
 {
 	m_physics_modifiers.erase(key);
 	updatePhysicsModifiersTotal();

@@ -31,6 +31,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include <log.h>
 #include "config.h"
 #include "common/c_types.h"
 
@@ -120,6 +121,13 @@ std::string script_get_backtrace(lua_State *L);
  * @param stack_depth Lua stack depth
  */
 void script_log_short_src(lua_State *L, std::ostream &log_to, int stack_depth=1);
+
+void script_log(lua_State *L, const std::string &message,
+				std::ostream &log_to, bool do_error, int stack_depth=1);
+
+inline void script_warning(lua_State *L, const std::string &message, int stack_depth=1) {
+	script_log(L, message, warningstream, false, stack_depth);
+}
 
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);

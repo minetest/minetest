@@ -146,7 +146,7 @@ void script_log_short_src(lua_State *L, std::ostream &log_to, int stack_depth)
 	}
 }
 
-static void script_log(lua_State *L, const std::string &message,
+void script_log(lua_State *L, const std::string &message,
 	std::ostream &log_to, bool do_error, int stack_depth)
 {
 	log_to << message << " ";

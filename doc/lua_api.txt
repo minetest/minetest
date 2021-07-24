@@ -6548,21 +6548,33 @@ object you are working with still exists.
     * 7 - dig
     * 8 - place
     * 9 - zoom
-* `get_effective_physics()`: Returns a table representing the current player movement physics parameters.
-    * If physics modifiers are enabled, this will be the resolved values after the modifiers are applied.
-    * Otherwise, this will return same values as `get_physics_override()`, but without the flags.
-    * fields:
+* `get_effective_physics()`:
+    * Returns a table of the physics factors after applying all overrides.
+    * Table fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
-* `set_physics_modifier(key_string, modifier_table)`: Adds a physics modifier to
-   the player under the given key.
+* `set_physics_modifier(id, modifiers)`:
+   * Adds a physics modifier to the player under the given id.
    * Modifiers are resolved by first adding all `add` modifiers, and then multiplying all `multiply` modifiers.
-   * `key_string`: A string key identifying this modifier. Should take the format
-     "modname:modifier_name".
-   * `modifier_table`: a table with the same fields as `get_effective_physics`. Plus:
-       * `type` - `multiply` or `add`. Default: `multiply`.
-* `remove_physics_modifier(key_string)`: Removes the physics modifier with the key `key_string`.
+   * `id`: A string to identify this modifier in the format "modname:modifier_name".
+   * `modifiers`: either `nil` to delete the modifier, or a table with the same fields as `get_effective_physics` plus:
+       * `type`: `multiply` or `add`. Default: `multiply`.
+   * Examples:
+
+     ```lua
+     player:set_physics_modifier("mymod:moon", {
+          gravity = 0.16,
+     })
+
+     player:set_physics_modifier("phystest:potion", {
+         type = "add",
+         speed = 0.5,
+     })
+
+     player:set_physics_modifier("phystest:potion", nil)
+     ```
+* `remove_physics_modifier(id)`: Same as `set_physics_modifier(id, nil)`.
 * `set_physics_flags(flags)`:
     * `sneak`: whether player can sneak (default: `true`)
     * `sneak_glitch`: whether player can use the new move code replications
@@ -7222,7 +7234,7 @@ Used by `minetest.register_abm`.
         chance = 1,
         -- Chance of triggering `action` per-node per-interval is 1.0 / this
         -- value
-        
+
         min_y = -32768,
         max_y = 32767,
         -- min and max height levels where ABM will be processed

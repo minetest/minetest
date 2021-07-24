@@ -1,21 +1,5 @@
 local cmds = {}
 
-minetest.register_chatcommand("physics", {
-	func = function(name, param)
-		local player = minetest.get_player_by_name(name)
-		if not player then
-			return
-		end
-
-		local cmd = cmds[param:trim()]
-		if cmd then
-			cmd(player)
-		end
-
-		minetest.chat_send_player(name, dump(player:get_effective_physics()))
-	end
-})
-
 function cmds.moon(player)
 	player:set_physics_modifier("phystest:moon", {
 		gravity = 0.16,
@@ -99,3 +83,28 @@ end
 function cmds.dep2(player)
 	player:set_physics_override(2, 3, 0.16)
 end
+
+
+local params = ""
+for name in pairs(cmds) do
+	params = params .. name .. " | "
+end
+params = params:sub(1, #params - 3)
+
+minetest.register_chatcommand("physics", {
+	params = params,
+	description = "Change physics modifiers",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return
+		end
+
+		local cmd = cmds[param:trim()]
+		if cmd then
+			cmd(player)
+		end
+
+		minetest.chat_send_player(name, dump(player:get_effective_physics()))
+	end
+})
