@@ -1,6 +1,6 @@
 local force_default_fontpath_input = false
-local sync_monospace = false
-local force_monospace_fontpath_input = false
+local sync_mono = false
+local force_mono_fontpath_input = false
 
 local default_fonts  = {
 	"Arimo",
@@ -10,7 +10,7 @@ local default_fonts  = {
 	fgettext("Custom path"),
 }
 
-local monospace_fonts = {
+local mono_fonts = {
 	"Cousine",
 	"Unifont",
 	"Unifont (JP)",
@@ -60,9 +60,9 @@ local fonttest = string.gsub([[
 ]],"[\t]+","")
 
 local function create_settings_formspec()
-	local default_font_selection, monospace_font_selection
+	local default_font_selection, mono_font_selection
 	local default_font = minetest.settings:get("font_path")
-	local monospace_font = minetest.settings:get("mono_font_path")
+	local mono_font = minetest.settings:get("mono_font_path")
 	-- Get default font preset
 	for i = 1, #default_fonts-2 do
 		if match_font(default_font, default_fonts[i], "Regular") then
@@ -70,27 +70,27 @@ local function create_settings_formspec()
 			break
 		end
 	end
-	if default_font == monospace_font then
+	if default_font == mono_font then
 		default_font_selection = #default_fonts-1
 	end
 	if force_default_fontpath_input or not default_font_selection then
 		default_font_selection = #default_fonts
 	end
-	-- Get monospace font preset
-	for i = 1, #monospace_fonts-1 do
-		if match_font(monospace_font, monospace_fonts[i], "Regular") then
-			monospace_font_selection = i
+	-- Get mono font preset
+	for i = 1, #mono_fonts-1 do
+		if match_font(mono_font, mono_fonts[i], "Regular") then
+			mono_font_selection = i
 			break
 		end
 	end
-	if force_monospace_fontpath_input or not monospace_font_selection then
-		monospace_font_selection = #monospace_fonts
+	if force_mono_fontpath_input or not mono_font_selection then
+		mono_font_selection = #mono_fonts
 	end
 	local formspec = "size[12,5.4;true]" ..
 			"label[0,0;" .. fgettext("Default font") .. "]" ..
 			"dropdown[0,0.5;3,1;default_font_preset;" .. table.concat(default_fonts,",") .. ";" .. default_font_selection .. ";true]" ..
 			"label[0,1.25;" .. fgettext("Monospace font") .. "]" ..
-			"dropdown[0,1.75;3,1;monospace_font_preset;" .. table.concat(monospace_fonts,",") .. ";" .. monospace_font_selection .. ";true]" ..
+			"dropdown[0,1.75;3,1;mono_font_preset;" .. table.concat(mono_fonts,",") .. ";" .. mono_font_selection .. ";true]" ..
 			-- FIXME: font preview with hypertext causes segfault
 			--"label[0,2.5;" .. fgettext("Font preview") .. "]" ..
 			--"box[0,3;11.75,1.5;#999999]" ..
@@ -101,8 +101,8 @@ local function create_settings_formspec()
 	if default_font_selection == #default_fonts then
 		formspec = formspec .. "field[3.5,0.75;8.75,1;default_font_path;;" .. core.formspec_escape(default_font) .. "]"
 	end
-	if monospace_font_selection == #monospace_fonts then
-		formspec = formspec .. "field[3.5,2;8.75,1;monospace_font_path;;" .. core.formspec_escape(monospace_font) .. "]"
+	if mono_font_selection == #mono_fonts then
+		formspec = formspec .. "field[3.5,2;8.75,1;mono_font_path;;" .. core.formspec_escape(mono_font) .. "]"
 	end
 	return formspec
 end
@@ -152,9 +152,9 @@ local function handle_settings_buttons(this, fields)
 	local has_changes = false
 	if fields["btn_update"] then
 		force_default_fontpath_input = false
-		force_monospace_fontpath_input = false
-		if fields["monospace_font_path"] then
-			local path = fields["monospace_font_path"]
+		force_mono_fontpath_input = false
+		if fields["mono_font_path"] then
+			local path = fields["mono_font_path"]
 			if not is_valid_font_path(path) then
 				this.data.error_message = fgettext("Invalid font path")
 			else
@@ -162,7 +162,7 @@ local function handle_settings_buttons(this, fields)
 			end
 		end
 		if fields["default_font_path"] then
-			sync_monospace = false
+			sync_mono = false
 			local path = fields["default_font_path"]
 			if not is_valid_font_path(path) then
 				this.data.error_message = fgettext("Invalid font path")
@@ -172,14 +172,14 @@ local function handle_settings_buttons(this, fields)
 		end
 		has_changes = true
 	end
-	if fields["monospace_font_preset"] then
-		local preset_index = tonumber(fields["monospace_font_preset"])
-		if preset_index and monospace_fonts[preset_index] then
-			if preset_index == #monospace_fonts then
-				force_monospace_fontpath_input = true
+	if fields["mono_font_preset"] then
+		local preset_index = tonumber(fields["mono_font_preset"])
+		if preset_index and mono_fonts[preset_index] then
+			if preset_index == #mono_fonts then
+				force_mono_fontpath_input = true
 			else
-				force_monospace_fontpath_input = false
-				update_font_settings("mono_", generate_font_paths(monospace_fonts[preset_index]))
+				force_mono_fontpath_input = false
+				update_font_settings("mono_", generate_font_paths(mono_fonts[preset_index]))
 			end
 			has_changes = true
 		end
@@ -188,19 +188,19 @@ local function handle_settings_buttons(this, fields)
 		local preset_index = tonumber(fields["default_font_preset"])
 		if preset_index and default_fonts[preset_index] then
 			if preset_index == #default_fonts then
-				sync_monospace = false
+				sync_mono = false
 				force_default_fontpath_input = true
 			elseif preset_index == #default_fonts-1 then
-				sync_monospace = true
+				sync_mono = true
 			else
-				sync_monospace = false
+				sync_mono = false
 				force_default_fontpath_input = false
 				update_font_settings("", generate_font_paths(default_fonts[preset_index]))
 			end
 			has_changes = true
 		end
 	end
-	if sync_monospace then
+	if sync_mono then
 		force_default_fontpath_input = false
 		for _, i in pairs{"", "_bold", "_italic", "_bold_italic"} do
 			minetest.settings:set("font_path"..i, minetest.settings:get("mono_font_path"..i))
@@ -208,8 +208,8 @@ local function handle_settings_buttons(this, fields)
 	end
 	if fields["btn_reset"] then
 		force_default_fontpath_input = false
-		force_monospace_fontpath_input = false
-		sync_monospace = false
+		force_mono_fontpath_input = false
+		sync_mono = false
 		for _, i in pairs{"", "mono_"} do
 			for _, j in pairs{"", "_bold", "_italic", "_bold_italic"} do
 				core.settings:remove(string.format("%sfont_path%s", i, j))
