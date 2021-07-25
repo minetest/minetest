@@ -618,11 +618,11 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
-
-#    Set the shadow update time, in seconds.
-#    Lower value means shadows and map updates faster, but it consumes more resources.
-#    Minimum value: 0.001; maximum value: 0.2
-shadow_update_time (Map update time) float 0.2 0.001 0.2
+#    Spread a complete update of shadow map over given amount of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
