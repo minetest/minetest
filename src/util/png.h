@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
-#include <irrTypes.h>
-using namespace irr;
+#include "irrlichttypes.h"
 
 /*	Simple PNG encoder. Encodes an RGBA image with no predictors.
 	Returns a binary string. */
