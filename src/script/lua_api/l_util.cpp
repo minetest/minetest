@@ -40,10 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "util/hex.h"
 #include "util/sha1.h"
-#include "util/serialize.h"
+#include "util/png.h"
 #include <algorithm>
 #include <cstdio>
-#include <zlib.h>
 
 // log([level,] text)
 // Writes a line to the logger.
@@ -519,70 +518,21 @@ int ModApiUtil::l_colorspec_to_bytes(lua_State *L)
 	return 0;
 }
 
-#include "log.h"
-
-// encode_png(w, h, data, [level])
+// encode_png(w, h, data, level)
 int ModApiUtil::l_encode_png(lua_State *L)
 {
-	// Swap endianness of u32 'n' in place
-	#define PNGBS(n) { u32 tmp = n ; writeU32( (u8*) ( & n ), tmp ); }
-
 	NO_MAP_LOCK_REQUIRED;
 
-	u32 width = readParam<float>(L, 1);
-	u32 height = readParam<float>(L, 2);
-	size_t scanline_count = height;
-	size_t scanline_size = width * 4;
+	// The args are already pre-validated on the lua side.
+	u32 width = readParam<int>(L, 1);
+	u32 height = readParam<int>(L, 2);
+	const char *data = luaL_checklstring(L, 3, NULL);
+	s32 compression = readParam<int>(L, 4);
 
-	size_t size;
-	const char *data = luaL_checklstring(L, 3, &size);
-
-	s32 compression = readParam<float>(L, 4);
-
-	std::ostringstream file, header, zdata, scanlines;
-
-	file << "\x89PNG\r\n\x1a\n";
-
-	u32 headerLength = 0x0D;
-	PNGBS(headerLength)
-	file.write((char const*) &headerLength, 4);
-
-	header << "IHDR";
-	PNGBS(width)
-	header.write((char const*) &width, 4);
-	PNGBS(height)
-	header.write((char const*) &height, 4);
-	header.write("\x08\x06\x00\x00\x00", 5);
-	std::string header_str = header.str();
-	file << header_str;
-
-	u32 crc_header = crc32(0,(const u8*)header_str.data(), header_str.size());
-	PNGBS(crc_header)
-	file.write((char const*) &crc_header, 4);
-
-	zdata << "IDAT";
-
-	for( u32 i = 0; i < scanline_count; i++ ) {
-		scanlines.write( "\x00", 1 );
-		scanlines.write( data + scanline_size * i, scanline_size );
-	}
-	compressZlib(scanlines.str(), zdata, compression);
-
-	std::string zdata_str = zdata.str();
-	u32 zdata_length = zdata_str.size() - 4;
-	PNGBS(zdata_length)
-	file.write((char const*) &zdata_length, 4);
-	file << zdata_str;
-	u32 crc_zdata = crc32(0,(const u8*)zdata_str.data(), zdata_str.size());
-	PNGBS(crc_zdata)
-	file.write((char const*) &crc_zdata, 4);
-	file.write("\x00\x00\x00\x00IEND\xae\x42\x60\x82", 12);
-
-	std::string out = file.str();
+	std::string out = encodePNG((const u8*)data, width, height, compression);
 
 	lua_pushlstring(L, out.data(), out.size());
 	return 1;
-	#undef PNGBS
 }
 
 void ModApiUtil::Initialize(lua_State *L, int top)

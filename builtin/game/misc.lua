@@ -297,13 +297,15 @@ end
 local o_encode_png = core.encode_png
 function core.encode_png(width, height, data, compression)
 	if type(width) ~= "number" then
-		error("Incorrect type for 'width', expected number, got " .. type(width))  end
+		error("Incorrect type for 'width', expected number, got " .. type(width))
+	end
 	if type(height) ~= "number" then
-		error("Incorrect type for 'height', expected number, got " .. type(height))  end
+		error("Incorrect type for 'height', expected number, got " .. type(height))
+	end
 
 	local expected_byte_count = width * height * 4;
 
-	if type(data)~= "table" and type(data) ~= "string" then
+	if type(data) ~= "table" and type(data) ~= "string" then
 		error("Incorrect type for 'height', expected table or string, got " .. type(height));
 	end
 
@@ -318,12 +320,12 @@ function core.encode_png(width, height, data, compression)
 	end
 
 	if type(data) == "table" then
-		local dataBuf = {};
-		for i=1, #data do
-			dataBuf[i] = core.colorspec_to_bytes(data[i]);
+		local dataBuf = {}
+		for i = 1, #data do
+			dataBuf[i] = core.colorspec_to_bytes(data[i])
 		end
-		data = table.concat(dataBuf);
+		data = table.concat(dataBuf)
 	end
 
-	return o_encode_png(width, height, data, compression or 6);
+	return o_encode_png(width, height, data, compression or 6)
 end
