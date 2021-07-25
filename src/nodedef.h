@@ -250,6 +250,7 @@ enum Solidness : u8 {
 	SOLIDNESS_OBJECT,   // torchlike, fencelike etc.
 	SOLIDNESS_TRANSPARENT, // glasslike, allfaces
 	SOLIDNESS_LIQUID,  // liquids
+	SOLIDNESS_OPAQUE_LIQUID, // liquids without transparency
 	SOLIDNESS_SOLID,   // normal nodes
 };
 

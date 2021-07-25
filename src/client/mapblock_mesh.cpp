@@ -677,9 +677,9 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	}
 
 	if (c1 > c2)
-		return c1 == SOLIDNESS_SOLID ? 1 : 0;
+		return c1 >= SOLIDNESS_OPAQUE_LIQUID ? 1 : 0;
 
-	return c2 == SOLIDNESS_SOLID ? 2 : 0;
+	return c2 >= SOLIDNESS_OPAQUE_LIQUID ? 2 : 0;
 }
 
 /*
