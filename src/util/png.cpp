@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <zlib.h>
 #include "util/serialize.h"
 #include "serialization.h"
-#include <irrTypes.h>
-using namespace irr;
+#include "irrlichttypes.h"
 
 void writeChunk(std::ostringstream &target, const std::string &chunk_str)
 {
