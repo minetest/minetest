@@ -687,7 +687,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 		facePointer(int index, int distance, bool apply_backface_culling) : 
 				face(index), distance(distance), apply_backface_culling(apply_backface_culling) {}
 
-		bool operator<(const struct facePointer& other) {
+		bool operator<(const struct facePointer& other) const {
 			return distance > other.distance || (distance == other.distance && face > other.face);
 		}
 	};
