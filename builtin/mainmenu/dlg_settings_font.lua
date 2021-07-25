@@ -4,16 +4,12 @@ local force_mono_fontpath_input = false
 
 local default_fonts  = {
 	"Arimo",
-	"Unifont",
-	"Unifont (JP)",
 	fgettext("Monospace"),
 	fgettext("Custom path"),
 }
 
 local mono_fonts = {
 	"Cousine",
-	"Unifont",
-	"Unifont (JP)",
 	fgettext("Custom path"),
 }
 
