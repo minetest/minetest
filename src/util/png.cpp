@@ -21,12 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <sstream>
 #include <zlib.h>
+#include <cassert>
 #include "util/serialize.h"
 #include "serialization.h"
 #include "irrlichttypes.h"
 
-void writeChunk(std::ostringstream &target, const std::string &chunk_str)
+static void writeChunk(std::ostringstream &target, const std::string &chunk_str)
 {
+	assert(chunk_str.size() >= 4);
+	assert(chunk_str.size() - 4 < U32_MAX);
 	writeU32(target, chunk_str.size() - 4); // Write length minus the identifier
 	target << chunk_str;
 	writeU32(target, crc32(0,(const u8*)chunk_str.data(), chunk_str.size()));
