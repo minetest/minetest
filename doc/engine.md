@@ -69,7 +69,7 @@ triage whether or not an engine change is necessary or useful.
 * Is it possible to do what I want with Lua scripts?
 * Is the performance of the Lua solution acceptable?
 * Is this gonna be useful to others as well?
-* Is the solution future proof and not just a hack?
+* Is the solution robust and not just a hack?
 
 ## 2. Obligation to content creators
 
