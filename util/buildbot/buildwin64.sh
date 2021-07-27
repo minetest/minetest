@@ -30,7 +30,7 @@ if [ -z "$toolchain_file" ]; then
 fi
 echo "Using $toolchain_file"
 
-irrlicht_version=1.9.0mt1
+irrlicht_version=1.9.0mt2
 ogg_version=1.3.4
 vorbis_version=1.3.7
 curl_version=7.76.1
@@ -97,7 +97,7 @@ cd $builddir
 mkdir build
 cd build
 
-irr_dlls=$(echo $libdir/irrlicht/bin/*.dll | tr ' ' ';')
+irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
 vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
 gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
@@ -113,9 +113,7 @@ cmake -S $sourcedir -B . \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include/irrlichtmt \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/libIrrlichtMt.dll.a \
-	-DIRRLICHT_DLL="$irr_dlls" \
+	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \

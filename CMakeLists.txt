@@ -68,34 +68,25 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	if(NOT TARGET IrrlichtMt)
 		message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
 	endif()
-
-	# set include dir the way it would normally be
-	set(IRRLICHT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
-	set(IRRLICHT_LIBRARY IrrlichtMt)
 else()
-	find_package(Irrlicht)
-	if(BUILD_CLIENT AND NOT IRRLICHT_FOUND)
-		message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.")
-	elseif(NOT IRRLICHT_INCLUDE_DIR)
-		message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.")
-	endif()
-endif()
+	find_package(IrrlichtMt QUIET)
+	if(NOT TARGET IrrlichtMt::IrrlichtMt)
+		string(CONCAT explanation_msg
+			"The Minetest team has forked Irrlicht to make their own customizations. "
+			"It can be found here: https://github.com/minetest/irrlicht")
+		if(BUILD_CLIENT)
+			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.\n${explanation_msg}")
+		endif()
 
-include(CheckSymbolExists)
-set(CMAKE_REQUIRED_INCLUDES ${IRRLICHT_INCLUDE_DIR})
-unset(HAS_FORKED_IRRLICHT CACHE)
-check_symbol_exists(IRRLICHT_VERSION_MT "IrrCompileConfig.h" HAS_FORKED_IRRLICHT)
-if(NOT HAS_FORKED_IRRLICHT)
-	string(CONCAT EXPLANATION_MSG
-		"Irrlicht found, but it is not IrrlichtMt (Minetest's Irrlicht fork). "
-		"The Minetest team has forked Irrlicht to make their own customizations. "
-		"It can be found here: https://github.com/minetest/irrlicht")
-	if(BUILD_CLIENT)
-		message(FATAL_ERROR "${EXPLANATION_MSG}\n"
-			"Building the client with upstream Irrlicht is no longer possible.")
+		include(MinetestFindIrrlichtHeaders)
+		if(NOT IRRLICHT_INCLUDE_DIR)
+			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.\n${explanation_msg}")
+		endif()
+		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE "${IRRLICHT_INCLUDE_DIR}")
 	else()
-		message(WARNING "${EXPLANATION_MSG}\n"
-			"The server can still be built with upstream Irrlicht but this is DISCOURAGED.")
+		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 	endif()
 endif()
 
