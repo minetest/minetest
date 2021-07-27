@@ -1586,15 +1586,37 @@ since, by default, no schematic attributes are set.
 Items
 =====
 
+Items are things that can be held by players, dropped in the map and
+stored in inventories.
+Items come in the form of item stacks, which are collections of equal
+items that occupy a single inventory slot.
+
 Item types
 ----------
 
 There are three kinds of items: nodes, tools and craftitems.
 
-* Node: Can be placed in the world's voxel grid
-* Tool: Has a wear property but cannot be stacked. The default use action is to
-  dig nodes or hit objects according to its tool capabilities.
-* Craftitem: Cannot dig nodes or be placed
+* Node: Placeable item form of a node in the world's voxel grid
+* Tool: Has a changable wear property but cannot be stacked
+* Craftitem: Has no special properties
+
+Every registered node (the voxel in the world) has a corresponding
+item form (the thing in your inventory) that comes along with it.
+This item form can be placed which will create a node in the
+world (by default).
+Both the 'actual' node and its item form share the same identifier.
+For all practical purposes, you can treat the node and its item form
+interchangeably. We usually just say 'node' to the item form of
+the node as well.
+
+Note the definition of tools is purely technical. The only really
+unique thing about tools is their wear, and that's basically it.
+Beyond that, you can't make any gameplay-relevant assumptions
+about tools or non-tools. It is perfectly valid to register something
+that acts as tool in a gameplay sense as a craftitem, and vice-versa.
+
+Craftitems can be used for items that neither need to be a node
+nor a tool.
 
 Amount and wear
 ---------------
@@ -1605,7 +1627,9 @@ default. Tool item stacks can not have an amount greater than 1.
 Tools use a wear (damage) value ranging from 0 to 65535. The
 value 0 is the default and is used for unworn tools. The values
 1 to 65535 are used for worn tools, where a higher value stands for
-a higher wear. Non-tools always have a wear value of 0.
+a higher wear. Non-tools technically also have a wear property,
+but it is always 0. There is also a special 'toolrepair' crafting
+recipe that is only available to tools.
 
 Item formats
 ------------
@@ -1659,8 +1683,8 @@ Groups
 ======
 
 In a number of places, there is a group table. Groups define the
-properties of a thing (item, node, armor of entity, capabilities of
-tool) in such a way that the engine and other mods can can interact with
+properties of a thing (item, node, armor of entity, tool capabilities)
+in such a way that the engine and other mods can can interact with
 the thing without actually knowing what the thing is.
 
 Usage
@@ -1701,17 +1725,17 @@ Groups of entities
 ------------------
 
 For entities, groups are, as of now, used only for calculating damage.
-The rating is the percentage of damage caused by tools with this damage group.
+The rating is the percentage of damage caused by items with this damage group.
 See [Entity damage mechanism].
 
     object.get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
     object.set_armor_groups({fleshy=30, cracky=80})
 
-Groups of tools
----------------
+Groups of tool capabilities
+---------------------------
 
-Groups in tools define which groups of nodes and entities they are
-effective towards.
+Groups in tool capabilities define which groups of nodes and entities they
+are effective towards.
 
 Groups in crafting recipes
 --------------------------
@@ -1743,7 +1767,7 @@ The asterisk `(*)` after a group name describes that there is no engine
 functionality bound to it, and implementation is left up as a suggestion
 to games.
 
-### Node, item and tool groups
+### Node and item groups
 
 * `not_in_creative_inventory`: (*) Special group for inventory mods to indicate
   that the item should be hidden in item lists.
@@ -1779,7 +1803,7 @@ to games.
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-     * See also: `leveldiff` in [Tools]
+     * See also: `leveldiff` in [Tool Capabilities]
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
 
@@ -1810,8 +1834,8 @@ Known damage and digging time defining groups
 
 * `crumbly`: dirt, sand
 * `cracky`: tough but crackable stuff like stone.
-* `snappy`: something that can be cut using fine tools; e.g. leaves, small
-  plants, wire, sheets of metal
+* `snappy`: something that can be cut using things like scissors, shears,
+  bolt cutters and the like, e.g. leaves, small plants, wire, sheets of metal
 * `choppy`: something that can be cut using force; e.g. trees, wooden planks
 * `fleshy`: Living things like animals and the player. This could imply
   some blood effects when hitting.
@@ -1820,7 +1844,7 @@ Known damage and digging time defining groups
    Can be added to nodes that shouldn't logically be breakable by the
    hand but are. Somewhat similar to `dig_immediate`, but times are more
    like `{[1]=3.50,[2]=2.00,[3]=0.70}` and this does not override the
-   speed of a tool if the tool can dig at a faster speed than this
+   digging speed of an item if it can dig at a faster speed than this
    suggests for the hand.
 
 Examples of custom groups
@@ -1846,50 +1870,62 @@ Groups such as `crumbly`, `cracky` and `snappy` are used for this
 purpose. Rating is `1`, `2` or `3`. A higher rating for such a group implies
 faster digging time.
 
-The `level` group is used to limit the toughness of nodes a tool can dig
-and to scale the digging times / damage to a greater extent.
+The `level` group is used to limit the toughness of nodes an item capable
+of digging can dig and to scale the digging times / damage to a greater extent.
 
 **Please do understand this**, otherwise you cannot use the system to it's
 full potential.
 
-Tools define their properties by a list of parameters for groups. They
+Items define their properties by a list of parameters for groups. They
 cannot dig other groups; thus it is important to use a standard bunch of
-groups to enable interaction with tools.
+groups to enable interaction with items.
 
 
 
 
-Tools
-=====
+Tool Capabilities
+=================
 
-Tools definition
-----------------
+'Tool capabilities' is a property of items that defines two things:
 
-Tools define:
+1) Which nodes it can dig and how fast
+2) Which objects it can hurt by punching and by how much
+
+Tool capabilities are available for all items, not just tools.
+But only tools can receive wear from digging and punching.
+
+Missing or incomplete tool capabilities will default to the
+player's hand.
+
+Tool capabilities definition
+----------------------------
+
+Tool capabilities define:
 
 * Full punch interval
 * Maximum drop level
-* For an arbitrary list of groups:
+* For an arbitrary list of node groups:
     * Uses (until the tool breaks)
-        * Maximum level (usually `0`, `1`, `2` or `3`)
-        * Digging times
-        * Damage groups
+    * Maximum level (usually `0`, `1`, `2` or `3`)
+    * Digging times
+* Damage groups
+* Punch attack uses (until the tool breaks)
 
 ### Full punch interval
 
-When used as a weapon, the tool will do full damage if this time is spent
-between punches. If e.g. half the time is spent, the tool will do half
+When used as a weapon, the item will do full damage if this time is spent
+between punches. If e.g. half the time is spent, the item will do half
 damage.
 
 ### Maximum drop level
 
-Suggests the maximum level of node, when dug with the tool, that will drop
-it's useful item. (e.g. iron ore to drop a lump of iron).
+Suggests the maximum level of node, when dug with the item, that will drop
+its useful item. (e.g. iron ore to drop a lump of iron).
 
 This is not automated; it is the responsibility of the node definition
 to implement this.
 
-### Uses
+### Uses (tools only)
 
 Determines how many uses the tool has when it is used for digging a node,
 of this group, of the maximum level. For lower leveled nodes, the use count
@@ -1901,9 +1937,11 @@ node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 * `uses=10, leveldiff=1`: actual uses: 30
 * `uses=10, leveldiff=2`: actual uses: 90
 
+For non-tools, this has no effect.
+
 ### Maximum level
 
-Tells what is the maximum level of a node of this group that the tool will
+Tells what is the maximum level of a node of this group that the item will
 be able to dig.
 
 ### Digging times
@@ -1912,7 +1950,7 @@ List of digging times for different ratings of the group, for nodes of the
 maximum level.
 
 For example, as a Lua table, `times={2=2.00, 3=0.70}`. This would
-result in the tool to be able to dig nodes that have a rating of `2` or `3`
+result in the item to be able to dig nodes that have a rating of `2` or `3`
 for this group, and unable to dig the rating `1`, which is the toughest.
 Unless there is a matching group that enables digging otherwise.
 
@@ -1924,8 +1962,19 @@ i.e. players can more quickly click the nodes away instead of holding LMB.
 
 List of damage for groups of entities. See [Entity damage mechanism].
 
-Example definition of the capabilities of a tool
-------------------------------------------------
+### Punch attack uses (tools only)
+
+Determines how many uses (before breaking) the tool has when dealing damage
+to an object, when the full punch interval (see above) was always
+waited out fully.
+
+Wear received by the tool is proportional to the time spent, scaled by
+the full punch interval.
+
+For non-tools, this has no effect.
+
+Example definition of the capabilities of an item
+-------------------------------------------------
 
     tool_capabilities = {
         full_punch_interval=1.5,
@@ -1936,7 +1985,7 @@ Example definition of the capabilities of a tool
         damage_groups = {fleshy=2},
     }
 
-This makes the tool be able to dig nodes that fulfil both of these:
+This makes the item capable of digging nodes that fulfil both of these:
 
 * Have the `crumbly` group
 * Have a `level` group less or equal to `2`
@@ -3394,21 +3443,21 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
-* `minetest.get_dig_params(groups, tool_capabilities)`: Simulates a tool
+* `minetest.get_dig_params(groups, tool_capabilities)`: Simulates an item
     that digs a node.
     Returns a table with the following fields:
     * `diggable`: `true` if node can be dug, `false` otherwise.
     * `time`: Time it would take to dig the node.
-    * `wear`: How much wear would be added to the tool.
+    * `wear`: How much wear would be added to the tool (ignored for non-tools).
     `time` and `wear` are meaningless if node's not diggable
     Parameters:
     * `groups`: Table of the node groups of the node that would be dug
-    * `tool_capabilities`: Tool capabilities table of the tool
+    * `tool_capabilities`: Tool capabilities table of the item
 * `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
     * `hp`: How much damage the punch would cause.
-    * `wear`: How much wear would be added to the tool.
+    * `wear`: How much wear would be added to the tool (ignored for non-tools).
     Parameters:
     * `groups`: Damage groups of the object
     * `tool_capabilities`: Tool capabilities table of the item
@@ -4334,7 +4383,7 @@ Callbacks:
     * `puncher`: an `ObjectRef` (can be `nil`)
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
       (can be `nil`).
-    * `tool_capabilities`: capability table of used tool (can be `nil`)
+    * `tool_capabilities`: capability table of used item (can be `nil`)
     * `dir`: unit vector of direction of punch. Always defined. Points from the
       puncher to the punched.
     * `damage`: damage that will be done to entity.
@@ -4706,7 +4755,7 @@ Call these functions only at load time!
     * `hitter`: ObjectRef - Player that hit
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
       (can be nil).
-    * `tool_capabilities`: Capability table of used tool (can be nil)
+    * `tool_capabilities`: Capability table of used item (can be nil)
     * `dir`: Unit vector of direction of punch. Always defined. Points from
       the puncher to the punched.
     * `damage`: Number that represents the damage calculated by the engine
@@ -5396,9 +5445,9 @@ Item handling
       information.
 * `minetest.get_node_drops(node, toolname)`
     * Returns list of itemstrings that are dropped by `node` when dug
-      with `toolname`.
+      with the item `toolname` (not limited to tools).
     * `node`: node as table or node name
-    * `toolname`: name of the tool item (can be `nil`)
+    * `toolname`: name of the item used to dig (can be `nil`)
 * `minetest.get_craft_result(input)`: returns `output, decremented_input`
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
@@ -6200,7 +6249,7 @@ an itemstring, a table or `nil`.
 * `get_tool_capabilities()`: returns the digging properties of the item,
   or those of the hand if none are defined for this item type
 * `add_wear(amount)`
-    * Increases wear by `amount` if the item is a tool
+    * Increases wear by `amount` if the item is a tool, otherwise does nothing
     * `amount`: number, integer
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
@@ -7372,7 +7421,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
         -- behavior.
 
-        -- See "Tools" section for an example including explanation
+        -- See "Tool Capabilities" section for an example including explanation
         tool_capabilities = {
             full_punch_interval = 1.0,
             max_drop_level = 0,
@@ -7445,7 +7494,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         after_use = function(itemstack, user, node, digparams),
         -- default: nil
         -- If defined, should return an itemstack and will be called instead of
-        -- wearing out the tool. If returns nil, does nothing.
+        -- wearing out the item (if tool). If returns nil, does nothing.
         -- If after_use doesn't exist, it is the same as:
         --   function(itemstack, user, node, digparams)
         --     itemstack:add_wear(digparams.wear)
@@ -7658,7 +7707,7 @@ Used by `minetest.register_node`.
             -- While digging node.
             -- If `"__group"`, then the sound will be
             -- `default_dig_<groupname>`, where `<groupname>` is the
-            -- name of the tool's digging group with the fastest digging time.
+            -- name of the item's digging group with the fastest digging time.
             -- In case of a tie, one of the sounds will be played (but we
             -- cannot predict which one)
             -- Default value: `"__group"`
@@ -7682,14 +7731,13 @@ Used by `minetest.register_node`.
         drop = "",
         -- Name of dropped item when dug.
         -- Default dropped item is the node itself.
-        -- Using a table allows multiple items, drop chances and tool filtering.
-        -- Tool filtering was undocumented until recently, tool filtering by string
-        -- matching is deprecated.
+        -- Using a table allows multiple items, drop chances and item filtering.
+        -- Item filtering by string matching is deprecated.
         drop = {
             max_items = 1,
             -- Maximum number of item lists to drop.
             -- The entries in 'items' are processed in order. For each:
-            -- Tool filtering is applied, chance of drop is applied, if both are
+            -- Item filtering is applied, chance of drop is applied, if both are
             -- successful the entire item list is dropped.
             -- Entry processing continues until the number of dropped item lists
             -- equals 'max_items'.
@@ -7703,7 +7751,7 @@ Used by `minetest.register_node`.
                     items = {"default:diamond"},
                 },
                 {
-                    -- Only drop if using a tool whose name is identical to one
+                    -- Only drop if using an item whose name is identical to one
                     -- of these.
                     tools = {"default:shovel_mese", "default:shovel_diamond"},
                     rarity = 5,
@@ -7714,8 +7762,8 @@ Used by `minetest.register_node`.
                     inherit_color = true,
                 },
                 {
-                    -- Only drop if using a tool whose name contains
-                    -- "default:shovel_" (this tool filtering by string matching
+                    -- Only drop if using a item whose name contains
+                    -- "default:shovel_" (this item filtering by string matching
                     -- is deprecated).
                     tools = {"~default:shovel_"},
                     rarity = 2,
@@ -7796,7 +7844,7 @@ Used by `minetest.register_node`.
 
         on_dig = function(pos, node, digger),
         -- default: minetest.node_dig
-        -- By default checks privileges, wears out tool and removes node.
+        -- By default checks privileges, wears out item (if tool) and removes node.
         -- return true if the node was dug successfully, false otherwise.
         -- Deprecated: returning nil is the same as returning true.
 
@@ -7883,10 +7931,22 @@ Used by `minetest.register_craft`.
 
     {
         type = "toolrepair",
-        additional_wear = -0.02,
+        additional_wear = -0.02, -- multiplier of 65536
     }
 
-Note: Tools with group `disable_repair=1` will not repairable by this recipe.
+Adds a shapeless recipe for *every* tool that doesn't have the `disable_repair=1`
+group. Player can put 2 equal tools in the craft grid to get one "repaired" tool
+back.
+The wear of the output is determined by the wear of both tools, plus a
+'repair bonus' given by `additional_wear`. To reduce the wear (i.e. 'repair'),
+you want `additional_wear` to be negative.
+
+The formula used to calculate the resulting wear is:
+
+    65536 - ( (65536 - tool_1_wear) + (65536 - tool_2_wear) + 65536 * additional_wear )
+
+The result is rounded and can't be lower than 0. If the result is 65536 or higher,
+no crafting is possible.
 
 ### Cooking
 
