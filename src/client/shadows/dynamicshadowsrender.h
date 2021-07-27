@@ -76,6 +76,7 @@ public:
 	void setClearColor(video::SColor ClearColor);
 
 	void update(video::ITexture *outputTarget = nullptr);
+	void drawDebug();
 
 	video::ITexture *get_texture()
 	{

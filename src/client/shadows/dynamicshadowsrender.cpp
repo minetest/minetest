@@ -242,6 +242,7 @@ void ShadowRenderer::updateSMTextures()
 				// This is also handled in ClientMap.
 				if (m_current_frame == m_map_shadow_update_frames - 1) {
 					if (m_shadow_map_colored) {
+						m_driver->setRenderTarget(0, false, false);
 						m_driver->setRenderTarget(shadowMapTextureColors,
 								true, false, video::SColor(255, 255, 255, 255));
 					}
@@ -273,7 +274,6 @@ void ShadowRenderer::updateSMTextures()
 void ShadowRenderer::update(video::ITexture *outputTarget)
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
-		m_smgr->drawAll();
 		return;
 	}
 
@@ -308,36 +308,34 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			m_driver->setRenderTarget(0, false, false);
 
 		} // end for lights
-
-		// now render the actual MT render pass
-		m_driver->setRenderTarget(outputTarget, true, true, m_clear_color);
-		m_smgr->drawAll();
-
-		/* this code just shows shadows textures in screen and in ONLY for debugging*/
-		#if 0
-		// this is debug, ignore for now.
-		m_driver->draw2DImage(shadowMapTextureFinal,
-				core::rect<s32>(0, 50, 128, 128 + 50),
-				core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
-
-		m_driver->draw2DImage(shadowMapClientMap,
-				core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
-				core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
-		m_driver->draw2DImage(shadowMapTextureDynamicObjects,
-				core::rect<s32>(0, 128 + 50 + 128, 128,
-						128 + 50 + 128 + 128),
-				core::rect<s32>({0, 0}, shadowMapTextureDynamicObjects->getSize()));
-
-		if (m_shadow_map_colored) {
-
-			m_driver->draw2DImage(shadowMapTextureColors,
-					core::rect<s32>(128,128 + 50 + 128 + 128,
-							128 + 128, 128 + 50 + 128 + 128 + 128),
-					core::rect<s32>({0, 0}, shadowMapTextureColors->getSize()));
-		}
-		#endif
-		m_driver->setRenderTarget(0, false, false);
 	}
+}
+
+void ShadowRenderer::drawDebug()
+{
+	/* this code just shows shadows textures in screen and in ONLY for debugging*/
+	#if 0
+	// this is debug, ignore for now.
+	m_driver->draw2DImage(shadowMapTextureFinal,
+			core::rect<s32>(0, 50, 128, 128 + 50),
+			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
+
+	m_driver->draw2DImage(shadowMapClientMap,
+			core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
+			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
+	m_driver->draw2DImage(shadowMapTextureDynamicObjects,
+			core::rect<s32>(0, 128 + 50 + 128, 128,
+					128 + 50 + 128 + 128),
+			core::rect<s32>({0, 0}, shadowMapTextureDynamicObjects->getSize()));
+
+	if (m_shadow_map_colored) {
+
+		m_driver->draw2DImage(shadowMapTextureColors,
+				core::rect<s32>(128,128 + 50 + 128 + 128,
+						128 + 128, 128 + 50 + 128 + 128 + 128),
+				core::rect<s32>({0, 0}, shadowMapTextureColors->getSize()));
+	}
+	#endif
 }
 
 
