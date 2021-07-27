@@ -8447,6 +8447,9 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         z_index = 0,
         -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
+
+        style = 0,
+        -- For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
     }
 
 Particle definition
