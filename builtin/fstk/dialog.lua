@@ -68,14 +68,14 @@ function dialog_create(name,get_formspec,buttonhandler,eventhandler)
 	return self
 end
 
-function messagebox(name, message)
-	return dialog_create(name,
+function messagebox(name, message, parent)
+	local dlg = dialog_create(name,
 			function()
 				return ([[
 					formspec_version[3]
-					size[8,3]
-					textarea[0.375,0.375;7.25,1.2;;;%s]
-					button[3,1.825;2,0.8;ok;%s]
+					size[8,4]
+					textarea[0.375,0.375;7.25,2.2;;;%s]
+					button[3,2.825;2,0.8;ok;%s]
 				]]):format(message, fgettext("OK"))
 			end,
 			function(this, fields)
@@ -85,4 +85,10 @@ function messagebox(name, message)
 				end
 			end,
 			nil)
+	if parent then
+		dlg:set_parent(parent)
+		parent:hide()
+		dlg:show()
+	end
+	return dlg
 end
