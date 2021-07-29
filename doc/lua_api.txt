@@ -620,6 +620,21 @@ Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
 
+#### `[png:<base64>`
+
+Embed a base64 encoded PNG image in the texture string.
+You can produce a valid string for this by calling
+`minetest.encode_base64(minetest.encode_png(tex))`,
+refer to the documentation of these functions for details.
+You can use this to send disposable images such as captchas
+to individual clients, or render things that would be too
+expensive to compose with `[combine:`.
+Avoid sending large images in this way. This is not a replacement
+for asset files, do not use it to do anything that you could instead
+achieve by just using a file. Test whether using other
+texture modifiers could result in a shorter string than
+embedding a whole image, this may vary by use case.
+
 Hardware coloring
 -----------------
 

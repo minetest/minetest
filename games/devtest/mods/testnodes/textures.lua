@@ -102,12 +102,22 @@ local function gen_checkers(w, h, tile)
 end
 
 local fractal = mandelbrot(512, 512, 128)
+local frac_emb = mandelbrot(64, 64, 64)
 local checker = gen_checkers(512, 512, 32)
 
 local floor = math.floor
 local abs = math.abs
+local data_emb = {}
 local data_mb = {}
 local data_ck = {}
+for i=1, #frac_emb do
+	data_emb[i] = {
+		r = floor(abs(frac_emb[i] * 2 - 1) * 255),
+		g = floor(abs(1 - frac_emb[i]) * 255),
+		b = floor(frac_emb[i] * 255),
+		a = frac_emb[i] < 0.95 and 255 or 0,
+	}
+end
 for i=1, #fractal do
 	data_mb[i] = {
 		r = floor(fractal[i] * 255),
@@ -137,6 +147,27 @@ minetest.register_node("testnodes:generated_png_mb", {
 minetest.register_node("testnodes:generated_png_ck", {
 	description = S("Generated Checker PNG Test Node"),
 	tiles = { "testnodes_generated_ck.png" },
+
+	groups = { dig_immediate = 2 },
+})
+
+local png_emb = "[png:" .. minetest.encode_base64(minetest.encode_png(64,64,data_emb))
+
+minetest.register_node("testnodes:generated_png_emb", {
+	description = S("Generated In-Band Mandelbrot PNG Test Node"),
+	tiles = { png_emb },
+
+	groups = { dig_immediate = 2 },
+})
+minetest.register_node("testnodes:generated_png_src_emb", {
+	description = S("Generated In-Band Source Blit Mandelbrot PNG Test Node"),
+	tiles = { png_emb .. "^testnodes_damage_neg.png" },
+
+	groups = { dig_immediate = 2 },
+})
+minetest.register_node("testnodes:generated_png_dst_emb", {
+	description = S("Generated In-Band Dest Blit Mandelbrot PNG Test Node"),
+	tiles = { "testnodes_generated_ck.png^" .. png_emb },
 
 	groups = { dig_immediate = 2 },
 })
