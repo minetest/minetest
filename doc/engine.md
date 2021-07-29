@@ -108,7 +108,7 @@ Understand that some types of artwork and some rendering features do not mix.
 A model made and textured for an unlit renderer is unlikely to look
 better with gouraud shading or shadows, it's more likely to look worse.
 
-Heed the words of one dissatisfied user: (Issue #10307, worth a read)
+Heed the words of one dissatisfied user: (Issue [#10307](https://github.com/minetest/minetest/issues/10307), worth a read)
 
 > When people enable additional graphics features, they expect better graphics, not worse
 
