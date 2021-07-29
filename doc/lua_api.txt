@@ -4611,6 +4611,23 @@ Utilities
 * `minetest.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
   ColorString. If the ColorSpec is invalid, returns `nil`.
     * `colorspec`: The ColorSpec to convert
+* `minetest.colorspec_to_bytes(colorspec)`: Converts a ColorSpec to a raw
+  string of four bytes in an RGBA layout, returned as a string.
+  * `colorspec`: The ColorSpec to convert
+* `minetest.encode_png(width, height, data, [compression])`: Encode a PNG
+  image and return it in string form.
+    * `width`: Width of the image
+    * `height`: Height of the image
+    * `data`: Image data, one of:
+        * array table of ColorSpec, length must be width*height
+        * string with raw RGBA pixels, length must be width*height*4
+    * `compression`: Optional zlib compression level, number in range 0 to 9.
+  The data is one-dimensional, starting in the upper left corner of the image
+  and laid out in scanlines going from left to right, then top to bottom.
+  Please note that it's not safe to use string.char to generate raw data,
+  use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
+  The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
+  You may use this to procedurally generate textures during server init.
 
 Logging
 -------
@@ -7631,7 +7648,7 @@ Used by `minetest.register_node`.
         leveled_max = 127,
         -- Maximum value for `leveled` (0-127), enforced in
         -- `minetest.set_node_level` and `minetest.add_node_level`.
-		-- Values above 124 might causes collision detection issues.
+        -- Values above 124 might causes collision detection issues.
 
         liquid_range = 8,
         -- Maximum distance that flowing liquid nodes can spread around
