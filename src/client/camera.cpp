@@ -135,15 +135,15 @@ void Camera::notifyFovChange()
 bool Camera::successfullyCreated(std::string &error_message)
 {
 	if (!m_playernode) {
-		error_message = "Failed to create the player scene node";
+		error_message = gettext("Failed to create the player scene node");
 	} else if (!m_headnode) {
-		error_message = "Failed to create the head scene node";
+		error_message = gettext("Failed to create the head scene node");
 	} else if (!m_cameranode) {
-		error_message = "Failed to create the camera scene node";
+		error_message = gettext("Failed to create the camera scene node");
 	} else if (!m_wieldmgr) {
-		error_message = "Failed to create the wielded item scene manager";
+		error_message = gettext("Failed to create the wielded item scene manager");
 	} else if (!m_wieldnode) {
-		error_message = "Failed to create the wielded item scene node";
+		error_message = gettext("Failed to create the wielded item scene node");
 	} else {
 		error_message.clear();
 	}
