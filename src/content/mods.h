@@ -49,6 +49,9 @@ struct ModSpec
 	bool part_of_modpack = false;
 	bool is_modpack = false;
 
+	// For logging purposes
+	std::vector<const char *> deprecation_msgs;
+
 	// if modpack:
 	std::map<std::string, ModSpec> modpack_content;
 	ModSpec(const std::string &name = "", const std::string &path = "") :
@@ -59,6 +62,8 @@ struct ModSpec
 			name(name), path(path), part_of_modpack(part_of_modpack)
 	{
 	}
+
+	void checkAndLog() const;
 };
 
 // Retrieves depends, optdepends, is_modpack and modpack_content

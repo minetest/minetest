@@ -177,11 +177,7 @@ void Client::loadMods()
 
 	// Load "mod" scripts
 	for (const ModSpec &mod : m_mods) {
-		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			throw ModError("Error loading mod \"" + mod.name +
-				"\": Mod name does not follow naming conventions: "
-					"Only characters [a-z0-9_] are allowed.");
-		}
+		mod.checkAndLog();
 		scanModIntoMemory(mod.name, mod.path);
 	}
 
