@@ -225,7 +225,8 @@ Run it:
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
 - IrrlichtMt can also be installed somewhere that is not a standard install path.
   - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
-  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists.
+  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists
+    or that `$(CMAKE_PREFIX_PATH)` is the path of an IrrlichtMt build folder.
 
 ### CMake options
 
@@ -275,8 +276,7 @@ Library specific options:
     GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
     IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
-    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h
-    IRRLICHT_LIBRARY                - Path to libIrrlichtMt.a/libIrrlichtMt.so/libIrrlichtMt.dll.a/IrrlichtMt.lib
+    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
@@ -327,7 +327,7 @@ After you successfully built vcpkg you can easily install the required libraries
 vcpkg install zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit gmp jsoncpp --triplet x64-windows
 ```
 
-- **Note that you currently need to build irrlicht on your own**
+- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
 - `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 - `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 - `freetype` is optional, it allows true-type font rendering.
