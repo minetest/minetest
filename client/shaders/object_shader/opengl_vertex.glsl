@@ -3,6 +3,11 @@ uniform mat4 mWorld;
 uniform vec3 eyePosition;
 uniform float animationTimer;
 
+uniform vec4 emissiveColor; // emissiveColor holds lighting for objects
+
+uniform float ambientBrightness = 0.0;
+uniform vec4 ambientColorTint = vec4(1.0,1.0,1.0,1.0);
+
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 worldPosition;
@@ -28,7 +33,6 @@ centroid varying vec2 varTexCoord;
 #endif
 
 varying vec3 eyeVec;
-varying float vIDiff;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -65,11 +69,11 @@ void main(void)
 	eyeVec = -(mWorldView * inVertexPosition).xyz;
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_PLAIN) || (MATERIAL_TYPE == TILE_MATERIAL_PLAIN_ALPHA)
-	vIDiff = 1.0;
+	float vIDiff = 1.0;
 #else
 	// This is intentional comparison with zero without any margin.
 	// If normal is not equal to zero exactly, then we assume it's a valid, just not normalized vector
-	vIDiff = length(inVertexNormal) == 0.0
+	float vIDiff = length(inVertexNormal) == 0.0
 		? 1.0
 		: directional_ambient(normalize(inVertexNormal));
 #endif
@@ -79,6 +83,9 @@ void main(void)
 #else
 	varColor = inVertexColor;
 #endif
+
+	varColor *= emissiveColor * vIDiff;
+	varColor.rgb = (1 - (1 - varColor.rgb) * (1 - ambientBrightness)) * ambientColorTint.rgb;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 

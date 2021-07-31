@@ -16,7 +16,6 @@ centroid varying vec2 varTexCoord;
 #endif
 
 varying vec3 eyeVec;
-varying float vIDiff;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -343,7 +342,6 @@ void main(void)
 	color = base.rgb;
 	vec4 col = vec4(color.rgb, base.a);
 	col.rgb *= varColor.rgb;
-	col.rgb *= emissiveColor.rgb * vIDiff;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	float shadow_int = 0.0;

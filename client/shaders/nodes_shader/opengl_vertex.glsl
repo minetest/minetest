@@ -7,6 +7,9 @@ uniform vec3 eyePosition;
 uniform vec3 cameraOffset;
 uniform float animationTimer;
 
+uniform float ambientBrightness = 0.0;
+uniform vec4 ambientColorTint = vec4(1.0,1.0,1.0,1.0);
+
 varying vec3 vNormal;
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
@@ -191,6 +194,12 @@ void main(void)
 		0.07 * brightness);
 
 	varColor = clamp(color, 0.0, 1.0);
+
+	varColor.rgb = (1 - (1 - varColor.rgb) * (1 - ambientBrightness)) * ambientColorTint.rgb;
+	// adjust nightRatio for the ambient brightness, assuming that
+	// it only contributes to the 'night' part of the lighting.
+	nightRatio = 1 - brightness * (1 - nightRatio) * (1 - ambientBrightness) /
+			(1 - (1 - brightness) * (1 - ambientBrightness));
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	vec3 nNormal = normalize(vNormal);
