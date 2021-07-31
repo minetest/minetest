@@ -755,6 +755,15 @@ bool Settings::getS16NoEx(const std::string &name, s16 &val) const
 	}
 }
 
+bool Settings::getU32NoEx(const std::string &name, u32 &val) const
+{
+	try {
+		val = getU32(name);
+		return true;
+	} catch (SettingNotFoundException &e) {
+		return false;
+	}
+}
 
 bool Settings::getS32NoEx(const std::string &name, s32 &val) const
 {
