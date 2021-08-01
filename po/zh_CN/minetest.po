@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-07-27 01:17+0000\n"
-"Last-Translator: Riceball LEE <snowyu.lee@gmail.com>\n"
+"PO-Revision-Date: 2021-08-02 16:34+0000\n"
+"Last-Translator: Emily Ellis <e222d29f@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -5353,7 +5353,7 @@ msgstr "窗口未聚焦或游戏暂停时的最大 FPS。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr ""
+msgstr "最大渲染阴影距离。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
