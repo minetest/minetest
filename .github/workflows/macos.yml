@@ -22,7 +22,7 @@ on:
       - '.github/workflows/macos.yml'
 
 env:
-  IRRLICHT_TAG: 1.9.0mt1
+  IRRLICHT_TAG: 1.9.0mt2
   MINETEST_GAME_REPO: https://github.com/minetest/minetest_game.git
   MINETEST_GAME_BRANCH: master
   MINETEST_GAME_NAME: minetest_game
@@ -44,11 +44,7 @@ jobs:
         run: |
           git clone -b $MINETEST_GAME_BRANCH $MINETEST_GAME_REPO games/$MINETEST_GAME_NAME
           rm -rvf games/$MINETEST_GAME_NAME/.git
-          git clone -b $IRRLICHT_TAG https://github.com/minetest/irrlicht
-          cd irrlicht
-          cmake . -DBUILD_SHARED_LIBS=OFF -DCMAKE_FIND_FRAMEWORK=LAST
-          make -j2
-          cd ..
+          git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
           mkdir cmakebuild
           cd cmakebuild
           cmake \
@@ -61,8 +57,6 @@ jobs:
             -DENABLE_GETTEXT=TRUE \
             -DBUILD_CLIENT=TRUE \
             -DBUILD_SERVER=FALSE \
-            -DIRRLICHT_LIBRARY=$PWD/../irrlicht/lib/OSX/libIrrlichtMt.a \
-            -DIRRLICHT_INCLUDE_DIR=$PWD/../irrlicht/include \
             ..
           make -j2
           make install
