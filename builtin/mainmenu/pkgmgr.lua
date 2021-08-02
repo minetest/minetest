@@ -682,10 +682,8 @@ function pkgmgr.preparemodlist(data)
 	local game_mods = {}
 
 	--read global mods
-	local modpath = core.get_modpath()
-
-	if modpath ~= nil and
-		modpath ~= "" then
+	local modpaths = core.get_modpaths()
+	for _,modpath in ipairs(modpaths) do
 		get_mods(modpath,global_mods)
 	end
 

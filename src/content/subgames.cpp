@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2021 Maxime Dvos <maximedevos@telenet.be>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -112,6 +113,10 @@ SubgameSpec findSubgame(const std::string &id)
 		mods_paths.insert(share + DIR_DELIM + "mods");
 	if (user != share || user_game)
 		mods_paths.insert(user + DIR_DELIM + "mods");
+
+	for (const std::string &mod_path : getEnvModPaths()) {
+		mods_paths.insert(mod_path);
+	}
 
 	// Get meta
 	std::string conf_path = game_path + DIR_DELIM + "game.conf";
@@ -383,4 +388,15 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// The Settings object is no longer needed for created worlds
 	if (new_game_settings)
 		delete game_settings;
+}
+
+std::vector<std::string> getEnvModPaths()
+{
+	const char *c_mod_path = getenv("MINETEST_MOD_PATH");
+	std::string mod_path = c_mod_path ? std::string(c_mod_path) : "";
+	std::vector<std::string> mod_paths;
+	Strfnd mod_search_paths(mod_path);
+	while (!mod_search_paths.at_end())
+		mod_paths.push_back(mod_search_paths.next(PATH_DELIM));
+	return mod_paths;
 }
