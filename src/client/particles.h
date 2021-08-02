@@ -93,6 +93,7 @@ private:
 	v3f m_pos;
 	v3f m_velocity;
 	v3f m_acceleration;
+	v3f m_drag;
 	LocalPlayer *m_player;
 	float m_size;
 	//! Color without lighting

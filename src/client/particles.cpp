@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "particles.h"
 #include <cmath>
-#include <iostream>
 #include "client.h"
 #include "collision.h"
 #include "client/content_cao.h"
@@ -92,6 +91,7 @@ Particle::Particle(
 	m_pos = p.pos;
 	m_velocity = p.vel;
 	m_acceleration = p.acc;
+	m_drag = p.drag;
 	m_expiration = p.expirationtime;
 	m_player = player;
 	m_size = p.size;
@@ -151,6 +151,12 @@ void Particle::step(float dtime)
 			m_velocity = p_velocity / BS;
 		}
 	} else {
+		// apply drag
+		v3f absvel = vecAbsolute(m_velocity);
+		absvel -= m_drag * dtime;
+		m_velocity = absvel * vecSign(m_velocity);
+
+		// apply acceleration
 		m_velocity += m_acceleration * dtime;
 		m_pos += m_velocity * dtime;
 	}
@@ -319,6 +325,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	pp.vel = random_v3f(r_vel.min, r_vel.max);
 	pp.acc = random_v3f(r_acc.min, r_acc.max);
+	pp.drag = random_v3f(r_drag.min, r_drag.max);
 
 	if (attached_absolute_pos_rot_matrix) {
 		// Apply attachment rotation
@@ -345,7 +352,6 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	} else {
 		if (m_texcount == 0) return;
 		size_t ti = myrand_range(0,m_texcount-1);
-		std::cerr << "picking from "<<m_texcount<<" textures: "<<ti<<"\n";
 		texture = m_texpool[m_texcount == 1 ? 0 : ti];
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);

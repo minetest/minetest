@@ -20,11 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 
 v3f ParticleParamTypes::v3fBlend(float fac, v3f a, v3f b) {
-	return v3f(
-		numericalBlend(fac, a.X, b.X),
-		numericalBlend(fac, a.Y, b.Y),
-		numericalBlend(fac, a.Z, b.Z)
-	);
+	return b.getInterpolated(a, fac);
+	// return v3f(
+	// 	numericalBlend(fac, a.X, b.X),
+	// 	numericalBlend(fac, a.Y, b.Y),
+	// 	numericalBlend(fac, a.Z, b.Z)
+	// );
 }
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
