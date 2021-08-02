@@ -1288,8 +1288,6 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		*error_message = buf;
 		errorstream << *error_message << std::endl;
 		return false;
-		errorstream << *error_message << std::endl;
-		return false;
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr,
@@ -4355,11 +4353,11 @@ void the_game(bool *kill,
 		}
 
 	} catch (SerializationError &e) {
-		const char *s = gettext("\n\nThe server is probably running a different version of %s.");
+		const char *s = gettext("The server is probably running a different version of %s.");
 		char ver_err[128];
 		porting::mt_snprintf(ver_err, sizeof(ver_err), s, PROJECT_NAME_C);
-		error_message = strgettext("A serialization error occurred:\n")
-				+ e.what() + ver_err;
+		error_message = strgettext("A serialization error occurred:") +"\n"
+				+ e.what() + "\n\n" + ver_err;
 		errorstream << error_message << std::endl;
 	} catch (ServerError &e) {
 		error_message = e.what();
