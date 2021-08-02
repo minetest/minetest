@@ -1572,7 +1572,12 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
-		const v3f pos = (p.minpos + p.maxpos) / 2.0f * BS;
+		const v3f pos = ((
+			p.pos.start.min.val +
+			p.pos.start.max.val +
+			p.pos.end.min.val +
+			p.pos.end.max.val
+		) / 4.0f) * BS;
 		const float radius_sq = radius * radius;
 		/* Don't send short-lived spawners to distant players.
 		 * This could be replaced with proper tracking at some point. */
@@ -1600,11 +1605,19 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 100, peer_id);
 
-	pkt << p.amount << p.time << p.minpos << p.maxpos << p.minvel
-		<< p.maxvel << p.minacc << p.maxacc << p.minexptime << p.maxexptime
-		<< p.minsize << p.maxsize << p.collisiondetection;
+	pkt << p.amount << p.time;
+	/* serialize legacy fields */ {
+		std::ostringstream os(std::ios_base::binary);
+		p.pos.start.serialize(os);
+		p.vel.start.serialize(os);
+		p.acc.start.serialize(os);
+		p.exptime.start.serialize(os);
+		p.size.start.serialize(os);
+		pkt.putRawString(os.str());
+	}
+	pkt << p.collisiondetection;
 
-	pkt.putLongString(p.texture);
+	pkt.putLongString(p.texture.first);
 
 	pkt << id << p.vertical << p.collision_removal << attached_id;
 	{
@@ -1614,6 +1627,33 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	}
 	pkt << p.glow << p.object_collision;
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
+
+	/* serialize v41 particle fields */ {
+		std::ostringstream os(std::ios_base::binary);
+
+		// final tween frames of older properties
+		p.pos.end.serialize(os);
+		p.vel.end.serialize(os);
+		p.acc.end.serialize(os);
+		p.exptime.end.serialize(os);
+		p.size.end.serialize(os);
+
+		// new properties
+		p.drag.serialize(os);
+		p.attract.serialize(os);
+		p.attractor.serialize(os);
+
+		pkt.putRawString(os.str());
+
+		pkt << (u16)p.texpool.size();
+		for(ParticleTexture tex : p.texpool) {
+			pkt << (u8)tex.tweened;
+			pkt.putLongString(tex.first);
+			if (tex.tweened)
+				pkt.putLongString(tex.last);
+		}
+	}
+
 
 	Send(&pkt);
 }

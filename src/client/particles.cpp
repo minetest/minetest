@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "particles.h"
 #include <cmath>
+#include <iostream>
 #include "client.h"
 #include "collision.h"
 #include "client/content_cao.h"
@@ -59,7 +60,7 @@ Particle::Particle(
 	LocalPlayer *player,
 	ClientEnvironment *env,
 	const ParticleParameters &p,
-	video::ITexture *texture,
+	ClientParticleTexture texture,
 	v2f texpos,
 	v2f texsize,
 	video::SColor color
@@ -72,12 +73,13 @@ Particle::Particle(
 	m_env = env;
 
 	// Texture
+	m_texture = texture;
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_material.setTexture(0, texture);
+	m_material.setTexture(0, m_texture.first);
 	m_texpos = texpos;
 	m_texsize = texsize;
 	m_animation = p.animation;
@@ -251,7 +253,8 @@ ParticleSpawner::ParticleSpawner(
 	LocalPlayer *player,
 	const ParticleSpawnerParameters &p,
 	u16 attached_id,
-	video::ITexture *texture,
+	ClientParticleTexture* texpool,
+	size_t texcount,
 	ParticleManager *p_manager
 ):
 	m_particlemanager(p_manager), p(p)
@@ -259,7 +262,8 @@ ParticleSpawner::ParticleSpawner(
 	m_gamedef = gamedef;
 	m_player = player;
 	m_attached_id = attached_id;
-	m_texture = texture;
+	m_texpool = texpool;
+	m_texcount = texcount;
 	m_time = 0;
 
 	m_spawntimes.reserve(p.amount + 1);
@@ -269,11 +273,30 @@ ParticleSpawner::ParticleSpawner(
 	}
 }
 
+ParticleSpawner::~ParticleSpawner() {
+	if (m_texpool != nullptr) delete[] m_texpool;
+}
+
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
+	float fac = 0;
+	if (p.time != 0) { // ensure safety from divide-by-zeroes
+		fac = m_time / p.time;
+	}
+
+	auto r_pos = p.pos.blend(fac);
+	auto r_vel = p.vel.blend(fac);
+	auto r_acc = p.acc.blend(fac);
+	auto r_drag = p.drag.blend(fac);
+	auto r_attractor = p.attractor.blend(fac);
+
+	auto r_exp = p.exptime.blend(fac);
+	auto r_size = p.size.blend(fac);
+	auto r_attract = p.attract.blend(fac);
+
 	v3f ppos = m_player->getPosition() / BS;
-	v3f pos = random_v3f(p.minpos, p.maxpos);
+	v3f pos = random_v3f(r_pos.min, r_pos.max);
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
@@ -294,8 +317,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	ParticleParameters pp;
 	pp.pos = pos;
 
-	pp.vel = random_v3f(p.minvel, p.maxvel);
-	pp.acc = random_v3f(p.minacc, p.maxacc);
+	pp.vel = random_v3f(r_vel.min, r_vel.max);
+	pp.acc = random_v3f(r_acc.min, r_acc.max);
 
 	if (attached_absolute_pos_rot_matrix) {
 		// Apply attachment rotation
@@ -303,28 +326,34 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		attached_absolute_pos_rot_matrix->rotateVect(pp.acc);
 	}
 
-	pp.expirationtime = random_f32(p.minexptime, p.maxexptime);
+	pp.expirationtime = random_f32(r_exp.min, r_exp.max);
 	p.copyCommon(pp);
 
-	video::ITexture *texture;
+	ClientParticleTexture texture;
+	texture.tweened = false;
+	texture.first = nullptr;
+	texture.last = nullptr;
 	v2f texpos, texsize;
 	video::SColor color(0xFFFFFFFF);
 
 	if (p.node.getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &f =
 			m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
-		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture,
+		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture.first,
 				texpos, texsize, &color, p.node_tile))
 			return;
 	} else {
-		texture = m_texture;
+		if (m_texcount == 0) return;
+		size_t ti = myrand_range(0,m_texcount-1);
+		std::cerr << "picking from "<<m_texcount<<" textures: "<<ti<<"\n";
+		texture = m_texpool[m_texcount == 1 ? 0 : ti];
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
 	}
 
 	// Allow keeping default random size
-	if (p.maxsize > 0.0f)
-		pp.size = random_f32(p.minsize, p.maxsize);
+	if (p.size.start.max > 0.0f or p.size.end.max > 0.0f)
+		pp.size = random_f32(r_size.min, r_size.max);
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,
@@ -464,13 +493,33 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
 
-			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(p.texture);
+			// fallback texture
+			// video::ITexture *texture =
+			// 	client->tsrc()->getTextureForMesh(p.texture.first);
+			
+			// texture pool
+			ClientParticleTexture* texpool = nullptr;
+			size_t txpsz = 0;
+			if (not p.texpool.empty()) {
+				txpsz = p.texpool.size();
+				texpool = new ClientParticleTexture [txpsz];
+
+				for (size_t i = 0; i < txpsz; ++i) {
+					texpool[i].tweened = p.texpool[i].tweened;
+					texpool[i].first = client -> tsrc() -> getTextureForMesh(p.texpool[i].first);
+					if (p.texpool[i].tweened) {
+						texpool[i].last = client -> tsrc() -> getTextureForMesh(p.texpool[i].last);
+					} else {
+						texpool[i].last = nullptr;
+					}
+				}
+			}
 
 			auto toadd = new ParticleSpawner(client, player,
 					p,
 					event->add_particlespawner.attached_id,
-					texture,
+					texpool,
+					txpsz,
 					this);
 
 			addParticleSpawner(event->add_particlespawner.id, toadd);
@@ -481,7 +530,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 		case CE_SPAWN_PARTICLE: {
 			ParticleParameters &p = *event->spawn_particle;
 
-			video::ITexture *texture;
+			ClientParticleTexture texture;
+			texture.tweened = false;
+			texture.last = nullptr;
 			v2f texpos, texsize;
 			video::SColor color(0xFFFFFFFF);
 
@@ -489,11 +540,15 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			if (p.node.getContent() != CONTENT_IGNORE) {
 				const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
-				if (!getNodeParticleParams(p.node, f, p, &texture, texpos,
+				if (!getNodeParticleParams(p.node, f, p, &texture.first, texpos,
 						texsize, &color, p.node_tile))
-					texture = nullptr;
+					texture.first = nullptr;
 			} else {
-				texture = client->tsrc()->getTextureForMesh(p.texture);
+				texture.first = client->tsrc()->getTextureForMesh(p.texture.first);
+				texture.tweened = p.texture.tweened;
+				if (texture.tweened) {
+					texture.last = client->tsrc()->getTextureForMesh(p.texture.last);
+				}
 				texpos = v2f(0.0f, 0.0f);
 				texsize = v2f(1.0f, 1.0f);
 			}
@@ -502,7 +557,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			if (oldsize > 0.0f)
 				p.size = oldsize;
 
-			if (texture) {
+			if (texture.first) {
 				Particle *toadd = new Particle(client, player, m_env,
 						p, texture, texpos, texsize, color);
 
@@ -577,11 +632,14 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	ParticleParameters p;
-	video::ITexture *texture;
+	ClientParticleTexture texture;
+	texture.tweened = false;
+	texture.first = nullptr;
+	texture.last = nullptr;
 	v2f texpos, texsize;
 	video::SColor color;
 
-	if (!getNodeParticleParams(n, f, p, &texture, texpos, texsize, &color))
+	if (!getNodeParticleParams(n, f, p, &texture.first, texpos, texsize, &color))
 		return;
 
 	p.expirationtime = (rand() % 100) / 100.0f;

@@ -988,18 +988,28 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
-	p.minpos             = readV3F32(is);
-	p.maxpos             = readV3F32(is);
-	p.minvel             = readV3F32(is);
-	p.maxvel             = readV3F32(is);
-	p.minacc             = readV3F32(is);
-	p.maxacc             = readV3F32(is);
-	p.minexptime         = readF32(is);
-	p.maxexptime         = readF32(is);
-	p.minsize            = readF32(is);
-	p.maxsize            = readF32(is);
+	// older protocols do not support tweening, and send only
+	// static ranges, so we can't just use the builtin serialization
+	// functions for the older values.
+	v3f pos_min          = readV3F32(is);
+	v3f pos_max          = readV3F32(is);
+	v3f vel_min          = readV3F32(is);
+	v3f vel_max          = readV3F32(is);
+	v3f acc_min          = readV3F32(is);
+	v3f acc_max          = readV3F32(is);
+	f32 exp_min          = readF32(is);
+	f32 exp_max          = readF32(is);
+	f32 size_min         = readF32(is);
+	f32 size_max         = readF32(is);
 	p.collisiondetection = readU8(is);
-	p.texture            = deSerializeString32(is);
+	p.texture.first      = deSerializeString32(is);
+
+	using namespace ParticleParamTypes;
+	p.pos     = range_v3f(pos_min, pos_max);
+	p.vel     = range_v3f(vel_min, vel_max);
+	p.acc     = range_v3f(acc_min, acc_max);
+	p.exptime = range_f32(exp_min, exp_max);
+	p.size    = range_f32(size_min, size_max);
 
 	server_id = readU32(is);
 
@@ -1020,7 +1030,31 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node.param0 = tmp_param0;
 		p.node.param2 = readU8(is);
 		p.node_tile   = readU8(is);
+
+		if (m_proto_ver >= 41) {
+			p.pos.end.deSerialize(is);
+			p.vel.end.deSerialize(is);
+			p.acc.end.deSerialize(is);
+			p.exptime.end.deSerialize(is);
+			p.size.end.deSerialize(is);
+
+			p.drag.deSerialize(is);
+			p.attract.deSerialize(is);
+			p.attractor.deSerialize(is);
+
+			u16 texpoolsz = readU16(is);
+			p.texpool.reserve(texpoolsz);
+			for (u16 i = 0; i < texpoolsz; ++i) {
+				ParticleTexture newtex;
+				newtex.tweened  = readU8(is);
+				newtex.first    = deSerializeString32(is);
+				if (newtex.tweened)
+					newtex.last = deSerializeString32(is);
+				p.texpool.push_back(newtex);
+			}
+		}
 	} while (0);
+
 
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;

@@ -18,7 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
-#include "util/serialize.h"
+
+v3f ParticleParamTypes::v3fBlend(float fac, v3f a, v3f b) {
+	return v3f(
+		numericalBlend(fac, a.X, b.X),
+		numericalBlend(fac, a.Y, b.Y),
+		numericalBlend(fac, a.Z, b.Z)
+	);
+}
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 {
@@ -28,7 +35,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeF32(os, expirationtime);
 	writeF32(os, size);
 	writeU8(os, collisiondetection);
-	os << serializeString32(texture);
+	os << serializeString32(texture.first);
 	writeU8(os, vertical);
 	writeU8(os, collision_removal);
 	animation.serialize(os, 6); /* NOT the protocol ver */
@@ -37,6 +44,10 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeU16(os, node.param0);
 	writeU8(os, node.param2);
 	writeU8(os, node_tile);
+	writeV3F32(os, drag);
+	writeU8(os, texture.tweened);
+	if (texture.tweened)
+		os << serializeString32(texture.last);
 }
 
 void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
@@ -47,7 +58,7 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 	expirationtime     = readF32(is);
 	size               = readF32(is);
 	collisiondetection = readU8(is);
-	texture            = deSerializeString32(is);
+	texture.first      = deSerializeString32(is);
 	vertical           = readU8(is);
 	collision_removal  = readU8(is);
 	animation.deSerialize(is, 6); /* NOT the protocol ver */
@@ -60,4 +71,10 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 	node.param0 = tmp_param0;
 	node.param2 = readU8(is);
 	node_tile   = readU8(is);
+	if (protocol_ver >= 41) {
+		drag = readV3F32(is);
+		texture.tweened = readU8(is);
+		if (texture.tweened)
+			texture.last = deSerializeString32(is);
+	}
 }

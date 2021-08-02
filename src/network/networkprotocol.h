@@ -207,9 +207,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		Added 'basic_debug' privilege
+	PROTOCOL VERSION 41:
+		Added new particlespawner parameters
 */
 
-#define LATEST_PROTOCOL_VERSION 40
+#define LATEST_PROTOCOL_VERSION 41
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -550,6 +552,15 @@ enum ToClientCommand
 		TileAnimation animation
 		u8 glow
 		u8 object_collision
+		u8[len] texture_final
+		v3f1000 mindrag
+		v3f1000 maxdrag
+		f1000 minattract
+		f1000 maxattract
+		if minattract !=0 or maxattract !=0 {
+			v3f1000 minattractor
+			v3f1000 maxattractor
+		}
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48, // Obsolete

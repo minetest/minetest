@@ -31,6 +31,11 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
+struct ClientParticleTexture {
+	bool tweened;
+	video::ITexture* first, * last;
+};
+
 class Particle : public scene::ISceneNode
 {
 	public:
@@ -39,7 +44,7 @@ class Particle : public scene::ISceneNode
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		const ParticleParameters &p,
-		video::ITexture *texture,
+		ClientParticleTexture texture,
 		v2f texpos,
 		v2f texsize,
 		video::SColor color
@@ -81,6 +86,7 @@ private:
 	IGameDef *m_gamedef;
 	aabb3f m_box;
 	aabb3f m_collisionbox;
+	ClientParticleTexture m_texture;
 	video::SMaterial m_material;
 	v2f m_texpos;
 	v2f m_texsize;
@@ -111,10 +117,11 @@ public:
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &p,
 		u16 attached_id,
-		video::ITexture *texture,
+		ClientParticleTexture *texpool,
+		size_t texcount,
 		ParticleManager* p_manager);
 
-	~ParticleSpawner() = default;
+	~ParticleSpawner();
 
 	void step(float dtime, ClientEnvironment *env);
 
@@ -130,7 +137,8 @@ private:
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;
-	video::ITexture *m_texture;
+	ClientParticleTexture* m_texpool;
+	size_t m_texcount;
 	std::vector<float> m_spawntimes;
 	u16 m_attached_id;
 };

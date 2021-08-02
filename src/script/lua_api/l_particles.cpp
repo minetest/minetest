@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_particles.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_internal.h"
+#include "lua_api/l_particleparams.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
@@ -38,6 +39,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
 // glow = num
+
+ParticleTexture
+LuaParticleParams::readTexValue(lua_State* L) {
+	lua_Integer top = lua_gettop(L);
+	ParticleTexture tex;
+	tex.tweened = false;
+	if (lua_isstring(L, -1)) {
+		tex.first = lua_tostring(L, -1);
+	} else if (lua_istable(L, -1)) {
+		lua_getfield(L, -1, "img");
+		if (lua_isstring(L, -1)) {
+			tex.first = lua_tostring(L, -1);
+		} else if (lua_istable(L, -1)) {
+			size_t tblen = lua_objlen(L, -1);
+			if (tblen >= 1) {
+				lua_pushinteger(L, 1), lua_gettable(L, -2);
+					tex.first = luaL_checkstring(L, -1);
+				lua_pop(L, 1);
+			}
+			if (tblen >= 2) {
+				tex.tweened = true;
+				lua_pushinteger(L, tblen), lua_gettable(L, -2);
+					tex.last = luaL_checkstring(L, -1);
+				lua_pop(L, 1);
+			}
+		} else goto error;
+	} else goto error;
+	lua_settop(L, top);
+	return tex;
+
+	error: lua_pushliteral(L, "texture specifier has invalid type"), lua_error(L);
+}
+
 int ModApiParticles::l_add_particle(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -56,7 +90,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		p.expirationtime = luaL_checknumber(L, 4);
 		p.size = luaL_checknumber(L, 5);
 		p.collisiondetection = readParam<bool>(L, 6);
-		p.texture = luaL_checkstring(L, 7);
+		p.texture.first = luaL_checkstring(L, 7);
+		p.texture.tweened = false;
 		if (lua_gettop(L) == 8) // only spawn for a single player
 			playername = luaL_checkstring(L, 8);
 	}
@@ -108,7 +143,12 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		p.animation = read_animation_definition(L, -1);
 		lua_pop(L, 1);
 
-		p.texture = getstringfield_default(L, 1, "texture", p.texture);
+		lua_getfield(L, 1, "texture");
+		if (not lua_isnil(L, -1)) {
+			p.texture = LuaParticleParams::readTexValue(L);
+		}
+		lua_pop(L, 1);
+
 		p.glow = getintfield_default(L, 1, "glow", p.glow);
 
 		lua_getfield(L, 1, "node");
@@ -147,6 +187,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
 // glow = num
+
 int ModApiParticles::l_add_particlespawner(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -156,24 +197,31 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	ServerActiveObject *attached = NULL;
 	std::string playername;
 
+	using namespace ParticleParamTypes;
 	if (lua_gettop(L) > 1) //deprecated
 	{
 		log_deprecated(L, "Deprecated add_particlespawner call with "
 			"individual parameters instead of definition");
 		p.amount = luaL_checknumber(L, 1);
 		p.time = luaL_checknumber(L, 2);
-		p.minpos = check_v3f(L, 3);
-		p.maxpos = check_v3f(L, 4);
-		p.minvel = check_v3f(L, 5);
-		p.maxvel = check_v3f(L, 6);
-		p.minacc = check_v3f(L, 7);
-		p.maxacc = check_v3f(L, 8);
-		p.minexptime = luaL_checknumber(L, 9);
-		p.maxexptime = luaL_checknumber(L, 10);
-		p.minsize = luaL_checknumber(L, 11);
-		p.maxsize = luaL_checknumber(L, 12);
+		auto minpos = check_v3f(L, 3);
+		auto maxpos = check_v3f(L, 4);
+		auto minvel = check_v3f(L, 5);
+		auto maxvel = check_v3f(L, 6);
+		auto minacc = check_v3f(L, 7);
+		auto maxacc = check_v3f(L, 8);
+		auto minexptime = luaL_checknumber(L, 9);
+		auto maxexptime = luaL_checknumber(L, 10);
+		auto minsize = luaL_checknumber(L, 11);
+		auto maxsize = luaL_checknumber(L, 12);
+		p.pos = range_v3f(minpos, maxpos);
+		p.vel = range_v3f(minvel, maxvel);
+		p.acc = range_v3f(minacc, maxacc);
+		p.exptime = range_f32(minexptime, maxexptime);
+		p.size = range_f32(minsize, maxsize);
+
 		p.collisiondetection = readParam<bool>(L, 13);
-		p.texture = luaL_checkstring(L, 14);
+		p.texture.first = luaL_checkstring(L, 14);
 		if (lua_gettop(L) == 15) // only spawn for a single player
 			playername = luaL_checkstring(L, 15);
 	}
@@ -182,40 +230,20 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		p.amount = getintfield_default(L, 1, "amount", p.amount);
 		p.time = getfloatfield_default(L, 1, "time", p.time);
 
-		lua_getfield(L, 1, "minpos");
-		if (lua_istable(L, -1))
-			p.minpos = check_v3f(L, -1);
-		lua_pop(L, 1);
+		// set default values
+		p.exptime = 1;
+		p.size = 1;
 
-		lua_getfield(L, 1, "maxpos");
-		if (lua_istable(L, -1))
-			p.maxpos = check_v3f(L, -1);
-		lua_pop(L, 1);
+		// read spawner parameters from the table
+		LuaParticleParams::readTweenTable(L, "pos", p.pos);
+		LuaParticleParams::readTweenTable(L, "vel", p.vel);
+		LuaParticleParams::readTweenTable(L, "acc", p.acc);
+		LuaParticleParams::readTweenTable(L, "size", p.size);
+		LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
+		LuaParticleParams::readTweenTable(L, "drag", p.drag);
+		LuaParticleParams::readTweenTable(L, "attract", p.attract);
+		LuaParticleParams::readTweenTable(L, "attractor", p.attractor);
 
-		lua_getfield(L, 1, "minvel");
-		if (lua_istable(L, -1))
-			p.minvel = check_v3f(L, -1);
-		lua_pop(L, 1);
-
-		lua_getfield(L, 1, "maxvel");
-		if (lua_istable(L, -1))
-			p.maxvel = check_v3f(L, -1);
-		lua_pop(L, 1);
-
-		lua_getfield(L, 1, "minacc");
-		if (lua_istable(L, -1))
-			p.minacc = check_v3f(L, -1);
-		lua_pop(L, 1);
-
-		lua_getfield(L, 1, "maxacc");
-		if (lua_istable(L, -1))
-			p.maxacc = check_v3f(L, -1);
-		lua_pop(L, 1);
-
-		p.minexptime = getfloatfield_default(L, 1, "minexptime", p.minexptime);
-		p.maxexptime = getfloatfield_default(L, 1, "maxexptime", p.maxexptime);
-		p.minsize = getfloatfield_default(L, 1, "minsize", p.minsize);
-		p.maxsize = getfloatfield_default(L, 1, "maxsize", p.maxsize);
 		p.collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", p.collisiondetection);
 		p.collision_removal = getboolfield_default(L, 1,
@@ -234,10 +262,33 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			attached = ObjectRef::getobject(ref);
 		}
 
+		lua_getfield(L, 1, "texture");
+		if (not lua_isnil(L, -1)) {
+			p.texture = LuaParticleParams::readTexValue(L);
+		}
+		lua_pop(L, 1);
+
 		p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
-		p.texture = getstringfield_default(L, 1, "texture", p.texture);
 		playername = getstringfield_default(L, 1, "playername", "");
 		p.glow = getintfield_default(L, 1, "glow", p.glow);
+
+		lua_getfield(L, 1, "texpool");
+		if (lua_istable(L, -1)) {
+			size_t tl = lua_objlen(L, -1);
+			p.texpool.reserve(tl);
+			for (size_t i = 0; i < tl; ++i) {
+				lua_pushinteger(L, i+1), lua_gettable(L, -2);
+				p.texpool.push_back(LuaParticleParams::readTexValue(L));
+				lua_pop(L,1);
+			}
+		} else if (lua_isnil(L, -1)) {
+			// place the fallback texture in the texture pool if the pool
+			// is not itself defined; otherwise the fallback texture will
+			// only be sent to older clients
+			p.texture.tweened = false;
+			p.texpool.push_back(p.texture);
+		}
+		lua_pop(L, 1);
 
 		lua_getfield(L, 1, "node");
 		if (lua_istable(L, -1))
