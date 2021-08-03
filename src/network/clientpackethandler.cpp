@@ -1046,10 +1046,14 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			p.texpool.reserve(texpoolsz);
 			for (u16 i = 0; i < texpoolsz; ++i) {
 				ParticleTexture newtex;
-				newtex.tweened  = readU8(is);
+				auto flags = readU8(is);
+				newtex.tweened  = (flags & 1<<0) > 0;
+				newtex.animated = (flags & 1<<1) > 0;
 				newtex.first    = deSerializeString32(is);
 				if (newtex.tweened)
 					newtex.last = deSerializeString32(is);
+				if (newtex.animated)
+					newtex.animation.deSerialize(is, m_proto_ver);
 				p.texpool.push_back(newtex);
 			}
 		}

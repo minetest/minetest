@@ -45,6 +45,7 @@ LuaParticleParams::readTexValue(lua_State* L) {
 	lua_Integer top = lua_gettop(L);
 	ParticleTexture tex;
 	tex.tweened = false;
+	tex.animated = false;
 	if (lua_isstring(L, -1)) {
 		tex.first = lua_tostring(L, -1);
 	} else if (lua_istable(L, -1)) {
@@ -65,6 +66,14 @@ LuaParticleParams::readTexValue(lua_State* L) {
 				lua_pop(L, 1);
 			}
 		} else goto error;
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "animation");
+		if (not lua_isnil(L, -1)) {
+			tex.animated = true;
+			tex.animation = read_animation_definition(L, -1);
+		}
+		lua_pop(L, 1);
 	} else goto error;
 	lua_settop(L, top);
 	return tex;
@@ -281,12 +290,6 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 				p.texpool.push_back(LuaParticleParams::readTexValue(L));
 				lua_pop(L,1);
 			}
-		} else if (lua_isnil(L, -1)) {
-			// place the fallback texture in the texture pool if the pool
-			// is not itself defined; otherwise the fallback texture will
-			// only be sent to older clients
-			p.texture.tweened = false;
-			p.texpool.push_back(p.texture);
 		}
 		lua_pop(L, 1);
 

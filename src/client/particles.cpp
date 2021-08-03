@@ -351,10 +351,11 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			return;
 	} else {
 		if (m_texcount == 0) return;
-		size_t ti = myrand_range(0,m_texcount-1);
-		texture = m_texpool[m_texcount == 1 ? 0 : ti];
+		texture = m_texpool[m_texcount == 1 ? 0 : myrand_range(0,m_texcount-1)];
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
+		if(texture.animated)
+			pp.animation = texture.animation;
 	}
 
 	// Allow keeping default random size
@@ -512,6 +513,10 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 				for (size_t i = 0; i < txpsz; ++i) {
 					texpool[i].tweened = p.texpool[i].tweened;
+					texpool[i].animated = p.texpool[i].animated;
+					if (texpool[i].animated)
+						texpool[i].animation = p.texpool[i].animation;
+
 					texpool[i].first = client -> tsrc() -> getTextureForMesh(p.texpool[i].first);
 					if (p.texpool[i].tweened) {
 						texpool[i].last = client -> tsrc() -> getTextureForMesh(p.texpool[i].last);
@@ -519,6 +524,18 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 						texpool[i].last = nullptr;
 					}
 				}
+			} else {
+				txpsz = 1;
+				texpool = new ClientParticleTexture [1];
+				texpool -> tweened = p.texture.tweened;
+				texpool -> animated = p.texture.animated;
+				if (texpool -> animated)
+					texpool -> animation = p.texture.animation;
+
+				texpool -> first = client -> tsrc() -> getTextureForMesh(p.texture.first);
+				if (p.texture.tweened) {
+					texpool -> last = client -> tsrc() -> getTextureForMesh(p.texture.last);
+				} else texpool -> last = nullptr;
 			}
 
 			auto toadd = new ParticleSpawner(client, player,

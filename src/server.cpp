@@ -1647,10 +1647,18 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 		pkt << (u16)p.texpool.size();
 		for(ParticleTexture tex : p.texpool) {
-			pkt << (u8)tex.tweened;
+			u8 flags = 0;
+			if (tex.tweened)  flags |= 1<<0;
+			if (tex.animated) flags |= 1<<1;
+			pkt << flags;
 			pkt.putLongString(tex.first);
 			if (tex.tweened)
 				pkt.putLongString(tex.last);
+			if (tex.animated) {
+				std::ostringstream os(std::ios_base::binary);
+				tex.animation.serialize(os, protocol_version);
+				pkt.putRawString(os.str());
+			}
 		}
 	}
 

@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace LuaParticleParams {
 	using namespace ParticleParamTypes;
-	using std::cerr;
 
 	inline void readLuaValue(lua_State* L, srz_f32& ret)
 		{ ret = (srz_f32)((f32)lua_tonumber(L, -1)); }

@@ -32,8 +32,9 @@ struct MapNode;
 struct ContentFeatures;
 
 struct ClientParticleTexture {
-	bool tweened;
+	bool tweened, animated;
 	video::ITexture* first, * last;
+	struct TileAnimationParams animation;
 };
 
 class Particle : public scene::ISceneNode

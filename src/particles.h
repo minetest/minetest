@@ -132,6 +132,8 @@ namespace ParticleParamTypes {
 struct ParticleTexture {
 	std::string first, last;
 	bool tweened = false;
+	bool animated = false;
+	TileAnimationParams animation;
 };
 
 struct CommonParticleParams {
