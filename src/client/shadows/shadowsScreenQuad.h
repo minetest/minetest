@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <IMaterialRendererServices.h>
 #include <IShaderConstantSetCallBack.h>
-#include "../shader.h"
+#include "client/shader.h"
 
 class shadowScreenQuad
 {
