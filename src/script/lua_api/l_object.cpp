@@ -685,6 +685,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 		return 0;
 
 	read_object_properties(L, 2, sao, prop, getServer(L)->idef());
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	return 0;
 }
@@ -752,6 +753,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	std::string nametag = getstringfield_default(L, 2, "text", "");
 	prop->nametag = nametag;
 
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	lua_pushboolean(L, true);
 	return 1;
