@@ -358,6 +358,21 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			pp.animation = texture.animation;
 	}
 
+	// synchronize animation length with particle life if desired
+	if (pp.animation.type != TAT_NONE) {
+		if (pp.animation.type == TAT_VERTICAL_FRAMES and pp.animation.vertical_frames.length < 0) {
+			auto& a = pp.animation.vertical_frames;
+			// we add a tiny extra value to prevent the first frame
+			// from flickering back on just before the particle dies
+			a.length = (pp.expirationtime / -a.length) + 0.1;
+		} else if (pp.animation.type == TAT_SHEET_2D and pp.animation.sheet_2d.frame_length < 0) {
+			auto& a = pp.animation.sheet_2d;
+			auto frames = a.frames_w * a.frames_h;
+			auto runtime = (pp.expirationtime / -a.frame_length) + 0.1;
+			pp.animation.sheet_2d.frame_length = frames / runtime;
+		}
+	}
+
 	// Allow keeping default random size
 	if (p.size.start.max > 0.0f or p.size.end.max > 0.0f)
 		pp.size = random_f32(r_size.min, r_size.max);

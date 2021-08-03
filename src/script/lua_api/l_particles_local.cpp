@@ -71,7 +71,9 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "texture");
-	p.texture = LuaParticleParams::readTexValue(L);
+	if (not lua_isnil(L, -1)) {
+		p.texture = LuaParticleParams::readTexValue(L);
+	}
 	lua_pop(L, 1);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
 
@@ -137,11 +139,6 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 			p.texpool.push_back(LuaParticleParams::readTexValue(L));
 			lua_pop(L,1);
 		}
-	} else if (lua_isnil(L, -1)) {
-		// place the fallback texture in the texture pool for
-		// the sake of back-compat
-		p.texture.tweened = false;
-		p.texpool.push_back(p.texture);
 	}
 	lua_pop(L, 1);
 
