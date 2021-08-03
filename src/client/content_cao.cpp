@@ -1722,6 +1722,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		m_tx_basepos = p;
 		m_anim_num_frames = num_frames;
+		m_anim_frame = 0;
 		m_anim_framelength = framelength;
 		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
