@@ -207,6 +207,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 #endif // ifndef _WIN32
 	}
 	else {
+		/* set current system default locale */
 		setlocale(LC_ALL, "");
 	}
 
