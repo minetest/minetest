@@ -146,11 +146,6 @@ void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 	}
 }
 
-void ShadowRenderer::setClearColor(video::SColor ClearColor)
-{
-	m_clear_color = ClearColor;
-}
-
 void ShadowRenderer::updateSMTextures()
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
