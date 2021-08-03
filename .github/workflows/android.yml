@@ -28,7 +28,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Install gettext for msgfmt
+    - name: Install deps
       run: sudo apt-get update; sudo apt-get install -y --no-install-recommends gettext
     - name: Build with Gradle
       run: cd android; ./gradlew assemblerelease
