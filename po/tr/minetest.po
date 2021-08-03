@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-03-07 07:10+0000\n"
+"PO-Revision-Date: 2021-08-04 06:32+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
@@ -12,49 +12,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "Dış sohbet kuyruğunun maksimum boyutu"
+msgstr "Dış sohbet kuyruğunu temizle"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Sohbet komutları"
+msgstr "Boş komut."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Menüye Çık"
+msgstr "Ana menüye çık"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Yerel komut"
+msgstr "Geçersiz komut: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Verilen komut: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Tek oyunculu"
+msgstr "Çevrim içi oyuncuları listele"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Tek oyunculu"
+msgstr "Çevrim içi oyuncular: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Dış sohbet kuyruğu artık boş."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Bu komut sunucu tarafından devre dışı bırakıldı."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -65,36 +59,35 @@ msgid "You died"
 msgstr "Öldün"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Öldün"
+msgstr "Öldün."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Yerel komut"
+msgstr "Kullanılabilir komutlar:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Yerel komut"
+msgstr "Kullanılabilir komutlar: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Komut kullanılamıyor: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Komutlar için yardım alın"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Daha fazla bilgi almak için '.help <komut>' veya her şeyi listelemek için "
+"'.help all' kullanın."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <komut>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -275,7 +268,7 @@ msgstr "Yerel oyun:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "Minetest cURL'siz derlediğinde ContentDB kullanılamaz"
+msgstr "Minetest cURL olmadan derlendiğinde ContentDB kullanılamaz"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -775,26 +768,25 @@ msgstr "Yükleniyor..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr "Açık sunucu listesi devre dışı"
+msgstr "Herkese açık sunucu listesi devre dışı"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Açık sunucu listesini tekrar etkinleştirmeyi deneyin ve internet "
-"bağlantınızı doğrulayın."
+"Herkese açık sunucu listesini tekrar etkinleştirmeyi deneyin ve internet "
+"bağlantınızı gözden geçirin."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Hakkında"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
 msgstr "Etkin Katkıda Bulunanlar"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "Etkin nesne gönderme uzaklığı"
+msgstr "Etkin işleyici:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -929,9 +921,8 @@ msgid "Start Game"
 msgstr "Oyun Başlat"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Adres: "
+msgstr "Adres"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -947,22 +938,20 @@ msgstr "Yaratıcı kip"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Hasar"
+msgstr "Hasar / Savaş (PvP)"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
-msgstr "Favoriyi Sil"
+msgstr "Sık Kullanılanı Sil"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Favori"
+msgstr "Sık Kullanılanlar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Uyumsuz Sunucular"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -973,18 +962,16 @@ msgid "Ping"
 msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Sunucuyu Duyur"
+msgstr "Herkese Açık Sunucular"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Yenile"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "Sunucu açıklaması"
+msgstr "Sunucu Açıklaması"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1027,13 +1014,12 @@ msgid "Connected Glass"
 msgstr "Bitişik Cam"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dynamic shadows"
-msgstr "Yazı tipi gölgesi"
+msgstr "Dinamik gölgeler"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Dinamik gölgeler: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1041,15 +1027,15 @@ msgstr "Şık Yapraklar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Yüksek"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Düşük"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Orta"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1141,11 +1127,11 @@ msgstr "Trilineer Filtre"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "Çok Yüksek"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Çok Düşük"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1249,12 +1235,12 @@ msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr "- Herkes: "
+msgstr "- Herkese Açık: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr "- Savaş: "
+msgstr "- Savaş (PvP): "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
@@ -1462,9 +1448,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "Mini harita şu anda, oyun veya mod tarafından devre dışı"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Tek oyunculu"
+msgstr "Çok oyunculu"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1900,9 +1885,8 @@ msgid "Proceed"
 msgstr "İlerle"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Özel\" = aşağı in"
+msgstr "\"Aux1\" = aşağı in"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -1914,7 +1898,7 @@ msgstr "Kendiliğinden zıplama"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -1922,7 +1906,7 @@ msgstr "Geri"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Blok sınırları"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2098,14 +2082,13 @@ msgstr ""
 "Devre dışı bırakılırsa, sanal joystick merkezi, ilk dokunuş konumu olur."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"(Android) \"aux\" düğmesini tetiklemek için sanal joystick kullanın.\n"
-"Etkinleştirilirse, sanal joystick, ana çemberin dışındayken \"aux\" "
+"(Android) \"Aux1\" düğmesini tetiklemek için sanal joystick kullanın.\n"
+"Etkinleştirilirse, sanal joystick, ana çemberin dışındayken \"Aux1\" "
 "düğmesini de dinler."
 
 #: src/settings_translation_file.cpp
@@ -2461,14 +2444,12 @@ msgid "Autoscaling mode"
 msgstr "Kendiliğinden boyutlandırma kipi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key"
-msgstr "Zıplama tuşu"
+msgstr "Aux1 tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
-msgstr "Tırmanma/alçalma için özel tuş"
+msgstr "Tırmanma/alçalma için Aux1 tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2621,9 +2602,8 @@ msgstr ""
 "0.0 minimum, 1.0 maksimum ışık seviyesidir."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat command time message threshold"
-msgstr "Sohbet iletisi vurma eşiği"
+msgstr "Sohbet komutu zaman iletisi eşiği"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2722,9 +2702,8 @@ msgid "Colored fog"
 msgstr "Renkli sis"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Renkli sis"
+msgstr "Renkli gölgeler"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2953,6 +2932,10 @@ msgid ""
 "This simulates the soft shadows effect by applying a PCF or poisson disk\n"
 "but also uses more resources."
 msgstr ""
+"Gölge filtreleme kalitesini tanımla.\n"
+"Bu, bir PCF veya poisson diski uygulayarak yumuşak gölge efektini taklit "
+"eder,\n"
+"ancak aynı zamanda daha fazla kaynak kullanır."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3133,6 +3116,9 @@ msgid ""
 "Enable colored shadows. \n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
+"Renkli gölgeleri etkinleştir. \n"
+"Doğru ise yarı saydam düğümlerde renkli gölgeler oluşturur. Bu fazla kaynak "
+"kullanır."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3164,6 +3150,9 @@ msgid ""
 "On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
+"Poisson disk filtrelemeyi etkinleştir.\n"
+"Doğru ise \"yumuşak gölgeler\" yapmak için poisson diski kullanır. Değilse "
+"PCF filtreleme kullanır."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3246,9 +3235,9 @@ msgid ""
 "enhanced, highlights and shadows are gradually compressed."
 msgstr ""
 "Hable'ın 'Uncharted 2' film ton eşlemesini etkinleştirir.\n"
-"Fotoğrafsal film ton eğrisini simüle eder ve bu\n"
+"Fotoğrafsal film ton eğrisini taklit eder ve bu\n"
 "yüksek dinamik aralıklı görüntülerin görünümü yakınlaştırır. Orta-aralık\n"
-"kontrast biraz geliştirilir, vurgular ve gölgeler kademeli olarak "
+"karşıtlık biraz geliştirilir, vurgular ve gölgeler kademeli olarak "
 "sıkıştırılır."
 
 #: src/settings_translation_file.cpp
@@ -3337,12 +3326,11 @@ msgid "Fast movement"
 msgstr "Hızlı hareket"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Hızlı hareket (\"özel\" tuşu ile).\n"
+"Hızlı hareket (\"Aux1\" tuşu ile).\n"
 "Bu, sunucu üzerinde \"hızlı\" yetkisi gerektirir."
 
 #: src/settings_translation_file.cpp
@@ -3359,8 +3347,8 @@ msgid ""
 "the\n"
 "Multiplayer Tab."
 msgstr ""
-"İstemci/sunucu listesi/ içinde Multiplayer Sekmesinde görüntülenen\n"
-"favori sunucularızı içeren dosya."
+"Çok Oyunculu Sekmesinde görüntülenen sık kullanılan sunucularızı içeren\n"
+"istemci/sunucu listesi/ içindeki dosya."
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth"
@@ -3375,7 +3363,6 @@ msgid "Filmic tone mapping"
 msgstr "Filmsel ton eşleme"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 "which PNG optimizers usually discard, often resulting in dark or\n"
@@ -3387,7 +3374,8 @@ msgstr ""
 "şeffaf komşuları ile RGB değerlerini kaynaştırabilir, bazen şeffaf "
 "dokularda\n"
 "karanlık veya aydınlık kenarlara neden olabilir. Bunu temizlemek için bu\n"
-"filtreyi doku yükleme zamanında uygulayın."
+"filtreyi doku yükleme zamanında uygulayın. Bu, mip eşleme etkinleştirilirse\n"
+"otomatik olarak etkinleştirilir."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
@@ -3630,16 +3618,16 @@ msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
 msgstr ""
-"Maksimum ışık seviyesinde ışık eğrisinin gradyantı.\n"
-"En yüksek ışık düzeylerinin kontrastını denetler."
+"Azami ışık seviyesinde ışık eğrisinin gradyantı.\n"
+"En yüksek ışık düzeylerinin karşıtlığını denetler."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Gradient of light curve at minimum light level.\n"
 "Controls the contrast of the lowest light levels."
 msgstr ""
-"Minimum ışık seviyesinde ışık eğrisinin gradyantı.\n"
-"En düşük ışık düzeylerinin kontrastını kontrol eder."
+"Asgari ışık seviyesinde ışık eğrisinin gradyantı.\n"
+"En düşük ışık düzeylerinin karşıtlığını denetler."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -3705,10 +3693,10 @@ msgid "Heat noise"
 msgstr "Isı gürültüsü"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
-msgstr "İlk pencere boyutunun yükseklik bileşeni."
+msgstr ""
+"İlk pencere boyutunun yükseklik bileşeni. Tam ekran kipinde yok sayılır."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3963,12 +3951,11 @@ msgstr ""
 "tüketmemek için, uykuya dalarak sınırla."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If disabled, \"Aux1\" key is used to fly fast if both fly and fast mode are\n"
 "enabled."
 msgstr ""
-"Devre dışı bırakılırsa \"özel\" tuşu, hem uçma hem de hızlı kipi etkin ise,\n"
+"Devre dışı bırakılırsa \"Aux1\" tuşu, hem uçma hem de hızlı kipi etkin ise,\n"
 "hızlı uçma için kullanılır."
 
 #: src/settings_translation_file.cpp
@@ -3995,13 +3982,12 @@ msgstr ""
 "Bu, sunucuda \"hayalet\" yetkisi gerektirir."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
 msgstr ""
-"Etkinleştirilirse, \"sızma\" tuşu yerine \"özel\" tuşu aşağı inme ve "
+"Etkinleştirilirse, \"sızma\" tuşu yerine \"Aux1\" tuşu aşağı inme ve "
 "alçalma\n"
 "için kullanılır."
 
@@ -4015,7 +4001,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr "Etkinleştirilirse, multiplayer'da hile önleme devre dışı bırakılır."
+msgstr "Etkinleştirilirse, çok oyunculuda hile önleme devre dışı bırakılır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4061,6 +4047,9 @@ msgid ""
 "If the execution of a chat command takes longer than this specified time in\n"
 "seconds, add the time information to the chat command message"
 msgstr ""
+"Bir sohbet komutunun yürütülmesi, saniye cinsinden bu belirtilen süreden "
+"daha\n"
+"uzun sürerse, zaman bilgisini sohbet komut iletisine ekle"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5320,9 +5309,8 @@ msgid "Map save interval"
 msgstr "Harita kaydetme aralığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Map update time"
-msgstr "Sıvı güncelleme tıkı"
+msgstr "Harita güncelleme zamanı"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -5434,7 +5422,7 @@ msgstr "Pencere odaklanmadığında veya oyun duraklatıldığında en yüksek F
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr ""
+msgstr "Gölgeleri işlemek için azami mesafe."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5564,19 +5552,20 @@ msgstr ""
 "Kuyruğa almayı kapamak için 0 ve sınırsız kuyruk boyutu için -1."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum time a file download (e.g. a mod download) may take, stated in "
 "milliseconds."
 msgstr ""
-"Bir dosya indirmesinin ms cinsinden alabileceği maksimum zaman (ör: mod "
-"indirme)."
+"Bir dosya indirmesinin (ör: mod indirme) alabileceği azami süre, milisaniye "
+"cinsinden belirtilir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum time an interactive request (e.g. server list fetch) may take, "
 "stated in milliseconds."
 msgstr ""
+"Etkileşimli bir isteğin (ör: sunucu listesi getirme) alabileceği azami süre, "
+"milisaniye cinsinden belirtilir."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
@@ -5803,7 +5792,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
-msgstr "Çevrimiçi İçerik Deposu"
+msgstr "Çevrim İçi İçerik Deposu"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5936,9 +5925,8 @@ msgid "Player versus player"
 msgstr "Oyuncu oyuncuya karşı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
-msgstr "Bilineer filtreleme"
+msgstr "Poisson filtreleme"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6338,6 +6326,9 @@ msgid ""
 "Set the shadow strength.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
 msgstr ""
+"Gölge gücünü ayarla.\n"
+"Daha düşük değer daha açık gölgeler, daha yüksek değer daha koyu gölgeler "
+"anlamına gelir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6346,6 +6337,10 @@ msgid ""
 "resources.\n"
 "Minimun value 0.001 seconds max value 0.2 seconds"
 msgstr ""
+"Gölge güncelleme zamanını ayarla.\n"
+"Daha düşük değer, gölgeler ve harita güncellemelerinin daha hızlı olması "
+"anlamına gelir, ancak daha fazla kaynak tüketir.\n"
+"En düşük değer 0,001 saniye, en yüksek değer 0,2 saniyedir"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6353,6 +6348,10 @@ msgid ""
 "Lower values mean sharper shadows bigger values softer.\n"
 "Minimun value 1.0 and max value 10.0"
 msgstr ""
+"Yumuşak gölge yarıçapı boyutunu ayarla.\n"
+"Daha düşük değerler daha keskin, daha büyük değerler daha yumuşak gölgeler "
+"anlamına gelir.\n"
+"En düşük değer 1.0 ve en yüksek değer 10.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6360,15 +6359,17 @@ msgid ""
 "Value of 0 means no tilt / vertical orbit.\n"
 "Minimun value 0.0 and max value 60.0"
 msgstr ""
+"Güneş/Ay yörüngesinin eğimini derece olarak ayarla\n"
+"0 değeri, eğim / dikey yörünge olmadığı anlamına gelir.\n"
+"En düşük değer 0.0 ve en yüksek değer 60.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Dalgalanan yaprakları için doğru'ya ayarlayın.\n"
-"Gölgelemeler etkin kılınmalıdır."
+"Gölge Eşlemeyi etkinleştirmek için doğru olarak ayarlayın.\n"
+"Gölgelemelerin etkinleştirilmesini gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6400,6 +6401,9 @@ msgid ""
 "On false, 16 bits texture will be used.\n"
 "This can cause much more artifacts in the shadow."
 msgstr ""
+"Gölge dokusu kalitesini 32 bit olarak ayarlar.\n"
+"Yanlış ise 16 bit doku kullanılacaktır.\n"
+"Bu, gölgede çok daha fazla bozulmalara neden olabilir."
 
 #: src/settings_translation_file.cpp
 msgid "Shader path"
@@ -6418,22 +6422,20 @@ msgstr ""
 "Bu yalnızca OpenGL video arka ucu ile çalışır."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow filter quality"
-msgstr "Ekran yakalama kalitesi"
+msgstr "Gölge filtresi kalitesi"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map max distance in nodes to render shadows"
-msgstr ""
+msgstr "Gölgeleri işlemek için nodlardaki gölge eşleme azami mesafesi"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture in 32 bits"
-msgstr ""
+msgstr "32 bitte gölge eşleme dokusu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow map texture size"
-msgstr "Minimum doku boyutu"
+msgstr "Gölge eşleme dokusu boyutu"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6444,7 +6446,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shadow strength"
-msgstr ""
+msgstr "Gölge gücü"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -6502,7 +6504,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
-msgstr ""
+msgstr "Gökyüzü Gövdesi Yörünge Eğimi"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6562,9 +6564,8 @@ msgid "Sneaking speed, in nodes per second."
 msgstr "Sızma hızı, saniye başına nod cinsinden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft shadow radius"
-msgstr "Yazı tipi gölge saydamlığı"
+msgstr "Yumuşak gölge yarıçapı"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6728,6 +6729,10 @@ msgid ""
 "This must be a power of two.\n"
 "Bigger numbers create better shadowsbut it is also more expensive."
 msgstr ""
+"Gölge eşlemenin işleneceği doku boyutu.\n"
+"Bu, 2'nin bir kuvveti olmalıdır.\n"
+"Daha büyük sayılar daha iyi gölgeler oluşturur ama aynı zamanda daha fazla "
+"kaynak kullanır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6825,7 +6830,6 @@ msgstr ""
 "Bu active_object_send_range_blocks ile birlikte ayarlanmalıdır."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "A restart is required after changing this.\n"
@@ -6834,7 +6838,7 @@ msgid ""
 "On other platforms, OpenGL is recommended.\n"
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
-"Irrlicht için işleme arka ucu.\n"
+"İşleme arka ucu.\n"
 "Bunu değiştirdikten sonra yeniden başlatma gerekir.\n"
 "Not: Android'de, emin değilseniz OGLES1 kullanın! Başka türlü, uygulama "
 "başlayamayabilir.\n"
@@ -6993,7 +6997,7 @@ msgstr "Güvenilen modlar"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
-msgstr "Multiplayer sekmesinde görüntülenen sunucu listesi URL'si."
+msgstr "Çok oyunculu sekmesinde görüntülenen sunucu listesinin URL'si."
 
 #: src/settings_translation_file.cpp
 msgid "Undersampling"
@@ -7175,9 +7179,8 @@ msgid "Viewing range"
 msgstr "Görüntüleme uzaklığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Virtual joystick triggers Aux1 button"
-msgstr "Sanal joystick aux düğmesini tetikler"
+msgstr "Sanal joystick Aux1 düğmesini tetikler"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
@@ -7277,7 +7280,6 @@ msgstr ""
 "sürücüleri için, eski boyutlandırma yöntemini kullan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
@@ -7294,12 +7296,10 @@ msgstr ""
 "pikselleri\n"
 "korumak için kendiliğinden büyütme yapılır. Bu minimum doku boyutunu\n"
 "büyütülmüş dokular için ayarlar; daha yüksek değerler daha net görünür,\n"
-"ama daha fazla bellek gerektirir. 2'nin kuvvetleri tavsiye edilir. 1'den "
-"daha\n"
-"yükseğe ayarlamanın, bilineer/trilineer/anisotropik filtreler etkin "
-"değilse,\n"
-"görünür bit etkisi olmayabilir.\n"
-"Bu, dünya hizalı doku kendilinden boyutlandırmada taban nod doku boyutu\n"
+"ama daha fazla bellek gerektirir. 2'nin kuvvetleri tavsiye edilir. Bu ayar "
+"YALNIZCA\n"
+"bilineer/trilineer/anisotropik filtreler etkinse uygulanır.\n"
+"Bu, dünya hizalı doku kendiliğinden boyutlandırmada taban nod doku boyutu\n"
 "olarak da kullanılır."
 
 #: src/settings_translation_file.cpp
@@ -7375,9 +7375,8 @@ msgstr ""
 "ile aynı etkiye sahiptir)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width component of the initial window size. Ignored in fullscreen mode."
-msgstr "İlk pencere boyutunun genişlik bileşeni."
+msgstr "İlk pencere boyutunun genişlik bileşeni. Tam ekran kipinde yok sayılır."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -7511,9 +7510,8 @@ msgid "cURL file download timeout"
 msgstr "cURL dosya indirme zaman aşımı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "cURL interactive timeout"
-msgstr "cURL zaman aşımı"
+msgstr "cURL etkileşimli zaman aşımı"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
