@@ -7788,8 +7788,9 @@ Used by `minetest.register_node`.
                     items = {"default:sand", "default:desert_sand"},
                 },
                 {
-                    -- Only drop if using a tool in the "magicwand" group, or a 
-                    -- tool that is in both the "pickaxe" and the "lucky" groups.
+                    -- Only drop if using an item in the "magicwand" group, or 
+                    -- an item that is in both the "pickaxe" and the "lucky"
+                    -- groups.
                     tool_groups =
                     {
                         "magicwand",
