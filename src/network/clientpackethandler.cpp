@@ -1002,7 +1002,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	f32 size_min         = readF32(is);
 	f32 size_max         = readF32(is);
 	p.collisiondetection = readU8(is);
-	p.texture.first      = deSerializeString32(is);
+	p.texture.string     = deSerializeString32(is);
 
 	using namespace ParticleParamTypes;
 	p.pos     = range_v3f(pos_min, pos_max);
@@ -1045,15 +1045,19 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			u16 texpoolsz = readU16(is);
 			p.texpool.reserve(texpoolsz);
 			for (u16 i = 0; i < texpoolsz; ++i) {
-				ParticleTexture newtex;
-				auto flags = readU8(is);
-				newtex.tweened  = (flags & 1<<0) > 0;
-				newtex.animated = (flags & 1<<1) > 0;
-				newtex.first    = deSerializeString32(is);
-				if (newtex.tweened)
-					newtex.last = deSerializeString32(is);
+				ServerParticleTexture newtex;
+				auto flags       = readU8(is);
+				newtex.alpha     = readF32(is);
+				newtex.fade_mode = (ParticleTexture::Fade)readU8(is);
+				newtex.string    = deSerializeString32(is);
+
+				newtex.animated  = (flags & 1<<0) > 0;
 				if (newtex.animated)
 					newtex.animation.deSerialize(is, m_proto_ver);
+				if (newtex.fade_mode != ParticleTexture::Fade::none) {
+					newtex.fade_start = readF32(is);
+					newtex.fade_freq = readU8(is);
+				}
 				p.texpool.push_back(newtex);
 			}
 		}

@@ -40,31 +40,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // animation = TileAnimation definition
 // glow = num
 
-ParticleTexture
+ServerParticleTexture
 LuaParticleParams::readTexValue(lua_State* L) {
 	lua_Integer top = lua_gettop(L);
-	ParticleTexture tex;
-	tex.tweened = false;
+	ServerParticleTexture tex;
 	tex.animated = false;
 	if (lua_isstring(L, -1)) {
-		tex.first = lua_tostring(L, -1);
+		tex.string = lua_tostring(L, -1);
 	} else if (lua_istable(L, -1)) {
 		lua_getfield(L, -1, "img");
 		if (lua_isstring(L, -1)) {
-			tex.first = lua_tostring(L, -1);
-		} else if (lua_istable(L, -1)) {
-			size_t tblen = lua_objlen(L, -1);
-			if (tblen >= 1) {
-				lua_pushinteger(L, 1), lua_gettable(L, -2);
-					tex.first = luaL_checkstring(L, -1);
-				lua_pop(L, 1);
-			}
-			if (tblen >= 2) {
-				tex.tweened = true;
-				lua_pushinteger(L, tblen), lua_gettable(L, -2);
-					tex.last = luaL_checkstring(L, -1);
-				lua_pop(L, 1);
-			}
+			tex.string = lua_tostring(L, -1);
 		} else goto error;
 		lua_pop(L, 1);
 
@@ -74,11 +60,45 @@ LuaParticleParams::readTexValue(lua_State* L) {
 			tex.animation = read_animation_definition(L, -1);
 		}
 		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "fade");
+		if (not lua_isnil(L, -1)) {
+			if (lua_isstring(L, -1)) {
+				const char* const opts[] = { "none", "in", "out", "pulse", "flicker" };
+				const ParticleTexture::Fade optmap[] = {
+					ParticleTexture::Fade::none,
+					ParticleTexture::Fade::in,
+					ParticleTexture::Fade::out,
+					ParticleTexture::Fade::pulse,
+					ParticleTexture::Fade::flicker,
+				};
+				static_assert(
+						(sizeof opts / sizeof opts[0]) ==
+						(sizeof optmap / sizeof optmap[0]),
+						"option maps not synced");
+				size_t v = luaL_checkoption(L, -1, "none", opts);
+				tex.fade_mode = optmap[v];
+			} else goto error;
+		}
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "fade_freq");
+		if (not lua_isnil(L, -1)) tex.fade_freq = lua_tointeger(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "fade_start");
+		if (not lua_isnil(L, -1)) tex.alpha = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "alpha");
+		if (not lua_isnil(L, -1)) tex.alpha = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
 	} else goto error;
 	lua_settop(L, top);
 	return tex;
 
-	error: lua_pushliteral(L, "texture specifier has invalid type"), lua_error(L);
+	error: lua_pushliteral(L, "invalid type in texture specifier"), lua_error(L);
 }
 
 int ModApiParticles::l_add_particle(lua_State *L)
@@ -99,8 +119,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		p.expirationtime = luaL_checknumber(L, 4);
 		p.size = luaL_checknumber(L, 5);
 		p.collisiondetection = readParam<bool>(L, 6);
-		p.texture.first = luaL_checkstring(L, 7);
-		p.texture.tweened = false;
+		p.texture.string = luaL_checkstring(L, 7);
 		if (lua_gettop(L) == 8) // only spawn for a single player
 			playername = luaL_checkstring(L, 8);
 	}
@@ -230,7 +249,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		p.size = range_f32(minsize, maxsize);
 
 		p.collisiondetection = readParam<bool>(L, 13);
-		p.texture.first = luaL_checkstring(L, 14);
+		p.texture.string = luaL_checkstring(L, 14);
 		if (lua_gettop(L) == 15) // only spawn for a single player
 			playername = luaL_checkstring(L, 15);
 	}

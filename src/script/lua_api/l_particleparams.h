@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#pragma once
 #include "lua_api/l_particles.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_internal.h"
@@ -108,5 +109,5 @@ namespace LuaParticleParams {
 		done: lua_settop(L, tbl); // clean up after ourselves
 	}
 
-	ParticleTexture readTexValue(lua_State* L);
+	ServerParticleTexture readTexValue(lua_State* L);
 }

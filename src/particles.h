@@ -75,7 +75,7 @@ namespace ParticleParamTypes {
 	template <typename T, BlendFunction<T> Blend>
 	struct TweenedParameter {
 		using ValType = T;
-		
+
 		T start, end;
 
 		TweenedParameter() = default;
@@ -118,7 +118,7 @@ namespace ParticleParamTypes {
 	// these are consistently-named convenience aliases to make code more readable without `using ParticleParamTypes` declarations
 	using range_v3f = RangedParameter<srz_v3f>;
 	using range_f32 = RangedParameter<srz_f32>;
-	
+
 	// these aliases bind tweened parameter types to the functions used to blend them
 	using tween_f32       = TweenedParameter      <srz_f32, srz_f32::blendWrap<numericalBlend<f32> > >;
 	// using tween_range_v3f = TweenedParameter<
@@ -130,10 +130,17 @@ namespace ParticleParamTypes {
 }
 
 struct ParticleTexture {
-	std::string first, last;
-	bool tweened = false;
 	bool animated = false;
 	TileAnimationParams animation;
+	enum class Fade {
+		none, in, out, pulse, flicker
+	} fade_mode = Fade::none;
+	u8 fade_freq = 1;
+	f32 alpha = 1.0f, fade_start = 0.0f;
+};
+
+struct ServerParticleTexture : public ParticleTexture {
+	std::string string;
 };
 
 struct CommonParticleParams {
@@ -141,7 +148,7 @@ struct CommonParticleParams {
 	bool collision_removal = false;
 	bool object_collision = false;
 	bool vertical = false;
-	ParticleTexture texture;
+	ServerParticleTexture texture;
 	struct TileAnimationParams animation;
 	u8 glow = 0;
 	MapNode node;
@@ -185,7 +192,7 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 
 	// texture is used for the fallback texture on outdated clients
 
-	std::vector<ParticleTexture> texpool;
+	std::vector<ServerParticleTexture> texpool;
 
 	ParticleParamTypes::tween_range_v3f
 		pos, vel, acc, drag, attractor;

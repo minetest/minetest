@@ -31,10 +31,10 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
-struct ClientParticleTexture {
-	bool tweened, animated;
-	video::ITexture* first, * last;
-	struct TileAnimationParams animation;
+struct ClientParticleTexture : public ParticleTexture {
+	video::ITexture* ref;
+	ClientParticleTexture() = default;
+	ClientParticleTexture(ParticleTexture p);
 };
 
 class Particle : public scene::ISceneNode
@@ -78,6 +78,7 @@ class Particle : public scene::ISceneNode
 private:
 	void updateLight();
 	void updateVertices();
+	void setVertexAlpha(float a);
 
 	video::S3DVertex m_vertices[4];
 	float m_time = 0.0f;
@@ -97,6 +98,7 @@ private:
 	v3f m_drag;
 	LocalPlayer *m_player;
 	float m_size;
+
 	//! Color without lighting
 	video::SColor m_base_color;
 	//! Final rendered color
@@ -110,6 +112,7 @@ private:
 	float m_animation_time = 0.0f;
 	int m_animation_frame = 0;
 	u8 m_glow;
+	float m_alpha = 0.0f;
 };
 
 class ParticleSpawner

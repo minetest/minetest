@@ -127,7 +127,7 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	lua_pop(L, 1);
 
 	p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
-	p.texture.first = getstringfield_default(L, 1, "texture", p.texture.first);
+	p.texture.string = getstringfield_default(L, 1, "texture", p.texture.string);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
 
 	lua_getfield(L, 1, "texpool");

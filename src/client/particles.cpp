@@ -54,6 +54,9 @@ static v3f random_v3f(v3f min, v3f max)
 	Particle
 */
 
+ClientParticleTexture::ClientParticleTexture(ParticleTexture p) :
+	ParticleTexture(p) {};
+
 Particle::Particle(
 	IGameDef *gamedef,
 	LocalPlayer *player,
@@ -77,11 +80,19 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
-	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_material.setTexture(0, m_texture.first);
+	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+	m_material.MaterialTypeParam = irr::video::pack_textureBlendFunc(
+			irr::video::EBF_SRC_ALPHA,
+			irr::video::EBF_ONE_MINUS_SRC_ALPHA,
+			irr::video::EMFN_MODULATE_1X,
+			irr::video::EAS_TEXTURE | irr::video::EAS_VERTEX_COLOR);
+	m_material.setFlag(video::EMF_BLEND_OPERATION, true);
+	m_material.setTexture(0, m_texture.ref);
 	m_texpos = texpos;
 	m_texsize = texsize;
 	m_animation = p.animation;
+
+
 
 	// Color
 	m_base_color = color;
@@ -100,6 +111,9 @@ Particle::Particle(
 	m_object_collision = p.object_collision;
 	m_vertical = p.vertical;
 	m_glow = p.glow;
+	if (p.texture.fade_mode == ParticleTexture::Fade::none or
+	    p.texture.fade_mode == ParticleTexture::Fade::out) m_alpha = p.texture.alpha;
+	else m_alpha = 0.0f;
 
 	// Irrlicht stuff
 	const float c = p.size / 2;
@@ -173,6 +187,31 @@ void Particle::step(float dtime)
 		}
 	}
 
+	// animate particle alpha in accordance with settings
+	if (m_time >= m_texture.fade_start) {
+		auto now = m_time       - m_expiration * m_texture.fade_start;
+		auto exp = m_expiration - m_expiration * m_texture.fade_start;
+		float fac = now / (exp / m_texture.fade_freq);
+		if (fac > 1) fac -= (u16)fac; // poor man's modulo
+		switch (m_texture.fade_mode) {
+			case ParticleTexture::Fade::none: /* do nothing */ break;
+			case ParticleTexture::Fade::out:  m_alpha = 1.0f - fac; break;
+			case ParticleTexture::Fade::in:   m_alpha = fac; break;
+			case ParticleTexture::Fade::pulse:
+			case ParticleTexture::Fade::flicker: {
+				if (fac > 0.5) {
+					m_alpha = 1 - (fac*2 - 1);
+				} else {
+					m_alpha = fac * 2;
+				}
+				if (m_texture.fade_mode == ParticleTexture::Fade::flicker) {
+					m_alpha = m_alpha * random_f32(0.7,1);
+				}
+			}
+		}
+	}
+	m_alpha *= m_texture.alpha;
+
 	// Update lighting
 	updateLight();
 
@@ -197,7 +236,7 @@ void Particle::updateLight()
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
 	u8 m_light = decode_light(light + m_glow);
-	m_color.set(255,
+	m_color.set(m_alpha*255,
 		m_light * m_base_color.getRed() / 255,
 		m_light * m_base_color.getGreen() / 255,
 		m_light * m_base_color.getBlue() / 255);
@@ -337,16 +376,14 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	p.copyCommon(pp);
 
 	ClientParticleTexture texture;
-	texture.tweened = false;
-	texture.first = nullptr;
-	texture.last = nullptr;
+	texture.ref = nullptr;
 	v2f texpos, texsize;
 	video::SColor color(0xFFFFFFFF);
 
 	if (p.node.getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &f =
 			m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
-		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture.first,
+		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture.ref,
 				texpos, texsize, &color, p.node_tile))
 			return;
 	} else {
@@ -518,7 +555,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			// fallback texture
 			// video::ITexture *texture =
 			// 	client->tsrc()->getTextureForMesh(p.texture.first);
-			
+
 			// texture pool
 			ClientParticleTexture* texpool = nullptr;
 			size_t txpsz = 0;
@@ -527,30 +564,13 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				texpool = new ClientParticleTexture [txpsz];
 
 				for (size_t i = 0; i < txpsz; ++i) {
-					texpool[i].tweened = p.texpool[i].tweened;
-					texpool[i].animated = p.texpool[i].animated;
-					if (texpool[i].animated)
-						texpool[i].animation = p.texpool[i].animation;
-
-					texpool[i].first = client -> tsrc() -> getTextureForMesh(p.texpool[i].first);
-					if (p.texpool[i].tweened) {
-						texpool[i].last = client -> tsrc() -> getTextureForMesh(p.texpool[i].last);
-					} else {
-						texpool[i].last = nullptr;
-					}
+					texpool[i] = ClientParticleTexture(p.texpool[i]);
+					texpool[i].ref = client -> tsrc() -> getTextureForMesh(p.texpool[i].string);
 				}
 			} else {
 				txpsz = 1;
-				texpool = new ClientParticleTexture [1];
-				texpool -> tweened = p.texture.tweened;
-				texpool -> animated = p.texture.animated;
-				if (texpool -> animated)
-					texpool -> animation = p.texture.animation;
-
-				texpool -> first = client -> tsrc() -> getTextureForMesh(p.texture.first);
-				if (p.texture.tweened) {
-					texpool -> last = client -> tsrc() -> getTextureForMesh(p.texture.last);
-				} else texpool -> last = nullptr;
+				texpool = new ClientParticleTexture(p.texture);
+				texpool -> ref = client -> tsrc() -> getTextureForMesh(p.texture.string);
 			}
 
 			auto toadd = new ParticleSpawner(client, player,
@@ -569,8 +589,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			ParticleParameters &p = *event->spawn_particle;
 
 			ClientParticleTexture texture;
-			texture.tweened = false;
-			texture.last = nullptr;
 			v2f texpos, texsize;
 			video::SColor color(0xFFFFFFFF);
 
@@ -578,15 +596,11 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			if (p.node.getContent() != CONTENT_IGNORE) {
 				const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
-				if (!getNodeParticleParams(p.node, f, p, &texture.first, texpos,
+				if (!getNodeParticleParams(p.node, f, p, &texture.ref, texpos,
 						texsize, &color, p.node_tile))
-					texture.first = nullptr;
+					texture.ref = nullptr;
 			} else {
-				texture.first = client->tsrc()->getTextureForMesh(p.texture.first);
-				texture.tweened = p.texture.tweened;
-				if (texture.tweened) {
-					texture.last = client->tsrc()->getTextureForMesh(p.texture.last);
-				}
+				texture.ref = client->tsrc()->getTextureForMesh(p.texture.string);
 				texpos = v2f(0.0f, 0.0f);
 				texsize = v2f(1.0f, 1.0f);
 			}
@@ -595,7 +609,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			if (oldsize > 0.0f)
 				p.size = oldsize;
 
-			if (texture.first) {
+			if (texture.ref) {
 				Particle *toadd = new Particle(client, player, m_env,
 						p, texture, texpos, texsize, color);
 
@@ -671,13 +685,11 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 {
 	ParticleParameters p;
 	ClientParticleTexture texture;
-	texture.tweened = false;
-	texture.first = nullptr;
-	texture.last = nullptr;
+	texture.ref = nullptr;
 	v2f texpos, texsize;
 	video::SColor color;
 
-	if (!getNodeParticleParams(n, f, p, &texture.first, texpos, texsize, &color))
+	if (!getNodeParticleParams(n, f, p, &texture.ref, texpos, texsize, &color))
 		return;
 
 	p.expirationtime = (rand() % 100) / 100.0f;

@@ -1617,7 +1617,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	}
 	pkt << p.collisiondetection;
 
-	pkt.putLongString(p.texture.first);
+	pkt.putLongString(p.texture.string);
 
 	pkt << id << p.vertical << p.collision_removal << attached_id;
 	{
@@ -1646,18 +1646,20 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		pkt.putRawString(os.str());
 
 		pkt << (u16)p.texpool.size();
-		for(ParticleTexture tex : p.texpool) {
+		for(auto tex : p.texpool) {
 			u8 flags = 0;
-			if (tex.tweened)  flags |= 1<<0;
-			if (tex.animated) flags |= 1<<1;
-			pkt << flags;
-			pkt.putLongString(tex.first);
-			if (tex.tweened)
-				pkt.putLongString(tex.last);
+			if (tex.animated) flags |= 1<<0;
+
+			pkt << flags << tex.alpha << (u8)tex.fade_mode;
+			pkt.putLongString(tex.string);
+
 			if (tex.animated) {
 				std::ostringstream os(std::ios_base::binary);
 				tex.animation.serialize(os, protocol_version);
 				pkt.putRawString(os.str());
+			}
+			if (tex.fade_mode != ParticleTexture::Fade::none) {
+				pkt << tex.fade_start << tex.fade_freq;
 			}
 		}
 	}
