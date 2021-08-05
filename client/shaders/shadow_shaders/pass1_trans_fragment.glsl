@@ -2,6 +2,8 @@ uniform sampler2D ColorMapSampler;
 varying vec4 tPos;
 
 #ifdef COLORED_SHADOWS
+varying vec4 varColor;
+
 // c_precision of 128 fits within 7 base-10 digits
 const float c_precision = 128.0;
 const float c_precisionp1 = c_precision + 1.0;
@@ -30,6 +32,7 @@ void main()
 
 	//col.rgb = col.a == 1.0 ? vec3(1.0) : col.rgb;
 #ifdef COLORED_SHADOWS
+	col *= varColor;
 	float packedColor = packColor(mix(col.rgb, black, col.a));
 	gl_FragColor = vec4(depth, packedColor, 0.0,1.0);
 #else
