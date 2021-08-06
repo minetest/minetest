@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-03-19 20:18+0000\n"
+"PO-Revision-Date: 2021-10-10 21:02+0000\n"
 "Last-Translator: abidin toumi <abidin24@disroot.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -26,30 +26,27 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "أمر فارغ."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "اخرج للقائمة"
+msgstr "اخرج للقائمة الرئيسة"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "أمر غير صالح: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
 msgstr ""
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "لاعب منفرد"
+msgstr "قائمة اللاعبين المتصلين"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "لاعب منفرد"
+msgstr "اللاعبون المتصلون: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -57,7 +54,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "هذا الأمر معطل من الخادم."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -68,34 +65,34 @@ msgid "You died"
 msgstr "مِت"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
 msgstr "مِت"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "الأوامر المتوفرة:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "الأوامر المتاحة: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "الأوامر غير المتاحة: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "احصل على تعليمات الأوامر"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"استخدم '.help <cmd>' للحصول على مزيد من المعلومات أو '.help all' لعرض كل شيء."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -236,7 +233,7 @@ msgstr "الاعتماديتان \"$1\" و $2 ستثبتان."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 بواسطة $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -256,7 +253,7 @@ msgstr "يحتاج $1 لكن لم يُعثر عليها."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 سيُثبت، واعتماديات $1 ستُتجاهل."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -354,7 +351,7 @@ msgstr "حدِّث الكل [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "اعرض مزيدًا من المعلومات عبر المتصفح"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -783,7 +780,7 @@ msgstr "جرب إعادة تمكين قائمة الحوادم العامة وت
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "حول"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -791,7 +788,7 @@ msgstr "المساهمون النشطون"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr ""
+msgstr "محرك التصيير النشط:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -954,13 +951,12 @@ msgid "Del. Favorite"
 msgstr "حذف المفضلة"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
 msgstr "المفضلة"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "خوادم غير متوافقة"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -971,18 +967,16 @@ msgid "Ping"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "أعلن عن الخادوم"
+msgstr "خوادم عمومية"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "حدِّث"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "منفذ الخدوم"
+msgstr "وصف الخادم"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1026,11 +1020,11 @@ msgstr "زجاج متصل"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
-msgstr ""
+msgstr "ظلال ديناميكية"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "ظلال ديناميكية: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -3270,7 +3264,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
-msgstr ""
+msgstr "الترشيح"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3286,11 +3280,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr ""
+msgstr "عصا التحكم الافتراضية ثابتة"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
-msgstr ""
+msgstr "كثافة الأرض الطافية"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland maximum Y"
@@ -3318,7 +3312,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "زر الطيران"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -3326,27 +3320,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "الضباب"
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
-msgstr ""
+msgstr "بداية الضباب"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "مفتاح تبديل ظهور الضباب"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
-msgstr ""
+msgstr "الخط عريض افتراضيًا"
 
 #: src/settings_translation_file.cpp
 msgid "Font italic by default"
-msgstr ""
+msgstr "الخط مائل افتراضيًا"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "ظل الخط"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
@@ -3354,7 +3348,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "حجم الخط"
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the default font in point (pt)."
@@ -4567,7 +4561,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
-msgstr ""
+msgstr "اطرد اللاعبين الذين أرسلوا أكثر من X رسالة في 10 ثوانٍ."
 
 #: src/settings_translation_file.cpp
 msgid "Lake steepness"
