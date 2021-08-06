@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-05-31 21:42+0000\n"
-"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
+"PO-Revision-Date: 2021-08-08 01:37+0000\n"
+"Last-Translator: phlostically <phlostically@mailinator.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -65,9 +65,8 @@ msgid "You died"
 msgstr "Vi mortis"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Vi mortis"
+msgstr "Vi mortis."
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
@@ -786,7 +785,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Pri"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -930,9 +929,8 @@ msgid "Start Game"
 msgstr "Ekigi ludon"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "– Adreso: "
+msgstr "Adreso"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -963,7 +961,7 @@ msgstr "Ŝati"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Nekongruaj serviloj"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -1028,13 +1026,12 @@ msgid "Connected Glass"
 msgstr "Ligata vitro"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dynamic shadows"
-msgstr "Tipara ombro"
+msgstr "Dinamikaj ombroj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Dinamikaj ombroj: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -5933,9 +5930,8 @@ msgid "Player versus player"
 msgstr "Ludanto kontraŭ ludanto"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
-msgstr "Dulineara filtrado"
+msgstr "Poisson-filtrado"
 
 #: src/settings_translation_file.cpp
 msgid ""
