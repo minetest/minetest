@@ -623,11 +623,11 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 	s32 fontHeight = 1;
 
 	if (m_override_font) {
-		fontHeight = m_override_font->getDimension(L"").Height;
+		fontHeight = m_override_font->getDimension(L"Ay").Height;
 	} else {
 		IGUIFont *font;
 		if (skin && (font = skin->getFont())) {
-			fontHeight = font->getDimension(L"").Height;
+			fontHeight = font->getDimension(L"Ay").Height;
 		}
 	}
 
