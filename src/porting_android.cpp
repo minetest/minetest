@@ -190,6 +190,7 @@ void initializePathsAndroid()
 
 	path_user    = path_storage + DIR_DELIM + PROJECT_NAME_C;
 	path_share   = path_storage + DIR_DELIM + PROJECT_NAME_C;
+	path_locale  = path_share + DIR_DELIM + "locale";
 	path_cache   = getAndroidPath(nativeActivity,
 			app_global->activity->clazz, mt_getAbsPath, "getCacheDir");
 	migrateCachePath();

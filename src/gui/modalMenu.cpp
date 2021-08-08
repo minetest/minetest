@@ -268,7 +268,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			std::string label = wide_to_utf8(getLabelByID(hovered->getID()));
 			if (label.empty())
 				label = "text";
-			message += gettext(label) + ":";
+			message += strgettext(label) + ":";
 
 			// single line text input
 			int type = 2;
