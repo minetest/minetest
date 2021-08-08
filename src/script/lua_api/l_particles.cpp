@@ -82,8 +82,8 @@ LuaParticleParams::readTexValue(lua_State* L) {
 		}
 		lua_pop(L, 1);
 
-		lua_getfield(L, -1, "fade_freq");
-		if (not lua_isnil(L, -1)) tex.fade_freq = lua_tointeger(L, -1);
+		lua_getfield(L, -1, "fade_reps");
+		if (not lua_isnil(L, -1)) tex.fade_reps = lua_tointeger(L, -1);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "fade_start");
@@ -99,6 +99,7 @@ LuaParticleParams::readTexValue(lua_State* L) {
 	return tex;
 
 	error: lua_pushliteral(L, "invalid type in texture specifier"), lua_error(L);
+	return tex; //silence incorrect warning
 }
 
 int ModApiParticles::l_add_particle(lua_State *L)
@@ -271,6 +272,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		LuaParticleParams::readTweenTable(L, "drag", p.drag);
 		LuaParticleParams::readTweenTable(L, "attract", p.attract);
 		LuaParticleParams::readTweenTable(L, "attractor", p.attractor);
+		LuaParticleParams::readTweenTable(L, "radius", p.radius);
 
 		p.collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", p.collisiondetection);

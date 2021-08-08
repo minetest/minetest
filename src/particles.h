@@ -89,7 +89,8 @@ namespace ParticleParamTypes {
 		void deSerialize(std::istream &is)     { start.deSerialize(is); end.deSerialize(is); };
 	};
 
-	template <typename T> T numericalBlend(float fac, T min, T max) { return min + ((max - min) * fac); }
+	template <typename T> T numericalBlend(float fac, T min, T max)
+		{ return min + ((max - min) * fac); }
 
 	v3f v3fBlend(float fac, v3f a, v3f b);
 
@@ -105,7 +106,8 @@ namespace ParticleParamTypes {
 		return r;
 	}
 
-	template <typename T, BlendFunction<T> Blend> using TweenedRangedParameter = TweenedParameter<
+	template <typename T, BlendFunction<T> Blend>
+	using TweenedRangedParameter = TweenedParameter<
 		/*      storage type */ RangedParameter<T>,
 		/* blending function */ rangeBlend<T, Blend>
 	>;
@@ -120,11 +122,8 @@ namespace ParticleParamTypes {
 	using range_f32 = RangedParameter<srz_f32>;
 
 	// these aliases bind tweened parameter types to the functions used to blend them
+	using tween_v3f       = TweenedParameter      <srz_v3f, srz_v3f::blendWrap<v3fBlend> >;
 	using tween_f32       = TweenedParameter      <srz_f32, srz_f32::blendWrap<numericalBlend<f32> > >;
-	// using tween_range_v3f = TweenedParameter<
-	// 	RangedParameter<srz_v3f>,
-	// 	rangeBlend<srz_v3f, srz_v3f::blendWrap<v3fBlend> >
-	// >;
 	using tween_range_v3f = TweenedRangedParameter<srz_v3f, srz_v3f::blendWrap<v3fBlend> >;
 	using tween_range_f32 = TweenedRangedParameter<srz_f32, srz_f32::blendWrap<numericalBlend<f32> > >;
 }
@@ -135,7 +134,7 @@ struct ParticleTexture {
 	enum class Fade {
 		none, in, out, pulse, flicker
 	} fade_mode = Fade::none;
-	u8 fade_freq = 1;
+	u8 fade_reps = 1;
 	f32 alpha = 1.0f, fade_start = 0.0f;
 };
 
@@ -194,10 +193,13 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 
 	std::vector<ServerParticleTexture> texpool;
 
-	ParticleParamTypes::tween_range_v3f
-		pos, vel, acc, drag, attractor;
+	ParticleParamTypes :: tween_range_v3f
+		pos, vel, acc, drag, radius;
 
-	ParticleParamTypes::tween_range_f32
+	ParticleParamTypes :: tween_v3f
+		attractor;
+
+	ParticleParamTypes :: tween_range_f32
 		exptime = 1, size = 1, attract = 1;
 
 	// For historical reasons no (de-)serialization methods here

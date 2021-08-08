@@ -1642,6 +1642,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		p.drag.serialize(os);
 		p.attract.serialize(os);
 		p.attractor.serialize(os);
+		p.radius.serialize(os);
 
 		pkt.putRawString(os.str());
 
@@ -1659,7 +1660,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 				pkt.putRawString(os.str());
 			}
 			if (tex.fade_mode != ParticleTexture::Fade::none) {
-				pkt << tex.fade_start << tex.fade_freq;
+				pkt << tex.fade_start << tex.fade_reps;
 			}
 		}
 	}

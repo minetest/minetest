@@ -1041,6 +1041,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			p.drag.deSerialize(is);
 			p.attract.deSerialize(is);
 			p.attractor.deSerialize(is);
+			p.radius.deSerialize(is);
 
 			u16 texpoolsz = readU16(is);
 			p.texpool.reserve(texpoolsz);
@@ -1056,7 +1057,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 					newtex.animation.deSerialize(is, m_proto_ver);
 				if (newtex.fade_mode != ParticleTexture::Fade::none) {
 					newtex.fade_start = readF32(is);
-					newtex.fade_freq = readU8(is);
+					newtex.fade_reps = readU8(is);
 				}
 				p.texpool.push_back(newtex);
 			}

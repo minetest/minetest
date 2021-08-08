@@ -191,7 +191,7 @@ void Particle::step(float dtime)
 	if (m_time >= m_texture.fade_start) {
 		auto now = m_time       - m_expiration * m_texture.fade_start;
 		auto exp = m_expiration - m_expiration * m_texture.fade_start;
-		float fac = now / (exp / m_texture.fade_freq);
+		float fac = now / (exp / m_texture.fade_reps);
 		if (fac > 1) fac -= (u16)fac; // poor man's modulo
 		switch (m_texture.fade_mode) {
 			case ParticleTexture::Fade::none: /* do nothing */ break;
@@ -334,14 +334,17 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto r_vel = p.vel.blend(fac);
 	auto r_acc = p.acc.blend(fac);
 	auto r_drag = p.drag.blend(fac);
-	auto r_attractor = p.attractor.blend(fac);
+	auto r_radius = p.radius.blend(fac);
+	auto attractor = p.attractor.blend(fac);
 
 	auto r_exp = p.exptime.blend(fac);
 	auto r_size = p.size.blend(fac);
 	auto r_attract = p.attract.blend(fac);
+	auto attract = random_f32(r_attract.min, r_attract.max);
 
 	v3f ppos = m_player->getPosition() / BS;
 	v3f pos = random_v3f(r_pos.min, r_pos.max);
+	v3f sphere_radius = random_v3f(r_radius.min, r_radius.max);
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
@@ -355,7 +358,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pos.Z += camera_offset.Z;
 	}
 
-	if (pos.getDistanceFrom(ppos) > radius)
+	if (pos.getDistanceFromSQ(ppos) > (radius*radius))
+		// we can avoid an expensive square root invocation for each particle
+		// by squaring the value to be compared against instead
 		return;
 
 	// Parameters for the single particle we're about to spawn
@@ -373,6 +378,36 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	}
 
 	pp.expirationtime = random_f32(r_exp.min, r_exp.max);
+
+	if (sphere_radius != v3f()) {
+		f32 l = sphere_radius.getLength();
+		v3f mag = sphere_radius;
+		mag.normalize();
+
+		v3f ofs = v3f(l,0,0);
+		ofs.rotateXZBy(random_f32(0,360));
+		ofs.rotateYZBy(random_f32(0,360));
+		ofs.rotateXYBy(random_f32(0,360));
+
+		pp.pos += ofs * mag;
+	}
+
+	if (attract != 0) {
+		f32 dist = pp.pos.getDistanceFrom(attractor);
+		f32 speedTowards = attract * dist;
+		v3f dir = pp.pos - attractor;
+		dir.normalize();
+		v3f avel = dir * speedTowards;
+		if (attract > 0 and speedTowards > 0) {
+			// make sure the particle dies after crossing the center
+			// TODO maybe add a flag that disables this
+			f32 timeToCenter = dist / speedTowards;
+			if (timeToCenter < pp.expirationtime)
+				pp.expirationtime = timeToCenter;
+		}
+// 		pp.vel += avel;
+	}
+
 	p.copyCommon(pp);
 
 	ClientParticleTexture texture;
@@ -387,7 +422,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 				texpos, texsize, &color, p.node_tile))
 			return;
 	} else {
-		if (m_texcount == 0) return;
+		if (m_texcount == 0)
+			return;
 		texture = m_texpool[m_texcount == 1 ? 0 : myrand_range(0,m_texcount-1)];
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
@@ -397,12 +433,14 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	// synchronize animation length with particle life if desired
 	if (pp.animation.type != TAT_NONE) {
-		if (pp.animation.type == TAT_VERTICAL_FRAMES and pp.animation.vertical_frames.length < 0) {
+		if (pp.animation.type == TAT_VERTICAL_FRAMES &&
+			pp.animation.vertical_frames.length < 0) {
 			auto& a = pp.animation.vertical_frames;
 			// we add a tiny extra value to prevent the first frame
 			// from flickering back on just before the particle dies
 			a.length = (pp.expirationtime / -a.length) + 0.1;
-		} else if (pp.animation.type == TAT_SHEET_2D and pp.animation.sheet_2d.frame_length < 0) {
+		} else if (pp.animation.type == TAT_SHEET_2D &&
+				   pp.animation.sheet_2d.frame_length < 0) {
 			auto& a = pp.animation.sheet_2d;
 			auto frames = a.frames_w * a.frames_h;
 			auto runtime = (pp.expirationtime / -a.frame_length) + 0.1;
@@ -411,7 +449,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	}
 
 	// Allow keeping default random size
-	if (p.size.start.max > 0.0f or p.size.end.max > 0.0f)
+	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = random_f32(r_size.min, r_size.max);
 
 	m_particlemanager->addParticle(new Particle(
