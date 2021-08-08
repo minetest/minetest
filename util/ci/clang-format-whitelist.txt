@@ -192,8 +192,6 @@ src/gui/guiTable.cpp
 src/gui/guiTable.h
 src/gui/guiVolumeChange.cpp
 src/gui/guiVolumeChange.h
-src/gui/intlGUIEditBox.cpp
-src/gui/intlGUIEditBox.h
 src/gui/mainmenumanager.h
 src/gui/modalMenu.h
 src/guiscalingfilter.cpp
