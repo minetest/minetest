@@ -32,31 +32,24 @@ namespace LuaParticleParams {
 	inline void readLuaValue(lua_State* L, srz_f32& ret)
 		{ ret = (srz_f32)((f32)lua_tonumber(L, -1)); }
 
-	inline void readLuaValue(lua_State* L, srz_v3f& ret)
-		{ ret = (srz_v3f)check_v3f(L, -1); }
+	inline void readLuaValue(lua_State* L, srz_v3f& ret) {
+		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
+			auto n = lua_tonumber(L, -1);
+			ret = (srz_v3f)v3f(n,n,n);
+		} else {
+			ret = (srz_v3f)check_v3f(L, -1);
+		}
+	}
 
 	template <typename T> void
 	readLuaValue(lua_State* L, RangedParameter<T>& field) {
-		if (!lua_istable(L,-1)) // is this is just a literal value?
-			goto set_both;
-
 		lua_getfield(L, -1, "min");
-		// handle convenience syntax for non-range values
-		if (lua_isnil(L,-1)) {
-			lua_pop(L, 1);
-			goto set_both;
-		}
 		readLuaValue(L,field.min);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "max");
 		readLuaValue(L,field.max);
 		lua_pop(L, 1);
-		return;
-
-		set_both:
-			readLuaValue(L, field.min);
-			readLuaValue(L, field.max);
 	}
 
 	template <typename T> void
