@@ -394,18 +394,19 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	if (attract != 0) {
 		f32 dist = pp.pos.getDistanceFrom(attractor);
-		f32 speedTowards = attract * dist;
+		f32 speedTowards = numericAbsolute(attract) * dist;
 		v3f dir = pp.pos - attractor;
 		dir.normalize();
 		v3f avel = dir * speedTowards;
 		if (attract > 0 and speedTowards > 0) {
+			avel *= -1;
 			// make sure the particle dies after crossing the center
 			// TODO maybe add a flag that disables this
 			f32 timeToCenter = dist / speedTowards;
 			if (timeToCenter < pp.expirationtime)
 				pp.expirationtime = timeToCenter;
 		}
-// 		pp.vel += avel;
+		pp.vel += avel;
 	}
 
 	p.copyCommon(pp);
@@ -427,7 +428,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		texture = m_texpool[m_texcount == 1 ? 0 : myrand_range(0,m_texcount-1)];
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
-		if(texture.animated)
+		if (texture.animated)
 			pp.animation = texture.animation;
 	}
 
