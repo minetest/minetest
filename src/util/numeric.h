@@ -223,6 +223,8 @@ u32 myrand();
 void mysrand(unsigned int seed);
 void myrand_bytes(void *out, size_t len);
 int myrand_range(int min, int max);
+float myrand_range(float min, float max);
+float myrand_float();
 
 /*
 	Miscellaneous functions

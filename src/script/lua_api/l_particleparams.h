@@ -31,6 +31,8 @@ namespace LuaParticleParams {
 
 	inline void readLuaValue(lua_State* L, f32Parameter& ret)
 		{ ret = (f32Parameter)((f32)lua_tonumber(L, -1)); }
+	inline void readLuaValue(lua_State* L, f32& ret)
+		{ ret = (f32)lua_tonumber(L, -1); }
 
 	inline void readLuaValue(lua_State* L, v3fParameter& ret) {
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
@@ -59,6 +61,11 @@ namespace LuaParticleParams {
 
 		lua_getfield(L, -1, "max");
 		readLuaValue(L,field.max);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "bias");
+		if (!lua_isnil(L,-1))
+			readLuaValue(L,field.bias);
 		lua_pop(L, 1);
 		return;
 

@@ -988,28 +988,18 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
+
 	// older protocols do not support tweening, and send only
-	// static ranges, so we can't just use the builtin serialization
+	// static ranges, so we can't just use the normal serialization
 	// functions for the older values.
-	v3f pos_min          = readV3F32(is);
-	v3f pos_max          = readV3F32(is);
-	v3f vel_min          = readV3F32(is);
-	v3f vel_max          = readV3F32(is);
-	v3f acc_min          = readV3F32(is);
-	v3f acc_max          = readV3F32(is);
-	f32 exp_min          = readF32(is);
-	f32 exp_max          = readF32(is);
-	f32 size_min         = readF32(is);
-	f32 size_max         = readF32(is);
+	p.pos.start.legacyDeSerialize(is);
+	p.vel.start.legacyDeSerialize(is);
+	p.acc.start.legacyDeSerialize(is);
+	p.exptime.start.legacyDeSerialize(is);
+	p.size.start.legacyDeSerialize(is);
+
 	p.collisiondetection = readU8(is);
 	p.texture.string     = deSerializeString32(is);
-
-	using namespace ParticleParamTypes;
-	p.pos     = v3fRange(pos_min, pos_max);
-	p.vel     = v3fRange(vel_min, vel_max);
-	p.acc     = v3fRange(acc_min, acc_max);
-	p.exptime = f32Range(exp_min, exp_max);
-	p.size    = f32Range(size_min, size_max);
 
 	server_id = readU32(is);
 
@@ -1032,6 +1022,15 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node_tile   = readU8(is);
 
 		if (m_proto_ver >= 41) {
+			// initial bias must be stored separately in the stream to preserve
+			// backwards compatibility with older clients, which do not support
+			// a bias field in their range "format"
+			p.pos.start.bias = readF32(is);
+			p.vel.start.bias = readF32(is);
+			p.acc.start.bias = readF32(is);
+			p.exptime.start.bias = readF32(is);
+			p.size.start.bias = readF32(is);
+
 			p.pos.end.deSerialize(is);
 			p.vel.end.deSerialize(is);
 			p.acc.end.deSerialize(is);
@@ -1046,6 +1045,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			u16 texpoolsz = readU16(is);
 			p.texpool.reserve(texpoolsz);
 			for (u16 i = 0; i < texpoolsz; ++i) {
+				using namespace ParticleParamTypes;
 				ServerParticleTexture newtex;
 				auto flags       = readU8(is);
 				newtex.alpha     = readF32(is);

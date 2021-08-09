@@ -1608,11 +1608,11 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.amount << p.time;
 	/* serialize legacy fields */ {
 		std::ostringstream os(std::ios_base::binary);
-		p.pos.start.serialize(os);
-		p.vel.start.serialize(os);
-		p.acc.start.serialize(os);
-		p.exptime.start.serialize(os);
-		p.size.start.serialize(os);
+		p.pos.start.legacySerialize(os);
+		p.vel.start.legacySerialize(os);
+		p.acc.start.legacySerialize(os);
+		p.exptime.start.legacySerialize(os);
+		p.size.start.legacySerialize(os);
 		pkt.putRawString(os.str());
 	}
 	pkt << p.collisiondetection;
@@ -1630,6 +1630,13 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	/* serialize v41 particle fields */ {
 		std::ostringstream os(std::ios_base::binary);
+
+		// initial bias for older properties
+		pkt << p.pos.start.bias
+			<< p.vel.start.bias
+			<< p.acc.start.bias
+			<< p.exptime.start.bias
+			<< p.size.start.bias;
 
 		// final tween frames of older properties
 		p.pos.end.serialize(os);

@@ -25,11 +25,15 @@ v3fParameter v3fParameter::interpolate(float fac, const v3fParameter against) co
 }
 
 v3fParameter v3fParameter::pick(float* f, const v3fParameter a, const v3fParameter b) {
-	return v3f(
-		numericalBlend(f[0], a.val.X, b.val.X),
-		numericalBlend(f[1], a.val.Y, b.val.Y),
-		numericalBlend(f[2], a.val.Z, b.val.Z)
-	);
+	auto x = numericalBlend(f[0], a.val.X, b.val.X);
+	auto y = numericalBlend(f[1], a.val.Y, b.val.Y);
+	auto z = numericalBlend(f[2], a.val.Z, b.val.Z);
+	// 	std::cerr << "values " <<
+	// 		f[0] << " " <<
+	// 		f[1] << " " <<
+	// 		f[2] << " / " <<
+	// 		x<<","<<y<<","<<z<<"\n";
+	return v3fParameter(x,y,z);
 }
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const

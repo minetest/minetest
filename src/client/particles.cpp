@@ -343,8 +343,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto attract = random_f32(r_attract.min, r_attract.max);
 
 	v3f ppos = m_player->getPosition() / BS;
-	v3f pos = random_v3f(r_pos.min, r_pos.max);
-	v3f sphere_radius = random_v3f(r_radius.min, r_radius.max);
+	v3f pos = r_pos.pickWithin(); //random_v3f(r_pos.min, r_pos.max);
+	v3f sphere_radius = r_radius.pickWithin(); // random_v3f(r_radius.min, r_radius.max);
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners

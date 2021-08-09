@@ -74,7 +74,8 @@ namespace ParticleParamTypes {
 
 		ParameterWrapper() = default;
 		ParameterWrapper(const This& a) : val(a.val) {};
-		ParameterWrapper(T  b) : val(b) {};
+		template <typename... Args>
+		ParameterWrapper(Args... args) : val(args...) {};
 
 		operator T() const { return val; }
 		T operator = (T b) { return val = b; }
@@ -83,15 +84,17 @@ namespace ParticleParamTypes {
 	template <typename T> T numericalBlend(float fac, T min, T max)
 		{ return min + ((max - min) * fac); }
 
-	template <typename T>
+	template <typename T,
+			 void (S)(std::ostream&, T),
+			 T    (D)(std::istream&)>
 	struct NumericParameter : public ParameterWrapper<T,1> {
-		using This = NumericParameter<T>;
+		using This = NumericParameter<T,S,D>;
 
 		template <typename... Args>
 		NumericParameter(Args... args) : ParameterWrapper<T,1>(args...) {};
 
-		void serialize(std::ostream &os) const { writeF32(os, this->val); }
-		void deSerialize(std::istream &is)     { this->val = readF32(is); }
+		void serialize(std::ostream &os) const { S(os, this->val); }
+		void deSerialize(std::istream &is)     { this->val = D(is); }
 		This interpolate(float fac, const This against) const {
 			return This(numericalBlend(fac, (T)*this, (T)against));
 		}
@@ -100,7 +103,12 @@ namespace ParticleParamTypes {
 		}
 	};
 
-	using f32Parameter = NumericParameter<f32>;
+	using u8Parameter  = NumericParameter<u8, writeU8, readU8 >;
+	using u16Parameter = NumericParameter<u16,writeU16,readU16>;
+	using u32Parameter = NumericParameter<u32,writeU32,readU32>;
+
+	using f32Parameter = NumericParameter<f32,writeF32,readF32>;
+
 	struct v3fParameter : public ParameterWrapper<v3f,3> {
 		template <typename... Args>
 		v3fParameter(Args... args) : ParameterWrapper<v3f,3>(args...) {};
@@ -117,15 +125,34 @@ namespace ParticleParamTypes {
 		using This = RangedParameter<T>;
 
 		T min, max;
-		f32 bias;
+		f32 bias = 0;
 
 		RangedParameter() = default;
 		RangedParameter(const This& a)             : min(a.min), max(a.max) {};
 		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {};
 		template <typename M> RangedParameter(M b) : min(b),     max(b)     {};
 
-		void serialize(std::ostream &os) const { min.serialize(os);   max.serialize(os);   };
-		void deSerialize(std::istream &is)     { min.deSerialize(is); max.deSerialize(is); };
+		// these functions handle the old range serialization "format"; bias must
+		// be manually encoded in a separate part of the stream. NEVER ADD FIELDS
+		// TO THESE FUNCTIONS
+		void legacySerialize(std::ostream& os) const {
+			min.serialize(os);
+			max.serialize(os);
+		}
+		void legacyDeSerialize(std::istream& is) {
+			min.deSerialize(is);
+			max.deSerialize(is);
+		}
+
+		// these functions handle the format used by new fields. new fields go here
+		void serialize(std::ostream &os) const {
+			legacySerialize(os);
+			writeF32(os, bias);
+		};
+		void deSerialize(std::istream &is) {
+			legacyDeSerialize(is);
+			bias = readF32(is);
+		};
 
 		This interpolate(float fac, const This against) const {
 			This r;
@@ -136,9 +163,12 @@ namespace ParticleParamTypes {
 
 		T pickWithin() {
 			typename T::pickFactors values;
-			auto p = numericAbsolute(bias);
-			for (size_t i = 0; i < sizeof values / sizeof values[0]; ++i) {
-				values[i] = pow(rand(), p);
+			auto p = numericAbsolute(bias) + 1;
+			for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); ++i) {
+				if (bias < 0)
+					values[i] = 1.0f - pow(myrand_float(), p);
+				else
+					values[i] = pow(myrand_float(), p);
 			}
 			return T::pick(values, min, max);
 		}
