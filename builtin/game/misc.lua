@@ -303,13 +303,13 @@ function core.encode_png(width, height, data, compression)
 		error("Incorrect type for 'height', expected number, got " .. type(height))
 	end
 
-	local expected_byte_count = width * height * 4;
+	local expected_byte_count = width * height * 4
 
 	if type(data) ~= "table" and type(data) ~= "string" then
-		error("Incorrect type for 'height', expected table or string, got " .. type(height));
+		error("Incorrect type for 'height', expected table or string, got " .. type(height))
 	end
 
-	local data_length = type(data) == "table" and #data * 4 or string.len(data);
+	local data_length = type(data) == "table" and #data * 4 or string.len(data)
 
 	if data_length ~= expected_byte_count then
 		error(string.format(
