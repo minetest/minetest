@@ -29,28 +29,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace LuaParticleParams {
 	using namespace ParticleParamTypes;
 
-	inline void readLuaValue(lua_State* L, srz_f32& ret)
-		{ ret = (srz_f32)((f32)lua_tonumber(L, -1)); }
+	inline void readLuaValue(lua_State* L, f32Parameter& ret)
+		{ ret = (f32Parameter)((f32)lua_tonumber(L, -1)); }
 
-	inline void readLuaValue(lua_State* L, srz_v3f& ret) {
+	inline void readLuaValue(lua_State* L, v3fParameter& ret) {
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
 			auto n = lua_tonumber(L, -1);
-			ret = (srz_v3f)v3f(n,n,n);
+			ret = (v3fParameter)v3f(n,n,n);
 		} else {
-			ret = (srz_v3f)check_v3f(L, -1);
+			ret = (v3fParameter)check_v3f(L, -1);
 		}
 	}
 
 	template <typename T> void
 	readLuaValue(lua_State* L, RangedParameter<T>& field) {
+		if (lua_isnil(L,-1))
+			return;
 		if (!lua_istable(L,-1)) // is this is just a literal value?
-			goto set_both;
+			goto set_uniform;
 
 		lua_getfield(L, -1, "min");
 		// handle convenience syntax for non-range values
 		if (lua_isnil(L,-1)) {
 			lua_pop(L, 1);
-			goto set_both;
+			goto set_uniform;
 		}
 		readLuaValue(L,field.min);
 		lua_pop(L, 1);
@@ -60,7 +62,7 @@ namespace LuaParticleParams {
 		lua_pop(L, 1);
 		return;
 
-		set_both:
+		set_uniform:
 			readLuaValue(L, field.min);
 			readLuaValue(L, field.max);
 	}
@@ -91,8 +93,8 @@ namespace LuaParticleParams {
 	}
 
 
-	template <typename T, BlendFunction<T> Blend> void
-	readTweenTable(lua_State* L, const char* name, TweenedParameter<T, Blend>& field)
+	template <typename T> void
+	readTweenTable(lua_State* L, const char* name, TweenedParameter<T>& field)
 	{
 		int tbl = lua_gettop(L);
 		lua_pushstring(L, name);
@@ -115,16 +117,16 @@ namespace LuaParticleParams {
 		// the table is not present; check for nonanimated values
 
 		lua_getfield(L, 1, name);
-		if(lua_istable(L, -1)) {
+		if(!lua_isnil(L, -1)) {
 			readLuaValue(L, field.start);
 			lua_settop(L, tbl);
-			goto legacy_done;
+			goto set_uniform;
 		} else lua_pop(L,1);
 
 		// this table is not present either; check for legacy values
 		readLegacyValue(L, name, field.start);
 
-		legacy_done: field.end = field.start;
+		set_uniform: field.end = field.start;
 		done: lua_settop(L, tbl); // clean up after ourselves
 	}
 

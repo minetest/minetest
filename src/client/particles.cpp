@@ -167,7 +167,7 @@ void Particle::step(float dtime)
 	} else {
 		// apply drag
 		v3f absvel = vecAbsolute(m_velocity);
-		absvel -= m_drag * dtime;
+		absvel -= absvel * (m_drag * dtime);
 		m_velocity = absvel * vecSign(m_velocity);
 
 		// apply acceleration
@@ -598,7 +598,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			// texture pool
 			ClientParticleTexture* texpool = nullptr;
 			size_t txpsz = 0;
-			if (not p.texpool.empty()) {
+			if (! p.texpool.empty()) {
 				txpsz = p.texpool.size();
 				texpool = new ClientParticleTexture [txpsz];
 

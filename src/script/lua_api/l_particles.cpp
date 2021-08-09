@@ -55,14 +55,14 @@ LuaParticleParams::readTexValue(lua_State* L) {
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "animation");
-		if (not lua_isnil(L, -1)) {
+		if (! lua_isnil(L, -1)) {
 			tex.animated = true;
 			tex.animation = read_animation_definition(L, -1);
 		}
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "fade");
-		if (not lua_isnil(L, -1)) {
+		if (! lua_isnil(L, -1)) {
 			if (lua_isstring(L, -1)) {
 				const char* const opts[] = { "none", "in", "out", "pulse", "flicker" };
 				const ParticleTexture::Fade optmap[] = {
@@ -83,15 +83,18 @@ LuaParticleParams::readTexValue(lua_State* L) {
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "fade_reps");
-		if (not lua_isnil(L, -1)) tex.fade_reps = lua_tointeger(L, -1);
+		if (! lua_isnil(L, -1))
+			tex.fade_reps = lua_tointeger(L, -1);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "fade_start");
-		if (not lua_isnil(L, -1)) tex.alpha = lua_tonumber(L, -1);
+		if (! lua_isnil(L, -1))
+			tex.alpha = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "alpha");
-		if (not lua_isnil(L, -1)) tex.alpha = lua_tonumber(L, -1);
+		if (! lua_isnil(L, -1))
+			tex.alpha = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 
 	} else goto error;
@@ -173,7 +176,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		lua_pop(L, 1);
 
 		lua_getfield(L, 1, "texture");
-		if (not lua_isnil(L, -1)) {
+		if (! lua_isnil(L, -1)) {
 			p.texture = LuaParticleParams::readTexValue(L);
 		}
 		lua_pop(L, 1);
@@ -243,11 +246,11 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		auto maxexptime = luaL_checknumber(L, 10);
 		auto minsize = luaL_checknumber(L, 11);
 		auto maxsize = luaL_checknumber(L, 12);
-		p.pos = range_v3f(minpos, maxpos);
-		p.vel = range_v3f(minvel, maxvel);
-		p.acc = range_v3f(minacc, maxacc);
-		p.exptime = range_f32(minexptime, maxexptime);
-		p.size = range_f32(minsize, maxsize);
+		p.pos = v3fRange(minpos, maxpos);
+		p.vel = v3fRange(minvel, maxvel);
+		p.acc = v3fRange(minacc, maxacc);
+		p.exptime = f32Range(minexptime, maxexptime);
+		p.size = f32Range(minsize, maxsize);
 
 		p.collisiondetection = readParam<bool>(L, 13);
 		p.texture.string = luaL_checkstring(L, 14);

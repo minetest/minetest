@@ -21,10 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <vector>
+#include <ctgmath>
 #include "irrlichttypes_bloated.h"
 #include "tileanimation.h"
 #include "mapnode.h"
 #include "util/serialize.h"
+#include "util/numeric.h"
 
 // This file defines the particle-related structures that both the server and
 // client need. The ParticleManager and rendering is in client/particles.h
@@ -32,100 +34,151 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace ParticleParamTypes {
 	template<typename T> using BlendFunction = T(float,T,T);
 
-	template <typename T,
-			 void (S)(std::ostream&, T),
-			 T    (D)(std::istream&)>
-	struct SerializableParameter {
+// 	template <typename T,
+// 			 void (S)(std::ostream&, T),
+// 			 T    (D)(std::istream&)>
+// 	struct SerializableParameter {
+// 		using ValType = T;
+//
+// 		T val;
+// 		using This = SerializableParameter<T,S,D>;
+//
+// 		SerializableParameter() = default;
+// 		SerializableParameter(const This& a) : val(a.val) {};
+// 		SerializableParameter(T b) { val = b; }
+//
+// 		operator T() const { return val; }
+// 		T operator = (T b) { return val = b; }
+//
+// 		void serialize(std::ostream &os) const { S(os,val);   }
+// 		void deSerialize(std::istream &is)     { val = D(is); }
+//
+// 		template <BlendFunction<T> Blend>
+// 		static This blendWrap(float fac, This a, This b) {
+// 			return This(Blend(fac, (T)a, (T)b));
+// 		}
+// 	};
+
+	struct Parameter {
+		virtual void serialize(std::ostream &os) const = 0;
+		virtual void deSerialize(std::istream &is) = 0;
+	};
+
+	template <typename T, size_t PN>
+	struct ParameterWrapper : public Parameter {
 		using ValType = T;
+		using pickFactors = float[PN];
 
 		T val;
-		using This = SerializableParameter<T,S,D>;
+		using This = ParameterWrapper<T, PN>;
 
-		SerializableParameter() = default;
-		SerializableParameter(const This& a) : val(a.val) {};
-		SerializableParameter(T b) { val = b; }
+		ParameterWrapper() = default;
+		ParameterWrapper(const This& a) : val(a.val) {};
+		ParameterWrapper(T  b) : val(b) {};
 
 		operator T() const { return val; }
 		T operator = (T b) { return val = b; }
-
-		void serialize(std::ostream &os) const { S(os,val);   }
-		void deSerialize(std::istream &is)     { val = D(is); }
-
-		template <BlendFunction<T> Blend>
-		static This blendWrap(float fac, This a, This b) {
-			return This(Blend(fac, (T)a, (T)b));
-		}
-	};
-
-	template <typename T>
-	struct RangedParameter {
-		using ValType = T;
-
-		T min, max;
-
-		RangedParameter() = default;
-		RangedParameter(const RangedParameter<T>& a) : min(a.min), max(a.max) {};
-		RangedParameter(T _min, T _max)              : min(_min),  max(_max)  {};
-		template <typename M> RangedParameter(M b)   : min(b),     max(b)     {};
-
-		void serialize(std::ostream &os) const { min.serialize(os);   max.serialize(os);   };
-		void deSerialize(std::istream &is)     { min.deSerialize(is); max.deSerialize(is); };
-	};
-
-	template <typename T, BlendFunction<T> Blend>
-	struct TweenedParameter {
-		using ValType = T;
-
-		T start, end;
-
-		TweenedParameter() = default;
-		TweenedParameter(const TweenedParameter<T,Blend>& a) : start(a.start), end(a.end) {};
-		TweenedParameter(T _start, T _end)                   : start(_start),  end(_end) {};
-		template <typename M> TweenedParameter(M b)          : start(b),       end(b) {};
-
-		T blend(float fac) { return Blend(fac, start, end); }
-
-		void serialize(std::ostream &os) const { start.serialize(os);   end.serialize(os);   };
-		void deSerialize(std::istream &is)     { start.deSerialize(is); end.deSerialize(is); };
 	};
 
 	template <typename T> T numericalBlend(float fac, T min, T max)
 		{ return min + ((max - min) * fac); }
 
-	v3f v3fBlend(float fac, v3f a, v3f b);
+	template <typename T>
+	struct NumericParameter : public ParameterWrapper<T,1> {
+		using This = NumericParameter<T>;
 
-	template <typename T, BlendFunction<T> Blend>
-	RangedParameter<T> rangeBlend(
-			float fac,
-			RangedParameter<T> a,
-			RangedParameter<T> b
-	) {
-		RangedParameter<T> r;
-		r.min = Blend(fac, a.min, b.min);
-		r.max = Blend(fac, a.max, b.max);
-		return r;
-	}
+		template <typename... Args>
+		NumericParameter(Args... args) : ParameterWrapper<T,1>(args...) {};
 
-	template <typename T, BlendFunction<T> Blend>
-	using TweenedRangedParameter = TweenedParameter<
-		/*      storage type */ RangedParameter<T>,
-		/* blending function */ rangeBlend<T, Blend>
-	>;
+		void serialize(std::ostream &os) const { writeF32(os, this->val); }
+		void deSerialize(std::istream &is)     { this->val = readF32(is); }
+		This interpolate(float fac, const This against) const {
+			return This(numericalBlend(fac, (T)*this, (T)against));
+		}
+		static This pick(float* f, const This a, const This b) {
+			return a.interpolate(f[0], b);
+		}
+	};
 
+	using f32Parameter = NumericParameter<f32>;
+	struct v3fParameter : public ParameterWrapper<v3f,3> {
+		template <typename... Args>
+		v3fParameter(Args... args) : ParameterWrapper<v3f,3>(args...) {};
+
+		void serialize(std::ostream &os) const { writeV3F32(os, this->val); }
+		void deSerialize(std::istream &is)     { this->val = readV3F32(is); }
+		v3fParameter interpolate(float fac, const v3fParameter against) const;
+		static v3fParameter pick(float* f, const v3fParameter a, const v3fParameter b);
+	};
+
+	template <typename T>
+	struct RangedParameter : public Parameter {
+		using ValType = T;
+		using This = RangedParameter<T>;
+
+		T min, max;
+		f32 bias;
+
+		RangedParameter() = default;
+		RangedParameter(const This& a)             : min(a.min), max(a.max) {};
+		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {};
+		template <typename M> RangedParameter(M b) : min(b),     max(b)     {};
+
+		void serialize(std::ostream &os) const { min.serialize(os);   max.serialize(os);   };
+		void deSerialize(std::istream &is)     { min.deSerialize(is); max.deSerialize(is); };
+
+		This interpolate(float fac, const This against) const {
+			This r;
+			r.min = min.interpolate(fac, against.min);
+			r.max = max.interpolate(fac, against.max);
+			return r;
+		}
+
+		T pickWithin() {
+			typename T::pickFactors values;
+			auto p = numericAbsolute(bias);
+			for (size_t i = 0; i < sizeof values / sizeof values[0]; ++i) {
+				values[i] = pow(rand(), p);
+			}
+			return T::pick(values, min, max);
+		}
+	};
+
+	template <typename T>
+	struct TweenedParameter : public Parameter {
+		using ValType = T;
+		using This = TweenedParameter<T>;
+
+		T start, end;
+
+		TweenedParameter() = default;
+		TweenedParameter(const This& a)             : start(a.start), end(a.end) {};
+		TweenedParameter(T _start, T _end)          : start(_start),  end(_end) {};
+		template <typename M> TweenedParameter(M b) : start(b),       end(b) {};
+
+		T blend(float fac) { return start.interpolate(fac, end); }
+
+		void serialize(std::ostream &os) const { start.serialize(os);   end.serialize(os);   };
+		void deSerialize(std::istream &is)     { start.deSerialize(is); end.deSerialize(is); };
+	};
+
+// 	v3f v3fBlend(float fac, v3f a, v3f b);
+//
+// 	srz_v3f srz_v3f_pick(float* facs, srz_v3f min, srz_v3f max);
 
 	// these aliases bind types to de/serialization functions
-	using srz_v3f = SerializableParameter<v3f, writeV3F32, readV3F32>;
-	using srz_f32 = SerializableParameter<f32, writeF32,   readF32>;
+// 	using srz_v3f = SerializableParameter<v3f, writeV3F32, readV3F32>;
+// 	using srz_f32 = SerializableParameter<f32, writeF32,   readF32>;
 
 	// these are consistently-named convenience aliases to make code more readable without `using ParticleParamTypes` declarations
-	using range_v3f = RangedParameter<srz_v3f>;
-	using range_f32 = RangedParameter<srz_f32>;
+	using v3fRange = RangedParameter<v3fParameter>;
+	using f32Range = RangedParameter<f32Parameter>;
 
 	// these aliases bind tweened parameter types to the functions used to blend them
-	using tween_v3f       = TweenedParameter      <srz_v3f, srz_v3f::blendWrap<v3fBlend> >;
-	using tween_f32       = TweenedParameter      <srz_f32, srz_f32::blendWrap<numericalBlend<f32> > >;
-	using tween_range_v3f = TweenedRangedParameter<srz_v3f, srz_v3f::blendWrap<v3fBlend> >;
-	using tween_range_f32 = TweenedRangedParameter<srz_f32, srz_f32::blendWrap<numericalBlend<f32> > >;
+	using v3fTween      = TweenedParameter<v3fParameter>;
+	using f32Tween      = TweenedParameter<f32Parameter>;
+	using v3fRangeTween = TweenedParameter<v3fRange>;
+	using f32RangeTween = TweenedParameter<f32Range>;
 }
 
 struct ParticleTexture {
@@ -193,14 +246,14 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 
 	std::vector<ServerParticleTexture> texpool;
 
-	ParticleParamTypes :: tween_range_v3f
+	ParticleParamTypes :: v3fRangeTween
 		pos, vel, acc, drag, radius;
 
-	ParticleParamTypes :: tween_v3f
+	ParticleParamTypes :: v3fTween
 		attractor;
 
-	ParticleParamTypes :: tween_range_f32
-		exptime = 1, size = 1, attract = 1;
+	ParticleParamTypes :: f32RangeTween
+		exptime = (f32)1, size = (f32)1, attract = (f32)0;
 
 	// For historical reasons no (de-)serialization methods here
 };

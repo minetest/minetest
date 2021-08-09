@@ -18,9 +18,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
+using namespace ParticleParamTypes;
 
-v3f ParticleParamTypes::v3fBlend(float fac, v3f a, v3f b) {
-	return b.getInterpolated(a, fac);
+v3fParameter v3fParameter::interpolate(float fac, const v3fParameter against) const {
+	return against.val.getInterpolated(val, fac);
+}
+
+v3fParameter v3fParameter::pick(float* f, const v3fParameter a, const v3fParameter b) {
+	return v3f(
+		numericalBlend(f[0], a.val.X, b.val.X),
+		numericalBlend(f[1], a.val.Y, b.val.Y),
+		numericalBlend(f[2], a.val.Z, b.val.Z)
+	);
 }
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const

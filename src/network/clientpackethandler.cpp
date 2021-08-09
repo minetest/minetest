@@ -1005,11 +1005,11 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.texture.string     = deSerializeString32(is);
 
 	using namespace ParticleParamTypes;
-	p.pos     = range_v3f(pos_min, pos_max);
-	p.vel     = range_v3f(vel_min, vel_max);
-	p.acc     = range_v3f(acc_min, acc_max);
-	p.exptime = range_f32(exp_min, exp_max);
-	p.size    = range_f32(size_min, size_max);
+	p.pos     = v3fRange(pos_min, pos_max);
+	p.vel     = v3fRange(vel_min, vel_max);
+	p.acc     = v3fRange(acc_min, acc_max);
+	p.exptime = f32Range(exp_min, exp_max);
+	p.size    = f32Range(size_min, size_max);
 
 	server_id = readU32(is);
 
