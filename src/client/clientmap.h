@@ -150,6 +150,10 @@ public:
 	f32 getCameraFov() const { return m_camera_fov; }
 
 private:
+
+	// update the vertex order in transparent mesh buffers
+	void updateTransparentMeshBuffers();
+
 	// Orders blocks by distance to the camera
 	class MapBlockComparer
 	{

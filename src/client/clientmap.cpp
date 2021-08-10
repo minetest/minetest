@@ -324,6 +324,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	//u32 mesh_animate_count_far = 0;
 
 	/*
+		Update transparent meshes
+	*/
+	this->updateTransparentMeshBuffers();
+
+	/*
 		Draw the selected MapBlocks
 	*/
 
@@ -891,3 +896,16 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
+
+void ClientMap::updateTransparentMeshBuffers()
+{
+	u16 blocks_queued = 0;
+	// Update block meshes if the blocks are marked dirty by camera movement
+	for (auto it = m_drawlist.rbegin(); it != m_drawlist.rend(); it++) {
+		MapBlock* block = it->second;
+		block->mesh->updateTransparentBuffers(m_camera_position, block->getPos());
+	}
+
+	g_profiler->avg("MapBlocks queued for remesh [#]", blocks_queued);
+}
+

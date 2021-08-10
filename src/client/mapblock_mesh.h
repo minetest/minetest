@@ -125,6 +125,8 @@ public:
 			m_animation_force_timer--;
 	}
 
+	/// attempt to update transparent buffers for camera movement to avoid full mesh regeneration
+	bool updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos);
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
