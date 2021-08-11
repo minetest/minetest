@@ -114,6 +114,7 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	LuaParticleParams::readTweenTable(L, "drag", p.drag);
 	LuaParticleParams::readTweenTable(L, "attract", p.attract);
 	LuaParticleParams::readTweenTable(L, "attractor", p.attractor);
+	LuaParticleParams::readTweenTable(L, "radius", p.radius);
 
 	p.collisiondetection = getboolfield_default(L, 1,
 		"collisiondetection", p.collisiondetection);

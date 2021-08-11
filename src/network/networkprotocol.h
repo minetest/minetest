@@ -531,6 +531,8 @@ enum ToClientCommand
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
 	/*
+		-- struct range<T> { T min, T max, f32 bias };
+		-- struct tween<T> { T start, T end };
 		u16 amount
 		f1000 spawntime
 		v3f1000 minpos
@@ -552,15 +554,53 @@ enum ToClientCommand
 		TileAnimation animation
 		u8 glow
 		u8 object_collision
-		u8[len] texture_final
-		v3f1000 mindrag
-		v3f1000 maxdrag
-		f1000 minattract
-		f1000 maxattract
-		if minattract !=0 or maxattract !=0 {
-			v3f1000 minattractor
-			v3f1000 maxattractor
+
+		f32 pos_start_bias
+		f32 vel_start_bias
+		f32 acc_start_bias
+		f32 exptime_start_bias
+		f32 size_start_bias
+
+		range<v3f1000> pos_end
+		-- i.e v3f1000 pos_end_min
+		--     v3f1000 pos_end_max
+		--     f32	pos_end_bias
+		range<v3f1000> vel_end
+		range<v3f1000> acc_end
+
+		tween<range<v3f1000>> drag
+		-- i.e. v3f1000 drag_start_min
+		--      v3f1000 drag_start_max
+		--      f32     drag_start_bias
+		--      v3f1000 drag_end_min
+		--      v3f1000 drag_end_max
+		--      f32		drag_end_bias
+		tween<range<f32>> attract
+		tween<range<v3f1000>> attractor
+		tween<range<v3f1000>> radius
+		tween<range<v3f1000>> drag
+
+		u16 texpool_sz
+		foreach texpool_sz {
+			u8 flags
+			-- bit 0: animated
+			-- other bits free & ignored as of proto v41
+			f32 alpha
+			u8 fade_mode
+			-- 0: none
+			-- 1: fade_in
+			-- 2: fade_out
+			-- 3: pulse
+			-- 4: flicker
+			if flags.animated {
+				TileAnimation animation
+			}
+			if fade_mode ≠ none {
+				f32 fade_start
+				u16 fade_reps
+			}
 		}
+
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48, // Obsolete

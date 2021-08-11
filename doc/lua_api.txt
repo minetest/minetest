@@ -8534,16 +8534,20 @@ Used by `minetest.add_particle`.
 ----------------------------
 Used by `minetest.add_particlespawner`.
 
-Before v5.5.0, particlespawners used a different syntax and had a more limited set of features.
-Common and legacy definitions are shown in the listing below; the modern property syntax is
-described separately.
+Before v5.5.0, particlespawners used a different syntax and had a more limited set
+of features. Definition fields that are used in both legacy and modern versions are
+shown in the listing below, and the legacy fields are shown separated by a comment;
+the modern fields are too complex to compactly describe in this manner and are
+documented below the listing.
 
-The older syntax can be used in combination with the newer syntax (e.g. having `minpos`, `maxpos`,
-and `pos` all set) to support older servers. On newer servers, the new syntax will override the
-older syntax; on older servers, the newer syntax will be ignored.
+The older syntax can be used in combination with the newer syntax (e.g. having
+`minpos`, `maxpos`, and `pos` all set) to support older servers. On newer servers,
+the new syntax will override the older syntax; on older servers, the newer syntax
+will be ignored.
 
     {
-        -- Common definitions (same in both new and legacy syntax)
+        -- Common fields (same name and meaning in both new and legacy syntax)
+
         amount = 1,
         -- Number of particles spawned over the time period `time`.
 
@@ -8563,7 +8567,7 @@ older syntax; on older servers, the newer syntax will be ignored.
         object_collision = false,
         -- If true particles collide with objects that are defined as
         -- `physical = true,` and `collide_with_objects = true,`.
-        -- Requires collisiondetection = true to have any effect.
+        -- Requires collisiondetection = true to have any effect.v
 
         attached = ObjectRef,
         -- If defined, particle positions, velocities and accelerations are
@@ -8580,9 +8584,9 @@ older syntax; on older servers, the newer syntax will be ignored.
 
         animation = {Tile Animation definition},
         -- Optional, specifies how to animate the particles' texture
-		-- v5.5.0 and later: set length to -1 to sychronize the length
-		-- of the animation with the expiration time of individual particles.
-		-- (-2 causes the animation to be played twice, and so on)
+	    -- v5.5.0 and later: set length to -1 to sychronize the length
+	    -- of the animation with the expiration time of individual particles.
+	    -- (-2 causes the animation to be played twice, and so on)
 
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
@@ -8599,7 +8603,7 @@ older syntax; on older servers, the newer syntax will be ignored.
         -- particle texture is picked.
         -- Otherwise, the default behavior is used. (currently: any random tile)
 
-        -- Legacy property definitions
+        -- Legacy definition fields
 
         minpos = {x=0, y=0, z=0},
         maxpos = {x=0, y=0, z=0},
@@ -8618,84 +8622,111 @@ older syntax; on older servers, the newer syntax will be ignored.
         -- randomly-sized particles (just like actual node dig particles).
     }
 
-## Modern property definitions
-After v5.5.0, properties can be defined in several different ways depending on the
-level of control you need. `pos` for instance can be set as a single vector, in which
-case all particles will appear at that exact point throughout the lifetime of the spawner.
-Alternately, it can be specified as a min-max pair, specifying a cubic range the particles
-can appear randomly within. The following definitions are all equivalent:
+## Modern definition fields
+After v5.5.0, spawner properties can be defined in several different ways depending
+on the level of control you need. `pos` for instance can be set as a single vector,
+in which case all particles will appear at that exact point throughout the lifetime
+of the spawner. Alternately, it can be specified as a min-max pair, specifying a
+cubic range the particles can appear randomly within. The following definitions are
+all equivalent, listed in order of precedence from lowest to highest (if both a
+lower-precedence and higher-precedence field are present, the lower-precedence field
+will be ignored):
 
     {
-    	pos = 0;
-		-- all components of every particle's position vector will be set to this value
+        minpos = vector.new(0,0,0);
+        maxpos = vector.new(0,0,0);
+        -- old syntax
 
-    	pos = vector.new(0,0,0);
-		-- all particles will appear at this exact position
+        pos = 0;
+        -- all components of every particle's position vector will be set to this
+        -- value
 
-		minpos = vector.new(0,0,0);
-		maxpos = vector.new(0,0,0);
-		-- old syntax
+        pos = vector.new(0,0,0);
+        -- all particles will appear at this exact position throughout the lifetime
+        -- of the particlespawner
 
-    	pos = {
-			-- the particle will appear at a position that is picked at random from within
-			-- a cubic range
+        pos = {
+        	-- the particle will appear at a position that is picked at random from
+        	-- within a cubic range
 
-    		min = vector.new(0,0,0);
-			-- `min` is the minimum value this property will be set to in particles spawned
-			-- by the generator
+        	min = vector.new(0,0,0);
+        	-- `min` is the minimum value this property will be set to in particles
+        	-- spawned by the generator
 
-    		max = vector.new(0,0,0);
-			-- `max` is the minimum value this property will be set to in particles spawned
-			-- by the generator
+        	max = vector.new(0,0,0);
+        	-- `max` is the minimum value this property will be set to in particles
+        	-- spawned by the generator
 
-    		bias = 0;
-			-- when `bias` is 0, all random values are exactly as likely as any other. when
-			-- it is positive, the higher it is, the more likely values will appear towards
-			-- the minimum end of the allowed spectrum. when it is negative, the lower it is,
-			-- the more likely values will appear towards the maximum end of the allowed
-			-- spectrum
-    	};
+        	bias = 0;
+        	-- when `bias` is 0, all random values are exactly as likely as any
+        	-- other. when it is positive, the higher it is, the more likely values
+        	-- will appear towards the minimum end of the allowed spectrum. when
+        	-- it is negative, the lower it is, the more likely values will appear
+        	-- towards the maximum end of the allowed spectrum. the curve is
+            -- exponential and there is no particular maximum or minimum value
+        };
 
-    	pos_tween = {
-			-- like `pos`, except the possible values will change over the lifetime of the
-			-- particle spawner. a tween table should consist of a list of frames which the
-			-- engine will interpolate between. currently **only two frames**, the first and
-			-- the last, are used. any of the above definition styles can be used here as well
+        pos_tween = …
+        -- like `pos`, except the possible values will change over the lifetime of
+        -- the particle spawner. a tween table should consist of a list of frames
+        -- which the engine will interpolate between. currently **only two frames**,
+        -- the first and the last, are used. any of the above definition styles can
+        -- be used here as well in any combination
 
-			0, 0;
-			-- absolute values
+        pos_tween = {0, 0};
+        -- absolute values
 
-			vector.new(0,0,0);
-			vector.new(0,0,0);
-			-- vector values
+        pos_tween = {
+        	vector.new(0,0,0);
+        	vector.new(0,0,0);
+        	-- vector values
+        };
 
-    		{ min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 };
-    		{ min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 };
-			-- vector ranges
-    	};
-	}
+        pos_tween = {
+        	{ min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 };
+        	{ min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 };
+        	-- vector ranges
+        };
+
+        pos_tween = {
+        	0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 };
+        	-- mixed
+        };
+    }
+
+All of the properties that can be defined in this way are listed in the next
+section.
 
 ### List of particlespawner properties
-All of the properties in this list can be animated with `*_tween` tables unless otherwise specified.
+All of the properties in this list can be animated with `*_tween` tables
+unless otherwise specified.
 
 * vector range `pos`: the position at which particles can appear
 * vector range `vel`: the initial velocity of the particle
-* vector range `acc`: the direction and speed with which the particle accelerates
-* vector range `drag`: the amount by which absolute particle velocity along each axis is decreased
-  per second.  a value of 1.0 means that the particle will be slowed to a stop over the space of
-  a second; a value of -1.0 means that the particle speed will be doubled every second. to avoid
-  interfering with gravity provided by `acc`, a drag vector like `vector.new(1,0,1)` can be used.
-* float range `exptime`: the number of seconds after which the particle disappears.
-* vector `attractor`: the point towards which particles will initially be oriented if
-  `attract` > 0. this can be used to implement effects like a shell of particles moving inward or
-  outward together from a single point. the velocity will be added to `vel` if it is also set.
-* float range `attract`: the speed with which particles will move towards `attractor`. If negative,
-  the particles will instead move away from that point.
-* vector range `radius`: if set, particles will be arranged in a sphere around `pos`. A constant can
-  be used to create a spherical shell of particles, a vector to create an ovoid shell, and a range
-  to create a volume; e.g. `{min = 0.5, max = 1, bias = 1}` will allow particles to appear between 0.5
-  and 1 nodes away from `pos` but will cluster them towards the center of the sphere. Usually if `radius`
-  is used, `pos` should be a single point, but it can still be a range if you really know what you're doing.
+* vector range `acc`: the direction and speed with which the particle
+  accelerates
+* vector range `drag`: the amount by which absolute particle velocity along
+  each axis is decreased per second.  a value of 1.0 means that the particle
+  will be slowed to a stop over the space of a second; a value of -1.0 means
+  that the particle speed will be doubled every second. to avoid interfering
+  with gravity provided by `acc`, a drag vector like `vector.new(1,0,1)` can
+  be used.
+* float range `exptime`: the number of seconds after which the particle
+  disappears.
+* vector `attractor`: the point towards which particles will initially be
+  oriented if `attract` > 0. this can be used to implement effects like a shell
+  of particles moving inward or outward together from a single point. the
+  velocity will be added to `vel` if it is also set.
+* float range `attract`: the speed with which particles will move towards
+  `attractor`. If negative, the particles will instead move away from that
+  point.
+* vector range `radius`: if set, particles will be arranged in a sphere around
+  `pos`. A constant can be used to create a spherical shell of particles, a
+  vector to create an ovoid shell, and a range to create a volume; e.g.
+  `{min = 0.5, max = 1, bias = 1}` will allow particles to appear between 0.5
+  and 1 nodes away from `pos` but will cluster them towards the center of the
+  sphere. Usually if `radius` is used, `pos` should be a single point, but it
+  can still be a range if you really know what you're doing.
 
 ### Textures
 In versions before v5.5.0, particlespawner textures could only be specified as a single
@@ -8705,36 +8736,36 @@ table contains options that allow simple animations to be applied to the texture
     texture = {
         img = 'mymod_particle_texture.png';
     	-- the texture specification string
-    
+
     	alpha = 1.0;
     	-- controls how visible the particle is; at 1.0 the particle is fully
     	-- visible, at 0, it is completely invisible
-    
+
         fade = 'none';
     	-- the particle will be displayed at max alpha throughout its lifetime
-    
+
         fade = 'out';
     	-- the particle will fade out from max alpha over the course of its lifetime
-    
+
         fade = 'in';
     	-- the particle will fade in to max alpha over the course of its lifetime
-    
+
         fade = 'pulse';
     	-- the particle will fade in and out over the course of its lifetime,
     	-- maximum alpha peaking in the middle
-    
+
         fade = 'flicker';
     	-- like 'pulse' but with added random jitter
-        
+
         fade_start = 0.0;
     	-- controls where along the particle's lifetime the fading effect begins,
     	-- 0.0 being the beginning and 1.0 being the end
-    
+
     	fade_reps = 1;
     	-- controls how many times the alpha animation will be repeated over the
     	-- particle's lifetime; allowing e.g. a particle to be set to pulse or
     	-- flicker 5 times before disappearing for good.
-        
+
         animation = {Tile Animation definition};
 		-- overrides the particlespawner's global animation property for a single
 		-- specific texture
