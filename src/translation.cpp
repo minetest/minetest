@@ -64,7 +64,13 @@ void Translations::loadTranslation(const std::string &data)
 			line.resize(line.length() - 1);
 
 		if (str_starts_with(line, "# textdomain:")) {
-			textdomain = utf8_to_wide(trim(str_split(line, ':')[1]));
+			auto parts = str_split(line, ':');
+			if (parts.size() < 2) {
+				errorstream << "Invalid textdomain translation line \"" << line
+						<< "\"" << std::endl;
+				continue;
+			}
+			textdomain = utf8_to_wide(trim(parts[1]));
 		}
 		if (line.empty() || line[0] == '#')
 			continue;
