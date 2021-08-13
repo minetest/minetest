@@ -598,8 +598,8 @@ void Schematic::applyProbabilities(v3s16 p0,
 	}
 
 	for (size_t i = 0; i != splist->size(); i++) {
-		s16 y = (*splist)[i].first - p0.Y;
-		slice_probs[y] = (*splist)[i].second;
+		s16 slice = (*splist)[i].first;
+		slice_probs[slice] = (*splist)[i].second;
 	}
 }
 
