@@ -59,6 +59,21 @@ namespace ParticleParamTypes {
 // 		}
 // 	};
 
+
+	void serializeParameterValue(std::ostream& os, u8 v);
+	void serializeParameterValue(std::ostream& os, u16 v);
+	void serializeParameterValue(std::ostream& os, u32 v);
+	void serializeParameterValue(std::ostream& os, f32 v);
+	void serializeParameterValue(std::ostream& os, v2f v);
+	void serializeParameterValue(std::ostream& os, v3f v);
+
+	void deSerializeParameterValue(std::istream& is, u8&  r);
+	void deSerializeParameterValue(std::istream& is, u16& r);
+	void deSerializeParameterValue(std::istream& is, u32& r);
+	void deSerializeParameterValue(std::istream& is, f32& r);
+	void deSerializeParameterValue(std::istream& is, v2f& r);
+	void deSerializeParameterValue(std::istream& is, v3f& r);
+
 	struct Parameter {
 		virtual void serialize(std::ostream &os) const = 0;
 		virtual void deSerialize(std::istream &is) = 0;
@@ -77,6 +92,9 @@ namespace ParticleParamTypes {
 		template <typename... Args>
 		ParameterWrapper(Args... args) : val(args...) {};
 
+		void serialize(std::ostream &os) const { serializeParameterValue  (os, this->val); }
+		void deSerialize(std::istream &is)     { deSerializeParameterValue(is, this->val); }
+
 		operator T() const { return val; }
 		T operator = (T b) { return val = b; }
 	};
@@ -84,17 +102,13 @@ namespace ParticleParamTypes {
 	template <typename T> T numericalBlend(float fac, T min, T max)
 		{ return min + ((max - min) * fac); }
 
-	template <typename T,
-			 void (S)(std::ostream&, T),
-			 T    (D)(std::istream&)>
+	template <typename T>
 	struct NumericParameter : public ParameterWrapper<T,1> {
-		using This = NumericParameter<T,S,D>;
+		using This = NumericParameter<T>;
 
 		template <typename... Args>
 		NumericParameter(Args... args) : ParameterWrapper<T,1>(args...) {};
 
-		void serialize(std::ostream &os) const { S(os, this->val); }
-		void deSerialize(std::istream &is)     { this->val = D(is); }
 		This interpolate(float fac, const This against) const {
 			return This(numericalBlend(fac, (T)*this, (T)against));
 		}
@@ -103,21 +117,32 @@ namespace ParticleParamTypes {
 		}
 	};
 
-	using u8Parameter  = NumericParameter<u8, writeU8, readU8 >;
-	using u16Parameter = NumericParameter<u16,writeU16,readU16>;
-	using u32Parameter = NumericParameter<u32,writeU32,readU32>;
+	v2f vectorBlend(float* f, const v2f& a, const v2f& b);
+	v3f vectorBlend(float* f, const v3f& a, const v3f& b);
 
-	using f32Parameter = NumericParameter<f32,writeF32,readF32>;
-
-	struct v3fParameter : public ParameterWrapper<v3f,3> {
+	template <typename T, size_t N>
+	struct VectorParameter : public ParameterWrapper<T,N> {
+		using This = VectorParameter<T,N>;
 		template <typename... Args>
-		v3fParameter(Args... args) : ParameterWrapper<v3f,3>(args...) {};
+		VectorParameter(Args... args) : ParameterWrapper<T,N>(args...) {};
 
-		void serialize(std::ostream &os) const { writeV3F32(os, this->val); }
-		void deSerialize(std::istream &is)     { this->val = readV3F32(is); }
-		v3fParameter interpolate(float fac, const v3fParameter against) const;
-		static v3fParameter pick(float* f, const v3fParameter a, const v3fParameter b);
+		This interpolate(float fac, const This& against) const {
+			return against.val.getInterpolated(this->val, fac);
+		}
+		static This pick(float* f, const This& a, const This& b) {
+			return This(vectorBlend(f, a.val, b.val));
+		}
 	};
+
+	using u8Parameter  = NumericParameter<u8>;
+	using u16Parameter = NumericParameter<u16>;
+	using u32Parameter = NumericParameter<u32>;
+
+	using f32Parameter = NumericParameter<f32>;
+
+	using v2fParameter = VectorParameter<v2f, 2>;
+	using v3fParameter = VectorParameter<v3f, 3>;
+
 
 	template <typename T>
 	struct RangedParameter : public Parameter {
@@ -174,22 +199,79 @@ namespace ParticleParamTypes {
 		}
 	};
 
+	enum class TweenStyle { fwd, rev, pulse, flicker };
+
 	template <typename T>
 	struct TweenedParameter : public Parameter {
 		using ValType = T;
 		using This = TweenedParameter<T>;
 
+		TweenStyle style = TweenStyle::fwd;
+		u16 reps = 1;
+		f32 beginning = 0.0f;
+
 		T start, end;
 
 		TweenedParameter() = default;
-		TweenedParameter(const This& a)             : start(a.start), end(a.end) {};
+		TweenedParameter(const This& a) = default;
 		TweenedParameter(T _start, T _end)          : start(_start),  end(_end) {};
 		template <typename M> TweenedParameter(M b) : start(b),       end(b) {};
 
-		T blend(float fac) { return start.interpolate(fac, end); }
+		T blend(float fac) const {
+			// warp time coordinates in accordance w/ settings
+			if (fac > beginning) {
+				// remap for beginning offset
+				auto len = 1 - beginning;
+				fac -= beginning;
+				fac /= len;
 
-		void serialize(std::ostream &os) const { start.serialize(os);   end.serialize(os);   };
-		void deSerialize(std::istream &is)     { start.deSerialize(is); end.deSerialize(is); };
+				// remap for repetitions
+				fac *= reps;
+				if (fac > 1) // poor man's modulo
+					fac -= (decltype(reps))fac;
+
+				// remap for style
+				switch (style) {
+					case TweenStyle::fwd: /* do nothing */  break;
+					case TweenStyle::rev: fac = 1.0f - fac; break;
+					case TweenStyle::pulse:
+					case TweenStyle::flicker: {
+						if (fac > 0.5f) {
+							fac = 1.f - (fac*2.f - 1.f);
+						} else {
+							fac = fac * 2;
+						}
+						if (style == TweenStyle::flicker) {
+							fac *= myrand_range(0.7f, 1.0f);
+						}
+					}
+				}
+				if (fac>1.f)
+					fac = 1.f;
+				else if (fac<0.f)
+					fac = 0.f;
+			} else {
+				fac = (style == TweenStyle::rev) ? 1.f : 0.f;
+			}
+
+			return start.interpolate(fac, end);
+		}
+
+		void serialize(std::ostream &os) const {
+			writeU8(os, (u8)style);
+			writeU16(os, reps);
+			writeF32(os, beginning);
+			start.serialize(os);
+			end.serialize(os);
+		};
+		void deSerialize(std::istream &is) {
+			u8 st = readU8(is);
+			style = (TweenStyle)st;
+			reps = readU16(is);
+			beginning = readF32(is);
+			start.deSerialize(is);
+			end.deSerialize(is);
+		};
 	};
 
 // 	v3f v3fBlend(float fac, v3f a, v3f b);
@@ -205,6 +287,7 @@ namespace ParticleParamTypes {
 	using f32Range = RangedParameter<f32Parameter>;
 
 	// these aliases bind tweened parameter types to the functions used to blend them
+	using v2fTween      = TweenedParameter<v2fParameter>;
 	using v3fTween      = TweenedParameter<v3fParameter>;
 	using f32Tween      = TweenedParameter<f32Parameter>;
 	using v3fRangeTween = TweenedParameter<v3fRange>;
@@ -214,15 +297,41 @@ namespace ParticleParamTypes {
 struct ParticleTexture {
 	bool animated = false;
 	TileAnimationParams animation;
-	enum class Fade {
-		none, in, out, pulse, flicker
-	} fade_mode = Fade::none;
-	u8 fade_reps = 1;
-	f32 alpha = 1.0f, fade_start = 0.0f;
+	ParticleParamTypes::f32Tween alpha = (f32)1;
+	ParticleParamTypes::v2fTween scale = (v2f){1.f,1.f};
+
+	// 	enum class Fade {
+	// 		none, in, out, pulse, flicker
+	// 	} fade_mode = Fade::none;
+	// 	u8 fade_reps = 1;
+	// 	f32 alpha = 1.0f, fade_start = 0.0f;
 };
 
 struct ServerParticleTexture : public ParticleTexture {
 	std::string string;
+	void serialize(std::ostream &os, u16 protocol_ver) const {
+		u8 flags = 0;
+		animated && (flags |= 1<<0);
+		writeU8(os, flags);
+
+		alpha.serialize(os);
+		scale.serialize(os);
+		os << serializeString32(string);
+
+		if (animated)
+			animation.serialize(os, protocol_ver);
+	}
+	void deSerialize(std::istream &is, u16 protocol_ver) {
+		u8 flags = readU8(is);
+		animated = (flags |= 1<<0) > 0;
+
+		alpha.deSerialize(is);
+		scale.deSerialize(is);
+		string = deSerializeString32(is);
+
+		if (animated)
+			animation.deSerialize(is, protocol_ver);
+	}
 };
 
 struct CommonParticleParams {

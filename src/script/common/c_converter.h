@@ -100,6 +100,7 @@ void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
 
 v3f                 checkFloatPos       (lua_State *L, int index);
+v2f                 check_v2f           (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
 v3s16               check_v3s16         (lua_State *L, int index);
 

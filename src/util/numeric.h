@@ -449,8 +449,8 @@ inline irr::video::SColor multiplyColorValue(const irr::video::SColor &color, fl
 			core::clamp<u32>(color.getBlue() * mod, 0, 255));
 }
 
-template <typename T> inline T numericAbsolute(T v) { return v < 0 ? -v : v;                }
-template <typename T> inline T numericSign(T v)     { return v < 0 ? -1 : (v == 0 ? 0 : 1); }
+template <typename T> inline T numericAbsolute(T v) { return v < 0 ? T(-v) : v;                }
+template <typename T> inline T numericSign(T v)     { return T(v < 0 ? -1 : (v == 0 ? 0 : 1)); }
 
 inline v3f vecAbsolute(v3f v) {
 	return v3f(numericAbsolute(v.X),

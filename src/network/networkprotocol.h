@@ -564,7 +564,7 @@ enum ToClientCommand
 		range<v3f1000> pos_end
 		-- i.e v3f1000 pos_end_min
 		--     v3f1000 pos_end_max
-		--     f32	pos_end_bias
+		--     f32     pos_end_bias
 		range<v3f1000> vel_end
 		range<v3f1000> acc_end
 
@@ -574,7 +574,7 @@ enum ToClientCommand
 		--      f32     drag_start_bias
 		--      v3f1000 drag_end_min
 		--      v3f1000 drag_end_max
-		--      f32		drag_end_bias
+		--      f32	    drag_end_bias
 		tween<range<f32>> attract
 		tween<range<v3f1000>> attractor
 		tween<range<v3f1000>> radius
@@ -585,19 +585,10 @@ enum ToClientCommand
 			u8 flags
 			-- bit 0: animated
 			-- other bits free & ignored as of proto v41
-			f32 alpha
-			u8 fade_mode
-			-- 0: none
-			-- 1: fade_in
-			-- 2: fade_out
-			-- 3: pulse
-			-- 4: flicker
+			tween<f32> alpha
+			tween<v3f1000> scale
 			if flags.animated {
 				TileAnimation animation
-			}
-			if fade_mode ≠ none {
-				f32 fade_start
-				u16 fade_reps
 			}
 		}
 

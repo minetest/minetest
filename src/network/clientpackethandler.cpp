@@ -1045,25 +1045,23 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			u16 texpoolsz = readU16(is);
 			p.texpool.reserve(texpoolsz);
 			for (u16 i = 0; i < texpoolsz; ++i) {
-				using namespace ParticleParamTypes;
 				ServerParticleTexture newtex;
-				auto flags       = readU8(is);
-				newtex.alpha     = readF32(is);
-				newtex.fade_mode = (ParticleTexture::Fade)readU8(is);
-				newtex.string    = deSerializeString32(is);
-
-				newtex.animated  = (flags & 1<<0) > 0;
-				if (newtex.animated)
-					newtex.animation.deSerialize(is, m_proto_ver);
-				if (newtex.fade_mode != ParticleTexture::Fade::none) {
-					newtex.fade_start = readF32(is);
-					newtex.fade_reps = readU8(is);
-				}
+				newtex.deSerialize(is, m_proto_ver);
 				p.texpool.push_back(newtex);
 			}
 		}
 	} while (0);
 
+	if (m_proto_ver < 41) {
+		// there's no tweening data to be had, so we need to set the
+		// legacy params to constant values, otherwise everything old
+		// will tween to zero
+		p.pos.end = p.pos.start;
+		p.vel.end = p.vel.start;
+		p.acc.end = p.acc.start;
+		p.exptime.end = p.exptime.start;
+		p.size.end = p.size.start;
+	}
 
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;

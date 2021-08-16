@@ -39,16 +39,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static f32 random_f32(f32 min, f32 max)
 {
-	return rand() / (float)RAND_MAX * (max - min) + min;
+// 	return rand() / (float)RAND_MAX * (max - min) + min;
+	return myrand_range(min,max);
 }
 
-static v3f random_v3f(v3f min, v3f max)
-{
-	return v3f(
-		random_f32(min.X, max.X),
-		random_f32(min.Y, max.Y),
-		random_f32(min.Z, max.Z));
-}
+	// static v3f random_v3f(v3f min, v3f max)
+	// {
+	// 	return v3f(
+	// 		random_f32(min.X, max.X),
+	// 		random_f32(min.Y, max.Y),
+	// 		random_f32(min.Z, max.Z));
+	// }
 
 /*
 	Particle
@@ -111,9 +112,7 @@ Particle::Particle(
 	m_object_collision = p.object_collision;
 	m_vertical = p.vertical;
 	m_glow = p.glow;
-	if (p.texture.fade_mode == ParticleTexture::Fade::none or
-	    p.texture.fade_mode == ParticleTexture::Fade::out) m_alpha = p.texture.alpha;
-	else m_alpha = 0.0f;
+	m_alpha = 0; //p.texture.alpha.blend(0.0f);
 
 	// Irrlicht stuff
 	const float c = p.size / 2;
@@ -188,29 +187,10 @@ void Particle::step(float dtime)
 	}
 
 	// animate particle alpha in accordance with settings
-	if (m_time >= m_texture.fade_start) {
-		auto now = m_time       - m_expiration * m_texture.fade_start;
-		auto exp = m_expiration - m_expiration * m_texture.fade_start;
-		float fac = now / (exp / m_texture.fade_reps);
-		if (fac > 1) fac -= (u16)fac; // poor man's modulo
-		switch (m_texture.fade_mode) {
-			case ParticleTexture::Fade::none: /* do nothing */ break;
-			case ParticleTexture::Fade::out:  m_alpha = 1.0f - fac; break;
-			case ParticleTexture::Fade::in:   m_alpha = fac; break;
-			case ParticleTexture::Fade::pulse:
-			case ParticleTexture::Fade::flicker: {
-				if (fac > 0.5) {
-					m_alpha = 1 - (fac*2 - 1);
-				} else {
-					m_alpha = fac * 2;
-				}
-				if (m_texture.fade_mode == ParticleTexture::Fade::flicker) {
-					m_alpha = m_alpha * random_f32(0.7,1);
-				}
-			}
-		}
-	}
-	m_alpha *= m_texture.alpha;
+	m_alpha = m_texture.alpha.blend(m_time / (m_expiration+0.1));
+// 	if (m_alpha < 0.2) // prevent full-alpha flash
+// 		m_alpha = 0;
+	// add fake extra 0.1 seconds to prevent last-frame flicker
 
 	// Update lighting
 	updateLight();
@@ -327,7 +307,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 {
 	float fac = 0;
 	if (p.time != 0) { // ensure safety from divide-by-zeroes
-		fac = m_time / p.time;
+		fac = m_time / (p.time+0.1);
 	}
 
 	auto r_pos = p.pos.blend(fac);
@@ -340,11 +320,11 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto r_exp = p.exptime.blend(fac);
 	auto r_size = p.size.blend(fac);
 	auto r_attract = p.attract.blend(fac);
-	auto attract = random_f32(r_attract.min, r_attract.max);
+	auto attract = r_attract.pickWithin();
 
 	v3f ppos = m_player->getPosition() / BS;
-	v3f pos = r_pos.pickWithin(); //random_v3f(r_pos.min, r_pos.max);
-	v3f sphere_radius = r_radius.pickWithin(); // random_v3f(r_radius.min, r_radius.max);
+	v3f pos = r_pos.pickWithin();
+	v3f sphere_radius = r_radius.pickWithin();
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
@@ -367,9 +347,12 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	ParticleParameters pp;
 	pp.pos = pos;
 
-	pp.vel = random_v3f(r_vel.min, r_vel.max);
-	pp.acc = random_v3f(r_acc.min, r_acc.max);
-	pp.drag = random_v3f(r_drag.min, r_drag.max);
+// 	pp.vel = random_v3f(r_vel.min, r_vel.max);
+// 	pp.acc = random_v3f(r_acc.min, r_acc.max);
+// 	pp.drag = random_v3f(r_drag.min, r_drag.max);
+	pp.vel = r_vel.pickWithin();
+	pp.acc = r_acc.pickWithin();
+	pp.drag = r_drag.pickWithin();
 
 	if (attached_absolute_pos_rot_matrix) {
 		// Apply attachment rotation
@@ -377,7 +360,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		attached_absolute_pos_rot_matrix->rotateVect(pp.acc);
 	}
 
-	pp.expirationtime = random_f32(r_exp.min, r_exp.max);
+	pp.expirationtime = r_exp.pickWithin();
 
 	if (sphere_radius != v3f()) {
 		f32 l = sphere_radius.getLength();
@@ -451,7 +434,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	// Allow keeping default random size
 	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
-		pp.size = random_f32(r_size.min, r_size.max);
+		pp.size = r_size.pickWithin();
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,

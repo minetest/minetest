@@ -20,21 +20,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 using namespace ParticleParamTypes;
 
-v3fParameter v3fParameter::interpolate(float fac, const v3fParameter against) const {
-	return against.val.getInterpolated(val, fac);
+v2f ParticleParamTypes::vectorBlend(float* f, const v2f& a, const v2f& b) {
+	return v2f(
+		numericalBlend(f[0], a.X, b.X),
+		numericalBlend(f[1], a.Y, b.Y)
+	);
+}
+v3f ParticleParamTypes::vectorBlend(float* f, const v3f& a, const v3f& b) {
+	return v3f(
+		numericalBlend(f[0], a.X, b.X),
+		numericalBlend(f[1], a.Y, b.Y),
+		numericalBlend(f[2], a.Z, b.Z)
+	);
 }
 
-v3fParameter v3fParameter::pick(float* f, const v3fParameter a, const v3fParameter b) {
-	auto x = numericalBlend(f[0], a.val.X, b.val.X);
-	auto y = numericalBlend(f[1], a.val.Y, b.val.Y);
-	auto z = numericalBlend(f[2], a.val.Z, b.val.Z);
-	// 	std::cerr << "values " <<
-	// 		f[0] << " " <<
-	// 		f[1] << " " <<
-	// 		f[2] << " / " <<
-	// 		x<<","<<y<<","<<z<<"\n";
-	return v3fParameter(x,y,z);
-}
+#define PARAM_DEF_SRZR(T, wr, rd) \
+	void ParticleParamTypes::serializeParameterValue  (std::ostream& os, T  v) {wr(os,v);  } \
+	void ParticleParamTypes::deSerializeParameterValue(std::istream& is, T& v) {v = rd(is);}
+
+PARAM_DEF_SRZR(u8,  writeU8,    readU8);
+PARAM_DEF_SRZR(u16, writeU16,   readU16);
+PARAM_DEF_SRZR(u32, writeU32,   readU32);
+PARAM_DEF_SRZR(f32, writeF32,   readF32);
+PARAM_DEF_SRZR(v2f, writeV2F32, readV2F32);
+PARAM_DEF_SRZR(v3f, writeV3F32, readV3F32);
+
+#undef PARAM_DEF_SRZR
+
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 {

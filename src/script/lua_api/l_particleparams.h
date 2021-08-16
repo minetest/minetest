@@ -29,17 +29,61 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace LuaParticleParams {
 	using namespace ParticleParamTypes;
 
-	inline void readLuaValue(lua_State* L, f32Parameter& ret)
-		{ ret = (f32Parameter)((f32)lua_tonumber(L, -1)); }
-	inline void readLuaValue(lua_State* L, f32& ret)
-		{ ret = (f32)lua_tonumber(L, -1); }
+	template<typename T>
+	inline void readNumericLuaValue(lua_State* L, T& ret) {
+		if (lua_isnil(L,-1)) return;
+		if (std::is_integral<T>())
+			ret = lua_tointeger(L, -1);
+		else
+			ret = lua_tonumber(L, -1);
+	}
+
+	template <typename T>
+	inline void readNumericLuaValue(lua_State* L, NumericParameter<T>& ret) {
+		readNumericLuaValue<T>(L, ret.val);
+	}
+
+	// these are unfortunately necessary as C++ intentionally disallows function template
+	// specialization and there's no way to make template overloads reliably resolve correctly
+	inline void readLuaValue(lua_State* L, f32Parameter& ret) { readNumericLuaValue(L, ret); }
+	inline void readLuaValue(lua_State* L, f32& ret)          { readNumericLuaValue(L, ret); }
+	inline void readLuaValue(lua_State* L, u16& ret)          { readNumericLuaValue(L, ret); }
+	inline void readLuaValue(lua_State* L, u8& ret)           { readNumericLuaValue(L, ret); }
 
 	inline void readLuaValue(lua_State* L, v3fParameter& ret) {
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
 			auto n = lua_tonumber(L, -1);
-			ret = (v3fParameter)v3f(n,n,n);
+			ret = v3fParameter(n,n,n);
 		} else {
 			ret = (v3fParameter)check_v3f(L, -1);
+		}
+	}
+
+	inline void readLuaValue(lua_State* L, v2fParameter& ret) {
+		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
+			auto n = lua_tonumber(L, -1);
+			ret = v2fParameter(n,n);
+		} else {
+			ret = (v2fParameter)check_v2f(L, -1);
+		}
+	}
+
+	inline void readLuaValue(lua_State* L, TweenStyle& ret) {
+		const char* const opts[] = { "fwd", "rev", "pulse", "flicker", NULL };
+		const TweenStyle optmap[] = {
+			TweenStyle::fwd,
+			TweenStyle::rev,
+			TweenStyle::pulse,
+			TweenStyle::flicker,
+		};
+		static_assert(
+				(sizeof opts / sizeof opts[0])-1 ==
+				(sizeof optmap / sizeof optmap[0]),
+				"option maps not synced");
+
+		if (lua_isstring(L, -1)) {
+			size_t v = luaL_checkoption(L, -1, opts[0], opts);
+			ret = optmap[v];
 		}
 	}
 
@@ -119,6 +163,20 @@ namespace LuaParticleParams {
 			lua_pushinteger(L, (lua_Integer)lua_objlen(L, -1)), lua_gettable(L, -2);
 			readLuaValue(L, field.end);
 			lua_pop(L, 1);
+
+			// get the effect settings
+			lua_pushliteral(L, "style"), lua_gettable(L, -2);
+			readLuaValue(L, field.style);
+			lua_pop(L, 1);
+
+			lua_pushliteral(L, "reps"), lua_gettable(L, -2);
+			readLuaValue(L, field.reps);
+			lua_pop(L, 1);
+
+			lua_pushliteral(L, "start"), lua_gettable(L, -2);
+			readLuaValue(L, field.beginning);
+			lua_pop(L, 1);
+
 			goto done;
 		} else lua_pop(L,1);
 		// the table is not present; check for nonanimated values
@@ -137,5 +195,5 @@ namespace LuaParticleParams {
 		done: lua_settop(L, tbl); // clean up after ourselves
 	}
 
-	ServerParticleTexture readTexValue(lua_State* L);
+	void readTexValue(lua_State* L, ServerParticleTexture& tex);
 }
