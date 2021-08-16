@@ -287,9 +287,6 @@ struct ServerParticleTexture : public ParticleTexture {
 
 		alpha.deSerialize(is);
 		scale.deSerialize(is);
-		std::cerr << "got scale "
-			<< scale.start.val.X << " " << scale.start.val.Y << " ~ "
-			<< scale.end.val.X << " " << scale.end.val.Y << "\n";
 		string = deSerializeString32(is);
 
 		if (animated)

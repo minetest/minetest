@@ -93,8 +93,6 @@ Particle::Particle(
 	m_texsize = texsize;
 	m_animation = p.animation;
 
-
-
 	// Color
 	m_base_color = color;
 	m_color = color;
