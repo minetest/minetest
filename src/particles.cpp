@@ -47,6 +47,29 @@ PARAM_DEF_SRZR(v3f, writeV3F32, readV3F32);
 
 #undef PARAM_DEF_SRZR
 
+void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver) const {
+	u8 flags = 0;
+	animated && (flags |= 1<<0);
+	writeU8(os, flags);
+
+	alpha.serialize(os);
+	scale.serialize(os);
+	os << serializeString32(string);
+
+	if (animated)
+		animation.serialize(os, protocol_ver);
+}
+void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver) {
+	u8 flags = readU8(is);
+	animated = (flags |= 1<<0) > 0;
+
+	alpha.deSerialize(is);
+	scale.deSerialize(is);
+	string = deSerializeString32(is);
+
+	if (animated)
+		animation.deSerialize(is, protocol_ver);
+}
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 {

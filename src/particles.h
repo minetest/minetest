@@ -66,8 +66,10 @@ namespace ParticleParamTypes {
 		template <typename... Args>
 		ParameterWrapper(Args... args) : val(args...) {};
 
-		void serialize(std::ostream &os) const { serializeParameterValue  (os, this->val); }
-		void deSerialize(std::istream &is)     { deSerializeParameterValue(is, this->val); }
+		void serialize(std::ostream &os) const override
+			{ serializeParameterValue  (os, this->val); }
+		void deSerialize(std::istream &is)     override
+			{ deSerializeParameterValue(is, this->val); }
 
 		operator T() const { return val; }
 		T operator = (T b) { return val = b; }
@@ -231,14 +233,14 @@ namespace ParticleParamTypes {
 			return start.interpolate(fac, end);
 		}
 
-		void serialize(std::ostream &os) const {
+		void serialize(std::ostream &os) const override {
 			writeU8(os, (u8)style);
 			writeU16(os, reps);
 			writeF32(os, beginning);
 			start.serialize(os);
 			end.serialize(os);
 		};
-		void deSerialize(std::istream &is) {
+		void deSerialize(std::istream &is) override {
 			u8 st = readU8(is);
 			style = (TweenStyle)st;
 			reps = readU16(is);
@@ -269,29 +271,8 @@ struct ParticleTexture {
 
 struct ServerParticleTexture : public ParticleTexture {
 	std::string string;
-	void serialize(std::ostream &os, u16 protocol_ver) const {
-		u8 flags = 0;
-		animated && (flags |= 1<<0);
-		writeU8(os, flags);
-
-		alpha.serialize(os);
-		scale.serialize(os);
-		os << serializeString32(string);
-
-		if (animated)
-			animation.serialize(os, protocol_ver);
-	}
-	void deSerialize(std::istream &is, u16 protocol_ver) {
-		u8 flags = readU8(is);
-		animated = (flags |= 1<<0) > 0;
-
-		alpha.deSerialize(is);
-		scale.deSerialize(is);
-		string = deSerializeString32(is);
-
-		if (animated)
-			animation.deSerialize(is, protocol_ver);
-	}
+	void serialize(std::ostream &os, u16 protocol_ver) const;
+	void deSerialize(std::istream &is, u16 protocol_ver);
 };
 
 struct CommonParticleParams {
