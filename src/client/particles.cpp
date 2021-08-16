@@ -112,7 +112,7 @@ Particle::Particle(
 	m_object_collision = p.object_collision;
 	m_vertical = p.vertical;
 	m_glow = p.glow;
-	m_alpha = 0; //p.texture.alpha.blend(0.0f);
+	m_alpha = 0;
 
 	// Irrlicht stuff
 	const float c = p.size / 2;
@@ -222,6 +222,7 @@ void Particle::updateLight()
 void Particle::updateVertices()
 {
 	f32 tx0, tx1, ty0, ty1;
+	v2f scale = m_texture.scale.blend(m_time / (m_expiration+0.1));
 
 	if (m_animation.type != TAT_NONE) {
 		const v2u32 texsize = m_material.getTexture(0)->getSize();
@@ -242,13 +243,16 @@ void Particle::updateVertices()
 		ty1 = m_texpos.Y + m_texsize.Y;
 	}
 
-	m_vertices[0] = video::S3DVertex(-m_size / 2, -m_size / 2,
+	auto half = m_size * .5f,
+	     hx   = half * scale.X,
+	     hy   = half * scale.Y;
+	m_vertices[0] = video::S3DVertex(-hx, -hy,
 		0, 0, 0, 0, m_color, tx0, ty1);
-	m_vertices[1] = video::S3DVertex(m_size / 2, -m_size / 2,
+	m_vertices[1] = video::S3DVertex(hx, -hy,
 		0, 0, 0, 0, m_color, tx1, ty1);
-	m_vertices[2] = video::S3DVertex(m_size / 2, m_size / 2,
+	m_vertices[2] = video::S3DVertex(hx, hy,
 		0, 0, 0, 0, m_color, tx1, ty0);
-	m_vertices[3] = video::S3DVertex(-m_size / 2, m_size / 2,
+	m_vertices[3] = video::S3DVertex(-hx, hy,
 		0, 0, 0, 0, m_color, tx0, ty0);
 
 	v3s16 camera_offset = m_env->getCameraOffset();
