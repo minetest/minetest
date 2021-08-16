@@ -555,6 +555,8 @@ enum ToClientCommand
 		u8 glow
 		u8 object_collision
 
+		-- since proto v41:
+
 		f32 pos_start_bias
 		f32 vel_start_bias
 		f32 acc_start_bias
@@ -586,7 +588,7 @@ enum ToClientCommand
 			-- bit 0: animated
 			-- other bits free & ignored as of proto v41
 			tween<f32> alpha
-			tween<v3f1000> scale
+			tween<v2f1000> scale
 			if flags.animated {
 				TileAnimation animation
 			}

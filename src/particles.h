@@ -34,32 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace ParticleParamTypes {
 	template<typename T> using BlendFunction = T(float,T,T);
 
-// 	template <typename T,
-// 			 void (S)(std::ostream&, T),
-// 			 T    (D)(std::istream&)>
-// 	struct SerializableParameter {
-// 		using ValType = T;
-//
-// 		T val;
-// 		using This = SerializableParameter<T,S,D>;
-//
-// 		SerializableParameter() = default;
-// 		SerializableParameter(const This& a) : val(a.val) {};
-// 		SerializableParameter(T b) { val = b; }
-//
-// 		operator T() const { return val; }
-// 		T operator = (T b) { return val = b; }
-//
-// 		void serialize(std::ostream &os) const { S(os,val);   }
-// 		void deSerialize(std::istream &is)     { val = D(is); }
-//
-// 		template <BlendFunction<T> Blend>
-// 		static This blendWrap(float fac, This a, This b) {
-// 			return This(Blend(fac, (T)a, (T)b));
-// 		}
-// 	};
-
-
 	void serializeParameterValue(std::ostream& os, u8 v);
 	void serializeParameterValue(std::ostream& os, u16 v);
 	void serializeParameterValue(std::ostream& os, u32 v);
@@ -274,14 +248,6 @@ namespace ParticleParamTypes {
 		};
 	};
 
-// 	v3f v3fBlend(float fac, v3f a, v3f b);
-//
-// 	srz_v3f srz_v3f_pick(float* facs, srz_v3f min, srz_v3f max);
-
-	// these aliases bind types to de/serialization functions
-// 	using srz_v3f = SerializableParameter<v3f, writeV3F32, readV3F32>;
-// 	using srz_f32 = SerializableParameter<f32, writeF32,   readF32>;
-
 	// these are consistently-named convenience aliases to make code more readable without `using ParticleParamTypes` declarations
 	using v3fRange = RangedParameter<v3fParameter>;
 	using f32Range = RangedParameter<f32Parameter>;
@@ -299,12 +265,6 @@ struct ParticleTexture {
 	TileAnimationParams animation;
 	ParticleParamTypes::f32Tween alpha = (f32)1;
 	ParticleParamTypes::v2fTween scale = (v2f){1.f,1.f};
-
-	// 	enum class Fade {
-	// 		none, in, out, pulse, flicker
-	// 	} fade_mode = Fade::none;
-	// 	u8 fade_reps = 1;
-	// 	f32 alpha = 1.0f, fade_start = 0.0f;
 };
 
 struct ServerParticleTexture : public ParticleTexture {

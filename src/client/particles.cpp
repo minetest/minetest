@@ -188,9 +188,6 @@ void Particle::step(float dtime)
 
 	// animate particle alpha in accordance with settings
 	m_alpha = m_texture.alpha.blend(m_time / (m_expiration+0.1));
-// 	if (m_alpha < 0.2) // prevent full-alpha flash
-// 		m_alpha = 0;
-	// add fake extra 0.1 seconds to prevent last-frame flicker
 
 	// Update lighting
 	updateLight();
@@ -347,9 +344,6 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	ParticleParameters pp;
 	pp.pos = pos;
 
-// 	pp.vel = random_v3f(r_vel.min, r_vel.max);
-// 	pp.acc = random_v3f(r_acc.min, r_acc.max);
-// 	pp.drag = random_v3f(r_drag.min, r_drag.max);
 	pp.vel = r_vel.pickWithin();
 	pp.acc = r_acc.pickWithin();
 	pp.drag = r_drag.pickWithin();

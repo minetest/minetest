@@ -145,6 +145,7 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 		if(pos_exists) *pos_exists = true;
 		return sao->getBasePosition(); }
 	}
+
 	return v3f(0,0,0);
 }
 
@@ -1658,23 +1659,6 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 			std::ostringstream os(std::ios_base::binary);
 			tex.serialize(os, protocol_version);
 			pkt.putRawString(os.str());
-// 			u8 flags = 0;
-// 			tex.animated && (flags |= 1<<0);
-// 			pkt << flags;
-//
-// 			{
-// 				std::ostringstream os(std::ios_base::binary);
-// 				tex.alpha.serialize(os);
-// 				tex.scale.serialize(os);
-// 			pkt.putRawString(os.str());
-// 			}
-//
-// 			pkt.putLongString(tex.string);
-// 			if (tex.animated) {
-// 				std::ostringstream os(std::ios_base::binary);
-// 				tex.animation.serialize(os, protocol_version);
-// 				pkt.putRawString(os.str());
-// 			}
 		}
 	}
 
