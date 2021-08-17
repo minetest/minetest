@@ -938,7 +938,13 @@ enum ToServerCommand
 		}
 	*/
 
-	TOSERVER_RECEIVED_MEDIA = 0x41, // Obsolete
+	TOSERVER_HAVE_MEDIA = 0x41,
+	/*
+		u8 number of media tokens
+		for each:
+			u32 token
+	*/
+
 	TOSERVER_BREATH = 0x42, // Obsolete
 
 	TOSERVER_CLIENT_READY = 0x43,
