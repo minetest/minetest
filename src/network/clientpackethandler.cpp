@@ -1545,6 +1545,8 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		return;
 	}
 
+	m_media_pushed_files.insert(filename);
+
 	// create a downloader for this file
 	auto downloader = new SingleMediaDownloader(cached);
 	m_pending_media_downloads[token] = downloader;
