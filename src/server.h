@@ -261,8 +261,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMedia(const std::string &filepath, u32 token,
-		const std::string &to_player);
+	bool dynamicAddMedia(std::string filepath, u32 token,
+		const std::string &to_player, bool ephemeral);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -401,6 +401,7 @@ private:
 	};
 
 	struct PendingDynamicMediaCallback {
+		std::string filename; // only set if media entry and file is to be deleted
 		float expiry_timer;
 		std::unordered_set<session_t> waiting_players;
 	};

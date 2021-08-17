@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <cerrno>
 #include <fstream>
@@ -809,6 +810,16 @@ bool ReadFile(const std::string &path, std::string &out)
 bool Rename(const std::string &from, const std::string &to)
 {
 	return rename(from.c_str(), to.c_str()) == 0;
+}
+
+std::string TempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "/MT_XXXXXX";
+	int fd = mkstemp(&path[0]); // modifies path
+	if (fd == -1)
+		return "";
+	close(fd);
+	return path;
 }
 
 } // namespace fs

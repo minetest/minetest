@@ -463,10 +463,12 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 
 	std::string filepath;
 	std::string to_player;
+	bool ephemeral = false;
 
 	if (lua_istable(L, 1)) {
 		getstringfield(L, 1, "filepath", filepath);
 		getstringfield(L, 1, "to_player", to_player);
+		getboolfield(L, 1, "ephemeral", ephemeral);
 	} else {
 		filepath = readParam<std::string>(L, 1);
 	}
@@ -476,7 +478,7 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 
 	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(2);
 
-	bool ok = server->dynamicAddMedia(filepath, token, to_player);
+	bool ok = server->dynamicAddMedia(filepath, token, to_player, false);
 	if (!ok)
 		server->getScriptIface()->freeDynamicMediaCallback(token);
 	lua_pushboolean(L, ok);

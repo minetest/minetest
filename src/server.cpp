@@ -2662,6 +2662,16 @@ void Server::stepPendingDynMediaCallbacks(float dtime)
 		bool del = it->second.waiting_players.empty() || it->second.expiry_timer < 0;
 
 		if (del) {
+			const auto &name = it->second.filename;
+			if (!name.empty()) {
+				assert(m_media.count(name));
+				// no_announce is only ever set for ephermal dynamic media,
+				// we should never be attempting to delete other files!
+				sanity_check(m_media[name].no_announce);
+
+				fs::DeleteSingleFileOrEmptyDirectory(m_media[name].path);
+				m_media.erase(name);
+			}
 			getScriptIface()->freeDynamicMediaCallback(it->first);
 			it = m_pending_dyn_media.erase(it);
 		} else {
@@ -3467,9 +3477,12 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(const std::string &filepath,
-	const u32 token, const std::string &to_player)
+bool Server::dynamicAddMedia(std::string filepath,
+	const u32 token, const std::string &to_player, bool ephemeral)
 {
+	if (!to_player.empty())
+		ephemeral = true;
+
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	if (m_media.find(filename) != m_media.end()) {
 		errorstream << "Server::dynamicAddMedia(): file \"" << filename
@@ -3482,17 +3495,43 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
 	if (!ok)
 		return false;
-	if (!to_player.empty())
+
+	if (ephemeral) {
+		// Create a copy of the file and swap out the path, this removes the
+		// requirement that mods keep the file accessiable at the original path.
+		filepath = fs::TempFile();
+		bool ok = ([&] () -> bool {
+			if (filepath.empty())
+				return false;
+			std::ofstream os(filepath.c_str(), std::ios::binary);
+			if (!os.good())
+				return false;
+			os << filedata;
+			os.close();
+			return !os.fail();
+		})();
+		if (!ok) {
+			errorstream << "Server: failed to create a copy of media file "
+				<< "\"" << filename << "\"" << std::endl;
+			m_media.erase(filename);
+			return false;
+		}
+		verbosestream << "Server: \"" << filename << "\" temporarily copied to "
+			<< filepath << std::endl;
+
+		m_media[filename].path = filepath;
 		m_media[filename].no_announce = true;
+		// stepPendingDynMediaCallbacks will clean this up later.
+	}
 
 	// Push file to existing clients
 	// Older clients have an awful hack that just throws the data at them
 	NetworkPacket legacy_pkt(TOCLIENT_MEDIA_PUSH, 0);
-	legacy_pkt << raw_hash << filename << (bool) true;
+	legacy_pkt << raw_hash << filename << (bool) ephemeral;
 	legacy_pkt.putLongString(filedata);
 	// Newer clients get asked to fetch the file (asynchronous)
 	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-	pkt << raw_hash << filename << token << (bool) true;
+	pkt << raw_hash << filename << token << (bool) ephemeral;
 
 	std::unordered_set<session_t> delivered, waiting;
 	m_clients.lock();
@@ -3535,6 +3574,8 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 	state.waiting_players = std::move(waiting);
 	// regardless of success throw away the callback after a while
 	state.expiry_timer = 60.0f;
+	if (ephemeral)
+		state.filename = filename;
 
 	return true;
 }
