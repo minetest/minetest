@@ -126,6 +126,8 @@ int main(int argc, char *argv[])
 	g_logger.registerThread("Main");
 	g_logger.addOutputMaxLevel(&stderr_output, LL_ACTION);
 
+	porting::install_crash_handler();
+
 	Settings cmd_args;
 	bool cmd_args_ok = get_cmdline_opts(argc, argv, &cmd_args);
 	if (!cmd_args_ok

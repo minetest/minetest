@@ -352,6 +352,8 @@ bool open_url(const std::string &url);
  */
 bool open_directory(const std::string &path);
 
+void install_crash_handler();
+
 } // namespace porting
 
 #ifdef __ANDROID__

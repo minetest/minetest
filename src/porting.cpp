@@ -775,4 +775,68 @@ double perf_freq = get_perf_freq();
 
 #endif
 
+#ifdef __GLIBC__
+
+#include <execinfo.h>
+
+void print_stack_trace()
+{
+	void* array[10];
+	size_t size;
+	char** strings;
+	size_t i;
+
+	size = backtrace(array, 10);
+	strings = backtrace_symbols(array, size);
+
+	fprintf(stderr, "Segmentation fault. Obtained %zd stack frames.\n", size);
+
+	for(i = 0; i < size; i++)
+	{
+		fprintf(stderr, "%s\n", strings[i]);
+	}
+
+	free (strings);
+}
+
+#else
+
+void print_stack_trace()
+{
+	fprintf(stderr, "TODO implement `print_stack_trace` on this platform! (%s:%d)\n", __FILE__, __LINE__);
+}
+
+#endif
+
+
+void sigsegv_print_stack_trace_then_abort(int singal, porting::siginfo_t* v, void* prt)
+{
+	print_stack_trace();
+	abort();
+}
+
+#ifdef __GLIBC__
+
+#include "signal.h"
+
+void install_crash_handler()
+{
+	struct sigaction sa;
+
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_sigaction = sigsegv_print_stack_trace_then_abort;
+	if (sigaction(SIGSEGV, &sa, NULL) == -1)
+		fprintf(stderr, "signal handler error");
+}
+
+#else
+
+void install_crash_handler()
+{
+	fprintf(stderr, "TODO implement crash handler installation on this platform. (%s:%d)\n", __FILE__, __LINE__);
+}
+
+#endif
+
 } //namespace porting
