@@ -2539,6 +2539,8 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	std::string lang_suffix;
 	lang_suffix.append(".").append(lang_code).append(".tr");
 	for (const auto &i : m_media) {
+		if (i.second.no_announce)
+			continue;
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
 			continue;
 		media_sent++;
@@ -2547,6 +2549,8 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	pkt << media_sent;
 
 	for (const auto &i : m_media) {
+		if (i.second.no_announce)
+			continue;
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
 			continue;
 		pkt << i.first << i.second.sha1_digest;
@@ -3464,7 +3468,7 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 }
 
 bool Server::dynamicAddMedia(const std::string &filepath,
-	const u32 token)
+	const u32 token, const std::string &to_player)
 {
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	if (m_media.find(filename) != m_media.end()) {
@@ -3478,6 +3482,8 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
 	if (!ok)
 		return false;
+	if (!to_player.empty())
+		m_media[filename].no_announce = true;
 
 	// Push file to existing clients
 	// Older clients have an awful hack that just throws the data at them
@@ -3497,6 +3503,10 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 		if (proto_ver < 39)
 			continue;
 
+		const session_t peer_id = pair.second->peer_id;
+		if (!to_player.empty() && getPlayerName(peer_id) != to_player)
+			continue;
+
 		if (proto_ver < 40) {
 			delivered.emplace(pair.second->peer_id);
 			/*
@@ -3505,11 +3515,11 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 				to push the media over ALL channels to ensure it is processed before
 				it is used. In practice this means channels 1 and 0.
 			*/
-			m_clients.send(pair.second->peer_id, 1, &legacy_pkt, true);
-			m_clients.send(pair.second->peer_id, 0, &legacy_pkt, true);
+			m_clients.send(peer_id, 1, &legacy_pkt, true);
+			m_clients.send(peer_id, 0, &legacy_pkt, true);
 		} else {
-			waiting.emplace(pair.second->peer_id);
-			m_clients.send(pair.second->peer_id, 1, &pkt, true);
+			waiting.emplace(peer_id);
+			m_clients.send(peer_id, 1, &pkt, true);
 		}
 	}
 	m_clients.unlock();

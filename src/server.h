@@ -82,12 +82,14 @@ enum ClientDeletionReason {
 struct MediaInfo
 {
 	std::string path;
-	std::string sha1_digest;
+	std::string sha1_digest; // base64-encoded
+	bool no_announce;
 
 	MediaInfo(const std::string &path_="",
 	          const std::string &sha1_digest_=""):
 		path(path_),
-		sha1_digest(sha1_digest_)
+		sha1_digest(sha1_digest_),
+		no_announce(false)
 	{
 	}
 };
@@ -259,7 +261,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMedia(const std::string &filepath, u32 token);
+	bool dynamicAddMedia(const std::string &filepath, u32 token,
+		const std::string &to_player);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);

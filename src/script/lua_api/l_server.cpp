@@ -461,14 +461,22 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 		throw LuaError("Dynamic media cannot be added before server has started up");
 	Server *server = getServer(L);
 
-	std::string filepath = readParam<std::string>(L, 1);
-	CHECK_SECURE_PATH(L, filepath.c_str(), false);
+	std::string filepath;
+	std::string to_player;
 
+	if (lua_istable(L, 1)) {
+		getstringfield(L, 1, "filepath", filepath);
+		getstringfield(L, 1, "to_player", to_player);
+	} else {
+		filepath = readParam<std::string>(L, 1);
+	}
 	luaL_checktype(L, 2, LUA_TFUNCTION);
+
+	CHECK_SECURE_PATH(L, filepath.c_str(), false);
 
 	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(2);
 
-	bool ok = server->dynamicAddMedia(filepath, token);
+	bool ok = server->dynamicAddMedia(filepath, token, to_player);
 	if (!ok)
 		server->getScriptIface()->freeDynamicMediaCallback(token);
 	lua_pushboolean(L, ok);
