@@ -44,12 +44,16 @@ bool clientMediaUpdateCache(const std::string &raw_hash, const std::string &file
 	return true;
 }
 
+IClientMediaDownloader::IClientMediaDownloader():
+	m_media_cache(getMediaCacheDir())
+{
+}
+
 /*
 	ClientMediaDownloader
 */
 
 ClientMediaDownloader::ClientMediaDownloader():
-	m_media_cache(getMediaCacheDir()),
 	m_httpfetch_caller(HTTPFETCH_DISCARD)
 {
 }
@@ -105,7 +109,7 @@ void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 {
 	assert(!m_initial_step_done);	// pre-condition
 
-	#ifdef USE_CURL
+#ifdef USE_CURL
 
 	if (g_settings->getBool("enable_remote_media_server")) {
 		infostream << "Client: Adding remote server \""
@@ -117,13 +121,13 @@ void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 		m_remotes.push_back(remote);
 	}
 
-	#else
+#else
 
 	infostream << "Client: Ignoring remote server \""
 		<< baseurl << "\" because cURL support is not compiled in"
 		<< std::endl;
 
-	#endif
+#endif
 }
 
 void ClientMediaDownloader::step(Client *client)
@@ -474,7 +478,7 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 	}
 }
 
-void ClientMediaDownloader::conventionalTransferDone(
+bool ClientMediaDownloader::conventionalTransferDone(
 		const std::string &name,
 		const std::string &data,
 		Client *client)
@@ -485,7 +489,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 		errorstream << "Client: server sent media file that was"
 			<< "not announced, ignoring it: \"" << name << "\""
 			<< std::endl;
-		return;
+		return false;
 	}
 	FileStatus *filestatus = file_iter->second;
 	assert(filestatus != NULL);
@@ -495,7 +499,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 		errorstream << "Client: server sent media file that we already"
 			<< "received, ignoring it: \"" << name << "\""
 			<< std::endl;
-		return;
+		return true;
 	}
 
 	// Mark file as received, regardless of whether loading it works and
@@ -508,9 +512,11 @@ void ClientMediaDownloader::conventionalTransferDone(
 	// Check that received file matches announced checksum
 	// If so, load it
 	checkAndLoad(name, filestatus->sha1, data, false, client);
+
+	return true;
 }
 
-bool ClientMediaDownloader::checkAndLoad(
+bool IClientMediaDownloader::checkAndLoad(
 		const std::string &name, const std::string &sha1,
 		const std::string &data, bool is_from_cache, Client *client)
 {

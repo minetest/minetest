@@ -38,7 +38,50 @@ struct HTTPFetchResult;
 bool clientMediaUpdateCache(const std::string &raw_hash,
 	const std::string &filedata);
 
-class ClientMediaDownloader
+// more of a base class than an interface but this name was most convenient...
+class IClientMediaDownloader
+{
+public:
+	virtual bool isStarted() const = 0;
+
+	// If this returns true, the downloader is done and can be deleted
+	virtual bool isDone() const = 0;
+
+	// Add a file to the list of required file (but don't fetch it yet)
+	virtual void addFile(const std::string &name, const std::string &sha1) = 0;
+
+	// Add a remote server to the list; ignored if not built with cURL
+	virtual void addRemoteServer(const std::string &baseurl) = 0;
+
+	// Steps the media downloader:
+	// - May load media into client by calling client->loadMedia()
+	// - May check media cache for files
+	// - May add files to media cache
+	// - May start remote transfers by calling httpfetch_async
+	// - May check for completion of current remote transfers
+	// - May start conventional transfers by calling client->request_media()
+	// - May inform server that all media has been loaded
+	//   by calling client->received_media()
+	// After step has been called once, don't call addFile/addRemoteServer.
+	virtual void step(Client *client) = 0;
+
+	// Must be called for each file received through TOCLIENT_MEDIA
+	// returns true if this file belongs to this downloader
+	virtual bool conventionalTransferDone(const std::string &name,
+			const std::string &data, Client *client) = 0;
+
+protected:
+	IClientMediaDownloader();
+
+	bool checkAndLoad(const std::string &name, const std::string &sha1,
+			const std::string &data, bool is_from_cache,
+			Client *client);
+
+	// Filesystem-based media cache
+	FileCache m_media_cache;
+};
+
+class ClientMediaDownloader : public IClientMediaDownloader
 {
 public:
 	ClientMediaDownloader();
@@ -52,39 +95,25 @@ public:
 		return 0.0f;
 	}
 
-	bool isStarted() const {
+	bool isStarted() const override {
 		return m_initial_step_done;
 	}
 
-	// If this returns true, the downloader is done and can be deleted
-	bool isDone() const {
+	bool isDone() const override {
 		return m_initial_step_done &&
 			m_uncached_received_count == m_uncached_count;
 	}
 
-	// Add a file to the list of required file (but don't fetch it yet)
-	void addFile(const std::string &name, const std::string &sha1);
+	void addFile(const std::string &name, const std::string &sha1) override;
 
-	// Add a remote server to the list; ignored if not built with cURL
-	void addRemoteServer(const std::string &baseurl);
+	void addRemoteServer(const std::string &baseurl) override;
 
-	// Steps the media downloader:
-	// - May load media into client by calling client->loadMedia()
-	// - May check media cache for files
-	// - May add files to media cache
-	// - May start remote transfers by calling httpfetch_async
-	// - May check for completion of current remote transfers
-	// - May start conventional transfers by calling client->request_media()
-	// - May inform server that all media has been loaded
-	//   by calling client->received_media()
-	// After step has been called once, don't call addFile/addRemoteServer.
-	void step(Client *client);
+	void step(Client *client) override;
 
-	// Must be called for each file received through TOCLIENT_MEDIA
-	void conventionalTransferDone(
+	bool conventionalTransferDone(
 			const std::string &name,
 			const std::string &data,
-			Client *client);
+			Client *client) override;
 
 private:
 	struct FileStatus {
@@ -107,22 +136,15 @@ private:
 	void startRemoteMediaTransfers();
 	void startConventionalTransfers(Client *client);
 
-	bool checkAndLoad(const std::string &name, const std::string &sha1,
-			const std::string &data, bool is_from_cache,
-			Client *client);
-
-	std::string serializeRequiredHashSet();
 	static void deSerializeHashSet(const std::string &data,
 			std::set<std::string> &result);
+	std::string serializeRequiredHashSet();
 
 	// Maps filename to file status
 	std::map<std::string, FileStatus*> m_files;
 
 	// Array of remote media servers
 	std::vector<RemoteServerStatus*> m_remotes;
-
-	// Filesystem-based media cache
-	FileCache m_media_cache;
 
 	// Has an attempt been made to load media files from the file cache?
 	// Have hash sets been requested from remote servers?
