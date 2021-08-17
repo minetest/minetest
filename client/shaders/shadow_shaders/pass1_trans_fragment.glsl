@@ -32,8 +32,10 @@ void main()
 
 	//col.rgb = col.a == 1.0 ? vec3(1.0) : col.rgb;
 #ifdef COLORED_SHADOWS
-	col *= varColor;
-	float packedColor = packColor(mix(col.rgb, black, col.a));
+	col.rgb *= varColor.rgb;
+	// alpha 0.0 results in all-white, 0.5 means full color, 1.0 means all black
+	// resulting color is used as a factor in the final shader
+	float packedColor = packColor(mix(mix(vec3(1.0), col.rgb, 2.0 * clamp(col.a, 0.0, 0.5)), black, 2.0 * clamp(col.a - 0.5, 0.0, 0.5)));
 	gl_FragColor = vec4(depth, packedColor, 0.0,1.0);
 #else
 	gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
