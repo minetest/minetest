@@ -665,6 +665,17 @@ void Server::AsyncRunStep(bool initial_step)
 	} else {
 		m_lag_gauge->increment(dtime/100);
 	}
+
+	{
+		float &counter = m_step_pending_dyn_media_timer;
+		counter += dtime;
+		if (counter >= 5.0f) {
+			stepPendingDynMediaCallbacks(counter);
+			counter = 0;
+		}
+	}
+
+
 #if USE_CURL
 	// send masterserver announce
 	{
@@ -2638,6 +2649,23 @@ void Server::sendRequestedMedia(session_t peer_id,
 	}
 }
 
+void Server::stepPendingDynMediaCallbacks(float dtime)
+{
+	MutexAutoLock lock(m_env_mutex);
+
+	for (auto it = m_pending_dyn_media.begin(); it != m_pending_dyn_media.end();) {
+		it->second.expiry_timer -= dtime;
+		bool del = it->second.waiting_players.empty() || it->second.expiry_timer < 0;
+
+		if (del) {
+			getScriptIface()->freeDynamicMediaCallback(it->first);
+			it = m_pending_dyn_media.erase(it);
+		} else {
+			it++;
+		}
+	}
+}
+
 void Server::SendMinimapModes(session_t peer_id,
 		std::vector<MinimapMode> &modes, size_t wanted_mode)
 {
@@ -3436,7 +3464,7 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 }
 
 bool Server::dynamicAddMedia(const std::string &filepath,
-	std::vector<RemotePlayer*> &sent_to)
+	const u32 token)
 {
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	if (m_media.find(filename) != m_media.end()) {
@@ -3452,33 +3480,51 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 		return false;
 
 	// Push file to existing clients
+	// Older clients have an awful hack that just throws the data at them
+	NetworkPacket legacy_pkt(TOCLIENT_MEDIA_PUSH, 0);
+	legacy_pkt << raw_hash << filename << (bool) true;
+	legacy_pkt.putLongString(filedata);
+	// Newer clients get asked to fetch the file (asynchronous)
 	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-	pkt << raw_hash << filename << (bool) true;
-	pkt.putLongString(filedata);
+	pkt << raw_hash << filename << token << (bool) true;
 
+	std::unordered_set<session_t> delivered, waiting;
 	m_clients.lock();
 	for (auto &pair : m_clients.getClientList()) {
 		if (pair.second->getState() < CS_DefinitionsSent)
 			continue;
-		if (pair.second->net_proto_version < 39)
+		const auto proto_ver = pair.second->net_proto_version;
+		if (proto_ver < 39)
 			continue;
 
-		if (auto player = m_env->getPlayer(pair.second->peer_id))
-			sent_to.emplace_back(player);
-		/*
-			FIXME: this is a very awful hack
-			The network layer only guarantees ordered delivery inside a channel.
-			Since the very next packet could be one that uses the media, we have
-			to push the media over ALL channels to ensure it is processed before
-			it is used.
-			In practice this means we have to send it twice:
-			- channel 1 (HUD)
-			- channel 0 (everything else: e.g. play_sound, object messages)
-		*/
-		m_clients.send(pair.second->peer_id, 1, &pkt, true);
-		m_clients.send(pair.second->peer_id, 0, &pkt, true);
+		if (proto_ver < 40) {
+			delivered.emplace(pair.second->peer_id);
+			/*
+				The network layer only guarantees ordered delivery inside a channel.
+				Since the very next packet could be one that uses the media, we have
+				to push the media over ALL channels to ensure it is processed before
+				it is used. In practice this means channels 1 and 0.
+			*/
+			m_clients.send(pair.second->peer_id, 1, &legacy_pkt, true);
+			m_clients.send(pair.second->peer_id, 0, &legacy_pkt, true);
+		} else {
+			waiting.emplace(pair.second->peer_id);
+			m_clients.send(pair.second->peer_id, 1, &pkt, true);
+		}
 	}
 	m_clients.unlock();
+
+	// Run callback for players that already had the file delivered (legacy-only)
+	for (session_t peer_id : delivered) {
+		if (auto player = m_env->getPlayer(peer_id))
+			getScriptIface()->on_dynamic_media_added(token, player->getName());
+	}
+
+	// Save all others in our pending state
+	auto &state = m_pending_dyn_media[token];
+	state.waiting_players = std::move(waiting);
+	// regardless of success throw away the callback after a while
+	state.expiry_timer = 60.0f;
 
 	return true;
 }

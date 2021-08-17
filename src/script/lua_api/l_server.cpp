@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "environment.h"
 #include "remoteplayer.h"
@@ -452,29 +453,25 @@ int ModApiServer::l_sound_fade(lua_State *L)
 }
 
 // dynamic_add_media(filepath)
-int ModApiServer::l_dynamic_add_media_raw(lua_State *L)
+int ModApiServer::l_dynamic_add_media(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	if (!getEnv(L))
 		throw LuaError("Dynamic media cannot be added before server has started up");
+	Server *server = getServer(L);
 
 	std::string filepath = readParam<std::string>(L, 1);
 	CHECK_SECURE_PATH(L, filepath.c_str(), false);
 
-	std::vector<RemotePlayer*> sent_to;
-	bool ok = getServer(L)->dynamicAddMedia(filepath, sent_to);
-	if (ok) {
-		// (see wrapper code in builtin)
-		lua_createtable(L, sent_to.size(), 0);
-		int i = 0;
-		for (RemotePlayer *player : sent_to) {
-			lua_pushstring(L, player->getName());
-			lua_rawseti(L, -2, ++i);
-		}
-	} else {
-		lua_pushboolean(L, false);
-	}
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+
+	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(2);
+
+	bool ok = server->dynamicAddMedia(filepath, token);
+	if (!ok)
+		server->getScriptIface()->freeDynamicMediaCallback(token);
+	lua_pushboolean(L, ok);
 
 	return 1;
 }
@@ -543,7 +540,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(sound_fade);
-	API_FCT(dynamic_add_media_raw);
+	API_FCT(dynamic_add_media);
 
 	API_FCT(get_player_information);
 	API_FCT(get_player_privs);
