@@ -252,14 +252,11 @@ void ScriptApiServer::on_dynamic_media_added(u32 token, const char *playername)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream << "on_dynamic_media_added(" << token << ", " << playername
-		<< ")" << std::endl;
-
 	int error_handler = PUSH_ERROR_HANDLER(L);
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "dynamic_media_callbacks");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_rawgeti(L, -2, token);
+	lua_rawgeti(L, -1, token);
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 
 	lua_pushstring(L, playername);
