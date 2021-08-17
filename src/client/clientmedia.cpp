@@ -673,7 +673,7 @@ bool SingleMediaDownloader::loadMedia(Client *client, const std::string &data,
 
 void SingleMediaDownloader::addFile(const std::string &name, const std::string &sha1)
 {
-	assert(stage == 0); // pre-condition
+	assert(m_stage == 0); // pre-condition
 
 	assert(!name.empty());
 	assert(sha1.size() == 20);
@@ -685,7 +685,7 @@ void SingleMediaDownloader::addFile(const std::string &name, const std::string &
 
 void SingleMediaDownloader::addRemoteServer(const std::string &baseurl)
 {
-	assert(stage == 0); // pre-condition
+	assert(m_stage == 0); // pre-condition
 
 	if (g_settings->getBool("enable_remote_media_server"))
 		m_remotes.emplace_back(baseurl);
