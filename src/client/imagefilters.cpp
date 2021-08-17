@@ -102,7 +102,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 
 	// Then repeatedly look for transparent pixels, filling them in until
 	// we're finished.
-	for (u32 iter = 0; iter < iter_max; iter++) {
+	for (int iter = 0; iter < iter_max; iter++) {
 
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
