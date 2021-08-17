@@ -5647,22 +5647,33 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
-* `minetest.dynamic_add_media(filepath, callback)`
-    * `filepath`: path to a media file on the filesystem
-    * `callback`: function with arguments `name`, where name is a player name
-      (previously there was no callback argument; omitting it is deprecated)
-    * Adds the file to the media sent to clients by the server on startup
-      and also pushes this file to already connected clients.
-      The file must be a supported image, sound or model format. It must not be
-      modified, deleted, moved or renamed after calling this function.
-      The list of dynamically added media is not persisted.
+* `minetest.dynamic_add_media(options, callback)`
+    * `options`: table containing the following parameters
+        * `filepath`: path to a media file on the filesystem
+        * `to_player`: name of the player the media should be sent to instead of
+                       all players (optional)
+        * `ephemeral`: boolean that marks the media as ephermal,
+                       it will not be cached on the client (optional, default false)
+    * `callback`: function with arguments `name`, which is a player name
+    * Pushes the specified media file to client(s). (details below)
+      The file must be a supported image, sound or model format.
+      Dynamically added media is not persisted between server restarts.
     * Returns false on error, true if the request was accepted
     * The given callback will be called for every player as soon as the
       media is available on the client.
-      Old clients that lack support for this feature will not see the media
-      unless they reconnect to the server. (callback won't be called)
-    * Since media transferred this way currently does not use client caching
-       or HTTP transfers, dynamic media should not be used with big files.
+    * Details/Notes:
+    * If `ephemeral`=false and `to_player` is unset the file is added to the media
+      sent to clients on startup, this means the media will appear even on
+      old clients if they rejoin the server.
+    * If `ephemeral`=false the file must not be modified, deleted, moved or
+      renamed after calling this function.
+    * Regardless of any use of `ephemeral`, adding media files with the same
+      name twice is not possible/guaranteed to work. An exception to this is the
+      use of `to_player` to send the same, already existent file to multiple
+      chosen players.
+    * Clients will attempt to fetch files added this way via remote media,
+      this can make transfer of bigger files painless (if set up). Nevertheless
+      it is advised not to use remote media for big media files.
 
 Bans
 ----

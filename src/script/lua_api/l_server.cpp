@@ -472,6 +472,8 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 	} else {
 		filepath = readParam<std::string>(L, 1);
 	}
+	if (filepath.empty())
+		luaL_typerror(L, 1, "non-empty string");
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 
 	CHECK_SECURE_PATH(L, filepath.c_str(), false);
