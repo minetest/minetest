@@ -2665,8 +2665,7 @@ void Server::stepPendingDynMediaCallbacks(float dtime)
 			const auto &name = it->second.filename;
 			if (!name.empty()) {
 				assert(m_media.count(name));
-				// no_announce is only ever set for ephermal dynamic media,
-				// we should never be attempting to delete other files!
+				// if no_announce isn't set we're definitely deleting the wrong file!
 				sanity_check(m_media[name].no_announce);
 
 				fs::DeleteSingleFileOrEmptyDirectory(m_media[name].path);
@@ -3480,14 +3479,15 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 bool Server::dynamicAddMedia(std::string filepath,
 	const u32 token, const std::string &to_player, bool ephemeral)
 {
-	if (!to_player.empty())
-		ephemeral = true;
-
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
-	if (m_media.find(filename) != m_media.end()) {
-		errorstream << "Server::dynamicAddMedia(): file \"" << filename
-			<< "\" already exists in media cache" << std::endl;
-		return false;
+	auto it = m_media.find(filename);
+	if (it != m_media.end()) {
+		// Allow the same path to be "added" again in certain conditions
+		if (ephemeral || it->second.path != filepath) {
+			errorstream << "Server::dynamicAddMedia(): file \"" << filename
+				<< "\" already exists in media cache" << std::endl;
+			return false;
+		}
 	}
 
 	// Load the file and add it to our media cache
@@ -3498,7 +3498,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 
 	if (ephemeral) {
 		// Create a copy of the file and swap out the path, this removes the
-		// requirement that mods keep the file accessiable at the original path.
+		// requirement that mods keep the file accessible at the original path.
 		filepath = fs::TempFile();
 		bool ok = ([&] () -> bool {
 			if (filepath.empty())
@@ -3522,6 +3522,8 @@ bool Server::dynamicAddMedia(std::string filepath,
 		m_media[filename].path = filepath;
 		m_media[filename].no_announce = true;
 		// stepPendingDynMediaCallbacks will clean this up later.
+	} else if (!to_player.empty()) {
+		m_media[filename].no_announce = true;
 	}
 
 	// Push file to existing clients
@@ -3547,7 +3549,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 			continue;
 
 		if (proto_ver < 40) {
-			delivered.emplace(pair.second->peer_id);
+			delivered.emplace(peer_id);
 			/*
 				The network layer only guarantees ordered delivery inside a channel.
 				Since the very next packet could be one that uses the media, we have
