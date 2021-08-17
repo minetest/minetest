@@ -1553,12 +1553,14 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (elem == nullptr)
 		return 0;
 
+	HudElementStat stat;
 	void *value = nullptr;
-	HudElementStat stat = read_hud_change(L, elem, &value);
+	bool ok = read_hud_change(L, stat, elem, &value);
 
-	getServer(L)->hudChange(player, id, stat, value);
+	if (ok)
+		getServer(L)->hudChange(player, id, stat, value);
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, ok);
 	return 1;
 }
 

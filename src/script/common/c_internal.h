@@ -114,6 +114,9 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
 
+bool script_log_unique(lua_State *L, std::string message, std::ostream &log_to,
+	int stack_depth = 1);
+
 enum class DeprecatedHandlingMode {
 	Ignore,
 	Log,
@@ -134,5 +137,4 @@ DeprecatedHandlingMode get_deprecated_handling_mode();
  * @param message The deprecation method
  * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
  */
-void log_deprecated(lua_State *L, const std::string &message,
-	int stack_depth=1);
+void log_deprecated(lua_State *L, std::string message, int stack_dept = 1);
