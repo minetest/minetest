@@ -758,7 +758,7 @@ void SingleMediaDownloader::remoteMediaReceived(
 
 	// Otherwise try the next remote server or fall back to conventional transfer
 	m_current_remote++;
-	if (m_current_remote >= m_remotes.size()) {
+	if (m_current_remote >= (int)m_remotes.size()) {
 		infostream << "Client: Failed to remote-fetch \"" << m_file_name
 				<< "\". Requesting it the usual way." << std::endl;
 		m_current_remote = -1;

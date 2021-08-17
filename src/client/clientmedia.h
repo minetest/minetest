@@ -72,6 +72,7 @@ public:
 
 protected:
 	IClientMediaDownloader();
+	virtual ~IClientMediaDownloader() {};
 
 	// Forwards the call to the appropriate Client method
 	virtual bool loadMedia(Client *client, const std::string &data,

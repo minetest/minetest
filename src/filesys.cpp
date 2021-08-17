@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdlib>
 #include <cstring>
 #include <cerrno>
+#include <unistd.h>
 #include <fstream>
 #include "log.h"
 #include "config.h"
