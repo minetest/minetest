@@ -301,8 +301,7 @@ void ClientMediaDownloader::remoteHashSetReceived(
 			// available on this server, add this server
 			// to the available_remotes array
 
-			for(std::map<std::string, FileStatus*>::iterator
-					it = m_files.upper_bound(m_name_bound);
+			for(auto it = m_files.upper_bound(m_name_bound);
 					it != m_files.end(); ++it) {
 				FileStatus *f = it->second;
 				if (!f->received && sha1_set.count(f->sha1))
@@ -328,8 +327,7 @@ void ClientMediaDownloader::remoteMediaReceived(
 
 	std::string name;
 	{
-		std::unordered_map<unsigned long, std::string>::iterator it =
-			m_remote_file_transfers.find(fetch_result.request_id);
+		auto it = m_remote_file_transfers.find(fetch_result.request_id);
 		assert(it != m_remote_file_transfers.end());
 		name = it->second;
 		m_remote_file_transfers.erase(it);
@@ -398,8 +396,7 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 {
 	bool changing_name_bound = true;
 
-	for (std::map<std::string, FileStatus*>::iterator
-			files_iter = m_files.upper_bound(m_name_bound);
+	for (auto files_iter = m_files.upper_bound(m_name_bound);
 			files_iter != m_files.end(); ++files_iter) {
 
 		// Abort if active fetch limit is exceeded
@@ -483,8 +480,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 		Client *client)
 {
 	// Check that file was announced
-	std::map<std::string, FileStatus*>::iterator
-		file_iter = m_files.find(name);
+	auto file_iter = m_files.find(name);
 	if (file_iter == m_files.end()) {
 		errorstream << "Client: server sent media file that was"
 			<< "not announced, ignoring it: \"" << name << "\""
@@ -587,12 +583,10 @@ std::string ClientMediaDownloader::serializeRequiredHashSet()
 
 	// Write list of hashes of files that have not been
 	// received (found in cache) yet
-	for (std::map<std::string, FileStatus*>::iterator
-			it = m_files.begin();
-			it != m_files.end(); ++it) {
-		if (!it->second->received) {
-			FATAL_ERROR_IF(it->second->sha1.size() != 20, "Invalid SHA1 size");
-			os << it->second->sha1;
+	for (const auto &it : m_files) {
+		if (!it.second->received) {
+			FATAL_ERROR_IF(it.second->sha1.size() != 20, "Invalid SHA1 size");
+			os << it.second->sha1;
 		}
 	}
 
