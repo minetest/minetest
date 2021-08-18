@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2020-06-22 17:56+0000\n"
+"PO-Revision-Date: 2021-08-19 06:36+0000\n"
 "Last-Translator: GunChleoc <fios@foramnagaidhlig.net>\n"
 "Language-Team: Gaelic <https://hosted.weblate.org/projects/minetest/minetest/"
 "gd/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
 "(n > 2 && n < 20) ? 2 : 3;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2162,10 +2162,10 @@ msgid ""
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
 "Riasladh 3D a mhìnicheas structar na tìre air fhleòd.\n"
-"Mura cleachd thu an luach tùsail, dh’fhaoidte gum fheàirrde thu gleus a chur "
-"air “scale” an riaslaidh (0.7 o thùs)\n"
-", on a dh’obraicheas foincseanan cinn-chaoil as fheàrr\n"
-"nuair a bhios an riasladh seo eadar mu -2.0 agus 2.0."
+"Mura cleachd thu an luach bunaiteach, dh’fhaoidte gum b’ fheàirrde thu\n"
+"gleus a chur air “scale” an riaslaidh (0.7 a ghnàth) on a dh’obraicheas "
+"foincseanan\n"
+"cinn-chaoil as fheàrr nuair a bhios an riasladh seo eadar mu -2.0 agus 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2821,7 +2821,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr "Sochairean tùsail"
+msgstr "Sochairean bunaiteach"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
