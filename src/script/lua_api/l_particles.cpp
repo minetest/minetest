@@ -274,7 +274,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			p.texpool.reserve(tl);
 			for (size_t i = 0; i < tl; ++i) {
 				lua_pushinteger(L, i+1), lua_gettable(L, -2);
-				p.texpool.push_back(ServerParticleTexture());
+				p.texpool.emplace_back();
 				LuaParticleParams::readTexValue(L, p.texpool.back());
 				lua_pop(L,1);
 			}

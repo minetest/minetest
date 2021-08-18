@@ -1655,7 +1655,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		pkt.putRawString(os.str());
 
 		pkt << (u16)p.texpool.size();
-		for(auto tex : p.texpool) {
+		for(const auto& tex : p.texpool) {
 			std::ostringstream os(std::ios_base::binary);
 			tex.serialize(os, protocol_version);
 			pkt.putRawString(os.str());
