@@ -34,24 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 
 /*
-	Utility
-*/
-
-static f32 random_f32(f32 min, f32 max)
-{
-// 	return rand() / (float)RAND_MAX * (max - min) + min;
-	return myrand_range(min,max);
-}
-
-	// static v3f random_v3f(v3f min, v3f max)
-	// {
-	// 	return v3f(
-	// 		random_f32(min.X, max.X),
-	// 		random_f32(min.Y, max.Y),
-	// 		random_f32(min.Z, max.Z));
-	// }
-
-/*
 	Particle
 */
 
@@ -292,7 +274,7 @@ ParticleSpawner::ParticleSpawner(
 
 	m_spawntimes.reserve(p.amount + 1);
 	for (u16 i = 0; i <= p.amount; i++) {
-		float spawntime = rand() / (float)RAND_MAX * p.time;
+		float spawntime = myrand_float() * p.time;
 		m_spawntimes.push_back(spawntime);
 	}
 }
@@ -364,9 +346,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		mag.normalize();
 
 		v3f ofs = v3f(l,0,0);
-		ofs.rotateXZBy(random_f32(0,360));
-		ofs.rotateYZBy(random_f32(0,360));
-		ofs.rotateXYBy(random_f32(0,360));
+		ofs.rotateXZBy(myrand_range(0.f,360.f));
+		ofs.rotateYZBy(myrand_range(0.f,360.f));
+		ofs.rotateXYBy(myrand_range(0.f,360.f));
 
 		pp.pos += ofs * mag;
 	}
@@ -485,7 +467,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 			return;
 
 		for (int i = 0; i <= p.amount; i++) {
-			if (rand() / (float)RAND_MAX < dtime)
+			if (myrand_float() < dtime)
 				spawnParticle(env, radius, attached_absolute_pos_rot_matrix);
 		}
 	}
@@ -654,7 +636,7 @@ bool ParticleManager::getNodeParticleParams(const MapNode &n,
 	if (tilenum > 0 && tilenum <= 6)
 		texid = tilenum - 1;
 	else
-		texid = rand() % 6;
+		texid = myrand_range(0,5);
 	const TileLayer &tile = f.tiles[texid].layers[0];
 	p.animation.type = TAT_NONE;
 
@@ -664,13 +646,13 @@ bool ParticleManager::getNodeParticleParams(const MapNode &n,
 	else
 		*texture = tile.texture;
 
-	float size = (rand() % 8) / 64.0f;
+	float size = (myrand_range(0,8)) / 64.0f;
 	p.size = BS * size;
 	if (tile.scale)
 		size /= tile.scale;
 	texsize = v2f(size * 2.0f, size * 2.0f);
-	texpos.X = (rand() % 64) / 64.0f - texsize.X;
-	texpos.Y = (rand() % 64) / 64.0f - texsize.Y;
+	texpos.X = (myrand_range(0,64)) / 64.0f - texsize.X;
+	texpos.Y = (myrand_range(0,64)) / 64.0f - texsize.Y;
 
 	if (tile.has_color)
 		*color = tile.color;
@@ -710,13 +692,13 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	if (!getNodeParticleParams(n, f, p, &texture.ref, texpos, texsize, &color))
 		return;
 
-	p.expirationtime = (rand() % 100) / 100.0f;
+	p.expirationtime = myrand_range(0, 100) / 100.0f;
 
 	// Physics
 	p.vel = v3f(
-		(rand() % 150) / 50.0f - 1.5f,
-		(rand() % 150) / 50.0f,
-		(rand() % 150) / 50.0f - 1.5f
+		myrand_range(-1.5f,1.5f),
+		myrand_range(0.f,3.f),
+		myrand_range(-1.5f,1.5f)
 	);
 	p.acc = v3f(
 		0.0f,
@@ -724,9 +706,9 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		0.0f
 	);
 	p.pos = v3f(
-		(f32)pos.X + (rand() % 100) / 200.0f - 0.25f,
-		(f32)pos.Y + (rand() % 100) / 200.0f - 0.25f,
-		(f32)pos.Z + (rand() % 100) / 200.0f - 0.25f
+		(f32)pos.X + myrand_range(0.f, .5f) - .25f,
+		(f32)pos.Y + myrand_range(0.f, .5f) - .25f,
+		(f32)pos.Z + myrand_range(0.f, .5f) - .25f
 	);
 
 	Particle *toadd = new Particle(
