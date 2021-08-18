@@ -266,7 +266,9 @@ struct ParticleTexture {
 	bool animated = false;
 	TileAnimationParams animation;
 	ParticleParamTypes::f32Tween alpha = (f32)1;
-	ParticleParamTypes::v2fTween scale = (v2f){1.f,1.f};
+	ParticleParamTypes::v2fTween scale; //= (v2f){1.f,1.f};
+
+	ParticleTexture();
 };
 
 struct ServerParticleTexture : public ParticleTexture {

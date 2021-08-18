@@ -116,3 +116,6 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 		drag = readV3F32(is);
 	}
 }
+
+ParticleTexture::ParticleTexture():
+	scale(1.f, 1.f) {}
