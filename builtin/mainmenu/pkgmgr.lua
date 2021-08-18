@@ -730,13 +730,20 @@ function pkgmgr.preparemodlist(data)
 		if key:sub(1, 9) == "load_mod_" then
 			key = key:sub(10)
 			local element = nil
+			local modpack_elem = nil
 			for i=1,#retval,1 do
 				if retval[i].name == key and
 					not retval[i].is_modpack then
-					element = retval[i]
-					break
+					if retval[i].modpack then
+						-- remember the element in modpack and continue to search
+						modpack_elem = retval[i]
+					else
+						element = retval[i]
+						break
+					end
 				end
 			end
+			if element == nil then element = modpack_elem end
 			if element ~= nil then
 				element.enabled = value ~= "false" and value ~= "nil" and value
 			else
