@@ -1927,24 +1927,18 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
 			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-			wchar_t buf[100];
 			g_settings->setFloat("sound_volume", new_volume);
-			const wchar_t *str = wgettext("Volume changed to %d%%");
-			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-			delete[] str;
-			m_game_ui->showStatusText(buf);
+			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+			m_game_ui->showStatusText(msg);
 		} else {
 			m_game_ui->showTranslatedStatusText("Sound system is disabled");
 		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
 			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-			wchar_t buf[100];
 			g_settings->setFloat("sound_volume", new_volume);
-			const wchar_t *str = wgettext("Volume changed to %d%%");
-			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-			delete[] str;
-			m_game_ui->showStatusText(buf);
+			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+			m_game_ui->showStatusText(msg);
 		} else {
 			m_game_ui->showTranslatedStatusText("Sound system is disabled");
 		}
@@ -2329,20 +2323,13 @@ void Game::increaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
 
-	wchar_t buf[255];
-	const wchar_t *str;
 	if (range_new > 4000) {
 		range_new = 4000;
-		str = wgettext("Viewing range is at maximum: %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
-
+		std::wstring msg = fwgettext("Viewing range is at maximum: %d", range_new);
+		m_game_ui->showStatusText(msg);
 	} else {
-		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
 }
@@ -2353,19 +2340,13 @@ void Game::decreaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
-	wchar_t buf[255];
-	const wchar_t *str;
 	if (range_new < 20) {
 		range_new = 20;
-		str = wgettext("Viewing range is at minimum: %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range is at minimum: %d", range_new);
+		m_game_ui->showStatusText(msg);
 	} else {
-		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
 }
