@@ -83,6 +83,39 @@ std::string ObjectProperties::dump()
 	return os.str();
 }
 
+bool ObjectProperties::validate()
+{
+	const char *func = "ObjectProperties::validate(): ";
+	bool ret = true;
+
+	// cf. where serializeString16 is used below
+	for (u32 i = 0; i < textures.size(); i++) {
+		if (textures[i].size() > U16_MAX) {
+			warningstream << func << "texture " << (i+1) << " has excessive length, "
+				"clearing it." << std::endl;
+			textures[i].clear();
+			ret = false;
+		}
+	}
+	if (nametag.length() > U16_MAX) {
+		warningstream << func << "nametag has excessive length, clearing it." << std::endl;
+		nametag.clear();
+		ret = false;
+	}
+	if (infotext.length() > U16_MAX) {
+		warningstream << func << "infotext has excessive length, clearing it." << std::endl;
+		infotext.clear();
+		ret = false;
+	}
+	if (wield_item.length() > U16_MAX) {
+		warningstream << func << "wield_item has excessive length, clearing it." << std::endl;
+		wield_item.clear();
+		ret = false;
+	}
+
+	return ret;
+}
+
 void ObjectProperties::serialize(std::ostream &os) const
 {
 	writeU8(os, 4); // PROTOCOL_VERSION >= 37
@@ -105,7 +138,6 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, is_visible);
 	writeU8(os, makes_footstep_sound);
 	writeF32(os, automatic_rotate);
-	// Added in protocol version 14
 	os << serializeString16(mesh);
 	writeU16(os, colors.size());
 	for (video::SColor color : colors) {
