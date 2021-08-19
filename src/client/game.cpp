@@ -2199,7 +2199,24 @@ void Game::toggleCinematic()
 void Game::toggleBlockBounds()
 {
 	if (client->checkPrivilege("basic_debug")) {
-		hud->toggleBlockBounds();
+		enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
+		switch (newmode) {
+			case Hud::BLOCK_BOUNDS_OFF:
+				m_game_ui->showTranslatedStatusText("Block bounds hidden");
+				break;
+			case Hud::BLOCK_BOUNDS_CURRENT:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for current block");
+				break;
+			case Hud::BLOCK_BOUNDS_NEAR:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
+				break;
+			case Hud::BLOCK_BOUNDS_MAX:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
+				break;
+			default:
+				break;
+		}
+
 	} else {
 		m_game_ui->showTranslatedStatusText("Can't show block bounds (need 'basic_debug' privilege)");
 	}
