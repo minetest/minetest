@@ -813,7 +813,7 @@ bool Rename(const std::string &from, const std::string &to)
 	return rename(from.c_str(), to.c_str()) == 0;
 }
 
-std::string TempFile()
+std::string CreateTempFile()
 {
 	std::string path = TempPath() + DIR_DELIM "/MT_XXXXXX";
 	int fd = mkstemp(&path[0]); // modifies path

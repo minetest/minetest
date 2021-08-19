@@ -73,7 +73,7 @@ std::string TempPath();
 
 // Returns path to securely-created temporary file (will already exist when this function returns)
 // can return "" on error
-std::string TempFile();
+std::string CreateTempFile();
 
 /* Returns a list of subdirectories, including the path itself, but excluding
        hidden directories (whose names start with . or _)

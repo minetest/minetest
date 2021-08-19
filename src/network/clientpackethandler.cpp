@@ -728,16 +728,16 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 		*pkt >> name;
 		data = pkt->readLongString();
 
-		if (init_phase) {
-			m_media_downloader->conventionalTransferDone(name, data, this);
-			continue;
-		}
-		// Check pending dynamic transfers, one of them must be it
 		bool ok = false;
-		for (const auto &it : m_pending_media_downloads) {
-			if (it.second->conventionalTransferDone(name, data, this)) {
-				ok = true;
-				break;
+		if (init_phase) {
+			ok = m_media_downloader->conventionalTransferDone(name, data, this);
+		} else {
+			// Check pending dynamic transfers, one of them must be it
+			for (const auto &it : m_pending_media_downloads) {
+				if (it.second->conventionalTransferDone(name, data, this)) {
+					ok = true;
+					break;
+				}
 			}
 		}
 		if (!ok) {

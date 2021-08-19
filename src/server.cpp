@@ -3499,7 +3499,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 	if (ephemeral) {
 		// Create a copy of the file and swap out the path, this removes the
 		// requirement that mods keep the file accessible at the original path.
-		filepath = fs::TempFile();
+		filepath = fs::CreateTempFile();
 		bool ok = ([&] () -> bool {
 			if (filepath.empty())
 				return false;

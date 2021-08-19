@@ -558,8 +558,7 @@ void Client::step(float dtime)
 	{
 		std::vector<u32> done;
 		for (auto it = m_pending_media_downloads.begin();
-			it != m_pending_media_downloads.end();)
-		{
+			it != m_pending_media_downloads.end();) {
 			assert(it->second->isStarted());
 			it->second->step(this);
 			if (it->second->isDone()) {
@@ -571,7 +570,7 @@ void Client::step(float dtime)
 				it++;
 			}
 
-			if (done.size() == 255) {
+			if (done.size() == 255) { // maximum in one packet
 				sendHaveMedia(done);
 				done.clear();
 			}
