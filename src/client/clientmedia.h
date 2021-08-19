@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "filecache.h"
+#include "util/basic_macros.h"
 #include <ostream>
 #include <map>
 #include <set>
@@ -42,6 +43,8 @@ bool clientMediaUpdateCache(const std::string &raw_hash,
 class IClientMediaDownloader
 {
 public:
+	DISABLE_CLASS_COPY(IClientMediaDownloader)
+
 	virtual bool isStarted() const = 0;
 
 	// If this returns true, the downloader is done and can be deleted
@@ -72,7 +75,7 @@ public:
 
 protected:
 	IClientMediaDownloader();
-	virtual ~IClientMediaDownloader() {};
+	virtual ~IClientMediaDownloader() = default;
 
 	// Forwards the call to the appropriate Client method
 	virtual bool loadMedia(Client *client, const std::string &data,

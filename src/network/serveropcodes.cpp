@@ -89,7 +89,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
-	{ "TOSERVER_HAVE_MEDIA",               TOSERVER_STATE_STARTUP, &Server::handleCommand_HaveMedia }, // 0x41
+	{ "TOSERVER_HAVE_MEDIA",               TOSERVER_STATE_INGAME, &Server::handleCommand_HaveMedia }, // 0x41
 	null_command_handler, // 0x42
 	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
 	null_command_handler, // 0x44

@@ -2571,7 +2571,7 @@ struct SendableMedia
 
 	SendableMedia(const std::string &name, const std::string &path,
 			std::string &&data):
-		name(name), path(path), data(data)
+		name(name), path(path), data(std::move(data))
 	{}
 };
 
@@ -3560,7 +3560,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 			m_clients.send(peer_id, 0, &legacy_pkt, true);
 		} else {
 			waiting.emplace(peer_id);
-			m_clients.send(peer_id, 1, &pkt, true);
+			Send(peer_id, &pkt);
 		}
 	}
 	m_clients.unlock();

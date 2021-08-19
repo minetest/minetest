@@ -1821,7 +1821,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	broadcastModChannelMessage(channel_name, channel_msg, peer_id);
 }
 
-void Server::handleCommand_HaveMedia(NetworkPacket* pkt)
+void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 {
 	std::vector<u32> tokens;
 	u8 numtokens;

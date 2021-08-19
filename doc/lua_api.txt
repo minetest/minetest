@@ -5662,18 +5662,18 @@ Server
     * The given callback will be called for every player as soon as the
       media is available on the client.
     * Details/Notes:
-    * If `ephemeral`=false and `to_player` is unset the file is added to the media
-      sent to clients on startup, this means the media will appear even on
-      old clients if they rejoin the server.
-    * If `ephemeral`=false the file must not be modified, deleted, moved or
-      renamed after calling this function.
-    * Regardless of any use of `ephemeral`, adding media files with the same
-      name twice is not possible/guaranteed to work. An exception to this is the
-      use of `to_player` to send the same, already existent file to multiple
-      chosen players.
+      * If `ephemeral`=false and `to_player` is unset the file is added to the media
+        sent to clients on startup, this means the media will appear even on
+        old clients if they rejoin the server.
+      * If `ephemeral`=false the file must not be modified, deleted, moved or
+        renamed after calling this function.
+      * Regardless of any use of `ephemeral`, adding media files with the same
+        name twice is not possible/guaranteed to work. An exception to this is the
+        use of `to_player` to send the same, already existent file to multiple
+        chosen players.
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
-      it is advised not to use remote media for big media files.
+      it is advised not to use dynamic media for big media files.
 
 Bans
 ----

@@ -480,7 +480,7 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 
 	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(2);
 
-	bool ok = server->dynamicAddMedia(filepath, token, to_player, false);
+	bool ok = server->dynamicAddMedia(filepath, token, to_player, ephemeral);
 	if (!ok)
 		server->getScriptIface()->freeDynamicMediaCallback(token);
 	lua_pushboolean(L, ok);
