@@ -1140,7 +1140,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 			break;
 		default:
 			*pkt >> intdata;
-			return;
+			break;
 	}
 
 	ClientEvent *event = new ClientEvent();

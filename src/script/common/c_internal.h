@@ -137,4 +137,4 @@ DeprecatedHandlingMode get_deprecated_handling_mode();
  * @param message The deprecation method
  * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
  */
-void log_deprecated(lua_State *L, std::string message, int stack_dept = 1);
+void log_deprecated(lua_State *L, std::string message, int stack_depth = 1);
