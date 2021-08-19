@@ -60,13 +60,19 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # This is done here so that relative search paths are more reasonable
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
-	# tell IrrlichtMt to create a static library
-	set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
-	add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
-	unset(BUILD_SHARED_LIBS CACHE)
+	if(BUILD_CLIENT)
+		# tell IrrlichtMt to create a static library
+		set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
+		add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
+		unset(BUILD_SHARED_LIBS CACHE)
 
-	if(NOT TARGET IrrlichtMt)
-		message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		if(NOT TARGET IrrlichtMt)
+			message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		endif()
+	else()
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE
+			"${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
 	endif()
 else()
 	find_package(IrrlichtMt QUIET)
