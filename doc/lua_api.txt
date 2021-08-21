@@ -7791,8 +7791,7 @@ Used by `minetest.register_node`.
                     -- Only drop if using an item in the "magicwand" group, or 
                     -- an item that is in both the "pickaxe" and the "lucky"
                     -- groups.
-                    tool_groups =
-                    {
+                    tool_groups = {
                         "magicwand",
                         {"pickaxe", "lucky"}
                     },
