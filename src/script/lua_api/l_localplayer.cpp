@@ -369,10 +369,11 @@ int LuaLocalPlayer::l_hud_change(lua_State *L)
 	if (!element)
 		return 0;
 
+	HudElementStat stat;
 	void *unused;
-	read_hud_change(L, element, &unused);
+	bool ok = read_hud_change(L, stat, element, &unused);
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, ok);
 	return 1;
 }
 

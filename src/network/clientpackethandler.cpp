@@ -1119,17 +1119,29 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 
 	*pkt >> server_id >> stat;
 
-	if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
-		stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
-		*pkt >> v2fdata;
-	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT || stat == HUD_STAT_TEXT2)
-		*pkt >> sdata;
-	else if (stat == HUD_STAT_WORLD_POS)
-		*pkt >> v3fdata;
-	else if (stat == HUD_STAT_SIZE)
-		*pkt >> v2s32data;
-	else
-		*pkt >> intdata;
+	// Keep in sync with:server.cpp -> SendHUDChange
+	switch ((HudElementStat)stat) {
+		case HUD_STAT_POS:
+		case HUD_STAT_SCALE:
+		case HUD_STAT_ALIGN:
+		case HUD_STAT_OFFSET:
+			*pkt >> v2fdata;
+			break;
+		case HUD_STAT_NAME:
+		case HUD_STAT_TEXT:
+		case HUD_STAT_TEXT2:
+			*pkt >> sdata;
+			break;
+		case HUD_STAT_WORLD_POS:
+			*pkt >> v3fdata;
+			break;
+		case HUD_STAT_SIZE:
+			*pkt >> v2s32data;
+			break;
+		default:
+			*pkt >> intdata;
+			break;
+	}
 
 	ClientEvent *event = new ClientEvent();
 	event->type                 = CE_HUDCHANGE;
