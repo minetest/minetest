@@ -41,15 +41,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // glow = num
 
 void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex) {
-	lua_Integer top = lua_gettop(L);
+	StackUnroller unroll(L);
 	tex.animated = false;
 	if (lua_isstring(L, -1)) {
 		tex.string = lua_tostring(L, -1);
-	} else if (lua_istable(L, -1)) {
+	} else {
+		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "img");
-		if (lua_isstring(L, -1)) {
-			tex.string = lua_tostring(L, -1);
-		} else goto error;
+		tex.string = luaL_checkstring(L, -1);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "animation");
@@ -61,11 +60,7 @@ void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex) {
 
 		LuaParticleParams::readTweenTable(L, "alpha", tex.alpha);
 		LuaParticleParams::readTweenTable(L, "scale", tex.scale);
-	} else goto error;
-	lua_settop(L, top);
-	return;
-
-	error: lua_pushliteral(L, "invalid type in texture specifier"), lua_error(L);
+	}
 }
 
 int ModApiParticles::l_add_particle(lua_State *L)

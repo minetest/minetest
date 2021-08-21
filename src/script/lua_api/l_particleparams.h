@@ -69,21 +69,18 @@ namespace LuaParticleParams {
 	}
 
 	inline void readLuaValue(lua_State* L, TweenStyle& ret) {
-		const char* const opts[] = { "fwd", "rev", "pulse", "flicker", NULL };
-		const TweenStyle optmap[] = {
-			TweenStyle::fwd,
-			TweenStyle::rev,
-			TweenStyle::pulse,
-			TweenStyle::flicker,
+		EnumString opts[] = {
+			{(int)TweenStyle::fwd,     "fwd"},
+			{(int)TweenStyle::rev,     "rev"},
+			{(int)TweenStyle::pulse,   "pulse"},
+			{(int)TweenStyle::flicker, "flicker"},
+			{0, nullptr},
 		};
-		static_assert(
-				(sizeof opts / sizeof opts[0])-1 ==
-				(sizeof optmap / sizeof optmap[0]),
-				"option maps not synced");
 
 		if (lua_isstring(L, -1)) {
-			size_t v = luaL_checkoption(L, -1, opts[0], opts);
-			ret = optmap[v];
+			int v = (int)TweenStyle::fwd;
+			string_to_enum(opts, v, std::string(lua_tostring(L, -1)));
+			ret = (TweenStyle)v;
 		}
 	}
 
@@ -165,15 +162,15 @@ namespace LuaParticleParams {
 			lua_pop(L, 1);
 
 			// get the effect settings
-			lua_pushliteral(L, "style"), lua_gettable(L, -2);
+			lua_getfield(L, -1, "style");
 			readLuaValue(L, field.style);
 			lua_pop(L, 1);
 
-			lua_pushliteral(L, "reps"), lua_gettable(L, -2);
+			lua_getfield(L, -1, "reps");
 			readLuaValue(L, field.reps);
 			lua_pop(L, 1);
 
-			lua_pushliteral(L, "start"), lua_gettable(L, -2);
+			lua_getfield(L, -1, "start");
 			readLuaValue(L, field.beginning);
 			lua_pop(L, 1);
 

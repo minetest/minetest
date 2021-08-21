@@ -32,7 +32,7 @@ struct MapNode;
 struct ContentFeatures;
 
 struct ClientParticleTexture : public ParticleTexture {
-	video::ITexture* ref;
+	video::ITexture* ref = nullptr;
 	ClientParticleTexture() = default;
 	ClientParticleTexture(ParticleTexture p);
 };
@@ -168,6 +168,8 @@ public:
 
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
+
+	void reserveParticleSpace(size_t max_estimate);
 
 	/**
 	 * This function is only used by client particle spawners

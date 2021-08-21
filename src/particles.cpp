@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 using namespace ParticleParamTypes;
 
-v2f ParticleParamTypes::vectorBlend(float* f, const v2f& a, const v2f& b) {
+v2f ParticleParamTypes::pickParameterValue(float* f, const v2f a, const v2f b) {
 	return v2f(
 		numericalBlend(f[0], a.X, b.X),
 		numericalBlend(f[1], a.Y, b.Y)
 	);
 }
-v3f ParticleParamTypes::vectorBlend(float* f, const v3f& a, const v3f& b) {
+v3f ParticleParamTypes::pickParameterValue(float* f, const v3f a, const v3f b) {
 	return v3f(
 		numericalBlend(f[0], a.X, b.X),
 		numericalBlend(f[1], a.Y, b.Y),
@@ -34,22 +34,39 @@ v3f ParticleParamTypes::vectorBlend(float* f, const v3f& a, const v3f& b) {
 	);
 }
 
-#define PARAM_DEF_SRZR(T, wr, rd) \
-	void ParticleParamTypes::serializeParameterValue  (std::ostream& os, T  v) {wr(os,v);  } \
-	void ParticleParamTypes::deSerializeParameterValue(std::istream& is, T& v) {v = rd(is);}
+v2f ParticleParamTypes::interpolateParameterValue(float fac, const v2f a, const v2f b)
+		{ return b.getInterpolated(a, fac); }
+v3f ParticleParamTypes::interpolateParameterValue(float fac, const v3f a, const v3f b)
+		{ return b.getInterpolated(a, fac); }
 
-PARAM_DEF_SRZR(u8,  writeU8,    readU8);
-PARAM_DEF_SRZR(u16, writeU16,   readU16);
-PARAM_DEF_SRZR(u32, writeU32,   readU32);
-PARAM_DEF_SRZR(f32, writeF32,   readF32);
+#define PARAM_PVFN(n) ParticleParamTypes::n##ParameterValue
+#define PARAM_DEF_SRZR(T, wr, rd) \
+	void PARAM_PVFN(serialize)  (std::ostream& os, T  v) {wr(os,v);  } \
+	void PARAM_PVFN(deSerialize)(std::istream& is, T& v) {v = rd(is);}
+
+#define PARAM_DEF_NUM(T, wr, rd) PARAM_DEF_SRZR(T, wr, rd) \
+	T PARAM_PVFN(interpolate)(float fac, const T a, const T b)      \
+			{ return numericalBlend<T>(fac,a,b); } \
+	T PARAM_PVFN(pick)       (float* f, const T a, const T b)       \
+			{ return numericalBlend<T>(f[0],a,b); }
+
+PARAM_DEF_NUM(u8,  writeU8,    readU8);
+PARAM_DEF_NUM(u16, writeU16,   readU16);
+PARAM_DEF_NUM(u32, writeU32,   readU32);
+PARAM_DEF_NUM(f32, writeF32,   readF32);
 PARAM_DEF_SRZR(v2f, writeV2F32, readV2F32);
 PARAM_DEF_SRZR(v3f, writeV3F32, readV3F32);
 
-#undef PARAM_DEF_SRZR
+enum class ParticleTextureFlags : u8 {
+	/* each value specifies a bit in a bitmask; if the maximum value
+	 * goes above 1<<7 the type of the flags field must be changed
+	 * from u8, which will necessitate a protocol change! */
+	animated = 1
+};
 
 void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver) const {
 	u8 flags = 0;
-	animated && (flags |= 1<<0);
+	animated && (flags |= (u8)ParticleTextureFlags::animated);
 	writeU8(os, flags);
 
 	alpha.serialize(os);
@@ -61,7 +78,7 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver) const 
 }
 void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver) {
 	u8 flags = readU8(is);
-	animated = (flags |= 1<<0) > 0;
+	animated = (flags & (u8)ParticleTextureFlags::animated);
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);

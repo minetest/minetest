@@ -4549,6 +4549,11 @@ Utilities
           degrotate_240_steps = true,
           -- ABM supports min_y and max_y fields in definition (5.5.0)
           abm_min_max_y = true,
+		  -- particlespawners support texpools and animation of properties,
+		  -- particle textures support smooth fade and scale, and sprite-sheet
+		  -- particle animations can by synced to the lifetime of individual
+		  -- particles (5.5.0)
+		  particlespawner_tweenable = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -8567,7 +8572,7 @@ will be ignored.
         object_collision = false,
         -- If true particles collide with objects that are defined as
         -- `physical = true,` and `collide_with_objects = true,`.
-        -- Requires collisiondetection = true to have any effect.v
+        -- Requires collisiondetection = true to have any effect.
 
         attached = ObjectRef,
         -- If defined, particle positions, velocities and accelerations are

@@ -33,43 +33,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace ParticleParamTypes {
 	template<typename T> using BlendFunction = T(float,T,T);
+	#define DECL_PARAM_OVERLOADS(type) \
+		void serializeParameterValue(std::ostream& os, type v);                \
+		void deSerializeParameterValue(std::istream& is, type&  r);            \
+		type interpolateParameterValue(float fac, const type a, const type b); \
+		type pickParameterValue(float* f, const type a, const type b);
 
-	void serializeParameterValue(std::ostream& os, u8 v);
-	void serializeParameterValue(std::ostream& os, u16 v);
-	void serializeParameterValue(std::ostream& os, u32 v);
-	void serializeParameterValue(std::ostream& os, f32 v);
-	void serializeParameterValue(std::ostream& os, v2f v);
-	void serializeParameterValue(std::ostream& os, v3f v);
+	DECL_PARAM_OVERLOADS(u8);
+	DECL_PARAM_OVERLOADS(u16);
+	DECL_PARAM_OVERLOADS(u32);
+	DECL_PARAM_OVERLOADS(f32);
+	DECL_PARAM_OVERLOADS(v2f);
+	DECL_PARAM_OVERLOADS(v3f);
 
-	void deSerializeParameterValue(std::istream& is, u8&  r);
-	void deSerializeParameterValue(std::istream& is, u16& r);
-	void deSerializeParameterValue(std::istream& is, u32& r);
-	void deSerializeParameterValue(std::istream& is, f32& r);
-	void deSerializeParameterValue(std::istream& is, v2f& r);
-	void deSerializeParameterValue(std::istream& is, v3f& r);
-
-	struct Parameter {
-		virtual void serialize(std::ostream &os) const = 0;
-		virtual void deSerialize(std::istream &is) = 0;
-	};
+	#undef DECL_PARAM_OVERLOADS
 
 	template <typename T, size_t PN>
-	struct ParameterWrapper : public Parameter {
+	struct Parameter {
 		using ValType = T;
 		using pickFactors = float[PN];
 
 		T val;
-		using This = ParameterWrapper<T, PN>;
+		using This = Parameter<T, PN>;
 
-		ParameterWrapper() = default;
-		ParameterWrapper(const This& a) : val(a.val) {};
+		Parameter() = default;
+		Parameter(const This& a) : val(a.val) {};
 		template <typename... Args>
-		ParameterWrapper(Args... args) : val(args...) {};
+		Parameter(Args... args) : val(args...) {};
 
-		void serialize(std::ostream &os) const override
+		virtual void serialize(std::ostream &os) const
 			{ serializeParameterValue  (os, this->val); }
-		void deSerialize(std::istream &is)     override
+		virtual void deSerialize(std::istream &is)
 			{ deSerializeParameterValue(is, this->val); }
+
+		virtual T interpolate(float fac, const This& against) const {
+			return interpolateParameterValue(fac, this->val, against.val);
+		}
+
+		static T
+		pick(float* f, const This& a, const This& b) {
+			return pickParameterValue(f, a.val, b.val);
+		}
 
 		operator T() const { return val; }
 		T operator = (T b) { return val = b; }
@@ -79,11 +83,11 @@ namespace ParticleParamTypes {
 		{ return min + ((max - min) * fac); }
 
 	template <typename T>
-	struct NumericParameter : public ParameterWrapper<T,1> {
+	struct NumericParameter : public Parameter<T,1> {
 		using This = NumericParameter<T>;
 
 		template <typename... Args>
-		NumericParameter(Args... args) : ParameterWrapper<T,1>(args...) {};
+		NumericParameter(Args... args) : Parameter<T,1>(args...) {};
 
 		This interpolate(float fac, const This against) const {
 			return This(numericalBlend(fac, (T)*this, (T)against));
@@ -93,35 +97,26 @@ namespace ParticleParamTypes {
 		}
 	};
 
-	v2f vectorBlend(float* f, const v2f& a, const v2f& b);
-	v3f vectorBlend(float* f, const v3f& a, const v3f& b);
-
 	template <typename T, size_t N>
-	struct VectorParameter : public ParameterWrapper<T,N> {
+	struct VectorParameter : public Parameter<T,N> {
 		using This = VectorParameter<T,N>;
 		template <typename... Args>
-		VectorParameter(Args... args) : ParameterWrapper<T,N>(args...) {};
+		VectorParameter(Args... args) : Parameter<T,N>(args...) {};
 
-		This interpolate(float fac, const This& against) const {
-			return against.val.getInterpolated(this->val, fac);
-		}
-		static This pick(float* f, const This& a, const This& b) {
-			return This(vectorBlend(f, a.val, b.val));
-		}
 	};
 
-	using u8Parameter  = NumericParameter<u8>;
-	using u16Parameter = NumericParameter<u16>;
-	using u32Parameter = NumericParameter<u32>;
+	using u8Parameter  = Parameter<u8,  1>;
+	using u16Parameter = Parameter<u16, 1>;
+	using u32Parameter = Parameter<u32, 1>;
 
-	using f32Parameter = NumericParameter<f32>;
+	using f32Parameter = Parameter<f32, 1>;
 
-	using v2fParameter = VectorParameter<v2f, 2>;
-	using v3fParameter = VectorParameter<v3f, 3>;
+	using v2fParameter = Parameter<v2f, 2>;
+	using v3fParameter = Parameter<v3f, 3>;
 
 
 	template <typename T>
-	struct RangedParameter : public Parameter {
+	struct RangedParameter {
 		using ValType = T;
 		using This = RangedParameter<T>;
 
@@ -178,7 +173,7 @@ namespace ParticleParamTypes {
 	enum class TweenStyle { fwd, rev, pulse, flicker };
 
 	template <typename T>
-	struct TweenedParameter : public Parameter {
+	struct TweenedParameter {
 		using ValType = T;
 		using This = TweenedParameter<T>;
 
@@ -233,14 +228,14 @@ namespace ParticleParamTypes {
 			return start.interpolate(fac, end);
 		}
 
-		void serialize(std::ostream &os) const override {
+		void serialize(std::ostream &os) const {
 			writeU8(os, (u8)style);
 			writeU16(os, reps);
 			writeF32(os, beginning);
 			start.serialize(os);
 			end.serialize(os);
 		};
-		void deSerialize(std::istream &is) override {
+		void deSerialize(std::istream &is) {
 			u8 st = readU8(is);
 			style = (TweenStyle)st;
 			reps = readU16(is);
@@ -328,13 +323,13 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 
 	std::vector<ServerParticleTexture> texpool;
 
-	ParticleParamTypes :: v3fRangeTween
+	ParticleParamTypes::v3fRangeTween
 		pos, vel, acc, drag, radius;
 
-	ParticleParamTypes :: v3fTween
+	ParticleParamTypes::v3fTween
 		attractor;
 
-	ParticleParamTypes :: f32RangeTween
+	ParticleParamTypes::f32RangeTween
 		exptime = (f32)1, size = (f32)1, attract = (f32)0;
 
 	// For historical reasons no (de-)serialization methods here

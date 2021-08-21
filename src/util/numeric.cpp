@@ -49,7 +49,7 @@ void myrand_bytes(void *out, size_t len)
 float myrand_float()
 {
 	u32 uv = g_pcgrand.next();
-	return (float)uv / (float)((u32)-1);
+	return (float)uv / (float)U32_MAX;
 }
 
 int myrand_range(int min, int max)

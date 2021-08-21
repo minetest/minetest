@@ -277,6 +277,8 @@ ParticleSpawner::ParticleSpawner(
 		float spawntime = myrand_float() * p.time;
 		m_spawntimes.push_back(spawntime);
 	}
+
+	p_manager -> reserveParticleSpace(p.amount);
 }
 
 ParticleSpawner::~ParticleSpawner() {
@@ -373,7 +375,6 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	p.copyCommon(pp);
 
 	ClientParticleTexture texture;
-	texture.ref = nullptr;
 	v2f texpos, texsize;
 	video::SColor color(0xFFFFFFFF);
 
@@ -596,9 +597,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			if (p.node.getContent() != CONTENT_IGNORE) {
 				const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
-				if (!getNodeParticleParams(p.node, f, p, &texture.ref, texpos,
-						texsize, &color, p.node_tile))
-					texture.ref = nullptr;
+				getNodeParticleParams(p.node, f, p, &texture.ref, texpos,
+						texsize, &color, p.node_tile);
 			} else {
 				texture.ref = client->tsrc()->getTextureForMesh(p.texture.string);
 				texpos = v2f(0.0f, 0.0f);
@@ -685,7 +685,6 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 {
 	ParticleParameters p;
 	ClientParticleTexture texture;
-	texture.ref = nullptr;
 	v2f texpos, texsize;
 	video::SColor color;
 
@@ -722,6 +721,12 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		color);
 
 	addParticle(toadd);
+}
+
+void ParticleManager::reserveParticleSpace(size_t max_estimate)
+{
+	MutexAutoLock lock(m_particle_list_lock);
+	m_particles.reserve(m_particles.size() + max_estimate);
 }
 
 void ParticleManager::addParticle(Particle *toadd)
