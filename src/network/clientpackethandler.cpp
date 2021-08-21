@@ -1500,8 +1500,8 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		filedata = pkt->readLongString();
 	}
 
-	bool data_empty = m_proto_ver < 40 && filedata.empty();
-	if (raw_hash.size() != 20 || data_empty || filename.empty() ||
+	if (raw_hash.size() != 20 || filename.empty() ||
+			(m_proto_ver < 40 && filedata.empty()) ||
 			!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
 		throw PacketError("Illegal filename, data or hash");
 	}

@@ -5652,7 +5652,7 @@ Server
         * `filepath`: path to a media file on the filesystem
         * `to_player`: name of the player the media should be sent to instead of
                        all players (optional)
-        * `ephemeral`: boolean that marks the media as ephermal,
+        * `ephemeral`: boolean that marks the media as ephemeral,
                        it will not be cached on the client (optional, default false)
     * `callback`: function with arguments `name`, which is a player name
     * Pushes the specified media file to client(s). (details below)
