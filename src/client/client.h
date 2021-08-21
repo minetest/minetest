@@ -38,6 +38,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include <fstream>
+#include <memory>
+#include <vector>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -63,6 +65,7 @@ class Minimap;
 struct MinimapMapblock;
 class Camera;
 class NetworkPacket;
+class Thread;
 namespace con {
 class Connection;
 }
@@ -432,6 +435,13 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+
+	// Adds a thread that will be removed when it's done
+	void addAsyncJob(std::unique_ptr<Thread> &&t)
+	{
+		m_async_jobs.push_back(std::move(t));
+	}
+
 private:
 	void loadMods();
 
@@ -480,6 +490,7 @@ private:
 
 
 	MeshUpdateThread m_mesh_update_thread;
+	std::vector<std::unique_ptr<Thread>> m_async_jobs;
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;

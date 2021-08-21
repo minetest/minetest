@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "debug.h"
+#include <type_traits>
+#include <utility>
 
 struct nullopt_t
 {
@@ -43,33 +45,65 @@ class Optional
 public:
 	Optional() noexcept {}
 	Optional(nullopt_t) noexcept {}
-	Optional(const T &value) noexcept : m_has_value(true), m_value(value) {}
 	Optional(const Optional<T> &other) noexcept :
 			m_has_value(other.m_has_value), m_value(other.m_value)
-	{
-	}
+	{}
+	Optional(Optional<T> &&other) noexcept :
+			m_has_value(other.m_has_value), m_value(std::move(other.m_value))
+	{}
 
-	void operator=(nullopt_t) noexcept { m_has_value = false; }
+	template <typename U = T, typename std::enable_if<std::is_convertible<U &&, T>::value, int>::type = 0>
+	Optional(U &&value) noexcept : m_has_value(true), m_value(std::forward<U>(value)) {}
+	template <typename U = T, typename std::enable_if<!std::is_convertible<U &&, T>::value, int>::type = 0>
+	explicit Optional(U &&value) noexcept : m_has_value(true), m_value(std::forward<U>(value)) {}
 
-	void operator=(const Optional<T> &other) noexcept
+	Optional<T> &operator=(nullopt_t) noexcept { m_has_value = false; return *this; }
+
+	Optional<T> &operator=(const Optional<T> &other) noexcept
 	{
+		if (&other == this)
+			return *this;
 		m_has_value = other.m_has_value;
 		m_value = other.m_value;
+		return *this;
+	}
+	Optional<T> &operator=(Optional<T> &&other) noexcept
+	{
+		if (&other == this)
+			return *this;
+		m_has_value = other.m_has_value;
+		m_value = std::move(other.m_value);
+		other.m_has_value = false;
+		return *this;
 	}
 
-	T &value()
+	T &value() &
 	{
 		FATAL_ERROR_IF(!m_has_value, "optional doesn't have value");
 		return m_value;
 	}
-
-	const T &value() const
+	const T &value() const &
 	{
 		FATAL_ERROR_IF(!m_has_value, "optional doesn't have value");
 		return m_value;
 	}
+	T &&value() &&
+	{
+		FATAL_ERROR_IF(!m_has_value, "optional doesn't have value");
+		return std::move(m_value);
+	}
 
-	const T &value_or(const T &def) const { return m_has_value ? m_value : def; }
+	template <typename U>
+	T value_or(U &&def) const &
+	{
+		return m_has_value ? m_value : static_cast<T>(std::forward<U>(def));
+	}
+
+	template <typename U>
+	T value_or(U &&def) &&
+	{
+		return m_has_value ? std::move(m_value) : static_cast<T>(std::forward<U>(def));
+	}
 
 	bool has_value() const noexcept { return m_has_value; }
 

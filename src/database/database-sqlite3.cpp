@@ -35,6 +35,9 @@ SQLite format specification:
 #include "util/string.h"
 #include "remoteplayer.h"
 #include "server/player_sao.h"
+#ifndef SERVER
+#include "client/clientmedia.h"
+#endif
 
 #include <cassert>
 
@@ -774,3 +777,273 @@ void AuthDatabaseSQLite3::writePrivileges(const AuthEntry &authEntry)
 		sqlite3_reset(m_stmt_write_privs);
 	}
 }
+
+#ifndef SERVER
+/*
+ * Media cache database
+ */
+
+MediaCacheDatabaseSQLite3::MediaCacheDatabaseSQLite3(const std::string &savedir) :
+		Database_SQLite3(savedir, "media_db")
+{
+}
+
+MediaCacheDatabaseSQLite3::~MediaCacheDatabaseSQLite3()
+{
+	FINALIZE_STATEMENT(m_stmt_begin_exclusive);
+	FINALIZE_STATEMENT(m_stmt_lookup);
+	FINALIZE_STATEMENT(m_stmt_touch);
+	FINALIZE_STATEMENT(m_stmt_insert);
+	FINALIZE_STATEMENT(m_stmt_expire_olds);
+	FINALIZE_STATEMENT(m_stmt_update_deleted_since_vacuum);
+	FINALIZE_STATEMENT(m_stmt_get_deleted_since_vacuum);
+	FINALIZE_STATEMENT(m_stmt_reset_deleted_since_vacuum);
+	FINALIZE_STATEMENT(m_stmt_delete_twice_expired);
+	FINALIZE_STATEMENT(m_stmt_vacuum);
+}
+
+void MediaCacheDatabaseSQLite3::createDatabase()
+{
+	assert(m_database); // Pre-condition
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE TABLE IF NOT EXISTS `files` ("
+			"`sha1` TEXT PRIMARY KEY NOT NULL, " // hexadecimal-encoded sha1-digest
+			"`last_touch` INTEGER NOT NULL, " // time point in seconds since epoch (a time_t)
+			"`has_expired` INTEGER NOT NULL, " // counts how often the file has expired (0, 1 or 2)
+			"`cache_class` INTEGER NOT NULL, " // see MediaCacheClass in client/clientmedia.h.
+			"`data_format` INTEGER NOT NULL, " // see MediaDataFormat in client/clientmedia.h.
+			"`data` BLOB NOT NULL" // the file data
+		");",
+		NULL, NULL, NULL),
+		"Failed to create media cache files table");
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE INDEX files_cache_class_last_touch_index ON files(cache_class, last_touch);",
+		NULL, NULL, NULL),
+		"Failed to create index on media cache files table");
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE INDEX files_has_expired_index ON files(has_expired);",
+		NULL, NULL, NULL),
+		"Failed to create index on media cache files table");
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE TABLE IF NOT EXISTS `files_single_meta` ("
+			"`key` INTEGER PRIMARY KEY, "
+			"`deleted_since_vacuum` INTEGER"
+		");",
+		NULL, NULL, NULL),
+		"Failed to create media cache files simgle meta table");
+
+	SQLOK(sqlite3_exec(m_database, "INSERT INTO files_single_meta VALUES(1, 0);",
+		NULL, NULL, NULL),
+		"Failed to insert single value into media cache files simgle meta table");
+}
+
+void MediaCacheDatabaseSQLite3::initStatements()
+{
+	PREPARE_STATEMENT(begin_exclusive, "BEGIN EXCLUSIVE;");
+	PREPARE_STATEMENT(lookup, "SELECT data_format, data FROM files WHERE sha1 = ?;");
+	PREPARE_STATEMENT(touch, "UPDATE files SET last_touch=strftime('%s', 'now'), "
+			"has_expired = 0 WHERE sha1 = ?;");
+	PREPARE_STATEMENT(insert, "INSERT OR REPLACE INTO files "
+			"VALUES(?, strftime('%s', 'now'), 0, ?, ?, ?);");
+	static_assert(static_cast<u16>(MediaCacheClass::Max) == 2);
+	PREPARE_STATEMENT(expire_olds,
+			"WITH to_expire AS ("
+				"WITH expire_times(cache_class, oldest_keep) AS (VALUES"
+					"(0, ?), " // MediaCacheClass::Unknown
+					"(1, ?)"   // MediaCacheClass::Legacy
+				") "
+				"SELECT sha1 "
+				"FROM files, expire_times "
+				"WHERE files.cache_class = expire_times.cache_class AND "
+					"files.last_touch < expire_times.oldest_keep"
+			") "
+			"UPDATE files "
+			"SET last_touch = strftime('%s', 'now'), "
+				"has_expired = has_expired + 1 "
+			"WHERE sha1 IN to_expire;"
+		);
+	PREPARE_STATEMENT(update_deleted_since_vacuum, "UPDATE files_single_meta "
+			"SET deleted_since_vacuum = deleted_since_vacuum + ("
+				"SELECT count(*) FROM files WHERE has_expired >= 2"
+			");");
+	PREPARE_STATEMENT(get_deleted_since_vacuum, "SELECT deleted_since_vacuum FROM files_single_meta;");
+	PREPARE_STATEMENT(reset_deleted_since_vacuum, "UPDATE files_single_meta SET deleted_since_vacuum = 0;");
+	PREPARE_STATEMENT(delete_twice_expired, "DELETE FROM files WHERE has_expired >= 2;");
+	PREPARE_STATEMENT(vacuum, "VACUUM;");
+}
+
+void MediaCacheDatabaseSQLite3::beginSaveExclusive()
+{
+	verifyDatabase();
+	SQLRES(sqlite3_step(m_stmt_begin_exclusive), SQLITE_DONE,
+		"Failed to start SQLite3 transaction");
+	sqlite3_reset(m_stmt_begin_exclusive);
+}
+
+bool MediaCacheDatabaseSQLite3::findFile(const std::string &sha1_digest,
+		std::string *out_data, MediaDataFormat *out_data_format)
+{
+	beginSaveExclusive();
+	auto ret = findFileSingle(sha1_digest, out_data, out_data_format);
+	endSave();
+	return ret;
+}
+
+std::vector<Optional<std::pair<std::string, MediaDataFormat>>>
+		MediaCacheDatabaseSQLite3::findFiles(const std::vector<std::string> &sha1_digests)
+{
+	std::vector<Optional<std::pair<std::string, MediaDataFormat>>> ret;
+	ret.reserve(sha1_digests.size());
+
+	beginSaveExclusive();
+	for (auto &&sha1_digest : sha1_digests) {
+		std::string data;
+		MediaDataFormat data_format;
+		if (findFileSingle(sha1_digest, &data, &data_format)) {
+			ret.emplace_back(std::make_pair(std::move(data), data_format));
+		} else {
+			ret.emplace_back(nullopt);
+		}
+	}
+	endSave();
+	return ret;
+}
+
+bool MediaCacheDatabaseSQLite3::findFileSingle(const std::string &sha1_digest,
+		std::string *out_data, MediaDataFormat *out_data_format)
+{
+	str_to_sqlite(m_stmt_lookup, 1, sha1_digest);
+
+	int res = sqlite3_step(m_stmt_lookup);
+
+	if (res == SQLITE_DONE) {
+		// did not find
+		sqlite3_reset(m_stmt_lookup);
+		sqlite3_clear_bindings(m_stmt_lookup);
+		return false;
+	}
+
+	sqlite3_vrfy(res, SQLITE_ROW);
+	// found it
+	int data_format = sqlite_to_int(m_stmt_lookup, 0);
+	if (data_format < 0 || data_format >= static_cast<u16>(MediaDataFormat::Max)) {
+		// invalid data format. maybe a row from a newer version. we can't use this
+		sqlite3_reset(m_stmt_lookup);
+		sqlite3_clear_bindings(m_stmt_lookup);
+		return false;
+	}
+	if (out_data_format)
+		*out_data_format = static_cast<MediaDataFormat>(data_format);
+	if (out_data)
+		*out_data = sqlite_to_blob_string(m_stmt_lookup, 1);
+
+	sqlite3_vrfy(sqlite3_step(m_stmt_lookup), SQLITE_DONE);
+
+	// touch it
+	str_to_sqlite(m_stmt_touch, 1, sha1_digest);
+	sqlite3_vrfy(sqlite3_step(m_stmt_touch), SQLITE_DONE);
+
+	sqlite3_reset(m_stmt_touch);
+	sqlite3_clear_bindings(m_stmt_touch);
+	sqlite3_reset(m_stmt_lookup);
+	sqlite3_clear_bindings(m_stmt_lookup);
+	return true;
+}
+
+void MediaCacheDatabaseSQLite3::updateFile(const std::string &sha1_digest,
+		MediaCacheClass cache_class, MediaDataFormat data_format, const std::string &data)
+{
+	verifyDatabase();
+
+	updateFileSingle(sha1_digest, cache_class, data_format, data);
+}
+
+void MediaCacheDatabaseSQLite3::updateFiles(const std::vector<MediaCacheUpdateFileArg> &files)
+{
+	beginSaveExclusive();
+
+	for (auto &&file : files) {
+		updateFileSingle(file.sha1_digest, file.cache_class, file.data_format, file.data);
+	}
+
+	endSave();
+}
+
+void MediaCacheDatabaseSQLite3::updateFileSingle(const std::string &sha1_digest,
+		MediaCacheClass cache_class, MediaDataFormat data_format, const std::string &data)
+{
+	str_to_sqlite(m_stmt_insert, 1, sha1_digest);
+	int_to_sqlite(m_stmt_insert, 2, static_cast<u16>(cache_class));
+	int_to_sqlite(m_stmt_insert, 3, static_cast<u16>(data_format));
+	blob_str_to_sqlite(m_stmt_insert, 4, data);
+
+	sqlite3_vrfy(sqlite3_step(m_stmt_insert), SQLITE_DONE);
+
+	sqlite3_reset(m_stmt_insert);
+	sqlite3_clear_bindings(m_stmt_insert);
+}
+
+void MediaCacheDatabaseSQLite3::updateFilesAndClean(const std::vector<MediaCacheUpdateFileArg> &files,
+			const std::vector<std::time_t> &cache_class_oldest_times)
+{
+	constexpr int VACUUM_TRESHOLD = 1000; //TODO: tune this value, make a setting or whatever
+	SANITY_CHECK(cache_class_oldest_times.size() == static_cast<u16>(MediaCacheClass::Max));
+
+	beginSaveExclusive();
+
+	// 1: update the files
+
+	for (auto &&file : files) {
+		updateFileSingle(file.sha1_digest, file.cache_class, file.data_format, file.data);
+	}
+
+	// 2: expire old files
+
+	for (size_t i = 0; i < cache_class_oldest_times.size(); ++i) {
+		int64_to_sqlite(m_stmt_expire_olds, i+1, cache_class_oldest_times[i]);
+	}
+
+	sqlite3_vrfy(sqlite3_step(m_stmt_expire_olds), SQLITE_DONE);
+
+	// get heuristics for deciding whether to vacuum
+
+	bool do_vacuum = false;
+
+	sqlite3_vrfy(sqlite3_step(m_stmt_update_deleted_since_vacuum), SQLITE_DONE);
+
+	sqlite3_vrfy(sqlite3_step(m_stmt_get_deleted_since_vacuum), SQLITE_ROW);
+	int deleted_since_vacuum = sqlite_to_int(m_stmt_get_deleted_since_vacuum, 1);
+	sqlite3_vrfy(sqlite3_step(m_stmt_get_deleted_since_vacuum), SQLITE_DONE);
+
+	if (deleted_since_vacuum > VACUUM_TRESHOLD) {
+		do_vacuum = true;
+		sqlite3_vrfy(sqlite3_step(m_stmt_reset_deleted_since_vacuum), SQLITE_DONE);
+	}
+
+	// 3: delete files that are twice expired
+
+	sqlite3_vrfy(sqlite3_step(m_stmt_delete_twice_expired), SQLITE_DONE);
+
+	// end transaction
+
+	sqlite3_reset(m_stmt_expire_olds);
+	sqlite3_clear_bindings(m_stmt_expire_olds);
+	sqlite3_reset(m_stmt_update_deleted_since_vacuum);
+	sqlite3_reset(m_stmt_get_deleted_since_vacuum);
+	sqlite3_reset(m_stmt_reset_deleted_since_vacuum);
+	sqlite3_reset(m_stmt_delete_twice_expired);
+	endSave();
+
+	// 4: vacuum
+
+	if (do_vacuum) {
+		sqlite3_vrfy(sqlite3_step(m_stmt_vacuum), SQLITE_DONE);
+		sqlite3_reset(m_stmt_vacuum);
+	}
+}
+
+#endif

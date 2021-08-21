@@ -35,6 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DISABLE_CLASS_COPY(C)        \
 	C(const C &) = delete;           \
 	C &operator=(const C &) = delete;
+// same as DISABLE_CLASS_COPY, but for moving
+#define DISABLE_CLASS_MOVE(C)        \
+	C(C &&) = delete;                \
+	C &operator=(C &&) = delete;
 
 #ifndef _MSC_VER
 	#define UNUSED_ATTRIBUTE __attribute__ ((unused))

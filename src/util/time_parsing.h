@@ -1,7 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013 Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Copyright (C) 2021 DS
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,24 +19,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <iostream>
+#include "Optional.h"
 #include <string>
 
-class FileCache
-{
-public:
-	/*
-		'dir' is the file cache directory to use.
-	*/
-	FileCache(const std::string &dir) : m_dir(dir) {}
-
-	bool update(const std::string &name, const std::string &data);
-	bool load(const std::string &name, std::ostream &os);
-	bool exists(const std::string &name);
-
-private:
-	std::string m_dir;
-
-	bool loadByPath(const std::string &path, std::ostream &os);
-	bool updateByPath(const std::string &path, const std::string &data);
-};
+/** Parses a human-written time value.
+ *
+ * Possible time units are the SI stuff (ie. "d" for days, "s" for seconds, "a"
+ * for years (1a=365.2425d)) with decimal or binary prefixes (ie. k, Ki, M, Mi).
+ * Any double numbers are allowed, just not NaN.
+ * Whitespace is allowed at the front and back and between the number and the unit,
+ * but not between the unit's prefix and the rest of the unit.
+ * Examples:
+ * "42 d", "5Ms ", "-10a", " +0x3.0p13Kih"
+ *
+ * @param str the string to be parsed
+ * @return time in seconds or nothing
+ */
+Optional<double> parse_difftime(const std::string &str);

@@ -20,23 +20,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include "filecache.h"
 #include "util/basic_macros.h"
+#include <ctime>
 #include <ostream>
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 #include <unordered_map>
 
 class Client;
 struct HTTPFetchResult;
+class MediaCacheDatabaseSQLite3;
+struct MediaCacheUpdateFileArg;
 
 #define MTHASHSET_FILE_SIGNATURE 0x4d544853 // 'MTHS'
 #define MTHASHSET_FILE_NAME "index.mth"
 
+// cache-classes
+// each has a setting to define its longevity
+enum class MediaCacheClass : u16 {
+	Unknown = 0, // used if the server used a value that we don't know
+	Legacy = 1, // used for old(=current) version when the server didn't specify a value
+	Max = 2,
+};
+
+// how the media is sent over network or stored in cache
+enum class MediaDataFormat : u16 {
+	Raw = 0, // uncompressed
+	LibZ = 1, // libz-compressed
+	Max = 2,
+};
+
 // Store file into media cache (unless it exists already)
 // Validating the hash is responsibility of the caller
-bool clientMediaUpdateCache(const std::string &raw_hash,
+void clientMediaUpdateCache(const std::string &raw_hash,
 	const std::string &filedata);
 
 // more of a base class than an interface but this name was most convenient...
@@ -81,16 +99,14 @@ protected:
 	virtual bool loadMedia(Client *client, const std::string &data,
 		const std::string &name) = 0;
 
-	void createCacheDirs();
-
-	bool tryLoadFromCache(const std::string &name, const std::string &sha1,
-			Client *client);
+	virtual void cacheUpdateFile(MediaCacheUpdateFileArg &&file) = 0;
 
 	bool checkAndLoad(const std::string &name, const std::string &sha1,
-			const std::string &data, bool is_from_cache, Client *client);
+			const std::string &data, bool is_from_cache, Client *client,
+			MediaDataFormat = MediaDataFormat::Raw);
 
-	// Filesystem-based media cache
-	FileCache m_media_cache;
+	// Media cache database
+	std::unique_ptr<MediaCacheDatabaseSQLite3> m_media_cache;
 	bool m_write_to_cache;
 };
 
@@ -128,9 +144,15 @@ public:
 			const std::string &data,
 			Client *client) override;
 
+	// Writes new cache entries and removes very old ones
+	// The ClientMediaDownloader becomes unusable
+	void updateAndCleanCache(Client *client);
+
 protected:
 	bool loadMedia(Client *client, const std::string &data,
 			const std::string &name) override;
+
+	void cacheUpdateFile(MediaCacheUpdateFileArg &&file) override;
 
 private:
 	struct FileStatus {
@@ -157,11 +179,16 @@ private:
 			std::set<std::string> &result);
 	std::string serializeRequiredHashSet();
 
+	std::vector<std::time_t> getCacheExpiryTimes();
+
 	// Maps filename to file status
 	std::map<std::string, FileStatus*> m_files;
 
 	// Array of remote media servers
 	std::vector<RemoteServerStatus*> m_remotes;
+
+	// Files to fill into the cache
+	std::vector<MediaCacheUpdateFileArg> m_files_to_update_in_cache;
 
 	// Has an attempt been made to load media files from the file cache?
 	// Have hash sets been requested from remote servers?
@@ -220,6 +247,8 @@ public:
 protected:
 	bool loadMedia(Client *client, const std::string &data,
 			const std::string &name) override;
+
+	void cacheUpdateFile(MediaCacheUpdateFileArg &&file) override;
 
 private:
 	void initialStep(Client *client);

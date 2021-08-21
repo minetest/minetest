@@ -20,28 +20,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmedia.h"
 #include "httpfetch.h"
 #include "client.h"
-#include "filecache.h"
+#include "database/database-sqlite3.h"
+#include "exceptions.h"
 #include "filesys.h"
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
+#include "serialization.h"
 #include "util/hex.h"
 #include "util/serialize.h"
 #include "util/sha1.h"
 #include "util/string.h"
+#include "util/thread.h"
+#include "util/time_parsing.h"
+#include <algorithm>
+#include <array>
+#include <ctime>
+#include <functional>
+#include <limits>
+#include <utility>
 
-static std::string getMediaCacheDir()
-{
-	return porting::path_cache + DIR_DELIM + "media";
-}
+#include "util/timetaker.h"
 
-bool clientMediaUpdateCache(const std::string &raw_hash, const std::string &filedata)
+void clientMediaUpdateCache(const std::string &raw_hash, const std::string &filedata)
 {
-	FileCache media_cache(getMediaCacheDir());
+	MediaCacheDatabaseSQLite3 media_cache(porting::path_cache);
 	std::string sha1_hex = hex_encode(raw_hash);
-	if (!media_cache.exists(sha1_hex))
-		return media_cache.update(sha1_hex, filedata);
-	return true;
+	if (!media_cache.findFile(sha1_hex)) {
+		media_cache.updateFile(sha1_hex, MediaCacheClass::Legacy,
+				MediaDataFormat::Raw, filedata);
+	}
 }
 
 /*
@@ -69,6 +77,11 @@ bool ClientMediaDownloader::loadMedia(Client *client, const std::string &data,
 		const std::string &name)
 {
 	return client->loadMedia(data, name);
+}
+
+void ClientMediaDownloader::cacheUpdateFile(MediaCacheUpdateFileArg &&file)
+{
+	m_files_to_update_in_cache.push_back(std::move(file));
 }
 
 void ClientMediaDownloader::addFile(const std::string &name, const std::string &sha1)
@@ -174,24 +187,51 @@ void ClientMediaDownloader::step(Client *client)
 
 void ClientMediaDownloader::initialStep(Client *client)
 {
-	// Check media cache
-	m_uncached_count = m_files.size();
-	for (auto &file_it : m_files) {
-		const std::string &name = file_it.first;
-		FileStatus *filestatus = file_it.second;
-		const std::string &sha1 = filestatus->sha1;
+	errorstream << "ClientMediaDownloader::initialStep: start" << std::endl;
+	TimeTaker tt_media_dwnldr_initialStep("tt_media_dwnldr_initialStep");
 
-		if (tryLoadFromCache(name, sha1, client)) {
-			filestatus->received = true;
-			m_uncached_count--;
+	// Check media cache
+	{
+		std::vector<std::string> sha1_digests;
+		sha1_digests.reserve(m_files.size());
+		for (auto &&file_it : m_files) {
+			sha1_digests.push_back(hex_encode(file_it.second->sha1));
+		}
+		auto cached_files = m_media_cache->findFiles(sha1_digests);
+		SANITY_CHECK(cached_files.size() == m_files.size());
+
+		errorstream << "ClientMediaDownloader::initialStep: it took(1): "
+				<< tt_media_dwnldr_initialStep.getTimerTime() << " ms" << std::endl;
+
+		m_uncached_count = m_files.size();
+		auto cache_it = cached_files.begin();
+		for (auto &file_it : m_files) {
+			if (!cache_it->has_value()) {
+				// not found in cache
+				++cache_it;
+				continue;
+			}
+			std::string name = file_it.first;
+			FileStatus *filestatus = file_it.second;
+			const std::string &sha1 = filestatus->sha1;
+
+			std::string &&file_data = std::move(cache_it->value().first);
+			MediaDataFormat file_data_format = cache_it->value().second;
+
+			// Try to load file
+			if (checkAndLoad(name, sha1, std::move(file_data), true,
+					client, file_data_format)) {
+				filestatus->received = true;
+				m_uncached_count--;
+			}
+
+			++cache_it;
 		}
 	}
+	errorstream << "ClientMediaDownloader::initialStep: it took(2): "
+			<< tt_media_dwnldr_initialStep.getTimerTime() << " ms" << std::endl;
 
 	assert(m_uncached_received_count == 0);
-
-	// Create the media cache dir if we are likely to write to it
-	if (m_uncached_count != 0)
-		createCacheDirs();
 
 	// If we found all files in the cache, report this fact to the server.
 	// If the server reported no remote servers, immediately start
@@ -268,6 +308,8 @@ void ClientMediaDownloader::initialStep(Client *client)
 			m_outstanding_hash_sets++;
 		}
 	}
+	errorstream << "ClientMediaDownloader::initialStep: it took(3): "
+			<< tt_media_dwnldr_initialStep.getTimerTime() << " ms" << std::endl;
 }
 
 void ClientMediaDownloader::remoteHashSetReceived(
@@ -502,47 +544,148 @@ bool ClientMediaDownloader::conventionalTransferDone(
 	return true;
 }
 
+void ClientMediaDownloader::updateAndCleanCache(Client *client)
+{
+	std::vector<std::time_t> cache_class_oldest_times = getCacheExpiryTimes();
+
+	auto job = make_Thread("ClientMediaDownloader::updateAndCleanCache-thread",
+			std::bind([](
+				std::unique_ptr<MediaCacheDatabaseSQLite3> &m_media_cache,
+				std::vector<MediaCacheUpdateFileArg> &m_files_to_update_in_cache,
+				const std::vector<std::time_t> &cache_class_oldest_times) {
+			try {
+				errorstream << "ClientMediaDownloader::updateAndCleanCache: start" << std::endl;
+				TimeTaker tt("tt_media_dwnldr_updateAndCleanCache");
+
+				m_media_cache->updateFilesAndClean(m_files_to_update_in_cache,
+						cache_class_oldest_times);
+				m_files_to_update_in_cache.clear();
+
+				errorstream << "ClientMediaDownloader::updateAndCleanCache: it took: "
+						<< tt.getTimerTime() << " ms" << std::endl;
+			} catch (DatabaseException &e) {
+				// something failed, but this is no reason to crash, as we had
+				// nothing essential to do
+				errorstream << "ClientMediaDownloader::updateAndCleanCache: "
+						<< "Catched DatabaseException in async job: "
+						<< e.what() << std::endl;
+			}
+		}, std::move(m_media_cache), std::move(m_files_to_update_in_cache),
+				std::move(cache_class_oldest_times)));
+
+	job->start();
+	job->setPriority(THREAD_PRIORITY_LOWEST);
+	client->addAsyncJob(std::move(job));
+}
+
+std::vector<std::time_t> ClientMediaDownloader::getCacheExpiryTimes()
+{
+	constexpr size_t num_cache_classes = static_cast<u16>(MediaCacheClass::Max);
+	constexpr double inf = std::numeric_limits<double>::infinity();
+
+	// settings with their default values
+	constexpr std::array<std::pair<const char *, double>, num_cache_classes>
+			expiry_time_settings = { std::pair<const char *, double>
+				{"media_cache_class_expiry_time_unknown", 0.0},
+				{"media_cache_class_expiry_time_legacy", inf},
+		};
+
+	// one second after the big bang, the universe was still very hot. there could
+	// be no minetest, nor cached files
+	// also, minetest didn't exist back in 1970
+	constexpr std::time_t time_never = 1;
+
+	std::vector<std::time_t> cache_class_oldest_times;
+	cache_class_oldest_times.reserve(num_cache_classes);
+
+	for (auto &&expiry_time_setting : expiry_time_settings) {
+		// read setting
+		double expiry_time = [&] {
+			if (!g_settings->exists(expiry_time_setting.first)) {
+				return expiry_time_setting.second;
+			}
+
+			const std::string &time_str = g_settings->get(expiry_time_setting.first);
+
+			if (trim(time_str) == "never") {
+				return inf;
+			}
+
+			Optional<double> expiry_time_opt = parse_difftime(time_str);
+			if (!expiry_time_opt.has_value()) {
+				errorstream << "Failed to parse timediff value from setting " <<
+						expiry_time_setting.first << ": \"" << time_str
+						<< "\", falling back to never" << std::endl;
+				return inf;
+			}
+			return expiry_time_opt.value();
+		}();
+
+		// times in the future make no sense
+		expiry_time = std::max(expiry_time, 0.0);
+
+		// the files have to expire twice, but the setting sets (approximately)
+		// the time until full expire => expire twice with half time
+		expiry_time *= 0.5;
+
+		// check if expiry_time would lead to a negative time point
+		if (expiry_time > static_cast<double>(std::numeric_limits<std::time_t>::max())) {
+			cache_class_oldest_times.push_back(time_never);
+			continue;
+		}
+
+		// calculate the oldest allowed time point
+		std::time_t current_time = std::time(nullptr);
+		std::time_t oldest_time = current_time - static_cast<std::time_t>(expiry_time);
+		oldest_time = std::max(oldest_time, time_never);
+		cache_class_oldest_times.push_back(oldest_time);
+	}
+
+	return cache_class_oldest_times;
+}
+
+
 /*
 	IClientMediaDownloader
 */
 
 IClientMediaDownloader::IClientMediaDownloader():
-	m_media_cache(getMediaCacheDir()), m_write_to_cache(true)
+	m_media_cache(new MediaCacheDatabaseSQLite3(porting::path_cache)),
+	m_write_to_cache(true)
 {
-}
-
-void IClientMediaDownloader::createCacheDirs()
-{
-	if (!m_write_to_cache)
-		return;
-
-	std::string path = getMediaCacheDir();
-	if (!fs::CreateAllDirs(path)) {
+	// create the cache dir
+	if (!fs::CreateAllDirs(porting::path_cache)) {
 		errorstream << "Client: Could not create media cache directory: "
-			<< path << std::endl;
+			<< porting::path_cache << std::endl;
 	}
-}
-
-bool IClientMediaDownloader::tryLoadFromCache(const std::string &name,
-	const std::string &sha1, Client *client)
-{
-	std::ostringstream tmp_os(std::ios_base::binary);
-	bool found_in_cache = m_media_cache.load(hex_encode(sha1), tmp_os);
-
-	// If found in cache, try to load it from there
-	if (found_in_cache)
-		return checkAndLoad(name, sha1, tmp_os.str(), true, client);
-
-	return false;
 }
 
 bool IClientMediaDownloader::checkAndLoad(
 		const std::string &name, const std::string &sha1,
-		const std::string &data, bool is_from_cache, Client *client)
+		const std::string &data_unraw, bool is_from_cache, Client *client,
+		MediaDataFormat data_format)
 {
 	const char *cached_or_received = is_from_cache ? "cached" : "received";
 	const char *cached_or_received_uc = is_from_cache ? "Cached" : "Received";
 	std::string sha1_hex = hex_encode(sha1);
+
+	// uncompress data_unraw to data
+	std::string data_raw;
+	bool data_was_already_raw = false;
+	switch (data_format) {
+	case MediaDataFormat::Raw: {
+		data_was_already_raw = true;
+		break;
+	} case MediaDataFormat::LibZ: {
+		std::istringstream tmp_is(std::move(data_unraw));
+		std::ostringstream tmp_os;
+		decompressZlib(tmp_is, tmp_os);
+		data_raw = std::move(tmp_os).str();
+		break;
+	} default: {
+		FATAL_ERROR("unreachable code");
+	}}
+	const std::string &data = data_was_already_raw ? data_unraw : data_raw;
 
 	// Compute actual checksum of data
 	std::string data_sha1;
@@ -582,10 +725,16 @@ bool IClientMediaDownloader::checkAndLoad(
 
 	// Update cache (unless we just loaded the file from the cache)
 	if (!is_from_cache && m_write_to_cache)
-		m_media_cache.update(sha1_hex, data);
+		cacheUpdateFile(MediaCacheUpdateFileArg{sha1_hex,
+				MediaCacheClass::Legacy, MediaDataFormat::Raw, data});
 
 	return true;
 }
+
+
+/*
+	ClientMediaDownloader again
+*/
 
 /*
 	Minetest Hashset File Format
@@ -649,6 +798,7 @@ void ClientMediaDownloader::deSerializeHashSet(const std::string &data,
 	}
 }
 
+
 /*
 	SingleMediaDownloader
 */
@@ -669,6 +819,11 @@ bool SingleMediaDownloader::loadMedia(Client *client, const std::string &data,
 		const std::string &name)
 {
 	return client->loadMedia(data, name, true);
+}
+
+void SingleMediaDownloader::cacheUpdateFile(MediaCacheUpdateFileArg &&file)
+{
+	m_media_cache->updateFile(file);
 }
 
 void SingleMediaDownloader::addFile(const std::string &name, const std::string &sha1)
@@ -721,12 +876,22 @@ bool SingleMediaDownloader::conventionalTransferDone(const std::string &name,
 
 void SingleMediaDownloader::initialStep(Client *client)
 {
-	if (tryLoadFromCache(m_file_name, m_file_sha1, client))
-		m_stage = STAGE_DONE;
+	// Try to load from cache
+	{
+		std::string file_data;
+		MediaDataFormat file_data_format;
+		bool found_in_cache = m_media_cache->findFile(hex_encode(m_file_sha1),
+				&file_data, &file_data_format);
+
+		// If found in cache, try to load it from there
+		if (found_in_cache) {
+			if (checkAndLoad(m_file_name, m_file_sha1, file_data,
+					true, client, file_data_format))
+				m_stage = STAGE_DONE;
+		}
+	}
 	if (isDone())
 		return;
-
-	createCacheDirs();
 
 	// If the server reported no remote servers, immediately fall back to
 	// conventional transfer.

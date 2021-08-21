@@ -283,6 +283,12 @@ Client::~Client()
 
 	deleteAuthData();
 
+	for (auto &j : m_async_jobs)
+		j->stop();
+	for (auto &j : m_async_jobs)
+		j->wait();
+	m_async_jobs.clear();
+
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
 	while (!m_mesh_update_thread.m_queue_out.empty()) {
@@ -327,6 +333,17 @@ void Client::step(float dtime)
 		m_animation_time -= 60.0;
 
 	m_time_of_day_update_timer += dtime;
+
+	// Remove finished async jobs
+	for (size_t i = 0; i < m_async_jobs.size(); ++i) {
+		if (m_async_jobs[i]->isRunning())
+			continue;
+		m_async_jobs[i]->wait();
+		if (i != m_async_jobs.size() - 1) {
+			std::swap(m_async_jobs[i], m_async_jobs[m_async_jobs.size() - 1]);
+		}
+		m_async_jobs.pop_back();
+	}
 
 	ReceiveAll();
 
@@ -551,6 +568,9 @@ void Client::step(float dtime)
 	if (m_media_downloader && m_media_downloader->isStarted()) {
 		m_media_downloader->step(this);
 		if (m_media_downloader->isDone()) {
+			// remove old stuff from media cache and add new one
+			m_media_downloader->updateAndCleanCache(this);
+
 			delete m_media_downloader;
 			m_media_downloader = NULL;
 		}

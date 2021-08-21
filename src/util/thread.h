@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "log.h"
 #include "container.h"
+#include <memory>
 
 template<typename T>
 class MutexedVariable
@@ -226,3 +227,56 @@ protected:
 private:
 	Semaphore m_update_sem;
 };
+
+/**
+ * A thread that runs a given lambda.
+ *
+ * Use make_Thread to construct.
+ */
+template <typename F>
+class LambdaThread final : public Thread
+{
+public:
+	LambdaThread(const std::string &name, F &&func) :
+			Thread(name), m_func(std::move(func)) {};
+	explicit LambdaThread(F &&func) :
+			LambdaThread("LambdaThread", std::move(func)) {};
+
+protected:
+	void *run() override
+	{
+		m_func();
+
+		return nullptr;
+	}
+
+private:
+	F m_func;
+};
+
+/**
+ * Creates a Thread from a lamda.
+ *
+ * Be careful with your captures.
+ *
+ * Note: Until we can capture with an initializer in C+++14, std::bind can be used
+ * to capture by move:
+ * auto t = make_Thread(std::bind([](Foo &foo) {
+ *   // do something with foo.
+ *   // the foo here refers to a member of the return value of std::bind
+ * }, std::move(foo)));
+ * (The code above does not copy foo, but moves it twice: to move-construct what
+ * the inner foo is referring to, and to move the return value of std::bind into
+ * the LambdaThread.)
+ */
+template <typename F>
+std::unique_ptr<Thread> make_Thread(const std::string &name, F &&func)
+{
+	return std::unique_ptr<Thread>(new LambdaThread<F>(name, std::move(func)));
+}
+
+template <typename F>
+std::unique_ptr<Thread> make_Thread(F &&func)
+{
+	return std::unique_ptr<Thread>(new LambdaThread<F>(std::move(func)));
+}

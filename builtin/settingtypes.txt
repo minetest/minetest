@@ -614,7 +614,7 @@ shadow_poisson_filter (Poisson filtering) bool true
 #   but also uses more resources.
 shadow_filters (Shadow filter quality) enum 1 0,1,2
 
-#    Enable colored shadows. 
+#    Enable colored shadows.
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
@@ -1003,6 +1003,24 @@ enable_local_map_saving (Saving map received from server) bool false
 #    Remote servers offer a significantly faster way to download media (e.g. textures)
 #    when connecting to the server.
 enable_remote_media_server (Connect to external media server) bool true
+
+#    How long to keep a media file in cache if the file is in the "Unknown"
+#    cache-class.
+#    The "Unknown" cache-class consists of files where the server suggested a
+#    cache-class that we don't know, ie. because our version is too old.
+#
+#    Possible values are either "never" (don't ever delete the file) or consist
+#    of a number with an SI-unit that has an optional prefix, eg. "3 h", "42Ms"
+#    or "1.0e1 a", not "1 year" or "3.0 seconds".
+media_cache_class_expiry_time_unknown (Media cache expiry time for cache-class Unknown) string 0 s
+
+#    How long to keep a media file in cache if the file is in the "Legacy"
+#    cache-class.
+#    The "Legacy" cache-class is used if the server didn't suggest any
+#    cache-class, eg. because it's too old.
+#
+#    Possible values are the same as for media_cache_class_expiry_time_unknown.
+media_cache_class_expiry_time_legacy (Media cache expiry time for cache-class Legacy) string never
 
 #    Enable Lua modding support on client.
 #    This support is experimental and API can change.

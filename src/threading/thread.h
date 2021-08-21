@@ -59,6 +59,7 @@ public:
 	Thread(const std::string &name="");
 	virtual ~Thread();
 	DISABLE_CLASS_COPY(Thread)
+	DISABLE_CLASS_MOVE(Thread)
 
 	/*
 	 * Begins execution of a new thread at the pure virtual method Thread::run().

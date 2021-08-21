@@ -19,11 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include <cmath>
 #include "util/enriched_string.h"
 #include "util/numeric.h"
 #include "util/string.h"
 #include "util/base64.h"
+#include "util/time_parsing.h"
+#include "util/Optional.h"
+#include "util/thread.h"
+#include <atomic>
+#include <cmath>
+#include <functional>
+#include <limits>
 
 class TestUtilities : public TestBase {
 public:
@@ -58,6 +64,10 @@ public:
 	void testStringJoin();
 	void testEulerConversion();
 	void testBase64();
+	void testParseDifftime();
+	void testClassMoveTester();
+	void testOptional();
+	void testLambdaThread();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +100,10 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
 	TEST(testBase64);
+	TEST(testParseDifftime);
+	TEST(testClassMoveTester);
+	TEST(testOptional);
+	TEST(testLambdaThread);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -629,4 +643,250 @@ void TestUtilities::testBase64()
 	UASSERT(base64_is_valid("AAA=A") == false);
 	UASSERT(base64_is_valid("AAAA=A") == false);
 	UASSERT(base64_is_valid("AAAAA=A") == false);
+}
+
+void TestUtilities::testParseDifftime()
+{
+#define TEST_CORRECT(str, expected_seconds)               \
+	do {                                                  \
+		auto t = parse_difftime(str);                     \
+		UASSERT(t.has_value());                           \
+		UASSERTEQ(auto, t.value(), (expected_seconds));   \
+	} while (false)
+
+#define TEST_INVALID(str)                                 \
+	do {                                                  \
+		auto t = parse_difftime(str);                     \
+		UASSERT(!t.has_value());                          \
+	} while (false)
+
+	TEST_CORRECT("42 d", 3628800.0);
+	TEST_CORRECT("5Ms ", 5000000.0);
+	TEST_CORRECT("-10a", -315569520.0);
+	TEST_CORRECT(" +0x3.0p13Kih", 90596966400.0);
+	TEST_CORRECT("1ks", 1000.0);
+	TEST_CORRECT("1Ts", 1000000000000.0);
+	TEST_CORRECT("1 s", 1.0);
+	TEST_CORRECT("1 min", 60.0);
+	TEST_CORRECT("1 h", 3600.0);
+	TEST_CORRECT("1 d", 86400.0);
+	TEST_CORRECT("1 a", 31556952.0);
+	TEST_CORRECT("1 ca", 315569.52);
+	TEST_CORRECT("1 ma", 31556.952);
+	TEST_CORRECT("1 ua", 31.556952);
+	TEST_CORRECT("100 cs", 1.0);
+	TEST_CORRECT("0s", 0.0);
+	TEST_CORRECT("0", 0.0);
+	// FIXME: this doesn't work because of -ffast-math
+	//~ TEST_CORRECT("inf", std::numeric_limits<double>::infinity());
+	TEST_CORRECT("infs", std::numeric_limits<double>::infinity());
+
+	TEST_INVALID("");
+	TEST_INVALID(" ");
+	TEST_INVALID(" 4 2");
+	TEST_INVALID("3 M s");
+	TEST_INVALID("h3");
+	TEST_INVALID("4kmph");
+	TEST_INVALID("4km/h");
+	TEST_INVALID("1 day");
+	TEST_INVALID("11:00");
+	TEST_INVALID("1 y");
+	TEST_INVALID("1kis");
+
+#undef TEST_INVALID
+#undef TEST_CORRECT
+}
+
+struct ClassMoveTester
+{
+	ClassMoveTester() = default;
+
+	ClassMoveTester(int val, int &copy_counter, int &move_counter) :
+			m_val(val), m_copy_counter(copy_counter), m_move_counter(move_counter) {}
+
+	ClassMoveTester(const ClassMoveTester &other) :
+			m_val(other.m_val), m_copy_counter(other.m_copy_counter),
+			m_move_counter(other.m_move_counter) { m_copy_counter += 1; }
+
+	ClassMoveTester(ClassMoveTester &&other) :
+			m_val(other.m_val), m_copy_counter(other.m_copy_counter),
+			m_move_counter(other.m_move_counter) { other.m_val = -1;  m_move_counter += 1; }
+
+	ClassMoveTester &operator=(const ClassMoveTester &other)
+	{
+		m_val = other.m_val;
+		m_copy_counter += 1;
+		return *this;
+	}
+
+	ClassMoveTester &operator=(ClassMoveTester &&other)
+	{
+		if (&other != this) {
+			m_val = other.m_val;
+			other.m_val = -1;
+		}
+		m_move_counter += 1;
+		return *this;
+	}
+
+	int m_val = 0; // -1 means moved from
+	int &m_copy_counter = s_fb_copy_counter;
+	int &m_move_counter = s_fb_move_counter;
+
+	static int s_fb_copy_counter;
+	static int s_fb_move_counter;
+};
+
+int ClassMoveTester::s_fb_copy_counter = 0;
+int ClassMoveTester::s_fb_move_counter = 0;
+
+void TestUtilities::testClassMoveTester()
+{
+	int copy_counter = 0;
+	int move_counter = 0;
+	ClassMoveTester tstr1(1, copy_counter, move_counter);
+	ClassMoveTester tstr2 = tstr1;
+	UASSERTEQ(int, copy_counter, 1);
+	UASSERTEQ(int, move_counter, 0);
+	tstr1 = std::move(tstr2);
+	UASSERTEQ(int, copy_counter, 1);
+	UASSERTEQ(int, move_counter, 1);
+	UASSERTEQ(int, tstr1.m_val, 1);
+	UASSERTEQ(int, tstr2.m_val, -1);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 0);
+
+	ClassMoveTester::s_fb_copy_counter = 0;
+	ClassMoveTester::s_fb_move_counter = 0;
+}
+
+void TestUtilities::testOptional()
+{
+	int copy_counter = 0;
+	int move_counter = 0;
+	ClassMoveTester::s_fb_copy_counter = 0;
+	ClassMoveTester::s_fb_move_counter = 0;
+
+	// constructors
+	Optional<ClassMoveTester> o1 = nullopt; // uses the static counters
+	UASSERTEQ(int, move_counter, 0);
+	Optional<ClassMoveTester> o2 = ClassMoveTester(2, copy_counter, move_counter);
+	UASSERTEQ(int, move_counter, 1);
+	UASSERTEQ(int, copy_counter, 0);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 0);
+
+	// assignment-operators
+	o1 = ClassMoveTester(1, copy_counter, move_counter); // impl ctor + mov-ass => 2 moves
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 1); // 1 move here
+	UASSERTEQ(int, move_counter, 2); // and 1 here
+	o2 = nullopt;
+	UASSERTEQ(int, copy_counter, 0);
+	UASSERTEQ(int, move_counter, 2);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 1);
+
+	// has_value, operator bool
+	UASSERT(o1.has_value());
+	UASSERT(!o2.has_value());
+	UASSERT((bool)o1.has_value());
+	UASSERT(!(bool)o2.has_value());
+	UASSERTEQ(int, copy_counter, 0);
+	UASSERTEQ(int, move_counter, 2);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 1);
+
+	// value
+	const Optional<ClassMoveTester> &co1 = o1;
+	UASSERTEQ(int, co1.value().m_val, 1); // const &
+	o1.value().m_val = 11; // &
+	UASSERTEQ(int, o1.value().m_val, 11);
+	UASSERTEQ(int, copy_counter, 0);
+	ClassMoveTester to1c = o1.value();
+	UASSERTEQ(int, to1c.m_val, 11);
+	UASSERTEQ(int, o1.value().m_val, 11);
+	UASSERTEQ(int, move_counter, 2);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 1);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 1);
+	UASSERTEQ(int, copy_counter, 0);
+	ClassMoveTester to1m = std::move(o1).value(); // &&
+	UASSERTEQ(int, move_counter, 2);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 2);
+	UASSERTEQ(int, copy_counter, 0);
+	UASSERTEQ(int, o1.value().m_val, -1);
+	UASSERT(o1.has_value()); // value was moved, not the Optional
+	UASSERTEQ(int, to1m.m_val, 11);
+	o1 = ClassMoveTester(3, copy_counter, move_counter);
+	o2 = ClassMoveTester(4, copy_counter, move_counter);
+	UASSERTEQ(int, move_counter, 5); // +3 moves to this (2 * impl ctor + mov-ass)
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 3); // +1 move here (mov-ass)
+	ClassMoveTester to2m = std::move(o2.value()); // &, then move
+	UASSERTEQ(int, move_counter, 6);
+	UASSERTEQ(int, copy_counter, 0);
+	UASSERTEQ(int, o2.value().m_val, -1);
+	UASSERTEQ(int, to2m.m_val, 4);
+
+	// value_or
+	UASSERTEQ(int, copy_counter, 0);
+	UASSERTEQ(int, move_counter, 6);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 1);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 3);
+	ClassMoveTester tdef(637, copy_counter, move_counter);
+	Optional<ClassMoveTester> o0 = nullopt;
+	o2 = ClassMoveTester(5, copy_counter, move_counter);
+	UASSERTEQ(int, move_counter, 8); // +2 moves (impl ctor + mov-ass)
+	UASSERTEQ(int, o0.value_or(tdef).m_val, 637);
+	UASSERTEQ(int, copy_counter, 1); // tdef was copied
+	UASSERTEQ(int, std::move(o0).value_or(tdef).m_val, 637);
+	UASSERTEQ(int, copy_counter, 2); // tdef was copied
+	UASSERTEQ(int, std::move(o2).value_or(tdef).m_val, 5);
+	UASSERTEQ(int, move_counter, 9); // o2.m_val was moved
+	UASSERTEQ(int, o0.value_or(std::move(tdef)).m_val, 637);
+	UASSERTEQ(int, move_counter, 10); // tdef was moved
+
+	UASSERTEQ(int, copy_counter, 2);
+	UASSERTEQ(int, move_counter, 10);
+	UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 1);
+	UASSERTEQ(int, ClassMoveTester::s_fb_move_counter, 3);
+
+	ClassMoveTester::s_fb_copy_counter = 0;
+	ClassMoveTester::s_fb_move_counter = 0;
+}
+
+void TestUtilities::testLambdaThread()
+{
+	// constructors
+	{
+		std::atomic_int c(0);
+		std::unique_ptr<Thread> t1 = make_Thread("bla", [&c] { c += 1; });
+		std::unique_ptr<Thread> t2 = make_Thread([&c] { c += 1; });
+		UASSERT(t1->start());
+		UASSERT(t2->start());
+		UASSERT(t1->wait());
+		UASSERT(t2->wait());
+		UASSERTEQ(int, c, 2);
+	}
+
+	// the example to move into the lambda
+	{
+		int copy_counter = 0;
+		int move_counter = 0;
+		ClassMoveTester::s_fb_copy_counter = 0;
+		ClassMoveTester::s_fb_move_counter = 0;
+		ClassMoveTester cmt(1, copy_counter, move_counter);
+
+		auto t = make_Thread(std::bind([](ClassMoveTester &cmt) {
+			(void)cmt;
+		}, std::move(cmt)));
+		UASSERTEQ(int, copy_counter, 0);
+		UASSERTEQ(int, move_counter, 2);
+		UASSERTEQ(int, cmt.m_val, -1);
+		UASSERT(t->start());
+		UASSERT(t->wait());
+		UASSERTEQ(int, copy_counter, 0);
+		UASSERTEQ(int, move_counter, 2);
+		UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+		UASSERTEQ(int, ClassMoveTester::s_fb_copy_counter, 0);
+	}
 }

@@ -121,13 +121,13 @@ bool Thread::start()
 		return false;
 	}
 
-	// Allow spawned thread to continue
-	m_start_finished_mutex.unlock();
-
 	while (!m_running)
 		sleep_ms(1);
 
 	m_joinable = true;
+
+	// Allow spawned thread to continue
+	m_start_finished_mutex.unlock();
 
 	return true;
 }
@@ -183,6 +183,8 @@ void Thread::threadProc(Thread *thr)
 
 	// Wait for the thread that started this one to finish initializing the
 	// thread handle so that getThreadId/getThreadHandle will work.
+	// Also, we must not set thr->m_running to false before start() finished, or
+	// else it will wait forever.
 	thr->m_start_finished_mutex.lock();
 
 	thr->m_retval = thr->run();
