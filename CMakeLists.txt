@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 
+# Policies should be set to NEW behavior whenever possible. This only sets
+# policies up to version 3.9 (for the IPO policies we want) as a way to
+# introduce the feature more gradually and see how it works.
+if(${CMAKE_VERSION} VERSION_LESS 3.9)
+	cmake_policy(VERSION ${CMAKE_VERSION_MAJOR}.${CMAKE_VERSION_MINOR})
+else()
+	cmake_policy(VERSION 3.9)
+endif()
+
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
