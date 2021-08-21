@@ -330,7 +330,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	if (to_i < 0 || list_to->getSize() <= (u32) to_i) {
-		infostream << "IMoveAction::apply(): FAIL: destination index is not in range: "
+		infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
 			<< "size of to_list=\"" << list_to->getSize() << "\""
 			<< ", to_index=\"" << to_i << "\"" << std::endl;
 		return;
