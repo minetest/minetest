@@ -34,7 +34,7 @@ struct ContentFeatures;
 struct ClientParticleTexture : public ParticleTexture {
 	video::ITexture* ref = nullptr;
 	ClientParticleTexture() = default;
-	ClientParticleTexture(ParticleTexture p);
+	ClientParticleTexture(ParticleTexture p) : ParticleTexture(p) {};
 };
 
 class Particle : public scene::ISceneNode

@@ -82,20 +82,6 @@ namespace ParticleParamTypes {
 	template <typename T> T numericalBlend(float fac, T min, T max)
 		{ return min + ((max - min) * fac); }
 
-	template <typename T>
-	struct NumericParameter : public Parameter<T,1> {
-		using This = NumericParameter<T>;
-
-		template <typename... Args>
-		NumericParameter(Args... args) : Parameter<T,1>(args...) {};
-
-		This interpolate(float fac, const This against) const {
-			return This(numericalBlend(fac, (T)*this, (T)against));
-		}
-		static This pick(float* f, const This a, const This b) {
-			return a.interpolate(f[0], b);
-		}
-	};
 
 	template <typename T, size_t N>
 	struct VectorParameter : public Parameter<T,N> {

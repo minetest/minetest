@@ -38,8 +38,8 @@ namespace LuaParticleParams {
 			ret = lua_tonumber(L, -1);
 	}
 
-	template <typename T>
-	inline void readNumericLuaValue(lua_State* L, NumericParameter<T>& ret) {
+	template <typename T, size_t N>
+	inline void readNumericLuaValue(lua_State* L, Parameter<T,N>& ret) {
 		readNumericLuaValue<T>(L, ret.val);
 	}
 

@@ -37,9 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Particle
 */
 
-ClientParticleTexture::ClientParticleTexture(ParticleTexture p) :
-	ParticleTexture(p) {};
-
 Particle::Particle(
 	IGameDef *gamedef,
 	LocalPlayer *player,
@@ -278,7 +275,16 @@ ParticleSpawner::ParticleSpawner(
 		m_spawntimes.push_back(spawntime);
 	}
 
-	p_manager -> reserveParticleSpace(p.amount);
+	size_t max_particles = 0;
+	if (p.time != 0) {
+		auto maxGenerations = p.time / std::min(p.exptime.start.min, p.exptime.end.min);
+		max_particles = p.amount / maxGenerations;
+	} else {
+		auto longestLife = std::max(p.exptime.start.max, p.exptime.end.max);
+		max_particles = p.amount * longestLife;
+	}
+
+	p_manager -> reserveParticleSpace(max_particles * 1.2);
 }
 
 ParticleSpawner::~ParticleSpawner() {

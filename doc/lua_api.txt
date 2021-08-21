@@ -4550,9 +4550,9 @@ Utilities
           -- ABM supports min_y and max_y fields in definition (5.5.0)
           abm_min_max_y = true,
 		  -- particlespawners support texpools and animation of properties,
-		  -- particle textures support smooth fade and scale, and sprite-sheet
-		  -- particle animations can by synced to the lifetime of individual
-		  -- particles (5.5.0)
+		  -- particle textures support smooth fade and scale animations, and
+		  -- sprite-sheet particle animations can by synced to the lifetime
+          -- of individual particles (5.5.0)
 		  particlespawner_tweenable = true,
       }
 
