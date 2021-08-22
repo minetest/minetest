@@ -1629,7 +1629,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.glow << p.object_collision;
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
 
-	/* serialize v41 particle fields */ {
+	/* serialize v5.5.0 particle fields */ {
 		std::ostringstream os(std::ios_base::binary);
 
 		// initial bias for older properties

@@ -207,11 +207,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		Added 'basic_debug' privilege
-	PROTOCOL VERSION 41:
-		Added new particlespawner parameters
+		v5.5.0: Added new particlespawner parameters
 */
 
-#define LATEST_PROTOCOL_VERSION 41
+#define LATEST_PROTOCOL_VERSION 40
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -555,7 +554,7 @@ enum ToClientCommand
 		u8 glow
 		u8 object_collision
 
-		-- since proto v41:
+		-- since v5.5.0
 
 		f32 pos_start_bias
 		f32 vel_start_bias
@@ -586,7 +585,7 @@ enum ToClientCommand
 		foreach texpool_sz {
 			u8 flags
 			-- bit 0: animated
-			-- other bits free & ignored as of proto v41
+			-- other bits free & ignored as of proto v40
 			tween<f32> alpha
 			tween<v2f1000> scale
 			if flags.animated {

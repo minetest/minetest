@@ -1021,38 +1021,42 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node.param2 = readU8(is);
 		p.node_tile   = readU8(is);
 
-		if (m_proto_ver >= 41) {
-			// initial bias must be stored separately in the stream to preserve
-			// backwards compatibility with older clients, which do not support
-			// a bias field in their range "format"
-			p.pos.start.bias = readF32(is);
-			p.vel.start.bias = readF32(is);
-			p.acc.start.bias = readF32(is);
-			p.exptime.start.bias = readF32(is);
-			p.size.start.bias = readF32(is);
+		f32 tmp_sbias = readF32(is);
+		if (is.eof())
+			break;
 
-			p.pos.end.deSerialize(is);
-			p.vel.end.deSerialize(is);
-			p.acc.end.deSerialize(is);
-			p.exptime.end.deSerialize(is);
-			p.size.end.deSerialize(is);
+		// initial bias must be stored separately in the stream to preserve
+		// backwards compatibility with older clients, which do not support
+		// a bias field in their range "format"
+		p.pos.start.bias = tmp_sbias;
+		p.vel.start.bias = readF32(is);
+		p.acc.start.bias = readF32(is);
+		p.exptime.start.bias = readF32(is);
+		p.size.start.bias = readF32(is);
 
-			p.drag.deSerialize(is);
-			p.attract.deSerialize(is);
-			p.attractor.deSerialize(is);
-			p.radius.deSerialize(is);
+		p.pos.end.deSerialize(is);
+		p.vel.end.deSerialize(is);
+		p.acc.end.deSerialize(is);
+		p.exptime.end.deSerialize(is);
+		p.size.end.deSerialize(is);
 
-			u16 texpoolsz = readU16(is);
-			p.texpool.reserve(texpoolsz);
-			for (u16 i = 0; i < texpoolsz; ++i) {
-				ServerParticleTexture newtex;
-				newtex.deSerialize(is, m_proto_ver);
-				p.texpool.push_back(newtex);
-			}
+		p.drag.deSerialize(is);
+		p.attract.deSerialize(is);
+		p.attractor.deSerialize(is);
+		p.radius.deSerialize(is);
+
+		u16 texpoolsz = readU16(is);
+		p.texpool.reserve(texpoolsz);
+		for (u16 i = 0; i < texpoolsz; ++i) {
+			ServerParticleTexture newtex;
+			newtex.deSerialize(is, m_proto_ver);
+			p.texpool.push_back(newtex);
 		}
-	} while (0);
 
-	if (m_proto_ver < 41) {
+		goto skipLegacyWorkaround;
+	} while(0);
+
+	/* maintain legacy compat */ {
 		// there's no tweening data to be had, so we need to set the
 		// legacy params to constant values, otherwise everything old
 		// will tween to zero
@@ -1062,6 +1066,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.exptime.end = p.exptime.start;
 		p.size.end = p.size.start;
 	}
+
+	skipLegacyWorkaround:;
 
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;
