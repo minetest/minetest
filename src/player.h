@@ -80,6 +80,7 @@ struct PlayerControl
 	bool place = false;
 	float pitch = 0.0f;
 	float yaw = 0.0f;
+	// Note: These two are NOT available on the server
 	float movement_speed = 0.0f;
 	float movement_direction = 0.0f;
 };
