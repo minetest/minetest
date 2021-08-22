@@ -30,7 +30,7 @@ public:
 	Buffer()
 	{
 		m_size = 0;
-		data = NULL;
+		data = nullptr;
 	}
 	Buffer(unsigned int size)
 	{
@@ -38,7 +38,7 @@ public:
 		if(size != 0)
 			data = new T[size];
 		else
-			data = NULL;
+			data = nullptr;
 	}
 	Buffer(const Buffer &buffer)
 	{
@@ -49,7 +49,7 @@ public:
 			memcpy(data, buffer.data, buffer.m_size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 	}
 	Buffer(const T *t, unsigned int size)
 	{
@@ -60,7 +60,7 @@ public:
 			memcpy(data, t, size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 	}
 	~Buffer()
 	{
@@ -78,7 +78,7 @@ public:
 			memcpy(data, buffer.data, buffer.m_size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 		return *this;
 	}
 	T & operator[](unsigned int i) const

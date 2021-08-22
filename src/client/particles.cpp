@@ -256,7 +256,7 @@ ParticleSpawner::ParticleSpawner(
 	LocalPlayer *player,
 	const ParticleSpawnerParameters &p,
 	u16 attached_id,
-	ClientParticleTexture* texpool,
+	std::unique_ptr<ClientParticleTexture[]>& texpool,
 	size_t texcount,
 	ParticleManager *p_manager
 ):
@@ -265,7 +265,7 @@ ParticleSpawner::ParticleSpawner(
 	m_gamedef = gamedef;
 	m_player = player;
 	m_attached_id = attached_id;
-	m_texpool = texpool;
+	m_texpool = std::move(texpool);
 	m_texcount = texcount;
 	m_time = 0;
 
@@ -285,10 +285,6 @@ ParticleSpawner::ParticleSpawner(
 	}
 
 	p_manager -> reserveParticleSpace(max_particles * 1.2);
-}
-
-ParticleSpawner::~ParticleSpawner() {
-	if (m_texpool != nullptr) delete[] m_texpool;
 }
 
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
@@ -559,25 +555,22 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
 
-			// fallback texture
-			// video::ITexture *texture =
-			// 	client->tsrc()->getTextureForMesh(p.texture.first);
-
 			// texture pool
-			ClientParticleTexture* texpool = nullptr;
+			std::unique_ptr<ClientParticleTexture[]> texpool = nullptr;
 			size_t txpsz = 0;
 			if (! p.texpool.empty()) {
 				txpsz = p.texpool.size();
-				texpool = new ClientParticleTexture [txpsz];
+				texpool = decltype(texpool)(new ClientParticleTexture [txpsz]);
 
 				for (size_t i = 0; i < txpsz; ++i) {
 					texpool[i] = ClientParticleTexture(p.texpool[i]);
 					texpool[i].ref = client -> tsrc() -> getTextureForMesh(p.texpool[i].string);
 				}
 			} else {
+				// no texpool in use, use fallback texture
 				txpsz = 1;
-				texpool = new ClientParticleTexture(p.texture);
-				texpool -> ref = client -> tsrc() -> getTextureForMesh(p.texture.string);
+				texpool = decltype(texpool)(new ClientParticleTexture[1] {p.texture});
+				texpool[0].ref = client -> tsrc() -> getTextureForMesh(p.texture.string);
 			}
 
 			auto toadd = new ParticleSpawner(client, player,

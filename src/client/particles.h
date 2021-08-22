@@ -122,11 +122,9 @@ public:
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &p,
 		u16 attached_id,
-		ClientParticleTexture *texpool,
+		std::unique_ptr<ClientParticleTexture[]>& texpool,
 		size_t texcount,
 		ParticleManager* p_manager);
-
-	~ParticleSpawner();
 
 	void step(float dtime, ClientEnvironment *env);
 
@@ -142,7 +140,7 @@ private:
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;
-	ClientParticleTexture* m_texpool;
+	std::unique_ptr<ClientParticleTexture[]> m_texpool;
 	size_t m_texcount;
 	std::vector<float> m_spawntimes;
 	u16 m_attached_id;
