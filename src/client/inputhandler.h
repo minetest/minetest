@@ -299,8 +299,7 @@ public:
 	}
 	virtual float getMovementDirection()
 	{
-		int x = 0;
-		int z = 0;
+		float x = 0, z = 0;
 
 		/* Check keyboard for input */
 		if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]))
