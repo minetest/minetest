@@ -240,8 +240,8 @@ public:
 	virtual bool wasKeyReleased(GameKeyType k) = 0;
 	virtual bool cancelPressed() = 0;
 
-	virtual float getMovementSpeed() {return 0.0f;}
-	virtual float getMovementDirection() {return 0.0f;}
+	virtual float getMovementSpeed() = 0;
+	virtual float getMovementDirection() = 0;
 
 	virtual void clearWasKeyPressed() {}
 	virtual void clearWasKeyReleased() {}
