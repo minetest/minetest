@@ -383,6 +383,8 @@ public:
 	virtual bool wasKeyPressed(GameKeyType k) { return false; }
 	virtual bool wasKeyReleased(GameKeyType k) { return false; }
 	virtual bool cancelPressed() { return false; }
+	virtual float getMovementSpeed() {return 0.0f;}
+	virtual float getMovementDirection() {return 0.0f;}
 	virtual v2s32 getMousePos() { return mousepos; }
 	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
 
