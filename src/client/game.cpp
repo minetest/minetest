@@ -2523,15 +2523,18 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		absolute_direction = abs(control.movement_direction);
 		if (absolute_direction < (3.0f / 8.0f * M_PI))
 			keypress_bits |= (u32)(0x1 << 0); // Forward
-		keypress_bits |= (u32)(((absolute_direction > ((5.0 * M_PI) / 8.0)) & 0x1) << 1); // Backward
+		if (absolute_direction > (5.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 1); // Backward
 
 		// Rotate entire coordinate system by 90 degrees (absolute value indicates left / right)
 		absolute_direction = control.movement_direction + M_PI_2;
 		if (absolute_direction >= M_PI)
 			absolute_direction -= 2 * M_PI;
 		absolute_direction = abs(absolute_direction);
-		keypress_bits |= (u32)(((absolute_direction < ((3.0 * M_PI) / 8.0)) & 0x1) << 2); // Left
-		keypress_bits |= (u32)(((absolute_direction > ((5.0 * M_PI) / 8.0)) & 0x1) << 3); // Right
+		if (absolute_direction < (3.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 2); // Left
+		if (absolute_direction > (5.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 3); // Right
 	}
 
 	client->setPlayerControl(control);
