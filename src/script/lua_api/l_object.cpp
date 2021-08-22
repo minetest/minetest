@@ -1402,6 +1402,10 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "dig");
 	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "place");
+	lua_pushnumber(L, control.movement_speed);
+	lua_setfield(L, -2, "movement_speed");
+	lua_pushnumber(L, control.movement_direction);
+	lua_setfield(L, -2, "movement_direction");
 	// Legacy fields to ensure mod compatibility
 	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");

@@ -229,7 +229,10 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	set("zoom",  c.zoom);
 	set("dig",   c.dig);
 	set("place", c.place);
-	// Legacy field to ensure compatibility
+	// Player movement in polar coordinates and non-binary speed
+	set("movement_speed",     c.movement_speed);
+	set("movement_direction", c.movement_direction);
+	// Provide direction keys to ensure compatibility
 	set("up",    player->keyPressed & (1 << 0)); // Up, down, left, and right were removed in favor of
 	set("down",  player->keyPressed & (1 << 1)); // analog  direction indicators and are therefore not
 	set("left",  player->keyPressed & (1 << 2)); // available as booleans anymore. The corresponding values
