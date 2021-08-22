@@ -2515,7 +2515,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			( (u32)(control.zoom  & 0x1) << 9)
 		);
 
-	// Legacy fields to ensure mod compatibility
+	// Set direction keys to ensure mod compatibility
 	if (control.movement_speed > 0.001f) {
 		float absolute_direction;
 
