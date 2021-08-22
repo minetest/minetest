@@ -2521,7 +2521,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 		// Check in original orientation (absolute value indicates forward / backward)
 		absolute_direction = abs(control.movement_direction);
-		keypress_bits |= (u32)(((absolute_direction < ((3.0 * M_PI) / 8.0)) & 0x1) << 0); // Forward
+		if (absolute_direction < (3.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 0); // Forward
 		keypress_bits |= (u32)(((absolute_direction > ((5.0 * M_PI) / 8.0)) & 0x1) << 1); // Backward
 
 		// Rotate entire coordinate system by 90 degrees (absolute value indicates left / right)
