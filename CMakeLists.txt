@@ -71,8 +71,8 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 		endif()
 	else()
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
-		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE
-			"${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
 	endif()
 else()
 	find_package(IrrlichtMt QUIET)
@@ -90,7 +90,9 @@ else()
 		endif()
 		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
-		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE "${IRRLICHT_INCLUDE_DIR}")
+		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${IRRLICHT_INCLUDE_DIR}")
 	else()
 		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 	endif()
