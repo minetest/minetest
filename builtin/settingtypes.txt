@@ -618,11 +618,11 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
-
-#    Set the shadow update time, in seconds.
-#    Lower value means shadows and map updates faster, but it consumes more resources.
-#    Minimum value: 0.001; maximum value: 0.2
-shadow_update_time (Map update time) float 0.2 0.001 0.2
+#    Spread a complete update of shadow map over given amount of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
@@ -2218,15 +2218,15 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024 1 1000000
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
-emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128 1 1000000
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
-emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128 1 1000000
 
 #    Number of emerge threads to use.
 #    Value 0:

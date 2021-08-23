@@ -685,6 +685,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 		return 0;
 
 	read_object_properties(L, 2, sao, prop, getServer(L)->idef());
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	return 0;
 }
@@ -752,6 +753,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	std::string nametag = getstringfield_default(L, 2, "text", "");
 	prop->nametag = nametag;
 
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	lua_pushboolean(L, true);
 	return 1;
@@ -1553,12 +1555,14 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (elem == nullptr)
 		return 0;
 
+	HudElementStat stat;
 	void *value = nullptr;
-	HudElementStat stat = read_hud_change(L, elem, &value);
+	bool ok = read_hud_change(L, stat, elem, &value);
 
-	getServer(L)->hudChange(player, id, stat, value);
+	if (ok)
+		getServer(L)->hudChange(player, id, stat, value);
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, ok);
 	return 1;
 }
 

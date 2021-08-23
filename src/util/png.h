@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2021 Liso <anlismon@gmail.com>
+Copyright (C) 2021 hecks
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,20 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client/shadows/shadowsshadercallbacks.h"
+#pragma once
 
-void ShadowDepthShaderCB::OnSetConstants(
-		video::IMaterialRendererServices *services, s32 userData)
-{
-	video::IVideoDriver *driver = services->getVideoDriver();
+#include <string>
+#include "irrlichttypes.h"
 
-	core::matrix4 lightMVP = driver->getTransform(video::ETS_PROJECTION);
-	lightMVP *= driver->getTransform(video::ETS_VIEW);
-	lightMVP *= driver->getTransform(video::ETS_WORLD);
-
-	m_light_mvp_setting.set(lightMVP.pointer(), services);
-	m_map_resolution_setting.set(&MapRes, services);
-	m_max_far_setting.set(&MaxFar, services);
-	s32 TextureId = 0;
-	m_color_map_sampler_setting.set(&TextureId, services);
-}
+/*	Simple PNG encoder. Encodes an RGBA image with no predictors.
+	Returns a binary string. */
+std::string encodePNG(const u8 *data, u32 width, u32 height, s32 compression);

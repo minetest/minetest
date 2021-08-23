@@ -229,9 +229,9 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 {
 	sanity_check(g_extrusion_mesh_cache);
 
-	// Remove node from shadow casters
-	if (m_shadow)
-		m_shadow->removeNodeFromShadowList(m_meshnode);
+	// Remove node from shadow casters. m_shadow might be an invalid pointer!
+	if (auto shadow = RenderingEngine::get_shadow_renderer())
+		shadow->removeNodeFromShadowList(m_meshnode);
 
 	if (g_extrusion_mesh_cache->drop())
 		g_extrusion_mesh_cache = nullptr;

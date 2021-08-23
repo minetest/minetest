@@ -362,6 +362,14 @@ public:
 
 		for (auto &buffer : m_buffers) {
 			for (SoundBuffer *sb : buffer.second) {
+				alDeleteBuffers(1, &sb->buffer_id);
+
+				ALenum error = alGetError();
+				if (error != AL_NO_ERROR) {
+					warningstream << "Audio: Failed to free stream for "
+						<< buffer.first << ": " << alErrorString(error) << std::endl;
+				}
+
 				delete sb;
 			}
 			buffer.second.clear();

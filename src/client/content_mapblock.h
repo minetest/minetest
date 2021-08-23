@@ -146,7 +146,7 @@ public:
 
 	void drawPlantlikeQuad(float rotation, float quad_offset = 0,
 		bool offset_top_only = false);
-	void drawPlantlike();
+	void drawPlantlike(bool is_rooted = false);
 
 // firelike-specific
 	void drawFirelikeQuad(float rotation, float opening_angle,

@@ -609,7 +609,6 @@ struct GameRunData {
 	float jump_timer;
 	float damage_flash;
 	float update_draw_list_timer;
-	float update_shadows_timer;
 
 	f32 fog_range;
 
@@ -1928,24 +1927,18 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
 			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-			wchar_t buf[100];
 			g_settings->setFloat("sound_volume", new_volume);
-			const wchar_t *str = wgettext("Volume changed to %d%%");
-			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-			delete[] str;
-			m_game_ui->showStatusText(buf);
+			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+			m_game_ui->showStatusText(msg);
 		} else {
 			m_game_ui->showTranslatedStatusText("Sound system is disabled");
 		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
 			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-			wchar_t buf[100];
 			g_settings->setFloat("sound_volume", new_volume);
-			const wchar_t *str = wgettext("Volume changed to %d%%");
-			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-			delete[] str;
-			m_game_ui->showStatusText(buf);
+			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+			m_game_ui->showStatusText(msg);
 		} else {
 			m_game_ui->showTranslatedStatusText("Sound system is disabled");
 		}
@@ -2200,7 +2193,24 @@ void Game::toggleCinematic()
 void Game::toggleBlockBounds()
 {
 	if (client->checkPrivilege("basic_debug")) {
-		hud->toggleBlockBounds();
+		enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
+		switch (newmode) {
+			case Hud::BLOCK_BOUNDS_OFF:
+				m_game_ui->showTranslatedStatusText("Block bounds hidden");
+				break;
+			case Hud::BLOCK_BOUNDS_CURRENT:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for current block");
+				break;
+			case Hud::BLOCK_BOUNDS_NEAR:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
+				break;
+			case Hud::BLOCK_BOUNDS_MAX:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
+				break;
+			default:
+				break;
+		}
+
 	} else {
 		m_game_ui->showTranslatedStatusText("Can't show block bounds (need 'basic_debug' privilege)");
 	}
@@ -2330,20 +2340,13 @@ void Game::increaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
 
-	wchar_t buf[255];
-	const wchar_t *str;
 	if (range_new > 4000) {
 		range_new = 4000;
-		str = wgettext("Viewing range is at maximum: %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
-
+		std::wstring msg = fwgettext("Viewing range is at maximum: %d", range_new);
+		m_game_ui->showStatusText(msg);
 	} else {
-		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
 }
@@ -2354,19 +2357,13 @@ void Game::decreaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
-	wchar_t buf[255];
-	const wchar_t *str;
 	if (range_new < 20) {
 		range_new = 20;
-		str = wgettext("Viewing range is at minimum: %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range is at minimum: %d", range_new);
+		m_game_ui->showStatusText(msg);
 	} else {
-		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
 }
@@ -2731,6 +2728,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->size      = event->hudadd->size;
 	e->z_index   = event->hudadd->z_index;
 	e->text2     = event->hudadd->text2;
+	e->style     = event->hudadd->style;
 	m_hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd;
@@ -2796,6 +2794,8 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		CASE_SET(HUD_STAT_Z_INDEX, z_index, data);
 
 		CASE_SET(HUD_STAT_TEXT2, text2, sdata);
+
+		CASE_SET(HUD_STAT_STYLE, style, data);
 	}
 
 #undef CASE_SET
@@ -3881,10 +3881,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		changed much
 	*/
 	runData.update_draw_list_timer += dtime;
-	runData.update_shadows_timer += dtime;
 
 	float update_draw_list_delta = 0.2f;
-	bool draw_list_updated = false;
 
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= update_draw_list_delta
@@ -3894,18 +3892,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
-		draw_list_updated = true;
 	}
 
-	if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
-		update_draw_list_delta = shadow->getUpdateDelta();
-
-		if (m_camera_offset_changed ||
-				(runData.update_shadows_timer > update_draw_list_delta &&
-				(!draw_list_updated || shadow->getDirectionalLightCount() == 0))) {
-			runData.update_shadows_timer = 0;
-			updateShadows();
-		}
+	if (RenderingEngine::get_shadow_renderer()) {
+		updateShadows();
 	}
 
 	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
@@ -4062,7 +4052,7 @@ void Game::updateShadows()
 	shadow->getDirectionalLight().setDirection(sun_pos);
 	shadow->setTimeOfDay(in_timeofday);
 
-	shadow->getDirectionalLight().update_frustum(camera, client);
+	shadow->getDirectionalLight().update_frustum(camera, client, m_camera_offset_changed);
 }
 
 /****************************************************************************

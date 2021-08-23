@@ -1928,6 +1928,8 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
 	lua_pop(L, 1);
 
+	elem->style = getintfield_default(L, 2, "style", 0);
+
 	/* check for known deprecated element usage */
 	if ((elem->type  == HUD_ELEM_STATBAR) && (elem->size == v2s32()))
 		log_deprecated(L,"Deprecated usage of statbar without size!");
@@ -1982,17 +1984,22 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	lua_pushstring(L, elem->text2.c_str());
 	lua_setfield(L, -2, "text2");
+
+	lua_pushinteger(L, elem->style);
+	lua_setfield(L, -2, "style");
 }
 
-HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
+bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void **value)
 {
-	HudElementStat stat = HUD_STAT_NUMBER;
-	std::string statstr;
-	if (lua_isstring(L, 3)) {
+	std::string statstr = lua_tostring(L, 3);
+	{
 		int statint;
-		statstr = lua_tostring(L, 3);
-		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
-				(HudElementStat)statint : stat;
+		if (!string_to_enum(es_HudElementStat, statint, statstr)) {
+			script_log_unique(L, "Unknown HUD stat type: " + statstr, warningstream);
+			return false;
+		}
+
+		stat = (HudElementStat)statint;
 	}
 
 	switch (stat) {
@@ -2050,8 +2057,13 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			elem->text2 = luaL_checkstring(L, 4);
 			*value = &elem->text2;
 			break;
+		case HUD_STAT_STYLE:
+			elem->style = luaL_checknumber(L, 4);
+			*value = &elem->style;
+			break;
 	}
-	return stat;
+
+	return true;
 }
 
 /******************************************************************************/

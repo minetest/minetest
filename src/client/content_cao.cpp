@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include <IBillboardSceneNode.h>
 #include <ICameraSceneNode.h>
-#include <ITextSceneNode.h>
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include "client/client.h"
@@ -1723,6 +1722,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		m_tx_basepos = p;
 		m_anim_num_frames = num_frames;
+		m_anim_frame = 0;
 		m_anim_framelength = framelength;
 		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 

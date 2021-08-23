@@ -1638,7 +1638,7 @@ void Server::SendHUDAdd(session_t peer_id, u32 id, HudElement *form)
 	pkt << id << (u8) form->type << form->pos << form->name << form->scale
 			<< form->text << form->number << form->item << form->dir
 			<< form->align << form->offset << form->world_pos << form->size
-			<< form->z_index << form->text2;
+			<< form->z_index << form->text2 << form->style;
 
 	Send(&pkt);
 }
@@ -1673,10 +1673,7 @@ void Server::SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void 
 		case HUD_STAT_SIZE:
 			pkt << *(v2s32 *) value;
 			break;
-		case HUD_STAT_NUMBER:
-		case HUD_STAT_ITEM:
-		case HUD_STAT_DIR:
-		default:
+		default: // all other types
 			pkt << *(u32 *) value;
 			break;
 	}
@@ -2441,10 +2438,9 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 	// If name is not in a supported format, ignore it
 	const char *supported_ext[] = {
-		".png", ".jpg", ".bmp", ".tga",
-		".pcx", ".ppm", ".psd", ".wal", ".rgb",
+		".png", ".jpg", ".bmp",
 		".ogg",
-		".x", ".b3d", ".md2", ".obj",
+		".x", ".b3d", ".obj",
 		// Custom translation file format
 		".tr",
 		NULL
