@@ -41,21 +41,21 @@ Particle::Particle(
 	IGameDef *gamedef,
 	LocalPlayer *player,
 	ClientEnvironment *env,
-	const ParticleParameters &p,
-	ClientParticleTexture texture,
+	const ParticleParameters& p,
+	const ClientTexRef& texture,
 	v2f texpos,
 	v2f texsize,
 	video::SColor color
 ):
 	scene::ISceneNode(((Client *)gamedef)->getSceneManager()->getRootSceneNode(),
-		((Client *)gamedef)->getSceneManager())
+		((Client *)gamedef)->getSceneManager()),
+	m_texture(texture)
 {
 	// Misc
 	m_gamedef = gamedef;
 	m_env = env;
 
 	// Texture
-	m_texture = texture;
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
@@ -90,6 +90,7 @@ Particle::Particle(
 	m_vertical = p.vertical;
 	m_glow = p.glow;
 	m_alpha = 0;
+	m_parent = nullptr;
 
 	// Irrlicht stuff
 	const float c = p.size / 2;
@@ -101,6 +102,13 @@ Particle::Particle(
 
 	// Init model
 	updateVertices();
+}
+
+Particle::~Particle() {
+	/* if our textures aren't owned by a particlespawner, we need to clean
+	 * them up ourselves when the particle dies */
+	if (m_parent == nullptr)
+		delete m_texture.tex;
 }
 
 void Particle::OnRegisterSceneNode()
@@ -164,7 +172,10 @@ void Particle::step(float dtime)
 	}
 
 	// animate particle alpha in accordance with settings
-	m_alpha = m_texture.alpha.blend(m_time / (m_expiration+0.1));
+	if (m_texture.tex != nullptr)
+		m_alpha = m_texture.tex -> alpha.blend(m_time / (m_expiration+0.1));
+	else
+		m_alpha = 1.f;
 
 	// Update lighting
 	updateLight();
@@ -199,7 +210,12 @@ void Particle::updateLight()
 void Particle::updateVertices()
 {
 	f32 tx0, tx1, ty0, ty1;
-	v2f scale = m_texture.scale.blend(m_time / (m_expiration+0.1));
+	v2f scale;
+
+	if (m_texture.tex != nullptr)
+		scale = m_texture.tex -> scale.blend(m_time / (m_expiration+0.1));
+	else
+		scale = v2f(1.f, 1.f);
 
 	if (m_animation.type != TAT_NONE) {
 		const v2u32 texsize = m_material.getTexture(0)->getSize();
@@ -256,7 +272,7 @@ ParticleSpawner::ParticleSpawner(
 	LocalPlayer *player,
 	const ParticleSpawnerParameters &p,
 	u16 attached_id,
-	std::unique_ptr<ClientParticleTexture[]>& texpool,
+	std::unique_ptr<ClientTexture[]>& texpool,
 	size_t texcount,
 	ParticleManager *p_manager
 ):
@@ -268,6 +284,8 @@ ParticleSpawner::ParticleSpawner(
 	m_texpool = std::move(texpool);
 	m_texcount = texcount;
 	m_time = 0;
+	m_active = 0;
+	m_dying = false;
 
 	m_spawntimes.reserve(p.amount + 1);
 	for (u16 i = 0; i <= p.amount; i++) {
@@ -275,7 +293,7 @@ ParticleSpawner::ParticleSpawner(
 		m_spawntimes.push_back(spawntime);
 	}
 
-	size_t max_particles = 0;
+	size_t max_particles = 0; // maximum number of particles likely to be visible at any given time
 	if (p.time != 0) {
 		auto maxGenerations = p.time / std::min(p.exptime.start.min, p.exptime.end.min);
 		max_particles = p.amount / maxGenerations;
@@ -376,7 +394,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	p.copyCommon(pp);
 
-	ClientParticleTexture texture;
+	ClientTexRef texture;
 	v2f texpos, texsize;
 	video::SColor color(0xFFFFFFFF);
 
@@ -389,11 +407,11 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	} else {
 		if (m_texcount == 0)
 			return;
-		texture = m_texpool[m_texcount == 1 ? 0 : myrand_range(0,m_texcount-1)];
+		texture = decltype(texture)(m_texpool[m_texcount == 1 ? 0 : myrand_range(0,m_texcount-1)]);
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
-		if (texture.animated)
-			pp.animation = texture.animation;
+		if (texture.tex -> animated)
+			pp.animation = texture.tex -> animation;
 	}
 
 	// synchronize animation length with particle life if desired
@@ -417,7 +435,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = r_size.pickWithin();
 
-	m_particlemanager->addParticle(new Particle(
+	++m_active;
+	auto pa = new Particle(
 		m_gamedef,
 		m_player,
 		env,
@@ -426,7 +445,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		texpos,
 		texsize,
 		color
-	));
+	);
+	pa -> m_parent = this;
+	m_particlemanager->addParticle(pa);
 }
 
 void ParticleSpawner::step(float dtime, ClientEnvironment *env)
@@ -500,8 +521,12 @@ void ParticleManager::stepSpawners(float dtime)
 	MutexAutoLock lock(m_spawner_list_lock);
 	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
 		if (i->second->get_expired()) {
-			delete i->second;
-			m_particle_spawners.erase(i++);
+			// the particlespawner owns the textures, so we need to make
+			// sure there are no active particles before we free it
+			if (i -> second -> m_active == 0) {
+				delete i->second;
+				m_particle_spawners.erase(i++);
+			} else ++i;
 		} else {
 			i->second->step(dtime, m_env);
 			++i;
@@ -514,6 +539,10 @@ void ParticleManager::stepParticles(float dtime)
 	MutexAutoLock lock(m_particle_list_lock);
 	for (auto i = m_particles.begin(); i != m_particles.end();) {
 		if ((*i)->get_expired()) {
+			if ((*i)->m_parent) {
+				assert((*i)->m_parent->m_active != 0);
+				-- (*i)->m_parent->m_active;
+			}
 			(*i)->remove();
 			delete *i;
 			i = m_particles.erase(i);
@@ -556,21 +585,20 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
 
 			// texture pool
-			std::unique_ptr<ClientParticleTexture[]> texpool = nullptr;
+			std::unique_ptr<ClientTexture[]> texpool = nullptr;
 			size_t txpsz = 0;
+			auto texsrc = client -> tsrc();
 			if (! p.texpool.empty()) {
 				txpsz = p.texpool.size();
-				texpool = decltype(texpool)(new ClientParticleTexture [txpsz]);
+				texpool = decltype(texpool)(new ClientTexture [txpsz]);
 
 				for (size_t i = 0; i < txpsz; ++i) {
-					texpool[i] = ClientParticleTexture(p.texpool[i]);
-					texpool[i].ref = client -> tsrc() -> getTextureForMesh(p.texpool[i].string);
+					texpool[i] = ClientTexture(p.texpool[i], texsrc);
 				}
 			} else {
 				// no texpool in use, use fallback texture
 				txpsz = 1;
-				texpool = decltype(texpool)(new ClientParticleTexture[1] {p.texture});
-				texpool[0].ref = client -> tsrc() -> getTextureForMesh(p.texture.string);
+				texpool = decltype(texpool)(new ClientTexture[1] {ClientTexture(p.texture, texsrc)});
 			}
 
 			auto toadd = new ParticleSpawner(client, player,
@@ -588,7 +616,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 		case CE_SPAWN_PARTICLE: {
 			ParticleParameters &p = *event->spawn_particle;
 
-			ClientParticleTexture texture;
+			ClientTexRef texture;
 			v2f texpos, texsize;
 			video::SColor color(0xFFFFFFFF);
 
@@ -599,7 +627,12 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				getNodeParticleParams(p.node, f, p, &texture.ref, texpos,
 						texsize, &color, p.node_tile);
 			} else {
-				texture.ref = client->tsrc()->getTextureForMesh(p.texture.string);
+				/* with no particlespawner to own the texture, we need
+				 * to save it on the heap. it will be freed when * the
+				 * particle is destroyed */
+				auto texstore = new ClientTexture(p.texture, client -> tsrc());
+
+				texture = ClientTexRef(*texstore);
 				texpos = v2f(0.0f, 0.0f);
 				texsize = v2f(1.0f, 1.0f);
 			}
@@ -683,11 +716,11 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	ParticleParameters p;
-	ClientParticleTexture texture;
+	video::ITexture* ref = nullptr;
 	v2f texpos, texsize;
 	video::SColor color;
 
-	if (!getNodeParticleParams(n, f, p, &texture.ref, texpos, texsize, &color))
+	if (!getNodeParticleParams(n, f, p, &ref, texpos, texsize, &color))
 		return;
 
 	p.expirationtime = myrand_range(0, 100) / 100.0f;
@@ -714,7 +747,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		player,
 		m_env,
 		p,
-		texture,
+		ClientTexRef(ref),
 		texpos,
 		texsize,
 		color);
@@ -746,7 +779,6 @@ void ParticleManager::deleteParticleSpawner(u64 id)
 	MutexAutoLock lock(m_spawner_list_lock);
 	auto it = m_particle_spawners.find(id);
 	if (it != m_particle_spawners.end()) {
-		delete it->second;
-		m_particle_spawners.erase(it);
+		it->second->m_dying = true;
 	}
 }

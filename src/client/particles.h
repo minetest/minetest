@@ -31,12 +31,35 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
-struct ClientParticleTexture : public ParticleTexture {
+struct ClientTexture {
+	/* per-spawner structure used to store the ParticleTexture structs
+	 * that spawned particles will refer to through ClientTexRef */
+	ParticleTexture tex;
 	video::ITexture* ref = nullptr;
-	ClientParticleTexture() = default;
-	ClientParticleTexture(ParticleTexture p) : ParticleTexture(p) {};
+	ClientTexture() = default;
+	ClientTexture(const ClientTexture&) = default;
+	ClientTexture(const ServerParticleTexture& p, ITextureSource* t):
+			tex(p),
+			ref(t -> getTextureForMesh(p.string)) {};
 };
 
+struct ClientTexRef {
+	/* per-particle structure used to avoid massively duplicating the
+	 * fairly large ParticleTexture struct */
+	ParticleTexture* tex = nullptr;
+	video::ITexture* ref = nullptr;
+	ClientTexRef() = default;
+	ClientTexRef(const ClientTexRef&) = default;
+
+	/* constructor used by particles spawned from a spawner */
+	ClientTexRef(ClientTexture& t):
+			tex(&t.tex), ref(t.ref) {};
+
+	/* constructor used for node particles */
+	ClientTexRef(decltype(ref) tp): ref(tp) {};
+};
+
+class ParticleSpawner;
 class Particle : public scene::ISceneNode
 {
 	public:
@@ -45,12 +68,12 @@ class Particle : public scene::ISceneNode
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		const ParticleParameters &p,
-		ClientParticleTexture texture,
+		const ClientTexRef& texture,
 		v2f texpos,
 		v2f texsize,
 		video::SColor color
 	);
-	~Particle() = default;
+	~Particle();
 
 	virtual const aabb3f &getBoundingBox() const
 	{
@@ -75,6 +98,8 @@ class Particle : public scene::ISceneNode
 	bool get_expired ()
 	{ return m_expiration < m_time; }
 
+	ParticleSpawner* m_parent;
+
 private:
 	void updateLight();
 	void updateVertices();
@@ -88,7 +113,7 @@ private:
 	IGameDef *m_gamedef;
 	aabb3f m_box;
 	aabb3f m_collisionbox;
-	ClientParticleTexture m_texture;
+	ClientTexRef m_texture;
 	video::SMaterial m_material;
 	v2f m_texpos;
 	v2f m_texsize;
@@ -122,14 +147,16 @@ public:
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &p,
 		u16 attached_id,
-		std::unique_ptr<ClientParticleTexture[]>& texpool,
+		std::unique_ptr<ClientTexture[]>& texpool,
 		size_t texcount,
 		ParticleManager* p_manager);
 
 	void step(float dtime, ClientEnvironment *env);
 
+	size_t m_active;
+	bool m_dying;
 	bool get_expired ()
-	{ return p.amount <= 0 && p.time != 0; }
+	{ return m_dying || (p.amount <= 0 && p.time != 0); }
 
 private:
 	void spawnParticle(ClientEnvironment *env, float radius,
@@ -140,7 +167,7 @@ private:
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;
-	std::unique_ptr<ClientParticleTexture[]> m_texpool;
+	std::unique_ptr<ClientTexture[]> m_texpool;
 	size_t m_texcount;
 	std::vector<float> m_spawntimes;
 	u16 m_attached_id;
