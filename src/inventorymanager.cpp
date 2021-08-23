@@ -273,7 +273,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 	if (!list_to) {
 		infostream << "IMoveAction::apply(): FAIL: destination list not found: "
-			<< "to_inv=\""<<to_inv.dump() << "\""
+			<< "to_inv=\"" << to_inv.dump() << "\""
 			<< ", to_list=\"" << to_list << "\"" << std::endl;
 		return;
 	}
@@ -322,12 +322,20 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	if ((u16)to_i > list_to->getSize()) {
-		infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
-			<< "to_i=" << to_i
-			<< ", size=" << list_to->getSize() << std::endl;
+	if (from_i < 0 || list_from->getSize() <= (u32) from_i) {
+		infostream << "IMoveAction::apply(): FAIL: source index out of bounds: "
+			<< "size of from_list=\"" << list_from->getSize() << "\""
+			<< ", from_index=\"" << from_i << "\"" << std::endl;
 		return;
 	}
+
+	if (to_i < 0 || list_to->getSize() <= (u32) to_i) {
+		infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
+			<< "size of to_list=\"" << list_to->getSize() << "\""
+			<< ", to_index=\"" << to_i << "\"" << std::endl;
+		return;
+	}
+
 	/*
 		Do not handle rollback if both inventories are that of the same player
 	*/
