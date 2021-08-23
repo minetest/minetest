@@ -294,7 +294,26 @@ public:
 				m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]) ||
 				m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]) ||
 				m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]))
+		{
+			// handle opposing directions pressed
+			if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]) &&
+					m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]) &&
+					m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]) &&
+					m_receiver->IsKeyDown(keycache.key[KeyType::LEFT])) {
+				return 0.0; /* all directions pressed, stay still */
+			} else if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]) &&
+					m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]) &&
+					!m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]) &&
+					!m_receiver->IsKeyDown(keycache.key[KeyType::LEFT])) {
+				return 0.0;
+			} else if (!m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]) &&
+					!m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]) &&
+					m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]) &&
+					m_receiver->IsKeyDown(keycache.key[KeyType::LEFT])) {
+				return 0.0;
+			}
 			return 1.0; /* If there is a keyboard event, assume maximum speed */
+		}
 		return joystick.getMovementSpeed();
 	}
 	virtual float getMovementDirection()
