@@ -1,4 +1,4 @@
-ARG DOCKER_IMAGE=alpine:3.13
+ARG DOCKER_IMAGE=alpine:3.14
 FROM $DOCKER_IMAGE AS builder
 
 ENV MINETEST_GAME_VERSION master
@@ -54,7 +54,7 @@ RUN mkdir build && \
 	ninja && \
 	ninja install
 
-ARG DOCKER_IMAGE=alpine:3.13
+ARG DOCKER_IMAGE=alpine:3.14
 FROM $DOCKER_IMAGE AS runtime
 
 RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp && \
