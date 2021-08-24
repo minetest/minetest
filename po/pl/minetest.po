@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-07-01 18:33+0000\n"
-"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"PO-Revision-Date: 2021-08-25 16:34+0000\n"
+"Last-Translator: A M <augim3@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,17 +13,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
 msgstr "Wyczyść kolejkę wiadomości czatu"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Puste komenda."
+msgstr "Pusta komenda."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -38,21 +36,18 @@ msgid "Issued command: "
 msgstr "Wydana komenda: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Lista graczy sieciowych"
+msgstr "Lista graczy online"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Gracze sieciowi: "
+msgstr "Gracze online: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
 msgstr "Kolejka czatu jest teraz pusta."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "This command is disabled by server."
 msgstr "Ta komenda jest dezaktywowana przez serwer."
 
@@ -69,12 +64,10 @@ msgid "You died."
 msgstr "Umarłeś."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
 msgstr "Dostępne komendy:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
 msgstr "Dostępne komendy: "
 
