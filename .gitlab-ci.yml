@@ -45,6 +45,7 @@ variables:
     - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/JPEG_PLACEHOLDER/'$JPEG_PKG'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
+    - sed -i 's/JSONCPP_PLACEHOLDER/'$JSONCPP_PKG'/g' build/deb/minetest/DEBIAN/control
     - cd build/deb/ && dpkg-deb -b minetest/ && mv minetest.deb ../../
   artifacts:
     expire_in: 90 day
@@ -54,7 +55,7 @@ variables:
 .debpkg_install:
   stage: deploy
   before_script:
-    - apt-get update
+    - apt-get update -qy
   script:
     - apt-get install -y ./*.deb
     - minetest --version
@@ -75,6 +76,7 @@ package:debian-9:
   needs:
     - build:debian-9
   variables:
+    JSONCPP_PKG: libjsoncpp1
     LEVELDB_PKG: libleveldb1v5
     JPEG_PKG: libjpeg62-turbo
 
@@ -96,6 +98,7 @@ package:debian-10:
   needs:
     - build:debian-10
   variables:
+    JSONCPP_PKG: libjsoncpp1
     LEVELDB_PKG: libleveldb1d
     JPEG_PKG: libjpeg62-turbo
 
@@ -104,6 +107,28 @@ deploy:debian-10:
   image: debian:10
   needs:
     - package:debian-10
+
+# Bullseye
+
+build:debian-11:
+ extends: .build_template
+ image: debian:11
+
+package:debian-11:
+  extends: .debpkg_template
+  image: debian:11
+  needs:
+    - build:debian-11
+  variables:
+    JSONCPP_PKG: libjsoncpp24
+    LEVELDB_PKG: libleveldb1d
+    JPEG_PKG: libjpeg62-turbo
+
+deploy:debian-11:
+  extends: .debpkg_install
+  image: debian:11
+  needs:
+    - package:debian-11
 
 ##
 ## Ubuntu
@@ -121,6 +146,7 @@ package:ubuntu-16.04:
   needs:
     - build:ubuntu-16.04
   variables:
+    JSONCPP_PKG: libjsoncpp1
     LEVELDB_PKG: libleveldb1v5
     JPEG_PKG: libjpeg-turbo8
 
@@ -142,6 +168,7 @@ package:ubuntu-18.04:
   needs:
     - build:ubuntu-18.04
   variables:
+    JSONCPP_PKG: libjsoncpp1
     LEVELDB_PKG: libleveldb1v5
     JPEG_PKG: libjpeg-turbo8
 
