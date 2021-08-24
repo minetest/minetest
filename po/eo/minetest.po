@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-08-08 01:37+0000\n"
-"Last-Translator: phlostically <phlostically@mailinator.com>\n"
+"PO-Revision-Date: 2021-08-25 16:34+0000\n"
+"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -20,33 +20,28 @@ msgid "Clear the out chat queue"
 msgstr "Maksimumo da atendantaj elaj mesaĝoj"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Babilaj komandoj"
+msgstr "Malplena komando."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Eliri al menuo"
+msgstr "Eliri al ĉefmenuo"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Loka komando"
+msgstr "Nevalida komando: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Donita komando: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Ludo por unu"
+msgstr "Listigi enretajn ludantojn"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Ludo por unu"
+msgstr "Enretaj ludantoj: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -54,7 +49,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Ĉi tiun komandon malŝaltis servilo."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -69,22 +64,20 @@ msgid "You died."
 msgstr "Vi mortis."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Loka komando"
+msgstr "Uzeblaj komandoj:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Loka komando"
+msgstr "Uzeblaj komandoj: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Komando ne uzeblas: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Trovu helpon pri komandoj"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -961,7 +954,7 @@ msgstr "Ŝati"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr "Nekongruaj serviloj"
+msgstr "Neakordaj serviloj"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -3193,7 +3186,7 @@ msgid ""
 "expecting."
 msgstr ""
 "Ŝalti por malpermesi konekton de malnovaj klientoj.\n"
-"Malnovaj klientoj estas kongruaj tiel, ke ili ne fiaskas konektante al novaj "
+"Malnovaj klientoj estas akordaj tiel, ke ili ne fiaskas konektante al novaj "
 "serviloj,\n"
 "sed eble ili ne subtenos ĉiujn atendatajn funkciojn."
 
