@@ -189,12 +189,6 @@ build:fedora-28:
   before_script:
     - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
 
-build:fedora-34:
-  extends: .build_template
-  image: fedora:34
-  before_script:
-    - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
-
 ##
 ## MinGW for Windows
 ##
