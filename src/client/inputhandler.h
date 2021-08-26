@@ -293,17 +293,17 @@ public:
 		bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
 			b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
 			l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),
-			r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]));
+			r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
 		if (f || b || l || r)
 		{
 			// if contradictory keys pressed, stay still
 			if (f && b && l && r)
-				return 0;
+				return 0.0f;
 			else if (f && b && !l && !r)
-				return 0;
+				return 0.0f;
 			else if (!f && !b && l && r)
-				return 0;
-			return 1.0; // If there is a keyboard event, assume maximum speed
+				return 0.0f;
+			return 1.0f; // If there is a keyboard event, assume maximum speed
 		}
 		return joystick.getMovementSpeed();
 	}
