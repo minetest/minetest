@@ -172,8 +172,8 @@ void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 /******************************************************************************/
 AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 		const std::string &name) :
-	Thread(name),
 	ScriptApiBase(ScriptingType::Async),
+	Thread(name),
 	jobDispatcher(jobDispatcher)
 {
 	lua_State *L = getStack();
