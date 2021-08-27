@@ -7798,13 +7798,23 @@ Used by `minetest.register_node`.
                     inherit_color = true,
                 },
                 {
-                    -- Only drop if using a item whose name contains
+                    -- Only drop if using an item whose name contains
                     -- "default:shovel_" (this item filtering by string matching
-                    -- is deprecated).
+                    -- is deprecated, use tool_groups instead).
                     tools = {"~default:shovel_"},
                     rarity = 2,
                     -- The item list dropped.
                     items = {"default:sand", "default:desert_sand"},
+                },
+                {
+                    -- Only drop if using an item in the "magicwand" group, or 
+                    -- an item that is in both the "pickaxe" and the "lucky"
+                    -- groups.
+                    tool_groups = {
+                        "magicwand",
+                        {"pickaxe", "lucky"}
+                    },
+                    items = {"default:coal_lump"},
                 },
             },
         },
