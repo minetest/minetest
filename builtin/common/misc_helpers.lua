@@ -209,14 +209,7 @@ end
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
-	local t
-	x = math.abs(x)
-	y = math.abs(y)
-	t = math.min(x, y)
-	x = math.max(x, y)
-	if x == 0 then return 0 end
-	t = t / x
-	return x * math.sqrt(1 + t * t)
+	return math.sqrt(x * x + y * y)
 end
 
 --------------------------------------------------------------------------------
