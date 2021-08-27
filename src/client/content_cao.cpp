@@ -998,9 +998,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			const PlayerControl &controls = player->getPlayerControl();
 
 			bool walking = false;
-			if (controls.up || controls.down || controls.left || controls.right ||
-					controls.forw_move_joystick_axis != 0.f ||
-					controls.sidew_move_joystick_axis != 0.f)
+			if (controls.movement_speed > 0.001f)
 				walking = true;
 
 			f32 new_speed = player->local_animation_speed;
@@ -1015,9 +1013,10 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 					g_settings->getBool("free_move") &&
 					m_client->checkLocalPrivilege("fly"))))
 					new_speed *= 1.5;
-			// slowdown speed if sneeking
+			// slowdown speed if sneaking
 			if (controls.sneak && walking)
 				new_speed /= 2;
+			new_speed *= controls.movement_speed;
 
 			if (walking && (controls.dig || controls.place)) {
 				new_anim = player->local_animations[3];
