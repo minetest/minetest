@@ -92,11 +92,11 @@ u32 AsyncEngine::queueAsyncJob(std::string &&func, std::string &&params,
 	u32 jobId = jobIdCounter++;
 
 	jobQueue.emplace_back();
-	auto &toAdd = jobQueue.back();
-	toAdd.id = jobId;
-	toAdd.function = std::move(func);
-	toAdd.params = std::move(params);
-	toAdd.mod_origin = mod_origin;
+	auto &to_add = jobQueue.back();
+	to_add.id = jobId;
+	to_add.function = std::move(func);
+	to_add.params = std::move(params);
+	to_add.mod_origin = mod_origin;
 
 	jobQueueCounter.post();
 	jobQueueMutex.unlock();
@@ -139,7 +139,7 @@ void AsyncEngine::step(lua_State *L)
 
 	MutexAutoLock autolock(resultQueueMutex);
 	while (!resultQueue.empty()) {
-		LuaJobInfo jobDone = std::move(resultQueue.front());
+		LuaJobInfo j = std::move(resultQueue.front());
 		resultQueue.pop_front();
 
 		lua_getfield(L, -1, "async_event_handler");
@@ -147,12 +147,11 @@ void AsyncEngine::step(lua_State *L)
 			FATAL_ERROR("Async event handler does not exist!");
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 
-		lua_pushinteger(L, jobDone.id);
-		lua_pushlstring(L, jobDone.result.data(), jobDone.result.size());
+		lua_pushinteger(L, j.id);
+		lua_pushlstring(L, j.result.data(), j.result.size());
 
 		// Call handler
-		const char *origin = jobDone.mod_origin.empty() ? nullptr :
-			jobDone.mod_origin.c_str();
+		const char *origin = j.mod_origin.empty() ? nullptr : j.mod_origin.c_str();
 		script->setOriginDirect(origin);
 		int result = lua_pcall(L, 2, 0, error_handler);
 		if (result)
@@ -248,7 +247,7 @@ void* AsyncWorkerThread::run()
 			// Fetch result
 			size_t length;
 			const char *retval = lua_tolstring(L, -1, &length);
-			j.result = std::string(retval, length);
+			j.result.assign(retval, length);
 		}
 
 		lua_pop(L, 1);  // Pop retval
