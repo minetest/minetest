@@ -3406,6 +3406,11 @@ Helper functions
     * e.g. `"a,b":split","` returns `{"a","b"}`
 * `string:trim()`: returns the string without whitespace pre- and suffixes
     * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
+* `string:encode_uri()`: Equivalent to the JavaScript one, see [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+	* Allows reserved & unescaped characters
+* `string:encode_uri_component()`: Equivalent to the JavaScript one, see [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
+    * Allows only unescaped characters
+	* Use this for URI components such as parameters
 * `minetest.wrap_text(str, limit, as_table)`: returns a string or table
     * Adds newlines to the string to keep it within the specified character
       limit

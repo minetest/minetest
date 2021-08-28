@@ -168,6 +168,59 @@ function dump(o, indent, nested, level)
 end
 
 --------------------------------------------------------------------------------
+function table.copy(t, seen)
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
+			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
+	end
+	return n
+end
+
+function table.insert_all(t, other)
+	for i=1, #other do
+		t[#t + 1] = other[i]
+	end
+	return t
+end
+
+function table.key_value_swap(t)
+	local ti = {}
+	for k,v in pairs(t) do
+		ti[v] = k
+	end
+	return ti
+end
+
+function table.shuffle(t, from, to, random)
+	from = from or 1
+	to = to or #t
+	random = random or math.random
+	local n = to - from + 1
+	while n > 1 do
+		local r = from + n-1
+		local l = from + random(0, n-1)
+		t[l], t[r] = t[r], t[l]
+		n = n-1
+	end
+end
+
+function table.indexof(list, val)
+	for i, v in ipairs(list) do
+		if v == val then
+			return i
+		end
+	end
+	return -1
+end
+
+--------------------------------------------------------------------------------
+function string:trim()
+	return (self:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
 	max_splits = max_splits or -2
@@ -192,19 +245,45 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	return items
 end
 
---------------------------------------------------------------------------------
-function table.indexof(list, val)
-	for i, v in ipairs(list) do
-		if v == val then
-			return i
+do
+	-- URI escaping utilities
+	-- See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
+
+	local uri_unescaped_chars = {}
+	for char in ("-_.!~*'()"):gmatch(".") do
+		uri_unescaped_chars[char] = true
+	end
+	local function add_unescaped_range(from, to)
+		for byte = from:byte(), to:byte() do
+			uri_unescaped_chars[string.char(byte)] = true
 		end
 	end
-	return -1
-end
+	add_unescaped_range("0", "9")
+	add_unescaped_range("a", "z")
+	add_unescaped_range("A", "Z")
 
---------------------------------------------------------------------------------
-function string:trim()
-	return (self:gsub("^%s*(.-)%s*$", "%1"))
+	local uri_allowed_chars = table.copy(uri_unescaped_chars)
+	for char in (";,/?:@&=+$#"):gmatch(".") do
+		-- Reserved characters are allowed
+		uri_allowed_chars[char] = true
+	end
+
+	local function encode(str, allowed_chars)
+		return str:gsub(".", function(char)
+			if allowed_chars[char] then
+				return char
+			end
+			return ("%%%02X"):format(char:byte())
+		end)
+	end
+
+	function string:encode_uri_component()
+		return encode(self, uri_unescaped_chars)
+	end
+
+	function string:encode_uri()
+		return encode(self, uri_allowed_chars)
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -472,50 +551,6 @@ local function test_string_to_area()
 end
 
 test_string_to_area()
-
---------------------------------------------------------------------------------
-function table.copy(t, seen)
-	local n = {}
-	seen = seen or {}
-	seen[t] = n
-	for k, v in pairs(t) do
-		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
-			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
-	end
-	return n
-end
-
-
-function table.insert_all(t, other)
-	for i=1, #other do
-		t[#t + 1] = other[i]
-	end
-	return t
-end
-
-
-function table.key_value_swap(t)
-	local ti = {}
-	for k,v in pairs(t) do
-		ti[v] = k
-	end
-	return ti
-end
-
-
-function table.shuffle(t, from, to, random)
-	from = from or 1
-	to = to or #t
-	random = random or math.random
-	local n = to - from + 1
-	while n > 1 do
-		local r = from + n-1
-		local l = from + random(0, n-1)
-		t[l], t[r] = t[r], t[l]
-		n = n-1
-	end
-end
-
 
 --------------------------------------------------------------------------------
 -- mainmenu only functions
