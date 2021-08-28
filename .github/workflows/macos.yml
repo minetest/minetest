@@ -47,17 +47,12 @@ jobs:
           git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
           mkdir cmakebuild
           cd cmakebuild
-          cmake \
+          cmake .. \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
             -DCMAKE_FIND_FRAMEWORK=LAST \
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-            -DCMAKE_BUILD_TYPE=Release \
             -DRUN_IN_PLACE=FALSE \
-            -DENABLE_FREETYPE=TRUE \
-            -DENABLE_GETTEXT=TRUE \
-            -DBUILD_CLIENT=TRUE \
-            -DBUILD_SERVER=FALSE \
-            ..
+            -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
           make -j2
           make install
 
