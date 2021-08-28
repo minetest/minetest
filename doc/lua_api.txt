@@ -5767,6 +5767,38 @@ Timing
 * `job:cancel()`
     * Cancels the job function from being called
 
+Async environment
+-----------------
+
+The engine allows you to submit jobs to be ran in an isolated environment
+concurrently with normal server operation.
+A job consists of a function to be ran in the async environment, any amount of
+arguments (will be serialized) and a callback that will be called with the return
+value(s) of the job function once it finished.
+
+The async environment does *not* have access to the map, entities, players or any
+globals defined in the 'usual' environment. Consequently, functions like
+`minetest.get_node()` or `minetest.get_player_by_name()` simply do not exist in it.
+
+If you need existing code to run inside the async environment it is recommend to
+load it as needed using this idiom: [TODO this should not be necessary]
+```
+minetest.handle_async(function(arg1, arg2)
+  if not myname then
+    myname = dofile(minetest.get_modpath("myname") .. "/async_code.lua")
+  end
+  return myname.do_some_task(arg1, arg2)
+end, callback, arg1, arg2)
+```
+
+* `minetest.handle_async(func, callback, ...)`:
+    * Queue the function `func` to be ran in an async environment.
+      Note that there are multiple persistent workers and any of them may
+      end up running a given job.
+    * When `func` returns the callback is called (in the normal environment)
+      with all of the return values as arguments.
+    * Optional: Variable number of arguments that are passed to `func`
+
 Server
 ------
 

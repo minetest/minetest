@@ -526,6 +526,41 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 	return 0;
 }
 
+int ModApiServer::l_do_async_callback(lua_State *L)
+{
+	ServerScripting *script = getScriptApi<ServerScripting>(L);
+
+	luaL_checktype(L, 1, LUA_TFUNCTION);
+	luaL_checktype(L, 2, LUA_TSTRING);
+	luaL_checktype(L, 3, LUA_TSTRING);
+
+	// Safely call string.dump on the function
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+	if (!lua_isnil(L, -1))
+		lua_getfield(L, -1, "string");
+	else
+		lua_getglobal(L, "string");
+	lua_getfield(L, -1, "dump");
+	lua_pushvalue(L, 1);
+	lua_call(L, 1, 1);
+
+	size_t func_length, param_length;
+	const char *serialized_func_raw = lua_tolstring(L, -1, &func_length);
+	const char *serialized_param_raw = lua_tolstring(L, 2, &param_length);
+
+	printf("func_l: %zu param_l: %zu\n", func_length, param_length);
+
+	std::string mod_origin = readParam<std::string>(L, 3);
+
+	u32 jobId = script->queueAsync(
+		std::string(serialized_func_raw, func_length),
+		std::string(serialized_param_raw, param_length), mod_origin);
+
+	lua_settop(L, 0);
+	lua_pushinteger(L, jobId);
+	return 1;
+}
+
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
@@ -559,4 +594,6 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(remove_player);
 	API_FCT(unban_player_or_ip);
 	API_FCT(notify_authentication_modified);
+
+	API_FCT(do_async_callback);
 }

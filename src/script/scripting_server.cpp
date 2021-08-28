@@ -51,7 +51,8 @@ extern "C" {
 }
 
 ServerScripting::ServerScripting(Server* server):
-		ScriptApiBase(ScriptingType::Server)
+		ScriptApiBase(ScriptingType::Server),
+		asyncEngine(server)
 {
 	setGameDef(server);
 
@@ -86,6 +87,24 @@ ServerScripting::ServerScripting(Server* server):
 	lua_setglobal(L, "INIT");
 
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
+
+	// Initialize async environment
+	asyncEngine.registerStateInitializer(InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
+
+	asyncEngine.initialize(2); // TODO
+}
+
+void ServerScripting::stepAsync()
+{
+	asyncEngine.step(getStack());
+}
+
+u32 ServerScripting::queueAsync(std::string &&serialized_func,
+	std::string &&serialized_param, const std::string &mod_origin)
+{
+	return asyncEngine.queueAsyncJob(std::move(serialized_func),
+		std::move(serialized_param), mod_origin);
 }
 
 void ServerScripting::InitializeModApi(lua_State *L, int top)
@@ -124,4 +143,17 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);
+}
+
+void ServerScripting::InitializeAsync(lua_State *L, int top)
+{
+	actionstream << "ServerScripting::InitializeAsync(" << L << ")" << std::endl;
+	LuaItemStack::Register(L);
+	LuaPerlinNoise::Register(L);
+	LuaPerlinNoiseMap::Register(L);
+	LuaPseudoRandom::Register(L);
+	LuaPcgRandom::Register(L);
+	LuaRaycast::Register(L);
+	LuaSecureRandom::Register(L);
+	LuaSettings::Register(L);
 }

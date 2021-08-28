@@ -106,6 +106,9 @@ private:
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
 
+	// do_async_callback(func, serialized_params)
+	static int l_do_async_callback(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

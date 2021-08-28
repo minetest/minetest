@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/thread.h"
 #include "lua.h"
 #include "cpp_api/s_base.h"
+#include "cpp_api/s_security.h"
 
 // Forward declarations
 class AsyncEngine;
@@ -51,7 +52,8 @@ struct LuaJobInfo
 };
 
 // Asynchronous working environment
-class AsyncWorkerThread : public Thread, virtual public ScriptApiBase {
+class AsyncWorkerThread : public Thread,
+	virtual public ScriptApiBase, public ScriptApiSecurity {
 	friend class AsyncEngine;
 public:
 	virtual ~AsyncWorkerThread();
@@ -71,6 +73,7 @@ class AsyncEngine {
 	typedef void (*StateInitializer)(lua_State *L, int top);
 public:
 	AsyncEngine() = default;
+	AsyncEngine(Server *server) : server(server) {};
 	~AsyncEngine();
 
 	/**
@@ -128,6 +131,9 @@ protected:
 private:
 	// Variable locking the engine against further modification
 	bool initDone = false;
+
+	// Only set for the server async environment (duh)
+	Server *server = nullptr;
 
 	// Internal store for registred state initializers
 	std::vector<StateInitializer> stateInitializers;

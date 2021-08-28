@@ -178,6 +178,13 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 {
 	lua_State *L = getStack();
 
+	if (jobDispatcher->server) {
+		setGameDef(jobDispatcher->server);
+
+		if (g_settings->getBool("secure.enable_security"))
+			initializeSecurity();
+	}
+
 	// Prepare job lua environment
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
@@ -241,7 +248,10 @@ void* AsyncWorkerThread::run()
 			try {
 				scriptError(result, "<async>");
 			} catch (const ModError &e) {
-				errorstream << e.what() << std::endl;
+				if (jobDispatcher->server)
+					jobDispatcher->server->setAsyncFatalError(e.what());
+				else
+					errorstream << e.what() << std::endl;
 			}
 		} else {
 			// Fetch result
