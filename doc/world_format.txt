@@ -282,8 +282,8 @@ MapBlock serialization format
 NOTE: Byte order is MSB first (big-endian).
 NOTE: Zlib data is in such a format that Python's zlib at least can
       directly decompress.
-NOTE: In version 29 zstd is used instead of zlib. In addition the entire
-      block is first serialized and then compressed.
+NOTE: Since version 29 zstd is used instead of zlib. In addition the entire
+      block is first serialized and then compressed (except the version byte).
 
 u8 version
 - map format version number, see serialisation.h for the latest number
@@ -338,7 +338,7 @@ u8 params_width
 - Number of bytes used for parameters per node
 - Always 2
 
-zlib-compressed node data (version <= 28):
+node data (zlib-compressed if version <= 28):
 if content_width == 1:
     - content:
       u8[4096]: param0 fields
@@ -351,7 +351,7 @@ if content_width == 2:
       u8[4096]: param2 fields
 - The location of a node in each of those arrays is (z*16*16 + y*16 + x).
 
-zlib-compressed node metadata list (version <= 28)
+node metadata list (zlib-compressed if version <= 28)
 - content:
 if map format version <= 22:
   u16 version (=1)
