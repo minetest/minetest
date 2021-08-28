@@ -1079,8 +1079,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	if (playersao->isDead())
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
 	else
-		SendPlayerHPOrDie(playersao,
-				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+		SendPlayerHP(peer_id);
 
 	// Send Breath
 	SendPlayerBreath(playersao);
