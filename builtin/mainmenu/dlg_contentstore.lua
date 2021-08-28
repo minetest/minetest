@@ -184,7 +184,9 @@ local function get_raw_dependencies(package)
 	local url_fmt = "/api/packages/%s/dependencies/?only_hard=1&protocol_version=%s&engine_version=%s"
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
-	local url = base_url .. url_fmt:format(package.id, core.get_max_supp_proto(), version.string)
+	local url = base_url .. url_fmt:format(package.id,
+		core.get_max_supp_proto(),
+		version.string:encode_uri_component())
 
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
@@ -559,12 +561,12 @@ function store.load()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. version.string
+		core.get_max_supp_proto() .. "&engine_version=" .. version.string:encode_uri_component()
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. item
+			url = url .. "&hide=" .. item:encode_uri_component()
 		end
 	end
 
@@ -578,11 +580,18 @@ function store.load()
 	store.aliases = {}
 
 	for _, package in pairs(store.packages_full) do
+		package.url = base_url .. "/packages/" ..
+			package.author:lower():encode_uri_component() ..
+			"/" .. package.name ..
+			"/releases/" .. package.release .. "/download/"
+
 		local name_len = #package.name
 		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
+			package.id = package.author:lower():encode_uri_component() ..
+				"/" .. package.name:sub(1, name_len - 5)
 		else
-			package.id = package.author:lower() .. "/" .. package.name
+			package.id = package.author:lower():encode_uri_component() ..
+				"/" .. package.name
 		end
 
 		if package.aliases then
@@ -606,7 +615,7 @@ function store.update_paths()
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		if mod.author and mod.release > 0 then
-			local id = mod.author:lower() .. "/" .. mod.name
+			local id = mod.author:lower():encode_uri_component() .. "/" .. mod.name
 			mod_hash[store.aliases[id] or id] = mod
 		end
 	end
@@ -615,7 +624,7 @@ function store.update_paths()
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
 		if game.author ~= "" and game.release > 0 then
-			local id = game.author:lower() .. "/" .. game.id
+			local id = game.author:lower():encode_uri_component() .. "/" .. game.id
 			game_hash[store.aliases[id] or id] = game
 		end
 	end
@@ -623,7 +632,7 @@ function store.update_paths()
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
 		if txp.author and txp.release > 0 then
-			local id = txp.author:lower() .. "/" .. txp.name
+			local id = txp.author:lower():encode_uri_component() .. "/" .. txp.name
 			txp_hash[store.aliases[id] or id] = txp
 		end
 	end
@@ -999,8 +1008,10 @@ function store.handle_submit(this, fields)
 
 		if fields["view_" .. i] then
 			local url = ("%s/packages/%s/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"),
-					package.author, package.name, core.get_max_supp_proto())
+				core.settings:get("contentdb_url"),
+				package.author:encode_uri_component(),
+				package.name:encode_uri_component(),
+				core.get_max_supp_proto())
 			core.open_url(url)
 			return true
 		end
