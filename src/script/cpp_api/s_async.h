@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <deque>
-#include <map>
 
 #include "threading/semaphore.h"
 #include "threading/thread.h"
@@ -39,25 +38,28 @@ struct LuaJobInfo
 {
 	LuaJobInfo() = default;
 
-	// Function to be called in async environment
-	std::string serializedFunction = "";
-	// Parameter to be passed to function
-	std::string serializedParams = "";
-	// Result of function call
-	std::string serializedResult = "";
+	// Function to be called in async environment (from string.dump)
+	std::string function;
+	// Parameter to be passed to function (serialized)
+	std::string params;
+	// Result of function call (serialized)
+	std::string result;
+	// Name of the mod who invoked this call
+	std::string mod_origin;
 	// JobID used to identify a job and match it to callback
-	unsigned int id = 0;
-
-	bool valid = false;
+	u32 id;
 };
 
 // Asynchronous working environment
-class AsyncWorkerThread : public Thread, public ScriptApiBase {
+class AsyncWorkerThread : public Thread, virtual public ScriptApiBase {
+	friend class AsyncEngine;
 public:
-	AsyncWorkerThread(AsyncEngine* jobDispatcher, const std::string &name);
 	virtual ~AsyncWorkerThread();
 
 	void *run();
+
+protected:
+	AsyncWorkerThread(AsyncEngine* jobDispatcher, const std::string &name);
 
 private:
 	AsyncEngine *jobDispatcher = nullptr;
@@ -89,7 +91,8 @@ public:
 	 * @param params Serialized parameters
 	 * @return jobid The job is queued
 	 */
-	unsigned int queueAsyncJob(const std::string &func, const std::string &params);
+	u32 queueAsyncJob(std::string &&func, std::string &&params,
+			const std::string &mod_origin = "");
 
 	/**
 	 * Engine step to process finished jobs
@@ -102,15 +105,16 @@ protected:
 	/**
 	 * Get a Job from queue to be processed
 	 *  this function blocks until a job is ready
-	 * @return a job to be processed
+	 * @param job a job to be processed
+	 * @return whether a job was available
 	 */
-	LuaJobInfo getJob();
+	bool getJob(LuaJobInfo *job);
 
 	/**
 	 * Put a Job result back to result queue
 	 * @param result result of completed job
 	 */
-	void putJobResult(const LuaJobInfo &result);
+	void putJobResult(LuaJobInfo &&result);
 
 	/**
 	 * Initialize environment with current registred functions
@@ -129,11 +133,10 @@ private:
 	std::vector<StateInitializer> stateInitializers;
 
 	// Internal counter to create job IDs
-	unsigned int jobIdCounter = 0;
+	u32 jobIdCounter = 0;
 
 	// Mutex to protect job queue
 	std::mutex jobQueueMutex;
-
 	// Job queue
 	std::deque<LuaJobInfo> jobQueue;
 

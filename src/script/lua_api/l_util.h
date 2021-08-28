@@ -110,6 +110,12 @@ private:
 	// encode_png(w, h, data, level)
 	static int l_encode_png(lua_State *L);
 
+	// get_last_run_mod()
+	static int l_get_last_run_mod(lua_State *L);
+
+	// set_last_run_mod(modname)
+	static int l_set_last_run_mod(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);
