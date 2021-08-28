@@ -416,7 +416,11 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		Node metadata
 	*/
 	if (version >= 29) {
-		m_node_metadata.serialize(os, version, disk);
+		std::ostringstream metadata(std::ios_base::binary);
+		m_node_metadata.serialize(metadata, version, disk);
+		std::string metadata_str = metadata.str();
+		writeU32(os, metadata_str.size());
+		os.write(metadata_str.c_str(), metadata_str.size());
 	} else {
 		// use os_raw from above to avoid allocating another stream object
 		m_node_metadata.serialize(os_raw, version, disk);
@@ -525,6 +529,8 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 	// Ignore errors
 	try {
 		if (version >= 29) {
+			// ignore size
+			readU32(is);
 			m_node_metadata.deSerialize(is, m_gamedef->idef());
 		} else {
 			// resuse in_raw
