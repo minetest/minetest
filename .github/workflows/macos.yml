@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install deps
         run: |
-          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit)
+          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd)
           brew update
           brew install ${pkgs[@]}
           brew unlink $(brew ls --formula)
