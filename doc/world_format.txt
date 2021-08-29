@@ -327,6 +327,21 @@ u16 lighting_complete
   then Minetest will correct lighting in the day light bank when
   the block at (1, 0, 0) is also loaded.
 
+if map format version >= 29:
+  u32 timestamp
+  - Timestamp when last saved, as seconds from starting the game.
+  - 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
+                 difference when loaded
+
+  u16 num_name_id_mappings
+
+  foreach num_name_id_mappings
+    u16 id
+    u16 name_len
+    u8[name_len] name
+if map format version < 29:
+  -- Nothing right here, timpstamp and node id mappings are serialized later
+
 u8 content_width
 - Number of bytes in the content (param0) fields of nodes
 if map format version <= 23:
@@ -338,7 +353,7 @@ u8 params_width
 - Number of bytes used for parameters per node
 - Always 2
 
-node data (zlib-compressed if version <= 28):
+node data (zlib-compressed if version < 29):
 if content_width == 1:
     - content:
       u8[4096]: param0 fields
@@ -351,31 +366,34 @@ if content_width == 2:
       u8[4096]: param2 fields
 - The location of a node in each of those arrays is (z*16*16 + y*16 + x).
 
-node metadata list (zlib-compressed if version <= 28)
-- content:
-if map format version <= 22:
-  u16 version (=1)
-  u16 count of metadata
-  foreach count:
-    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
-    u16 type_id
-    u16 content_size
-    u8[content_size] content of metadata. Format depends on type_id, see below.
-if map format version >= 23:
-  u8 version -- Note: type was u16 for map format version <= 22
-    -- = 1 for map format version < 28
-    -- = 2 since map format version 28
-  u16 count of metadata
-  foreach count:
-    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
-    u32 num_vars
-    foreach num_vars:
-      u16 key_len
-      u8[key_len] key
-      u32 val_len
-      u8[val_len] value
-      u8 is_private -- only for version >= 2. 0 = not private, 1 = private
-    serialized inventory
+if map format version < 29:
+  zlib-compressed node metadata list
+  - content:
+    if map format version <= 22:
+      u16 version (=1)
+      u16 count of metadata
+      foreach count:
+        u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+        u16 type_id
+        u16 content_size
+        u8[content_size] content of metadata. Format depends on type_id, see below.
+    if map format version >= 23:
+      u8 version -- Note: type was u16 for map format version <= 22
+        -- = 1 for map format version < 28
+        -- = 2 since map format version 28
+      u16 count of metadata
+      foreach count:
+        u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+        u32 num_vars
+        foreach num_vars:
+          u16 key_len
+          u8[key_len] key
+          u32 val_len
+          u8[val_len] value
+          u8 is_private -- only for version >= 2. 0 = not private, 1 = private
+        serialized inventory
+if map format version >= 29:
+  -- Nothing right here, node metadata is serialized later
 
 - Node timers
 if map format version == 23:
@@ -406,20 +424,22 @@ foreach static_object_count:
   u16 data_size
   u8[data_size] data
 
-u32 timestamp
-- Timestamp when last saved, as seconds from starting the game.
-- 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
-               difference when loaded
+if map format version < 29:
+  u32 timestamp
+  - Timestamp when last saved, as seconds from starting the game.
+  - 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
+                 difference when loaded
 
 u8 name-id-mapping version
 - Always 0
 
-u16 num_name_id_mappings
+if map format version < 29:
+  u16 num_name_id_mappings
 
-foreach num_name_id_mappings
-  u16 id
-  u16 name_len
-  u8[name_len] name
+  foreach num_name_id_mappings
+    u16 id
+    u16 name_len
+    u8[name_len] name
 
 - Node timers
 if map format version == 25:
@@ -429,6 +449,22 @@ if map format version == 25:
     u16 timer position (z*16*16 + y*16 + x)
     s32 timeout*1000
     s32 elapsed*1000
+
+if map format version >= 29:
+  node metadata list
+  - content:
+      u8 version (always = 2)
+      u16 count of metadata
+      foreach count:
+        u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+        u32 num_vars
+        foreach num_vars:
+          u16 key_len
+          u8[key_len] key
+          u32 val_len
+          u8[val_len] value
+          u8 is_private -- 0 = not private, 1 = private
+        serialized inventory
 
 EOF.
 
