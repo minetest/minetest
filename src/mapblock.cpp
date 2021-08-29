@@ -415,12 +415,13 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	/*
 		Node metadata
 	*/
+	u32 metadata_offset = 0;
+	u32 metadata_length = 0;
 	if (version >= 29) {
-		std::ostringstream metadata(std::ios_base::binary);
-		m_node_metadata.serialize(metadata, version, disk);
-		std::string metadata_str = metadata.str();
-		writeU32(os, metadata_str.size());
-		os.write(metadata_str.c_str(), metadata_str.size());
+		metadata_offset = os.tellp();
+		writeU32(os, 0); // placeholder for length
+		m_node_metadata.serialize(os, version, disk);
+		metadata_length = (u32)os.tellp() - metadata_offset - sizeof(u32);
 	} else {
 		// use os_raw from above to avoid allocating another stream object
 		m_node_metadata.serialize(os_raw, version, disk);
@@ -454,8 +455,11 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	}
 
 	if(version >= 29) {
+		// write the metadata length
+		std::string output = os_raw.str();
+		writeU32(reinterpret_cast<u8*>(&output[metadata_offset]), metadata_length);
 		// now compress the whole thing
-		compress(os_raw.str(), os_compressed, version, compression_level);
+		compress(output, os_compressed, version, compression_level);
 	}
 }
 
