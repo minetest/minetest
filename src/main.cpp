@@ -1044,9 +1044,6 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 
 static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
 {
-	float comptime = 0.0;
-	u32 decompdata = 0;
-
 	Settings world_mt;
 	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
 
@@ -1080,16 +1077,13 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 
 		std::istringstream iss(data);
 		u8 ver = readU8(iss);
-		decompdata += data.size();
 
 		MapBlock mb(NULL, v3s16(0,0,0), &server);
 		mb.deSerialize(iss, ver, true);
 
 		std::ostringstream oss;
 		writeU8(oss, serialize_as_ver);
-		clock_t t = clock();
 		mb.serialize(oss, serialize_as_ver, true, -1);
-		comptime += (float)(clock() - t) / CLOCKS_PER_SEC;
 
 		db->saveBlock(*it, oss.str());
 
@@ -1106,10 +1100,6 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 
 	actionstream << "############" << std::endl;
 	actionstream << "Recompressed blocks:            " << count << std::endl;
-	actionstream << "Total data (before comp.):      " << (decompdata / 1024 / 1024) << " MB" << std::endl;
-	actionstream << "Total compression CPU time:     " << comptime << "s" << std::endl;
-	actionstream << "Compression CPU time per block: " << (comptime / count * 1000 * 1000) << "us" << std::endl;
-	actionstream << "Compression speed:              " << (decompdata / comptime / 1024) << " KB/s" << std::endl;
 	actionstream << "############" << std::endl;
 	return true;
 }
