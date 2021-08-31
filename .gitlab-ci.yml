@@ -17,7 +17,7 @@ variables:
   stage: build
   before_script:
    - apt-get update
-   - apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+   - apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
   script:
     - git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
     - mkdir cmakebuild
@@ -187,7 +187,7 @@ build:fedora-28:
   extends: .build_template
   image: fedora:28
   before_script:
-    - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
+    - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
 
 ##
 ## MinGW for Windows
