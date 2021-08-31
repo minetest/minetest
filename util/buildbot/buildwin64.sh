@@ -30,7 +30,7 @@ if [ -z "$toolchain_file" ]; then
 fi
 echo "Using $toolchain_file"
 
-irrlicht_version=1.9.0mt2
+irrlicht_version=1.9.0mt3
 ogg_version=1.3.4
 vorbis_version=1.3.7
 curl_version=7.76.1
