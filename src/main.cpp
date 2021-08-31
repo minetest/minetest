@@ -305,7 +305,7 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
-			_("Recompress the given database."))));
+			_("Recompress the blocks of the given map database."))));
 #ifndef SERVER
 	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));
@@ -1045,27 +1045,28 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
 {
 	Settings world_mt;
-	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	const std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
 
 	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
 		errorstream << "Cannot read world.mt at " << world_mt_path << std::endl;
 		return false;
 	}
-	std::string backend = world_mt.get("backend");
+	const std::string &backend = world_mt.get("backend");
 	Server server(game_params.world_path, game_params.game_spec, false, addr, false);
 	MapDatabase *db = ServerMap::createDatabase(backend, game_params.world_path, world_mt);
 
 	u32 count = 0;
-	time_t last_update_time = 0;
+	u64 last_update_time = 0;
 	bool &kill = *porting::signal_handler_killstatus();
 	const u8 serialize_as_ver = SER_FMT_VER_HIGHEST_WRITE;
 
 	// This is ok because the server doesn't actually run
 	std::vector<v3s16> blocks;
-	// this will ignore the read-only db
 	db->listAllLoadableBlocks(blocks);
 	db->beginSave();
-	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
+	std::istringstream iss(std::ios_base::binary);
+	std::ostringstream oss(std::ios_base::binary);
+	for (auto it = blocks.begin(); it != blocks.end(); ++it) {
 		if (kill) return false;
 
 		std::string data;
@@ -1075,31 +1076,32 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 			return false;
 		}
 
-		std::istringstream iss(data);
-		u8 ver = readU8(iss);
+		iss.str(data);
+		iss.clear();
 
-		MapBlock mb(NULL, v3s16(0,0,0), &server);
+		MapBlock mb(nullptr, v3s16(0,0,0), &server);
+		u8 ver = readU8(iss);
 		mb.deSerialize(iss, ver, true);
 
-		std::ostringstream oss;
+		oss.str("");
+		oss.clear();
 		writeU8(oss, serialize_as_ver);
 		mb.serialize(oss, serialize_as_ver, true, -1);
 
 		db->saveBlock(*it, oss.str());
 
-		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
+		count++;
+		if (count % 0xFF == 0 && porting::getTimeS() - last_update_time >= 1) {
 			std::cerr << " Recompressed " << count << " blocks, "
-				<< (100.0 * count / blocks.size()) << "% completed.\r";
+				<< (100.0f * count / blocks.size()) << "% completed.\r";
 			db->endSave();
 			db->beginSave();
-			last_update_time = time(NULL);
+			last_update_time = porting::getTimeS();
 		}
 	}
 	std::cerr << std::endl;
 	db->endSave();
 
-	actionstream << "############" << std::endl;
-	actionstream << "Recompressed blocks:            " << count << std::endl;
-	actionstream << "############" << std::endl;
+	actionstream << "Done, " << count << " blocks were recompressed." << std::endl;
 	return true;
 }
