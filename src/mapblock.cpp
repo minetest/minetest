@@ -367,6 +367,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 
 	std::ostringstream os_raw(std::ios_base::binary);
 	std::ostream &os = version >= 29 ? os_raw : os_compressed;
+
 	// First byte
 	u8 flags = 0;
 	if(is_underground)
@@ -390,8 +391,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
  	if(disk)
 	{
 		MapNode *tmp_nodes = new MapNode[nodecount];
-		for(u32 i=0; i<nodecount; i++)
-			tmp_nodes[i] = data[i];
+		memcpy(tmp_nodes, data, nodecount * sizeof(MapNode));
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
 
 		buf = MapNode::serializeBulk(version, tmp_nodes, nodecount,
@@ -399,11 +399,9 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		delete[] tmp_nodes;
 
 		// write timestamp and node/id mapping first
-		if(version >= 29) {
-			// Timestamp
+		if (version >= 29) {
 			writeU32(os, getTimestamp());
 
-			// Write block-specific node definition id mapping
 			nimap.serialize(os);
 		}
 	}
@@ -415,7 +413,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 
 	writeU8(os, content_width);
 	writeU8(os, params_width);
-	if(version >= 29) {
+	if (version >= 29) {
 		os.write(reinterpret_cast<char*>(*buf), buf.getSize());
 	} else {
 		// prior to 29 node data was compressed individually
@@ -423,9 +421,11 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	}
 
 	/*
-		Node metadata (version < 29)
+		Node metadata
 	*/
-	if (version < 29) {
+	if (version >= 29) {
+		m_node_metadata.serialize(os, version, disk);
+	} else {
 		// use os_raw from above to avoid allocating another stream object
 		m_node_metadata.serialize(os_raw, version, disk);
 		// prior to 29 node data was compressed individually
@@ -459,12 +459,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		}
 	}
 
-	if(version >= 29) {
-		/*
-			Node metadata (version => 29)
-		*/
-		m_node_metadata.serialize(os, version, disk);
-
+	if (version >= 29) {
 		// now compress the whole thing
 		compress(os_raw.str(), os_compressed, version, compression_level);
 	}
@@ -494,11 +489,10 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 		return;
 	}
 
+	// Decompress the whole block (version >= 29)
 	std::stringstream in_raw(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
-	if (version >= 29) {
-		// decompress the whole thing
+	if (version >= 29)
 		decompress(in_compressed, in_raw, version);
-	}
 	std::istream &is = version >= 29 ? in_raw : in_compressed;
 
 	u8 flags = readU8(is);
@@ -511,7 +505,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 	m_generated = (flags & 0x08) == 0;
 
 	NameIdMapping nimap;
-	if(disk && version >= 29) {
+	if (disk && version >= 29) {
 		// Timestamp
 		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 				<<": Timestamp"<<std::endl);
@@ -544,15 +538,18 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 		decompress(is, in_raw, version);
 		MapNode::deSerializeBulk(in_raw, version, data, nodecount,
 			content_width, params_width);
+	}
 
-		/*
-			NodeMetadata (version < 29)
-		*/
-		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
-				<<": Node metadata"<<std::endl);
-		// Ignore errors
+	/*
+		NodeMetadata
+	*/
+	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+			<<": Node metadata"<<std::endl);
+	if (version >= 29) {
+		m_node_metadata.deSerialize(is, m_gamedef->idef());
+	} else {
 		try {
-			// resuse in_raw
+			// reuse in_raw
 			in_raw.str("");
 			in_raw.clear();
 			decompress(is, in_raw, version);
@@ -597,10 +594,9 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 			setTimestampNoChangedFlag(readU32(is));
 			m_disk_timestamp = m_timestamp;
 
-			// Dynamically re-set ids based on node names
+			// Node/id mapping
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 				    <<": NameIdMapping"<<std::endl);
-			NameIdMapping nimap;
 			nimap.deSerialize(is);
 		}
 
@@ -611,18 +607,6 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 					<<": Node timers (ver>=25)"<<std::endl);
 			m_node_timers.deSerialize(is, version);
-		}
-	}
-	if (version >= 29) {
-		try {
-			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
-				<<": Node metadata"<<std::endl);
-
-			m_node_metadata.deSerialize(is, m_gamedef->idef());
-		} catch(SerializationError &e) {
-			warningstream<<"MapBlock::deSerialize(): Ignoring an error"
-				<<" while deserializing node metadata at ("
-				<<PP(getPos())<<": "<<e.what()<<std::endl;
 		}
 	}
 
