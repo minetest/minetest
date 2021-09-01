@@ -40,6 +40,7 @@ sqlite3_version=3.35.5
 luajit_version=2.1.0-beta3
 leveldb_version=1.23
 zlib_version=1.2.11
+zstd_version=1.4.9
 
 mkdir -p $libdir
 
@@ -66,6 +67,7 @@ download () {
 cd $libdir
 download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win64.zip"
+download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/curl-$curl_version-win64.zip"
@@ -119,6 +121,10 @@ cmake -S $sourcedir -B . \
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
 	-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll \
+	\
+	-DZSTD_INCLUDE_DIR=$libdir/zstd/include \
+	-DZSTD_LIBRARY=$libdir/zstd/lib/libzstd.dll.a \
+	-DZSTD_DLL=$libdir/zstd/bin/libzstd.dll \
 	\
 	-DLUA_INCLUDE_DIR=$libdir/luajit/include \
 	-DLUA_LIBRARY=$libdir/luajit/libluajit.a \

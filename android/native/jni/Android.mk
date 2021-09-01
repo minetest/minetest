@@ -58,6 +58,11 @@ LOCAL_SRC_FILES := deps/Android/Vorbis/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libvo
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := Zstd
+LOCAL_SRC_FILES := deps/Android/Zstd/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libzstd.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := Minetest
 
 LOCAL_CFLAGS += \
@@ -101,7 +106,8 @@ LOCAL_C_INCLUDES := \
 	deps/Android/LuaJIT/src                         \
 	deps/Android/OpenAL-Soft/include                \
 	deps/Android/sqlite                             \
-	deps/Android/Vorbis/include
+	deps/Android/Vorbis/include                     \
+	deps/Android/Zstd/include
 
 LOCAL_SRC_FILES := \
 	$(wildcard ../../src/client/*.cpp)           \
@@ -201,7 +207,7 @@ LOCAL_SRC_FILES += \
 # SQLite3
 LOCAL_SRC_FILES += deps/Android/sqlite/sqlite3.c
 
-LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT GetText android_native_app_glue $(PROFILER_LIBS) #LevelDB
+LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT GetText Zstd android_native_app_glue $(PROFILER_LIBS) #LevelDB
 
 LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES
 
