@@ -119,7 +119,7 @@ cmake -S $sourcedir -B . \
 	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
-	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
+	-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a \
 	-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll \
 	\
 	-DZSTD_INCLUDE_DIR=$libdir/zstd/include \
