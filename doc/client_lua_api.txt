@@ -659,6 +659,18 @@ Minetest namespace reference
    * If a flag in this table is set to true, the feature is RESTRICTED.
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
+* `minetest.get_common_buffer([index])`: Gets a shared temporary buffer table.
+    * `index`: The numeric identifier of a buffer such that the returned buffer
+      is distinct from buffers with different indices. The index should be a
+      small integer in order to promote sharing. Default: 1
+  This function provides a way to temporarily store large amounts of
+  information while avoiding many large allocations. Functions can share
+  buffers as temporary storage rather than making their own, increasing memory
+  efficiency.
+  **Sections of code that use a buffer of a given index must not overlap**,
+  as this will lead to data being overwritten while it is still in use.
+  Do not rely on the length of a buffer, as it may be padded by junk left over
+  from its previous uses.
 
 ### Logging
 * `minetest.debug(...)`

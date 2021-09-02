@@ -4172,7 +4172,8 @@ inside the VoxelManip.
   this reason, it is strongly encouraged to complete the usage of a particular
   VoxelManip object in the same callback it had been created.
 * If a VoxelManip object will be used often, such as in an `on_generated()`
-  callback, consider passing a file-scoped table as the optional parameter to
+  callback, consider passing a file-scoped table or a table from
+  `minetest.get_common_buffer()` as the optional parameter to
   `VoxelManip:get_data()`, which serves as a static buffer the function can use
   to write map data to instead of returning a new table each call. This greatly
   enhances performance by avoiding unnecessary memory allocations.
@@ -4643,6 +4644,18 @@ Utilities
   use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
   The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
+* `minetest.get_common_buffer([index])`: Gets a shared temporary buffer table.
+    * `index`: The numeric identifier of a buffer such that the returned buffer
+      is distinct from buffers with different indices. The index should be a
+      small integer in order to promote sharing. Default: 1
+  This function provides a way to temporarily store large amounts of
+  information while avoiding many large allocations. Functions can share
+  buffers as temporary storage rather than making their own, increasing memory
+  efficiency.
+  **Sections of code that use a buffer of a given index must not overlap**,
+  as this will lead to data being overwritten while it is still in use.
+  Do not rely on the length of a buffer, as it may be padded by junk left over
+  from its previous uses.
 
 Logging
 -------
