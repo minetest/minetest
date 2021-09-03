@@ -138,11 +138,8 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 #endif
 
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-		/* TODO add a check like:
-		if (event.JoystickEvent != joystick_we_listen_for)
-			return false;
-		*/
-		return joystick->handleEvent(event.JoystickEvent);
+		// joystick may be nullptr if game is launched with '--random-input' parameter
+		return joystick && joystick->handleEvent(event.JoystickEvent);
 	} else if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		// Handle mouse events
 		KeyPress key;
