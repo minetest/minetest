@@ -240,4 +240,39 @@ void RandomInputHandler::step(float dtime)
 		}
 	}
 	mousepos += mousespeed;
+	static bool useJoystick = false;
+	{
+		static float counterUseJoystick = 0;
+		counterUseJoystick -= dtime;
+		if (counterUseJoystick < 0.0) {
+			counterUseJoystick = 5.0; // switch between joystick and keyboard direction input
+			useJoystick = !useJoystick;
+		}
+	}
+	if (useJoystick) {
+		static float counterMovement = 0;
+		counterMovement -= dtime;
+		if (counterMovement < 0.0) {
+			counterMovement = 0.1 * Rand(1, 40);
+			movementSpeed = Rand(0,100)*0.01;
+			movementDirection = Rand(-100, 100)*0.01 * M_PI;
+		}
+	} else {
+		bool f = keydown[keycache.key[KeyType::FORWARD]],
+			l = keydown[keycache.key[KeyType::LEFT]];
+		if (f || l) {
+			movementSpeed = 1.0f;
+			if (f && !l)
+				movementDirection = 0.0;
+			else if (!f && l)
+				movementDirection = -M_PI_2;
+			else if (f && l)
+				movementDirection = -M_PI_4;
+			else
+				movementDirection = 0.0;
+		} else {
+			movementSpeed = 0.0;
+			movementDirection = 0.0;
+		}
+	}
 }
