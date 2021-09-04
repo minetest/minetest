@@ -938,18 +938,15 @@ void Inventory::deSerialize(std::istream &is)
 InventoryList * Inventory::addList(const std::string &name, u32 size)
 {
 	setModified();
+
+	// Remove existing lists
 	s32 i = getListIndex(name);
-	if(i != -1)
-	{
-		if(m_lists[i]->getSize() != size)
-		{
-			delete m_lists[i];
-			m_lists[i] = new InventoryList(name, size, m_itemdef);
-			m_lists[i]->setModified();
-		}
+	if (i != -1) {
+		delete m_lists[i];
+		m_lists[i] = new InventoryList(name, size, m_itemdef);
+		m_lists[i]->setModified();
 		return m_lists[i];
 	}
-
 
 	//don't create list with invalid name
 	if (name.find(' ') != std::string::npos)
@@ -965,13 +962,14 @@ InventoryList * Inventory::getList(const std::string &name)
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
-		return NULL;
+		return nullptr;
 	return m_lists[i];
 }
 
 std::vector<const InventoryList*> Inventory::getLists()
 {
 	std::vector<const InventoryList*> lists;
+	lists.reserve(m_lists.size());
 	for (auto list : m_lists) {
 		lists.push_back(list);
 	}
@@ -990,11 +988,11 @@ bool Inventory::deleteList(const std::string &name)
 	return true;
 }
 
-const InventoryList * Inventory::getList(const std::string &name) const
+const InventoryList *Inventory::getList(const std::string &name) const
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
-		return NULL;
+		return nullptr;
 	return m_lists[i];
 }
 

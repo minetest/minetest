@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "basic_macros.h"
+#include "constants.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "irr_v3d.h"
@@ -36,6 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	y = temp; \
 } while (0)
 
+// Maximum radius of a block.  The magic number is
+// sqrt(3.0) / 2.0 in literal form.
+static constexpr const f32 BLOCK_MAX_RADIUS = 0.866025403784f * MAP_BLOCKSIZE * BS;
 
 inline s16 getContainerPos(s16 p, s16 d)
 {

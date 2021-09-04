@@ -39,20 +39,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/player_sao.h"
 
-Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
+Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string,
+	const char *type) :
 	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
-		throw SettingNotFoundException(
-			"Set pgsql_connection string in world.mt to "
+		// Use given type to reference the exact setting in the error message
+		std::string s = type;
+		std::string msg =
+			"Set pgsql" + s + "_connection string in world.mt to "
 			"use the postgresql backend\n"
 			"Notes:\n"
-			"pgsql_connection has the following form: \n"
-			"\tpgsql_connection = host=127.0.0.1 port=5432 user=mt_user "
-			"password=mt_password dbname=minetest_world\n"
+			"pgsql" + s + "_connection has the following form: \n"
+			"\tpgsql" + s + "_connection = host=127.0.0.1 port=5432 "
+			"user=mt_user password=mt_password dbname=minetest" + s + "\n"
 			"mt_user should have CREATE TABLE, INSERT, SELECT, UPDATE and "
-			"DELETE rights on the database.\n"
-			"Don't create mt_user as a SUPERUSER!");
+			"DELETE rights on the database. "
+			"Don't create mt_user as a SUPERUSER!";
+		throw SettingNotFoundException(msg);
 	}
 }
 
@@ -166,7 +170,7 @@ void Database_PostgreSQL::rollback()
 }
 
 MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string):
-	Database_PostgreSQL(connect_string),
+	Database_PostgreSQL(connect_string, ""),
 	MapDatabase()
 {
 	connectToDatabase();
@@ -315,7 +319,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
  * Player Database
  */
 PlayerDatabasePostgreSQL::PlayerDatabasePostgreSQL(const std::string &connect_string):
-	Database_PostgreSQL(connect_string),
+	Database_PostgreSQL(connect_string, "_player"),
 	PlayerDatabase()
 {
 	connectToDatabase();
@@ -637,7 +641,8 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 }
 
 AuthDatabasePostgreSQL::AuthDatabasePostgreSQL(const std::string &connect_string) :
-		Database_PostgreSQL(connect_string), AuthDatabase()
+	Database_PostgreSQL(connect_string, "_auth"),
+	AuthDatabase()
 {
 	connectToDatabase();
 }

@@ -6,7 +6,7 @@ uniform sampler2D textureFlags;
 #define rightImage normalTexture
 #define maskImage textureFlags
 
-varying mediump vec2 varTexCoord;
+varying mediump vec4 varTexCoord;
 
 void main(void)
 {

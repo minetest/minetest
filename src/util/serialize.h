@@ -290,7 +290,7 @@ inline void writeS8(u8 *data, s8 i)
 
 inline void writeS16(u8 *data, s16 i)
 {
-	writeU16(data, (u16)i); 
+	writeU16(data, (u16)i);
 }
 
 inline void writeS32(u8 *data, s32 i)

@@ -506,6 +506,13 @@ video::SColor GUIButton::getOverrideColor() const
 	return OverrideColor;
 }
 
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+video::SColor GUIButton::getActiveColor() const
+{
+	return video::SColor(0,0,0,0); // unused?
+}
+#endif
+
 void GUIButton::enableOverrideColor(bool enable)
 {
 	OverrideColorEnabled = enable;

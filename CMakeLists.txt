@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
+# Set policies up to 3.9 since we want to enable the IPO option
+if(${CMAKE_VERSION} VERSION_LESS 3.9)
+	cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+else()
+	cmake_policy(VERSION 3.9)
+endif()
+
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
@@ -10,7 +17,7 @@ set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 4)
+set(VERSION_MINOR 5)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -58,7 +65,45 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
 # This is done here so that relative search paths are more reasonable
-find_package(Irrlicht)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
+	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
+	if(BUILD_CLIENT)
+		# tell IrrlichtMt to create a static library
+		set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
+		add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
+		unset(BUILD_SHARED_LIBS CACHE)
+
+		if(NOT TARGET IrrlichtMt)
+			message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		endif()
+	else()
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
+	endif()
+else()
+	find_package(IrrlichtMt QUIET)
+	if(NOT TARGET IrrlichtMt::IrrlichtMt)
+		string(CONCAT explanation_msg
+			"The Minetest team has forked Irrlicht to make their own customizations. "
+			"It can be found here: https://github.com/minetest/irrlicht")
+		if(BUILD_CLIENT)
+			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.\n${explanation_msg}")
+		endif()
+
+		include(MinetestFindIrrlichtHeaders)
+		if(NOT IRRLICHT_INCLUDE_DIR)
+			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.\n${explanation_msg}")
+		endif()
+		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${IRRLICHT_INCLUDE_DIR}")
+	else()
+		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
+	endif()
+endif()
 
 
 # Installation
@@ -167,7 +212,6 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHA
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 	if(RUN_IN_PLACE)
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/clientmods" DESTINATION "${SHAREDIR}")
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/serverlist" DESTINATION "${SHAREDIR}/client")
@@ -202,8 +246,8 @@ find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
 
-# JsonCPP doesn't compile well on GCC 4.8
-if(NOT ENABLE_SYSTEM_JSONCPP)
+# JsonCpp doesn't compile well on GCC 4.8
+if(NOT USE_SYSTEM_JSONCPP)
 	set(GCC_MINIMUM_VERSION "4.9")
 endif()
 
@@ -212,7 +256,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
 	endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
 		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")

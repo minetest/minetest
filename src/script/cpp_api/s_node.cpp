@@ -65,6 +65,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_COLORED_FACEDIR, "colorfacedir"},
 		{CPT2_COLORED_WALLMOUNTED, "colorwallmounted"},
 		{CPT2_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
+		{CPT2_COLORED_DEGROTATE, "colordegrotate"},
 		{0, NULL},
 	};
 
@@ -90,6 +91,14 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
 		{NODEBOX_LEVELED, "leveled"},
 		{NODEBOX_CONNECTED, "connected"},
+		{0, NULL},
+	};
+
+struct EnumString ScriptApiNode::es_TextureAlphaMode[] =
+	{
+		{ALPHAMODE_OPAQUE, "opaque"},
+		{ALPHAMODE_CLIP, "clip"},
+		{ALPHAMODE_BLEND, "blend"},
 		{0, NULL},
 	};
 
@@ -133,9 +142,14 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 	push_v3s16(L, p);
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, digger);
-	PCALL_RES(lua_pcall(L, 3, 0, error_handler));
-	lua_pop(L, 1);  // Pop error handler
-	return true;
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+
+	// nil is treated as true for backwards compat
+	bool result = lua_isnil(L, -1) || lua_toboolean(L, -1);
+
+	lua_pop(L, 2);  // Pop error handler and result
+
+	return result;
 }
 
 void ScriptApiNode::node_on_construct(v3s16 p, MapNode node)

@@ -65,7 +65,7 @@ struct ChangingLight {
 
 	ChangingLight() = default;
 
-	ChangingLight(const relative_v3 &rel_pos, const mapblock_v3 &block_pos,
+	ChangingLight(relative_v3 rel_pos, mapblock_v3 block_pos,
 		MapBlock *b, direction source_dir) :
 		rel_position(rel_pos),
 		block_position(block_pos),
@@ -125,8 +125,8 @@ struct LightQueue {
 	 * The parameters are the same as in ChangingLight's constructor.
 	 * \param light light level of the ChangingLight
 	 */
-	inline void push(u8 light, const relative_v3 &rel_pos,
-		const mapblock_v3 &block_pos, MapBlock *block,
+	inline void push(u8 light, relative_v3 rel_pos,
+		mapblock_v3 block_pos, MapBlock *block,
 		direction source_dir)
 	{
 		assert(light <= LIGHT_SUN);
@@ -467,7 +467,7 @@ bool is_sunlight_above(Map *map, v3s16 pos, const NodeDefManager *ndef)
 static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
 
 void update_lighting_nodes(Map *map,
-	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
+	const std::vector<std::pair<v3s16, MapNode>> &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
@@ -482,8 +482,7 @@ void update_lighting_nodes(Map *map,
 		// won't change, since they didn't get their light from a
 		// modified node.
 		u8 min_safe_light = 0;
-		for (std::vector<std::pair<v3s16, MapNode> >::iterator it =
-				oldnodes.begin(); it < oldnodes.end(); ++it) {
+		for (auto it = oldnodes.cbegin(); it < oldnodes.cend(); ++it) {
 			u8 old_light = it->second.getLight(bank, ndef);
 			if (old_light > min_safe_light) {
 				min_safe_light = old_light;
@@ -495,8 +494,7 @@ void update_lighting_nodes(Map *map,
 			min_safe_light++;
 		}
 		// For each changed node process sunlight and initialize
-		for (std::vector<std::pair<v3s16, MapNode> >::iterator it =
-				oldnodes.begin(); it < oldnodes.end(); ++it) {
+		for (auto it = oldnodes.cbegin(); it < oldnodes.cend(); ++it) {
 			// Get position and block of the changed node
 			v3s16 p = it->first;
 			relative_v3 rel_pos;

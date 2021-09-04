@@ -206,10 +206,9 @@ NodeMetadataList::~NodeMetadataList()
 std::vector<v3s16> NodeMetadataList::getAllKeys()
 {
 	std::vector<v3s16> keys;
-
-	NodeMetadataMap::const_iterator it;
-	for (it = m_data.begin(); it != m_data.end(); ++it)
-		keys.push_back(it->first);
+	keys.reserve(m_data.size());
+	for (const auto &it : m_data)
+		keys.push_back(it.first);
 
 	return keys;
 }
@@ -218,7 +217,7 @@ NodeMetadata *NodeMetadataList::get(v3s16 p)
 {
 	NodeMetadataMap::const_iterator n = m_data.find(p);
 	if (n == m_data.end())
-		return NULL;
+		return nullptr;
 	return n->second;
 }
 
@@ -235,7 +234,7 @@ void NodeMetadataList::remove(v3s16 p)
 void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 {
 	remove(p);
-	m_data.insert(std::make_pair(p, d));
+	m_data.emplace(p, d);
 }
 
 void NodeMetadataList::clear()
@@ -251,9 +250,8 @@ void NodeMetadataList::clear()
 int NodeMetadataList::countNonEmpty() const
 {
 	int n = 0;
-	NodeMetadataMap::const_iterator it;
-	for (it = m_data.begin(); it != m_data.end(); ++it) {
-		if (!it->second->empty())
+	for (const auto &it : m_data) {
+		if (!it.second->empty())
 			n++;
 	}
 	return n;

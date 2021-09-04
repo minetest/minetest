@@ -33,6 +33,7 @@ public:
 	bool luaentity_Add(u16 id, const char *name);
 	void luaentity_Activate(u16 id,
 			const std::string &staticdata, u32 dtime_s);
+	void luaentity_Deactivate(u16 id);
 	void luaentity_Remove(u16 id);
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,

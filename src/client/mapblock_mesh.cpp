@@ -404,26 +404,26 @@ static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 
 static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, float *u, float *v)
 {
-	if (dir.X > 0 || dir.Y > 0 || dir.Z < 0)
+	if (dir.X > 0 || dir.Y != 0 || dir.Z < 0)
 		base -= scale;
 	if (dir == v3s16(0,0,1)) {
-		*u = -base.X - 1;
-		*v = -base.Y - 1;
+		*u = -base.X;
+		*v = -base.Y;
 	} else if (dir == v3s16(0,0,-1)) {
 		*u = base.X + 1;
-		*v = -base.Y - 2;
+		*v = -base.Y - 1;
 	} else if (dir == v3s16(1,0,0)) {
 		*u = base.Z + 1;
-		*v = -base.Y - 2;
-	} else if (dir == v3s16(-1,0,0)) {
-		*u = -base.Z - 1;
 		*v = -base.Y - 1;
+	} else if (dir == v3s16(-1,0,0)) {
+		*u = -base.Z;
+		*v = -base.Y;
 	} else if (dir == v3s16(0,1,0)) {
 		*u = base.X + 1;
-		*v = -base.Z - 2;
+		*v = -base.Z - 1;
 	} else if (dir == v3s16(0,-1,0)) {
-		*u = base.X;
-		*v = base.Z;
+		*u = base.X + 1;
+		*v = base.Z + 1;
 	}
 }
 
@@ -860,6 +860,9 @@ static void updateFastFaceRow(
 		g_settings->getBool("enable_shaders") &&
 		g_settings->getBool("enable_waving_water");
 
+	static thread_local const bool force_not_tiling =
+			g_settings->getBool("enable_dynamic_shadows");
+
 	v3s16 p = startpos;
 
 	u16 continuous_tiles_count = 1;
@@ -898,7 +901,8 @@ static void updateFastFaceRow(
 					waving,
 					next_tile);
 
-			if (next_makes_face == makes_face
+			if (!force_not_tiling
+					&& next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, sizeof(lights)) == 0
@@ -1072,8 +1076,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	*/
 
 	{
-		MapblockMeshGenerator generator(data, &collector);
-		generator.generate();
+		MapblockMeshGenerator(data, &collector,
+			data->m_client->getSceneManager()->getMeshManipulator()).generate();
 	}
 
 	/*
@@ -1176,13 +1180,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		}
 
 		if (m_mesh[layer]) {
-#if 0
-			// Usually 1-700 faces and 1-7 materials
-			std::cout << "Updated MapBlock has " << fastfaces_new.size()
-					<< " faces and uses " << m_mesh[layer]->getMeshBufferCount()
-					<< " materials (meshbuffers)" << std::endl;
-#endif
-
 			// Use VBO for mesh (this just would set this for ever buffer)
 			if (m_enable_vbo)
 				m_mesh[layer]->setHardwareMappingHint(scene::EHM_STATIC);

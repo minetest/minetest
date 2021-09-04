@@ -45,7 +45,7 @@ namespace voxalgo
  */
 void update_lighting_nodes(
 	Map *map,
-	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
+	const std::vector<std::pair<v3s16, MapNode>> &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks);
 
 /*!

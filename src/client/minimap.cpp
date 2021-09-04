@@ -304,7 +304,7 @@ void Minimap::setModeIndex(size_t index)
 		data->mode = m_modes[index];
 		m_current_mode_index = index;
 	} else {
-		data->mode = MinimapModeDef{MINIMAP_TYPE_OFF, N_("Minimap hidden"), 0, 0, ""};
+		data->mode = MinimapModeDef{MINIMAP_TYPE_OFF, gettext("Minimap hidden"), 0, 0, ""};
 		m_current_mode_index = 0;
 	}
 
@@ -330,25 +330,26 @@ void Minimap::addMode(MinimapModeDef mode)
 	if (mode.label == "") {
 		switch (mode.type) {
 			case MINIMAP_TYPE_OFF:
-				mode.label = N_("Minimap hidden");
+				mode.label = gettext("Minimap hidden");
 				break;
 			case MINIMAP_TYPE_SURFACE:
-				mode.label = N_("Minimap in surface mode, Zoom x%d");
+				mode.label = gettext("Minimap in surface mode, Zoom x%d");
 				if (mode.map_size > 0)
 					zoom = 256 / mode.map_size;
 				break;
 			case MINIMAP_TYPE_RADAR:
-				mode.label = N_("Minimap in radar mode, Zoom x%d");
+				mode.label = gettext("Minimap in radar mode, Zoom x%d");
 				if (mode.map_size > 0)
 					zoom = 512 / mode.map_size;
 				break;
 			case MINIMAP_TYPE_TEXTURE:
-				mode.label = N_("Minimap in texture mode");
+				mode.label = gettext("Minimap in texture mode");
 				break;
 			default:
 				break;
 		}
 	}
+	// else: Custom labels need mod-provided client-side translation
 
 	if (zoom >= 0) {
 		char label_buf[1024];
@@ -490,7 +491,8 @@ video::ITexture *Minimap::getMinimapTexture()
 		// Want to use texture source, to : 1 find texture, 2 cache it
 		video::ITexture* texture = m_tsrc->getTexture(data->mode.texture);
 		video::IImage* image = driver->createImageFromData(
-			 texture->getColorFormat(), texture->getSize(), texture->lock(), true, false);
+			 texture->getColorFormat(), texture->getSize(),
+			 texture->lock(video::ETLM_READ_ONLY), true, false);
 		texture->unlock();
 
 		auto dim = image->getDimension();
@@ -575,7 +577,7 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 void Minimap::drawMinimap()
 {
 	// Non hud managed minimap drawing (legacy minimap)
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
+	v2u32 screensize = RenderingEngine::getWindowSize();
 	const u32 size = 0.25 * screensize.Y;
 
 	drawMinimap(core::rect<s32>(

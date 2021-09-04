@@ -15,22 +15,6 @@ testing this node easier and more convenient.
 
 local S = minetest.get_translator("testnodes")
 
--- If set to true, will show an inventory image for nodes that have no inventory image as of Minetest 5.1.0.
--- This is due to <https://github.com/minetest/minetest/issues/9209>.
--- This is only added to make the items more visible to avoid confusion, but you will no longer see
--- the default inventory images for these items. When you want to test the default inventory image of drawtypes,
--- this should be turned off.
--- TODO: Remove support for fallback inventory image as soon #9209 is fixed.
-local SHOW_FALLBACK_IMAGE = minetest.settings:get_bool("testnodes_show_fallback_image", false)
-
-local fallback_image = function(img)
-	if SHOW_FALLBACK_IMAGE then
-		return img
-	else
-		return nil
-	end
-end
-
 -- A regular cube
 minetest.register_node("testnodes:normal", {
 	description = S("Normal Drawtype Test Node"),
@@ -145,20 +129,15 @@ minetest.register_node("testnodes:fencelike", {
 })
 
 minetest.register_node("testnodes:torchlike", {
-	description = S("Torchlike Drawtype Test Node"),
+	description = S("Floor Torchlike Drawtype Test Node"),
 	drawtype = "torchlike",
 	paramtype = "light",
-	tiles = {
-		"testnodes_torchlike_floor.png",
-		"testnodes_torchlike_ceiling.png",
-		"testnodes_torchlike_wall.png",
-	},
+	tiles = { "testnodes_torchlike_floor.png^[colorize:#FF0000:64" },
 
 
 	walkable = false,
 	sunlight_propagates = true,
 	groups = { dig_immediate = 3 },
-	inventory_image = fallback_image("testnodes_torchlike_floor.png"),
 })
 
 minetest.register_node("testnodes:torchlike_wallmounted", {
@@ -176,12 +155,22 @@ minetest.register_node("testnodes:torchlike_wallmounted", {
 	walkable = false,
 	sunlight_propagates = true,
 	groups = { dig_immediate = 3 },
-	inventory_image = fallback_image("testnodes_torchlike_floor.png"),
+})
+
+minetest.register_node("testnodes:signlike", {
+	description = S("Floor Signlike Drawtype Test Node"),
+	drawtype = "signlike",
+	paramtype = "light",
+	tiles = { "testnodes_signlike.png^[colorize:#FF0000:64" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+	sunlight_propagates = true,
 })
 
 
-
-minetest.register_node("testnodes:signlike", {
+minetest.register_node("testnodes:signlike_wallmounted", {
 	description = S("Wallmounted Signlike Drawtype Test Node"),
 	drawtype = "signlike",
 	paramtype = "light",
@@ -192,7 +181,6 @@ minetest.register_node("testnodes:signlike", {
 	walkable = false,
 	groups = { dig_immediate = 3 },
 	sunlight_propagates = true,
-	inventory_image = fallback_image("testnodes_signlike.png"),
 })
 
 minetest.register_node("testnodes:plantlike", {
@@ -220,9 +208,46 @@ minetest.register_node("testnodes:plantlike_waving", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:plantlike_wallmounted", {
+	description = S("Wallmounted Plantlike Drawtype Test Node"),
+	drawtype = "plantlike",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	tiles = { "testnodes_plantlike_wallmounted.png" },
+	leveled = 1,
+
+
+	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
 
 
 -- param2 will rotate
+local function rotate_on_rightclick(pos, node, clicker)
+	local def = minetest.registered_nodes[node.name]
+	local aux1 = clicker:get_player_control().aux1
+
+	local deg, deg_max
+	local color, color_mult = 0, 0
+	if def.paramtype2 == "degrotate" then
+		deg = node.param2
+		deg_max = 240
+	elseif def.paramtype2 == "colordegrotate" then
+		-- MSB [3x color, 5x rotation] LSB
+		deg = node.param2 % 2^5
+		deg_max = 24
+		color_mult = 2^5
+		color = math.floor(node.param2 / color_mult)
+	end
+
+	deg = (deg + (aux1 and 10 or 1)) % deg_max
+	node.param2 = color * color_mult + deg
+	minetest.swap_node(pos, node)
+	minetest.chat_send_player(clicker:get_player_name(),
+		"Rotation is now " .. deg .. " / " .. deg_max)
+end
+
 minetest.register_node("testnodes:plantlike_degrotate", {
 	description = S("Degrotate Plantlike Drawtype Test Node"),
 	drawtype = "plantlike",
@@ -230,8 +255,39 @@ minetest.register_node("testnodes:plantlike_degrotate", {
 	paramtype2 = "degrotate",
 	tiles = { "testnodes_plantlike_degrotate.png" },
 
-
+	on_rightclick = rotate_on_rightclick,
+	place_param2 = 7,
 	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:mesh_degrotate", {
+	description = S("Degrotate Mesh Drawtype Test Node"),
+	drawtype = "mesh",
+	paramtype = "light",
+	paramtype2 = "degrotate",
+	mesh = "testnodes_ocorner.obj",
+	tiles = { "testnodes_mesh_stripes2.png" },
+
+	on_rightclick = rotate_on_rightclick,
+	place_param2 = 10, -- 15°
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:mesh_colordegrotate", {
+	description = S("Color Degrotate Mesh Drawtype Test Node"),
+	drawtype = "mesh",
+	paramtype = "light",
+	paramtype2 = "colordegrotate",
+	palette = "testnodes_palette_facedir.png",
+	mesh = "testnodes_ocorner.obj",
+	tiles = { "testnodes_mesh_stripes3.png" },
+
+	on_rightclick = rotate_on_rightclick,
+	-- color index 1, 1 step (=15°) rotated
+	place_param2 = 1 * 2^5 + 1,
 	sunlight_propagates = true,
 	groups = { dig_immediate = 3 },
 })
@@ -273,6 +329,20 @@ minetest.register_node("testnodes:plantlike_rooted", {
 	paramtype = "light",
 	tiles = { "testnodes_plantlike_rooted_base.png" },
 	special_tiles = { "testnodes_plantlike_rooted.png" },
+
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:plantlike_rooted_wallmounted", {
+	description = S("Wallmounted Rooted Plantlike Drawtype Test Node"),
+	drawtype = "plantlike_rooted",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	tiles = {
+		"testnodes_plantlike_rooted_base.png",
+		"testnodes_plantlike_rooted_base.png",
+		"testnodes_plantlike_rooted_base_side_wallmounted.png" },
+	special_tiles = { "testnodes_plantlike_rooted_wallmounted.png" },
 
 	groups = { dig_immediate = 3 },
 })
@@ -350,68 +420,72 @@ minetest.register_node("testnodes:plantlike_rooted_degrotate", {
 })
 
 -- Demonstrative liquid nodes, source and flowing form.
-minetest.register_node("testnodes:liquid", {
-	description = S("Source Liquid Drawtype Test Node"),
-	drawtype = "liquid",
-	paramtype = "light",
-	tiles = {
-		"testnodes_liquidsource.png",
-	},
-	special_tiles = {
-		{name="testnodes_liquidsource.png", backface_culling=false},
-		{name="testnodes_liquidsource.png", backface_culling=true},
-	},
-	use_texture_alpha = true,
+-- DRAWTYPE ONLY, NO LIQUID PHYSICS!
+-- Liquid ranges 0 to 8
+for r = 0, 8 do
+	minetest.register_node("testnodes:liquid_"..r, {
+		description = S("Source Liquid Drawtype Test Node, Range @1", r),
+		drawtype = "liquid",
+		paramtype = "light",
+		tiles = {
+			"testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100",
+		},
+		special_tiles = {
+			{name="testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
+			{name="testnodes_liquidsource_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=true},
+		},
+		use_texture_alpha = "blend",
 
 
-	walkable = false,
-	liquidtype = "source",
-	liquid_range = 1,
-	liquid_viscosity = 0,
-	liquid_alternative_flowing = "testnodes:liquid_flowing",
-	liquid_alternative_source = "testnodes:liquid",
-	groups = { dig_immediate = 3 },
-})
-minetest.register_node("testnodes:liquid_flowing", {
-	description = S("Flowing Liquid Drawtype Test Node"),
-	drawtype = "flowingliquid",
-	paramtype = "light",
-	paramtype2 = "flowingliquid",
-	tiles = {
-		"testnodes_liquidflowing.png",
-	},
-	special_tiles = {
-		{name="testnodes_liquidflowing.png", backface_culling=false},
-		{name="testnodes_liquidflowing.png", backface_culling=false},
-	},
-	use_texture_alpha = true,
+		walkable = false,
+		liquid_range = r,
+		liquid_viscosity = 0,
+		liquid_alternative_flowing = "testnodes:liquid_flowing_"..r,
+		liquid_alternative_source = "testnodes:liquid_"..r,
+		groups = { dig_immediate = 3 },
+	})
+	minetest.register_node("testnodes:liquid_flowing_"..r, {
+		description = S("Flowing Liquid Drawtype Test Node, Range @1", r),
+		drawtype = "flowingliquid",
+		paramtype = "light",
+		paramtype2 = "flowingliquid",
+		tiles = {
+			"testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100",
+		},
+		special_tiles = {
+			{name="testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
+			{name="testnodes_liquidflowing_r"..r..".png^[colorize:#FFFFFF:100", backface_culling=false},
+		},
+		use_texture_alpha = "blend",
 
 
-	walkable = false,
-	liquidtype = "flowing",
-	liquid_range = 1,
-	liquid_viscosity = 0,
-	liquid_alternative_flowing = "testnodes:liquid_flowing",
-	liquid_alternative_source = "testnodes:liquid",
-	groups = { dig_immediate = 3 },
-})
+		walkable = false,
+		liquid_range = r,
+		liquid_viscosity = 0,
+		liquid_alternative_flowing = "testnodes:liquid_flowing_"..r,
+		liquid_alternative_source = "testnodes:liquid_"..r,
+		groups = { dig_immediate = 3 },
+	})
+
+end
+
+-- Waving liquid test (drawtype only)
 minetest.register_node("testnodes:liquid_waving", {
 	description = S("Waving Source Liquid Drawtype Test Node"),
 	drawtype = "liquid",
 	paramtype = "light",
 	tiles = {
-		"testnodes_liquidsource.png^[brighten",
+		"testnodes_liquidsource.png^[colorize:#0000FF:127",
 	},
 	special_tiles = {
-		{name="testnodes_liquidsource.png^[brighten", backface_culling=false},
-		{name="testnodes_liquidsource.png^[brighten", backface_culling=true},
+		{name="testnodes_liquidsource.png^[colorize:#0000FF:127", backface_culling=false},
+		{name="testnodes_liquidsource.png^[colorize:#0000FF:127", backface_culling=true},
 	},
-	use_texture_alpha = true,
+	use_texture_alpha = "blend",
 	waving = 3,
 
 
 	walkable = false,
-	liquidtype = "source",
 	liquid_range = 1,
 	liquid_viscosity = 0,
 	liquid_alternative_flowing = "testnodes:liquid_flowing_waving",
@@ -424,26 +498,23 @@ minetest.register_node("testnodes:liquid_flowing_waving", {
 	paramtype = "light",
 	paramtype2 = "flowingliquid",
 	tiles = {
-		"testnodes_liquidflowing.png^[brighten",
+		"testnodes_liquidflowing.png^[colorize:#0000FF:127",
 	},
 	special_tiles = {
-		{name="testnodes_liquidflowing.png^[brighten", backface_culling=false},
-		{name="testnodes_liquidflowing.png^[brighten", backface_culling=false},
+		{name="testnodes_liquidflowing.png^[colorize:#0000FF:127", backface_culling=false},
+		{name="testnodes_liquidflowing.png^[colorize:#0000FF:127", backface_culling=false},
 	},
-	use_texture_alpha = true,
+	use_texture_alpha = "blend",
 	waving = 3,
 
 
 	walkable = false,
-	liquidtype = "flowing",
 	liquid_range = 1,
 	liquid_viscosity = 0,
 	liquid_alternative_flowing = "testnodes:liquid_flowing_waving",
 	liquid_alternative_source = "testnodes:liquid_waving",
 	groups = { dig_immediate = 3 },
 })
-
-
 
 -- Invisible node
 minetest.register_node("testnodes:airlike", {
@@ -455,7 +526,6 @@ minetest.register_node("testnodes:airlike", {
 	walkable = false,
 	groups = { dig_immediate = 3 },
 	sunlight_propagates = true,
-	inventory_image = fallback_image("testnodes_airlike.png"),
 })
 
 -- param2 changes liquid height
@@ -545,10 +615,13 @@ scale("allfaces_optional_waving",
 scale("plantlike",
 	S("Double-sized Plantlike Drawtype Test Node"),
 	S("Half-sized Plantlike Drawtype Test Node"))
+scale("plantlike_wallmounted",
+	S("Double-sized Wallmounted Plantlike Drawtype Test Node"),
+	S("Half-sized Wallmounted Plantlike Drawtype Test Node"))
 scale("torchlike_wallmounted",
 	S("Double-sized Wallmounted Torchlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Torchlike Drawtype Test Node"))
-scale("signlike",
+scale("signlike_wallmounted",
 	S("Double-sized Wallmounted Signlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Signlike Drawtype Test Node"))
 scale("firelike",

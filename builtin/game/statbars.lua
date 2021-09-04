@@ -84,8 +84,8 @@ local function update_builtin_statbars(player)
 	end
 
 	if hud.id_breathbar and (not show_breathbar or breath == breath_max) then
-		minetest.after(1, function(player_name, breath_bar)
-			local player = minetest.get_player_by_name(player_name)
+		core.after(1, function(player_name, breath_bar)
+			local player = core.get_player_by_name(player_name)
 			if player then
 				player:hud_remove(breath_bar)
 			end

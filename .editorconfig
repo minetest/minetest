@@ -1,0 +1,9 @@
+[*]
+end_of_line = lf
+
+[*.{cpp,h,lua,txt,glsl,md,c,cmake,java,gradle}]
+charset = utf8
+indent_size = 4
+indent_style = tab
+insert_final_newline = true
+trim_trailing_whitespace = true

@@ -77,6 +77,19 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	return readParam<bool>(L, -1);
 }
 
+void ScriptApiPlayer::on_rightclickplayer(ServerActiveObject *player,
+                ServerActiveObject *clicker)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	// Get core.registered_on_rightclickplayers
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_rightclickplayers");
+	// Call callbacks
+	objectrefGetOrCreate(L, player);
+	objectrefGetOrCreate(L, clicker);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
 s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 	s32 hp_change, const PlayerHPChangeReason &reason)
 {

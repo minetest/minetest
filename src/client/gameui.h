@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irrlichttypes.h"
 #include <IGUIEnvironment.h>
 #include "gui/guiFormSpecMenu.h"
 #include "util/enriched_string.h"
@@ -57,7 +58,8 @@ public:
 		bool show_chat = true;
 		bool show_hud = true;
 		bool show_minimap = false;
-		bool show_debug = true;
+		bool show_minimal_debug = false;
+		bool show_basic_debug = false;
 		bool show_profiler_graph = false;
 	};
 

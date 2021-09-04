@@ -38,7 +38,8 @@ protected:
 	 * @param index Lua Index to read
 	 * @return read value from Lua
 	 */
-	template <typename T> static T readParam(lua_State *L, int index);
+	template <typename T>
+	static T readParam(lua_State *L, int index);
 
 	/**
 	 * Read a value using a template type T from Lua State L and index

@@ -34,7 +34,7 @@ public:
 
 	~NetworkPacket();
 
-	void putRawPacket(u8 *data, u32 datasize, session_t peer_id);
+	void putRawPacket(const u8 *data, u32 datasize, session_t peer_id);
 	void clear();
 
 	// Getters

@@ -223,16 +223,20 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	};
 
 	lua_createtable(L, 0, 12);
-	set("up", c.up);
-	set("down", c.down);
-	set("left", c.left);
-	set("right", c.right);
-	set("jump", c.jump);
-	set("aux1", c.aux1);
+	set("jump",  c.jump);
+	set("aux1",  c.aux1);
 	set("sneak", c.sneak);
-	set("zoom", c.zoom);
-	set("dig", c.dig);
+	set("zoom",  c.zoom);
+	set("dig",   c.dig);
 	set("place", c.place);
+	// Player movement in polar coordinates and non-binary speed
+	set("movement_speed",     c.movement_speed);
+	set("movement_direction", c.movement_direction);
+	// Provide direction keys to ensure compatibility
+	set("up",    player->keyPressed & (1 << 0)); // Up, down, left, and right were removed in favor of
+	set("down",  player->keyPressed & (1 << 1)); // analog  direction indicators and are therefore not
+	set("left",  player->keyPressed & (1 << 2)); // available as booleans anymore. The corresponding values
+	set("right", player->keyPressed & (1 << 3)); // can still be read from the keyPressed bits though.
 
 	return 1;
 }
@@ -369,10 +373,11 @@ int LuaLocalPlayer::l_hud_change(lua_State *L)
 	if (!element)
 		return 0;
 
+	HudElementStat stat;
 	void *unused;
-	read_hud_change(L, element, &unused);
+	bool ok = read_hud_change(L, stat, element, &unused);
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, ok);
 	return 1;
 }
 
@@ -446,7 +451,7 @@ void LuaLocalPlayer::Register(lua_State *L)
 
 	lua_pop(L, 1); // Drop metatable
 
-	luaL_openlib(L, 0, methods, 0); // fill methodtable
+	luaL_register(L, nullptr, methods); // fill methodtable
 	lua_pop(L, 1);			// Drop methodtable
 }
 

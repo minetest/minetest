@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemstackmetadata.h"
 #include "util/serialize.h"
 #include "util/strfnd.h"
+#include <algorithm>
 
 #define DESERIALIZE_START '\x01'
 #define DESERIALIZE_KV_DELIM '\x02'
@@ -37,10 +38,22 @@ void ItemStackMetadata::clear()
 	updateToolCapabilities();
 }
 
+static void sanitize_string(std::string &str)
+{
+	str.erase(std::remove(str.begin(), str.end(), DESERIALIZE_START), str.end());
+	str.erase(std::remove(str.begin(), str.end(), DESERIALIZE_KV_DELIM), str.end());
+	str.erase(std::remove(str.begin(), str.end(), DESERIALIZE_PAIR_DELIM), str.end());
+}
+
 bool ItemStackMetadata::setString(const std::string &name, const std::string &var)
 {
-	bool result = Metadata::setString(name, var);
-	if (name == TOOLCAP_KEY)
+	std::string clean_name = name;
+	std::string clean_var = var;
+	sanitize_string(clean_name);
+	sanitize_string(clean_var);
+
+	bool result = Metadata::setString(clean_name, clean_var);
+	if (clean_name == TOOLCAP_KEY)
 		updateToolCapabilities();
 	return result;
 }

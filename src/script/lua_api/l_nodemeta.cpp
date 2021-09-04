@@ -234,7 +234,7 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 void NodeMetaRef::Register(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsServer, 0);  // fill methodtable
+	luaL_register(L, nullptr, methodsServer);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 
@@ -260,7 +260,7 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 void NodeMetaRef::RegisterClient(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsClient, 0);  // fill methodtable
+	luaL_register(L, nullptr, methodsClient);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 

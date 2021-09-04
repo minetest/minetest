@@ -21,17 +21,17 @@ prompt_for_number() {
 # * Commit the changes
 # * Tag with current version
 perform_release() {
+	RELEASE_DATE=$(date +%Y-%m-%d)
+
 	sed -i -re "s/^set\(DEVELOPMENT_BUILD TRUE\)$/set(DEVELOPMENT_BUILD FALSE)/" CMakeLists.txt
 
-	sed -i -re "s/\"versionCode\", [0-9]+/\"versionCode\", $NEW_ANDROID_VERSION_CODE/" build/android/build.gradle
+	sed -i 's/project.ext.set("versionExtra", "-dev")/project.ext.set("versionExtra", "")/' android/build.gradle
+	sed -i -re "s/\"versionCode\", [0-9]+/\"versionCode\", $NEW_ANDROID_VERSION_CODE/" android/build.gradle
 
 	sed -i '/\<release/s/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
-
-	RELEASE_DATE=`date +%Y-%m-%d`
-
 	sed -i 's/\(<release date\)="[^"]*"/\1="'"$RELEASE_DATE"'"/' misc/net.minetest.minetest.appdata.xml
 
-	git add -f CMakeLists.txt build/android/build.gradle misc/net.minetest.minetest.appdata.xml
+	git add -f CMakeLists.txt android/build.gradle misc/net.minetest.minetest.appdata.xml
 
 	git commit -m "Bump version to $RELEASE_VERSION"
 
@@ -47,20 +47,24 @@ perform_release() {
 back_to_devel() {
 	echo 'Creating "return back to development" commit'
 
+	# Update CMakeList.txt versions
 	sed -i -re 's/^set\(DEVELOPMENT_BUILD FALSE\)$/set(DEVELOPMENT_BUILD TRUE)/' CMakeLists.txt
-
 	sed -i -re "s/^set\(VERSION_MAJOR [0-9]+\)$/set(VERSION_MAJOR $NEXT_VERSION_MAJOR)/" CMakeLists.txt
-
 	sed -i -re "s/^set\(VERSION_MINOR [0-9]+\)$/set(VERSION_MINOR $NEXT_VERSION_MINOR)/" CMakeLists.txt
-
 	sed -i -re "s/^set\(VERSION_PATCH [0-9]+\)$/set(VERSION_PATCH $NEXT_VERSION_PATCH)/" CMakeLists.txt
 
-	sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEXT_VERSION/g" doc/menu_lua_api.txt
+	# Update Android versions
+	sed -i 's/set("versionExtra", "")/set("versionExtra", "-dev")/' android/build.gradle
+	sed -i -re "s/set\(\"versionMajor\", [0-9]+\)/set(\"versionMajor\", $NEXT_VERSION_MAJOR)/" android/build.gradle
+	sed -i -re "s/set\(\"versionMinor\", [0-9]+\)/set(\"versionMinor\", $NEXT_VERSION_MINOR)/" android/build.gradle
+	sed -i -re "s/set\(\"versionPatch\", [0-9]+\)/set(\"versionPatch\", $NEXT_VERSION_PATCH)/" android/build.gradle
 
+	# Update doc versions
+	sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEXT_VERSION/g" doc/menu_lua_api.txt
 	sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEXT_VERSION/g" doc/client_lua_api.txt
 
-	git add -f CMakeLists.txt doc/menu_lua_api.txt doc/client_lua_api.txt
-
+	# Commit
+	git add -f CMakeLists.txt android/build.gradle doc/menu_lua_api.txt doc/client_lua_api.txt
 	git commit -m "Continue with $NEXT_VERSION-dev"
 }
 ##################################
@@ -78,12 +82,12 @@ cd ${0%/*}/..
 grep -q -E '^set\(VERSION_MAJOR [0-9]+\)$' CMakeLists.txt
 grep -q -E '^set\(VERSION_MINOR [0-9]+\)$' CMakeLists.txt
 grep -q -E '^set\(VERSION_PATCH [0-9]+\)$' CMakeLists.txt
-grep -q -E '\("versionCode", [0-9]+\)' build/android/build.gradle
+grep -q -E '\("versionCode", [0-9]+\)' android/build.gradle
 
 VERSION_MAJOR=$(grep -E '^set\(VERSION_MAJOR [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
 VERSION_MINOR=$(grep -E '^set\(VERSION_MINOR [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
 VERSION_PATCH=$(grep -E '^set\(VERSION_PATCH [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
-ANDROID_VERSION_CODE=$(grep -E '"versionCode", [0-9]+' build/android/build.gradle | tr -dC 0-9)
+ANDROID_VERSION_CODE=$(grep -E '"versionCode", [0-9]+' android/build.gradle | tr -dC 0-9)
 
 RELEASE_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
 

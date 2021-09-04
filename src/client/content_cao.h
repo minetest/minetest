@@ -174,6 +174,8 @@ public:
 
 	const bool isImmortal();
 
+	inline const ObjectProperties &getProperties() const { return m_prop; }
+
 	scene::ISceneNode *getSceneNode() const;
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
@@ -234,7 +236,7 @@ public:
 
 	void removeFromScene(bool permanent);
 
-	void addToScene(ITextureSource *tsrc);
+	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 
 	inline void expireVisuals()
 	{

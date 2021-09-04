@@ -36,6 +36,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PATH_DELIM ":"
 #endif
 
+namespace irr { namespace io {
+class IFileSystem;
+}}
+
 namespace fs
 {
 
@@ -85,9 +89,6 @@ void GetRecursiveSubPaths(const std::string &path,
 		  bool list_files,
 		  const std::set<char> &ignore = {});
 
-// Tries to delete all, returns false if any failed
-bool DeletePaths(const std::vector<std::string> &paths);
-
 // Only pass full paths to this one. True on success.
 bool RecursiveDeleteContent(const std::string &path);
 
@@ -127,6 +128,8 @@ std::string AbsolutePath(const std::string &path);
 const char *GetFilenameFromPath(const char *path);
 
 bool safeWriteToFile(const std::string &path, const std::string &content);
+
+bool extractZipFile(irr::io::IFileSystem *fs, const char *filename, const std::string &destination);
 
 bool ReadFile(const std::string &path, std::string &out);
 

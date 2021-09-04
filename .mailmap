@@ -1,33 +1,67 @@
+# Documentation: https://git-scm.com/docs/git-check-mailmap#_mapping_authors
+
 0gb.us <0gb.us@0gb.us> <us_0gb@laptop-0gb-us.0gb.us>
-Calinou <calinou9999@gmail.com> <calinou9999spam@gmail.com>
-Perttu Ahola <celeron55@gmail.com> celeron55 <celeron55@gmail.com>
+Calinou <calinou@opmbx.org> <calinou9999@gmail.com>
+Calinou <calinou@opmbx.org> <calinou9999spam@gmail.com>
+Perttu Ahola <celeron55@gmail.com>
 Perttu Ahola <celeron55@gmail.com> celeron55 <celeron55@armada.(none)>
-Craig Robbins <kde.psych@gmail.com> <crobbins@localhost.localdomain>
+Zeno- <kde.psych@gmail.com>
+Zeno- <kde.psych@gmail.com> <crobbins@localhost.localdomain>
+Diego Martínez <kaeza@users.sf.net>
 Diego Martínez <kaeza@users.sf.net> <lkaezadl3@gmail.com>
+Ilya Zhuravlev <zhuravlevilya@ya.ru>
 Ilya Zhuravlev <zhuravlevilya@ya.ru> <whatever@xyz.is>
 kwolekr <kwolekr@minetest.net> <mirrorisim@gmail.com>
-PilzAdam <pilzadam@minetest.net> PilzAdam <adam-k@outlook.com>
-PilzAdam <pilzadam@minetest.net> Pilz Adam <PilzAdam@gmx.de>
-PilzAdam <pilzadam@minetest.net> PilzAdam <PilzAdam@gmx.de>
+PilzAdam <pilzadam@minetest.net> <adam-k@outlook.com>
+PilzAdam <pilzadam@minetest.net> <PilzAdam@gmx.de>
 proller <proller@github.com> <proler@github.com>
 proller <proller@github.com> <proler@gmail.com>
 RealBadAngel <maciej.kasatkin@o2.pl> <mk@realbadangel.pl>
 RealBadAngel <maciej.kasatkin@o2.pl> <maciej.kasatkin@yahoo.com>
 Selat <LongExampleTestName@gmail.com> <LongExampletestName@gmail.com>
 ShadowNinja <shadowninja@minetest.net> ShadowNinja <noreply@gmail.com>
-Shen Zheyu <arsdragonfly@gmail.com> arsdragonfly <arsdragonfly@gmail.com>
-Pavel Elagin <elagin.pasha@gmail.com> elagin <elagin.pasha@gmail.com>
-Esteban I. Ruiz Moreno <exio4.com@gmail.com> Esteban I. RM <exio4.com@gmail.com>
-manuel duarte <ffrogger0@yahoo.com> manuel joaquim <ffrogger0@yahoo.com>
-manuel duarte <ffrogger0@yahoo.com> sweetbomber <ffrogger _zero_ at yahoo dot com>
-Diego Martínez <kaeza@users.sf.net> kaeza <kaeza@users.sf.net>
-Diego Martínez <kaeza@users.sf.net> Diego Martinez <kaeza@users.sf.net>
-Lord James <neftali_dtctv@hotmail.com> Lord89James <neftali_dtctv@hotmail.com>
-BlockMen <nmuelll@web.de> Block Men <nmuelll@web.de>
-sfan5 <sfan5@live.de> Sfan5 <sfan5@live.de>
-DannyDark <the_skeleton_of_a_child@yahoo.co.uk> dannydark <the_skeleton_of_a_child@yahoo.co.uk>
-Ilya Pavlov <TTChangeTheWorld@gmail.com> Ilya <TTChangeTheWorld@gmail.com>
-Ilya Zhuravlev <zhuravlevilya@ya.ru> xyzz <zhuravlevilya@ya.ru>
+Esteban I. Ruiz Moreno <exio4.com@gmail.com>
+Esteban I. Ruiz Moreno <exio4.com@gmail.com> <me@exio4.xyz>
+Lord James <neftali_dtctv@hotmail.com>
+BlockMen <nmuelll@web.de>
+sfan5 <sfan5@live.de>
+DannyDark <the_skeleton_of_a_child@yahoo.co.uk>
+Ilya Pavlov <TTChangeTheWorld@gmail.com>
 sapier <Sapier at GMX dot net> sapier <sapier AT gmx DOT net>
 sapier <Sapier at GMX dot net> sapier <sapier at gmx dot net>
-
+SmallJoker <SmallJoker@users.noreply.github.com> <mk939@ymail.com>
+Loïc Blot <nerzhul@users.noreply.github.com>
+Loïc Blot <nerzhul@users.noreply.github.com> <loic.blot@unix-experience.fr>
+numzero <numzer0@yandex.ru> Vitaliy <numzer0@yandex.ru>
+numzero <numzer0@yandex.ru> <silverunicorn2011@yandex.ru>
+Jean-Patrick Guerrero <kilbith@users.noreply.github.com>
+Jean-Patrick Guerrero <kilbith@users.noreply.github.com> <jeanpatrick.guerrero@gmail.com>
+HybridDog <3192173+HybridDog@users.noreply.github.com> <ovvv@web.de>
+srfqi <muhammadrifqipriyosusanto@gmail.com>
+Dániel Juhász <juhdanad@gmail.com>
+rubenwardy <rw@rubenwardy.com>
+rubenwardy <rw@rubenwardy.com> <rubenwardy@gmail.com>
+Paul Ouellette <oue.paul18@gmail.com>
+Vanessa Dannenberg <vanessa.e.dannenberg@gmail.com> <vanessaezekowitz@gmail.com>
+ClobberXD <ClobberXD@gmail.com>
+ClobberXD <ClobberXD@gmail.com> <ClobberXD@protonmail.com>
+ClobberXD <ClobberXD@gmail.com> <36130650+ClobberXD@users.noreply.github.com>
+Auke Kok <sofar+github@foo-projects.org>
+Auke Kok <sofar+github@foo-projects.org> <sofar@foo-projects.org>
+Desour <vorunbekannt75@web.de>
+Nathanaël Courant <Ekdohibs@users.noreply.github.com> <nathanael.courant@laposte.net>
+Ezhh <owlecho@live.com>
+paramat <paramat@users.noreply.github.com>
+paramat <paramat@users.noreply.github.com> <mat.gregory@virginmedia.com>
+lhofhansl <lhofhansl@yahoo.com> <larsh@apache.org>
+red-001 <red-001@outlook.ie> <red-001@openmailbox.org>
+Wuzzy <wuzzy2@mail.ru> <Wuzzy2@mail.ru>
+Wuzzy <wuzzy2@mail.ru> <almikes@aol.com>
+Jordach <jordach.snelling@gmail.com>
+MoNTE48 <MoNTE48@mail.ua>
+v-rob <robinsonvincent89@gmail.com>
+v-rob <robinsonvincent89@gmail.com> <31123645+v-rob@users.noreply.github.com>
+EvidenceB <49488517+EvidenceBKidscode@users.noreply.github.com>
+gregorycu <gregory.currie@gmail.com>
+Rogier <rogier777@gmail.com>
+Rogier <rogier777@gmail.com> <Rogier-5@users.noreply.github.com>

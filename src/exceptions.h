@@ -72,11 +72,6 @@ public:
 	SettingNotFoundException(const std::string &s): BaseException(s) {}
 };
 
-class InvalidFilenameException : public BaseException {
-public:
-	InvalidFilenameException(const std::string &s): BaseException(s) {}
-};
-
 class ItemNotFoundException : public BaseException {
 public:
 	ItemNotFoundException(const std::string &s): BaseException(s) {}

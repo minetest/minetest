@@ -39,12 +39,13 @@ static video::SMaterial baseMaterial()
 {
 	video::SMaterial mat;
 	mat.Lighting = false;
-#if ENABLE_GLES
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 	mat.ZBuffer = video::ECFN_DISABLED;
+	mat.ZWriteEnable = video::EZW_OFF;
 #else
+	mat.ZWriteEnable = false;
 	mat.ZBuffer = video::ECFN_NEVER;
 #endif
-	mat.ZWriteEnable = false;
 	mat.AntiAliasing = 0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
@@ -52,10 +53,12 @@ static video::SMaterial baseMaterial()
 	return mat;
 };
 
-Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
-		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-			RenderingEngine::get_scene_manager(), id)
+Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShaderSource *ssrc) :
+		scene::ISceneNode(rendering_engine->get_scene_manager()->getRootSceneNode(),
+			rendering_engine->get_scene_manager(), id)
 {
+	m_seed = (u64)myrand() << 32 | myrand();
+
 	setAutomaticCulling(scene::EAC_OFF);
 	m_box.MaxEdge.set(0, 0, 0);
 	m_box.MinEdge.set(0, 0, 0);
@@ -81,13 +84,13 @@ Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
 	// Ensures that sun and moon textures and tonemaps are correct.
 	setSkyDefaults();
 	m_sun_texture = tsrc->isKnownSourceImage(m_sun_params.texture) ?
-		tsrc->getTextureForMesh(m_sun_params.texture) : NULL;
+		tsrc->getTextureForMesh(m_sun_params.texture) : nullptr;
 	m_moon_texture = tsrc->isKnownSourceImage(m_moon_params.texture) ?
-		tsrc->getTextureForMesh(m_moon_params.texture) : NULL;
+		tsrc->getTextureForMesh(m_moon_params.texture) : nullptr;
 	m_sun_tonemap = tsrc->isKnownSourceImage(m_sun_params.tonemap) ?
-		tsrc->getTexture(m_sun_params.tonemap) : NULL;
+		tsrc->getTexture(m_sun_params.tonemap) : nullptr;
 	m_moon_tonemap = tsrc->isKnownSourceImage(m_moon_params.tonemap) ?
-		tsrc->getTexture(m_moon_params.tonemap) : NULL;
+		tsrc->getTexture(m_moon_params.tonemap) : nullptr;
 
 	if (m_sun_texture) {
 		m_materials[3] = baseMaterial();
@@ -119,7 +122,14 @@ Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
 		m_materials[i].Lighting = true;
 		m_materials[i].MaterialType = video::EMT_SOLID;
 	}
+
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
+
+	if (g_settings->getBool("enable_dynamic_shadows")) {
+		float val = g_settings->getFloat("shadow_sky_body_orbit_tilt");
+		m_sky_body_orbit_tilt = rangelim(val, 0.0f, 60.0f);
+	}
+
 	setStarCount(1000, true);
 }
 
@@ -172,17 +182,7 @@ void Sky::render()
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
 
-		float nightlength = 0.415;
-		float wn = nightlength / 2;
-		float wicked_time_of_day = 0;
-		if (m_time_of_day > wn && m_time_of_day < 1.0 - wn)
-			wicked_time_of_day = (m_time_of_day - wn) / (1.0 - wn * 2) * 0.5 + 0.25;
-		else if (m_time_of_day < 0.5)
-			wicked_time_of_day = m_time_of_day / wn * 0.25;
-		else
-			wicked_time_of_day = 1.0 - ((1.0 - m_time_of_day) / wn * 0.25);
-		/*std::cerr<<"time_of_day="<<m_time_of_day<<" -> "
-				<<"wicked_time_of_day="<<wicked_time_of_day<<std::endl;*/
+		float wicked_time_of_day = getWickedTimeOfDay(m_time_of_day);
 
 		video::SColor suncolor = suncolor_f.toSColor();
 		video::SColor suncolor2 = suncolor2_f.toSColor();
@@ -736,21 +736,26 @@ void Sky::place_sky_body(
 	* day_position: turn the body around the Z axis, to place it depending of the time of the day
 	*/
 {
+	v3f centrum(0, 0, -1);
+	centrum.rotateXZBy(horizon_position);
+	centrum.rotateXYBy(day_position);
+	centrum.rotateYZBy(m_sky_body_orbit_tilt);
 	for (video::S3DVertex &vertex : vertices) {
 		// Body is directed to -Z (south) by default
 		vertex.Pos.rotateXZBy(horizon_position);
 		vertex.Pos.rotateXYBy(day_position);
+		vertex.Pos.Z += centrum.Z;
 	}
 }
 
-void Sky::setSunTexture(std::string sun_texture,
-		std::string sun_tonemap, ITextureSource *tsrc)
+void Sky::setSunTexture(const std::string &sun_texture,
+		const std::string &sun_tonemap, ITextureSource *tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
 	m_sun_params.tonemap = sun_tonemap;
 	m_sun_tonemap = tsrc->isKnownSourceImage(m_sun_params.tonemap) ?
-		tsrc->getTexture(m_sun_params.tonemap) : NULL;
+		tsrc->getTexture(m_sun_params.tonemap) : nullptr;
 	m_materials[3].Lighting = !!m_sun_tonemap;
 
 	if (m_sun_params.texture == sun_texture)
@@ -779,7 +784,7 @@ void Sky::setSunTexture(std::string sun_texture,
 	}
 }
 
-void Sky::setSunriseTexture(std::string sunglow_texture,
+void Sky::setSunriseTexture(const std::string &sunglow_texture,
 		ITextureSource* tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely.
@@ -791,14 +796,14 @@ void Sky::setSunriseTexture(std::string sunglow_texture,
 	);
 }
 
-void Sky::setMoonTexture(std::string moon_texture,
-		std::string moon_tonemap, ITextureSource *tsrc)
+void Sky::setMoonTexture(const std::string &moon_texture,
+	const std::string &moon_tonemap, ITextureSource *tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
 	m_moon_params.tonemap = moon_tonemap;
 	m_moon_tonemap = tsrc->isKnownSourceImage(m_moon_params.tonemap) ?
-		tsrc->getTexture(m_moon_params.tonemap) : NULL;
+		tsrc->getTexture(m_moon_params.tonemap) : nullptr;
 	m_materials[4].Lighting = !!m_moon_tonemap;
 
 	if (m_moon_params.texture == moon_texture)
@@ -832,7 +837,6 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	// Allow force updating star count at game init.
 	if (m_star_params.count != star_count || force_update) {
 		m_star_params.count = star_count;
-		m_seed = (u64)myrand() << 32 | myrand();
 		updateStars();
 	}
 }
@@ -892,7 +896,7 @@ void Sky::setSkyColors(const SkyColor &sky_color)
 }
 
 void Sky::setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
-		std::string use_sun_tint)
+	const std::string &use_sun_tint)
 {
 	// Change sun and moon tinting:
 	m_sky_params.fog_sun_tint = sun_tint;
@@ -906,7 +910,7 @@ void Sky::setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
 		m_default_tint = true;
 }
 
-void Sky::addTextureToSkybox(std::string texture, int material_id,
+void Sky::addTextureToSkybox(const std::string &texture, int material_id,
 		ITextureSource *tsrc)
 {
 	// Sanity check for more than six textures.
@@ -928,4 +932,18 @@ void Sky::setSkyDefaults()
 	m_sun_params = sky_defaults.getSunDefaults();
 	m_moon_params = sky_defaults.getMoonDefaults();
 	m_star_params = sky_defaults.getStarDefaults();
+}
+
+float getWickedTimeOfDay(float time_of_day)
+{
+	float nightlength = 0.415f;
+	float wn = nightlength / 2;
+	float wicked_time_of_day = 0;
+	if (time_of_day > wn && time_of_day < 1.0f - wn)
+		wicked_time_of_day = (time_of_day - wn) / (1.0f - wn * 2) * 0.5f + 0.25f;
+	else if (time_of_day < 0.5f)
+		wicked_time_of_day = time_of_day / wn * 0.25f;
+	else
+		wicked_time_of_day = 1.0f - ((1.0f - time_of_day) / wn * 0.25f);
+	return wicked_time_of_day;
 }

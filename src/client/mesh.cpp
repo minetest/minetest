@@ -27,14 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SAnimatedMesh.h>
 #include <IAnimatedMeshSceneNode.h>
 
-// In Irrlicht 1.8 the signature of ITexture::lock was changed from
-// (bool, u32) to (E_TEXTURE_LOCK_MODE, u32).
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 7
-#define MY_ETLM_READ_ONLY true
-#else
-#define MY_ETLM_READ_ONLY video::ETLM_READ_ONLY
-#endif
-
 inline static void applyShadeFactor(video::SColor& color, float factor)
 {
 	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));

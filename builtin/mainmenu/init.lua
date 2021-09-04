@@ -34,6 +34,7 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
+dofile(menupath .. DIR_DELIM .. "serverlistmgr.lua")
 dofile(menupath .. DIR_DELIM .. "textures.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
@@ -48,7 +49,7 @@ local tabs = {}
 
 tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
 tabs.content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
-tabs.credits  = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
+tabs.about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
 tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
 tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
 
@@ -97,7 +98,7 @@ local function init_globals()
 
 	tv_main:add(tabs.content)
 	tv_main:add(tabs.settings)
-	tv_main:add(tabs.credits)
+	tv_main:add(tabs.about)
 
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)

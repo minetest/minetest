@@ -83,9 +83,6 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
-	warn_if_field_exists(L, index, "tool_digging_properties",
-			"Obsolete; use tool_capabilities");
-
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
 		def.tool_capabilities = new ToolCapabilities(
@@ -122,6 +119,8 @@ void read_item_definition(lua_State* L, int index,
 	// "" = no prediction
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
+
+	getintfield(L, index, "place_param2", def.place_param2);
 }
 
 /******************************************************************************/
@@ -143,8 +142,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
-	lua_pushstring(L, i.short_description.c_str());
-	lua_setfield(L, -2, "short_description");
+	if (!i.short_description.empty()) {
+		lua_pushstring(L, i.short_description.c_str());
+		lua_setfield(L, -2, "short_description");
+	}
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
@@ -199,8 +200,6 @@ void read_object_properties(lua_State *L, int index,
 		if (prop->hp_max < sao->getHP()) {
 			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 			sao->setHP(prop->hp_max, reason);
-			if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-				sao->getEnv()->getGameDef()->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
 		}
 	}
 
@@ -313,6 +312,17 @@ void read_object_properties(lua_State *L, int index,
 			prop->nametag_color = color;
 	}
 	lua_pop(L, 1);
+	lua_getfield(L, -1, "nametag_bgcolor");
+	if (!lua_isnil(L, -1)) {
+		if (lua_toboolean(L, -1)) {
+			video::SColor color;
+			if (read_color(L, -1, &color))
+				prop->nametag_bgcolor = color;
+		} else {
+			prop->nametag_bgcolor = nullopt;
+		}
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "automatic_face_movement_max_rotation_per_sec");
 	if (lua_isnumber(L, -1)) {
@@ -404,6 +414,13 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "nametag");
 	push_ARGB8(L, prop->nametag_color);
 	lua_setfield(L, -2, "nametag_color");
+	if (prop->nametag_bgcolor) {
+		push_ARGB8(L, prop->nametag_bgcolor.value());
+		lua_setfield(L, -2, "nametag_bgcolor");
+	} else {
+		lua_pushboolean(L, false);
+		lua_setfield(L, -2, "nametag_bgcolor");
+	}
 	lua_pushnumber(L, prop->automatic_face_movement_max_rotation_per_sec);
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
@@ -621,21 +638,38 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	}
 	lua_pop(L, 1);
 
-	f.alpha = getintfield_default(L, index, "alpha", 255);
+	/* alpha & use_texture_alpha */
+	// This is a bit complicated due to compatibility
 
-	bool usealpha = getboolfield_default(L, index,
-			"use_texture_alpha", false);
-	if (usealpha)
-		f.alpha = 0;
+	f.setDefaultAlphaMode();
 
-	// Read node color.
+	warn_if_field_exists(L, index, "alpha",
+		"Obsolete, only limited compatibility provided; "
+		"replaced by \"use_texture_alpha\"");
+	if (getintfield_default(L, index, "alpha", 255) != 255)
+		f.alpha = ALPHAMODE_BLEND;
+
+	lua_getfield(L, index, "use_texture_alpha");
+	if (lua_isboolean(L, -1)) {
+		warn_if_field_exists(L, index, "use_texture_alpha",
+			"Boolean values are deprecated; use the new choices");
+		if (lua_toboolean(L, -1))
+			f.alpha = (f.drawtype == NDT_NORMAL) ? ALPHAMODE_CLIP : ALPHAMODE_BLEND;
+	} else if (check_field_or_nil(L, -1, LUA_TSTRING, "use_texture_alpha")) {
+		int result = f.alpha;
+		string_to_enum(ScriptApiNode::es_TextureAlphaMode, result,
+				std::string(lua_tostring(L, -1)));
+		f.alpha = static_cast<enum AlphaMode>(result);
+	}
+	lua_pop(L, 1);
+
+	/* Other stuff */
+
 	lua_getfield(L, index, "color");
 	read_color(L, -1, &f.color);
 	lua_pop(L, 1);
 
 	getstringfield(L, index, "palette", f.palette_name);
-
-	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
 	read_color(L, -1, &f.post_effect_color);
@@ -649,23 +683,10 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	if (!f.palette_name.empty() &&
 			!(f.param_type_2 == CPT2_COLOR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR ||
-			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_DEGROTATE))
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
-
-	// Warn about some obsolete fields
-	warn_if_field_exists(L, index, "wall_mounted",
-			"Obsolete; use paramtype2 = 'wallmounted'");
-	warn_if_field_exists(L, index, "light_propagates",
-			"Obsolete; determined from paramtype");
-	warn_if_field_exists(L, index, "dug_item",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item_rarity",
-			"Obsolete; use 'drop' field");
-	warn_if_field_exists(L, index, "metadata_name",
-			"Obsolete; use on_add and metadata callbacks");
 
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
@@ -1327,26 +1348,28 @@ void read_inventory_list(lua_State *L, int tableindex,
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
+
 	// If nil, delete list
 	if(lua_isnil(L, tableindex)){
 		inv->deleteList(name);
 		return;
 	}
-	// Otherwise set list
+
+	// Get Lua-specified items to insert into the list
 	std::vector<ItemStack> items = read_items(L, tableindex,srv);
-	int listsize = (forcesize != -1) ? forcesize : items.size();
+	size_t listsize = (forcesize >= 0) ? forcesize : items.size();
+
+	// Create or resize/clear list
 	InventoryList *invlist = inv->addList(name, listsize);
-	int index = 0;
-	for(std::vector<ItemStack>::const_iterator
-			i = items.begin(); i != items.end(); ++i){
-		if(forcesize != -1 && index == forcesize)
-			break;
-		invlist->changeItem(index, *i);
-		index++;
+	if (!invlist) {
+		luaL_error(L, "inventory list: cannot create list named '%s'", name);
+		return;
 	}
-	while(forcesize != -1 && index < forcesize){
-		invlist->deleteItem(index);
-		index++;
+
+	for (size_t i = 0; i < items.size(); ++i) {
+		if (i == listsize)
+			break; // Truncate provided list of items
+		invlist->changeItem(i, items[i]);
 	}
 }
 
@@ -1903,6 +1926,8 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
 	lua_pop(L, 1);
 
+	elem->style = getintfield_default(L, 2, "style", 0);
+
 	/* check for known deprecated element usage */
 	if ((elem->type  == HUD_ELEM_STATBAR) && (elem->size == v2s32()))
 		log_deprecated(L,"Deprecated usage of statbar without size!");
@@ -1957,17 +1982,22 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	lua_pushstring(L, elem->text2.c_str());
 	lua_setfield(L, -2, "text2");
+
+	lua_pushinteger(L, elem->style);
+	lua_setfield(L, -2, "style");
 }
 
-HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
+bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void **value)
 {
-	HudElementStat stat = HUD_STAT_NUMBER;
-	std::string statstr;
-	if (lua_isstring(L, 3)) {
+	std::string statstr = lua_tostring(L, 3);
+	{
 		int statint;
-		statstr = lua_tostring(L, 3);
-		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
-				(HudElementStat)statint : stat;
+		if (!string_to_enum(es_HudElementStat, statint, statstr)) {
+			script_log_unique(L, "Unknown HUD stat type: " + statstr, warningstream);
+			return false;
+		}
+
+		stat = (HudElementStat)statint;
 	}
 
 	switch (stat) {
@@ -2025,8 +2055,13 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			elem->text2 = luaL_checkstring(L, 4);
 			*value = &elem->text2;
 			break;
+		case HUD_STAT_STYLE:
+			elem->style = luaL_checknumber(L, 4);
+			*value = &elem->style;
+			break;
 	}
-	return stat;
+
+	return true;
 }
 
 /******************************************************************************/

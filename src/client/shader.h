@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <IMaterialRendererServices.h>
 #include "irrlichttypes_bloated.h"
+#include <IMaterialRendererServices.h>
 #include <string>
 #include "tile.h"
 #include "nodedef.h"
@@ -96,9 +96,10 @@ public:
 		if (has_been_set && std::equal(m_sent, m_sent + count, value))
 			return;
 		if (is_pixel)
-			services->setPixelShaderConstant(m_name, value, count);
+			services->setPixelShaderConstant(services->getPixelShaderConstantID(m_name), value, count);
 		else
-			services->setVertexShaderConstant(m_name, value, count);
+			services->setVertexShaderConstant(services->getVertexShaderConstantID(m_name), value, count);
+
 		std::copy(value, value + count, m_sent);
 		has_been_set = true;
 	}

@@ -110,7 +110,7 @@ int ObjectRef::l_remove(lua_State *L)
 	sao->clearParentAttachment();
 
 	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
-	sao->m_pending_removal = true;
+	sao->markForRemoval();
 	return 0;
 }
 
@@ -172,27 +172,11 @@ int ObjectRef::l_punch(lua_State *L)
 	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
 	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
-
 	dir.normalize();
-	u16 src_original_hp = sao->getHP();
-	u16 dst_origin_hp = puncher->getHP();
 
 	u16 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
 	lua_pushnumber(L, wear);
 
-	// If the punched is a player, and its HP changed
-	if (src_original_hp != sao->getHP() &&
-			sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)sao,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
-	}
-
-	// If the puncher is a player, and its HP changed
-	if (dst_origin_hp != puncher->getHP() &&
-			puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, sao));
-	}
 	return 1;
 }
 
@@ -238,8 +222,6 @@ int ObjectRef::l_set_hp(lua_State *L)
 	}
 
 	sao->setHP(hp, reason);
-	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
 	if (reason.hasLuaReference())
 		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
 	return 0;
@@ -355,6 +337,15 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	ItemGroupList groups;
 
 	read_groups(L, 2, groups);
+	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		if (!g_settings->getBool("enable_damage") && !itemgroup_get(groups, "immortal")) {
+			warningstream << "Mod tried to enable damage for a player, but it's "
+				"disabled globally. Ignoring." << std::endl;
+			infostream << script_get_backtrace(L) << std::endl;
+			groups["immortal"] = 1;
+		}
+	}
+
 	sao->setArmorGroups(groups);
 	return 0;
 }
@@ -399,7 +390,7 @@ int ObjectRef::l_get_animation(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v2f frames = v2f(1,1);
+	v2f frames = v2f(1, 1);
 	float frame_speed = 15;
 	float frame_blend = 0;
 	bool frame_loop = true;
@@ -463,8 +454,8 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v3f offset_first = read_v3f(L, 2);
-	v3f offset_third = read_v3f(L, 3);
+	v3f offset_first = readParam<v3f>(L, 2, v3f(0, 0, 0));
+	v3f offset_third = readParam<v3f>(L, 3, v3f(0, 0, 0));
 
 	// Prevent abuse of offset values (keep player always visible)
 	offset_third.X = rangelim(offset_third.X,-10,10);
@@ -537,9 +528,9 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2);
-	v3f position = check_v3f(L, 3);
-	v3f rotation = check_v3f(L, 4);
+	std::string bone = readParam<std::string>(L, 2, "");
+	v3f position = readParam<v3f>(L, 3, v3f(0, 0, 0));
+	v3f rotation = readParam<v3f>(L, 4, v3f(0, 0, 0));
 
 	sao->setBonePosition(bone, position, rotation);
 	return 0;
@@ -554,7 +545,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2);
+	std::string bone = readParam<std::string>(L, 2, "");
 
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
@@ -578,10 +569,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	if (sao == parent)
 		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
 
-	int parent_id = 0;
+	int parent_id;
 	std::string bone;
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
+	v3f position;
+	v3f rotation;
 	bool force_visible;
 
 	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
@@ -590,9 +581,9 @@ int ObjectRef::l_set_attach(lua_State *L)
 		old_parent->removeAttachmentChild(sao->getId());
 	}
 
-	bone      = readParam<std::string>(L, 3, "");
-	position  = read_v3f(L, 4);
-	rotation  = read_v3f(L, 5);
+	bone          = readParam<std::string>(L, 3, "");
+	position      = readParam<v3f>(L, 4, v3f(0, 0, 0));
+	rotation      = readParam<v3f>(L, 5, v3f(0, 0, 0));
 	force_visible = readParam<bool>(L, 6, false);
 
 	sao->setAttachment(parent->getId(), bone, position, rotation, force_visible);
@@ -609,10 +600,10 @@ int ObjectRef::l_get_attach(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	int parent_id = 0;
+	int parent_id;
 	std::string bone;
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
+	v3f position;
+	v3f rotation;
 	bool force_visible;
 
 	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
@@ -676,6 +667,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 		return 0;
 
 	read_object_properties(L, 2, sao, prop, getServer(L)->idef());
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	return 0;
 }
@@ -728,9 +720,22 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	}
 	lua_pop(L, 1);
 
+	lua_getfield(L, -1, "bgcolor");
+	if (!lua_isnil(L, -1)) {
+		if (lua_toboolean(L, -1)) {
+			video::SColor color;
+			if (read_color(L, -1, &color))
+				prop->nametag_bgcolor = color;
+		} else {
+			prop->nametag_bgcolor = nullopt;
+		}
+	}
+	lua_pop(L, 1);
+
 	std::string nametag = getstringfield_default(L, 2, "text", "");
 	prop->nametag = nametag;
 
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	lua_pushboolean(L, true);
 	return 1;
@@ -749,13 +754,24 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 	if (!prop)
 		return 0;
 
-	video::SColor color = prop->nametag_color;
-
 	lua_newtable(L);
-	push_ARGB8(L, color);
+
+	push_ARGB8(L, prop->nametag_color);
 	lua_setfield(L, -2, "color");
+
+	if (prop->nametag_bgcolor) {
+		push_ARGB8(L, prop->nametag_bgcolor.value());
+		lua_setfield(L, -2, "bgcolor");
+	} else {
+		lua_pushboolean(L, false);
+		lua_setfield(L, -2, "bgcolor");
+	}
+
 	lua_pushstring(L, prop->nametag.c_str());
 	lua_setfield(L, -2, "text");
+
+
+
 	return 1;
 }
 
@@ -891,9 +907,6 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
-
-	if (isNaN(L, 2))
-		throw LuaError("ObjectRef::set_yaw: NaN value is not allowed.");
 
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
@@ -1361,13 +1374,13 @@ int ObjectRef::l_get_player_control(lua_State *L)
 
 	const PlayerControl &control = player->getPlayerControl();
 	lua_newtable(L);
-	lua_pushboolean(L, control.up);
+	lua_pushboolean(L, player->keyPressed & (1 << 0));
 	lua_setfield(L, -2, "up");
-	lua_pushboolean(L, control.down);
+	lua_pushboolean(L, player->keyPressed & (1 << 1));
 	lua_setfield(L, -2, "down");
-	lua_pushboolean(L, control.left);
+	lua_pushboolean(L, player->keyPressed & (1 << 2));
 	lua_setfield(L, -2, "left");
-	lua_pushboolean(L, control.right);
+	lua_pushboolean(L, player->keyPressed & (1 << 3));
 	lua_setfield(L, -2, "right");
 	lua_pushboolean(L, control.jump);
 	lua_setfield(L, -2, "jump");
@@ -1524,12 +1537,14 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (elem == nullptr)
 		return 0;
 
+	HudElementStat stat;
 	void *value = nullptr;
-	HudElementStat stat = read_hud_change(L, elem, &value);
+	bool ok = read_hud_change(L, stat, elem, &value);
 
-	getServer(L)->hudChange(player, id, stat, value);
+	if (ok)
+		getServer(L)->hudChange(player, id, stat, value);
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, ok);
 	return 1;
 }
 
@@ -2199,7 +2214,7 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 
 	luaL_checktype(L, 2, LUA_TTABLE);
 	std::vector<MinimapMode> modes;
-	s16 selected_mode = luaL_checkint(L, 3);
+	s16 selected_mode = readParam<s16>(L, 3);
 
 	lua_pushnil(L);
 	while (lua_next(L, 2) != 0) {
@@ -2282,7 +2297,7 @@ void ObjectRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_register(L, nullptr, methods);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 

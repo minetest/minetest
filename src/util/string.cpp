@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include <sstream>
 #include <iomanip>
-#include <map>
+#include <unordered_map>
 
 #ifndef _WIN32
 	#include <iconv.h>
@@ -44,14 +44,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define BSD_ICONV_USED
 #endif
 
-static bool parseHexColorString(const std::string &value, video::SColor &color,
-		unsigned char default_alpha = 0xff);
-static bool parseNamedColorString(const std::string &value, video::SColor &color);
-
 #ifndef _WIN32
 
-bool convert(const char *to, const char *from, char *outbuf,
-		size_t outbuf_size, char *inbuf, size_t inbuf_size)
+static bool convert(const char *to, const char *from, char *outbuf,
+		size_t *outbuf_size, char *inbuf, size_t inbuf_size)
 {
 	iconv_t cd = iconv_open(to, from);
 
@@ -60,15 +56,14 @@ bool convert(const char *to, const char *from, char *outbuf,
 #else
 	char *inbuf_ptr = inbuf;
 #endif
-
 	char *outbuf_ptr = outbuf;
 
 	size_t *inbuf_left_ptr = &inbuf_size;
-	size_t *outbuf_left_ptr = &outbuf_size;
 
+	const size_t old_outbuf_size = *outbuf_size;
 	size_t old_size = inbuf_size;
 	while (inbuf_size > 0) {
-		iconv(cd, &inbuf_ptr, inbuf_left_ptr, &outbuf_ptr, outbuf_left_ptr);
+		iconv(cd, &inbuf_ptr, inbuf_left_ptr, &outbuf_ptr, outbuf_size);
 		if (inbuf_size == old_size) {
 			iconv_close(cd);
 			return false;
@@ -77,11 +72,12 @@ bool convert(const char *to, const char *from, char *outbuf,
 	}
 
 	iconv_close(cd);
+	*outbuf_size = old_outbuf_size - *outbuf_size;
 	return true;
 }
 
 #ifdef __ANDROID__
-// Android need manual caring to support the full character set possible with wchar_t
+// On Android iconv disagrees how big a wchar_t is for whatever reason
 const char *DEFAULT_ENCODING = "UTF-32LE";
 #else
 const char *DEFAULT_ENCODING = "WCHAR_T";
@@ -89,58 +85,52 @@ const char *DEFAULT_ENCODING = "WCHAR_T";
 
 std::wstring utf8_to_wide(const std::string &input)
 {
-	size_t inbuf_size = input.length() + 1;
+	const size_t inbuf_size = input.length();
 	// maximum possible size, every character is sizeof(wchar_t) bytes
-	size_t outbuf_size = (input.length() + 1) * sizeof(wchar_t);
+	size_t outbuf_size = input.length() * sizeof(wchar_t);
 
-	char *inbuf = new char[inbuf_size];
+	char *inbuf = new char[inbuf_size]; // intentionally NOT null-terminated
 	memcpy(inbuf, input.c_str(), inbuf_size);
-	char *outbuf = new char[outbuf_size];
-	memset(outbuf, 0, outbuf_size);
+	std::wstring out;
+	out.resize(outbuf_size / sizeof(wchar_t));
 
 #ifdef __ANDROID__
-	// Android need manual caring to support the full character set possible with wchar_t
 	SANITY_CHECK(sizeof(wchar_t) == 4);
 #endif
 
-	if (!convert(DEFAULT_ENCODING, "UTF-8", outbuf, outbuf_size, inbuf, inbuf_size)) {
+	char *outbuf = reinterpret_cast<char*>(&out[0]);
+	if (!convert(DEFAULT_ENCODING, "UTF-8", outbuf, &outbuf_size, inbuf, inbuf_size)) {
 		infostream << "Couldn't convert UTF-8 string 0x" << hex_encode(input)
 			<< " into wstring" << std::endl;
 		delete[] inbuf;
-		delete[] outbuf;
 		return L"<invalid UTF-8 string>";
 	}
-	std::wstring out((wchar_t *)outbuf);
-
 	delete[] inbuf;
-	delete[] outbuf;
 
+	out.resize(outbuf_size / sizeof(wchar_t));
 	return out;
 }
 
 std::string wide_to_utf8(const std::wstring &input)
 {
-	size_t inbuf_size = (input.length() + 1) * sizeof(wchar_t);
-	// maximum possible size: utf-8 encodes codepoints using 1 up to 6 bytes
-	size_t outbuf_size = (input.length() + 1) * 6;
+	const size_t inbuf_size = input.length() * sizeof(wchar_t);
+	// maximum possible size: utf-8 encodes codepoints using 1 up to 4 bytes
+	size_t outbuf_size = input.length() * 4;
 
-	char *inbuf = new char[inbuf_size];
+	char *inbuf = new char[inbuf_size]; // intentionally NOT null-terminated
 	memcpy(inbuf, input.c_str(), inbuf_size);
-	char *outbuf = new char[outbuf_size];
-	memset(outbuf, 0, outbuf_size);
+	std::string out;
+	out.resize(outbuf_size);
 
-	if (!convert("UTF-8", DEFAULT_ENCODING, outbuf, outbuf_size, inbuf, inbuf_size)) {
+	if (!convert("UTF-8", DEFAULT_ENCODING, &out[0], &outbuf_size, inbuf, inbuf_size)) {
 		infostream << "Couldn't convert wstring 0x" << hex_encode(inbuf, inbuf_size)
 			<< " into UTF-8 string" << std::endl;
 		delete[] inbuf;
-		delete[] outbuf;
-		return "<invalid wstring>";
+		return "<invalid wide string>";
 	}
-	std::string out(outbuf);
-
 	delete[] inbuf;
-	delete[] outbuf;
 
+	out.resize(outbuf_size);
 	return out;
 }
 
@@ -172,72 +162,13 @@ std::string wide_to_utf8(const std::wstring &input)
 
 #endif // _WIN32
 
-// You must free the returned string!
-// The returned string is allocated using new
 wchar_t *utf8_to_wide_c(const char *str)
 {
 	std::wstring ret = utf8_to_wide(std::string(str));
 	size_t len = ret.length();
 	wchar_t *ret_c = new wchar_t[len + 1];
-	memset(ret_c, 0, (len + 1) * sizeof(wchar_t));
-	memcpy(ret_c, ret.c_str(), len * sizeof(wchar_t));
+	memcpy(ret_c, ret.c_str(), (len + 1) * sizeof(wchar_t));
 	return ret_c;
-}
-
-// You must free the returned string!
-// The returned string is allocated using new
-wchar_t *narrow_to_wide_c(const char *str)
-{
-	wchar_t *nstr = nullptr;
-#if defined(_WIN32)
-	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, 0, 0);
-	if (nResult == 0) {
-		errorstream<<"gettext: MultiByteToWideChar returned null"<<std::endl;
-	} else {
-		nstr = new wchar_t[nResult];
-		MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, (WCHAR *) nstr, nResult);
-	}
-#else
-	size_t len = strlen(str);
-	nstr = new wchar_t[len + 1];
-
-	std::wstring intermediate = narrow_to_wide(str);
-	memset(nstr, 0, (len + 1) * sizeof(wchar_t));
-	memcpy(nstr, intermediate.c_str(), len * sizeof(wchar_t));
-#endif
-
-	return nstr;
-}
-
-std::wstring narrow_to_wide(const std::string &mbs) {
-#ifdef __ANDROID__
-	return utf8_to_wide(mbs);
-#else
-	size_t wcl = mbs.size();
-	Buffer<wchar_t> wcs(wcl + 1);
-	size_t len = mbstowcs(*wcs, mbs.c_str(), wcl);
-	if (len == (size_t)(-1))
-		return L"<invalid multibyte string>";
-	wcs[len] = 0;
-	return *wcs;
-#endif
-}
-
-
-std::string wide_to_narrow(const std::wstring &wcs)
-{
-#ifdef __ANDROID__
-	return wide_to_utf8(wcs);
-#else
-	size_t mbl = wcs.size() * 4;
-	SharedBuffer<char> mbs(mbl+1);
-	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
-	if (len == (size_t)(-1))
-		return "Character conversion failed!";
-
-	mbs[len] = 0;
-	return *mbs;
-#endif
 }
 
 
@@ -389,29 +320,10 @@ u64 read_seed(const char *str)
 	return num;
 }
 
-bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
-		unsigned char default_alpha)
-{
-	bool success;
-
-	if (value[0] == '#')
-		success = parseHexColorString(value, color, default_alpha);
-	else
-		success = parseNamedColorString(value, color);
-
-	if (!success && !quiet)
-		errorstream << "Invalid color: \"" << value << "\"" << std::endl;
-
-	return success;
-}
-
 static bool parseHexColorString(const std::string &value, video::SColor &color,
 		unsigned char default_alpha)
 {
-	unsigned char components[] = { 0x00, 0x00, 0x00, default_alpha }; // R,G,B,A
-
-	if (value[0] != '#')
-		return false;
+	u8 components[] = {0x00, 0x00, 0x00, default_alpha}; // R,G,B,A
 
 	size_t len = value.size();
 	bool short_form;
@@ -423,197 +335,181 @@ static bool parseHexColorString(const std::string &value, video::SColor &color,
 	else
 		return false;
 
-	bool success = true;
-
 	for (size_t pos = 1, cc = 0; pos < len; pos++, cc++) {
-		assert(cc < sizeof components / sizeof components[0]);
 		if (short_form) {
-			unsigned char d;
-			if (!hex_digit_decode(value[pos], d)) {
-				success = false;
-				break;
-			}
+			u8 d;
+			if (!hex_digit_decode(value[pos], d))
+				return false;
+
 			components[cc] = (d & 0xf) << 4 | (d & 0xf);
 		} else {
-			unsigned char d1, d2;
+			u8 d1, d2;
 			if (!hex_digit_decode(value[pos], d1) ||
-					!hex_digit_decode(value[pos+1], d2)) {
-				success = false;
-				break;
-			}
+					!hex_digit_decode(value[pos+1], d2))
+				return false;
+
 			components[cc] = (d1 & 0xf) << 4 | (d2 & 0xf);
-			pos++;	// skip the second digit -- it's already used
+			pos++; // skip the second digit -- it's already used
 		}
 	}
 
-	if (success) {
-		color.setRed(components[0]);
-		color.setGreen(components[1]);
-		color.setBlue(components[2]);
-		color.setAlpha(components[3]);
-	}
+	color.setRed(components[0]);
+	color.setGreen(components[1]);
+	color.setBlue(components[2]);
+	color.setAlpha(components[3]);
 
-	return success;
+	return true;
 }
 
-struct ColorContainer {
-	ColorContainer();
-	std::map<const std::string, u32> colors;
+const static std::unordered_map<std::string, u32> s_named_colors = {
+	{"aliceblue",            0xf0f8ff},
+	{"antiquewhite",         0xfaebd7},
+	{"aqua",                 0x00ffff},
+	{"aquamarine",           0x7fffd4},
+	{"azure",                0xf0ffff},
+	{"beige",                0xf5f5dc},
+	{"bisque",               0xffe4c4},
+	{"black",                00000000},
+	{"blanchedalmond",       0xffebcd},
+	{"blue",                 0x0000ff},
+	{"blueviolet",           0x8a2be2},
+	{"brown",                0xa52a2a},
+	{"burlywood",            0xdeb887},
+	{"cadetblue",            0x5f9ea0},
+	{"chartreuse",           0x7fff00},
+	{"chocolate",            0xd2691e},
+	{"coral",                0xff7f50},
+	{"cornflowerblue",       0x6495ed},
+	{"cornsilk",             0xfff8dc},
+	{"crimson",              0xdc143c},
+	{"cyan",                 0x00ffff},
+	{"darkblue",             0x00008b},
+	{"darkcyan",             0x008b8b},
+	{"darkgoldenrod",        0xb8860b},
+	{"darkgray",             0xa9a9a9},
+	{"darkgreen",            0x006400},
+	{"darkgrey",             0xa9a9a9},
+	{"darkkhaki",            0xbdb76b},
+	{"darkmagenta",          0x8b008b},
+	{"darkolivegreen",       0x556b2f},
+	{"darkorange",           0xff8c00},
+	{"darkorchid",           0x9932cc},
+	{"darkred",              0x8b0000},
+	{"darksalmon",           0xe9967a},
+	{"darkseagreen",         0x8fbc8f},
+	{"darkslateblue",        0x483d8b},
+	{"darkslategray",        0x2f4f4f},
+	{"darkslategrey",        0x2f4f4f},
+	{"darkturquoise",        0x00ced1},
+	{"darkviolet",           0x9400d3},
+	{"deeppink",             0xff1493},
+	{"deepskyblue",          0x00bfff},
+	{"dimgray",              0x696969},
+	{"dimgrey",              0x696969},
+	{"dodgerblue",           0x1e90ff},
+	{"firebrick",            0xb22222},
+	{"floralwhite",          0xfffaf0},
+	{"forestgreen",          0x228b22},
+	{"fuchsia",              0xff00ff},
+	{"gainsboro",            0xdcdcdc},
+	{"ghostwhite",           0xf8f8ff},
+	{"gold",                 0xffd700},
+	{"goldenrod",            0xdaa520},
+	{"gray",                 0x808080},
+	{"green",                0x008000},
+	{"greenyellow",          0xadff2f},
+	{"grey",                 0x808080},
+	{"honeydew",             0xf0fff0},
+	{"hotpink",              0xff69b4},
+	{"indianred",            0xcd5c5c},
+	{"indigo",               0x4b0082},
+	{"ivory",                0xfffff0},
+	{"khaki",                0xf0e68c},
+	{"lavender",             0xe6e6fa},
+	{"lavenderblush",        0xfff0f5},
+	{"lawngreen",            0x7cfc00},
+	{"lemonchiffon",         0xfffacd},
+	{"lightblue",            0xadd8e6},
+	{"lightcoral",           0xf08080},
+	{"lightcyan",            0xe0ffff},
+	{"lightgoldenrodyellow", 0xfafad2},
+	{"lightgray",            0xd3d3d3},
+	{"lightgreen",           0x90ee90},
+	{"lightgrey",            0xd3d3d3},
+	{"lightpink",            0xffb6c1},
+	{"lightsalmon",          0xffa07a},
+	{"lightseagreen",        0x20b2aa},
+	{"lightskyblue",         0x87cefa},
+	{"lightslategray",       0x778899},
+	{"lightslategrey",       0x778899},
+	{"lightsteelblue",       0xb0c4de},
+	{"lightyellow",          0xffffe0},
+	{"lime",                 0x00ff00},
+	{"limegreen",            0x32cd32},
+	{"linen",                0xfaf0e6},
+	{"magenta",              0xff00ff},
+	{"maroon",               0x800000},
+	{"mediumaquamarine",     0x66cdaa},
+	{"mediumblue",           0x0000cd},
+	{"mediumorchid",         0xba55d3},
+	{"mediumpurple",         0x9370db},
+	{"mediumseagreen",       0x3cb371},
+	{"mediumslateblue",      0x7b68ee},
+	{"mediumspringgreen",    0x00fa9a},
+	{"mediumturquoise",      0x48d1cc},
+	{"mediumvioletred",      0xc71585},
+	{"midnightblue",         0x191970},
+	{"mintcream",            0xf5fffa},
+	{"mistyrose",            0xffe4e1},
+	{"moccasin",             0xffe4b5},
+	{"navajowhite",          0xffdead},
+	{"navy",                 0x000080},
+	{"oldlace",              0xfdf5e6},
+	{"olive",                0x808000},
+	{"olivedrab",            0x6b8e23},
+	{"orange",               0xffa500},
+	{"orangered",            0xff4500},
+	{"orchid",               0xda70d6},
+	{"palegoldenrod",        0xeee8aa},
+	{"palegreen",            0x98fb98},
+	{"paleturquoise",        0xafeeee},
+	{"palevioletred",        0xdb7093},
+	{"papayawhip",           0xffefd5},
+	{"peachpuff",            0xffdab9},
+	{"peru",                 0xcd853f},
+	{"pink",                 0xffc0cb},
+	{"plum",                 0xdda0dd},
+	{"powderblue",           0xb0e0e6},
+	{"purple",               0x800080},
+	{"red",                  0xff0000},
+	{"rosybrown",            0xbc8f8f},
+	{"royalblue",            0x4169e1},
+	{"saddlebrown",          0x8b4513},
+	{"salmon",               0xfa8072},
+	{"sandybrown",           0xf4a460},
+	{"seagreen",             0x2e8b57},
+	{"seashell",             0xfff5ee},
+	{"sienna",               0xa0522d},
+	{"silver",               0xc0c0c0},
+	{"skyblue",              0x87ceeb},
+	{"slateblue",            0x6a5acd},
+	{"slategray",            0x708090},
+	{"slategrey",            0x708090},
+	{"snow",                 0xfffafa},
+	{"springgreen",          0x00ff7f},
+	{"steelblue",            0x4682b4},
+	{"tan",                  0xd2b48c},
+	{"teal",                 0x008080},
+	{"thistle",              0xd8bfd8},
+	{"tomato",               0xff6347},
+	{"turquoise",            0x40e0d0},
+	{"violet",               0xee82ee},
+	{"wheat",                0xf5deb3},
+	{"white",                0xffffff},
+	{"whitesmoke",           0xf5f5f5},
+	{"yellow",               0xffff00},
+	{"yellowgreen",          0x9acd32}
 };
-
-ColorContainer::ColorContainer()
-{
-	colors["aliceblue"]              = 0xf0f8ff;
-	colors["antiquewhite"]           = 0xfaebd7;
-	colors["aqua"]                   = 0x00ffff;
-	colors["aquamarine"]             = 0x7fffd4;
-	colors["azure"]                  = 0xf0ffff;
-	colors["beige"]                  = 0xf5f5dc;
-	colors["bisque"]                 = 0xffe4c4;
-	colors["black"]                  = 00000000;
-	colors["blanchedalmond"]         = 0xffebcd;
-	colors["blue"]                   = 0x0000ff;
-	colors["blueviolet"]             = 0x8a2be2;
-	colors["brown"]                  = 0xa52a2a;
-	colors["burlywood"]              = 0xdeb887;
-	colors["cadetblue"]              = 0x5f9ea0;
-	colors["chartreuse"]             = 0x7fff00;
-	colors["chocolate"]              = 0xd2691e;
-	colors["coral"]                  = 0xff7f50;
-	colors["cornflowerblue"]         = 0x6495ed;
-	colors["cornsilk"]               = 0xfff8dc;
-	colors["crimson"]                = 0xdc143c;
-	colors["cyan"]                   = 0x00ffff;
-	colors["darkblue"]               = 0x00008b;
-	colors["darkcyan"]               = 0x008b8b;
-	colors["darkgoldenrod"]          = 0xb8860b;
-	colors["darkgray"]               = 0xa9a9a9;
-	colors["darkgreen"]              = 0x006400;
-	colors["darkgrey"]               = 0xa9a9a9;
-	colors["darkkhaki"]              = 0xbdb76b;
-	colors["darkmagenta"]            = 0x8b008b;
-	colors["darkolivegreen"]         = 0x556b2f;
-	colors["darkorange"]             = 0xff8c00;
-	colors["darkorchid"]             = 0x9932cc;
-	colors["darkred"]                = 0x8b0000;
-	colors["darksalmon"]             = 0xe9967a;
-	colors["darkseagreen"]           = 0x8fbc8f;
-	colors["darkslateblue"]          = 0x483d8b;
-	colors["darkslategray"]          = 0x2f4f4f;
-	colors["darkslategrey"]          = 0x2f4f4f;
-	colors["darkturquoise"]          = 0x00ced1;
-	colors["darkviolet"]             = 0x9400d3;
-	colors["deeppink"]               = 0xff1493;
-	colors["deepskyblue"]            = 0x00bfff;
-	colors["dimgray"]                = 0x696969;
-	colors["dimgrey"]                = 0x696969;
-	colors["dodgerblue"]             = 0x1e90ff;
-	colors["firebrick"]              = 0xb22222;
-	colors["floralwhite"]            = 0xfffaf0;
-	colors["forestgreen"]            = 0x228b22;
-	colors["fuchsia"]                = 0xff00ff;
-	colors["gainsboro"]              = 0xdcdcdc;
-	colors["ghostwhite"]             = 0xf8f8ff;
-	colors["gold"]                   = 0xffd700;
-	colors["goldenrod"]              = 0xdaa520;
-	colors["gray"]                   = 0x808080;
-	colors["green"]                  = 0x008000;
-	colors["greenyellow"]            = 0xadff2f;
-	colors["grey"]                   = 0x808080;
-	colors["honeydew"]               = 0xf0fff0;
-	colors["hotpink"]                = 0xff69b4;
-	colors["indianred"]              = 0xcd5c5c;
-	colors["indigo"]                 = 0x4b0082;
-	colors["ivory"]                  = 0xfffff0;
-	colors["khaki"]                  = 0xf0e68c;
-	colors["lavender"]               = 0xe6e6fa;
-	colors["lavenderblush"]          = 0xfff0f5;
-	colors["lawngreen"]              = 0x7cfc00;
-	colors["lemonchiffon"]           = 0xfffacd;
-	colors["lightblue"]              = 0xadd8e6;
-	colors["lightcoral"]             = 0xf08080;
-	colors["lightcyan"]              = 0xe0ffff;
-	colors["lightgoldenrodyellow"]   = 0xfafad2;
-	colors["lightgray"]              = 0xd3d3d3;
-	colors["lightgreen"]             = 0x90ee90;
-	colors["lightgrey"]              = 0xd3d3d3;
-	colors["lightpink"]              = 0xffb6c1;
-	colors["lightsalmon"]            = 0xffa07a;
-	colors["lightseagreen"]          = 0x20b2aa;
-	colors["lightskyblue"]           = 0x87cefa;
-	colors["lightslategray"]         = 0x778899;
-	colors["lightslategrey"]         = 0x778899;
-	colors["lightsteelblue"]         = 0xb0c4de;
-	colors["lightyellow"]            = 0xffffe0;
-	colors["lime"]                   = 0x00ff00;
-	colors["limegreen"]              = 0x32cd32;
-	colors["linen"]                  = 0xfaf0e6;
-	colors["magenta"]                = 0xff00ff;
-	colors["maroon"]                 = 0x800000;
-	colors["mediumaquamarine"]       = 0x66cdaa;
-	colors["mediumblue"]             = 0x0000cd;
-	colors["mediumorchid"]           = 0xba55d3;
-	colors["mediumpurple"]           = 0x9370db;
-	colors["mediumseagreen"]         = 0x3cb371;
-	colors["mediumslateblue"]        = 0x7b68ee;
-	colors["mediumspringgreen"]      = 0x00fa9a;
-	colors["mediumturquoise"]        = 0x48d1cc;
-	colors["mediumvioletred"]        = 0xc71585;
-	colors["midnightblue"]           = 0x191970;
-	colors["mintcream"]              = 0xf5fffa;
-	colors["mistyrose"]              = 0xffe4e1;
-	colors["moccasin"]               = 0xffe4b5;
-	colors["navajowhite"]            = 0xffdead;
-	colors["navy"]                   = 0x000080;
-	colors["oldlace"]                = 0xfdf5e6;
-	colors["olive"]                  = 0x808000;
-	colors["olivedrab"]              = 0x6b8e23;
-	colors["orange"]                 = 0xffa500;
-	colors["orangered"]              = 0xff4500;
-	colors["orchid"]                 = 0xda70d6;
-	colors["palegoldenrod"]          = 0xeee8aa;
-	colors["palegreen"]              = 0x98fb98;
-	colors["paleturquoise"]          = 0xafeeee;
-	colors["palevioletred"]          = 0xdb7093;
-	colors["papayawhip"]             = 0xffefd5;
-	colors["peachpuff"]              = 0xffdab9;
-	colors["peru"]                   = 0xcd853f;
-	colors["pink"]                   = 0xffc0cb;
-	colors["plum"]                   = 0xdda0dd;
-	colors["powderblue"]             = 0xb0e0e6;
-	colors["purple"]                 = 0x800080;
-	colors["red"]                    = 0xff0000;
-	colors["rosybrown"]              = 0xbc8f8f;
-	colors["royalblue"]              = 0x4169e1;
-	colors["saddlebrown"]            = 0x8b4513;
-	colors["salmon"]                 = 0xfa8072;
-	colors["sandybrown"]             = 0xf4a460;
-	colors["seagreen"]               = 0x2e8b57;
-	colors["seashell"]               = 0xfff5ee;
-	colors["sienna"]                 = 0xa0522d;
-	colors["silver"]                 = 0xc0c0c0;
-	colors["skyblue"]                = 0x87ceeb;
-	colors["slateblue"]              = 0x6a5acd;
-	colors["slategray"]              = 0x708090;
-	colors["slategrey"]              = 0x708090;
-	colors["snow"]                   = 0xfffafa;
-	colors["springgreen"]            = 0x00ff7f;
-	colors["steelblue"]              = 0x4682b4;
-	colors["tan"]                    = 0xd2b48c;
-	colors["teal"]                   = 0x008080;
-	colors["thistle"]                = 0xd8bfd8;
-	colors["tomato"]                 = 0xff6347;
-	colors["turquoise"]              = 0x40e0d0;
-	colors["violet"]                 = 0xee82ee;
-	colors["wheat"]                  = 0xf5deb3;
-	colors["white"]                  = 0xffffff;
-	colors["whitesmoke"]             = 0xf5f5f5;
-	colors["yellow"]                 = 0xffff00;
-	colors["yellowgreen"]            = 0x9acd32;
-
-}
-
-static const ColorContainer named_colors;
 
 static bool parseNamedColorString(const std::string &value, video::SColor &color)
 {
@@ -635,9 +531,8 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 
 	color_name = lowercase(color_name);
 
-	std::map<const std::string, unsigned>::const_iterator it;
-	it = named_colors.colors.find(color_name);
-	if (it == named_colors.colors.end())
+	auto it = s_named_colors.find(color_name);
+	if (it == s_named_colors.end())
 		return false;
 
 	u32 color_temp = it->second;
@@ -645,26 +540,47 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 	/* An empty string for alpha is ok (none of the color table entries
 	 * have an alpha value either). Color strings without an alpha specified
 	 * are interpreted as fully opaque
-	 *
-	 * For named colors the supplied alpha string (representing a hex value)
-	 * must be exactly two digits. For example:  colorname#08
 	 */
 	if (!alpha_string.empty()) {
-		if (alpha_string.length() != 2)
-			return false;
+		if (alpha_string.size() == 1) {
+			u8 d;
+			if (!hex_digit_decode(alpha_string[0], d))
+				return false;
 
-		unsigned char d1, d2;
-		if (!hex_digit_decode(alpha_string.at(0), d1)
-				|| !hex_digit_decode(alpha_string.at(1), d2))
+			color_temp |= ((d & 0xf) << 4 | (d & 0xf)) << 24;
+		} else if (alpha_string.size() == 2) {
+			u8 d1, d2;
+			if (!hex_digit_decode(alpha_string[0], d1)
+					|| !hex_digit_decode(alpha_string[1], d2))
+				return false;
+
+			color_temp |= ((d1 & 0xf) << 4 | (d2 & 0xf)) << 24;
+		} else {
 			return false;
-		color_temp |= ((d1 & 0xf) << 4 | (d2 & 0xf)) << 24;
+		}
 	} else {
-		color_temp |= 0xff << 24;  // Fully opaque
+		color_temp |= 0xff << 24; // Fully opaque
 	}
 
 	color = video::SColor(color_temp);
 
 	return true;
+}
+
+bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
+		unsigned char default_alpha)
+{
+	bool success;
+
+	if (value[0] == '#')
+		success = parseHexColorString(value, color, default_alpha);
+	else
+		success = parseNamedColorString(value, color);
+
+	if (!success && !quiet)
+		errorstream << "Invalid color: \"" << value << "\"" << std::endl;
+
+	return success;
 }
 
 void str_replace(std::string &str, char from, char to)
@@ -766,7 +682,8 @@ void translate_string(const std::wstring &s, Translations *translations,
 		} else {
 			// This is an escape sequence *inside* the template string to translate itself.
 			// This should not happen, show an error message.
-			errorstream << "Ignoring escape sequence '" << wide_to_narrow(escape_sequence) << "' in translation" << std::endl;
+			errorstream << "Ignoring escape sequence '"
+				<< wide_to_utf8(escape_sequence) << "' in translation" << std::endl;
 		}
 	}
 

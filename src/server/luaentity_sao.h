@@ -71,6 +71,11 @@ public:
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
 
+protected:
+	void dispatchScriptDeactivate();
+	virtual void onMarkedForDeactivation() { dispatchScriptDeactivate(); }
+	virtual void onMarkedForRemoval() { dispatchScriptDeactivate(); }
+
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);

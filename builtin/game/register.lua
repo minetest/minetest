@@ -1,5 +1,7 @@
 -- Minetest: builtin/misc_register.lua
 
+local S = core.get_translator("__builtin")
+
 --
 -- Make raw registration functions inaccessible to anyone except this file
 --
@@ -117,10 +119,6 @@ function core.register_item(name, itemdef)
 		error("Unable to register item: Name is forbidden: " .. name)
 	end
 	itemdef.name = name
-
-	-- default short_description to first line of description
-	itemdef.short_description = itemdef.short_description or
-		(itemdef.description or ""):gsub("\n.*","")
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
@@ -324,20 +322,13 @@ for name in pairs(forbidden_item_names) do
 	register_alias_raw(name, "")
 end
 
-
--- Obsolete:
--- Aliases for core.register_alias (how ironic...)
--- core.alias_node = core.register_alias
--- core.alias_tool = core.register_alias
--- core.alias_craftitem = core.register_alias
-
 --
 -- Built-in node definitions. Also defined in C.
 --
 
 core.register_item(":unknown", {
 	type = "none",
-	description = "Unknown Item",
+	description = S("Unknown Item"),
 	inventory_image = "unknown_item.png",
 	on_place = core.item_place,
 	on_secondary_use = core.item_secondary_use,
@@ -347,7 +338,7 @@ core.register_item(":unknown", {
 })
 
 core.register_node(":air", {
-	description = "Air",
+	description = S("Air"),
 	inventory_image = "air.png",
 	wield_image = "air.png",
 	drawtype = "airlike",
@@ -364,7 +355,7 @@ core.register_node(":air", {
 })
 
 core.register_node(":ignore", {
-	description = "Ignore",
+	description = S("Ignore"),
 	inventory_image = "ignore.png",
 	wield_image = "ignore.png",
 	drawtype = "airlike",
@@ -377,11 +368,12 @@ core.register_node(":ignore", {
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
+	node_placement_prediction = "",
 	on_place = function(itemstack, placer, pointed_thing)
 		core.chat_send_player(
 				placer:get_player_name(),
 				core.colorize("#FF0000",
-				"You can't place 'ignore' nodes!"))
+				S("You can't place 'ignore' nodes!")))
 		return ""
 	end,
 })
@@ -617,6 +609,8 @@ core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_
 core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
 core.registered_on_player_inventory_actions, core.register_on_player_inventory_action = make_registration()
 core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
+core.registered_on_rightclickplayers, core.register_on_rightclickplayer = make_registration()
+core.registered_on_liquid_transformed, core.register_on_liquid_transformed = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

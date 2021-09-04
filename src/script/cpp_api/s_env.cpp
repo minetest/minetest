@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mapgen.h"
 #include "lua_api/l_env.h"
 #include "server.h"
+#include "script/common/c_content.h"
+
 
 void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	u32 blockseed)
@@ -150,13 +152,19 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 
 		bool simple_catch_up = true;
 		getboolfield(L, current_abm, "catch_up", simple_catch_up);
+		
+		s16 min_y = INT16_MIN;
+		getintfield(L, current_abm, "min_y", min_y);
+		
+		s16 max_y = INT16_MAX;
+		getintfield(L, current_abm, "max_y", max_y);
 
 		lua_getfield(L, current_abm, "action");
 		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
 		lua_pop(L, 1);
 
 		LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
-			trigger_interval, trigger_chance, simple_catch_up);
+			trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
 
 		env->addActiveBlockModifier(abm);
 
@@ -260,4 +268,36 @@ void ScriptApiEnv::on_emerge_area_completion(
 		luaL_unref(L, LUA_REGISTRYINDEX, state->callback_ref);
 		luaL_unref(L, LUA_REGISTRYINDEX, state->args_ref);
 	}
+}
+
+void ScriptApiEnv::on_liquid_transformed(
+	const std::vector<std::pair<v3s16, MapNode>> &list)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_liquid_transformed
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_liquid_transformed");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_remove(L, -2);
+
+	// Skip converting list and calling hook if there are
+	// no registered callbacks.
+	if(lua_objlen(L, -1) < 1) return;
+
+	// Convert the list to a pos array and a node array for lua
+	int index = 1;
+	const NodeDefManager *ndef = getEnv()->getGameDef()->ndef();
+	lua_createtable(L, list.size(), 0);
+	lua_createtable(L, list.size(), 0);
+	for(std::pair<v3s16, MapNode> p : list) {
+		lua_pushnumber(L, index);
+		push_v3s16(L, p.first);
+		lua_rawset(L, -4);
+		lua_pushnumber(L, index++);
+		pushnode(L, p.second, ndef);
+		lua_rawset(L, -3);
+	}
+
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }

@@ -56,12 +56,12 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Created);
 
+	Address addr;
 	std::string addr_s;
 	try {
-		Address address = getPeerAddress(peer_id);
-		addr_s = address.serializeString();
-	}
-	catch (con::PeerNotFoundException &e) {
+		addr = m_con->GetPeerAddress(peer_id);
+		addr_s = addr.serializeString();
+	} catch (con::PeerNotFoundException &e) {
 		/*
 		 * no peer for this packet found
 		 * most common reason is peer timeout, e.g. peer didn't
@@ -73,12 +73,13 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	// If net_proto_version is set, this client has already been handled
 	if (client->getState() > CS_Created) {
 		verbosestream << "Server: Ignoring multiple TOSERVER_INITs from " <<
 			addr_s << " (peer_id=" << peer_id << ")" << std::endl;
 		return;
 	}
+
+	client->setCachedAddress(addr);
 
 	verbosestream << "Server: Got TOSERVER_INIT from " << addr_s <<
 		" (peer_id=" << peer_id << ")" << std::endl;
@@ -170,6 +171,16 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		actionstream << "Server: Player with an invalid name tried to connect "
 			"from " << addr_s << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME);
+		return;
+	}
+
+	RemotePlayer *player = m_env->getPlayer(playername);
+
+	// If player is already connected, cancel
+	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+		actionstream << "Server: Player with name \"" << playername <<
+			"\" tried to connect, but player with same name is already connected" << std::endl;
+		DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
 		return;
 	}
 
@@ -437,18 +448,20 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 	u8 count;
 	*pkt >> count;
 
-	RemoteClient *client = getClient(pkt->getPeerId());
-
 	if ((s16)pkt->getSize() < 1 + (int)count * 6) {
 		throw con::InvalidIncomingDataException
 				("GOTBLOCKS length is too short");
 	}
+
+	m_clients.lock();
+	RemoteClient *client = m_clients.lockedGetClientNoEx(pkt->getPeerId());
 
 	for (u16 i = 0; i < count; i++) {
 		v3s16 p;
 		*pkt >> p;
 		client->GotBlock(p);
 	}
+	m_clients.unlock();
 }
 
 void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
@@ -485,18 +498,18 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
 
-	playersao->setBasePosition(position);
-	player->setSpeed(speed);
+	if (!playersao->isAttached()) {
+		// Only update player positions when moving freely
+		// to not interfere with attachment handling
+		playersao->setBasePosition(position);
+		player->setSpeed(speed);
+	}
 	playersao->setLookPitch(pitch);
 	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
 
 	player->keyPressed = keyPressed;
-	player->control.up    = (keyPressed & (0x1 << 0));
-	player->control.down  = (keyPressed & (0x1 << 1));
-	player->control.left  = (keyPressed & (0x1 << 2));
-	player->control.right = (keyPressed & (0x1 << 3));
 	player->control.jump  = (keyPressed & (0x1 << 4));
 	player->control.aux1  = (keyPressed & (0x1 << 5));
 	player->control.sneak = (keyPressed & (0x1 << 6));
@@ -619,21 +632,36 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	const bool player_has_interact = checkPriv(player->getName(), "interact");
 
-	auto check_inv_access = [player, player_has_interact] (
+	auto check_inv_access = [player, player_has_interact, this] (
 			const InventoryLocation &loc) -> bool {
-		if (loc.type == InventoryLocation::CURRENT_PLAYER)
-			return false; // Only used internally on the client, never sent
-		if (loc.type == InventoryLocation::PLAYER) {
-			// Allow access to own inventory in all cases
-			return loc.name == player->getName();
-		}
 
-		if (!player_has_interact) {
+		// Players without interact may modify their own inventory
+		if (!player_has_interact && loc.type != InventoryLocation::PLAYER) {
 			infostream << "Cannot modify foreign inventory: "
 					<< "No interact privilege" << std::endl;
 			return false;
 		}
-		return true;
+
+		switch (loc.type) {
+		case InventoryLocation::CURRENT_PLAYER:
+			// Only used internally on the client, never sent
+			return false;
+		case InventoryLocation::PLAYER:
+			// Allow access to own inventory in all cases
+			return loc.name == player->getName();
+		case InventoryLocation::NODEMETA:
+			{
+				// Check for out-of-range interaction
+				v3f node_pos   = intToFloat(loc.p, BS);
+				v3f player_pos = player->getPlayerSAO()->getEyePosition();
+				f32 d = player_pos.getDistanceFrom(node_pos);
+				return checkInteractDistance(player, d, "inventory");
+			}
+		case InventoryLocation::DETACHED:
+			return getInventoryMgr()->checkDetachedInventoryAccess(loc, player->getName());
+		default:
+			return false;
+		}
 	};
 
 	/*
@@ -652,18 +680,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		if (!check_inv_access(ma->from_inv) ||
 				!check_inv_access(ma->to_inv))
 			return;
-
-		InventoryLocation *remote = ma->from_inv.type == InventoryLocation::PLAYER ?
-			&ma->to_inv : &ma->from_inv;
-
-		// Check for out-of-range interaction
-		if (remote->type == InventoryLocation::NODEMETA) {
-			v3f node_pos   = intToFloat(remote->p, BS);
-			v3f player_pos = player->getPlayerSAO()->getEyePosition();
-			f32 d = player_pos.getDistanceFrom(node_pos);
-			if (!checkInteractDistance(player, d, "inventory"))
-				return;
-		}
 
 		/*
 			Disable moving items out of craftpreview
@@ -749,21 +765,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 {
-	/*
-		u16 command
-		u16 length
-		wstring message
-	*/
-	u16 len;
-	*pkt >> len;
-
 	std::wstring message;
-	for (u16 i = 0; i < len; i++) {
-		u16 tmp_wchar;
-		*pkt >> tmp_wchar;
-
-		message += (wchar_t)tmp_wchar;
-	}
+	*pkt >> message;
 
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -775,15 +778,13 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		return;
 	}
 
-	// Get player name of this client
 	std::string name = player->getName();
-	std::wstring wname = narrow_to_wide(name);
 
-	std::wstring answer_to_sender = handleChat(name, wname, message, true, player);
+	std::wstring answer_to_sender = handleChat(name, message, true, player);
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
-		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_NORMAL,
-			answer_to_sender, wname));
+		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+			answer_to_sender));
 	}
 }
 
@@ -827,7 +828,6 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 		PlayerHPChangeReason reason(PlayerHPChangeReason::FALL);
 		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason);
-		SendPlayerHPOrDie(playersao, reason);
 	}
 }
 
@@ -1046,6 +1046,12 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (pointed.type == POINTEDTHING_NODE) {
 			target_pos = intToFloat(pointed.node_undersurface, BS);
 		} else if (pointed.type == POINTEDTHING_OBJECT) {
+			if (playersao->getId() == pointed_object->getId()) {
+				actionstream << "Server: " << player->getName()
+					<< " attempted to interact with themselves" << std::endl;
+				m_script->on_cheat(playersao, "interacted_with_self");
+				return;
+			}
 			target_pos = pointed_object->getBasePosition();
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
@@ -1106,9 +1112,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		float time_from_last_punch =
 			playersao->resetTimeFromLastPunch();
 
-		u16 src_original_hp = pointed_object->getHP();
-		u16 dst_origin_hp = playersao->getHP();
-
 		u16 wear = pointed_object->punch(dir, &toolcap, playersao,
 				time_from_last_punch);
 
@@ -1117,18 +1120,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		bool changed = selected_item.addWear(wear, m_itemdef);
 		if (changed)
 			playersao->setWieldedItem(selected_item);
-
-		// If the object is a player and its HP changed
-		if (src_original_hp != pointed_object->getHP() &&
-				pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			SendPlayerHPOrDie((PlayerSAO *)pointed_object,
-					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
-		}
-
-		// If the puncher is a player and its HP changed
-		if (dst_origin_hp != playersao->getHP())
-			SendPlayerHPOrDie(playersao,
-					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
 
 		return;
 	} // action == INTERACT_START_DIGGING

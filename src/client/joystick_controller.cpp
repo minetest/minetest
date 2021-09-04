@@ -79,7 +79,7 @@ JoystickLayout create_default_layout()
 
 	// Accessible without any modifier pressed
 	JLO_B_PB(KeyType::JUMP,       bm | 1 << 0, 1 << 0);
-	JLO_B_PB(KeyType::SPECIAL1,   bm | 1 << 1, 1 << 1);
+	JLO_B_PB(KeyType::AUX1,       bm | 1 << 1, 1 << 1);
 
 	// Accessible with start button not pressed, but four pressed
 	// TODO find usage for button 0
@@ -126,11 +126,11 @@ JoystickLayout create_xbox_layout()
 	// 4 Buttons
 	JLO_B_PB(KeyType::JUMP,        1 << 0,  1 << 0); // A/green
 	JLO_B_PB(KeyType::ESC,         1 << 1,  1 << 1); // B/red
-	JLO_B_PB(KeyType::SPECIAL1,    1 << 2,  1 << 2); // X/blue
+	JLO_B_PB(KeyType::AUX1,        1 << 2,  1 << 2); // X/blue
 	JLO_B_PB(KeyType::INVENTORY,   1 << 3,  1 << 3); // Y/yellow
 
 	// Analog Sticks
-	JLO_B_PB(KeyType::SPECIAL1,    1 << 11, 1 << 11); // left
+	JLO_B_PB(KeyType::AUX1,        1 << 11, 1 << 11); // left
 	JLO_B_PB(KeyType::SNEAK,       1 << 12, 1 << 12); // right
 
 	// Triggers
@@ -160,6 +160,7 @@ JoystickController::JoystickController() :
 	for (float &i : m_past_pressed_time) {
 		i = 0;
 	}
+	m_layout.axes_deadzone = 0;
 	clear();
 }
 
@@ -251,10 +252,27 @@ void JoystickController::clear()
 	memset(m_axes_vals, 0, sizeof(m_axes_vals));
 }
 
-s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
+float JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
+
 	if (abs(v) < m_layout.axes_deadzone)
-		return 0;
-	return v;
+		return 0.0f;
+
+	v += (v < 0 ? m_layout.axes_deadzone : -m_layout.axes_deadzone);
+
+	return (float)v / ((float)(INT16_MAX - m_layout.axes_deadzone));
+}
+
+float JoystickController::getMovementDirection()
+{
+	return atan2(getAxisWithoutDead(JA_SIDEWARD_MOVE), -getAxisWithoutDead(JA_FORWARD_MOVE));
+}
+
+float JoystickController::getMovementSpeed()
+{
+	float speed = sqrt(pow(getAxisWithoutDead(JA_FORWARD_MOVE), 2) + pow(getAxisWithoutDead(JA_SIDEWARD_MOVE), 2));
+	if (speed > 1.0f)
+		speed = 1.0f;
+	return speed;
 }

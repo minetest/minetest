@@ -103,6 +103,32 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 	lua_pop(L, 2); // Pop object and error handler
 }
 
+void ScriptApiEntity::luaentity_Deactivate(u16 id)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	verbosestream << "scriptapi_luaentity_deactivate: id=" << id << std::endl;
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get the entity
+	luaentity_get(L, id);
+	int object = lua_gettop(L);
+
+	// Get on_deactivate
+	lua_getfield(L, -1, "on_deactivate");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pushvalue(L, object);
+
+		setOriginFromTable(object);
+		PCALL_RES(lua_pcall(L, 1, 0, error_handler));
+	} else {
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 2); // Pop object and error handler
+}
+
 void ScriptApiEntity::luaentity_Remove(u16 id)
 {
 	SCRIPTAPI_PRECHECKHEADER

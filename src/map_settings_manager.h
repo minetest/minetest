@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
+#include "settings.h"
 
-class Settings;
 struct NoiseParams;
 struct MapgenParams;
 
@@ -44,8 +44,7 @@ struct MapgenParams;
 */
 class MapSettingsManager {
 public:
-	MapSettingsManager(Settings *user_settings,
-		const std::string &map_meta_path);
+	MapSettingsManager(const std::string &map_meta_path);
 	~MapSettingsManager();
 
 	// Finalized map generation parameters
@@ -71,6 +70,8 @@ public:
 
 private:
 	std::string m_map_meta_path;
+
+	SettingsHierarchy m_hierarchy;
+	Settings *m_defaults;
 	Settings *m_map_settings;
-	Settings *m_user_settings;
 };

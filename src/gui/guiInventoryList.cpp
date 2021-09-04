@@ -104,8 +104,6 @@ void GUIInventoryList::draw()
 			&& m_invmgr->getInventory(selected_item->inventoryloc) == inv
 			&& selected_item->listname == m_listname
 			&& selected_item->i == item_i;
-		core::rect<s32> clipped_rect(rect);
-		clipped_rect.clipAgainst(AbsoluteClippingRect);
 		bool hovering = m_hovered_i == item_i;
 		ItemRotationKind rotation_kind = selected ? IT_ROT_SELECTED :
 			(hovering ? IT_ROT_HOVERED : IT_ROT_NONE);

@@ -134,10 +134,11 @@ namespace gui
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 		//! Gets the override color
-		#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 7
-		virtual const video::SColor& getOverrideColor() const;
-		#else
 		virtual video::SColor getOverrideColor() const;
+
+		#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+		//! Gets the currently used text color
+		virtual video::SColor getActiveColor() const;
 		#endif
 
 		//! Sets if the static text should use the overide color or the

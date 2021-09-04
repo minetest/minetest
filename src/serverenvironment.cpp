@@ -632,7 +632,7 @@ void ServerEnvironment::saveMeta()
 	// Open file and serialize
 	std::ostringstream ss(std::ios_base::binary);
 
-	Settings args;
+	Settings args("EnvArgsEnd");
 	args.setU64("game_time", m_game_time);
 	args.setU64("time_of_day", getTimeOfDay());
 	args.setU64("last_clear_objects_time", m_last_clear_objects_time);
@@ -641,7 +641,6 @@ void ServerEnvironment::saveMeta()
 		m_lbm_mgr.createIntroductionTimesString());
 	args.setU64("day_count", m_day_count);
 	args.writeLines(ss);
-	ss<<"EnvArgsEnd\n";
 
 	if(!fs::safeWriteToFile(path, ss.str()))
 	{
@@ -676,9 +675,9 @@ void ServerEnvironment::loadMeta()
 		throw SerializationError("Couldn't load env meta");
 	}
 
-	Settings args;
+	Settings args("EnvArgsEnd");
 
-	if (!args.parseConfigLines(is, "EnvArgsEnd")) {
+	if (!args.parseConfigLines(is)) {
 		throw SerializationError("ServerEnvironment::loadMeta(): "
 			"EnvArgsEnd not found!");
 	}
@@ -730,6 +729,8 @@ struct ActiveABM
 	int chance;
 	std::vector<content_t> required_neighbors;
 	bool check_required_neighbors; // false if required_neighbors is known to be empty
+	s16 min_y;
+	s16 max_y;
 };
 
 class ABMHandler
@@ -774,6 +775,9 @@ public:
 			} else {
 				aabm.chance = chance;
 			}
+			// y limits
+			aabm.min_y = abm->getMinY();
+			aabm.max_y = abm->getMaxY();
 
 			// Trigger neighbors
 			const std::vector<std::string> &required_neighbors_s =
@@ -886,6 +890,9 @@ public:
 
 			v3s16 p = p0 + block->getPosRelative();
 			for (ActiveABM &aabm : *m_aabms[c]) {
+				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
+					continue;
+				
 				if (myrand() % aabm.chance != 0)
 					continue;
 
@@ -1164,7 +1171,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 		// If known by some client, don't delete immediately
 		if (obj->m_known_by_count > 0) {
-			obj->m_pending_removal = true;
+			obj->markForRemoval();
 			return false;
 		}
 
@@ -1543,6 +1550,21 @@ void ServerEnvironment::step(float dtime)
 	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
 }
 
+ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
+{
+	if (m_active_blocks.contains(blockpos))
+		return BS_ACTIVE;
+
+	const MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	if (block && !block->isDummy())
+		return BS_LOADED;
+
+	if (m_map->isBlockInQueue(blockpos))
+		return BS_EMERGING;
+
+	return BS_UNKNOWN;
+}
+
 u32 ServerEnvironment::addParticleSpawner(float exptime)
 {
 	// Timers with lifetime 0 do not expire
@@ -1792,7 +1814,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Delete static data from block if removed
 		*/
-		if (obj->m_pending_removal)
+		if (obj->isPendingRemoval())
 			deleteStaticFromBlock(obj, id, MOD_REASON_REMOVE_OBJECTS_REMOVE, false);
 
 		// If still known by clients, don't actually remove. On some future
@@ -1803,7 +1825,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Move static data from active to stored if deactivated
 		*/
-		if (!obj->m_pending_removal && obj->m_static_exists) {
+		if (!obj->isPendingRemoval() && obj->m_static_exists) {
 			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if (block) {
 				const auto i = block->m_static_objects.m_active.find(id);
@@ -1991,6 +2013,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		if (!force_delete && obj->m_static_exists &&
 		   !m_active_blocks.contains(obj->m_static_block) &&
 		   m_active_blocks.contains(blockpos_o)) {
+
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 
@@ -2068,6 +2091,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				force_delete = true;
 		}
 
+		// Regardless of what happens to the object at this point, deactivate it first.
+		// This ensures that LuaEntity on_deactivate is always called.
+		obj->markForDeactivation();
+
 		/*
 			If known by some client, set pending deactivation.
 			Otherwise delete it immediately.
@@ -2077,7 +2104,6 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 						  << "object id=" << id << " is known by clients"
 						  << "; not deleting yet" << std::endl;
 
-			obj->m_pending_deactivation = true;
 			return false;
 		}
 

@@ -369,7 +369,7 @@ float contour(float v)
 ///////////////////////// [ New noise ] ////////////////////////////
 
 
-float NoisePerlin2D(NoiseParams *np, float x, float y, s32 seed)
+float NoisePerlin2D(const NoiseParams *np, float x, float y, s32 seed)
 {
 	float a = 0;
 	float f = 1.0;
@@ -395,7 +395,7 @@ float NoisePerlin2D(NoiseParams *np, float x, float y, s32 seed)
 }
 
 
-float NoisePerlin3D(NoiseParams *np, float x, float y, float z, s32 seed)
+float NoisePerlin3D(const NoiseParams *np, float x, float y, float z, s32 seed)
 {
 	float a = 0;
 	float f = 1.0;
@@ -422,7 +422,7 @@ float NoisePerlin3D(NoiseParams *np, float x, float y, float z, s32 seed)
 }
 
 
-Noise::Noise(NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
+Noise::Noise(const NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
 {
 	np = *np_;
 	this->seed = seed;

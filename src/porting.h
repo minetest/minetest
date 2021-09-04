@@ -234,21 +234,21 @@ inline u64 getTimeMs()
 {
 	struct timespec ts;
 	os_get_clock(&ts);
-	return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+	return ((u64) ts.tv_sec) * 1000LL + ((u64) ts.tv_nsec) / 1000000LL;
 }
 
 inline u64 getTimeUs()
 {
 	struct timespec ts;
 	os_get_clock(&ts);
-	return ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
+	return ((u64) ts.tv_sec) * 1000000LL + ((u64) ts.tv_nsec) / 1000LL;
 }
 
 inline u64 getTimeNs()
 {
 	struct timespec ts;
 	os_get_clock(&ts);
-	return ts.tv_sec * 1000000000 + ts.tv_nsec;
+	return ((u64) ts.tv_sec) * 1000000000LL + ((u64) ts.tv_nsec);
 }
 
 #endif

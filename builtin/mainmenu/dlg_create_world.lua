@@ -443,7 +443,7 @@ local function create_world_buttonhandler(this, fields)
 	end
 
 	if fields["mgv6_biomes"] then
-		local entry = minetest.formspec_escape(fields["mgv6_biomes"])
+		local entry = core.formspec_escape(fields["mgv6_biomes"])
 		for b=1, #mgv6_biomes do
 			if entry == mgv6_biomes[b][1] then
 				local ftable = core.settings:get_flags("mgv6_spflags")

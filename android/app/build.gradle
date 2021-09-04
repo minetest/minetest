@@ -1,0 +1,116 @@
+apply plugin: 'com.android.application'
+android {
+	compileSdkVersion 29
+	buildToolsVersion '30.0.3'
+	ndkVersion '22.0.7026061'
+	defaultConfig {
+		applicationId 'net.minetest.minetest'
+		minSdkVersion 16
+		targetSdkVersion 29
+		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+		versionCode project.versionCode
+	}
+
+	// load properties
+	Properties props = new Properties()
+	def propfile = file('../local.properties')
+	if (propfile.exists())
+		props.load(new FileInputStream(propfile))
+
+	if (props.getProperty('keystore') != null) {
+		signingConfigs {
+			release {
+				storeFile file(props['keystore'])
+				storePassword props['keystore.password']
+				keyAlias props['key']
+				keyPassword props['key.password']
+			}
+		}
+
+		buildTypes {
+			release {
+				minifyEnabled true
+				signingConfig signingConfigs.release
+			}
+		}
+	}
+
+	// for multiple APKs
+	splits {
+		abi {
+			enable true
+			reset()
+			include 'armeabi-v7a', 'arm64-v8a'
+		}
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
+task prepareAssets() {
+	def assetsFolder = "build/assets"
+	def projRoot = "../.."
+	def gameToCopy = "minetest_game"
+
+	copy {
+		from "${projRoot}/minetest.conf.example", "${projRoot}/README.md" into assetsFolder
+	}
+	copy {
+		from "${projRoot}/doc/lgpl-2.1.txt" into "${assetsFolder}"
+	}
+	copy {
+		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
+	}
+	copy {
+		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
+	}
+	copy {
+		from "../native/deps/Android/Irrlicht/shaders" into "${assetsFolder}/client/shaders/Irrlicht"
+	}
+	copy {
+		from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
+	}
+	copy {
+		from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
+	}
+	fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
+		def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
+		file(moPath).mkdirs()
+		exec {
+			commandLine 'msgfmt', '-o', "${moPath}/minetest.mo", poFile
+		}
+	}
+	copy {
+		from "${projRoot}/textures" into "${assetsFolder}/textures"
+	}
+
+	file("${assetsFolder}/.nomedia").text = "";
+
+	task zipAssets(type: Zip) {
+		archiveName "Minetest.zip"
+		from "${assetsFolder}"
+		destinationDir file("src/main/assets")
+	}
+}
+
+preBuild.dependsOn zipAssets
+
+// Map for the version code that gives each ABI a value.
+import com.android.build.OutputFile
+
+def abiCodes = ['armeabi-v7a': 0, 'arm64-v8a': 1]
+android.applicationVariants.all { variant ->
+	variant.outputs.each {
+		output ->
+			def abiName = output.getFilter(OutputFile.ABI)
+			output.versionCodeOverride = abiCodes.get(abiName, 0) + variant.versionCode
+	}
+}
+
+dependencies {
+	implementation project(':native')
+	implementation 'androidx.appcompat:appcompat:1.2.0'
+}

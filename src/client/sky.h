@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "irrlichttypes_extrabloated.h"
 #include <ISceneNode.h>
 #include <array>
 #include "camera.h"
-#include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
 #include "shader.h"
 #include "skyparams.h"
@@ -36,7 +36,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc);
+	Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShaderSource *ssrc);
 
 	virtual void OnRegisterSceneNode();
 
@@ -65,15 +65,15 @@ public:
 	}
 
 	void setSunVisible(bool sun_visible) { m_sun_params.visible = sun_visible; }
-	void setSunTexture(std::string sun_texture,
-		std::string sun_tonemap, ITextureSource *tsrc);
+	void setSunTexture(const std::string &sun_texture,
+		const std::string &sun_tonemap, ITextureSource *tsrc);
 	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
 	void setSunriseVisible(bool glow_visible) { m_sun_params.sunrise_visible = glow_visible; }
-	void setSunriseTexture(std::string sunglow_texture, ITextureSource* tsrc);
+	void setSunriseTexture(const std::string &sunglow_texture, ITextureSource* tsrc);
 
 	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
-	void setMoonTexture(std::string moon_texture,
-		std::string moon_tonemap, ITextureSource *tsrc);
+	void setMoonTexture(const std::string &moon_texture,
+		const std::string &moon_tonemap, ITextureSource *tsrc);
 	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
 
 	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
@@ -87,23 +87,25 @@ public:
 	void setVisible(bool visible) { m_visible = visible; }
 	// Set only from set_sky API
 	void setCloudsEnabled(bool clouds_enabled) { m_clouds_enabled = clouds_enabled; }
-	void setFallbackBgColor(const video::SColor &fallback_bg_color)
+	void setFallbackBgColor(video::SColor fallback_bg_color)
 	{
 		m_fallback_bg_color = fallback_bg_color;
 	}
-	void overrideColors(const video::SColor &bgcolor, const video::SColor &skycolor)
+	void overrideColors(video::SColor bgcolor, video::SColor skycolor)
 	{
 		m_bgcolor = bgcolor;
 		m_skycolor = skycolor;
 	}
 	void setSkyColors(const SkyColor &sky_color);
 	void setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
-		std::string use_sun_tint);
+		const std::string &use_sun_tint);
 	void setInClouds(bool clouds) { m_in_clouds = clouds; }
 	void clearSkyboxTextures() { m_sky_params.textures.clear(); }
-	void addTextureToSkybox(std::string texture, int material_id,
+	void addTextureToSkybox(const  std::string &texture, int material_id,
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
+
+	float getSkyBodyOrbitTilt() const { return m_sky_body_orbit_tilt; }
 
 private:
 	aabb3f m_box;
@@ -126,7 +128,7 @@ private:
 	}
 
 	// Mix two colors by a given amount
-	video::SColor m_mix_scolor(video::SColor col1, video::SColor col2, f32 factor)
+	static video::SColor m_mix_scolor(video::SColor col1, video::SColor col2, f32 factor)
 	{
 		video::SColor result = video::SColor(
 				col1.getAlpha() * (1 - factor) + col2.getAlpha() * factor,
@@ -135,7 +137,7 @@ private:
 				col1.getBlue() * (1 - factor) + col2.getBlue() * factor);
 		return result;
 	}
-	video::SColorf m_mix_scolorf(video::SColorf col1, video::SColorf col2, f32 factor)
+	static video::SColorf m_mix_scolorf(video::SColorf col1, video::SColorf col2, f32 factor)
 	{
 		video::SColorf result =
 				video::SColorf(col1.r * (1 - factor) + col2.r * factor,
@@ -159,6 +161,7 @@ private:
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
 	bool m_enable_shaders = false;
+	float m_sky_body_orbit_tilt = 0.0f;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -205,3 +208,7 @@ private:
 		float horizon_position,	float day_position);
 	void setSkyDefaults();
 };
+
+// calculates value for sky body positions for the given observed time of day
+// this is used to draw both Sun/Moon and shadows
+float getWickedTimeOfDay(float time_of_day);

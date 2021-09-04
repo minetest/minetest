@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include <sstream>
 
+static const video::SColor NULL_BGCOLOR{0, 1, 1, 1};
+
 ObjectProperties::ObjectProperties()
 {
 	textures.emplace_back("unknown_object.png");
@@ -62,6 +64,13 @@ std::string ObjectProperties::dump()
 	os << ", nametag=" << nametag;
 	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
+
+	if (nametag_bgcolor)
+		os << ", nametag_bgcolor=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
+		   << "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
+	else
+		os << ", nametag_bgcolor=null ";
+
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
 	os << ", pointable=" << pointable;
 	os << ", static_save=" << static_save;
@@ -72,6 +81,39 @@ std::string ObjectProperties::dump()
 	os << ", shaded=" << shaded;
 	os << ", show_on_minimap=" << show_on_minimap;
 	return os.str();
+}
+
+bool ObjectProperties::validate()
+{
+	const char *func = "ObjectProperties::validate(): ";
+	bool ret = true;
+
+	// cf. where serializeString16 is used below
+	for (u32 i = 0; i < textures.size(); i++) {
+		if (textures[i].size() > U16_MAX) {
+			warningstream << func << "texture " << (i+1) << " has excessive length, "
+				"clearing it." << std::endl;
+			textures[i].clear();
+			ret = false;
+		}
+	}
+	if (nametag.length() > U16_MAX) {
+		warningstream << func << "nametag has excessive length, clearing it." << std::endl;
+		nametag.clear();
+		ret = false;
+	}
+	if (infotext.length() > U16_MAX) {
+		warningstream << func << "infotext has excessive length, clearing it." << std::endl;
+		infotext.clear();
+		ret = false;
+	}
+	if (wield_item.length() > U16_MAX) {
+		warningstream << func << "wield_item has excessive length, clearing it." << std::endl;
+		wield_item.clear();
+		ret = false;
+	}
+
+	return ret;
 }
 
 void ObjectProperties::serialize(std::ostream &os) const
@@ -96,7 +138,6 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, is_visible);
 	writeU8(os, makes_footstep_sound);
 	writeF32(os, automatic_rotate);
-	// Added in protocol version 14
 	os << serializeString16(mesh);
 	writeU16(os, colors.size());
 	for (video::SColor color : colors) {
@@ -120,6 +161,13 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os << serializeString16(damage_texture_modifier);
 	writeU8(os, shaded);
 	writeU8(os, show_on_minimap);
+
+	if (!nametag_bgcolor)
+		writeARGB8(os, NULL_BGCOLOR);
+	else if (nametag_bgcolor.value().getAlpha() == 0)
+		writeARGB8(os, video::SColor(0, 0, 0, 0));
+	else
+		writeARGB8(os, nametag_bgcolor.value());
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -182,5 +230,11 @@ void ObjectProperties::deSerialize(std::istream &is)
 		if (is.eof())
 			return;
 		show_on_minimap = tmp;
+
+		auto bgcolor = readARGB8(is);
+		if (bgcolor != NULL_BGCOLOR)
+			nametag_bgcolor = bgcolor;
+		else
+			nametag_bgcolor = nullopt;
 	} catch (SerializationError &e) {}
 }

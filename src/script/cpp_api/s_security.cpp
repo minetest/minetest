@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_security.h"
-
+#include "lua_api/l_base.h"
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
@@ -42,6 +42,21 @@ static inline void copy_safe(lua_State *L, const char *list[], unsigned len, int
 	for (unsigned i = 0; i < (len / sizeof(list[0])); i++) {
 		lua_getfield(L, from, list[i]);
 		lua_setfield(L, to,   list[i]);
+	}
+}
+
+static void shallow_copy_table(lua_State *L, int from=-2, int to=-1)
+{
+	if (from < 0) from = lua_gettop(L) + from + 1;
+	if (to   < 0) to   = lua_gettop(L) + to   + 1;
+	lua_pushnil(L);
+	while (lua_next(L, from) != 0) {
+		assert(lua_type(L, -1) != LUA_TTABLE);
+		// duplicate key and value for lua_rawset
+		lua_pushvalue(L, -2);
+		lua_pushvalue(L, -2);
+		lua_rawset(L, to);
+		lua_pop(L, 1);
 	}
 }
 
@@ -83,7 +98,10 @@ void ScriptApiSecurity::initializeSecurity()
 		"unpack",
 		"_VERSION",
 		"xpcall",
-		// Completely safe libraries
+	};
+	static const char *whitelist_tables[] = {
+		// These libraries are completely safe BUT we need to duplicate their table
+		// to ensure the sandbox can't affect the insecure env
 		"coroutine",
 		"string",
 		"table",
@@ -167,6 +185,17 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_pop(L, 1);
 
 
+	// Copy safe libraries
+	for (const char *libname : whitelist_tables) {
+		lua_getfield(L, old_globals, libname);
+		lua_newtable(L);
+		shallow_copy_table(L);
+
+		lua_setglobal(L, libname);
+		lua_pop(L, 1);
+	}
+
+
 	// Copy safe IO functions
 	lua_getfield(L, old_globals, "io");
 	lua_newtable(L);
@@ -222,6 +251,19 @@ void ScriptApiSecurity::initializeSecurity()
 #endif
 
 	lua_pop(L, 1); // Pop globals_backup
+
+
+	/*
+	 * In addition to copying the tables in whitelist_tables, we also need to
+	 * replace the string metatable. Otherwise old_globals.string would
+	 * be accessible via getmetatable("").__index from inside the sandbox.
+	 */
+	lua_pushliteral(L, "");
+	lua_newtable(L);
+	lua_getglobal(L, "string");
+	lua_setfield(L, -2, "__index");
+	lua_setmetatable(L, -2);
+	lua_pop(L, 1); // Pop empty string
 }
 
 void ScriptApiSecurity::initializeSecurityClient()
@@ -496,15 +538,8 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	if (!removed.empty())
 		abs_path += DIR_DELIM + removed;
 
-	// Get server from registry
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script;
-#if INDIRECT_SCRIPTAPI_RIDX
-	script = (ScriptApiBase *) *(void**)(lua_touserdata(L, -1));
-#else
-	script = (ScriptApiBase *) lua_touserdata(L, -1);
-#endif
-	lua_pop(L, 1);
+	// Get gamedef from registry
+	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 	const IGameDef *gamedef = script->getGameDef();
 	if (!gamedef)
 		return false;
@@ -627,13 +662,7 @@ int ScriptApiSecurity::sl_g_load(lua_State *L)
 int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 {
 #ifndef SERVER
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-#if INDIRECT_SCRIPTAPI_RIDX
-	ScriptApiBase *script = (ScriptApiBase *) *(void**)(lua_touserdata(L, -1));
-#else
-	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
-#endif
-	lua_pop(L, 1);
+	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 
 	// Client implementation
 	if (script->getType() == ScriptingType::Client) {

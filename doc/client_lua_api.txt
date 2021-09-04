@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.4.0
+Minetest Lua Client Modding API Reference 5.5.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -620,7 +620,7 @@ Helper functions
 * `minetest.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
 * `minetest.is_nan(arg)`
-    * returns true true when the passed number represents NaN.
+    * returns true when the passed number represents NaN.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
@@ -651,6 +651,9 @@ Minetest namespace reference
 * `minetest.sha1(data, [raw])`: returns the sha1 hash of data
     * `data`: string of data to hash
     * `raw`: return raw bytes instead of hex digits, default: false
+* `minetest.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
+  ColorString. If the ColorSpec is invalid, returns `nil`.
+    * `colorspec`: The ColorSpec to convert
 * `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
    restrictions applied to the current mod.
    * If a flag in this table is set to true, the feature is RESTRICTED.
@@ -907,7 +910,9 @@ Call these functions only at load time!
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string
+* `minetest.decode_base64(string)`: returns string or nil on failure
+    * Padding characters are only supported starting at version 5.4.0, where
+      5.5.0 and newer perform proper checks.
     * Decodes a string encoded in base64.
 * `minetest.gettext(string)` : returns string
     * look up the translation of a string in the gettext message catalog
@@ -1309,6 +1314,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
     --  ^ See "HUD Element Types"
         size = { x=100, y=100 },  -- default {x=0, y=0}
     --  ^ Size of element in pixels
+        style = 0,
+    --  ^ For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
     }
 ```
 
@@ -1348,9 +1355,8 @@ The following functions provide escape sequences:
 
 Named colors are also supported and are equivalent to
 [CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
-To specify the value of the alpha channel, append `#AA` to the end of the color name
-(e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
-value must (always) be two hexadecimal digits.
+To specify the value of the alpha channel, append `#A` or `#AA` to the end of
+the color name (e.g. `colorname#08`).
 
 `Color`
 -------------

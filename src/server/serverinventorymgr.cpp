@@ -157,8 +157,8 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 			m_env->getGameDef()->sendDetachedInventory(
 					nullptr, name, player->getPeerId());
 
-	} else {
-		// Notify all players about the change
+	} else if (m_env) {
+		// Notify all players about the change as soon ServerEnv exists
 		m_env->getGameDef()->sendDetachedInventory(
 				nullptr, name, PEER_ID_INEXISTENT);
 	}
@@ -166,6 +166,18 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 	m_detached_inventories.erase(inv_it);
 
 	return true;
+}
+
+bool ServerInventoryManager::checkDetachedInventoryAccess(
+		const InventoryLocation &loc, const std::string &player) const
+{
+	SANITY_CHECK(loc.type == InventoryLocation::DETACHED);
+
+	const auto &inv_it = m_detached_inventories.find(loc.name);
+	if (inv_it == m_detached_inventories.end())
+		return false;
+
+	return inv_it->second.owner.empty() || inv_it->second.owner == player;
 }
 
 void ServerInventoryManager::sendDetachedInventories(const std::string &peer_name,

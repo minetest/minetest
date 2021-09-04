@@ -113,13 +113,15 @@ EmergeParams::~EmergeParams()
 {
 	infostream << "EmergeParams: destroying " << this << std::endl;
 	// Delete everything that was cloned on creation of EmergeParams
+	delete biomegen;
 	delete biomemgr;
 	delete oremgr;
 	delete decomgr;
 	delete schemmgr;
 }
 
-EmergeParams::EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
+EmergeParams::EmergeParams(EmergeManager *parent, const BiomeGen *biomegen,
+	const BiomeManager *biomemgr,
 	const OreManager *oremgr, const DecorationManager *decomgr,
 	const SchematicManager *schemmgr) :
 	ndef(parent->ndef),
@@ -129,6 +131,7 @@ EmergeParams::EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
 	biomemgr(biomemgr->clone()), oremgr(oremgr->clone()),
 	decomgr(decomgr->clone()), schemmgr(schemmgr->clone())
 {
+	this->biomegen = biomegen->clone(this->biomemgr);
 }
 
 ////
@@ -142,6 +145,10 @@ EmergeManager::EmergeManager(Server *server)
 	this->oremgr    = new OreManager(server);
 	this->decomgr   = new DecorationManager(server);
 	this->schemmgr  = new SchematicManager(server);
+
+	// initialized later
+	this->mgparams = nullptr;
+	this->biomegen = nullptr;
 
 	// Note that accesses to this variable are not synchronized.
 	// This is because the *only* thread ever starting or stopping
@@ -158,20 +165,17 @@ EmergeManager::EmergeManager(Server *server)
 	if (nthreads < 1)
 		nthreads = 1;
 
-	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
+	m_qlimit_total = g_settings->getU32("emergequeue_limit_total");
 	// FIXME: these fallback values are probably not good
-	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
+	if (!g_settings->getU32NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
 		m_qlimit_diskonly = nthreads * 5 + 1;
-	if (!g_settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))
+	if (!g_settings->getU32NoEx("emergequeue_limit_generate", m_qlimit_generate))
 		m_qlimit_generate = nthreads + 1;
 
 	// don't trust user input for something very important like this
-	if (m_qlimit_total < 1)
-		m_qlimit_total = 1;
-	if (m_qlimit_diskonly < 1)
-		m_qlimit_diskonly = 1;
-	if (m_qlimit_generate < 1)
-		m_qlimit_generate = 1;
+	m_qlimit_total = rangelim(m_qlimit_total, 1, 1000000);
+	m_qlimit_diskonly = rangelim(m_qlimit_diskonly, 1, 1000000);
+	m_qlimit_generate = rangelim(m_qlimit_generate, 1, 1000000);
 
 	for (s16 i = 0; i < nthreads; i++)
 		m_threads.push_back(new EmergeThread(server, i));
@@ -240,9 +244,12 @@ void EmergeManager::initMapgens(MapgenParams *params)
 
 	mgparams = params;
 
+	v3s16 csize = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+	biomegen = biomemgr->createBiomeGen(BIOMEGEN_ORIGINAL, params->bparams, csize);
+
 	for (u32 i = 0; i != m_threads.size(); i++) {
-		EmergeParams *p = new EmergeParams(
-			this, biomemgr, oremgr, decomgr, schemmgr);
+		EmergeParams *p = new EmergeParams(this, biomegen,
+			biomemgr, oremgr, decomgr, schemmgr);
 		infostream << "EmergeManager: Created params " << p
 			<< " for thread " << i << std::endl;
 		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, params, p));
@@ -348,6 +355,13 @@ bool EmergeManager::enqueueBlockEmergeEx(
 }
 
 
+bool EmergeManager::isBlockInQueue(v3s16 pos)
+{
+	MutexAutoLock queuelock(m_queue_mutex);
+	return m_blocks_enqueued.find(pos) != m_blocks_enqueued.end();
+}
+
+
 //
 // Mapgen-related helper functions
 //
@@ -396,14 +410,7 @@ int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 // TODO(hmmmm): Move this to ServerMap
 bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 {
-#if 0
-	v2s16 p = v2s16((blockpos.X * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2,
-					(blockpos.Y * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2);
-	int ground_level = getGroundLevelAtPoint(p);
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= min(water_level, ground_level);
-#endif
-
-	// Use a simple heuristic; the above method is wildly inaccurate anyway.
+	// Use a simple heuristic
 	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= mgparams->water_level;
 }
 
@@ -415,14 +422,14 @@ bool EmergeManager::pushBlockEmergeData(
 	void *callback_param,
 	bool *entry_already_exists)
 {
-	u16 &count_peer = m_peer_queue_count[peer_requested];
+	u32 &count_peer = m_peer_queue_count[peer_requested];
 
 	if ((flags & BLOCK_EMERGE_FORCE_QUEUE) == 0) {
 		if (m_blocks_enqueued.size() >= m_qlimit_total)
 			return false;
 
 		if (peer_requested != PEER_ID_INEXISTENT) {
-			u16 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
+			u32 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
 				m_qlimit_generate : m_qlimit_diskonly;
 			if (count_peer >= qlimit_peer)
 				return false;
@@ -457,20 +464,18 @@ bool EmergeManager::pushBlockEmergeData(
 
 bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
-	std::map<v3s16, BlockEmergeData>::iterator it;
-	std::unordered_map<u16, u16>::iterator it2;
-
-	it = m_blocks_enqueued.find(pos);
+	auto it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
 		return false;
 
 	*bedata = it->second;
 
-	it2 = m_peer_queue_count.find(bedata->peer_requested);
+	auto it2 = m_peer_queue_count.find(bedata->peer_requested);
 	if (it2 == m_peer_queue_count.end())
 		return false;
 
-	u16 &count_peer = it2->second;
+	u32 &count_peer = it2->second;
+
 	assert(count_peer != 0);
 	count_peer--;
 

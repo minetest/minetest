@@ -13,6 +13,8 @@ on:
       - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -24,6 +26,8 @@ on:
       - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
 
 jobs:
   # This is our minor gcc compiler
@@ -76,7 +80,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-3.9
+          install_linux_deps clang-3.9 gdb
 
       - name: Build
         run: |
@@ -85,9 +89,13 @@ jobs:
           CC: clang-3.9
           CXX: clang++-3.9
 
-      - name: Test
+      - name: Unittest
         run: |
           ./bin/minetest --run-unittests
+
+      - name: Integration test
+        run: |
+          ./util/test_multiplayer.sh
 
   # This is the current clang version
   clang_9:
@@ -124,7 +132,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-9
+          install_linux_deps --old-irr clang-9
 
       - name: Build prometheus-cpp
         run: |
@@ -212,11 +220,14 @@ jobs:
 
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
-    runs-on: windows-2019 
+    runs-on: windows-2019
+    #### Disabled due to Irrlicht switch
+    if: false
+    #### Disabled due to Irrlicht switch
     env:
       VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
 #                    2020.11
-      vcpkg_packages: irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      vcpkg_packages: irrlicht zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
     strategy:
       fail-fast: false
       matrix:

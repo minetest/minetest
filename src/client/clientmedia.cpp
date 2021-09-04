@@ -216,7 +216,6 @@ void ClientMediaDownloader::initialStep(Client *client)
 
 		// This is the first time we use httpfetch, so alloc a caller ID
 		m_httpfetch_caller = httpfetch_caller_alloc();
-		m_httpfetch_timeout = g_settings->getS32("curl_timeout");
 
 		// Set the active fetch limit to curl_parallel_limit or 84,
 		// whichever is greater. This gives us some leeway so that
@@ -258,8 +257,6 @@ void ClientMediaDownloader::initialStep(Client *client)
 				remote->baseurl + MTHASHSET_FILE_NAME;
 			fetch_request.caller = m_httpfetch_caller;
 			fetch_request.request_id = m_httpfetch_next_id; // == i
-			fetch_request.timeout = m_httpfetch_timeout;
-			fetch_request.connect_timeout = m_httpfetch_timeout;
 			fetch_request.method = HTTP_POST;
 			fetch_request.raw_data = required_hash_set;
 			fetch_request.extra_headers.emplace_back(
@@ -432,9 +429,8 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 				fetch_request.url = url;
 				fetch_request.caller = m_httpfetch_caller;
 				fetch_request.request_id = m_httpfetch_next_id;
-				fetch_request.timeout = 0; // no data timeout!
-				fetch_request.connect_timeout =
-					m_httpfetch_timeout;
+				fetch_request.timeout =
+					g_settings->getS32("curl_file_download_timeout");
 				httpfetch_async(fetch_request);
 
 				m_remote_file_transfers.insert(std::make_pair(

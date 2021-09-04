@@ -125,8 +125,6 @@ public:
 			m_animation_force_timer--;
 	}
 
-	void updateCameraOffset(v3s16 camera_offset);
-
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;

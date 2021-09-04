@@ -362,6 +362,14 @@ public:
 
 		for (auto &buffer : m_buffers) {
 			for (SoundBuffer *sb : buffer.second) {
+				alDeleteBuffers(1, &sb->buffer_id);
+
+				ALenum error = alGetError();
+				if (error != AL_NO_ERROR) {
+					warningstream << "Audio: Failed to free stream for "
+						<< buffer.first << ": " << alErrorString(error) << std::endl;
+				}
+
 				delete sb;
 			}
 			buffer.second.clear();
@@ -671,8 +679,8 @@ public:
 
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
-		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
+		alSource3f(sound->source_id, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
+		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 10.0f);
 	}
 
 	bool updateSoundGain(int id, float gain)

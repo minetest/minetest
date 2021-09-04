@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-04 16:41+0000\n"
-"Last-Translator: f0roots <f0rootss@gmail.com>\n"
+"POT-Creation-Date: 2021-06-16 18:27+0200\n"
+"PO-Revision-Date: 2021-04-28 01:32+0000\n"
+"Last-Translator: Nicolae Crefelean <kneekoo@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
 "Language: ro\n"
@@ -13,7 +13,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
+
+#: builtin/client/chatcommands.lua
+msgid "Clear the out chat queue"
+msgstr ""
+
+#: builtin/client/chatcommands.lua
+#, fuzzy
+msgid "Empty command."
+msgstr "Comenzi de chat"
+
+#: builtin/client/chatcommands.lua
+#, fuzzy
+msgid "Exit to main menu"
+msgstr "Ieși în Meniu"
+
+#: builtin/client/chatcommands.lua
+#, fuzzy
+msgid "Invalid command: "
+msgstr "Comandă locală"
+
+#: builtin/client/chatcommands.lua
+msgid "Issued command: "
+msgstr ""
+
+#: builtin/client/chatcommands.lua
+#, fuzzy
+msgid "List online players"
+msgstr "Jucător singur"
+
+#: builtin/client/chatcommands.lua
+#, fuzzy
+msgid "Online players: "
+msgstr "Jucător singur"
+
+#: builtin/client/chatcommands.lua
+msgid "The out chat queue is now empty."
+msgstr ""
+
+#: builtin/client/chatcommands.lua
+msgid "This command is disabled by server."
+msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +64,41 @@ msgstr "Reînviere"
 msgid "You died"
 msgstr "Ai murit"
 
+#: builtin/client/death_formspec.lua
+#, fuzzy
+msgid "You died."
+msgstr "Ai murit"
+
+#: builtin/common/chatcommands.lua
+#, fuzzy
+msgid "Available commands:"
+msgstr "Comandă locală"
+
+#: builtin/common/chatcommands.lua
+#, fuzzy
+msgid "Available commands: "
+msgstr "Comandă locală"
+
+#: builtin/common/chatcommands.lua
+msgid "Command not available: "
+msgstr ""
+
+#: builtin/common/chatcommands.lua
+msgid "Get help for commands"
+msgstr ""
+
+#: builtin/common/chatcommands.lua
+msgid ""
+"Use '.help <cmd>' to get more information, or '.help all' to list everything."
+msgstr ""
+
+#: builtin/common/chatcommands.lua
+msgid "[all | <cmd>]"
+msgstr ""
+
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -41,15 +114,11 @@ msgstr "Meniul principal"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Reconectează-te"
+msgstr "Reconectare"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Serverul cere o reconectare :"
-
-#: builtin/mainmenu/common.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Se încarcă..."
+msgstr "Serverul cere o reconectare:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -61,23 +130,18 @@ msgstr "Serverul forțează versiunea protocolului $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Acest Server suporta versiunile protocolului intre $1 si $2. "
-
-#: builtin/mainmenu/common.lua
-msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
-"Încercați să activați lista de servere publică și să vă verificați "
-"conexiunea la internet."
+msgstr "Serverul permite versiuni ale protocolului între $1 și $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Suportam doar versiunea de protocol $1."
+msgstr "Permitem doar versiunea de protocol $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Acceptăm versiuni de protocol între versiunea 1$ și 2$."
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -87,7 +151,8 @@ msgstr "Acceptăm versiuni de protocol între versiunea 1$ și 2$."
 msgid "Cancel"
 msgstr "Anulează"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Dependențe:"
 
@@ -97,7 +162,7 @@ msgstr "Dezactivează toate"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Dezactiveaza pachet mod"
+msgstr "Dezactivează modpack-ul"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -105,7 +170,7 @@ msgstr "Activează tot"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Activeaza pachet mod"
+msgstr "Activează modpack-ul"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -117,7 +182,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Găsește mai multe modificări"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -161,25 +226,64 @@ msgid "enabled"
 msgstr "activat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "„$1” există deja. Doriți s-o suprascrieți?"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Dependențele $1 și $2 vor fi instalate."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+"$1 în descărcare,\n"
+"$2 în așteptare"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 downloading..."
+msgstr "$1 se descarcă..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 are dependințe care nu sunt disponibile."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 va fi instalat, iar $2 dependințe vor fi ignorate."
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Toate pachetele"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Already installed"
+msgstr "Deja instalată"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "Înapoi la meniul principal"
+msgstr "Meniul principal"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Base Game:"
+msgstr "Jocul de bază:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB nu este disponibilă când Minetest e compilat fără cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Se încarcă..."
+msgstr "Descărcare..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr "Nu a putut descărca $1"
+msgstr "Nu s-a putut descărca $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -191,9 +295,17 @@ msgid "Install"
 msgstr "Instalează"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Install $1"
+msgstr "Instalează $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Install missing dependencies"
+msgstr "Instalează dependințele opționale"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Moduri"
+msgstr "Modificări"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -201,16 +313,31 @@ msgstr "Nu s-au putut prelua pachete"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Fara rezultate"
+msgstr "Fără rezultate"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Caută"
+msgid "No updates"
+msgstr "Nu există actualizări"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Not found"
+msgstr "Indisponibile"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Suprascrie"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr "Verificați dacă jocul de bază este corect."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "Queued"
+msgstr "În așteptare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr "Pachete de textură"
+msgstr "Pachete de texturi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -221,79 +348,76 @@ msgid "Update"
 msgstr "Actualizare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View more information in a web browser"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "O lume cu numele \"$1\" deja există"
+msgstr "Deja există o lume numită \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Teren suplimentar"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr "Altitudine de frisoane"
+msgstr "Răcire la altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Altitudine de frisoane"
+msgstr "Ariditate la altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Biome zgomot"
+msgstr "Amestec de biom"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Biome zgomot"
+msgstr "Biomuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Pragul cavernei"
+msgstr "Caverne"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Octava"
+msgstr "Peșteri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Creează"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Informații:"
+msgstr "Decorațiuni"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Descărcați un joc, cum ar fi Minetest Game, de pe minetest.net"
+msgstr "Descărcați un joc, precum Minetest Game, de pe minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
 msgstr "Descărcați unul de pe minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Zgomotul temnițelor"
+msgstr "Temnițe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Teren plat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Mase de teren plutitoare în cer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Terenuri plutitoare (experimental)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -301,27 +425,28 @@ msgstr "Joc"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generare terenuri fără fracturi: Oceane și sub pământ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Dealuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Râuri umede"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Mărește umiditea în jurul râurilor"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lacuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Umiditatea redusă și căldura ridicată cauzează râuri superficiale sau uscate"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -332,21 +457,20 @@ msgid "Mapgen flags"
 msgstr "Steagurile Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Steaguri specifice Mapgen V5"
+msgstr "Steaguri specifice Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Munți"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Curgere de noroi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Rețea de tunele și peșteri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -354,20 +478,19 @@ msgstr "Nici un joc selectat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Reduce căldura cu altitudinea"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Reduce umiditatea cu altitudinea"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Zgomotul râului"
+msgstr "Râuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Râuri la nivelul mării"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -376,51 +499,51 @@ msgstr "Seminţe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Tranziție lină între biomi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Structuri care apar pe teren (fără efect asupra copacilor și a ierbii de "
+"junglă creați de v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Structuri care apar pe teren, tipic copaci și plante"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperat, Deșert"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperat, Deșert, Junglă"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperat, Deșert, Junglă, Tundră, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Eroziunea suprafeței terenului"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Copaci și iarbă de junglă"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Adâncimea râului variază"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Caverne foarte mari adânc în pământ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr ""
-"Avertisment: Testul de dezvoltare minimă este destinat dezvoltatorilor."
+msgstr "Avertisment: Testul de dezvoltare este destinat dezvoltatorilor."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -484,7 +607,7 @@ msgstr "< Înapoi la pagina de setări"
 msgid "Browse"
 msgstr "Navighează"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
 msgstr "Dezactivat"
 
@@ -527,6 +650,10 @@ msgstr "Restabilește valori implicite"
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
 msgstr "Scală"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "Caută"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -645,6 +772,55 @@ msgstr "Imposibil de instalat un mod ca $1"
 msgid "Unable to install a modpack as a $1"
 msgstr "Imposibil de instalat un pachet de moduri ca $ 1"
 
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Se încarcă..."
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Public server list is disabled"
+msgstr "Lista de servere publice este dezactivată"
+
+#: builtin/mainmenu/serverlistmgr.lua
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+"Încercați să activați lista de servere publică și să vă verificați "
+"conexiunea la internet."
+
+#: builtin/mainmenu/tab_about.lua
+msgid "About"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Active Contributors"
+msgstr "Contribuitori activi"
+
+#: builtin/mainmenu/tab_about.lua
+#, fuzzy
+msgid "Active renderer:"
+msgstr "Interval de trimitere obiect e activ"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Developers"
+msgstr "Dezvoltatori de bază"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Open User Data Directory"
+msgstr "Deschide directorul cu datele utilizatorului"
+
+#: builtin/mainmenu/tab_about.lua
+msgid ""
+"Opens the directory that contains user-provided worlds, games, mods,\n"
+"and texture packs in a file manager / explorer."
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Previous Contributors"
+msgstr "Foști contribuitori"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Previous Core Developers"
+msgstr "Dezvoltatori de bază precedenți"
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr "Căutați conținut online"
@@ -685,26 +861,6 @@ msgstr "Dezinstalați pachetul"
 msgid "Use Texture Pack"
 msgstr "Folosiți pachetul de textură"
 
-#: builtin/mainmenu/tab_credits.lua
-msgid "Active Contributors"
-msgstr "Contribuitori activi"
-
-#: builtin/mainmenu/tab_credits.lua
-msgid "Core Developers"
-msgstr "Dezvoltatori de bază"
-
-#: builtin/mainmenu/tab_credits.lua
-msgid "Credits"
-msgstr "Credite"
-
-#: builtin/mainmenu/tab_credits.lua
-msgid "Previous Contributors"
-msgstr "Foști contribuitori"
-
-#: builtin/mainmenu/tab_credits.lua
-msgid "Previous Core Developers"
-msgstr "Dezvoltatori de bază precedenți"
-
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
 msgstr "Anunțare server"
@@ -714,14 +870,10 @@ msgid "Bind Address"
 msgstr "Adresa legată"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Configure"
-msgstr "Configurează"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
 msgstr "Modul Creativ"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
 msgstr "Activează Daune"
 
@@ -735,11 +887,11 @@ msgstr "Găzduiește Server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Instalarea jocurilor din ContentDB"
 
-#: builtin/mainmenu/tab_local.lua
-msgid "Name/Password"
-msgstr "Nume/Parolă"
+#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
+msgid "Name"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -749,13 +901,21 @@ msgstr "Nou"
 msgid "No world created or selected!"
 msgstr "Nicio lume creată sau selectată!"
 
+#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
+msgid "Password"
+msgstr "Parola"
+
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
 msgstr "Joacă jocul"
 
-#: builtin/mainmenu/tab_local.lua
+#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
 msgstr "Port"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Select Mods"
+msgstr "Alege modificările"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -770,45 +930,62 @@ msgid "Start Game"
 msgstr "Începe Jocul"
 
 #: builtin/mainmenu/tab_online.lua
-msgid "Address / Port"
-msgstr "Adresă / Port"
+#, fuzzy
+msgid "Address"
+msgstr "- Adresa: "
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
+msgid "Clear"
+msgstr "Șterge"
+
+#: builtin/mainmenu/tab_online.lua
 msgid "Connect"
 msgstr "Conectează"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Modul Creativ"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Damage enabled"
-msgstr "Daune activate"
+#. ~ PvP = Player versus Player
+#: builtin/mainmenu/tab_online.lua
+#, fuzzy
+msgid "Damage / PvP"
+msgstr "Daune"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Şterge Favorit"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Favorite"
+#: builtin/mainmenu/tab_online.lua
+#, fuzzy
+msgid "Favorites"
 msgstr "Favorit"
+
+#: builtin/mainmenu/tab_online.lua
+msgid "Incompatible Servers"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
 msgstr "Alatură-te jocului"
 
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Name / Password"
-msgstr "Nume / Parolă"
-
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Ping"
 
-#. ~ PvP = Player versus Player
-#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-msgid "PvP enabled"
-msgstr "PvP activat"
+#: builtin/mainmenu/tab_online.lua
+#, fuzzy
+msgid "Public Servers"
+msgstr "Anunțare server"
+
+#: builtin/mainmenu/tab_online.lua
+msgid "Refresh"
+msgstr ""
+
+#: builtin/mainmenu/tab_online.lua
+#, fuzzy
+msgid "Server Description"
+msgstr "Descrierea serverului"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -835,20 +1012,12 @@ msgid "Antialiasing:"
 msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "Eşti sigur că vrei să resetezi lumea proprie ?"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr "Salvează automat dimensiunea ecranului"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
 msgstr "Filtrare Biliniară"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bump Mapping"
-msgstr "Cartografiere cu denivelări"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -858,13 +1027,29 @@ msgstr "Modifică tastele"
 msgid "Connected Glass"
 msgstr "Sticlă conectată"
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Dynamic shadows"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Dynamic shadows: "
+msgstr ""
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "Frunze luxsoase"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normal Maps"
-msgstr "Generați Hărți Normale"
+msgid "High"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Low"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Medium"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -873,10 +1058,6 @@ msgstr "Hartă mip"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "Hartă mip + filtru aniso."
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No"
-msgstr "Nu"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -906,17 +1087,9 @@ msgstr "Frunze opace"
 msgid "Opaque Water"
 msgstr "Apă opacă"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
-msgstr "Ocluzie Parallax"
-
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
 msgstr "Particule"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Reset singleplayer world"
-msgstr "Resetează lume proprie"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -929,6 +1102,10 @@ msgstr "Setări"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Umbră"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Shaders (experimental)"
+msgstr "Shadere (experimental)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -963,6 +1140,14 @@ msgid "Trilinear Filter"
 msgstr "Filtrare Triliniară"
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "Ultra High"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Very Low"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
 msgstr "Frunze legănătoare"
 
@@ -973,22 +1158,6 @@ msgstr "Fluturarea lichidelor"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Plante legănătoare"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Da"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Config mods"
-msgstr "Configurează moduri"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Main"
-msgstr "Principal"
-
-#: builtin/mainmenu/tab_simple_main.lua
-msgid "Start Singleplayer"
-msgstr "Începeți Jucător singur"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -1049,18 +1218,6 @@ msgstr "Fișierul cu parolă nu a putut fi deschis: "
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
 msgstr "Calea aprovizionată a lumii nu există: "
-
-#. ~ DO NOT TRANSLATE THIS LITERALLY!
-#. This is a special string. Put either "no" or "yes"
-#. into the translation field (literally).
-#. Choose "yes" if the language requires use of the fallback
-#. font, "no" otherwise.
-#. The fallback font is (normally) required for languages with
-#. non-Latin script, like Chinese.
-#. When in doubt, test your translation.
-#: src/client/fontengine.cpp
-msgid "needs_fallback_font"
-msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
@@ -1151,30 +1308,30 @@ msgid ""
 "- %s: move backwards\n"
 "- %s: move left\n"
 "- %s: move right\n"
-"- %s: jump/climb\n"
-"- %s: sneak/go down\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
 "- %s: drop item\n"
 "- %s: inventory\n"
 "- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
 "Controale:\n"
-"-%s: deplasați înainte\n"
-"-%s: deplasați înapoi\n"
-"-%s: deplasați spre stânga\n"
-"-%s: deplasați spre dreapta\n"
-"-%s: salt / urcare\n"
-"-%s: strecurați / coborâți\n"
-"-%s: aruncați element\n"
-"-%s: inventar\n"
-"- Mouse: rotiți / priviți\n"
-"- Mouse stânga: săpați / pocniți\n"
-"- Mouse dreapta: plasați / utilizare\n"
-"- Roată mousului: selectează elementul\n"
-"-%s: chat\n"
+"- %s: deplasare înainte\n"
+"- %s: deplasare înapoi\n"
+"- %s: deplasare stânga\n"
+"- %s: deplasare dreapta\n"
+"- %s: salt/urcare\n"
+"- %s: săpare/lovire\n"
+"- %s: plasare/utilizare\n"
+"- %s: furișare/coborâre\n"
+"- %s: aruncare obiect\n"
+"- %s: inventar\n"
+"- Maus: rotire/privire\n"
+"- Roata mausului: selectare obiect\n"
+"- %s: chat\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1305,32 +1462,9 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "Hartă mip dezactivată de joc sau mod"
 
 #: src/client/game.cpp
-msgid "Minimap hidden"
-msgstr "Hartă mip ascunsă"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x1"
-msgstr "Hartă mip în modul radar, Zoom x1"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x2"
-msgstr "Hartă mip în modul radar, Zoom x2"
-
-#: src/client/game.cpp
-msgid "Minimap in radar mode, Zoom x4"
-msgstr "Hartă mip în modul radar, Zoom x4"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x1"
-msgstr "Hartă mip în modul de suprafață, Zoom x1"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x2"
-msgstr "Hartă mip în modul de suprafață, Zoom x2"
-
-#: src/client/game.cpp
-msgid "Minimap in surface mode, Zoom x4"
-msgstr "Hartă mip în modul de suprafață, Zoom x4"
+#, fuzzy
+msgid "Multiplayer"
+msgstr "Jucător singur"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1394,11 +1528,11 @@ msgstr "Sunet dezactivat"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Sistem audio dezactivat"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Sistemul audio nu e suportat în această construcție"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1472,10 +1606,6 @@ msgstr "Înapoi"
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Majuscule"
-
-#: src/client/keycode.cpp
-msgid "Clear"
-msgstr "Șterge"
 
 #: src/client/keycode.cpp
 msgid "Control"
@@ -1724,6 +1854,24 @@ msgstr "X Butonul 2"
 msgid "Zoom"
 msgstr "Mărire"
 
+#: src/client/minimap.cpp
+msgid "Minimap hidden"
+msgstr "Hartă mip ascunsă"
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in radar mode, Zoom x%d"
+msgstr "Mini hartă în modul radar, Zoom %dx"
+
+#: src/client/minimap.cpp
+#, c-format
+msgid "Minimap in surface mode, Zoom x%d"
+msgstr "Mini hartă în modul de suprafață, Zoom %dx"
+
+#: src/client/minimap.cpp
+msgid "Minimap in texture mode"
+msgstr "Mini hartă în modul de textură"
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Parolele nu se potrivesc!"
@@ -1753,7 +1901,8 @@ msgid "Proceed"
 msgstr "Continuă"
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "\"Special\" = climb down"
+#, fuzzy
+msgid "\"Aux1\" = climb down"
 msgstr "\"Special\" = coborâți"
 
 #: src/gui/guiKeyChangeMenu.cpp
@@ -1765,8 +1914,16 @@ msgid "Automatic jumping"
 msgstr "Salt automat"
 
 #: src/gui/guiKeyChangeMenu.cpp
+msgid "Aux1"
+msgstr ""
+
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Înapoi"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Block bounds"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -1858,10 +2015,6 @@ msgid "Sneak"
 msgstr "Furișează"
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Special"
-msgstr "Special"
-
-#: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
 msgstr "Comutați HUD"
 
@@ -1948,9 +2101,10 @@ msgstr ""
 "prima atingere."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"(Android) Use virtual joystick to trigger \"aux\" button.\n"
-"If enabled, virtual joystick will also tap \"aux\" button when out of main "
+"(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
+"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
 "(Android) Utilizați joystick-ul virtual pentru a declanșa butonul \"aux\".\n"
@@ -1999,14 +2153,6 @@ msgstr ""
 "o insulă, setați toate cele 3 numere egale pentru forma brută."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"0 = parallax occlusion with slope information (faster).\n"
-"1 = relief mapping (slower, more accurate)."
-msgstr ""
-"0 = ocluzia de paralax cu informații despre panta (mai rapid).\n"
-"1 = mapare în relief (mai lentă, mai exactă)."
-
-#: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
 msgstr "Zgomot 2D care controlează forma/dimensiunea munților crestați."
 
@@ -2045,7 +2191,7 @@ msgstr "Mod 3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
-msgstr ""
+msgstr "Mod 3D putere paralaxă"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2066,6 +2212,10 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"Zgomot 3D care definește structura insulelor plutitoare (floatlands).\n"
+"Dacă este modificată valoarea implicită, 'scala' (0.7) ar putea trebui\n"
+"să fie ajustată, formarea floatland funcționează optim cu un zgomot\n"
+"în intervalul aproximativ -2.0 până la 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2133,9 +2283,12 @@ msgid "ABM interval"
 msgstr "Interval ABM"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
+msgid "ABM time budget"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "Limita absolută a cozilor emergente"
+msgstr "Limita absolută a cozilor de blocuri procesate"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2192,6 +2345,13 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Ajustează densitatea stratului de insule plutitoare.\n"
+"Mărește valoarea pentru creșterea densității. Poate fi pozitivă sau "
+"negativă.\n"
+"Valoarea = 0.0: 50% din volum este insulă plutitoare.\n"
+"Valoarea = 2.0 (poate fi mai mare în funcție de 'mgv7_np_floatland'; "
+"testați\n"
+"pentru siguranță) va crea un strat solid de insulă plutitoare."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2315,6 +2475,15 @@ msgid "Autoscaling mode"
 msgstr "Mod scalare automată"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Aux1 key"
+msgstr "Tasta de salt"
+
+#: src/settings_translation_file.cpp
+msgid "Aux1 key for climbing/descending"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "Tastă înapoi"
 
@@ -2359,10 +2528,6 @@ msgid "Biome noise"
 msgstr "Biome zgomot"
 
 #: src/settings_translation_file.cpp
-msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr "Biți per pixel (aka adâncime de culoare) în modul ecran complet."
-
-#: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Distanță de optimizare trimitere bloc"
 
@@ -2391,10 +2556,6 @@ msgid "Builtin"
 msgstr "Incorporat"
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr "Hartă pentru Denivelări"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2413,88 +2574,84 @@ msgstr "Netezirea camerei"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Cameră fluidă în modul cinematic"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Tasta de comutare a actualizării camerei"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr ""
+msgstr "Zgomotul peșterilor"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Zgomotul 1 al peșterilor"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Zgomotul 2 al peșterilor"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "Lățime peșteri"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr ""
+msgstr "Zgomot peșteri1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr ""
+msgstr "Zgomot peșteri2"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
-msgstr ""
+msgstr "Limita cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr ""
+msgstr "Zgomotul cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr ""
+msgstr "Subțiere caverne"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr "Pragul cavernei"
+msgstr "Pragul cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
-msgstr ""
+msgstr "Limita superioară a cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Centrul razei de amplificare a curbei de lumină.\n"
+"Aici 0.0 este nivelul minim de lumină, iar 1.0 este nivelul maxim."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Changes the main menu UI:\n"
-"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
-"etc.\n"
-"-   Simple: One singleplayer world, no game or texture pack choosers. May "
-"be\n"
-"necessary for smaller screens."
-msgstr ""
+#, fuzzy
+msgid "Chat command time message threshold"
+msgstr "Pragul de lansare a mesajului de chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr ""
+msgstr "Dimensiunea fontului din chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Tasta de chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Cheia de comutare a chatului"
+msgstr "Nivelul de raportare în chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
-msgstr ""
+msgstr "Limita mesajelor din chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message format"
@@ -2506,7 +2663,7 @@ msgstr "Pragul de lansare a mesajului de chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Lungimea maximă a unui mesaj din chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
@@ -2518,7 +2675,7 @@ msgstr "Comenzi de chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Dimensiunea unui chunk"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -2530,7 +2687,7 @@ msgstr "Tasta modului cinematografic"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "Texturi transparente curate"
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2538,7 +2695,7 @@ msgstr "Client"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Client și server"
 
 #: src/settings_translation_file.cpp
 msgid "Client modding"
@@ -2550,11 +2707,11 @@ msgstr "Restricții de modificare de partea clientului"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Restricția razei de căutare a nodurilor în clienți"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Viteza escaladării"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
@@ -2566,7 +2723,7 @@ msgstr "Nori"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Norii sunt un efect pe client."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2574,6 +2731,11 @@ msgstr "Nori in meniu"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
+msgstr "Ceaţă colorată"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Colored shadows"
 msgstr "Ceaţă colorată"
 
 #: src/settings_translation_file.cpp
@@ -2586,12 +2748,22 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Listă separată de virgule cu etichete de ascuns din depozitul de conținut.\n"
+"\"nonfree\" se poate folosi pentru ascunderea pachetelor care nu sunt "
+"'software liber',\n"
+"conform definiției Free Software Foundation.\n"
+"Puteți specifica și clasificarea conținutului.\n"
+"Aceste etichete nu depind de versiunile Minetest.\n"
+"Puteți vedea lista completă la https://content.minetest.net/help/"
+"content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Listă separată de virgule, cu modificări care au acces la API-uri HTTP,\n"
+"care la permit încărcarea și descărcarea de date în/din internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2629,6 +2801,10 @@ msgstr "Înalţime consolă"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ContentDB Max Concurrent Downloads"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2688,7 +2864,9 @@ msgid "Crosshair alpha"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair alpha (opaqueness, between 0 and 255)."
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2696,7 +2874,9 @@ msgid "Crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Crosshair color (R,G,B)."
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2758,14 +2938,14 @@ msgid "Default report format"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "Jocul implicit"
+msgstr "Dimensiunea implicită a stivei"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Default timeout for cURL, stated in milliseconds.\n"
-"Only has an effect if compiled with cURL."
+"Define shadow filtering quality\n"
+"This simulates the soft shadows effect by applying a PCF or poisson disk\n"
+"but also uses more resources."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2794,12 +2974,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Defines sampling step of texture.\n"
-"A higher value results in smoother normal maps."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2873,6 +3047,10 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Dig key"
+msgstr "Tasta pentru săpat"
+
+#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Particule pentru săpare"
 
@@ -2929,11 +3107,17 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enable colored shadows. \n"
+"On true translucent nodes cast colored shadows. This is expensive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable console window"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for new created maps."
+msgid "Enable creative mode for all players"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2950,6 +3134,13 @@ msgstr "Activați securitatea modului"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable poisson disk filtering.\n"
+"On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
+"filtering."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3021,32 +3212,12 @@ msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
-"texture pack\n"
-"or need to be auto-generated.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
 msgstr "Activează minimap."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables on the fly normalmap generation (Emboss effect).\n"
-"Requires bumpmapping to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables parallax occlusion mapping.\n"
-"Requires shaders to be enabled."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3066,12 +3237,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Experimental option, might cause visible spaces between blocks\n"
-"when set to higher number than 0."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Exponent of the floatland tapering. Alters the tapering behaviour.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
@@ -3081,7 +3246,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS in pause menu"
+msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3101,18 +3266,6 @@ msgid "Fallback font path"
 msgstr "Cale font de rezervă"
 
 #: src/settings_translation_file.cpp
-msgid "Fallback font shadow"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fallback font shadow alpha"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fallback font size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Fast key"
 msgstr ""
 
@@ -3130,7 +3283,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Fast movement (via the \"special\" key).\n"
+"Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
 
@@ -3164,9 +3317,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
-"which PNG optimizers usually discard, sometimes resulting in a dark or\n"
-"light edge to transparent textures. Apply this filter to clean that up\n"
-"at texture load time."
+"which PNG optimizers usually discard, often resulting in dark or\n"
+"light edges to transparent textures. Apply a filter to clean that up\n"
+"at texture load time. This is automatically enabled if mipmapping is enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3202,9 +3355,8 @@ msgid "Floatland minimum Y"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "Zgomotul solului"
+msgstr "Sunetul insulelor plutitoare"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland taper exponent"
@@ -3260,10 +3412,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the default font in point (pt)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Font size of the fallback font in point (pt)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3364,10 +3512,6 @@ msgid "Full screen"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Full screen BPP"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
 msgstr ""
 
@@ -3381,10 +3525,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Generate normalmaps"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3441,8 +3581,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
-"-    legacy: (try to) mimic old behaviour (default for release).\n"
-"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 
@@ -3464,7 +3604,8 @@ msgid "Heat noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Height component of the initial window size."
+msgid ""
+"Height component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3473,10 +3614,6 @@ msgstr "Zgomot de înălțime"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "High-precision FPU"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3710,8 +3847,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If disabled, \"special\" key is used to fly fast if both fly and fast mode "
-"are\n"
+"If disabled, \"Aux1\" key is used to fly fast if both fly and fast mode are\n"
 "enabled."
 msgstr ""
 
@@ -3733,8 +3869,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, \"special\" key instead of \"sneak\" key is used for climbing "
-"down and\n"
+"If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
+"and\n"
 "descending."
 msgstr ""
 
@@ -3776,6 +3912,12 @@ msgid ""
 "If the CSM restriction for node range is enabled, get_node calls are "
 "limited\n"
 "to this distance from the player to the node."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If the execution of a chat command takes longer than this specified time in\n"
+"seconds, add the time information to the chat command message"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3909,6 +4051,10 @@ msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Joystick deadzone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
 msgstr ""
 
@@ -3983,6 +4129,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for decreasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4082,6 +4235,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the inventory.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4644,20 +4804,20 @@ msgid "Main menu script"
 msgstr "Scriptul meniului principal"
 
 #: src/settings_translation_file.cpp
-msgid "Main menu style"
-msgstr "Stilul meniului principal"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
+msgid "Makes all liquids opaque"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4717,6 +4877,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map update time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4824,7 +4988,11 @@ msgid "Maximum FPS"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum FPS when game is paused."
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum distance to render shadows."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4870,6 +5038,13 @@ msgstr ""
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4926,7 +5101,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum time in ms a file download (e.g. a mod download) may take."
+msgid ""
+"Maximum time a file download (e.g. a mod download) may take, stated in "
+"milliseconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum time an interactive request (e.g. server list fetch) may take, "
+"stated in milliseconds."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5102,14 +5285,6 @@ msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Normalmaps sampling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Normalmaps strength"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
 msgstr ""
 
@@ -5135,10 +5310,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Number of parallax occlusion iterations."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Online Content Repository"
 msgstr ""
 
@@ -5153,42 +5324,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Open the pause menu when the window's focus is lost. Does not pause if a "
 "formspec is\n"
 "open."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Overall scale of parallax occlusion effect."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion bias"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion iterations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax occlusion scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5257,6 +5395,14 @@ msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Place key"
+msgstr "Tasta de plasare"
+
+#: src/settings_translation_file.cpp
+msgid "Place repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
@@ -5273,6 +5419,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Player versus player"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Poisson filtering"
+msgstr "Filtrare Biliniară"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5410,10 +5561,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "Tasta dreapta"
-
-#: src/settings_translation_file.cpp
-msgid "Rightclick repetition interval"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
@@ -5614,6 +5761,40 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the shadow strength.\n"
+"Lower value means lighter shadows, higher value means darker shadows."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set the shadow update time.\n"
+"Lower value means shadows and map updates faster, but it consume more "
+"resources.\n"
+"Minimun value 0.001 seconds max value 0.2 seconds"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set the soft shadow radius size.\n"
+"Lower values mean sharper shadows bigger values softer.\n"
+"Minimun value 1.0 and max value 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set the tilt of Sun/Moon orbit in degrees\n"
+"Value of 0 means no tilt / vertical orbit.\n"
+"Minimun value 0.0 and max value 60.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to enable Shadow Mapping.\n"
+"Requires shaders to be enabled."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5631,6 +5812,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Sets shadow texture quality to 32 bits.\n"
+"On false, 16 bits texture will be used.\n"
+"This can cause much more artifacts in the shadow."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shader path"
 msgstr "Calea shaderului"
 
@@ -5643,15 +5831,30 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Shadow filter quality"
+msgstr "Calitatea capturii de ecran"
+
+#: src/settings_translation_file.cpp
+msgid "Shadow map max distance in nodes to render shadows"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Shadow map texture in 32 bits"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Shadow map texture size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Shadow offset (in pixels) of the default font. If 0, then shadow will not be "
 "drawn."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Shadow offset (in pixels) of the fallback font. If 0, then shadow will not "
-"be drawn."
+msgid "Shadow strength"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5664,6 +5867,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Show nametag backgrounds by default"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5685,6 +5898,10 @@ msgid ""
 "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Sky Body Orbit Tilt"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5742,15 +5959,12 @@ msgid "Sneaking speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Soft shadow radius"
+msgstr "Rază nori"
+
+#: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Special key"
-msgstr "Cheie specială"
-
-#: src/settings_translation_file.cpp
-msgid "Special key for climbing/descending"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5793,10 +6007,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strength of 3D mode parallax."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Strength of generated normalmaps."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5880,6 +6090,13 @@ msgstr "Calea texturii"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Texture size to render the shadow map on.\n"
+"This must be a power of two.\n"
+"Bigger numbers create better shadowsbut it is also more expensive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Textures on a node may be aligned either to the node or to the world.\n"
 "The former mode suits better things like machines, furniture, etc., while\n"
 "the latter makes stairs and microblocks fit surroundings better.\n"
@@ -5890,6 +6107,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The deadzone of the joystick"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5947,12 +6168,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The rendering back-end for Irrlicht.\n"
+"The rendering back-end.\n"
 "A restart is required after changing this.\n"
 "Note: On Android, stick with OGLES1 if unsure! App may fail to start "
 "otherwise.\n"
-"On other platforms, OpenGL is recommended, and it’s the only driver with\n"
-"shader support currently."
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5978,15 +6199,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The time in seconds it takes between repeated right clicks when holding the "
-"right\n"
-"mouse button."
+"The time in seconds it takes between repeated node placements when holding\n"
+"the place button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6122,6 +6348,17 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
+"but it doesn't affect the insides of textures\n"
+"(which is especially noticeable with transparent textures).\n"
+"Visible spaces appear between nodes when shaders are disabled.\n"
+"If set to 0, MSAA is disabled.\n"
+"A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
@@ -6218,7 +6455,7 @@ msgid "Viewing range"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Virtual joystick triggers aux button"
+msgid "Virtual joystick triggers Aux1 button"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6309,9 +6546,8 @@ msgid ""
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
 "interpolation to preserve crisp pixels. This sets the minimum texture size\n"
 "for the upscaled textures; higher values look sharper, but require more\n"
-"memory.  Powers of 2 are recommended. Setting this higher than 1 may not\n"
-"have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
-"enabled.\n"
+"memory.  Powers of 2 are recommended. This setting is ONLY applies if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
@@ -6321,6 +6557,12 @@ msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled "
 "in.\n"
 "If disabled, bitmap and XML vectors fonts are used instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether nametag backgrounds should be shown by default.\n"
+"Mods may still set a background."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6361,7 +6603,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Width component of the initial window size."
+msgid "Width component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6446,32 +6688,86 @@ msgid "Y-level of seabed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when saving mapblocks to disk.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"ZLib compression level to use when sending mapblocks to the client.\n"
+"-1 - Zlib's default compression level\n"
+"0 - no compresson, fastest\n"
+"9 - best compression, slowest\n"
+"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "cURL interactive timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr ""
 
-#: src/settings_translation_file.cpp
-msgid "cURL timeout"
-msgstr ""
+#~ msgid ""
+#~ "0 = parallax occlusion with slope information (faster).\n"
+#~ "1 = relief mapping (slower, more accurate)."
+#~ msgstr ""
+#~ "0 = ocluzia de paralax cu informații despre panta (mai rapid).\n"
+#~ "1 = mapare în relief (mai lentă, mai exactă)."
 
-#, fuzzy
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Intră pe rapid"
+#~ msgid "Address / Port"
+#~ msgstr "Adresă / Port"
 
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Selectează Fișierul Modului:"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Eşti sigur că vrei să resetezi lumea proprie ?"
 
-#, fuzzy
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Activează Daune"
+#~ msgid "Back"
+#~ msgstr "Înapoi"
 
-#, fuzzy
-#~ msgid "Enable VBO"
-#~ msgstr "Activează MP"
+#~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
+#~ msgstr "Biți per pixel (aka adâncime de culoare) în modul ecran complet."
+
+#~ msgid "Bump Mapping"
+#~ msgstr "Cartografiere cu denivelări"
+
+#~ msgid "Bumpmapping"
+#~ msgstr "Hartă pentru Denivelări"
+
+#~ msgid ""
+#~ "Changes the main menu UI:\n"
+#~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
+#~ "chooser, etc.\n"
+#~ "-   Simple: One singleplayer world, no game or texture pack choosers. May "
+#~ "be\n"
+#~ "necessary for smaller screens."
+#~ msgstr ""
+#~ "Modifică interfața meniului principal:\n"
+#~ "-   Complet:  Lumi multiple singleplayer, selector de joc, selector de "
+#~ "texturi etc.\n"
+#~ "-   Simplu:  Doar o lume singleplayer, fără selectoare de joc sau "
+#~ "texturi.\n"
+#~ "Poate fi necesar pentru ecrane mai mici."
+
+#~ msgid "Config mods"
+#~ msgstr "Configurează moduri"
+
+#~ msgid "Configure"
+#~ msgstr "Configurează"
+
+#~ msgid "Credits"
+#~ msgstr "Credite"
+
+#~ msgid "Damage enabled"
+#~ msgstr "Daune activate"
 
 #, fuzzy
 #~ msgid "Darkness sharpness"
@@ -6480,8 +6776,78 @@ msgstr ""
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Se descarca si se instaleaza $ 1, vă rugăm să așteptați ..."
 
-#~ msgid "Back"
-#~ msgstr "Înapoi"
+#, fuzzy
+#~ msgid "Enable VBO"
+#~ msgstr "Activează MP"
+
+#, fuzzy
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Activează Daune"
+
+#~ msgid "Generate Normal Maps"
+#~ msgstr "Generați Hărți Normale"
+
+#~ msgid "Main"
+#~ msgstr "Principal"
+
+#~ msgid "Main menu style"
+#~ msgstr "Stilul meniului principal"
+
+#~ msgid "Minimap in radar mode, Zoom x2"
+#~ msgstr "Hartă mip în modul radar, Zoom x2"
+
+#~ msgid "Minimap in radar mode, Zoom x4"
+#~ msgstr "Hartă mip în modul radar, Zoom x4"
+
+#~ msgid "Minimap in surface mode, Zoom x2"
+#~ msgstr "Hartă mip în modul de suprafață, Zoom x2"
+
+#~ msgid "Minimap in surface mode, Zoom x4"
+#~ msgstr "Hartă mip în modul de suprafață, Zoom x4"
+
+#~ msgid "Name / Password"
+#~ msgstr "Nume / Parolă"
+
+#~ msgid "Name/Password"
+#~ msgstr "Nume/Parolă"
+
+#~ msgid "No"
+#~ msgstr "Nu"
 
 #~ msgid "Ok"
 #~ msgstr "Ok"
+
+#~ msgid "Parallax Occlusion"
+#~ msgstr "Ocluzie Parallax"
+
+#~ msgid "PvP enabled"
+#~ msgstr "PvP activat"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Resetează lume proprie"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Selectează Fișierul Modului:"
+
+#~ msgid "Special"
+#~ msgstr "Special"
+
+#~ msgid "Special key"
+#~ msgstr "Cheie specială"
+
+#~ msgid "Start Singleplayer"
+#~ msgstr "Începeți Jucător singur"
+
+#, fuzzy
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Intră pe rapid"
+
+#~ msgid "View"
+#~ msgstr "Vizualizare"
+
+#~ msgid "Yes"
+#~ msgstr "Da"
+
+#~ msgid "needs_fallback_font"
+#~ msgstr "no"

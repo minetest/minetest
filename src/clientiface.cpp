@@ -452,9 +452,6 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		case CSE_Hello:
 			m_state = CS_HelloSent;
 			break;
-		case CSE_InitLegacy:
-			m_state = CS_AwaitingInit2;
-			break;
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
 			break;
@@ -673,7 +670,6 @@ void ClientInterface::UpdatePlayerList()
 	if (m_env) {
 		std::vector<session_t> clients = getClientIDs();
 		m_clients_names.clear();
-
 
 		if (!clients.empty())
 			infostream<<"Players:"<<std::endl;

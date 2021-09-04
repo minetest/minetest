@@ -61,12 +61,8 @@ void ServerModManager::loadMods(ServerScripting *script)
 	infostream << std::endl;
 	// Load and run "mod" scripts
 	for (const ModSpec &mod : m_sorted_mods) {
-		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			throw ModError("Error loading mod \"" + mod.name +
-					"\": Mod name does not follow naming "
-					"conventions: "
-					"Only characters [a-z0-9_] are allowed.");
-		}
+		mod.checkAndLog();
+
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		auto t = porting::getTimeMs();
 		script->loadMod(script_path, mod.name);
@@ -98,7 +94,8 @@ void ServerModManager::getModNames(std::vector<std::string> &modlist) const
 
 void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 {
-	for (const ModSpec &spec : m_sorted_mods) {
+	for (auto it = m_sorted_mods.crbegin(); it != m_sorted_mods.crend(); it++) {
+		const ModSpec &spec = *it;
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "textures");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "sounds");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "media");

@@ -3,6 +3,7 @@ _G.core = {}
 _G.setfenv = require 'busted.compatibility'.setfenv
 
 dofile("builtin/common/serialize.lua")
+dofile("builtin/common/vector.lua")
 
 describe("serialize", function()
 	it("works", function()
@@ -52,5 +53,17 @@ describe("serialize", function()
 		local test_out = core.deserialize(str, true)
 		assert.is_nil(test_out.func)
 		assert.equals(test_out.foo, "bar")
+	end)
+
+	it("vectors work", function()
+		local v = vector.new(1, 2, 3)
+		assert.same({{x = 1, y = 2, z = 3}}, core.deserialize(core.serialize({v})))
+		assert.same({x = 1, y = 2, z = 3}, core.deserialize(core.serialize(v)))
+
+		-- abuse
+		v = vector.new(1, 2, 3)
+		v.a = "bla"
+		assert.same({x = 1, y = 2, z = 3, a = "bla"},
+				core.deserialize(core.serialize(v)))
 	end)
 end)

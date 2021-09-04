@@ -152,6 +152,7 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			Client *client,
+			gui::IGUIEnvironment *guienv,
 			ISimpleTextureSource *tsrc,
 			ISoundManager *sound_manager,
 			IFormSource* fs_src,
@@ -162,8 +163,9 @@ public:
 	~GUIFormSpecMenu();
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
-		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-		const std::string &formspecPrepend, ISoundManager *sound_manager);
+		gui::IGUIEnvironment *guienv, JoystickController *joystick, IFormSource *fs_src,
+		TextDest *txt_dest, const std::string &formspecPrepend,
+		ISoundManager *sound_manager);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
@@ -253,7 +255,7 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput(FormspecQuitMode quitmode);
+	void acceptInput(FormspecQuitMode quitmode=quit_mode_no);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
 	bool doPause;

@@ -52,7 +52,7 @@ extern FlagDesc flagdesc_ore[];
 
 class Ore : public ObjDef, public NodeResolver {
 public:
-	static const bool NEEDS_NOISE = false;
+	const bool needs_noise;
 
 	content_t c_ore;                  // the node to place
 	std::vector<content_t> c_wherein; // the nodes to be placed in
@@ -68,7 +68,7 @@ public:
 	Noise *noise = nullptr;
 	std::unordered_set<biome_t> biomes;
 
-	Ore() = default;;
+	explicit Ore(bool needs_noise): needs_noise(needs_noise) {}
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
@@ -83,88 +83,81 @@ protected:
 
 class OreScatter : public Ore {
 public:
-	static const bool NEEDS_NOISE = false;
+	OreScatter() : Ore(false) {}
 
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	void generate(MMVManip *vm, int mapseed, u32 blockseed,
+			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
 };
 
 class OreSheet : public Ore {
 public:
-	static const bool NEEDS_NOISE = true;
+	OreSheet() : Ore(true) {}
 
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	u16 column_height_min;
 	u16 column_height_max;
 	float column_midpoint_factor;
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	void generate(MMVManip *vm, int mapseed, u32 blockseed,
+			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
 };
 
 class OrePuff : public Ore {
 public:
-	static const bool NEEDS_NOISE = true;
-
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
 	Noise *noise_puff_top = nullptr;
 	Noise *noise_puff_bottom = nullptr;
 
-	OrePuff() = default;
+	OrePuff() : Ore(true) {}
 	virtual ~OrePuff();
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	void generate(MMVManip *vm, int mapseed, u32 blockseed,
+			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
 };
 
 class OreBlob : public Ore {
 public:
-	static const bool NEEDS_NOISE = true;
+	ObjDef *clone() const override;
 
-	ObjDef *clone() const;
-
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	OreBlob() : Ore(true) {}
+	void generate(MMVManip *vm, int mapseed, u32 blockseed,
+			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
 };
 
 class OreVein : public Ore {
 public:
-	static const bool NEEDS_NOISE = true;
-
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	float random_factor;
 	Noise *noise2 = nullptr;
 	int sizey_prev = 0;
 
-	OreVein() = default;
+	OreVein() : Ore(true) {}
 	virtual ~OreVein();
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	void generate(MMVManip *vm, int mapseed, u32 blockseed,
+			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
 };
 
 class OreStratum : public Ore {
 public:
-	static const bool NEEDS_NOISE = false;
-
-	ObjDef *clone() const;
+	ObjDef *clone() const override;
 
 	NoiseParams np_stratum_thickness;
 	Noise *noise_stratum_thickness = nullptr;
 	u16 stratum_thickness;
 
-	OreStratum() = default;
+	OreStratum() : Ore(false) {}
 	virtual ~OreStratum();
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	void generate(MMVManip *vm, int mapseed, u32 blockseed,
+			v3s16 nmin, v3s16 nmax, biome_t *biomemap) override;
 };
 
 class OreManager : public ObjDefManager {

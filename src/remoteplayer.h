@@ -44,8 +44,6 @@ public:
 	RemotePlayer(const char *name, IItemDefManager *idef);
 	virtual ~RemotePlayer() = default;
 
-	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
-
 	PlayerSAO *getPlayerSAO() { return m_sao; }
 	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
 
@@ -142,14 +140,6 @@ public:
 	void onSuccessfulSave();
 
 private:
-	/*
-		serialize() writes a bunch of text that can contain
-		any characters except a '\0', and such an ending that
-		deSerialize stops reading exactly at the right point.
-	*/
-	void serialize(std::ostream &os);
-	void serializeExtraAttributes(std::string &output);
-
 	PlayerSAO *m_sao = nullptr;
 	bool m_dirty = false;
 
