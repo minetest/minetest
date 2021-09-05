@@ -415,7 +415,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				layer.Texture = shadow->get_texture();
 				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
-				layer.TrilinearFilter = true;
+				// Do not enable filter on shadow texture to avoid visual artifacts
+				// with colored shadows.
+				// Filtering is done in shader code anyway
+				layer.TrilinearFilter = false;
 			}
 
 			driver->setMaterial(list.m);
