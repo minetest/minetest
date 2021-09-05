@@ -2,7 +2,7 @@ uniform sampler2D ColorMapSampler;
 varying vec4 tPos;
 
 #ifdef COLORED_SHADOWS
-varying vec4 varColor;
+varying vec3 varColor;
 
 // c_precision of 128 fits within 7 base-10 digits
 const float c_precision = 128.0;

@@ -1,7 +1,7 @@
 uniform mat4 LightMVP; // world matrix
 varying vec4 tPos;
 #ifdef COLORED_SHADOWS
-varying vec4 varColor;
+varying vec3 varColor;
 #endif
 
 const float bias0 = 0.9;
@@ -28,6 +28,6 @@ void main()
 	gl_TexCoord[0].st = gl_MultiTexCoord0.st;
 
 #ifdef COLORED_SHADOWS
-	varColor = vec4(gl_Color.rgb, 1.0);
+	varColor = gl_Color.rgb;
 #endif
 }
