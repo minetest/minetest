@@ -130,9 +130,9 @@ protected:
 
 	// Checks that stack size is sane
 	void realityCheck();
-	// Takes an error from lua_pcall and throws it as a LuaError (does NOT add a backtrace)
+	// Takes an error from lua_pcall and throws it as a LuaError
 	void scriptError(int result, const char *fxn);
-	// dumps stack contents for debugging
+	// Dumps stack contents for debugging
 	void stackDump(std::ostream &o);
 
 	void setGameDef(IGameDef* gamedef) { m_gamedef = gamedef; }
