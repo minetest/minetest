@@ -117,8 +117,7 @@ void *ServerThread::run()
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
-			m_server->setAsyncFatalError(
-					"ServerThread::run Lua: " + std::string(e.what()));
+			m_server->setAsyncFatalError(e);
 		}
 	}
 
