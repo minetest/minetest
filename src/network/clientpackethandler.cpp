@@ -1493,12 +1493,11 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	u32 token;
 	bool cached;
 
-	if (m_proto_ver >= 40) {
-		*pkt >> raw_hash >> filename >> token >> cached;
-	} else {
-		*pkt >> raw_hash >> filename >> cached;
+	*pkt >> raw_hash >> filename >> cached;
+	if (m_proto_ver >= 40)
+		*pkt >> token;
+	else
 		filedata = pkt->readLongString();
-	}
 
 	if (raw_hash.size() != 20 || filename.empty() ||
 			(m_proto_ver < 40 && filedata.empty()) ||

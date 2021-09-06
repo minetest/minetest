@@ -201,11 +201,11 @@ public:
 	~SingleMediaDownloader();
 
 	bool isStarted() const override {
-		return m_stage > 0;
+		return m_stage > STAGE_INIT;
 	}
 
 	bool isDone() const override {
-		return m_stage > 1;
+		return m_stage >= STAGE_DONE;
 	}
 
 	void addFile(const std::string &name, const std::string &sha1) override;
@@ -227,6 +227,12 @@ private:
 	void startRemoteMediaTransfer();
 	void startConventionalTransfer(Client *client);
 
+	enum Stage {
+		STAGE_INIT,
+		STAGE_CACHE_CHECKED, // we have tried to load the file from cache
+		STAGE_DONE
+	};
+
 	// Information about the one file we want to fetch
 	std::string m_file_name;
 	std::string m_file_sha1;
@@ -235,10 +241,7 @@ private:
 	// Array of remote media servers
 	std::vector<std::string> m_remotes;
 
-	// 0 = init
-	// 1 = attempt to load the media file from the file cache has been made
-	// 2 = file received, we're done
-	int m_stage = 0;
+	enum Stage m_stage = STAGE_INIT;
 
 	// Status of remote transfers
 	unsigned long m_httpfetch_caller;

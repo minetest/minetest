@@ -673,7 +673,7 @@ bool SingleMediaDownloader::loadMedia(Client *client, const std::string &data,
 
 void SingleMediaDownloader::addFile(const std::string &name, const std::string &sha1)
 {
-	assert(m_stage == 0); // pre-condition
+	assert(m_stage == STAGE_INIT); // pre-condition
 
 	assert(!name.empty());
 	assert(sha1.size() == 20);
@@ -685,7 +685,7 @@ void SingleMediaDownloader::addFile(const std::string &name, const std::string &
 
 void SingleMediaDownloader::addRemoteServer(const std::string &baseurl)
 {
-	assert(m_stage == 0); // pre-condition
+	assert(m_stage == STAGE_INIT); // pre-condition
 
 	if (g_settings->getBool("enable_remote_media_server"))
 		m_remotes.emplace_back(baseurl);
@@ -693,8 +693,8 @@ void SingleMediaDownloader::addRemoteServer(const std::string &baseurl)
 
 void SingleMediaDownloader::step(Client *client)
 {
-	if (m_stage == 0) {
-		m_stage = 1;
+	if (m_stage == STAGE_INIT) {
+		m_stage = STAGE_CACHE_CHECKED;
 		initialStep(client);
 	}
 
@@ -714,7 +714,7 @@ bool SingleMediaDownloader::conventionalTransferDone(const std::string &name,
 		return false;
 
 	// Mark file as received unconditionally and try to load it
-	m_stage = 2;
+	m_stage = STAGE_DONE;
 	checkAndLoad(name, m_file_sha1, data, false, client);
 	return true;
 }
@@ -722,7 +722,7 @@ bool SingleMediaDownloader::conventionalTransferDone(const std::string &name,
 void SingleMediaDownloader::initialStep(Client *client)
 {
 	if (tryLoadFromCache(m_file_name, m_file_sha1, client))
-		m_stage = 2;
+		m_stage = STAGE_DONE;
 	if (isDone())
 		return;
 
@@ -751,7 +751,7 @@ void SingleMediaDownloader::remoteMediaReceived(
 		bool success = checkAndLoad(m_file_name, m_file_sha1,
 				fetch_result.data, false, client);
 		if (success) {
-			m_stage = 2;
+			m_stage = STAGE_DONE;
 			return;
 		}
 	}

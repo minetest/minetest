@@ -215,9 +215,9 @@ u32 ScriptApiServer::allocateDynamicMediaCallback(int f_idx)
 	while (1) {
 		token = myrand();
 		lua_rawgeti(L, -2, token);
-		bool exit = lua_isnil(L, -1);
+		bool is_free = lua_isnil(L, -1);
 		lua_pop(L, 1);
-		if (exit)
+		if (is_free)
 			break;
 		if (--tries < 0)
 			FATAL_ERROR("Ran out of callbacks IDs?!");

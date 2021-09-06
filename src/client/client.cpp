@@ -556,6 +556,7 @@ void Client::step(float dtime)
 		}
 	}
 	{
+		// Acknowledge dynamic media downloads to server
 		std::vector<u32> done;
 		for (auto it = m_pending_media_downloads.begin();
 				it != m_pending_media_downloads.end();) {

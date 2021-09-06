@@ -2661,21 +2661,22 @@ void Server::stepPendingDynMediaCallbacks(float dtime)
 		it->second.expiry_timer -= dtime;
 		bool del = it->second.waiting_players.empty() || it->second.expiry_timer < 0;
 
-		if (del) {
-			const auto &name = it->second.filename;
-			if (!name.empty()) {
-				assert(m_media.count(name));
-				// if no_announce isn't set we're definitely deleting the wrong file!
-				sanity_check(m_media[name].no_announce);
-
-				fs::DeleteSingleFileOrEmptyDirectory(m_media[name].path);
-				m_media.erase(name);
-			}
-			getScriptIface()->freeDynamicMediaCallback(it->first);
-			it = m_pending_dyn_media.erase(it);
-		} else {
+		if (!del) {
 			it++;
+			continue;
 		}
+
+		const auto &name = it->second.filename;
+		if (!name.empty()) {
+			assert(m_media.count(name));
+			// if no_announce isn't set we're definitely deleting the wrong file!
+			sanity_check(m_media[name].no_announce);
+
+			fs::DeleteSingleFileOrEmptyDirectory(m_media[name].path);
+			m_media.erase(name);
+		}
+		getScriptIface()->freeDynamicMediaCallback(it->first);
+		it = m_pending_dyn_media.erase(it);
 	}
 }
 
@@ -3527,13 +3528,15 @@ bool Server::dynamicAddMedia(std::string filepath,
 	}
 
 	// Push file to existing clients
-	// Older clients have an awful hack that just throws the data at them
-	NetworkPacket legacy_pkt(TOCLIENT_MEDIA_PUSH, 0);
-	legacy_pkt << raw_hash << filename << (bool) ephemeral;
-	legacy_pkt.putLongString(filedata);
-	// Newer clients get asked to fetch the file (asynchronous)
 	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-	pkt << raw_hash << filename << token << (bool) ephemeral;
+	pkt << raw_hash << filename << (bool)ephemeral;
+
+	NetworkPacket legacy_pkt = pkt;
+
+	// Newer clients get asked to fetch the file (asynchronous)
+	pkt << token;
+	// Older clients have an awful hack that just throws the data at them
+	legacy_pkt.putLongString(filedata);
 
 	std::unordered_set<session_t> delivered, waiting;
 	m_clients.lock();
