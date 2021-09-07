@@ -113,13 +113,13 @@ int NodeMetadata::countNonPrivate() const
 */
 
 void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
-	bool absolute_pos) const
+	bool absolute_pos, bool include_empty) const
 {
 	/*
 		Version 0 is a placeholder for "nothing to see here; go away."
 	*/
 
-	u16 count = countNonEmpty();
+	u16 count = include_empty ? m_data.size() : countNonEmpty();
 	if (count == 0) {
 		writeU8(os, 0); // version
 		return;
@@ -134,7 +134,7 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
 			i != m_data.end(); ++i) {
 		v3s16 p = i->first;
 		NodeMetadata *data = i->second;
-		if (data->empty())
+		if (!include_empty && data->empty())
 			continue;
 
 		if (absolute_pos) {
