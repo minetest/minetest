@@ -172,27 +172,11 @@ int ObjectRef::l_punch(lua_State *L)
 	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
 	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
-
 	dir.normalize();
-	u16 src_original_hp = sao->getHP();
-	u16 dst_origin_hp = puncher->getHP();
 
 	u16 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
 	lua_pushnumber(L, wear);
 
-	// If the punched is a player, and its HP changed
-	if (src_original_hp != sao->getHP() &&
-			sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)sao,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
-	}
-
-	// If the puncher is a player, and its HP changed
-	if (dst_origin_hp != puncher->getHP() &&
-			puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, sao));
-	}
 	return 1;
 }
 
@@ -238,8 +222,6 @@ int ObjectRef::l_set_hp(lua_State *L)
 	}
 
 	sao->setHP(hp, reason);
-	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
 	if (reason.hasLuaReference())
 		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
 	return 0;
@@ -685,6 +667,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 		return 0;
 
 	read_object_properties(L, 2, sao, prop, getServer(L)->idef());
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	return 0;
 }
@@ -752,6 +735,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	std::string nametag = getstringfield_default(L, 2, "text", "");
 	prop->nametag = nametag;
 
+	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	lua_pushboolean(L, true);
 	return 1;
@@ -1390,13 +1374,13 @@ int ObjectRef::l_get_player_control(lua_State *L)
 
 	const PlayerControl &control = player->getPlayerControl();
 	lua_newtable(L);
-	lua_pushboolean(L, control.up);
+	lua_pushboolean(L, player->keyPressed & (1 << 0));
 	lua_setfield(L, -2, "up");
-	lua_pushboolean(L, control.down);
+	lua_pushboolean(L, player->keyPressed & (1 << 1));
 	lua_setfield(L, -2, "down");
-	lua_pushboolean(L, control.left);
+	lua_pushboolean(L, player->keyPressed & (1 << 2));
 	lua_setfield(L, -2, "left");
-	lua_pushboolean(L, control.right);
+	lua_pushboolean(L, player->keyPressed & (1 << 3));
 	lua_setfield(L, -2, "right");
 	lua_pushboolean(L, control.jump);
 	lua_setfield(L, -2, "jump");
@@ -1553,12 +1537,14 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (elem == nullptr)
 		return 0;
 
+	HudElementStat stat;
 	void *value = nullptr;
-	HudElementStat stat = read_hud_change(L, elem, &value);
+	bool ok = read_hud_change(L, stat, elem, &value);
 
-	getServer(L)->hudChange(player, id, stat, value);
+	if (ok)
+		getServer(L)->hudChange(player, id, stat, value);
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, ok);
 	return 1;
 }
 

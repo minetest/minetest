@@ -610,6 +610,7 @@ core.registered_on_modchannel_message, core.register_on_modchannel_message = mak
 core.registered_on_player_inventory_actions, core.register_on_player_inventory_action = make_registration()
 core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
 core.registered_on_rightclickplayers, core.register_on_rightclickplayer = make_registration()
+core.registered_on_liquid_transformed, core.register_on_liquid_transformed = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

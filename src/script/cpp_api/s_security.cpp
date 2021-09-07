@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_security.h"
-
+#include "lua_api/l_base.h"
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
@@ -538,15 +538,8 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	if (!removed.empty())
 		abs_path += DIR_DELIM + removed;
 
-	// Get server from registry
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script;
-#if INDIRECT_SCRIPTAPI_RIDX
-	script = (ScriptApiBase *) *(void**)(lua_touserdata(L, -1));
-#else
-	script = (ScriptApiBase *) lua_touserdata(L, -1);
-#endif
-	lua_pop(L, 1);
+	// Get gamedef from registry
+	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 	const IGameDef *gamedef = script->getGameDef();
 	if (!gamedef)
 		return false;
@@ -669,13 +662,7 @@ int ScriptApiSecurity::sl_g_load(lua_State *L)
 int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 {
 #ifndef SERVER
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-#if INDIRECT_SCRIPTAPI_RIDX
-	ScriptApiBase *script = (ScriptApiBase *) *(void**)(lua_touserdata(L, -1));
-#else
-	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
-#endif
-	lua_pop(L, 1);
+	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 
 	// Client implementation
 	if (script->getType() == ScriptingType::Client) {

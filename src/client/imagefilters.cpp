@@ -95,9 +95,14 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 
 	Bitmap newmap = bitmap;
 
+	// Cap iterations to keep runtime reasonable, for higher-res textures we can
+	// get away with filling less pixels.
+	int iter_max = 11 - std::max(dim.Width, dim.Height) / 16;
+	iter_max = std::max(iter_max, 2);
+
 	// Then repeatedly look for transparent pixels, filling them in until
-	// we're finished (capped at 50 iterations).
-	for (u32 iter = 0; iter < 50; iter++) {
+	// we're finished.
+	for (int iter = 0; iter < iter_max; iter++) {
 
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {

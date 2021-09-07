@@ -97,10 +97,13 @@ core.register_privilege("rollback", {
 	description = S("Can use the rollback functionality"),
 	give_to_singleplayer = false,
 })
-core.register_privilege("debug", {
-	description = S("Allows enabling various debug options that may affect gameplay"),
+core.register_privilege("basic_debug", {
+	description = S("Can view more debug info that might give a gameplay advantage"),
 	give_to_singleplayer = false,
-	give_to_admin = true,
+})
+core.register_privilege("debug", {
+	description = S("Can enable wireframe"),
+	give_to_singleplayer = false,
 })
 
 core.register_can_bypass_userlimit(function(name, ip)

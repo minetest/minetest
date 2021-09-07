@@ -104,6 +104,18 @@ private:
 	// colorspec_to_colorstring(colorspec)
 	static int l_colorspec_to_colorstring(lua_State *L);
 
+	// colorspec_to_bytes(colorspec)
+	static int l_colorspec_to_bytes(lua_State *L);
+
+	// encode_png(w, h, data, level)
+	static int l_encode_png(lua_State *L);
+
+	// get_last_run_mod()
+	static int l_get_last_run_mod(lua_State *L);
+
+	// set_last_run_mod(modname)
+	static int l_set_last_run_mod(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);

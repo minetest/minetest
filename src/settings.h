@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
+#include "util/basic_macros.h"
 #include <string>
 #include <list>
 #include <set>
@@ -60,12 +61,34 @@ enum SettingsParseEvent {
 	SPE_MULTILINE,
 };
 
+// Describes the global setting layers, SL_GLOBAL is where settings are read from
 enum SettingsLayer {
 	SL_DEFAULTS,
 	SL_GAME,
 	SL_GLOBAL,
-	SL_MAP,
 	SL_TOTAL_COUNT
+};
+
+// Implements the hierarchy a settings object may be part of
+class SettingsHierarchy {
+public:
+	/*
+	 * A settings object that may be part of another hierarchy can
+	 * occupy the index 0 as a fallback. If not set you can use 0 on your own.
+	 */
+	SettingsHierarchy(Settings *fallback = nullptr);
+
+	DISABLE_CLASS_COPY(SettingsHierarchy)
+
+	Settings *getLayer(int layer) const;
+
+private:
+	friend class Settings;
+	Settings *getParent(int layer) const;
+	void onLayerCreated(int layer, Settings *obj);
+	void onLayerRemoved(int layer);
+
+	std::vector<Settings*> layers;
 };
 
 struct ValueSpec {
@@ -100,13 +123,15 @@ typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
+	/* These functions operate on the global hierarchy! */
 	static Settings *createLayer(SettingsLayer sl, const std::string &end_tag = "");
 	static Settings *getLayer(SettingsLayer sl);
-	SettingsLayer getLayerType() const { return m_settingslayer; }
+	/**/
 
 	Settings(const std::string &end_tag = "") :
 		m_end_tag(end_tag)
 	{}
+	Settings(const std::string &end_tag, SettingsHierarchy *h, int settings_layer);
 	~Settings();
 
 	Settings & operator += (const Settings &other);
@@ -161,6 +186,7 @@ public:
 	bool getFlag(const std::string &name) const;
 	bool getU16NoEx(const std::string &name, u16 &val) const;
 	bool getS16NoEx(const std::string &name, s16 &val) const;
+	bool getU32NoEx(const std::string &name, u32 &val) const;
 	bool getS32NoEx(const std::string &name, s32 &val) const;
 	bool getU64NoEx(const std::string &name, u64 &val) const;
 	bool getFloatNoEx(const std::string &name, float &val) const;
@@ -200,9 +226,9 @@ public:
 	// remove a setting
 	bool remove(const std::string &name);
 
-	/**************
-	 * Miscellany *
-	 **************/
+	/*****************
+	 * Miscellaneous *
+	 *****************/
 
 	void setDefault(const std::string &name, const FlagDesc *flagdesc, u32 flags);
 	const FlagDesc *getFlagDescFallback(const std::string &name) const;
@@ -213,6 +239,10 @@ public:
 		SettingsChangedCallback cbf, void *userdata = NULL);
 
 	void removeSecureSettings();
+
+	// Returns the settings layer this object is.
+	// If within the global hierarchy you can cast this to enum SettingsLayer
+	inline int getLayer() const { return m_settingslayer; }
 
 private:
 	/***********************
@@ -257,7 +287,8 @@ private:
 	// All methods that access m_settings/m_defaults directly should lock this.
 	mutable std::mutex m_mutex;
 
-	static Settings *s_layers[SL_TOTAL_COUNT];
-	SettingsLayer m_settingslayer = SL_TOTAL_COUNT;
+	SettingsHierarchy *m_hierarchy = nullptr;
+	int m_settingslayer = -1;
+
 	static std::unordered_map<std::string, const FlagDesc *> s_flags;
 };

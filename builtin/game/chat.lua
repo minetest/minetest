@@ -255,11 +255,11 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	if privs_unknown ~= "" then
 		return false, privs_unknown
 	end
+	core.set_player_privs(grantname, privs)
 	for priv, _ in pairs(grantprivs) do
 		-- call the on_grant callbacks
 		core.run_priv_callbacks(grantname, priv, caller, "grant")
 	end
-	core.set_player_privs(grantname, privs)
 	core.log("action", caller..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
 	if grantname ~= caller then
 		core.chat_send_player(grantname,
@@ -359,13 +359,13 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	end
 
 	local revokecount = 0
+
+	core.set_player_privs(revokename, privs)
 	for priv, _ in pairs(revokeprivs) do
 		-- call the on_revoke callbacks
 		core.run_priv_callbacks(revokename, priv, caller, "revoke")
 		revokecount = revokecount + 1
 	end
-
-	core.set_player_privs(revokename, privs)
 	local new_privs = core.get_player_privs(revokename)
 
 	if revokecount == 0 then

@@ -59,7 +59,7 @@ struct ClientEventHudAdd
 	v2f pos, scale;
 	std::string name;
 	std::string text, text2;
-	u32 number, item, dir;
+	u32 number, item, dir, style;
 	v2f align, offset;
 	v3f world_pos;
 	v2s32 size;

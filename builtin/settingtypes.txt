@@ -618,11 +618,11 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
-
-#    Set the shadow update time, in seconds.
-#    Lower value means shadows and map updates faster, but it consumes more resources.
-#    Minimum value: 0.001; maximum value: 0.2
-shadow_update_time (Map update time) float 0.2 0.001 0.2
+#    Spread a complete update of shadow map over given amount of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
@@ -715,7 +715,7 @@ texture_path (Texture path) path
 #    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
 #    On other platforms, OpenGL is recommended.
 #    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
-video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl,ogles1,ogles2
+video_driver (Video driver) enum opengl opengl,ogles1,ogles2
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
@@ -1100,11 +1100,10 @@ full_block_send_enable_min_time_from_building (Delay in sending blocks after bui
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024
 
-#    ZLib compression level to use when sending mapblocks to the client.
-#    -1 - Zlib's default compression level
-#     0 - no compresson, fastest
+#    Compression level to use when sending mapblocks to the client.
+#    -1 - use default compression level
+#     0 - least compresson, fastest
 #     9 - best compression, slowest
-#     (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
 map_compression_level_net (Map Compression Level for Network Transfer) int -1 -1 9
 
 [*Game]
@@ -1303,12 +1302,11 @@ max_objects_per_block (Maximum objects per block) int 64
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
-#    ZLib compression level to use when saving mapblocks to disk.
-#    -1 - Zlib's default compression level
-#     0 - no compresson, fastest
+#    Compression level to use when saving mapblocks to disk.
+#    -1 - use default compression level
+#     0 - least compresson, fastest
 #     9 - best compression, slowest
-#     (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
-map_compression_level_disk (Map Compression Level for Disk Storage) int 3 -1 9
+map_compression_level_disk (Map Compression Level for Disk Storage) int -1 -1 9
 
 #    Length of a server tick and the interval at which objects are generally updated over
 #    network.
@@ -2218,15 +2216,15 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024 1 1000000
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
-emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128 1 1000000
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
-emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128 1 1000000
 
 #    Number of emerge threads to use.
 #    Value 0:

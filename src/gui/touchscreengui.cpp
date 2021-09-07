@@ -32,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <algorithm>
 
-#include <ISceneCollisionManager.h>
-
 using namespace irr::core;
 
 const char **button_imagenames = (const char *[]) {

@@ -896,6 +896,11 @@ void Client::handleCommand_Privileges(NetworkPacket* pkt)
 		m_privileges.insert(priv);
 		infostream << priv << " ";
 	}
+
+	// Enable basic_debug on server versions before it was added
+	if (m_proto_ver < 40)
+		m_privileges.insert("basic_debug");
+
 	infostream << std::endl;
 }
 
@@ -1056,6 +1061,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v2s32 size;
 	s16 z_index = 0;
 	std::string text2;
+	u32 style = 0;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
@@ -1064,6 +1070,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 		*pkt >> size;
 		*pkt >> z_index;
 		*pkt >> text2;
+		*pkt >> style;
 	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
@@ -1084,6 +1091,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd->size      = size;
 	event->hudadd->z_index   = z_index;
 	event->hudadd->text2     = text2;
+	event->hudadd->style     = style;
 	m_client_event_queue.push(event);
 }
 
@@ -1111,17 +1119,29 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 
 	*pkt >> server_id >> stat;
 
-	if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
-		stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
-		*pkt >> v2fdata;
-	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT || stat == HUD_STAT_TEXT2)
-		*pkt >> sdata;
-	else if (stat == HUD_STAT_WORLD_POS)
-		*pkt >> v3fdata;
-	else if (stat == HUD_STAT_SIZE )
-		*pkt >> v2s32data;
-	else
-		*pkt >> intdata;
+	// Keep in sync with:server.cpp -> SendHUDChange
+	switch ((HudElementStat)stat) {
+		case HUD_STAT_POS:
+		case HUD_STAT_SCALE:
+		case HUD_STAT_ALIGN:
+		case HUD_STAT_OFFSET:
+			*pkt >> v2fdata;
+			break;
+		case HUD_STAT_NAME:
+		case HUD_STAT_TEXT:
+		case HUD_STAT_TEXT2:
+			*pkt >> sdata;
+			break;
+		case HUD_STAT_WORLD_POS:
+			*pkt >> v3fdata;
+			break;
+		case HUD_STAT_SIZE:
+			*pkt >> v2s32data;
+			break;
+		default:
+			*pkt >> intdata;
+			break;
+	}
 
 	ClientEvent *event = new ClientEvent();
 	event->type                 = CE_HUDCHANGE;

@@ -194,11 +194,11 @@ private:
 
 	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	std::unordered_map<u16, u16> m_peer_queue_count;
+	std::unordered_map<u16, u32> m_peer_queue_count;
 
-	u16 m_qlimit_total;
-	u16 m_qlimit_diskonly;
-	u16 m_qlimit_generate;
+	u32 m_qlimit_total;
+	u32 m_qlimit_diskonly;
+	u32 m_qlimit_generate;
 
 	// Managers of various map generation-related components
 	// Note that each Mapgen gets a copy(!) of these to work with

@@ -1,0 +1,66 @@
+name: macos
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - '.github/workflows/macos.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - '.github/workflows/macos.yml'
+
+env:
+  IRRLICHT_TAG: 1.9.0mt3
+  MINETEST_GAME_REPO: https://github.com/minetest/minetest_game.git
+  MINETEST_GAME_BRANCH: master
+  MINETEST_GAME_NAME: minetest_game
+
+jobs:
+  build:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd)
+          brew update
+          brew install ${pkgs[@]}
+          brew unlink $(brew ls --formula)
+          brew link ${pkgs[@]}
+
+      - name: Build
+        run: |
+          git clone -b $MINETEST_GAME_BRANCH $MINETEST_GAME_REPO games/$MINETEST_GAME_NAME
+          rm -rvf games/$MINETEST_GAME_NAME/.git
+          git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
+          mkdir cmakebuild
+          cd cmakebuild
+          cmake .. \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+            -DCMAKE_FIND_FRAMEWORK=LAST \
+            -DCMAKE_INSTALL_PREFIX=../build/macos/ \
+            -DRUN_IN_PLACE=FALSE \
+            -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
+          make -j2
+          make install
+
+      - name: Test
+        run: |
+          ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: minetest-macos
+          path: ./build/macos/

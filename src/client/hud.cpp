@@ -331,8 +331,8 @@ bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *p
 
 void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
-	u32 text_height = g_fontengine->getTextHeight();
-	irr::gui::IGUIFont* font = g_fontengine->getFont();
+	const u32 text_height = g_fontengine->getTextHeight();
+	gui::IGUIFont *const font = g_fontengine->getFont();
 
 	// Reorder elements by z_index
 	std::vector<HudElement*> elems;
@@ -356,38 +356,34 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				floor(e->pos.Y * (float) m_screensize.Y + 0.5));
 		switch (e->type) {
 			case HUD_ELEM_TEXT: {
-				irr::gui::IGUIFont *textfont = font;
 				unsigned int font_size = g_fontengine->getDefaultFontSize();
 
 				if (e->size.X > 0)
 					font_size *= e->size.X;
 
-				if (font_size != g_fontengine->getDefaultFontSize())
-					textfont = g_fontengine->getFont(font_size);
+#ifdef __ANDROID__
+				// The text size on Android is not proportional with the actual scaling
+				// FIXME: why do we have such a weird unportable hack??
+				if (font_size > 3 && e->offset.X < -20)
+					font_size -= 3;
+#endif
+				auto textfont = g_fontengine->getFont(FontSpec(font_size,
+					(e->style & HUD_STYLE_MONO) ? FM_Mono : FM_Unspecified,
+					e->style & HUD_STYLE_BOLD, e->style & HUD_STYLE_ITALIC));
 
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
-#ifdef __ANDROID__
-				// The text size on Android is not proportional with the actual scaling
-				irr::gui::IGUIFont *font_scaled = font_size <= 3 ?
-					textfont : g_fontengine->getFont(font_size - 3);
-				if (e->offset.X < -20)
-					textsize = font_scaled->getDimension(text.c_str());
-#endif
+
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
 				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
 				                     text_height * e->scale.Y * m_scale_factor);
 				v2s32 offs(e->offset.X * m_scale_factor,
 				           e->offset.Y * m_scale_factor);
-#ifdef __ANDROID__
-				if (e->offset.X < -20)
-					font_scaled->draw(text.c_str(), size + pos + offset + offs, color);
-				else
-#endif
+
 				{
 					textfont->draw(text.c_str(), size + pos + offset + offs, color);
 				}
@@ -861,13 +857,19 @@ void Hud::drawSelectionMesh()
 	}
 }
 
-void Hud::toggleBlockBounds()
+enum Hud::BlockBoundsMode Hud::toggleBlockBounds()
 {
 	m_block_bounds_mode = static_cast<BlockBoundsMode>(m_block_bounds_mode + 1);
 
 	if (m_block_bounds_mode >= BLOCK_BOUNDS_MAX) {
 		m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 	}
+	return m_block_bounds_mode;
+}
+
+void Hud::disableBlockBounds()
+{
+	m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 }
 
 void Hud::drawBlockBounds()
@@ -889,7 +891,7 @@ void Hud::drawBlockBounds()
 
 	v3f offset = intToFloat(client->getCamera()->getOffset(), BS);
 
-	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_ALL ? 2 : 0;
+	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ? 2 : 0;
 
 	v3f halfNode = v3f(BS, BS, BS) / 2.0f;
 

@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "util/hex.h"
 #include "util/sha1.h"
+#include "util/png.h"
 #include <algorithm>
 #include <cstdio>
 
@@ -497,6 +498,67 @@ int ModApiUtil::l_colorspec_to_colorstring(lua_State *L)
 	return 0;
 }
 
+// colorspec_to_bytes(colorspec)
+int ModApiUtil::l_colorspec_to_bytes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::SColor color(0);
+	if (read_color(L, 1, &color)) {
+		u8 colorbytes[4] = {
+			(u8) color.getRed(),
+			(u8) color.getGreen(),
+			(u8) color.getBlue(),
+			(u8) color.getAlpha(),
+		};
+		lua_pushlstring(L, (const char*) colorbytes, 4);
+		return 1;
+	}
+
+	return 0;
+}
+
+// encode_png(w, h, data, level)
+int ModApiUtil::l_encode_png(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	// The args are already pre-validated on the lua side.
+	u32 width = readParam<int>(L, 1);
+	u32 height = readParam<int>(L, 2);
+	const char *data = luaL_checklstring(L, 3, NULL);
+	s32 compression = readParam<int>(L, 4);
+
+	std::string out = encodePNG((const u8*)data, width, height, compression);
+
+	lua_pushlstring(L, out.data(), out.size());
+	return 1;
+}
+
+// get_last_run_mod()
+int ModApiUtil::l_get_last_run_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	std::string current_mod = readParam<std::string>(L, -1, "");
+	if (current_mod.empty()) {
+		lua_pop(L, 1);
+		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
+	}
+	return 1;
+}
+
+// set_last_run_mod(modname)
+int ModApiUtil::l_set_last_run_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	const char *mod = luaL_checkstring(L, 1);
+	getScriptApiBase(L)->setOriginDirect(mod);
+	return 0;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(log);
@@ -532,6 +594,12 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_version);
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
+	API_FCT(colorspec_to_bytes);
+
+	API_FCT(encode_png);
+
+	API_FCT(get_last_run_mod);
+	API_FCT(set_last_run_mod);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
@@ -557,6 +625,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(get_version);
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
+	API_FCT(colorspec_to_bytes);
 }
 
 void ModApiUtil::InitializeAsync(lua_State *L, int top)
@@ -585,6 +654,10 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_version);
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
+	API_FCT(colorspec_to_bytes);
+
+	API_FCT(get_last_run_mod);
+	API_FCT(set_last_run_mod);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");

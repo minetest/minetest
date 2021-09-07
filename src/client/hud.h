@@ -35,6 +35,14 @@ struct ItemStack;
 class Hud
 {
 public:
+	enum BlockBoundsMode
+	{
+		BLOCK_BOUNDS_OFF,
+		BLOCK_BOUNDS_CURRENT,
+		BLOCK_BOUNDS_NEAR,
+		BLOCK_BOUNDS_MAX
+	} m_block_bounds_mode = BLOCK_BOUNDS_OFF;
+
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
 
@@ -51,7 +59,8 @@ public:
 			Inventory *inventory);
 	~Hud();
 
-	void toggleBlockBounds();
+	enum BlockBoundsMode toggleBlockBounds();
+	void disableBlockBounds();
 	void drawBlockBounds();
 
 	void drawHotbar(u16 playeritem);
@@ -125,14 +134,6 @@ private:
 	video::SMaterial m_selection_material;
 
 	scene::SMeshBuffer m_rotation_mesh_buffer;
-
-	enum BlockBoundsMode
-	{
-		BLOCK_BOUNDS_OFF,
-		BLOCK_BOUNDS_CURRENT,
-		BLOCK_BOUNDS_ALL,
-		BLOCK_BOUNDS_MAX
-	} m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 
 	enum
 	{

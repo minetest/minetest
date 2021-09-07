@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <IrrlichtDevice.h>
-#include <irrlicht.h>
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
@@ -105,7 +104,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
 		if (!strcasecmp(driverstring.c_str(),
-				RenderingEngine::getVideoDriverName(drivers[i]))) {
+				RenderingEngine::getVideoDriverInfo(drivers[i]).name.c_str())) {
 			driverType = drivers[i];
 			break;
 		}
@@ -284,14 +283,6 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
 	switch (driver->getDriverType()) {
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-	case video::EDT_DIRECT3D8:
-		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
-		break;
-#endif
-	case video::EDT_DIRECT3D9:
-		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
-		break;
 #if ENABLE_GLES
 	case video::EDT_OGLES1:
 	case video::EDT_OGLES2:
@@ -527,11 +518,19 @@ void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
 
 std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 {
+	// Only check these drivers.
+	// We do not support software and D3D in any capacity.
+	static const irr::video::E_DRIVER_TYPE glDrivers[4] = {
+		irr::video::EDT_NULL,
+		irr::video::EDT_OPENGL,
+		irr::video::EDT_OGLES1,
+		irr::video::EDT_OGLES2,
+	};
 	std::vector<irr::video::E_DRIVER_TYPE> drivers;
 
-	for (int i = 0; i != irr::video::EDT_COUNT; i++) {
-		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE)i))
-			drivers.push_back((irr::video::E_DRIVER_TYPE)i);
+	for (int i = 0; i < 4; i++) {
+		if (irr::IrrlichtDevice::isDriverSupported(glDrivers[i]))
+			drivers.push_back(glDrivers[i]);
 	}
 
 	return drivers;
@@ -555,36 +554,15 @@ void RenderingEngine::draw_scene(video::SColor skycolor, bool show_hud,
 	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 }
 
-const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)
+const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_TYPE type)
 {
-	static const char *driver_ids[] = {
-			"null",
-			"software",
-			"burningsvideo",
-			"direct3d8",
-			"direct3d9",
-			"opengl",
-			"ogles1",
-			"ogles2",
+	static const std::unordered_map<int, VideoDriverInfo> driver_info_map = {
+		{(int)video::EDT_NULL,   {"null",   "NULL Driver"}},
+		{(int)video::EDT_OPENGL, {"opengl", "OpenGL"}},
+		{(int)video::EDT_OGLES1, {"ogles1", "OpenGL ES1"}},
+		{(int)video::EDT_OGLES2, {"ogles2", "OpenGL ES2"}},
 	};
-
-	return driver_ids[type];
-}
-
-const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type)
-{
-	static const char *driver_names[] = {
-			"NULL Driver",
-			"Software Renderer",
-			"Burning's Video",
-			"Direct3D 8",
-			"Direct3D 9",
-			"OpenGL",
-			"OpenGL ES1",
-			"OpenGL ES2",
-	};
-
-	return driver_names[type];
+	return driver_info_map.at((int)type);
 }
 
 #ifndef __ANDROID__

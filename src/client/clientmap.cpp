@@ -636,7 +636,7 @@ void ClientMap::PrintInfo(std::ostream &out)
 }
 
 void ClientMap::renderMapShadows(video::IVideoDriver *driver,
-		const video::SMaterial &material, s32 pass)
+		const video::SMaterial &material, s32 pass, int frame, int total_frames)
 {
 	bool is_transparent_pass = pass != scene::ESNRP_SOLID;
 	std::string prefix;
@@ -650,7 +650,23 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	MeshBufListList drawbufs;
 
+	int count = 0;
+	int low_bound = is_transparent_pass ? 0 : m_drawlist_shadow.size() / total_frames * frame;
+	int high_bound = is_transparent_pass ? m_drawlist_shadow.size() : m_drawlist_shadow.size() / total_frames * (frame + 1);
+
+	// transparent pass should be rendered in one go
+	if (is_transparent_pass && frame != total_frames - 1) {
+		return;
+	}
+
 	for (auto &i : m_drawlist_shadow) {
+		// only process specific part of the list & break early
+		++count;
+		if (count <= low_bound)
+			continue;
+		if (count > high_bound)
+			break;
+
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
 
@@ -705,6 +721,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.MaterialType = material.MaterialType;
 				local_material.BackfaceCulling = material.BackfaceCulling;
 				local_material.FrontfaceCulling = material.FrontfaceCulling;
+				local_material.BlendOperation = material.BlendOperation;
 				local_material.Lighting = false;
 				driver->setMaterial(local_material);
 
@@ -720,6 +737,12 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 	}
 
+	// restore the driver material state 
+	video::SMaterial clean;
+	clean.BlendOperation = video::EBO_ADD;
+	driver->setMaterial(clean); // reset material to defaults
+	driver->draw3DLine(v3f(), v3f(), video::SColor(0));
+	
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);

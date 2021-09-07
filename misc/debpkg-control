@@ -3,7 +3,7 @@ Priority: extra
 Standards-Version: 3.6.2
 Package: minetest-staging
 Version: 5.4.0-DATEPLACEHOLDER
-Depends: libc6, libcurl3-gnutls, libfreetype6, libgl1, JPEG_PLACEHOLDER, libjsoncpp1, LEVELDB_PLACEHOLDER, libopenal1, libpng16-16, libsqlite3-0, libstdc++6, libvorbisfile3, libx11-6, libxxf86vm1, zlib1g
+Depends: libc6, libcurl3-gnutls, libfreetype6, libgl1, JPEG_PLACEHOLDER, JSONCPP_PLACEHOLDER, LEVELDB_PLACEHOLDER, libopenal1, libpng16-16, libsqlite3-0, libstdc++6, libvorbisfile3, libx11-6, libxxf86vm1, libzstd1, zlib1g
 Maintainer: Loic Blot <loic.blot@unix-experience.fr>
 Homepage: https://www.minetest.net/
 Vcs-Git: https://github.com/minetest/minetest.git

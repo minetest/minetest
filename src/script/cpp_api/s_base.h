@@ -39,7 +39,6 @@ extern "C" {
 #include "config.h"
 
 #define SCRIPTAPI_LOCK_DEBUG
-#define SCRIPTAPI_DEBUG
 
 // MUST be an invalid mod name so that mods can't
 // use that name to bypass security!
@@ -108,7 +107,9 @@ public:
 	Client* getClient();
 #endif
 
-	std::string getOrigin() { return m_last_run_mod; }
+	// IMPORTANT: these cannot be used for any security-related uses, they exist
+	// only to enrich error messages
+	const std::string &getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
 	void setOriginFromTableRaw(int index, const char *fxn);
 

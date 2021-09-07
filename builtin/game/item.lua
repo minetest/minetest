@@ -175,6 +175,18 @@ function core.strip_param2_color(param2, paramtype2)
 	return param2
 end
 
+local function has_all_groups(tbl, required_groups)
+	if type(required_groups) == "string" then
+		return (tbl[required_groups] or 0) ~= 0
+	end
+	for _, group in ipairs(required_groups) do
+		if (tbl[group] or 0) == 0 then
+			return false
+		end
+	end
+	return true
+end
+
 function core.get_node_drops(node, toolname)
 	-- Compatibility, if node is string
 	local nodename = node
@@ -214,7 +226,7 @@ function core.get_node_drops(node, toolname)
 		if item.rarity ~= nil then
 			good_rarity = item.rarity < 1 or math.random(item.rarity) == 1
 		end
-		if item.tools ~= nil then
+		if item.tools ~= nil or item.tool_groups ~= nil then
 			good_tool = false
 		end
 		if item.tools ~= nil and toolname then
@@ -226,6 +238,27 @@ function core.get_node_drops(node, toolname)
 				end
 				if good_tool then
 					break
+				end
+			end
+		end
+		if item.tool_groups ~= nil and toolname then
+			local tooldef = core.registered_items[toolname]
+			if tooldef ~= nil and type(tooldef.groups) == "table" then
+				if type(item.tool_groups) == "string" then
+					-- tool_groups can be a string which specifies the required group
+					good_tool = core.get_item_group(toolname, item.tool_groups) ~= 0
+				else
+					-- tool_groups can be a list of sufficient requirements.
+					-- i.e. if any item in the list can be satisfied then the tool is good
+					assert(type(item.tool_groups) == "table")
+					for _, required_groups in ipairs(item.tool_groups) do
+						-- required_groups can be either a string (a single group),
+						-- or an array of strings where all must be in tooldef.groups
+						good_tool = has_all_groups(tooldef.groups, required_groups)
+						if good_tool then
+							break
+						end
+					end
 				end
 			end
 		end

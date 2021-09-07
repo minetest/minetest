@@ -1317,6 +1317,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
     --  ^ See "HUD Element Types"
         size = { x=100, y=100 },  -- default {x=0, y=0}
     --  ^ Size of element in pixels
+        style = 0,
+    --  ^ For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
     }
 ```
 

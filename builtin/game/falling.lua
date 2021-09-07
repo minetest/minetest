@@ -111,14 +111,21 @@ core.register_entity(":__builtin:falling_node", {
 				itemstring = core.itemstring_with_palette(itemstring, node.param2)
 			end
 			-- FIXME: solution needed for paramtype2 == "leveled"
-			local s = (def.visual_scale or 1) * SCALE
-			if def.drawtype == "mesh" then
-				s = s * 0.5
+			-- Calculate size of falling node
+			local s = {}
+			s.x = (def.visual_scale or 1) * SCALE
+			s.y = s.x
+			s.z = s.x
+			-- Compensate for wield_scale
+			if def.wield_scale then
+				s.x = s.x / def.wield_scale.x
+				s.y = s.y / def.wield_scale.y
+				s.z = s.z / def.wield_scale.z
 			end
 			self.object:set_properties({
 				is_visible = true,
 				wield_item = itemstring,
-				visual_size = vector.new(s, s, s),
+				visual_size = s,
 				glow = def.light_source,
 			})
 		end
@@ -157,7 +164,8 @@ core.register_entity(":__builtin:falling_node", {
 				if euler then
 					self.object:set_rotation(euler)
 				end
-			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike") then
+			elseif (def.drawtype ~= "plantlike" and def.drawtype ~= "plantlike_rooted" and
+					(def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike")) then
 				local rot = node.param2 % 8
 				if (def.drawtype == "signlike" and def.paramtype2 ~= "wallmounted" and def.paramtype2 ~= "colorwallmounted") then
 					-- Change rotation to "floor" by default for non-wallmounted paramtype2

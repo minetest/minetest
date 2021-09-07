@@ -48,8 +48,18 @@ LOCAL_SRC_FILES := deps/Android/OpenAL-Soft/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := GetText
+LOCAL_SRC_FILES := deps/Android/GetText/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libintl.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := Vorbis
 LOCAL_SRC_FILES := deps/Android/Vorbis/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libvorbis.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := Zstd
+LOCAL_SRC_FILES := deps/Android/Zstd/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libzstd.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -64,6 +74,7 @@ LOCAL_CFLAGS += \
 	-DUSE_FREETYPE=1                \
 	-DUSE_LEVELDB=0                 \
 	-DUSE_LUAJIT=1                  \
+	-DUSE_GETTEXT=1                 \
 	-DVERSION_MAJOR=${versionMajor} \
 	-DVERSION_MINOR=${versionMinor} \
 	-DVERSION_PATCH=${versionPatch} \
@@ -89,12 +100,14 @@ LOCAL_C_INCLUDES := \
 	deps/Android/Freetype/include                   \
 	deps/Android/Irrlicht/include                   \
 	deps/Android/LevelDB/include                    \
+	deps/Android/GetText/include                    \
 	deps/Android/libiconv/include                   \
 	deps/Android/libiconv/libcharset/include        \
 	deps/Android/LuaJIT/src                         \
 	deps/Android/OpenAL-Soft/include                \
 	deps/Android/sqlite                             \
-	deps/Android/Vorbis/include
+	deps/Android/Vorbis/include                     \
+	deps/Android/Zstd/include
 
 LOCAL_SRC_FILES := \
 	$(wildcard ../../src/client/*.cpp)           \
@@ -194,7 +207,7 @@ LOCAL_SRC_FILES += \
 # SQLite3
 LOCAL_SRC_FILES += deps/Android/sqlite/sqlite3.c
 
-LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT android_native_app_glue $(PROFILER_LIBS) #LevelDB
+LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT GetText Zstd android_native_app_glue $(PROFILER_LIBS) #LevelDB
 
 LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES
 

@@ -136,25 +136,26 @@ Compiling
 | CMake      | 3.5+    |            |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | SQLite3    | 3.0+    |            |
+| Zstd       | 1.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 
 For Debian/Ubuntu users:
 
-    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
 
 For Fedora users:
 
-    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
+    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
     
 For Arch users:
 
-    sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses
+    sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd
 
 For Alpine users:
 
-    sudo apk add build-base cmake libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev
+    sudo apk add build-base cmake libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev zstd-dev
 
 #### Download
 
@@ -177,6 +178,10 @@ Download minetest_game (otherwise only the "Development Test" game is available)
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
+Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
+
+    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+
 Download source, without using Git:
 
     wget https://github.com/minetest/minetest/archive/master.tar.gz
@@ -189,6 +194,14 @@ Download minetest_game, without using Git:
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
     tar xf master.tar.gz
     mv minetest_game-master minetest_game
+    cd ..
+
+Download IrrlichtMt, without using Git:
+
+    cd lib/
+    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
+    tar xf master.tar.gz
+    mv irrlicht-master irrlichtmt
     cd ..
 
 #### Build
@@ -211,6 +224,10 @@ Run it:
   - Debug build is slower, but gives much more useful output in a debugger.
 - If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
+- IrrlichtMt can also be installed somewhere that is not a standard install path.
+  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
+  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists
+    or that `$(CMAKE_PREFIX_PATH)` is the path of an IrrlichtMt build folder.
 
 ### CMake options
 
@@ -260,8 +277,7 @@ Library specific options:
     GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
     IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
-    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h
-    IRRLICHT_LIBRARY                - Path to libIrrlichtMt.a/libIrrlichtMt.so/libIrrlichtMt.dll.a/IrrlichtMt.lib
+    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
@@ -291,8 +307,11 @@ Library specific options:
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
     ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib
+    ZSTD_DLL                        - Only on Windows; path to libzstd.dll
+    ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
+    ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
-### Compiling on Windows
+### Compiling on Windows using MSVC
 
 ### Requirements
 
@@ -305,14 +324,12 @@ Library specific options:
 
 It is highly recommended to use vcpkg as package manager.
 
-#### a) Using vcpkg to install dependencies
-
 After you successfully built vcpkg you can easily install the required libraries:
 ```powershell
-vcpkg install zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit gmp jsoncpp --triplet x64-windows
+vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit gmp jsoncpp --triplet x64-windows
 ```
 
-- **Note that you currently need to build irrlicht on your own**
+- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
 - `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 - `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 - `freetype` is optional, it allows true-type font rendering.
@@ -322,10 +339,6 @@ vcpkg install zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype lu
 There are other optional libraries, but they are not tested if they can build and link correctly.
 
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
-
-#### b) Compile the dependencies on your own
-
-This is outdated and not recommended. Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Compile Minetest
 
@@ -354,12 +367,6 @@ cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/
 cmake --build . --config Release
 ```
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
-
-#### c) Using your own compiled libraries
-
-**This is outdated and not recommended**
-
-Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Windows Installer using WiX Toolset
 

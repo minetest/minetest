@@ -512,8 +512,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		// Load gamespec for required game
 		start_data.game_spec = findWorldSubgame(worldspec.path);
 		if (!start_data.game_spec.isValid()) {
-			error_message = gettext("Could not find or load game \"")
-					+ worldspec.gameid + "\"";
+			error_message = gettext("Could not find or load game: ")
+					+ worldspec.gameid;
 			errorstream << error_message << std::endl;
 			return false;
 		}

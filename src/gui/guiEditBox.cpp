@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "IGUIFont.h"
 
 #include "porting.h"
+#include "util/string.h"
 
 GUIEditBox::~GUIEditBox()
 {
@@ -517,8 +518,7 @@ void GUIEditBox::onKeyControlC(const SEvent &event)
 	const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
 	const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
 
-	core::stringc s;
-	s = Text.subString(realmbgn, realmend - realmbgn).c_str();
+	std::string s = stringw_to_utf8(Text.subString(realmbgn, realmend - realmbgn));
 	m_operator->copyToClipboard(s.c_str());
 }
 
@@ -567,29 +567,28 @@ bool GUIEditBox::onKeyControlV(const SEvent &event, s32 &mark_begin, s32 &mark_e
 
 	// add new character
 	if (const c8 *p = m_operator->getTextFromClipboard()) {
+		core::stringw inserted_text = utf8_to_stringw(p);
 		if (m_mark_begin == m_mark_end) {
 			// insert text
 			core::stringw s = Text.subString(0, m_cursor_pos);
-			s.append(p);
+			s.append(inserted_text);
 			s.append(Text.subString(
 					m_cursor_pos, Text.size() - m_cursor_pos));
 
 			if (!m_max || s.size() <= m_max) {
 				Text = s;
-				s = p;
-				m_cursor_pos += s.size();
+				m_cursor_pos += inserted_text.size();
 			}
 		} else {
 			// replace text
 
 			core::stringw s = Text.subString(0, realmbgn);
-			s.append(p);
+			s.append(inserted_text);
 			s.append(Text.subString(realmend, Text.size() - realmend));
 
 			if (!m_max || s.size() <= m_max) {
 				Text = s;
-				s = p;
-				m_cursor_pos = realmbgn + s.size();
+				m_cursor_pos = realmbgn + inserted_text.size();
 			}
 		}
 	}

@@ -369,7 +369,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_shadows"] == labels.shadow_levels[1] then
 		core.settings:set("enable_dynamic_shadows", "false")
 	else
-		core.settings:set("enable_dynamic_shadows", "true")
 		local shadow_presets = {
 			[2] = { 80,  512,  "true", 0, "false" },
 			[3] = { 120, 1024, "true", 1, "false" },
@@ -379,6 +378,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		}
 		local s = shadow_presets[table.indexof(labels.shadow_levels, fields["dd_shadows"])]
 		if s then
+			core.settings:set("enable_dynamic_shadows", "true")
 			core.settings:set("shadow_map_max_distance", s[1])
 			core.settings:set("shadow_map_texture_size", s[2])
 			core.settings:set("shadow_map_texture_32bit", s[3])
