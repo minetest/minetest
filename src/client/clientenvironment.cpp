@@ -225,8 +225,6 @@ void ClientEnvironment::step(float dtime)
 				if (in_liquid_stable) {
 					if (dl > lplayer->movement_liquid_fluidity_smooth)
 						dl = lplayer->movement_liquid_fluidity_smooth;
-				} else if (dl > (0.5f * BS)) {
-					dl = (0.5f * BS);
 				}
 
 				dl *= (lplayer->move_resistance * resistance_factor) +
