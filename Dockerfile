@@ -57,7 +57,7 @@ RUN mkdir build && \
 ARG DOCKER_IMAGE=alpine:3.14
 FROM $DOCKER_IMAGE AS runtime
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp && \
+RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp zstd-libs && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
 
