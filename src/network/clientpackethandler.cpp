@@ -1513,8 +1513,10 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	verbosestream << "(cached=" << cached << ")" << std::endl;
 
 	if (m_media_pushed_files.count(filename) != 0) {
-		// Silently ignore. Previously this was for sync purposes, but even in
-		// new versions media cannot be replaced at runtime.
+		// Ignore (but acknowledge). Previously this was for sync purposes,
+		// but even in new versions media cannot be replaced at runtime.
+		if (m_proto_ver >= 40)
+			sendHaveMedia({ token });
 		return;
 	}
 
