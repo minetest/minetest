@@ -362,16 +362,15 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	infostream << "Sending " << numfiles << " files to " <<
 		getPlayerName(peer_id) << std::endl;
-	verbosestream << "TOSERVER_REQUEST_MEDIA: " << std::endl;
+	verbosestream << "TOSERVER_REQUEST_MEDIA: requested file(s)" << std::endl;
 
 	for (u16 i = 0; i < numfiles; i++) {
 		std::string name;
 
 		*pkt >> name;
 
-		tosend.push_back(name);
-		verbosestream << "TOSERVER_REQUEST_MEDIA: requested file "
-				<< name << std::endl;
+		tosend.emplace_back(name);
+		verbosestream << "  " << name << std::endl;
 	}
 
 	sendRequestedMedia(peer_id, tosend);
@@ -1800,4 +1799,31 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	// @TODO: filter, rate limit
 
 	broadcastModChannelMessage(channel_name, channel_msg, peer_id);
+}
+
+void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
+{
+	std::vector<u32> tokens;
+	u8 numtokens;
+
+	*pkt >> numtokens;
+	for (u16 i = 0; i < numtokens; i++) {
+		u32 n;
+		*pkt >> n;
+		tokens.emplace_back(n);
+	}
+
+	const session_t peer_id = pkt->getPeerId();
+	auto player = m_env->getPlayer(peer_id);
+
+	for (const u32 token : tokens) {
+		auto it = m_pending_dyn_media.find(token);
+		if (it == m_pending_dyn_media.end())
+			continue;
+		if (it->second.waiting_players.count(peer_id)) {
+			it->second.waiting_players.erase(peer_id);
+			if (player)
+				getScriptIface()->on_dynamic_media_added(token, player->getName());
+		}
+	}
 }

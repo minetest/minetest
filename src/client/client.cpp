@@ -555,6 +555,29 @@ void Client::step(float dtime)
 			m_media_downloader = NULL;
 		}
 	}
+	{
+		// Acknowledge dynamic media downloads to server
+		std::vector<u32> done;
+		for (auto it = m_pending_media_downloads.begin();
+				it != m_pending_media_downloads.end();) {
+			assert(it->second->isStarted());
+			it->second->step(this);
+			if (it->second->isDone()) {
+				done.emplace_back(it->first);
+
+				it = m_pending_media_downloads.erase(it);
+			} else {
+				it++;
+			}
+
+			if (done.size() == 255) { // maximum in one packet
+				sendHaveMedia(done);
+				done.clear();
+			}
+		}
+		if (!done.empty())
+			sendHaveMedia(done);
+	}
 
 	/*
 		If the server didn't update the inventory in a while, revert
@@ -770,7 +793,8 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 	Send(&pkt);
 
 	infostream << "Client: Sending media request list to server ("
-			<< file_requests.size() << " files. packet size)" << std::endl;
+			<< file_requests.size() << " files, packet size "
+			<< pkt.getSize() << ")" << std::endl;
 }
 
 void Client::initLocalMapSaving(const Address &address,
@@ -1291,6 +1315,19 @@ void Client::sendPlayerPos()
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(player, &map, &pkt);
+
+	Send(&pkt);
+}
+
+void Client::sendHaveMedia(const std::vector<u32> &tokens)
+{
+	NetworkPacket pkt(TOSERVER_HAVE_MEDIA, 1 + tokens.size() * 4);
+
+	sanity_check(tokens.size() < 256);
+
+	pkt << static_cast<u8>(tokens.size());
+	for (u32 token : tokens)
+		pkt << token;
 
 	Send(&pkt);
 }

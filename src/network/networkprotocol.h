@@ -207,6 +207,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		Added 'basic_debug' privilege
+		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 */
 
 #define LATEST_PROTOCOL_VERSION 40
@@ -317,9 +318,8 @@ enum ToClientCommand
 	/*
 		std::string raw_hash
 		std::string filename
+		u32 callback_token
 		bool should_be_cached
-		u32 len
-		char filedata[len]
 	*/
 
 	// (oops, there is some gap here)
@@ -938,7 +938,13 @@ enum ToServerCommand
 		}
 	*/
 
-	TOSERVER_RECEIVED_MEDIA = 0x41, // Obsolete
+	TOSERVER_HAVE_MEDIA = 0x41,
+	/*
+		u8 number of callback tokens
+		for each:
+			u32 token
+	*/
+
 	TOSERVER_BREATH = 0x42, // Obsolete
 
 	TOSERVER_CLIENT_READY = 0x43,

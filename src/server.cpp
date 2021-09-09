@@ -665,6 +665,17 @@ void Server::AsyncRunStep(bool initial_step)
 	} else {
 		m_lag_gauge->increment(dtime/100);
 	}
+
+	{
+		float &counter = m_step_pending_dyn_media_timer;
+		counter += dtime;
+		if (counter >= 5.0f) {
+			stepPendingDynMediaCallbacks(counter);
+			counter = 0;
+		}
+	}
+
+
 #if USE_CURL
 	// send masterserver announce
 	{
@@ -2527,6 +2538,8 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	std::string lang_suffix;
 	lang_suffix.append(".").append(lang_code).append(".tr");
 	for (const auto &i : m_media) {
+		if (i.second.no_announce)
+			continue;
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
 			continue;
 		media_sent++;
@@ -2535,6 +2548,8 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	pkt << media_sent;
 
 	for (const auto &i : m_media) {
+		if (i.second.no_announce)
+			continue;
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
 			continue;
 		pkt << i.first << i.second.sha1_digest;
@@ -2553,11 +2568,9 @@ struct SendableMedia
 	std::string path;
 	std::string data;
 
-	SendableMedia(const std::string &name_="", const std::string &path_="",
-	              const std::string &data_=""):
-		name(name_),
-		path(path_),
-		data(data_)
+	SendableMedia(const std::string &name, const std::string &path,
+			std::string &&data):
+		name(name), path(path), data(std::move(data))
 	{}
 };
 
@@ -2584,40 +2597,19 @@ void Server::sendRequestedMedia(session_t peer_id,
 			continue;
 		}
 
-		//TODO get path + name
-		std::string tpath = m_media[name].path;
+		const auto &m = m_media[name];
 
 		// Read data
-		std::ifstream fis(tpath.c_str(), std::ios_base::binary);
-		if(!fis.good()){
-			errorstream<<"Server::sendRequestedMedia(): Could not open \""
-					<<tpath<<"\" for reading"<<std::endl;
+		std::string data;
+		if (!fs::ReadFile(m.path, data)) {
+			errorstream << "Server::sendRequestedMedia(): Failed to read \""
+					<< name << "\"" << std::endl;
 			continue;
 		}
-		std::ostringstream tmp_os(std::ios_base::binary);
-		bool bad = false;
-		for(;;) {
-			char buf[1024];
-			fis.read(buf, 1024);
-			std::streamsize len = fis.gcount();
-			tmp_os.write(buf, len);
-			file_size_bunch_total += len;
-			if(fis.eof())
-				break;
-			if(!fis.good()) {
-				bad = true;
-				break;
-			}
-		}
-		if (bad) {
-			errorstream<<"Server::sendRequestedMedia(): Failed to read \""
-					<<name<<"\""<<std::endl;
-			continue;
-		}
-		/*infostream<<"Server::sendRequestedMedia(): Loaded \""
-				<<tname<<"\""<<std::endl;*/
+		file_size_bunch_total += data.size();
+
 		// Put in list
-		file_bunches[file_bunches.size()-1].emplace_back(name, tpath, tmp_os.str());
+		file_bunches.back().emplace_back(name, m.path, std::move(data));
 
 		// Start next bunch if got enough data
 		if(file_size_bunch_total >= bytes_per_bunch) {
@@ -2657,6 +2649,33 @@ void Server::sendRequestedMedia(session_t peer_id,
 				<< " files=" << file_bunches[i].size()
 				<< " size="  << pkt.getSize() << std::endl;
 		Send(&pkt);
+	}
+}
+
+void Server::stepPendingDynMediaCallbacks(float dtime)
+{
+	MutexAutoLock lock(m_env_mutex);
+
+	for (auto it = m_pending_dyn_media.begin(); it != m_pending_dyn_media.end();) {
+		it->second.expiry_timer -= dtime;
+		bool del = it->second.waiting_players.empty() || it->second.expiry_timer < 0;
+
+		if (!del) {
+			it++;
+			continue;
+		}
+
+		const auto &name = it->second.filename;
+		if (!name.empty()) {
+			assert(m_media.count(name));
+			// if no_announce isn't set we're definitely deleting the wrong file!
+			sanity_check(m_media[name].no_announce);
+
+			fs::DeleteSingleFileOrEmptyDirectory(m_media[name].path);
+			m_media.erase(name);
+		}
+		getScriptIface()->freeDynamicMediaCallback(it->first);
+		it = m_pending_dyn_media.erase(it);
 	}
 }
 
@@ -3457,14 +3476,18 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(const std::string &filepath,
-	std::vector<RemotePlayer*> &sent_to)
+bool Server::dynamicAddMedia(std::string filepath,
+	const u32 token, const std::string &to_player, bool ephemeral)
 {
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
-	if (m_media.find(filename) != m_media.end()) {
-		errorstream << "Server::dynamicAddMedia(): file \"" << filename
-			<< "\" already exists in media cache" << std::endl;
-		return false;
+	auto it = m_media.find(filename);
+	if (it != m_media.end()) {
+		// Allow the same path to be "added" again in certain conditions
+		if (ephemeral || it->second.path != filepath) {
+			errorstream << "Server::dynamicAddMedia(): file \"" << filename
+				<< "\" already exists in media cache" << std::endl;
+			return false;
+		}
 	}
 
 	// Load the file and add it to our media cache
@@ -3473,34 +3496,90 @@ bool Server::dynamicAddMedia(const std::string &filepath,
 	if (!ok)
 		return false;
 
+	if (ephemeral) {
+		// Create a copy of the file and swap out the path, this removes the
+		// requirement that mods keep the file accessible at the original path.
+		filepath = fs::CreateTempFile();
+		bool ok = ([&] () -> bool {
+			if (filepath.empty())
+				return false;
+			std::ofstream os(filepath.c_str(), std::ios::binary);
+			if (!os.good())
+				return false;
+			os << filedata;
+			os.close();
+			return !os.fail();
+		})();
+		if (!ok) {
+			errorstream << "Server: failed to create a copy of media file "
+				<< "\"" << filename << "\"" << std::endl;
+			m_media.erase(filename);
+			return false;
+		}
+		verbosestream << "Server: \"" << filename << "\" temporarily copied to "
+			<< filepath << std::endl;
+
+		m_media[filename].path = filepath;
+		m_media[filename].no_announce = true;
+		// stepPendingDynMediaCallbacks will clean this up later.
+	} else if (!to_player.empty()) {
+		m_media[filename].no_announce = true;
+	}
+
 	// Push file to existing clients
 	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-	pkt << raw_hash << filename << (bool) true;
-	pkt.putLongString(filedata);
+	pkt << raw_hash << filename << (bool)ephemeral;
 
+	NetworkPacket legacy_pkt = pkt;
+
+	// Newer clients get asked to fetch the file (asynchronous)
+	pkt << token;
+	// Older clients have an awful hack that just throws the data at them
+	legacy_pkt.putLongString(filedata);
+
+	std::unordered_set<session_t> delivered, waiting;
 	m_clients.lock();
 	for (auto &pair : m_clients.getClientList()) {
 		if (pair.second->getState() < CS_DefinitionsSent)
 			continue;
-		if (pair.second->net_proto_version < 39)
+		const auto proto_ver = pair.second->net_proto_version;
+		if (proto_ver < 39)
 			continue;
 
-		if (auto player = m_env->getPlayer(pair.second->peer_id))
-			sent_to.emplace_back(player);
-		/*
-			FIXME: this is a very awful hack
-			The network layer only guarantees ordered delivery inside a channel.
-			Since the very next packet could be one that uses the media, we have
-			to push the media over ALL channels to ensure it is processed before
-			it is used.
-			In practice this means we have to send it twice:
-			- channel 1 (HUD)
-			- channel 0 (everything else: e.g. play_sound, object messages)
-		*/
-		m_clients.send(pair.second->peer_id, 1, &pkt, true);
-		m_clients.send(pair.second->peer_id, 0, &pkt, true);
+		const session_t peer_id = pair.second->peer_id;
+		if (!to_player.empty() && getPlayerName(peer_id) != to_player)
+			continue;
+
+		if (proto_ver < 40) {
+			delivered.emplace(peer_id);
+			/*
+				The network layer only guarantees ordered delivery inside a channel.
+				Since the very next packet could be one that uses the media, we have
+				to push the media over ALL channels to ensure it is processed before
+				it is used. In practice this means channels 1 and 0.
+			*/
+			m_clients.send(peer_id, 1, &legacy_pkt, true);
+			m_clients.send(peer_id, 0, &legacy_pkt, true);
+		} else {
+			waiting.emplace(peer_id);
+			Send(peer_id, &pkt);
+		}
 	}
 	m_clients.unlock();
+
+	// Run callback for players that already had the file delivered (legacy-only)
+	for (session_t peer_id : delivered) {
+		if (auto player = m_env->getPlayer(peer_id))
+			getScriptIface()->on_dynamic_media_added(token, player->getName());
+	}
+
+	// Save all others in our pending state
+	auto &state = m_pending_dyn_media[token];
+	state.waiting_players = std::move(waiting);
+	// regardless of success throw away the callback after a while
+	state.expiry_timer = 60.0f;
+	if (ephemeral)
+		state.filename = filename;
 
 	return true;
 }
