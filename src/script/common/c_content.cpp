@@ -829,6 +829,10 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// the higher, the slower.
 	f.move_resistance = getintfield_default(L, index,
 			"move_resistance", f.move_resistance);
+
+	// Whether e.g. players in this node will have liquid movement physics
+	f.liquid_move_physics = (LiquidMoveType)getenumfield(L, index, "liquid_move_physics",
+			ScriptApiNode::es_LiquidMoveType, LIQUID_MOVE_AUTO);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)
@@ -837,6 +841,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	std::string paramtype2(ScriptApiNode::es_ContentParamType2[(int)c.param_type_2].str);
 	std::string drawtype(ScriptApiNode::es_DrawType[(int)c.drawtype].str);
 	std::string liquid_type(ScriptApiNode::es_LiquidType[(int)c.liquid_type].str);
+	std::string liquid_move_physics(ScriptApiNode::es_LiquidMoveType[(int)c.liquid_move_physics].str);
 
 	/* Missing "tiles" because I don't see a usecase (at least not yet). */
 
@@ -958,6 +963,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "node_dig_prediction");
 	lua_pushnumber(L, c.move_resistance);
 	lua_setfield(L, -2, "move_resistance");
+	lua_pushstring(L, liquid_move_physics.c_str());
+	lua_setfield(L, -2, "liquid_move_physics");
 }
 
 /******************************************************************************/

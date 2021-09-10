@@ -7634,6 +7634,9 @@ Used by `minetest.register_node`.
         move_resistance = 0,
         -- Slows down movement of players through this node (max. 7).
         -- If this is nil, it will be equal to liquid_viscosity.
+        -- Note: If liquid movement physics apply to the node
+        -- (see `liquid_move_physics`), the movement speed will also be
+        -- affected by the `movement_liquid_*` settings.
 
         buildable_to = false,  -- If true, placed nodes can replace this node
 
@@ -7641,8 +7644,8 @@ Used by `minetest.register_node`.
         -- If true, liquids flow into and replace this node.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
-        liquidtype = "none",  -- specifies liquid physics
-        -- * "none":    no liquid physics
+        liquidtype = "none",  -- specifies liquid flowing physics
+        -- * "none":    no liquid flowing physics
         -- * "source":  spawns flowing liquid nodes at all 4 sides and below;
         --              recommended drawtype: "liquid".
         -- * "flowing": spawned from source, spawns more flowing liquid nodes
@@ -7665,6 +7668,16 @@ Used by `minetest.register_node`.
         liquid_renewable = true,
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
+
+        liquid_move_physics = "auto", -- specifies movement physics if inside node
+        -- * "normal": No liquid movement physics apply.
+        -- * "liquid": Enables liquid movement physics. Enables things like
+        --   ability to "swim" up/down, sinking slowly if not moving,
+        --   smoother speed change when falling into, etc. The `movement_liquid_*`
+        --   settings apply.
+        -- * "auto": Will be treated as "liquid" if `liquidype ~= "none"` and
+        --   treated as "normal" otherwise.
+        -- Default: "auto"
 
         leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
