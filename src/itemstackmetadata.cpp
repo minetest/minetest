@@ -60,7 +60,7 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 
 void ItemStackMetadata::serialize(std::ostream &os) const
 {
-	std::ostringstream os2;
+	std::ostringstream os2(std::ios_base::binary);
 	os2 << DESERIALIZE_START;
 	for (const auto &stringvar : m_stringvars) {
 		if (!stringvar.first.empty() || !stringvar.second.empty())

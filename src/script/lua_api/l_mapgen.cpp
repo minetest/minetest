@@ -752,9 +752,7 @@ int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 	lua_setfield(L, -2, "mgname");
 
 	settingsmgr->getMapSetting("seed", &value);
-	std::istringstream ss(value);
-	u64 seed;
-	ss >> seed;
+	u64 seed = from_string<u64>(value);
 	lua_pushinteger(L, seed);
 	lua_setfield(L, -2, "seed");
 
