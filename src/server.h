@@ -295,7 +295,8 @@ public:
 
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
-	inline void setAsyncFatalError(const LuaError &e) {
+	inline void setAsyncFatalError(const LuaError &e)
+	{
 		setAsyncFatalError(std::string("Lua: ") + e.what());
 	}
 
