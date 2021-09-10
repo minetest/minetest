@@ -103,7 +103,13 @@ void *ServerThread::run()
 	 * doesn't busy wait) and will process any remaining packets.
 	 */
 
-	m_server->AsyncRunStep(true);
+	try {
+		m_server->AsyncRunStep(true);
+	} catch (con::ConnectionBindFailed &e) {
+		m_server->setAsyncFatalError(e.what());
+	} catch (LuaError &e) {
+		m_server->setAsyncFatalError(e);
+	}
 
 	while (!stopRequested()) {
 		try {
@@ -117,8 +123,7 @@ void *ServerThread::run()
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
-			m_server->setAsyncFatalError(
-					"ServerThread::run Lua: " + std::string(e.what()));
+			m_server->setAsyncFatalError(e);
 		}
 	}
 

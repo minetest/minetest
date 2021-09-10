@@ -300,6 +300,10 @@ public:
 
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
+	inline void setAsyncFatalError(const LuaError &e)
+	{
+		setAsyncFatalError(std::string("Lua: ") + e.what());
+	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }

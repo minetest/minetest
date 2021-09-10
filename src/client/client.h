@@ -325,6 +325,10 @@ public:
 		m_access_denied = true;
 		m_access_denied_reason = reason;
 	}
+	inline void setFatalError(const LuaError &e)
+	{
+		setFatalError(std::string("Lua :") + e.what());
+	}
 
 	// Renaming accessDeniedReason to better name could be good as it's used to
 	// disconnect client when CSM failed.
