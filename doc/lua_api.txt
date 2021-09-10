@@ -3271,10 +3271,13 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 vectors are written like this: `(x, y, z)`:
 
 * `vector.new([a[, b, c]])`:
-    * Returns a vector.
-    * A copy of `a` if `a` is a vector.
-    * `(a, b, c)`, if all of `a`, `b`, `c` are defined numbers.
-    * `(0, 0, 0)`, if no arguments are given.
+    * Returns a new vector `(a, b, c)`.
+    * Deprecated: `vector.new()` does the same as `vector.zero()` and
+      `vector.new(v)` does the same as `vector.copy(v)`
+* `vector.zero()`:
+    * Returns a new vector `(0, 0, 0)`.
+* `vector.copy(v)`:
+    * Returns a copy of the vector `v`.
 * `vector.from_string(s[, init])`:
     * Returns `v, np`, where `v` is a vector read from the given string `s` and
       `np` is the next position in the string after the vector.
