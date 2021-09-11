@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "networkprotocol.h"
 #include <iostream>
-#include <fstream>
+#include <functional>
 #include <vector>
 #include <map>
 
@@ -245,8 +245,8 @@ public:
 	void insert(const BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<BufferedPacket> getTimedOuts(float timeout,
-			unsigned int max_packets);
+	std::vector<std::reference_wrapper<BufferedPacket>>
+		getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();

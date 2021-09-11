@@ -354,14 +354,14 @@ void ReliablePacketBuffer::incrementTimeouts(float dtime)
 	}
 }
 
-std::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout,
-													unsigned int max_packets)
+std::vector<std::reference_wrapper<BufferedPacket>>
+	ReliablePacketBuffer::getTimedOuts(float timeout, u32 max_packets)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	std::list<BufferedPacket> timed_outs;
+	std::vector<std::reference_wrapper<BufferedPacket>> timed_outs;
 	for (BufferedPacket &bufferedPacket : m_list) {
 		if (bufferedPacket.time >= timeout) {
-			timed_outs.push_back(bufferedPacket);
+			timed_outs.push_back(std::ref(bufferedPacket));
 
 			//this packet will be sent right afterwards reset timeout here
 			bufferedPacket.time = 0.0f;
