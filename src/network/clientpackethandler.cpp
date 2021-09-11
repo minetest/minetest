@@ -261,7 +261,7 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 		return;
 
 	std::istringstream is(pkt->readLongString(), std::ios::binary);
-	std::stringstream sstr;
+	std::stringstream sstr(std::ios::binary);
 	decompressZlib(is, sstr);
 
 	NodeMetadataList meta_updates_list(false);
@@ -760,12 +760,11 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 
 	// Decompress node definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
-	std::ostringstream tmp_os;
+	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	std::istringstream tmp_is2(tmp_os.str());
-	m_nodedef->deSerialize(tmp_is2);
+	m_nodedef->deSerialize(tmp_os);
 	m_nodedef_received = true;
 }
 
@@ -780,12 +779,11 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 	// Decompress item definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
-	std::ostringstream tmp_os;
+	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	std::istringstream tmp_is2(tmp_os.str());
-	m_itemdef->deSerialize(tmp_is2);
+	m_itemdef->deSerialize(tmp_os);
 	m_itemdef_received = true;
 }
 

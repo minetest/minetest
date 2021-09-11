@@ -272,11 +272,11 @@ int ModApiUtil::l_compress(lua_State *L)
 	const char *data = luaL_checklstring(L, 1, &size);
 
 	int level = -1;
-	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
-		level = readParam<float>(L, 3);
+	if (!lua_isnoneornil(L, 3))
+		level = readParam<int>(L, 3);
 
-	std::ostringstream os;
-	compressZlib(std::string(data, size), os, level);
+	std::ostringstream os(std::ios_base::binary);
+	compressZlib(reinterpret_cast<const u8 *>(data), size, os, level);
 
 	std::string out = os.str();
 
@@ -292,8 +292,8 @@ int ModApiUtil::l_decompress(lua_State *L)
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 
-	std::istringstream is(std::string(data, size));
-	std::ostringstream os;
+	std::istringstream is(std::string(data, size), std::ios_base::binary);
+	std::ostringstream os(std::ios_base::binary);
 	decompressZlib(is, os);
 
 	std::string out = os.str();

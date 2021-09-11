@@ -537,11 +537,8 @@ float Settings::getFloat(const std::string &name) const
 
 u64 Settings::getU64(const std::string &name) const
 {
-	u64 value = 0;
 	std::string s = get(name);
-	std::istringstream ss(s);
-	ss >> value;
-	return value;
+	return from_string<u64>(s);
 }
 
 
