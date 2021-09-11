@@ -242,7 +242,7 @@ public:
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(BufferedPacket &p, u16 next_expected);
+	void insert(const BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
 	std::list<BufferedPacket> getTimedOuts(float timeout,
@@ -250,12 +250,12 @@ public:
 
 	void print();
 	bool empty();
-	RPBSearchResult notFound();
 	u32 size();
 
 
 private:
 	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
+	inline RPBSearchResult notFound() { return m_list.end(); }
 
 	std::list<BufferedPacket> m_list;
 

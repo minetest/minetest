@@ -375,7 +375,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			<< " INFO: queueing reliable packet for peer_id: " << peer_id
 			<< " channel: " << (u32)channelnum
 			<< " seqnum: " << seqnum << std::endl);
-		channel->queued_reliables.push(p);
+		channel->queued_reliables.emplace(std::move(p));
 		return false;
 	}
 
@@ -717,13 +717,15 @@ void ConnectionSendThread::sendPackets(float dtime)
 					channel.outgoing_reliables_sent.size()
 					< channel.getWindowSize() &&
 					peer->m_increment_packets_remaining > 0) {
-				BufferedPacket p = channel.queued_reliables.front();
+				BufferedPacket p = std::move(channel.queued_reliables.front());
 				channel.queued_reliables.pop();
+
 				LOG(dout_con << m_connection->getDesc()
 					<< " INFO: sending a queued reliable packet "
 					<< " channel: " << i
 					<< ", seqnum: " << readU16(&p.data[BASE_HEADER_SIZE + 1])
 					<< std::endl);
+
 				sendAsPacketReliable(p, &channel);
 				peer->m_increment_packets_remaining--;
 			}

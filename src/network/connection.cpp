@@ -200,17 +200,12 @@ RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
 	return i;
 }
 
-RPBSearchResult ReliablePacketBuffer::notFound()
-{
-	return m_list.end();
-}
-
 bool ReliablePacketBuffer::getFirstSeqnum(u16& result)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	if (m_list.empty())
 		return false;
-	const BufferedPacket &p = *m_list.begin();
+	const BufferedPacket &p = m_list.front();
 	result = readU16(&p.data[BASE_HEADER_SIZE + 1]);
 	return true;
 }
@@ -220,14 +215,14 @@ BufferedPacket ReliablePacketBuffer::popFirst()
 	MutexAutoLock listlock(m_list_mutex);
 	if (m_list.empty())
 		throw NotFoundException("Buffer is empty");
-	BufferedPacket p = *m_list.begin();
-	m_list.erase(m_list.begin());
+	BufferedPacket p = std::move(m_list.front());
+	m_list.pop_front();
 
 	if (m_list.empty()) {
 		m_oldest_non_answered_ack = 0;
 	} else {
 		m_oldest_non_answered_ack =
-				readU16(&m_list.begin()->data[BASE_HEADER_SIZE + 1]);
+				readU16(&m_list.front().data[BASE_HEADER_SIZE + 1]);
 	}
 	return p;
 }
@@ -241,15 +236,7 @@ BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 				<< " not found in reliable buffer"<<std::endl);
 		throw NotFoundException("seqnum not found in buffer");
 	}
-	BufferedPacket p = *r;
-
-
-	RPBSearchResult next = r;
-	++next;
-	if (next != notFound()) {
-		u16 s = readU16(&(next->data[BASE_HEADER_SIZE+1]));
-		m_oldest_non_answered_ack = s;
-	}
+	BufferedPacket p = std::move(*r);
 
 	m_list.erase(r);
 
@@ -257,12 +244,12 @@ BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 		m_oldest_non_answered_ack = 0;
 	} else {
 		m_oldest_non_answered_ack =
-				readU16(&m_list.begin()->data[BASE_HEADER_SIZE + 1]);
+				readU16(&m_list.front().data[BASE_HEADER_SIZE + 1]);
 	}
 	return p;
 }
 
-void ReliablePacketBuffer::insert(BufferedPacket &p, u16 next_expected)
+void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	if (p.data.getSize() < BASE_HEADER_SIZE + 3) {
@@ -295,7 +282,7 @@ void ReliablePacketBuffer::insert(BufferedPacket &p, u16 next_expected)
 	// If list is empty, just add it
 	if (m_list.empty())
 	{
-		m_list.push_back(p);
+		m_list.emplace_back(p);
 		m_oldest_non_answered_ack = seqnum;
 		// Done.
 		return;
@@ -349,13 +336,13 @@ void ReliablePacketBuffer::insert(BufferedPacket &p, u16 next_expected)
 	}
 	/* insert or push back */
 	else if (i != m_list.end()) {
-		m_list.insert(i, p);
+		m_list.emplace(i, p);
 	} else {
-		m_list.push_back(p);
+		m_list.emplace_back(p);
 	}
 
 	/* update last packet number */
-	m_oldest_non_answered_ack = readU16(&(*m_list.begin()).data[BASE_HEADER_SIZE+1]);
+	m_oldest_non_answered_ack = readU16(&m_list.front().data[BASE_HEADER_SIZE+1]);
 }
 
 void ReliablePacketBuffer::incrementTimeouts(float dtime)
@@ -374,7 +361,7 @@ std::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout,
 	std::list<BufferedPacket> timed_outs;
 	for (BufferedPacket &bufferedPacket : m_list) {
 		if (bufferedPacket.time >= timeout) {
-			timed_outs.push_back(bufferedPacket);
+			timed_outs.emplace_back(bufferedPacket);
 
 			//this packet will be sent right afterwards reset timeout here
 			bufferedPacket.time = 0.0f;
@@ -1051,20 +1038,20 @@ bool UDPPeer::processReliableSendCommand(
 				m_connection->GetProtocolID(), m_connection->GetPeerID(),
 				c.channelnum);
 
-		toadd.push(p);
+		toadd.emplace(std::move(p));
 	}
 
 	if (have_sequence_number) {
 		volatile u16 pcount = 0;
 		while (!toadd.empty()) {
-			BufferedPacket p = toadd.front();
+			BufferedPacket p = std::move(toadd.front());
 			toadd.pop();
 //			LOG(dout_con<<connection->getDesc()
 //					<< " queuing reliable packet for peer_id: " << c.peer_id
 //					<< " channel: " << (c.channelnum&0xFF)
 //					<< " seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 //					<< std::endl)
-			chan.queued_reliables.push(p);
+			chan.queued_reliables.emplace(std::move(p));
 			pcount++;
 		}
 		sanity_check(chan.queued_reliables.size() < 0xFFFF);
