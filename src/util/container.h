@@ -140,6 +140,13 @@ public:
 		m_signal.post();
 	}
 
+	void emplace_back(T &&t)
+	{
+		MutexAutoLock lock(m_mutex);
+		m_queue.emplace_back(std::move(t));
+		m_signal.post();
+	}
+
 	/* this version of pop_front returns a empty element of T on timeout.
 	* Make sure default constructor of T creates a recognizable "empty" element
 	*/

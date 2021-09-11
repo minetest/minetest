@@ -1208,10 +1208,17 @@ Connection::~Connection()
 }
 
 /* Internal stuff */
-void Connection::putEvent(ConnectionEvent &e)
+
+void Connection::putEvent(const ConnectionEvent &e)
 {
 	assert(e.type != CONNEVENT_NONE); // Pre-condition
 	m_event_queue.push_back(e);
+}
+
+void Connection::putEvent(ConnectionEvent &&e)
+{
+	assert(e.type != CONNEVENT_NONE); // Pre-condition
+	m_event_queue.emplace_back(std::move(e));
 }
 
 void Connection::TriggerSend()
@@ -1299,10 +1306,18 @@ ConnectionEvent Connection::waitEvent(u32 timeout_ms)
 	}
 }
 
-void Connection::putCommand(ConnectionCommand &c)
+void Connection::putCommand(const ConnectionCommand &c)
 {
 	if (!m_shutting_down) {
 		m_command_queue.push_back(c);
+		m_sendThread->Trigger();
+	}
+}
+
+void Connection::putCommand(ConnectionCommand &&c)
+{
+	if (!m_shutting_down) {
+		m_command_queue.emplace_back(std::move(c));
 		m_sendThread->Trigger();
 	}
 }
@@ -1408,7 +1423,7 @@ void Connection::Send(session_t peer_id, u8 channelnum,
 	ConnectionCommand c;
 
 	c.send(peer_id, channelnum, pkt, reliable);
-	putCommand(c);
+	putCommand(std::move(c));
 }
 
 Address Connection::GetPeerAddress(session_t peer_id)
@@ -1508,12 +1523,12 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
 
 	ConnectionCommand cmd;
-	SharedBuffer<u8> reply(4);
+	Buffer<u8> reply(4);
 	writeU8(&reply[0], PACKET_TYPE_CONTROL);
 	writeU8(&reply[1], CONTROLTYPE_SET_PEER_ID);
 	writeU16(&reply[2], peer_id_new);
 	cmd.createPeer(peer_id_new,reply);
-	putCommand(cmd);
+	putCommand(std::move(cmd));
 
 	// Create peer addition event
 	ConnectionEvent e;
@@ -1560,7 +1575,7 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 	writeU16(&ack[2], seqnum);
 
 	c.ack(peer_id, channelnum, ack);
-	putCommand(c);
+	putCommand(std::move(c));
 	m_sendThread->Trigger();
 }
 

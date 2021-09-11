@@ -911,7 +911,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 					if (data_left) {
 						ConnectionEvent e;
 						e.dataReceived(peer_id, resultdata);
-						m_connection->putEvent(e);
+						m_connection->putEvent(std::move(e));
 					}
 				}
 				catch (ProcessedSilentlyException &e) {
@@ -1022,7 +1022,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 			ConnectionEvent e;
 			e.dataReceived(peer_id, resultdata);
-			m_connection->putEvent(e);
+			m_connection->putEvent(std::move(e));
 		}
 		catch (ProcessedSilentlyException &e) {
 		}
