@@ -1693,13 +1693,13 @@ float Client::mediaReceiveProgress()
 	return 1.0; // downloader only exists when not yet done
 }
 
-typedef struct TextureUpdateArgs {
+struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
 	ITextureSource *tsrc;
-} TextureUpdateArgs;
+};
 
 void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progress)
 {
@@ -1719,7 +1719,7 @@ void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progres
 		if (do_draw) {
 			targs->last_time_ms = time_ms;
 			std::wostringstream strm;
-			strm << targs->text_base << " " << targs->last_percent << "%...";
+			strm << targs->text_base << L" " << targs->last_percent << L"%...";
 			m_rendering_engine->draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
 				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
 		}
