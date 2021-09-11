@@ -647,7 +647,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
-				tsrc->getTextureForMesh("unknown_node.png"));
+				tsrc->getTextureForMesh("no_texture.png"));
 
 		setSceneNodeMaterial(m_spritenode);
 
@@ -1288,7 +1288,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
-			std::string texturestring = "unknown_node.png";
+			std::string texturestring = "no_texture.png";
 			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
@@ -1367,7 +1367,7 @@ void GenericCAO::updateTextures(std::string mod)
 		{
 			for (u32 i = 0; i < 6; ++i)
 			{
-				std::string texturestring = "unknown_node.png";
+				std::string texturestring = "no_texture.png";
 				if(m_prop.textures.size() > i)
 					texturestring = m_prop.textures[i];
 				texturestring += mod;
@@ -1400,7 +1400,7 @@ void GenericCAO::updateTextures(std::string mod)
 		} else if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			{
-				std::string tname = "unknown_object.png";
+				std::string tname = "no_texture.png";
 				if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
@@ -1422,7 +1422,7 @@ void GenericCAO::updateTextures(std::string mod)
 				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			{
-				std::string tname = "unknown_object.png";
+				std::string tname = "no_texture.png";
 				if (m_prop.textures.size() >= 2)
 					tname = m_prop.textures[1];
 				else if (!m_prop.textures.empty())

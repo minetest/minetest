@@ -1007,11 +1007,16 @@ void drawItemStack(
 
 	bool draw_overlay = false;
 
+	bool has_mesh = false;
+	bool anim_or_no_inv_img = (enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty();
+	ItemMesh *imesh;
+
 	// Render as mesh if animated or no inventory image
-	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
-		ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
-		if (!imesh || !imesh->mesh)
-			return;
+	if (anim_or_no_inv_img) {
+		imesh = client->idef()->getWieldMesh(def.name, client);
+		has_mesh = imesh && imesh->mesh;
+	}
+	if (has_mesh) {
 		scene::IMesh *mesh = imesh->mesh;
 		driver->clearBuffers(video::ECBF_DEPTH);
 		s32 delta = 0;
@@ -1103,10 +1108,17 @@ void drawItemStack(
 		draw_overlay = def.type == ITEM_NODE && def.inventory_image.empty();
 	} else { // Otherwise just draw as 2D
 		video::ITexture *texture = client->idef()->getInventoryTexture(def.name, client);
-		if (!texture)
-			return;
-		video::SColor color =
-			client->idef()->getItemstackColor(item, client);
+		video::SColor color;
+		if (texture) {
+			color = client->idef()->getItemstackColor(item, client);
+		} else {
+			color = video::SColor(255, 255, 255, 255);
+			texture = driver->getTexture("no_texture.png");
+			if (!texture) {
+				return;
+			}
+		}
+
 		const video::SColor colors[] = { color, color, color, color };
 
 		draw2DImageFilterScaled(driver, texture, rect,

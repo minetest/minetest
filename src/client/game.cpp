@@ -3331,9 +3331,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	} else {
 		MapNode n = map.getNode(nodepos);
 
-		if (nodedef_manager->get(n).tiledef[0].name == "unknown_node.png") {
-			m_game_ui->setInfoText(L"Unknown node: " +
-				utf8_to_wide(nodedef_manager->get(n).name));
+		if (nodedef_manager->get(n).name == "unknown") {
+			m_game_ui->setInfoText(L"Unknown node");
 		}
 	}
 
