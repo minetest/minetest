@@ -276,7 +276,7 @@ int ModApiUtil::l_compress(lua_State *L)
 		level = readParam<int>(L, 3);
 
 	std::ostringstream os(std::ios_base::binary);
-	compressZlib(reinterpret_cast<const u8*>(data), size, os, level);
+	compressZlib(reinterpret_cast<const u8 *>(data), size, os, level);
 
 	std::string out = os.str();
 
