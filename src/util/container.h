@@ -140,10 +140,10 @@ public:
 		m_signal.post();
 	}
 
-	void emplace_back(T &&t)
+	void push_back(T &&t)
 	{
 		MutexAutoLock lock(m_mutex);
-		m_queue.emplace_back(std::move(t));
+		m_queue.push_back(std::move(t));
 		m_signal.post();
 	}
 

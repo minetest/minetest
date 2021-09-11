@@ -375,7 +375,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			<< " INFO: queueing reliable packet for peer_id: " << peer_id
 			<< " channel: " << (u32)channelnum
 			<< " seqnum: " << seqnum << std::endl);
-		channel->queued_reliables.emplace(std::move(p));
+		channel->queued_reliables.push(std::move(p));
 		return false;
 	}
 

@@ -282,7 +282,7 @@ void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
 	// If list is empty, just add it
 	if (m_list.empty())
 	{
-		m_list.emplace_back(p);
+		m_list.push_back(p);
 		m_oldest_non_answered_ack = seqnum;
 		// Done.
 		return;
@@ -336,9 +336,9 @@ void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
 	}
 	/* insert or push back */
 	else if (i != m_list.end()) {
-		m_list.emplace(i, p);
+		m_list.insert(i, p);
 	} else {
-		m_list.emplace_back(p);
+		m_list.push_back(p);
 	}
 
 	/* update last packet number */
@@ -361,7 +361,7 @@ std::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout,
 	std::list<BufferedPacket> timed_outs;
 	for (BufferedPacket &bufferedPacket : m_list) {
 		if (bufferedPacket.time >= timeout) {
-			timed_outs.emplace_back(bufferedPacket);
+			timed_outs.push_back(bufferedPacket);
 
 			//this packet will be sent right afterwards reset timeout here
 			bufferedPacket.time = 0.0f;
@@ -971,14 +971,14 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
 				<<" processing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() << std::endl);
 		if (!processReliableSendCommand(c,max_packet_size)) {
-			chan.queued_commands.emplace_back(c);
+			chan.queued_commands.push_back(c);
 		}
 	}
 	else {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" Queueing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() <<std::endl);
-		chan.queued_commands.emplace_back(c);
+		chan.queued_commands.push_back(c);
 		if (chan.queued_commands.size() >= chan.getWindowSize() / 2) {
 			LOG(derr_con << m_connection->getDesc()
 					<< "Possible packet stall to peer id: " << c.peer_id
@@ -1038,7 +1038,7 @@ bool UDPPeer::processReliableSendCommand(
 				m_connection->GetProtocolID(), m_connection->GetPeerID(),
 				c.channelnum);
 
-		toadd.emplace(std::move(p));
+		toadd.push(std::move(p));
 	}
 
 	if (have_sequence_number) {
@@ -1051,7 +1051,7 @@ bool UDPPeer::processReliableSendCommand(
 //					<< " channel: " << (c.channelnum&0xFF)
 //					<< " seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 //					<< std::endl)
-			chan.queued_reliables.emplace(std::move(p));
+			chan.queued_reliables.push(std::move(p));
 			pcount++;
 		}
 		sanity_check(chan.queued_reliables.size() < 0xFFFF);
@@ -1205,7 +1205,7 @@ void Connection::putEvent(const ConnectionEvent &e)
 void Connection::putEvent(ConnectionEvent &&e)
 {
 	assert(e.type != CONNEVENT_NONE); // Pre-condition
-	m_event_queue.emplace_back(std::move(e));
+	m_event_queue.push_back(std::move(e));
 }
 
 void Connection::TriggerSend()
@@ -1304,7 +1304,7 @@ void Connection::putCommand(const ConnectionCommand &c)
 void Connection::putCommand(ConnectionCommand &&c)
 {
 	if (!m_shutting_down) {
-		m_command_queue.emplace_back(std::move(c));
+		m_command_queue.push_back(std::move(c));
 		m_sendThread->Trigger();
 	}
 }
