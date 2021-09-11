@@ -751,7 +751,7 @@ public:
 
 	/* Interface */
 	ConnectionEvent waitEvent(u32 timeout_ms);
-	// Warning: creates an uncecessary copy, prefer putCommand(T&&) if possible
+	// Warning: creates an unnecessary copy, prefer putCommand(T&&) if possible
 	void putCommand(const ConnectionCommand &c);
 	void putCommand(ConnectionCommand &&c);
 
@@ -797,7 +797,7 @@ protected:
 
 	bool Receive(NetworkPacket *pkt, u32 timeout);
 
-	// Warning: creates an uncecessary copy, prefer putEvent(T&&) if possible
+	// Warning: creates an unnecessary copy, prefer putEvent(T&&) if possible
 	void putEvent(const ConnectionEvent &e);
 	void putEvent(ConnectionEvent &&e);
 
