@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
 #include "peerhandler.h"
 #include "socket.h"
 #include "constants.h"
@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "networkprotocol.h"
 #include <iostream>
-#include <functional>
 #include <vector>
 #include <map>
 
@@ -245,8 +244,7 @@ public:
 	void insert(const BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::vector<std::reference_wrapper<BufferedPacket>>
-		getTimedOuts(float timeout, u32 max_packets);
+	std::list<BufferedPacket> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();

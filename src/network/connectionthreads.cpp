@@ -230,14 +230,12 @@ void ConnectionSendThread::runTimeouts(float dtime)
 
 			m_iteration_packets_avaialble -= timed_outs.size();
 
-			for (auto it : timed_outs) {
-				BufferedPacket &k = it.get();
+			for (const auto &k : timed_outs) {
 				session_t peer_id = readPeerId(*k.data);
 				u8 channelnum = readChannel(*k.data);
 				u16 seqnum = readU16(&(k.data[BASE_HEADER_SIZE + 1]));
 
 				channel.UpdateBytesLost(k.data.getSize());
-				k.resend_count++;
 
 				if (k.resend_count > MAX_RELIABLE_RETRY) {
 					retry_count_exceeded = true;
