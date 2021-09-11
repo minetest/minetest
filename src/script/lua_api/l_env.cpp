@@ -1200,6 +1200,33 @@ int ModApiEnvMod::l_load_area(lua_State *L)
 	return 0;
 }
 
+// activate_area(p1, p2)
+// temporarily activate existing mapblocks in area p1..p2
+int ModApiEnvMod::l_activate_area(lua_State *L)
+{
+	GET_ENV_PTR;
+	MAP_LOCK_REQUIRED;
+
+	Map &map = env->getMap();
+	v3s16 bpmin = getNodeBlockPos(check_v3s16(L, 1));
+	v3s16 bpmax = getNodeBlockPos(check_v3s16(L, 2));
+	sortBoxVerticies(bpmin, bpmax);
+	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
+	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
+	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+		v3s16 bp(x, y, z);
+		// blocks are skipped if they are already activated:
+		if (env->getBlockStatus(bp) < ServerEnvironment::BS_ACTIVE) {
+			MapBlock *block = map.emergeBlock(bp, false);
+			// blocks are skipped if they do not exist:
+			if (block)
+				env->activateBlock(block, 0);
+		}
+	}
+
+	return 0;
+}
+
 // emerge_area(p1, p2, [callback, context])
 // emerge mapblocks in area p1..p2, calls callback with context upon completion
 int ModApiEnvMod::l_emerge_area(lua_State *L)
@@ -1476,6 +1503,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_nodes_in_area_under_air);
 	API_FCT(fix_light);
 	API_FCT(load_area);
+	API_FCT(activate_area);
 	API_FCT(emerge_area);
 	API_FCT(delete_area);
 	API_FCT(get_perlin);
