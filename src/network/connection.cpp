@@ -971,14 +971,14 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
 				<<" processing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() << std::endl);
 		if (!processReliableSendCommand(c,max_packet_size)) {
-			chan.queued_commands.push_back(c);
+			chan.queued_commands.emplace_back(c);
 		}
 	}
 	else {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" Queueing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() <<std::endl);
-		chan.queued_commands.push_back(c);
+		chan.queued_commands.emplace_back(c);
 		if (chan.queued_commands.size() >= chan.getWindowSize() / 2) {
 			LOG(derr_con << m_connection->getDesc()
 					<< "Possible packet stall to peer id: " << c.peer_id
