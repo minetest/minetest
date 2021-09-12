@@ -1181,7 +1181,6 @@ int ModApiEnvMod::l_raycast(lua_State *L)
 int ModApiEnvMod::l_load_area(lua_State *L)
 {
 	GET_ENV_PTR;
-	MAP_LOCK_REQUIRED;
 
 	Map *map = &(env->getMap());
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 1));
@@ -1205,7 +1204,6 @@ int ModApiEnvMod::l_load_area(lua_State *L)
 int ModApiEnvMod::l_activate_area(lua_State *L)
 {
 	GET_ENV_PTR;
-	MAP_LOCK_REQUIRED;
 
 	Map &map = env->getMap();
 	v3s16 bpmin = getNodeBlockPos(check_v3s16(L, 1));
