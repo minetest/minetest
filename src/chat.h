@@ -117,7 +117,7 @@ public:
 	// preceding operations
 	// If they were not changed, getLineCount() and getLine() output the same as
 	// before
-	bool areLinesChanged() { return m_lines_changed; }
+	bool areLinesChanged() const { return m_lines_changed; }
 	void markLinesUnchanged() { m_lines_changed = false; }
 
 	// Format a chat line for the given number of columns.
