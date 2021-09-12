@@ -122,6 +122,9 @@ private:
 
 	gui::IGUIStaticText *m_guitext_chat = nullptr; // Chat text
 	u32 m_recent_chat_count = 0;
+	// cached stuff for m_guitext_chat, because updating each frame is too slow
+	EnrichedString m_cached_chat_text{L""};
+	core::rect<s32> m_cached_chat_size{0, 0, 0, 0};
 
 	gui::IGUIStaticText *m_guitext_profiler = nullptr; // Profiler text
 	u8 m_profiler_current_page = 0;
