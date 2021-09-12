@@ -261,7 +261,7 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 		return;
 
 	std::istringstream is(pkt->readLongString(), std::ios::binary);
-	std::stringstream sstr(std::ios::binary);
+	std::stringstream sstr(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(is, sstr);
 
 	NodeMetadataList meta_updates_list(false);
