@@ -2938,8 +2938,14 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	chat_backend->step(dtime);
 
 	// Display all messages in a static text element
-	m_game_ui->setChatText(chat_backend->getRecentChat(),
-		chat_backend->getRecentBuffer().getLineCount());
+	if (chat_backend->getRecentBuffer().areLinesChanged()) {
+		chat_backend->getRecentBuffer().markLinesUnchanged();
+		m_game_ui->setChatText(chat_backend->getRecentChat(),
+				chat_backend->getRecentBuffer().getLineCount());
+	}
+
+	// Make sure that the size is still correct
+	m_game_ui->updateChatSize();
 }
 
 void Game::updateCamera(u32 busy_time, f32 dtime)

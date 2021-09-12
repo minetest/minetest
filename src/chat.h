@@ -113,6 +113,13 @@ public:
 	// Scroll to top of buffer (oldest)
 	void scrollTop();
 
+	// Functions for keeping track of whether the lines were modified by any
+	// preceding operations
+	// If they were not changed, getLineCount() and getLine() output the same as
+	// before
+	bool areLinesChanged() { return m_lines_changed; }
+	void markLinesUnchanged() { m_lines_changed = false; }
+
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and
 	// returns the number of formatted lines.
@@ -146,6 +153,11 @@ private:
 	bool m_cache_clickable_chat_weblinks;
 	// Color of clickable chat weblinks
 	irr::video::SColor m_cache_chat_weblink_color;
+
+	// Whether the lines were modified since last markLinesUnchanged()
+	// Is always set to true when m_unformatted is modified, because that's what
+	// determines the output of getLineCount() and getLine()
+	bool m_lines_changed = true;
 };
 
 class ChatPrompt

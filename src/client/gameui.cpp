@@ -227,7 +227,13 @@ void GameUI::showTranslatedStatusText(const char *str)
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 {
+	setStaticText(m_guitext_chat, chat_text);
 
+	m_recent_chat_count = recent_chat_count;
+}
+
+void GameUI::updateChatSize()
+{
 	// Update gui element size and position
 	s32 chat_y = 5;
 
@@ -238,21 +244,15 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
-	core::rect<s32> chat_size(10, chat_y,
-		window_size.X - 20, 0);
+	core::rect<s32> chat_size(10, chat_y, window_size.X - 20, 0);
 	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y,
-		m_guitext_chat->getTextHeight() + chat_y);
+			m_guitext_chat->getTextHeight() + chat_y);
 
-	if (chat_size != m_cached_chat_size) {
-		m_guitext_chat->setRelativePosition(chat_size);
-		m_cached_chat_size = chat_size;
-	}
-	if (chat_text != m_cached_chat_text) {
-		setStaticText(m_guitext_chat, chat_text);
-		m_cached_chat_text = chat_text;
-	}
+	if (chat_size == m_current_chat_size)
+		return;
+	m_current_chat_size = chat_size;
 
-	m_recent_chat_count = recent_chat_count;
+	m_guitext_chat->setRelativePosition(chat_size);
 }
 
 void GameUI::updateProfiler()
