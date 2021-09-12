@@ -2939,8 +2939,8 @@ void Game::updateChat(f32 dtime)
 
 	// Display all messages in a static text element
 	auto &buf = chat_backend->getRecentBuffer();
-	if (buf.areLinesChanged()) {
-		buf.markLinesUnchanged();
+	if (buf.getLinesModified()) {
+		buf.resetLinesModified();
 		m_game_ui->setChatText(chat_backend->getRecentChat(), buf.getLineCount());
 	}
 

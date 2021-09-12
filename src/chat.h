@@ -117,8 +117,8 @@ public:
 	// preceding operations
 	// If they were not changed, getLineCount() and getLine() output the same as
 	// before
-	bool areLinesChanged() const { return m_lines_changed; }
-	void markLinesUnchanged() { m_lines_changed = false; }
+	bool getLinesModified() const { return m_lines_modified; }
+	void resetLinesModified() { m_lines_modified = false; }
 
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and
@@ -157,7 +157,7 @@ private:
 	// Whether the lines were modified since last markLinesUnchanged()
 	// Is always set to true when m_unformatted is modified, because that's what
 	// determines the output of getLineCount() and getLine()
-	bool m_lines_changed = true;
+	bool m_lines_modified = true;
 };
 
 class ChatPrompt
