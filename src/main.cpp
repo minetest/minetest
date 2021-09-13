@@ -61,11 +61,8 @@ extern "C" {
 #endif
 }
 
-#if !defined(SERVER) && \
-	(IRRLICHT_VERSION_MAJOR == 1) && \
-	(IRRLICHT_VERSION_MINOR == 8) && \
-	(IRRLICHT_VERSION_REVISION == 2)
-	#error "Irrlicht 1.8.2 is known to be broken - please update Irrlicht to version >= 1.8.3"
+#if !defined(__cpp_rtti) || !defined(__cpp_exceptions)
+#error Minetest cannot be built without exceptions or RTTI
 #endif
 
 #define DEBUGFILE "debug.txt"
