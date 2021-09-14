@@ -61,6 +61,7 @@ xgettext --package-name=minetest \
 	--keyword=wstrgettext \
 	--keyword=core.gettext \
 	--keyword=showTranslatedStatusText \
+	--keyword=fmtgettext \
 	--output $potfile \
 	--from-code=utf-8 \
 	`find src/ -name '*.cpp' -o -name '*.h'` \

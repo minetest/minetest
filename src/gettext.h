@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h" // for USE_GETTEXT
 #include <string>
+#include "porting.h"
 
 #if USE_GETTEXT
 	#include <libintl.h>
@@ -76,4 +77,21 @@ inline std::wstring fwgettext(const char *src, Args&&... args)
 	swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, std::forward<Args>(args)...);
 	delete[] str;
 	return std::wstring(buf);
+}
+
+template <typename ...Args>
+inline std::string fmtgettext(const char *format, std::size_t buf_size, Args&&... args)
+{
+	format = gettext(format);
+	if (buf_size <= 0) {
+		buf_size = porting::mt_snprintf(nullptr, 0, format, std::forward<Args>(args)...) + 1;
+		if (buf_size <= 0) {
+			throw std::runtime_error("gettext format error: " + std::string(format));
+		}
+	}
+	auto size = static_cast<size_t>(buf_size);
+	char buf[size];
+	porting::mt_snprintf(buf, size, format, std::forward<Args>(args)...);
+
+	return std::string(buf);
 }
