@@ -1282,10 +1282,8 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		const char *s = gettext("Unable to listen on %s because IPv6 is disabled");
-		char buf[128];
-		porting::mt_snprintf(buf, sizeof(buf), s, bind_addr.serializeString().c_str());
-		*error_message = buf;
+		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled", 128,
+			bind_addr.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1457,16 +1455,14 @@ bool Game::connectToServer(const GameStartData &start_data,
 			local_server_mode = true;
 		}
 	} catch (ResolveError &e) {
-		*error_message = strgettext("Couldn't resolve address: ") + e.what();
+		*error_message = fmtgettext("Couldn't resolve address: %s", 128, e.what());
+
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
 	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		const char *s = gettext("Unable to connect to %s because IPv6 is disabled");
-		char buf[128];
-		porting::mt_snprintf(buf, sizeof(buf), s, connect_address.serializeString().c_str());
-		*error_message = buf;
+		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", 128, connect_address.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1520,8 +1516,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 
 			if (client->accessDenied()) {
-				*error_message = gettext("Access denied. Reason: ")
-						+ client->accessDeniedReason();
+				*error_message = fmtgettext("Access denied. Reason: %s", 0, client->accessDeniedReason().c_str());
 				*reconnect_requested = client->reconnectRequested();
 				errorstream << *error_message << std::endl;
 				break;
@@ -4363,7 +4358,8 @@ void the_game(bool *kill,
 		error_message = e.what();
 		errorstream << "ServerError: " << error_message << std::endl;
 	} catch (ModError &e) {
-		error_message = std::string(N_("ModError: ")) + e.what() +
+		// DO NOT TRANSLATE the `ModError`, it's used by ui.lua
+		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
 	}
