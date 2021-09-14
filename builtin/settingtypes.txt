@@ -152,11 +152,11 @@ joystick_type (Joystick type) enum auto auto,generic,xbox
 #    when holding down a joystick button combination.
 repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
 
-#    The deadzone of the joystick
-joystick_deadzone (Joystick deadzone) int 2048
+#    The dead zone of the joystick
+joystick_deadzone (Joystick dead zone) int 2048
 
 #    The sensitivity of the joystick axes for moving the
-#    ingame view frustum around.
+#    in-game view frustum around.
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
 
 #    Key for moving the player forward.
@@ -451,9 +451,9 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 
 [**Basic]
 
-#    Whether nametag backgrounds should be shown by default.
+#    Whether name tag backgrounds should be shown by default.
 #    Mods may still set a background.
-show_nametag_backgrounds (Show nametag backgrounds by default) bool true
+show_nametag_backgrounds (Show name tag backgrounds by default) bool true
 
 #    Enable vertex buffer objects.
 #    This should greatly improve graphics performance.
@@ -489,7 +489,7 @@ enable_particles (Digging particles) bool true
 
 [**Filtering]
 
-#    Use mip mapping to scale textures. May slightly increase performance,
+#    Use mipmapping to scale textures. May slightly increase performance,
 #    especially when using a high resolution texture pack.
 #    Gamma correct downscaling is not supported.
 mip_map (Mipmapping) bool false
@@ -609,7 +609,7 @@ shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
 #    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
 shadow_poisson_filter (Poisson filtering) bool true
 
-#   Define shadow filtering quality
+#   Define shadow filtering quality.
 #   This simulates the soft shadows effect by applying a PCF or Poisson disk
 #   but also uses more resources.
 shadow_filters (Shadow filter quality) enum 1 0,1,2
@@ -626,10 +626,10 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
-#    Minimum value: 1.0; maxiumum value: 10.0
+#    Minimum value: 1.0; maximum value: 10.0
 shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
 
-#    Set the tilt of Sun/Moon orbit in degrees
+#    Set the tilt of Sun/Moon orbit in degrees.
 #    Value of 0 means no tilt / vertical orbit.
 #    Minimum value: 0.0; maximum value: 60.0
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 0.0 60.0
@@ -789,7 +789,7 @@ desynchronize_mapblock_texture_animation (Desynchronize block animation) bool tr
 #    Useful if there's something to be displayed right or left of hotbar.
 hud_hotbar_max_width (Maximum hotbar width) float 1.0
 
-#    Modifies the size of the hudbar elements.
+#    Modifies the size of the HUD elements.
 hud_scaling (HUD scale factor) float 1.0
 
 #    Enables caching of facedir rotated meshes.
@@ -973,7 +973,7 @@ mute_sound (Mute sound) bool false
 
 [Client]
 
-#    Clickable weblinks (middle-click or ctrl-left-click) enabled in chat console output.
+#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 clickable_chat_weblinks (Chat weblinks) bool false
 
 #    Optional override for chat weblink color.
@@ -1102,7 +1102,7 @@ max_packets_per_iteration (Max. packets per iteration) int 1024
 
 #    Compression level to use when sending mapblocks to the client.
 #    -1 - use default compression level
-#     0 - least compresson, fastest
+#     0 - least compression, fastest
 #     9 - best compression, slowest
 map_compression_level_net (Map Compression Level for Network Transfer) int -1 -1 9
 
@@ -1288,7 +1288,7 @@ movement_gravity (Gravity) float 9.81
 deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,error
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
-#    This is a trade-off between sqlite transaction overhead and
+#    This is a trade-off between SQLite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
 max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
 
@@ -1304,7 +1304,7 @@ sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
 #    Compression level to use when saving mapblocks to disk.
 #    -1 - use default compression level
-#     0 - least compresson, fastest
+#     0 - least compression, fastest
 #     9 - best compression, slowest
 map_compression_level_disk (Map Compression Level for Disk Storage) int -1 -1 9
 
@@ -1411,8 +1411,8 @@ instrument.abm (Active Block Modifiers) bool true
 #    Instrument the action function of Loading Block Modifiers on registration.
 instrument.lbm (Loading Block Modifiers) bool true
 
-#    Instrument chatcommands on registration.
-instrument.chatcommand (Chatcommands) bool true
+#    Instrument chat commands on registration.
+instrument.chatcommand (Chat commands) bool true
 
 #    Instrument global callback functions on registration.
 #    (anything you pass to a minetest.register_*() function)
@@ -1506,7 +1506,7 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
-#    and junglegrass, in all other mapgens this flag controls all decorations.
+#    and jungle grass, in all other mapgens this flag controls all decorations.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
 
 [*Biome API temperature and humidity noise parameters]
