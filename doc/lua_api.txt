@@ -6432,6 +6432,25 @@ Doing so is much less error-prone and you will never need to wonder if the
 object you are working with still exists.
 
 
+### Attachment
+
+It is possible to attach objects to other objects (`set_attach` method).
+
+When an object is attached, its position gets relative to the parent`s one and
+rotation is a sum of its own, the parent`s and relative rotations. Standard
+methods like 'set_pos' and 'set_rotation' won`t work, you should call repeatedly
+`set_attach` with already new position or rotation tables.
+
+**Bug**: keep in mind to multiply relative position by 10 when attaching to make it actually proper!
+
+Example:
+`child:set_attach(parent, "", vector.multiply(vector.subtract(child:get_pos(), parent:get_pos()), 10))`.
+
+It is also possible to set bones for parent objects like in Blender (`set_bone_position` method)
+and use them for child ones to adjust their position/rotation. After assignment a bone to an attached object,
+it will follow movement and rotation of that bone.
+
+
 ### Methods
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
@@ -7821,7 +7840,7 @@ Used by `minetest.register_node`.
                     items = {"default:sand", "default:desert_sand"},
                 },
                 {
-                    -- Only drop if using an item in the "magicwand" group, or 
+                    -- Only drop if using an item in the "magicwand" group, or
                     -- an item that is in both the "pickaxe" and the "lucky"
                     -- groups.
                     tool_groups = {
