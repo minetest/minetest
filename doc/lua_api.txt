@@ -5115,6 +5115,7 @@ Environment access
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.activate_objects_in_area(pos1, pos2)`: Immediately activate static
   objects in the area from `pos1` to `pos2`.
+    * In addition, the mapblocks that contain the area are loaded if they exist.
     * The objects will soon be deactivated again if they are and remain in a
       mapblock that is not active.
     * This function cannot be called during some object activation/deactivation.
