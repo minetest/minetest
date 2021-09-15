@@ -5113,6 +5113,14 @@ Environment access
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
+* `minetest.activate_objects_in_area(pos1, pos2)`: Immediately activate static
+  objects in the area from `pos1` to `pos2`.
+    * The objects will soon be deactivated again if they are and remain in a
+      mapblock that is not active.
+    * This function cannot be called during some object activation/deactivation.
+      If it is called at such a time, it throws an error. Therefore, try not to
+      call it during the execution of `on_activate` and `on_deactivate`
+      callbacks.
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
     * `radius`: using an euclidean metric

@@ -241,6 +241,11 @@ public:
 		-------------------------------------------
 	*/
 
+	/*
+		This is used in some member functions.
+	*/
+	typedef std::function<bool (const StaticObject &)> ObjectActivationCondition;
+
 	ServerActiveObject* getActiveObject(u16 id)
 	{
 		return m_ao_manager.getActiveObject(id);
@@ -299,6 +304,15 @@ public:
 		from timestamp and additional_dtime
 	*/
 	void activateBlock(MapBlock *block, u32 additional_dtime=0);
+
+	/*
+		Similar to the above, but just activate objects. The predicate, if
+		given, is a precondition to object activation.
+		Throws an IllegalObjectActivationException and changes nothing
+		if called at a time when object activation is not allowed.
+	*/
+	void activateObjects(MapBlock *block, ObjectActivationCondition condition=nullptr,
+		u32 additional_dtime=0);
 
 	/*
 		{Active,Loading}BlockModifiers
@@ -408,8 +422,10 @@ private:
 
 	/*
 		Convert stored objects from block to active
+		If given, the predicate is a precondition to activation
 	*/
-	void activateObjects(MapBlock *block, u32 dtime_s);
+	void activateStoredObjects(MapBlock *block, u32 dtime_s,
+		ObjectActivationCondition condition = nullptr);
 
 	/*
 		Convert objects that are not in active blocks to static.
@@ -472,6 +488,9 @@ private:
 	// Estimate for general maximum lag as determined by server.
 	// Can raise to high values like 15s with eg. map generation mods.
 	float m_max_lag_estimate = 0.1f;
+	// This is set in some places where mod callbacks may be run to tell
+	// them that they cannot synchronously activate objects right now.
+	bool m_object_activation_locked = false;
 
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<RemotePlayer*> m_players;

@@ -53,7 +53,7 @@ static const char *modified_reason_strings[] = {
 	"addActiveObjectRaw",
 	"removeRemovedObjects/remove",
 	"removeRemovedObjects/deactivate",
-	"Stored list cleared in activateObjects due to overflow",
+	"Stored list cleared in activateStoredObjects due to overflow",
 	"deactivateFarObjects: Static data moved in",
 	"deactivateFarObjects: Static data moved out",
 	"deactivateFarObjects: Static data changed considerably",

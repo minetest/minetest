@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include "serverenvironment.h"
+#include "exceptions.h"
 #include "settings.h"
 #include "log.h"
 #include "mapblock.h"
@@ -35,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
+#include "util/set_in_scope.h"
 #include "threading/mutex_auto_lock.h"
 #include "filesys.h"
 #include "gameparams.h"
@@ -973,8 +975,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	/*infostream<<"ServerEnvironment::activateBlock(): block is "
 			<<dtime_s<<" seconds old."<<std::endl;*/
 
-	// Activate stored objects
-	activateObjects(block, dtime_s);
+	activateStoredObjects(block, dtime_s);
 
 	/* Handle LoadingBlockModifiers */
 	m_lbm_mgr.applyLBMs(this, block, stamp);
@@ -992,6 +993,28 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 					elapsed_timer.position));
 		}
 	}
+}
+
+void ServerEnvironment::activateObjects(MapBlock *block, ObjectActivationCondition condition,
+	u32 additional_dtime)
+{
+	if (m_object_activation_locked)
+		throw IllegalObjectActivationException();
+
+	block->resetUsageTimer();
+
+	// Return early if there are no stored objects.
+	if (block->m_static_objects.m_stored.empty())
+		return;
+
+	u32 stamp = block->getTimestamp();
+
+	// If the objects were cleared, there are actually no objects present here.
+	if (stamp == BLOCK_TIMESTAMP_UNDEFINED || stamp < m_last_clear_objects_time)
+		return;
+
+	u32 dtime_s = (m_game_time > stamp ? m_game_time - stamp : 0) + additional_dtime;
+	activateStoredObjects(block, dtime_s, condition);
 }
 
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
@@ -1160,6 +1183,8 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 
 void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 {
+	SetInScope<bool> activation_lock(m_object_activation_locked, true);
+
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
 	auto cb_removal = [this] (ServerActiveObject *obj, u16 id) {
@@ -1797,6 +1822,8 @@ void ServerEnvironment::removeRemovedObjects()
 {
 	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
 
+	SetInScope<bool> activation_lock(m_object_activation_locked, true);
+
 	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it
 		if (!obj) {
@@ -1910,7 +1937,8 @@ ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
 /*
 	Convert stored objects from blocks near the players to active.
 */
-void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
+void ServerEnvironment::activateStoredObjects(MapBlock *block, u32 dtime_s,
+	ObjectActivationCondition condition)
 {
 	if(block == NULL)
 		return;
@@ -1919,7 +1947,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	if(block->m_static_objects.m_stored.empty())
 		return;
 
-	verbosestream<<"ServerEnvironment::activateObjects(): "
+	verbosestream<<"ServerEnvironment::activateStoredObjects(): "
 		<<"activating objects of block "<<PP(block->getPos())
 		<<" ("<<block->m_static_objects.m_stored.size()
 		<<" objects)"<<std::endl;
@@ -1936,15 +1964,23 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		return;
 	}
 
+	SetInScope<bool> activation_lock(m_object_activation_locked, true);
+
 	// Activate stored objects
 	std::vector<StaticObject> new_stored;
 	for (const StaticObject &s_obj : block->m_static_objects.m_stored) {
+		// Check the precondition to activation if it is present.
+		if (condition != nullptr && !condition(s_obj)) {
+			new_stored.push_back(s_obj);
+			continue;
+		}
+
 		// Create an active object from the data
 		ServerActiveObject *obj = createSAO((ActiveObjectType) s_obj.type, s_obj.pos,
 			s_obj.data);
 		// If couldn't create object, store static data back.
 		if (!obj) {
-			errorstream<<"ServerEnvironment::activateObjects(): "
+			errorstream<<"ServerEnvironment::activateStoredObjects(): "
 				<<"failed to create active object from static object "
 				<<"in block "<<PP(s_obj.pos/BS)
 				<<" type="<<(int)s_obj.type<<" data:"<<std::endl;
@@ -1953,7 +1989,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			new_stored.push_back(s_obj);
 			continue;
 		}
-		verbosestream<<"ServerEnvironment::activateObjects(): "
+		verbosestream<<"ServerEnvironment::activateStoredObjects(): "
 			<<"activated static object pos="<<PP(s_obj.pos/BS)
 			<<" type="<<(int)s_obj.type<<std::endl;
 		// This will also add the object to the active static list
@@ -1990,6 +2026,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 */
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
+	SetInScope<bool> activation_lock(m_object_activation_locked, true);
+
 	auto cb_deactivate = [this, _force_delete] (ServerActiveObject *obj, u16 id) {
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;

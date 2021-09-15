@@ -124,3 +124,15 @@ public:
 		BaseException(s)
 	{}
 };
+
+class IllegalObjectActivationException : public BaseException
+{
+public:
+	IllegalObjectActivationException():
+		BaseException("Someone tried to activate objects when doing so was not permitted.")
+	{}
+
+	IllegalObjectActivationException(const std::string &s):
+		BaseException(s)
+	{}
+};
