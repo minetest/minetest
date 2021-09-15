@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
+#include "lighting.h"
 #include <array>
 
 /*
@@ -304,18 +305,19 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
 }
 
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio)
+		u16 light, u32 daynight_ratio, const Lighting *lighting)
 {
 	video::SColorf dayLight;
 	get_sunlight_color(&dayLight, daynight_ratio);
 	final_color_blend(result,
-		encode_light(light, 0), dayLight);
+		encode_light(light, 0), dayLight, lighting);
 }
 
 void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight)
+		const video::SColor &data, const video::SColorf &dayLight, const Lighting* lighting)
 {
 	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
+	static const float ONE_BY_255 = 0.003922f;
 
 	video::SColorf c(data);
 	f32 n = 1 - c.a;
@@ -333,6 +335,12 @@ void final_color_blend(video::SColor *result,
 
 	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
 		0, 255) / 8] / 255.0f;
+
+	if (lighting != nullptr) {
+		r = (1 - (1 - r) * (1 - lighting->brightness)) * lighting->color_tint.getRed() * ONE_BY_255;
+		g = (1 - (1 - g) * (1 - lighting->brightness)) * lighting->color_tint.getGreen() * ONE_BY_255;
+		b = (1 - (1 - b) * (1 - lighting->brightness)) * lighting->color_tint.getBlue() * ONE_BY_255;
+	}
 
 	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
 	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
@@ -1140,7 +1148,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					video::SColor *vc = &p.vertices[j].Color;
 					video::SColor copy = *vc;
 					if (vc->getAlpha() == 0) // No sunlight - no need to animate
-						final_color_blend(vc, copy, sunlight); // Finalize color
+						final_color_blend(vc, copy, sunlight, &(data->m_client->getEnv().getLocalPlayer()->getLighting())); // Finalize color
 					else // Record color to animate
 						m_daynight_diffs[std::pair<u8, u32>(layer, i)][j] = copy;
 

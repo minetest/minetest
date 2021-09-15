@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
+#include "client/clientmap.h"
 #include <memory>
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
@@ -1698,4 +1699,8 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	Lighting& lighting = m_env.getLocalPlayer()->getLighting();
 	lighting.brightness = brightness;
 	lighting.color_tint = color_tint;
+
+	if (!g_settings->getBool("enable_shaders")) {
+		m_env.getClientMap().updateMeshes();
+	}
 }

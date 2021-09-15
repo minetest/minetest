@@ -149,6 +149,7 @@ public:
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
 
+	void updateMeshes() const;
 private:
 	// Orders blocks by distance to the camera
 	class MapBlockComparer

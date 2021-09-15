@@ -891,3 +891,22 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
+
+void ClientMap::updateMeshes() const
+{
+	for (auto &sector_it : m_sectors) {
+		MapSector *sector = sector_it.second;
+		if (!sector)
+			continue;
+
+		MapBlockVect sectorblocks;
+		sector->getBlocks(sectorblocks);
+
+		/*
+			Loop through blocks in sector
+		*/
+		for (MapBlock *block : sectorblocks) {
+			m_client->addUpdateMeshTask(block->getPos());
+		}
+	}
+}
