@@ -86,6 +86,40 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+local function objects_to_string(objects)
+	local info_list = {}
+	for i, object in ipairs(objects) do
+		local name = ""
+		if object:is_player() then
+			name = object:get_player_name()
+		elseif object:get_luaentity() then
+			name = object:get_luaentity().name
+		end
+		info_list[i] = name .. minetest.pos_to_string(object:get_pos())
+	end
+	return table.concat(info_list, ", ")
+end
+
+minetest.register_chatcommand("test_activate_objects", {
+	params = "<minp> <maxp>",
+	description = "Test: Activate objects in an area",
+	func = function(name, param)
+		local minp, maxp = minetest.string_to_area(param)
+		if not (minp and maxp) then
+			return false, "Invalid area specified."
+		end
+
+		local objects = minetest.get_objects_in_area(minp, maxp)
+		minetest.chat_send_player(name,
+			"Objects before activation: " .. objects_to_string(objects))
+		minetest.activate_objects_in_area(minp, maxp)
+		objects = minetest.get_objects_in_area(minp, maxp)
+		minetest.chat_send_player(name,
+			"Objects after activation: " .. objects_to_string(objects))
+		return true
+	end,
+})
+
 local function advance_pos(pos, start_pos, advance_z)
 	if advance_z then
 		pos.z = pos.z + 2
