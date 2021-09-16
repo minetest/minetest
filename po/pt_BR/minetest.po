@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-09-16 16:36+0000\n"
-"Last-Translator: Heitor <heitornegroni123@gmail.com>\n"
+"PO-Revision-Date: 2021-09-17 18:38+0000\n"
+"Last-Translator: Ronoaldo Pereira <ronoaldo@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -2472,9 +2472,8 @@ msgid "Aux1 key"
 msgstr "Tecla especial"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
-msgstr "Tecla especial pra escalar/descer"
+msgstr "Tecla Aux1 pra escalar/descer"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2726,9 +2725,8 @@ msgid "Colored fog"
 msgstr "Névoa colorida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Névoa colorida"
+msgstr "Sombra colorida"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3356,12 +3354,11 @@ msgid "Fast movement"
 msgstr "Modo rápido"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Movimento rápido (através da tecla \"especial\").\n"
+"Movimento rápido (através da tecla \"Aux1\").\n"
 "Isso requer o privilegio \"fast\" no servidor."
 
 #: src/settings_translation_file.cpp
@@ -3395,7 +3392,6 @@ msgid "Filmic tone mapping"
 msgstr "Filmic Tone Mapping"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 "which PNG optimizers usually discard, often resulting in dark or\n"
@@ -3405,7 +3401,8 @@ msgstr ""
 "Texturas filtradas podem misturar valores RGB com os vizinhos totalmente \n"
 "transparentes, o qual otimizadores PNG geralmente descartam, por vezes \n"
 "resultando em uma linha escura em texturas transparentes.\n"
-"Aplicar esse filtro para limpar isso no tempo de carregamento da textura."
+"Aplique esse filtro para limpar isso no momento de carregamento da textura.\n"
+"Esse filtro será ativo automaticamente ao ativar \"mipmapping\"."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
