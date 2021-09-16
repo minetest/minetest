@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <utility>
+
 /**
  * A scoped setting of a reference. The reference is set to the new value when
  * the SetInScope is constructed. On destruction the reference is reset to the
@@ -30,9 +32,17 @@ template<typename T>
 class SetInScope
 {
 public:
-	SetInScope(T &ref, const T &&val): m_ref(ref), m_old_val(ref) { ref = val; }
+	SetInScope(T &ref, const T &&val):
+		m_ref(ref),
+		m_old_val(std::move(m_ref))
+	{
+		m_ref = val;
+	}
 
-	~SetInScope() { m_ref = m_old_val; }
+	~SetInScope()
+	{
+		m_ref = std::move(m_old_val);
+	}
 
 private:
 	T &m_ref;
