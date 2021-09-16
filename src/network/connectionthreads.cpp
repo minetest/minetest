@@ -482,7 +482,7 @@ void ConnectionSendThread::serve(Address bind_address)
 		// Create event
 		ConnectionEvent ce;
 		ce.bindFailed();
-		m_connection->putEvent(ce);
+		m_connection->putEvent(std::move(ce));
 	}
 }
 
@@ -497,7 +497,7 @@ void ConnectionSendThread::connect(Address address)
 	// Create event
 	ConnectionEvent e;
 	e.peerAdded(peer->id, peer->address);
-	m_connection->putEvent(e);
+	m_connection->putEvent(std::move(e));
 
 	Address bind_addr;
 
@@ -1330,7 +1330,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 		} catch (IncomingDataCorruption &e) {
 			ConnectionCommand discon;
 			discon.disconnect_peer(peer->id);
-			m_connection->putCommand(discon);
+			m_connection->putCommand(std::move(discon));
 
 			LOG(derr_con << m_connection->getDesc()
 				<< "INVALID, TYPE_RELIABLE peer_id: " << peer->id

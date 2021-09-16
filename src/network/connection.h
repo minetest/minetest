@@ -93,6 +93,15 @@ struct BufferedPacket
 	BufferedPacket(u32 a_size):
 		data(a_size)
 	{}
+	void copyTo(BufferedPacket &p) const
+	{
+		data.copyTo(p.data);
+		p.time = time;
+		p.totaltime = totaltime;
+		p.absolute_send_time = absolute_send_time;
+		p.address = address;
+		p.resend_count = resend_count;
+	}
 	Buffer<u8> data; // Data of the packet, including headers
 	float time = 0.0f; // Seconds from buffering the packet or re-sending
 	float totaltime = 0.0f; // Seconds from buffering the packet
@@ -355,7 +364,7 @@ struct ConnectionCommand
 		type = CONCMD_ACK;
 		peer_id = peer_id_;
 		channelnum = channelnum_;
-		data = data_;
+		data_.copyTo(data);
 		reliable = false;
 	}
 
@@ -363,7 +372,7 @@ struct ConnectionCommand
 	{
 		type = CONCMD_CREATE_PEER;
 		peer_id = peer_id_;
-		data = data_;
+		data_.copyTo(data);
 		channelnum = 0;
 		reliable = true;
 		raw = true;
@@ -718,7 +727,7 @@ struct ConnectionEvent
 	{
 		type = CONNEVENT_DATA_RECEIVED;
 		peer_id = peer_id_;
-		data = data_;
+		data_.copyTo(data);
 	}
 	void peerAdded(session_t peer_id_, Address address_)
 	{
@@ -753,8 +762,7 @@ public:
 
 	/* Interface */
 	ConnectionEvent waitEvent(u32 timeout_ms);
-	// Warning: creates an unnecessary copy, prefer putCommand(T&&) if possible
-	void putCommand(const ConnectionCommand &c);
+
 	void putCommand(ConnectionCommand &&c);
 
 	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
@@ -799,8 +807,6 @@ protected:
 
 	bool Receive(NetworkPacket *pkt, u32 timeout);
 
-	// Warning: creates an unnecessary copy, prefer putEvent(T&&) if possible
-	void putEvent(const ConnectionEvent &e);
 	void putEvent(ConnectionEvent &&e);
 
 	void TriggerSend();
