@@ -40,6 +40,26 @@ describe("serialize", function()
 		assert.same(test_in, test_out)
 	end)
 
+	it("handles cross-referencing structures", function()
+		local test_in = {
+			foo = {
+				baz = {
+					{}
+				},
+			},
+			bar = {
+				baz = {},
+			},
+		}
+
+		test_in.foo.baz[1].foo = test_in.foo
+		test_in.foo.baz[1].bar = test_in.bar
+		test_in.bar.baz[1] = test_in.foo.baz[1]
+		local test_out = core.deserialize(core.serialize(test_in))
+
+		assert.same(test_in, test_out)
+	end)
+
 	it("strips functions in safe mode", function()
 		local test_in = {
 			func = function(a, b)
