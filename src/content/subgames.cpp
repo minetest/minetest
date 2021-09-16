@@ -1,7 +1,6 @@
 /*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2021 Maxime Dvos <maximedevos@telenet.be>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -393,10 +392,9 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 std::vector<std::string> getEnvModPaths()
 {
 	const char *c_mod_path = getenv("MINETEST_MOD_PATH");
-	std::string mod_path = c_mod_path ? std::string(c_mod_path) : "";
-	std::vector<std::string> mod_paths;
-	Strfnd mod_search_paths(mod_path);
-	while (!mod_search_paths.at_end())
-		mod_paths.push_back(mod_search_paths.next(PATH_DELIM));
-	return mod_paths;
+	std::vector<std::string> paths;
+	Strfnd search_paths(c_mod_path ? c_mod_path : "");
+	while (!search_paths.at_end())
+		paths.push_back(search_paths.next(PATH_DELIM));
+	return paths;
 }
