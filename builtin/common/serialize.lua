@@ -12,7 +12,7 @@ local table_insert, table_concat, string_dump, string_format, string_match, math
 local function count_objects(value)
 	local counts = {}
 	if value == nil then
-		-- Early return for nil
+		-- Early return for nil; tables can't contain nil
 		return counts
 	end
 	local function count_values(val)
@@ -22,11 +22,15 @@ local function count_objects(value)
 		end
 		local count = counts[val]
 		counts[val] = (count or 0) + 1
-		if not count and type_ == "table" then
-			for k, v in pairs(val) do
-				count_values(k)
-				count_values(v)
+		if type_ == "table" then
+			if not count then
+				for k, v in pairs(val) do
+					count_values(k)
+					count_values(v)
+				end
 			end
+		elseif type_ ~= "string" and type_ ~= "function" then
+			error("unsupported type: " .. type_)
 		end
 	end
 	count_values(value)
@@ -151,7 +155,6 @@ local function serialize(value, write)
 			write("}")
 			return
 		end
-		error("unsupported type: " .. type_)
 	end
 	for table, ref in pairs(to_fill) do
 		for k, v in pairs(table) do
