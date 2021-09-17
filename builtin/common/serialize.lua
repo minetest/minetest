@@ -18,8 +18,8 @@ local function count_objects(value)
 	local function count_values(val)
 		local type_ = type(val)
 		if type_ == "boolean" or type_ == "number" then
-            return
-        end
+			return
+		end
 		local count = counts[val]
 		counts[val] = (count or 0) + 1
 		if not count and type_ == "table" then
@@ -45,43 +45,43 @@ local function quote(string)
 end
 
 local function dump_func(func)
-    return string_format("loadstring(%q)", string_dump(func))
+	return string_format("loadstring(%q)", string_dump(func))
 end
 
 -- Serializes Lua nil, booleans, numbers, strings, tables and even functions
 -- Tables are referenced by reference, strings are referenced by value. Supports circular tables.
 local function serialize(value, write)
-    -- References are stored as tables of characters A-Z, which are digits of a base 26 number
+	-- References are stored as tables of characters A-Z, which are digits of a base 26 number
 	local reference = {"A"}
 	local function increment_reference(place)
 		if not reference[place] then
 			reference[place] = "B"
 		elseif reference[place] == "Z" then
-            -- Carriage
+			-- Carriage
 			reference[place] = "A"
 			return increment_reference(place + 1)
 		else
 			reference[place] = succ_ref_char[reference[place]]
 		end
 	end
-    -- [object] = reference string
+	-- [object] = reference string
 	local references = {}
-    -- Circular tables that must be filled using `table[key] = value` statements
+	-- Circular tables that must be filled using `table[key] = value` statements
 	local to_fill = {}
 	for object, count in pairs(count_objects(value)) do
 		local type_ = type(object)
-        -- Object must appear more than once. If it is a string, the reference has to be shorter than the string.
+		-- Object must appear more than once. If it is a string, the reference has to be shorter than the string.
 		if count >= 2 and (type_ ~= "string" or #reference + 2 < #object) then
 			local ref = table_concat(reference)
 			write(ref)
 			write("=")
-            if type_ == "table" then
-                write("{}")
-            elseif type_ == "function" then
-                write(dump_func(object))
-            elseif type_ == "string" then
-                write(quote(object))
-            end
+			if type_ == "table" then
+				write("{}")
+			elseif type_ == "function" then
+				write(dump_func(object))
+			elseif type_ == "string" then
+				write(quote(object))
+			end
 			write(";")
 			references[object] = ref
 			if type_ == "table" then
@@ -113,29 +113,29 @@ local function serialize(value, write)
 		if ref then
 			return write(ref)
 		end
-        if type_ == "string" then
+		if type_ == "string" then
 			return write(quote(value))
 		end
-        if type_ == "function" then
+		if type_ == "function" then
 			return write(dump_func(value))
 		end
-        if type_ == "table" then
+		if type_ == "table" then
 			local first = true
 			write("{")
-            -- First write list keys
+			-- First write list keys
 			local len = #value
 			for i = 1, len do
 				if not first then write(";") end
 				dump(value[i])
 				first = false
 			end
-            -- Now write map keys ([key] = value)
+			-- Now write map keys ([key] = value)
 			for k, v in next, value do
-                -- Check whether this is a non-list key (hash key)
+				-- Check whether this is a non-list key (hash key)
 				if type(k) ~= "number" or k % 1 ~= 0 or k < 1 or k > len then
 					if not first then
-                        write(";")
-                    end
+						write(";")
+					end
 					if use_short_key(k) then
 						write(k)
 					else
@@ -149,8 +149,8 @@ local function serialize(value, write)
 				end
 			end
 			write("}")
-            return
-        end
+			return
+		end
 		error("unsupported type: " .. type_)
 	end
 	for table, ref in pairs(to_fill) do
