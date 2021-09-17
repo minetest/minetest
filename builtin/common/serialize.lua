@@ -94,6 +94,7 @@ local function serialize(value, write)
 			increment_reference(1)
 		end
 	end
+	-- Used to decide whether we should do "key=..."
 	local function use_short_key(key)
 		return not references[key] and type(key) == "string" and string_match(key, "^[%a_][%a%d_]*$")
 	end
