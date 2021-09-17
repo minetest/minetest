@@ -125,22 +125,17 @@ local function serialize(value, write)
 			return write(dump_func(value))
 		end
 		if type_ == "table" then
-			local first = true
 			write("{")
 			-- First write list keys
 			local len = #value
 			for i = 1, len do
-				if not first then write(";") end
 				dump(value[i])
-				first = false
+				write(";")
 			end
 			-- Now write map keys ([key] = value)
 			for k, v in next, value do
 				-- Check whether this is a non-list key (hash key)
 				if type(k) ~= "number" or k % 1 ~= 0 or k < 1 or k > len then
-					if not first then
-						write(";")
-					end
 					if use_short_key(k) then
 						write(k)
 					else
@@ -150,7 +145,7 @@ local function serialize(value, write)
 					end
 					write("=")
 					dump(v)
-					first = false
+					write(";")
 				end
 			end
 			write("}")
