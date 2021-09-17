@@ -174,6 +174,11 @@ void ConnectionSendThread::runTimeouts(float dtime)
 	std::vector<session_t> timeouted_peers;
 	std::vector<session_t> peerIds = m_connection->getPeerIDs();
 
+	const u32 numpeers = m_connection->m_peers.size();
+
+	if (numpeers == 0)
+		return;
+
 	for (session_t &peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 
@@ -209,7 +214,6 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		float resend_timeout = udpPeer->getResendTimeout();
 		bool retry_count_exceeded = false;
 		for (Channel &channel : udpPeer->channels) {
-			std::list<BufferedPacket> timed_outs;
 
 			// Remove timed out incomplete unreliable split packets
 			channel.incoming_splits.removeUnreliableTimedOuts(dtime, m_timeout);
@@ -217,13 +221,8 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			// Increment reliable packet times
 			channel.outgoing_reliables_sent.incrementTimeouts(dtime);
 
-			unsigned int numpeers = m_connection->m_peers.size();
-
-			if (numpeers == 0)
-				return;
-
 			// Re-send timed out outgoing reliables
-			timed_outs = channel.outgoing_reliables_sent.getTimedOuts(resend_timeout,
+			auto timed_outs = channel.outgoing_reliables_sent.getTimedOuts(resend_timeout,
 				(m_max_data_packets_per_iteration / numpeers));
 
 			channel.UpdatePacketLossCounter(timed_outs.size());
@@ -231,16 +230,14 @@ void ConnectionSendThread::runTimeouts(float dtime)
 
 			m_iteration_packets_avaialble -= timed_outs.size();
 
-			for (std::list<BufferedPacket>::iterator k = timed_outs.begin();
-				k != timed_outs.end(); ++k) {
-				session_t peer_id = readPeerId(*(k->data));
-				u8 channelnum = readChannel(*(k->data));
-				u16 seqnum = readU16(&(k->data[BASE_HEADER_SIZE + 1]));
+			for (const auto &k : timed_outs) {
+				session_t peer_id = readPeerId(*k.data);
+				u8 channelnum = readChannel(*k.data);
+				u16 seqnum = readU16(&(k.data[BASE_HEADER_SIZE + 1]));
 
-				channel.UpdateBytesLost(k->data.getSize());
-				k->resend_count++;
+				channel.UpdateBytesLost(k.data.getSize());
 
-				if (k->resend_count > MAX_RELIABLE_RETRY) {
+				if (k.resend_count > MAX_RELIABLE_RETRY) {
 					retry_count_exceeded = true;
 					timeouted_peers.push_back(peer->id);
 					/* no need to check additional packets if a single one did timeout*/
@@ -249,14 +246,14 @@ void ConnectionSendThread::runTimeouts(float dtime)
 
 				LOG(derr_con << m_connection->getDesc()
 					<< "RE-SENDING timed-out RELIABLE to "
-					<< k->address.serializeString()
+					<< k.address.serializeString()
 					<< "(t/o=" << resend_timeout << "): "
 					<< "from_peer_id=" << peer_id
 					<< ", channel=" << ((int) channelnum & 0xff)
 					<< ", seqnum=" << seqnum
 					<< std::endl);
 
-				rawSend(*k);
+				rawSend(k);
 
 				// do not handle rtt here as we can't decide if this packet was
 				// lost or really takes more time to transmit
@@ -375,7 +372,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			<< " INFO: queueing reliable packet for peer_id: " << peer_id
 			<< " channel: " << (u32)channelnum
 			<< " seqnum: " << seqnum << std::endl);
-		channel->queued_reliables.push(p);
+		channel->queued_reliables.push(std::move(p));
 		return false;
 	}
 
@@ -717,13 +714,15 @@ void ConnectionSendThread::sendPackets(float dtime)
 					channel.outgoing_reliables_sent.size()
 					< channel.getWindowSize() &&
 					peer->m_increment_packets_remaining > 0) {
-				BufferedPacket p = channel.queued_reliables.front();
+				BufferedPacket p = std::move(channel.queued_reliables.front());
 				channel.queued_reliables.pop();
+
 				LOG(dout_con << m_connection->getDesc()
 					<< " INFO: sending a queued reliable packet "
 					<< " channel: " << i
 					<< ", seqnum: " << readU16(&p.data[BASE_HEADER_SIZE + 1])
 					<< std::endl);
+
 				sendAsPacketReliable(p, &channel);
 				peer->m_increment_packets_remaining--;
 			}
@@ -911,7 +910,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 					if (data_left) {
 						ConnectionEvent e;
 						e.dataReceived(peer_id, resultdata);
-						m_connection->putEvent(e);
+						m_connection->putEvent(std::move(e));
 					}
 				}
 				catch (ProcessedSilentlyException &e) {
@@ -1022,7 +1021,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 			ConnectionEvent e;
 			e.dataReceived(peer_id, resultdata);
-			m_connection->putEvent(e);
+			m_connection->putEvent(std::move(e));
 		}
 		catch (ProcessedSilentlyException &e) {
 		}
