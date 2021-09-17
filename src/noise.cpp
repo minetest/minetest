@@ -35,7 +35,8 @@
 #define NOISE_MAGIC_X    1619
 #define NOISE_MAGIC_Y    31337
 #define NOISE_MAGIC_Z    52591
-#define NOISE_MAGIC_SEED 1013
+// Unsigned magic seed prevents undefined behavior.
+#define NOISE_MAGIC_SEED 1013U
 
 typedef float (*Interp2dFxn)(
 		float v00, float v10, float v01, float v11,
