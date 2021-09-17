@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
 #include "peerhandler.h"
 #include "socket.h"
 #include "constants.h"
@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "networkprotocol.h"
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <map>
 
@@ -242,20 +241,19 @@ public:
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(BufferedPacket &p, u16 next_expected);
+	void insert(const BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<BufferedPacket> getTimedOuts(float timeout,
-			unsigned int max_packets);
+	std::list<BufferedPacket> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();
-	RPBSearchResult notFound();
 	u32 size();
 
 
 private:
 	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
+	inline RPBSearchResult notFound() { return m_list.end(); }
 
 	std::list<BufferedPacket> m_list;
 
@@ -329,18 +327,6 @@ struct ConnectionCommand
 	bool raw = false;
 
 	ConnectionCommand() = default;
-	ConnectionCommand &operator=(const ConnectionCommand &other)
-	{
-		type = other.type;
-		address = other.address;
-		peer_id = other.peer_id;
-		channelnum = other.channelnum;
-		// We must copy the buffer here to prevent race condition
-		data = SharedBuffer<u8>(*other.data, other.data.getSize());
-		reliable = other.reliable;
-		raw = other.raw;
-		return *this;
-	}
 
 	void serve(Address address_)
 	{
@@ -364,7 +350,7 @@ struct ConnectionCommand
 
 	void send(session_t peer_id_, u8 channelnum_, NetworkPacket *pkt, bool reliable_);
 
-	void ack(session_t peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_)
+	void ack(session_t peer_id_, u8 channelnum_, const Buffer<u8> &data_)
 	{
 		type = CONCMD_ACK;
 		peer_id = peer_id_;
@@ -373,7 +359,7 @@ struct ConnectionCommand
 		reliable = false;
 	}
 
-	void createPeer(session_t peer_id_, const SharedBuffer<u8> &data_)
+	void createPeer(session_t peer_id_, const Buffer<u8> &data_)
 	{
 		type = CONCMD_CREATE_PEER;
 		peer_id = peer_id_;
@@ -707,7 +693,7 @@ struct ConnectionEvent
 
 	ConnectionEvent() = default;
 
-	std::string describe()
+	const char *describe() const
 	{
 		switch(type) {
 		case CONNEVENT_NONE:
@@ -724,7 +710,7 @@ struct ConnectionEvent
 		return "Invalid ConnectionEvent";
 	}
 
-	void dataReceived(session_t peer_id_, const SharedBuffer<u8> &data_)
+	void dataReceived(session_t peer_id_, const Buffer<u8> &data_)
 	{
 		type = CONNEVENT_DATA_RECEIVED;
 		peer_id = peer_id_;
@@ -763,7 +749,9 @@ public:
 
 	/* Interface */
 	ConnectionEvent waitEvent(u32 timeout_ms);
-	void putCommand(ConnectionCommand &c);
+	// Warning: creates an unnecessary copy, prefer putCommand(T&&) if possible
+	void putCommand(const ConnectionCommand &c);
+	void putCommand(ConnectionCommand &&c);
 
 	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
@@ -802,11 +790,14 @@ protected:
 	}
 
 	UDPSocket m_udpSocket;
+	// Command queue: user -> SendThread
 	MutexedQueue<ConnectionCommand> m_command_queue;
 
 	bool Receive(NetworkPacket *pkt, u32 timeout);
 
-	void putEvent(ConnectionEvent &e);
+	// Warning: creates an unnecessary copy, prefer putEvent(T&&) if possible
+	void putEvent(const ConnectionEvent &e);
+	void putEvent(ConnectionEvent &&e);
 
 	void TriggerSend();
 	
@@ -815,6 +806,7 @@ protected:
 		return getPeerNoEx(PEER_ID_SERVER) != nullptr;
 	}
 private:
+	// Event queue: ReceiveThread -> user
 	MutexedQueue<ConnectionEvent> m_event_queue;
 
 	session_t m_peer_id = 0;

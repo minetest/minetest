@@ -51,6 +51,19 @@ public:
 		else
 			data = NULL;
 	}
+	Buffer(Buffer &&buffer)
+	{
+		m_size = buffer.m_size;
+		if(m_size != 0)
+		{
+			data = buffer.data;
+			buffer.data = nullptr;
+			buffer.m_size = 0;
+		}
+		else
+			data = nullptr;
+	}
+	// Copies whole buffer
 	Buffer(const T *t, unsigned int size)
 	{
 		m_size = size;
@@ -62,10 +75,12 @@ public:
 		else
 			data = NULL;
 	}
+
 	~Buffer()
 	{
 		drop();
 	}
+
 	Buffer& operator=(const Buffer &buffer)
 	{
 		if(this == &buffer)
@@ -81,6 +96,23 @@ public:
 			data = NULL;
 		return *this;
 	}
+	Buffer& operator=(Buffer &&buffer)
+	{
+		if(this == &buffer)
+			return *this;
+		drop();
+		m_size = buffer.m_size;
+		if(m_size != 0)
+		{
+			data = buffer.data;
+			buffer.data = nullptr;
+			buffer.m_size = 0;
+		}
+		else
+			data = nullptr;
+		return *this;
+	}
+
 	T & operator[](unsigned int i) const
 	{
 		return data[i];
@@ -89,10 +121,12 @@ public:
 	{
 		return data;
 	}
+
 	unsigned int getSize() const
 	{
 		return m_size;
 	}
+
 private:
 	void drop()
 	{
