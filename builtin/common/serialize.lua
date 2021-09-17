@@ -35,9 +35,9 @@ end
 
 -- Build a table with the succeeding character from A-Z
 -- Used to increment references quickly
-local succ = {}
+local succ_ref_char = {}
 for char = ("A"):byte(), ("Z"):byte() - 1 do
-	succ[string.char(char)] = string.char(char + 1)
+	succ_ref_char[string.char(char)] = string.char(char + 1)
 end
 
 local function quote(string)
@@ -61,7 +61,7 @@ local function serialize(value, write)
 			reference[place] = "A"
 			return increment_reference(place + 1)
 		else
-			reference[place] = succ[reference[place]]
+			reference[place] = succ_ref_char[reference[place]]
 		end
 	end
     -- [object] = reference string
