@@ -4567,6 +4567,8 @@ Utilities
           degrotate_240_steps = true,
           -- ABM supports min_y and max_y fields in definition (5.5.0)
           abm_min_max_y = true,
+          -- dynamic_add_media supports passing a table with options (5.5.0)
+          dynamic_add_media_table = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
