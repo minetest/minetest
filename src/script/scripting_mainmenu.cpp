@@ -92,9 +92,9 @@ void MainMenuScripting::step()
 }
 
 /******************************************************************************/
-unsigned int MainMenuScripting::queueAsync(const std::string &serialized_func,
-		const std::string &serialized_param)
+u32 MainMenuScripting::queueAsync(std::string &&serialized_func,
+		std::string &&serialized_param)
 {
-	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
+	return asyncEngine.queueAsyncJob(std::move(serialized_func), std::move(serialized_param));
 }
 

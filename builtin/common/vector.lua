@@ -30,14 +30,26 @@ local function fast_new(x, y, z)
 end
 
 function vector.new(a, b, c)
-	if type(a) == "table" then
-		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
-		return fast_new(a.x, a.y, a.z)
-	elseif a then
-		assert(b and c, "Invalid arguments for vector.new()")
+	if a and b and c then
 		return fast_new(a, b, c)
 	end
+
+	-- deprecated, use vector.copy and vector.zero directly
+	if type(a) == "table" then
+		return vector.copy(a)
+	else
+		assert(not a, "Invalid arguments for vector.new()")
+		return vector.zero()
+	end
+end
+
+function vector.zero()
 	return fast_new(0, 0, 0)
+end
+
+function vector.copy(v)
+	assert(v.x and v.y and v.z, "Invalid vector passed to vector.copy()")
+	return fast_new(v.x, v.y, v.z)
 end
 
 function vector.from_string(s, init)
@@ -67,7 +79,7 @@ metatable.__eq = vector.equals
 -- unary operations
 
 function vector.length(v)
-	return math.hypot(v.x, math.hypot(v.y, v.z))
+	return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
 end
 -- Note: we can not use __len because it is already used for primitive table length
 
@@ -104,7 +116,7 @@ function vector.distance(a, b)
 	local x = a.x - b.x
 	local y = a.y - b.y
 	local z = a.z - b.z
-	return math.hypot(x, math.hypot(y, z))
+	return math.sqrt(x * x + y * y + z * z)
 end
 
 function vector.direction(pos1, pos2)

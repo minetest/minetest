@@ -70,11 +70,11 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 
 void Database_LevelDB::loadBlock(const v3s16 &pos, std::string *block)
 {
-	std::string datastr;
 	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
-		i64tos(getBlockAsInteger(pos)), &datastr);
+		i64tos(getBlockAsInteger(pos)), block);
 
-	*block = (status.ok()) ? datastr : "";
+	if (!status.ok())
+		block->clear();	
 }
 
 bool Database_LevelDB::deleteBlock(const v3s16 &pos)
@@ -131,7 +131,7 @@ void PlayerDatabaseLevelDB::savePlayer(RemotePlayer *player)
 	std::string (long) serialized_inventory
 	*/
 
-	std::ostringstream os;
+	std::ostringstream os(std::ios_base::binary);
 	writeU8(os, 1);
 
 	PlayerSAO *sao = player->getPlayerSAO();
@@ -142,7 +142,7 @@ void PlayerDatabaseLevelDB::savePlayer(RemotePlayer *player)
 	writeF32(os, sao->getRotation().Y);
 	writeU16(os, sao->getBreath());
 
-	StringMap stringvars = sao->getMeta().getStrings();
+	const auto &stringvars = sao->getMeta().getStrings();
 	writeU32(os, stringvars.size());
 	for (const auto &it : stringvars) {
 		os << serializeString16(it.first);
@@ -170,7 +170,7 @@ bool PlayerDatabaseLevelDB::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		player->getName(), &raw);
 	if (!s.ok())
 		return false;
-	std::istringstream is(raw);
+	std::istringstream is(raw, std::ios_base::binary);
 
 	if (readU8(is) > 1)
 		return false;
@@ -230,7 +230,7 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 	leveldb::Status s = m_database->Get(leveldb::ReadOptions(), name, &raw);
 	if (!s.ok())
 		return false;
-	std::istringstream is(raw);
+	std::istringstream is(raw, std::ios_base::binary);
 
 	/*
 	u8 version = 1
@@ -262,7 +262,7 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 
 bool AuthDatabaseLevelDB::saveAuth(const AuthEntry &authEntry)
 {
-	std::ostringstream os;
+	std::ostringstream os(std::ios_base::binary);
 	writeU8(os, 1);
 	os << serializeString16(authEntry.password);
 

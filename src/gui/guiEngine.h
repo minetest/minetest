@@ -175,10 +175,6 @@ public:
 		return m_scriptdir;
 	}
 
-	/** pass async callback to scriptengine **/
-	unsigned int queueAsync(const std::string &serialized_fct,
-			const std::string &serialized_params);
-
 private:
 
 	/** find and run the main menu script */

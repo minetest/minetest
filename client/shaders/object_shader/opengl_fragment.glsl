@@ -328,13 +328,16 @@ void main(void)
 	vec2 uv = varTexCoord.st;
 	vec4 base = texture2D(baseTexture, uv).rgba;
 
-#ifdef USE_DISCARD
 	// If alpha is zero, we can just discard the pixel. This fixes transparency
 	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa,
 	// and also on GLES 2, where GL_ALPHA_TEST is missing entirely.
-	if (base.a == 0.0) {
+#ifdef USE_DISCARD
+	if (base.a == 0.0)
 		discard;
-	}
+#endif
+#ifdef USE_DISCARD_REF
+	if (base.a < 0.5)
+		discard;
 #endif
 
 	color = base.rgb;

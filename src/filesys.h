@@ -71,6 +71,10 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path);
 // Returns path to temp directory, can return "" on error
 std::string TempPath();
 
+// Returns path to securely-created temporary file (will already exist when this function returns)
+// can return "" on error
+std::string CreateTempFile();
+
 /* Returns a list of subdirectories, including the path itself, but excluding
        hidden directories (whose names start with . or _)
 */

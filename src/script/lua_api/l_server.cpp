@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "environment.h"
 #include "remoteplayer.h"
@@ -452,29 +453,37 @@ int ModApiServer::l_sound_fade(lua_State *L)
 }
 
 // dynamic_add_media(filepath)
-int ModApiServer::l_dynamic_add_media_raw(lua_State *L)
+int ModApiServer::l_dynamic_add_media(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	if (!getEnv(L))
 		throw LuaError("Dynamic media cannot be added before server has started up");
+	Server *server = getServer(L);
 
-	std::string filepath = readParam<std::string>(L, 1);
+	std::string filepath;
+	std::string to_player;
+	bool ephemeral = false;
+
+	if (lua_istable(L, 1)) {
+		getstringfield(L, 1, "filepath", filepath);
+		getstringfield(L, 1, "to_player", to_player);
+		getboolfield(L, 1, "ephemeral", ephemeral);
+	} else {
+		filepath = readParam<std::string>(L, 1);
+	}
+	if (filepath.empty())
+		luaL_typerror(L, 1, "non-empty string");
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+
 	CHECK_SECURE_PATH(L, filepath.c_str(), false);
 
-	std::vector<RemotePlayer*> sent_to;
-	bool ok = getServer(L)->dynamicAddMedia(filepath, sent_to);
-	if (ok) {
-		// (see wrapper code in builtin)
-		lua_createtable(L, sent_to.size(), 0);
-		int i = 0;
-		for (RemotePlayer *player : sent_to) {
-			lua_pushstring(L, player->getName());
-			lua_rawseti(L, -2, ++i);
-		}
-	} else {
-		lua_pushboolean(L, false);
-	}
+	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(2);
+
+	bool ok = server->dynamicAddMedia(filepath, token, to_player, ephemeral);
+	if (!ok)
+		server->getScriptIface()->freeDynamicMediaCallback(token);
+	lua_pushboolean(L, ok);
 
 	return 1;
 }
@@ -498,31 +507,6 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 	return 0;
 }
 
-// get_last_run_mod()
-int ModApiServer::l_get_last_run_mod(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	std::string current_mod = readParam<std::string>(L, -1, "");
-	if (current_mod.empty()) {
-		lua_pop(L, 1);
-		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
-	}
-	return 1;
-}
-
-// set_last_run_mod(modname)
-int ModApiServer::l_set_last_run_mod(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-#ifdef SCRIPTAPI_DEBUG
-	const char *mod = lua_tostring(L, 1);
-	getScriptApiBase(L)->setOriginDirect(mod);
-	//printf(">>>> last mod set from Lua: %s\n", mod);
-#endif
-	return 0;
-}
-
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
@@ -543,7 +527,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(sound_fade);
-	API_FCT(dynamic_add_media_raw);
+	API_FCT(dynamic_add_media);
 
 	API_FCT(get_player_information);
 	API_FCT(get_player_privs);
@@ -555,7 +539,4 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(remove_player);
 	API_FCT(unban_player_or_ip);
 	API_FCT(notify_authentication_modified);
-
-	API_FCT(get_last_run_mod);
-	API_FCT(set_last_run_mod);
 }

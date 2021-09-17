@@ -18,10 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "common/c_internal.h"
+#include "util/numeric.h"
 #include "debug.h"
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
+#include <algorithm> // std::find
 
 std::string script_get_backtrace(lua_State *L)
 {
@@ -99,60 +101,35 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 	throw LuaError(err_msg);
 }
 
-// Push the list of callbacks (a lua table).
-// Then push nargs arguments.
-// Then call this function, which
-// - runs the callbacks
-// - replaces the table and arguments with the return value,
-//     computed depending on mode
-void script_run_callbacks_f(lua_State *L, int nargs,
-	RunCallbacksMode mode, const char *fxn)
-{
-	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
-
-	// Insert error handler
-	PUSH_ERROR_HANDLER(L);
-	int error_handler = lua_gettop(L) - nargs - 1;
-	lua_insert(L, error_handler);
-
-	// Insert run_callbacks between error handler and table
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "run_callbacks");
-	lua_remove(L, -2);
-	lua_insert(L, error_handler + 1);
-
-	// Insert mode after table
-	lua_pushnumber(L, (int) mode);
-	lua_insert(L, error_handler + 3);
-
-	// Stack now looks like this:
-	// ... <error handler> <run_callbacks> <table> <mode> <arg#1> <arg#2> ... <arg#n>
-
-	int result = lua_pcall(L, nargs + 2, 1, error_handler);
-	if (result != 0)
-		script_error(L, result, NULL, fxn);
-
-	lua_remove(L, error_handler);
-}
-
-static void script_log(lua_State *L, const std::string &message,
-	std::ostream &log_to, bool do_error, int stack_depth)
+static void script_log_add_source(lua_State *L, std::string &message, int stack_depth)
 {
 	lua_Debug ar;
 
-	log_to << message << " ";
 	if (lua_getstack(L, stack_depth, &ar)) {
 		FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
-		log_to << "(at " << ar.short_src << ":" << ar.currentline << ")";
+		message.append(" (at " + std::string(ar.short_src) + ":"
+			+ std::to_string(ar.currentline) + ")");
 	} else {
-		log_to << "(at ?:?)";
+		message.append(" (at ?:?)");
 	}
-	log_to << std::endl;
+}
 
-	if (do_error)
-		script_error(L, LUA_ERRRUN, NULL, NULL);
-	else
-		infostream << script_get_backtrace(L) << std::endl;
+bool script_log_unique(lua_State *L, std::string message, std::ostream &log_to,
+	int stack_depth)
+{
+	thread_local std::vector<u64> logged_messages;
+
+	script_log_add_source(L, message, stack_depth);
+	u64 hash = murmur_hash_64_ua(message.data(), message.length(), 0xBADBABE);
+
+	if (std::find(logged_messages.begin(), logged_messages.end(), hash)
+			== logged_messages.end()) {
+
+		logged_messages.emplace_back(hash);
+		log_to << message << std::endl;
+		return true;
+	}
+	return false;
 }
 
 DeprecatedHandlingMode get_deprecated_handling_mode()
@@ -174,9 +151,18 @@ DeprecatedHandlingMode get_deprecated_handling_mode()
 	return ret;
 }
 
-void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
+void log_deprecated(lua_State *L, std::string message, int stack_depth)
 {
 	DeprecatedHandlingMode mode = get_deprecated_handling_mode();
-	if (mode != DeprecatedHandlingMode::Ignore)
-		script_log(L, message, warningstream, mode == DeprecatedHandlingMode::Error, stack_depth);
+	if (mode == DeprecatedHandlingMode::Ignore)
+		return;
+
+	script_log_add_source(L, message, stack_depth);
+	warningstream << message << std::endl;
+
+	if (mode == DeprecatedHandlingMode::Error)
+		script_error(L, LUA_ERRRUN, NULL, NULL);
+	else
+		infostream << script_get_backtrace(L) << std::endl;
 }
+

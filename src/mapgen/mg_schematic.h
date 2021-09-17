@@ -70,6 +70,7 @@ class Server;
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
 #define MTSCHEM_FILE_VER_HIGHEST_READ  4
 #define MTSCHEM_FILE_VER_HIGHEST_WRITE 4
+#define MTSCHEM_MAPNODE_SER_FMT_VER    28 // Fixed serialization version for schematics since these still need to use Zlib
 
 #define MTSCHEM_PROB_MASK       0x7F
 

@@ -81,7 +81,7 @@ static bool replace_ext(std::string &path, const char *ext)
 std::string getImagePath(std::string path)
 {
 	// A NULL-ended list of possible image extensions
-	const char *extensions[] = { "png", "jpg", "bmp", NULL };
+	const char *extensions[] = { "png", "jpg", "bmp", "tga", NULL };
 	// If there is no extension, assume PNG
 	if (removeStringEnd(path, extensions).empty())
 		path = path + ".png";

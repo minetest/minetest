@@ -71,7 +71,7 @@ private:
 	static int l_sound_fade(lua_State *L);
 
 	// dynamic_add_media(filepath)
-	static int l_dynamic_add_media_raw(lua_State *L);
+	static int l_dynamic_add_media(lua_State *L);
 
 	// get_player_privs(name, text)
 	static int l_get_player_privs(lua_State *L);
@@ -102,12 +102,6 @@ private:
 
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
-
-	// get_last_run_mod()
-	static int l_get_last_run_mod(lua_State *L);
-
-	// set_last_run_mod(modname)
-	static int l_set_last_run_mod(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

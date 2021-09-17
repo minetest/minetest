@@ -204,7 +204,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x3e
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
-	null_command_factory, // 0x41
+	{ "TOSERVER_HAVE_MEDIA",         2, true }, // 0x41
 	null_command_factory, // 0x42
 	{ "TOSERVER_CLIENT_READY",       1, true }, // 0x43
 	null_command_factory, // 0x44

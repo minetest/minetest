@@ -302,7 +302,10 @@ void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
 	const char *data = (const char *) sqlite3_column_blob(m_stmt_read, 0);
 	size_t len = sqlite3_column_bytes(m_stmt_read, 0);
 
-	*block = (data) ? std::string(data, len) : "";
+	if (data)
+		block->assign(data, len);
+	else
+		block->clear();
 
 	sqlite3_step(m_stmt_read);
 	// We should never get more than 1 row, so ok to reset
@@ -491,6 +494,7 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	sqlite3_reset(m_stmt_player_remove_inventory_items);
 
 	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
+	std::ostringstream oss;
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList* list = inventory_lists[i];
 
@@ -503,9 +507,10 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 		sqlite3_reset(m_stmt_player_add_inventory);
 
 		for (u32 j = 0; j < list->getSize(); j++) {
-			std::ostringstream os;
-			list->getItem(j).serialize(os);
-			std::string itemStr = os.str();
+			oss.str("");
+			oss.clear();
+			list->getItem(j).serialize(oss);
+			std::string itemStr = oss.str();
 
 			str_to_sqlite(m_stmt_player_add_inventory_items, 1, player->getName());
 			int_to_sqlite(m_stmt_player_add_inventory_items, 2, i);

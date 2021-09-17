@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <cerrno>
 #include <fstream>
@@ -36,6 +37,7 @@ namespace fs
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <shlwapi.h>
+#include <io.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
@@ -176,13 +178,27 @@ std::string TempPath()
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
 	}
-	std::vector<char> buf(bufsize);
+	std::string buf;
+	buf.resize(bufsize);
 	DWORD len = GetTempPath(bufsize, &buf[0]);
 	if(len == 0 || len > bufsize){
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
 	}
-	return std::string(buf.begin(), buf.begin() + len);
+	buf.resize(len);
+	return buf;
+}
+
+std::string CreateTempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	_mktemp_s(&path[0], path.size() + 1); // modifies path
+	HANDLE file = CreateFile(path.c_str(), GENERIC_WRITE, 0, nullptr,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (file == INVALID_HANDLE_VALUE)
+		return "";
+	CloseHandle(file);
+	return path;
 }
 
 #else // POSIX
@@ -362,6 +378,16 @@ std::string TempPath()
 #else
 	return DIR_DELIM "tmp";
 #endif
+}
+
+std::string CreateTempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	int fd = mkstemp(&path[0]); // modifies path
+	if (fd == -1)
+		return "";
+	close(fd);
+	return path;
 }
 
 #endif

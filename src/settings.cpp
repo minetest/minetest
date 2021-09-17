@@ -49,7 +49,7 @@ SettingsHierarchy::SettingsHierarchy(Settings *fallback)
 
 Settings *SettingsHierarchy::getLayer(int layer) const
 {
-	if (layer < 0 || layer >= layers.size())
+	if (layer < 0 || layer >= (int)layers.size())
 		throw BaseException("Invalid settings layer");
 	return layers[layer];
 }
@@ -57,7 +57,7 @@ Settings *SettingsHierarchy::getLayer(int layer) const
 
 Settings *SettingsHierarchy::getParent(int layer) const
 {
-	assert(layer >= 0 && layer < layers.size());
+	assert(layer >= 0 && layer < (int)layers.size());
 	// iterate towards the origin (0) to find the next fallback layer
 	for (int i = layer - 1; i >= 0; --i) {
 		if (layers[i])
@@ -72,8 +72,8 @@ void SettingsHierarchy::onLayerCreated(int layer, Settings *obj)
 {
 	if (layer < 0)
 		throw BaseException("Invalid settings layer");
-	if (layers.size() < layer+1)
-		layers.resize(layer+1);
+	if ((int)layers.size() < layer + 1)
+		layers.resize(layer + 1);
 
 	Settings *&pos = layers[layer];
 	if (pos)
@@ -537,11 +537,8 @@ float Settings::getFloat(const std::string &name) const
 
 u64 Settings::getU64(const std::string &name) const
 {
-	u64 value = 0;
 	std::string s = get(name);
-	std::istringstream ss(s);
-	ss >> value;
-	return value;
+	return from_string<u64>(s);
 }
 
 

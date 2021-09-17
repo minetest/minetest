@@ -362,16 +362,15 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	infostream << "Sending " << numfiles << " files to " <<
 		getPlayerName(peer_id) << std::endl;
-	verbosestream << "TOSERVER_REQUEST_MEDIA: " << std::endl;
+	verbosestream << "TOSERVER_REQUEST_MEDIA: requested file(s)" << std::endl;
 
 	for (u16 i = 0; i < numfiles; i++) {
 		std::string name;
 
 		*pkt >> name;
 
-		tosend.push_back(name);
-		verbosestream << "TOSERVER_REQUEST_MEDIA: requested file "
-				<< name << std::endl;
+		tosend.emplace_back(name);
+		verbosestream << "  " << name << std::endl;
 	}
 
 	sendRequestedMedia(peer_id, tosend);
@@ -510,10 +509,6 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setWantedRange(wanted_range);
 
 	player->keyPressed = keyPressed;
-	player->control.up    = (keyPressed & (0x1 << 0));
-	player->control.down  = (keyPressed & (0x1 << 1));
-	player->control.left  = (keyPressed & (0x1 << 2));
-	player->control.right = (keyPressed & (0x1 << 3));
 	player->control.jump  = (keyPressed & (0x1 << 4));
 	player->control.aux1  = (keyPressed & (0x1 << 5));
 	player->control.sneak = (keyPressed & (0x1 << 6));
@@ -832,7 +827,6 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 		PlayerHPChangeReason reason(PlayerHPChangeReason::FALL);
 		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason);
-		SendPlayerHPOrDie(playersao, reason);
 	}
 }
 
@@ -1117,9 +1111,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		float time_from_last_punch =
 			playersao->resetTimeFromLastPunch();
 
-		u16 src_original_hp = pointed_object->getHP();
-		u16 dst_origin_hp = playersao->getHP();
-
 		u16 wear = pointed_object->punch(dir, &toolcap, playersao,
 				time_from_last_punch);
 
@@ -1128,18 +1119,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		bool changed = selected_item.addWear(wear, m_itemdef);
 		if (changed)
 			playersao->setWieldedItem(selected_item);
-
-		// If the object is a player and its HP changed
-		if (src_original_hp != pointed_object->getHP() &&
-				pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			SendPlayerHPOrDie((PlayerSAO *)pointed_object,
-					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
-		}
-
-		// If the puncher is a player and its HP changed
-		if (dst_origin_hp != playersao->getHP())
-			SendPlayerHPOrDie(playersao,
-					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
 
 		return;
 	} // action == INTERACT_START_DIGGING
@@ -1820,4 +1799,31 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	// @TODO: filter, rate limit
 
 	broadcastModChannelMessage(channel_name, channel_msg, peer_id);
+}
+
+void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
+{
+	std::vector<u32> tokens;
+	u8 numtokens;
+
+	*pkt >> numtokens;
+	for (u16 i = 0; i < numtokens; i++) {
+		u32 n;
+		*pkt >> n;
+		tokens.emplace_back(n);
+	}
+
+	const session_t peer_id = pkt->getPeerId();
+	auto player = m_env->getPlayer(peer_id);
+
+	for (const u32 token : tokens) {
+		auto it = m_pending_dyn_media.find(token);
+		if (it == m_pending_dyn_media.end())
+			continue;
+		if (it->second.waiting_players.count(peer_id)) {
+			it->second.waiting_players.erase(peer_id);
+			if (player)
+				getScriptIface()->on_dynamic_media_added(token, player->getName());
+		}
+	}
 }

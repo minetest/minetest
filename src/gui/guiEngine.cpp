@@ -437,9 +437,22 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 		return;
 	}
 
+	// Chop background image to the smaller screen dimension
+	v2u32 bg_size = screensize;
+	v2f32 scale(
+			(f32) bg_size.X / sourcesize.X,
+			(f32) bg_size.Y / sourcesize.Y);
+	if (scale.X < scale.Y)
+		bg_size.X = (int) (scale.Y * sourcesize.X);
+	else
+		bg_size.Y = (int) (scale.X * sourcesize.Y);
+	v2s32 offset = v2s32(
+		(s32) screensize.X - (s32) bg_size.X,
+		(s32) screensize.Y - (s32) bg_size.Y
+	) / 2;
 	/* Draw background texture */
 	draw2DImageFilterScaled(driver, texture,
-		core::rect<s32>(0, 0, screensize.X, screensize.Y),
+		core::rect<s32>(offset.X, offset.Y, bg_size.X + offset.X, bg_size.Y + offset.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
 }
@@ -613,11 +626,4 @@ s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 void GUIEngine::stopSound(s32 handle)
 {
 	m_sound_manager->stopSound(handle);
-}
-
-/******************************************************************************/
-unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
-		const std::string &serialized_params)
-{
-	return m_script->queueAsync(serialized_func, serialized_params);
 }

@@ -30,7 +30,7 @@ if [ -z "$toolchain_file" ]; then
 fi
 echo "Using $toolchain_file"
 
-irrlicht_version=1.9.0mt2
+irrlicht_version=1.9.0mt3
 ogg_version=1.3.4
 vorbis_version=1.3.7
 curl_version=7.76.1
@@ -40,6 +40,7 @@ sqlite3_version=3.35.5
 luajit_version=2.1.0-beta3
 leveldb_version=1.23
 zlib_version=1.2.11
+zstd_version=1.4.9
 
 mkdir -p $libdir
 
@@ -66,6 +67,7 @@ download () {
 cd $libdir
 download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/curl-$curl_version-win32.zip"
@@ -117,8 +119,12 @@ cmake -S $sourcedir -B . \
 	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
-	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
+	-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a \
 	-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll \
+	\
+	-DZSTD_INCLUDE_DIR=$libdir/zstd/include \
+	-DZSTD_LIBRARY=$libdir/zstd/lib/libzstd.dll.a \
+	-DZSTD_DLL=$libdir/zstd/bin/libzstd.dll \
 	\
 	-DLUA_INCLUDE_DIR=$libdir/luajit/include \
 	-DLUA_LIBRARY=$libdir/luajit/libluajit.a \

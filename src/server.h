@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <vector>
+#include <unordered_set>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -81,12 +82,14 @@ enum ClientDeletionReason {
 struct MediaInfo
 {
 	std::string path;
-	std::string sha1_digest;
+	std::string sha1_digest; // base64-encoded
+	bool no_announce; // true: not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
 
 	MediaInfo(const std::string &path_="",
 	          const std::string &sha1_digest_=""):
 		path(path_),
-		sha1_digest(sha1_digest_)
+		sha1_digest(sha1_digest_),
+		no_announce(false)
 	{
 	}
 };
@@ -197,6 +200,7 @@ public:
 	void handleCommand_FirstSrp(NetworkPacket* pkt);
 	void handleCommand_SrpBytesA(NetworkPacket* pkt);
 	void handleCommand_SrpBytesM(NetworkPacket* pkt);
+	void handleCommand_HaveMedia(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -257,7 +261,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMedia(const std::string &filepath, std::vector<RemotePlayer*> &sent_to);
+	bool dynamicAddMedia(std::string filepath, u32 token,
+		const std::string &to_player, bool ephemeral);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -295,6 +300,10 @@ public:
 
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
+	inline void setAsyncFatalError(const LuaError &e)
+	{
+		setAsyncFatalError(std::string("Lua: ") + e.what());
+	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
@@ -395,6 +404,12 @@ private:
 			float m_timer = 0.0f;
 	};
 
+	struct PendingDynamicMediaCallback {
+		std::string filename; // only set if media entry and file is to be deleted
+		float expiry_timer;
+		std::unordered_set<session_t> waiting_players;
+	};
+
 	void init();
 
 	void SendMovement(session_t peer_id);
@@ -466,6 +481,7 @@ private:
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
+	void stepPendingDynMediaCallbacks(float dtime);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
@@ -649,6 +665,10 @@ private:
 
 	// media files known to server
 	std::unordered_map<std::string, MediaInfo> m_media;
+
+	// pending dynamic media callbacks, clients inform the server when they have a file fetched
+	std::unordered_map<u32, PendingDynamicMediaCallback> m_pending_dyn_media;
+	float m_step_pending_dyn_media_timer = 0.0f;
 
 	/*
 		Sounds
