@@ -62,18 +62,31 @@ namespace con
 
 #define PING_TIMEOUT 5.0
 
-BufferedPacket makePacket(Address &address, const SharedBuffer<u8> &data,
+u16 BufferedPacket::getSeqnum() const
+{
+	if (size() < BASE_HEADER_SIZE + 3) {
+		//std::cout << (int)data[0xFFFFFFFFF] << std::endl;
+		throw ConnectionException("Packet too short to contain a seqnum");
+	}
+
+	return readU16(&data[BASE_HEADER_SIZE + 1]);
+}
+
+BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel)
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
-	BufferedPacket p(packet_size);
-	p.address = address;
+	auto p = std::make_shared<BufferedPacket>(packet_size);
+	p->address = address;
 
-	writeU32(&p.data[0], protocol_id);
-	writeU16(&p.data[4], sender_peer_id);
-	writeU8(&p.data[6], channel);
+	u8 *packet = p->ptr_write();
 
-	memcpy(&p.data[BASE_HEADER_SIZE], *data, data.getSize());
+	writeU32(&packet[0], protocol_id);
+	writeU16(&packet[4], sender_peer_id);
+	writeU8(&packet[6], channel);
+
+	memcpy(&packet[BASE_HEADER_SIZE], *data, data.getSize());
+	p->lock();
 
 	return p;
 }
@@ -169,9 +182,8 @@ void ReliablePacketBuffer::print()
 	MutexAutoLock listlock(m_list_mutex);
 	LOG(dout_con<<"Dump of ReliablePacketBuffer:" << std::endl);
 	unsigned int index = 0;
-	for (BufferedPacket &bufferedPacket : m_list) {
-		u16 s = readU16(&(bufferedPacket.data[BASE_HEADER_SIZE+1]));
-		LOG(dout_con<<index<< ":" << s << std::endl);
+	for (BufferedPacketPtr &packet : m_list) {
+		LOG(dout_con<<index<< ":" << packet->getSeqnum() << std::endl);
 		index++;
 	}
 }
@@ -188,16 +200,13 @@ u32 ReliablePacketBuffer::size()
 	return m_list.size();
 }
 
-RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
+RPBSearchResult ReliablePacketBuffer::findPacketNoLock(u16 seqnum)
 {
-	std::list<BufferedPacket>::iterator i = m_list.begin();
-	for(; i != m_list.end(); ++i)
-	{
-		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
-		if (s == seqnum)
-			break;
+	for (auto it = m_list.begin(); it != m_list.end(); ++it) {
+		if ((*it)->getSeqnum() == seqnum)
+			return it;
 	}
-	return i;
+	return m_list.end();
 }
 
 bool ReliablePacketBuffer::getFirstSeqnum(u16& result)
@@ -205,54 +214,54 @@ bool ReliablePacketBuffer::getFirstSeqnum(u16& result)
 	MutexAutoLock listlock(m_list_mutex);
 	if (m_list.empty())
 		return false;
-	const BufferedPacket &p = m_list.front();
-	result = readU16(&p.data[BASE_HEADER_SIZE + 1]);
+	result = m_list.front()->getSeqnum();
 	return true;
 }
 
-BufferedPacket ReliablePacketBuffer::popFirst()
+BufferedPacketPtr ReliablePacketBuffer::popFirst()
 {
 	MutexAutoLock listlock(m_list_mutex);
 	if (m_list.empty())
 		throw NotFoundException("Buffer is empty");
-	BufferedPacket p = std::move(m_list.front());
+
+	BufferedPacketPtr p(m_list.front());
 	m_list.pop_front();
 
 	if (m_list.empty()) {
 		m_oldest_non_answered_ack = 0;
 	} else {
-		m_oldest_non_answered_ack =
-				readU16(&m_list.front().data[BASE_HEADER_SIZE + 1]);
+		m_oldest_non_answered_ack = m_list.front()->getSeqnum();
 	}
 	return p;
 }
 
-BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
+BufferedPacketPtr ReliablePacketBuffer::popSeqnum(u16 seqnum)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	RPBSearchResult r = findPacket(seqnum);
-	if (r == notFound()) {
+	RPBSearchResult r = findPacketNoLock(seqnum);
+	if (r == m_list.end()) {
 		LOG(dout_con<<"Sequence number: " << seqnum
 				<< " not found in reliable buffer"<<std::endl);
 		throw NotFoundException("seqnum not found in buffer");
 	}
-	BufferedPacket p = std::move(*r);
 
+	BufferedPacketPtr p(*r);
 	m_list.erase(r);
 
 	if (m_list.empty()) {
 		m_oldest_non_answered_ack = 0;
 	} else {
-		m_oldest_non_answered_ack =
-				readU16(&m_list.front().data[BASE_HEADER_SIZE + 1]);
+		m_oldest_non_answered_ack = m_list.front()->getSeqnum();
 	}
 	return p;
 }
 
-void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
+void ReliablePacketBuffer::insert(const BufferedPacketPtr &p_ptr, u16 next_expected)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	if (p.data.getSize() < BASE_HEADER_SIZE + 3) {
+	const BufferedPacket &p = *p_ptr;
+
+	if (p.size() < BASE_HEADER_SIZE + 3) {
 		errorstream << "ReliablePacketBuffer::insert(): Invalid data size for "
 			"reliable packet" << std::endl;
 		return;
@@ -263,7 +272,7 @@ void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
 			<< std::endl;
 		return;
 	}
-	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE + 1]);
+	const u16 seqnum = p.getSeqnum();
 
 	if (!seqnum_in_window(seqnum, next_expected, MAX_RELIABLE_WINDOW_SIZE)) {
 		errorstream << "ReliablePacketBuffer::insert(): seqnum is outside of "
@@ -281,44 +290,43 @@ void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
 	// Find the right place for the packet and insert it there
 	// If list is empty, just add it
 	if (m_list.empty()) {
-		BufferedPacket copy(0);
-		p.copyTo(copy);
-		m_list.push_back(std::move(copy));
+		m_list.push_back(p_ptr);
 		m_oldest_non_answered_ack = seqnum;
 		// Done.
 		return;
 	}
 
 	// Otherwise find the right place
-	std::list<BufferedPacket>::iterator i = m_list.begin();
+	auto it = m_list.begin();
 	// Find the first packet in the list which has a higher seqnum
-	u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
+	u16 s = (*it)->getSeqnum();
 
 	/* case seqnum is smaller then next_expected seqnum */
 	/* this is true e.g. on wrap around */
 	if (seqnum < next_expected) {
-		while(((s < seqnum) || (s >= next_expected)) && (i != m_list.end())) {
-			++i;
-			if (i != m_list.end())
-				s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
+		while(((s < seqnum) || (s >= next_expected)) && (it != m_list.end())) {
+			++it;
+			if (it != m_list.end())
+				s = (*it)->getSeqnum();
 		}
 	}
 	/* non wrap around case (at least for incoming and next_expected */
 	else
 	{
-		while(((s < seqnum) && (s >= next_expected)) && (i != m_list.end())) {
-			++i;
-			if (i != m_list.end())
-				s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
+		while(((s < seqnum) && (s >= next_expected)) && (it != m_list.end())) {
+			++it;
+			if (it != m_list.end())
+				s = (*it)->getSeqnum();
 		}
 	}
 
 	if (s == seqnum) {
 		/* nothing to do this seems to be a resent packet */
 		/* for paranoia reason data should be compared */
+		auto &i = *it;
 		if (
-			(readU16(&(i->data[BASE_HEADER_SIZE+1])) != seqnum) ||
-			(i->data.getSize() != p.data.getSize()) ||
+			(i->getSeqnum() != seqnum) ||
+			(i->size() != p.size()) ||
 			(i->address != p.address)
 			)
 		{
@@ -326,58 +334,52 @@ void ReliablePacketBuffer::insert(const BufferedPacket &p, u16 next_expected)
 			fprintf(stderr,
 					"Duplicated seqnum %d non matching packet detected:\n",
 					seqnum);
-			fprintf(stderr, "Old: seqnum: %05d size: %04d, address: %s\n",
-					readU16(&(i->data[BASE_HEADER_SIZE+1])),i->data.getSize(),
+			fprintf(stderr, "Old: seqnum: %05d size: %04zu, address: %s\n",
+					i->getSeqnum(), i->size(),
 					i->address.serializeString().c_str());
-			fprintf(stderr, "New: seqnum: %05d size: %04u, address: %s\n",
-					readU16(&(p.data[BASE_HEADER_SIZE+1])),p.data.getSize(),
+			fprintf(stderr, "New: seqnum: %05d size: %04zu, address: %s\n",
+					p.getSeqnum(), p.size(),
 					p.address.serializeString().c_str());
 			throw IncomingDataCorruption("duplicated packet isn't same as original one");
 		}
 	}
 	/* insert or push back */
-	else if (i != m_list.end()) {
-		BufferedPacket copy(0);
-		p.copyTo(copy);
-		m_list.insert(i, std::move(copy));
+	else if (it != m_list.end()) {
+		m_list.insert(it, p_ptr);
 	} else {
-		BufferedPacket copy(0);
-		p.copyTo(copy);
-		m_list.push_back(std::move(copy));
+		m_list.push_back(p_ptr);
 	}
 
 	/* update last packet number */
-	m_oldest_non_answered_ack = readU16(&m_list.front().data[BASE_HEADER_SIZE+1]);
+	m_oldest_non_answered_ack = m_list.front()->getSeqnum();
 }
 
 void ReliablePacketBuffer::incrementTimeouts(float dtime)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	for (BufferedPacket &bufferedPacket : m_list) {
-		bufferedPacket.time += dtime;
-		bufferedPacket.totaltime += dtime;
+	for (auto &packet : m_list) {
+		packet->time += dtime;
+		packet->totaltime += dtime;
 	}
 }
 
-std::list<BufferedPacket>
+std::list<BufferedPacketPtr>
 	ReliablePacketBuffer::getTimedOuts(float timeout, u32 max_packets)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	std::list<BufferedPacket> timed_outs;
-	for (BufferedPacket &bufferedPacket : m_list) {
-		if (bufferedPacket.time >= timeout) {
-			// caller will resend packet so reset time and increase counter
-			bufferedPacket.time = 0.0f;
-			bufferedPacket.resend_count++;
+	std::list<BufferedPacketPtr> timed_outs;
+	for (auto &packet : m_list) {
+		if (packet->time < timeout)
+			continue;
 
-			// TODO: Find a way to ensure proper packet lifecycle without copying
-			BufferedPacket p(0);
-			bufferedPacket.copyTo(p);
-			timed_outs.push_back(std::move(p));
+		// caller will resend packet so reset time and increase counter
+		packet->time = 0.0f;
+		packet->resend_count++;
 
-			if (timed_outs.size() >= max_packets)
-				break;
-		}
+		timed_outs.push_back(packet);
+
+		if (timed_outs.size() >= max_packets)
+			break;
 	}
 	return timed_outs;
 }
@@ -436,11 +438,13 @@ IncomingSplitBuffer::~IncomingSplitBuffer()
 	}
 }
 
-SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacket &p, bool reliable)
+SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacketPtr &p_ptr, bool reliable)
 {
 	MutexAutoLock listlock(m_map_mutex);
+	const BufferedPacket &p = *p_ptr;
+
 	u32 headersize = BASE_HEADER_SIZE + 7;
-	if (p.data.getSize() < headersize) {
+	if (p.size() < headersize) {
 		errorstream << "Invalid data size for split packet" << std::endl;
 		return SharedBuffer<u8>();
 	}
@@ -481,7 +485,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacket &p, bool relia
 				<<std::endl);
 
 	// Cut chunk data out of packet
-	u32 chunkdatasize = p.data.getSize() - headersize;
+	u32 chunkdatasize = p.size() - headersize;
 	SharedBuffer<u8> chunkdata(chunkdatasize);
 	memcpy(*chunkdata, &(p.data[headersize]), chunkdatasize);
 
@@ -570,39 +574,38 @@ void Channel::setNextSplitSeqNum(u16 seqnum)
 u16 Channel::getOutgoingSequenceNumber(bool& successful)
 {
 	MutexAutoLock internal(m_internal_mutex);
+
 	u16 retval = next_outgoing_seqnum;
-	u16 lowest_unacked_seqnumber;
+	successful = false;
 
 	/* shortcut if there ain't any packet in outgoing list */
-	if (outgoing_reliables_sent.empty())
-	{
+	if (outgoing_reliables_sent.empty()) {
+		successful = true;
 		next_outgoing_seqnum++;
 		return retval;
 	}
 
-	if (outgoing_reliables_sent.getFirstSeqnum(lowest_unacked_seqnumber))
-	{
+	u16 lowest_unacked_seqnumber;
+	if (outgoing_reliables_sent.getFirstSeqnum(lowest_unacked_seqnumber)) {
 		if (lowest_unacked_seqnumber < next_outgoing_seqnum) {
 			// ugly cast but this one is required in order to tell compiler we
 			// know about difference of two unsigned may be negative in general
 			// but we already made sure it won't happen in this case
 			if (((u16)(next_outgoing_seqnum - lowest_unacked_seqnumber)) > m_window_size) {
-				successful = false;
 				return 0;
 			}
-		}
-		else {
+		} else {
 			// ugly cast but this one is required in order to tell compiler we
 			// know about difference of two unsigned may be negative in general
 			// but we already made sure it won't happen in this case
 			if ((next_outgoing_seqnum + (u16)(SEQNUM_MAX - lowest_unacked_seqnumber)) >
 					m_window_size) {
-				successful = false;
 				return 0;
 			}
 		}
 	}
 
+	successful = true;
 	next_outgoing_seqnum++;
 	return retval;
 }
@@ -1010,9 +1013,9 @@ bool UDPPeer::processReliableSendCommand(
 		chan.setNextSplitSeqNum(split_sequence_number);
 	}
 
-	bool have_sequence_number = true;
+	bool have_sequence_number = false;
 	bool have_initial_sequence_number = false;
-	std::queue<BufferedPacket> toadd;
+	std::queue<BufferedPacketPtr> toadd;
 	volatile u16 initial_sequence_number = 0;
 
 	for (SharedBuffer<u8> &original : originals) {
@@ -1031,25 +1034,23 @@ bool UDPPeer::processReliableSendCommand(
 		SharedBuffer<u8> reliable = makeReliablePacket(original, seqnum);
 
 		// Add base headers and make a packet
-		BufferedPacket p = con::makePacket(address, reliable,
+		BufferedPacketPtr p = con::makePacket(address, reliable,
 				m_connection->GetProtocolID(), m_connection->GetPeerID(),
 				c.channelnum);
 
-		toadd.push(std::move(p));
+		toadd.push(p);
 	}
 
 	if (have_sequence_number) {
-		volatile u16 pcount = 0;
 		while (!toadd.empty()) {
-			BufferedPacket p = std::move(toadd.front());
+			BufferedPacketPtr p = toadd.front();
 			toadd.pop();
 //			LOG(dout_con<<connection->getDesc()
 //					<< " queuing reliable packet for peer_id: " << c.peer_id
 //					<< " channel: " << (c.channelnum&0xFF)
 //					<< " seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 //					<< std::endl)
-			chan.queued_reliables.push(std::move(p));
-			pcount++;
+			chan.queued_reliables.push(p);
 		}
 		sanity_check(chan.queued_reliables.size() < 0xFFFF);
 		return true;
@@ -1058,6 +1059,7 @@ bool UDPPeer::processReliableSendCommand(
 	volatile u16 packets_available = toadd.size();
 	/* we didn't get a single sequence number no need to fill queue */
 	if (!have_initial_sequence_number) {
+		LOG(derr_con << "Ran out of sequence numbers!" << std::endl);
 		return false;
 	}
 
@@ -1109,7 +1111,7 @@ void UDPPeer::RunCommandQueues(
 						<< " processing queued reliable command " << std::endl);
 
 				// Packet is processed, remove it from queue
-				if (processReliableSendCommand(c,max_packet_size)) {
+				if (processReliableSendCommand(c, max_packet_size)) {
 					channel.queued_commands.pop_front();
 				} else {
 					LOG(dout_con << m_connection->getDesc()
@@ -1137,7 +1139,7 @@ void UDPPeer::setNextSplitSequenceNumber(u8 channel, u16 seqnum)
 	channels[channel].setNextSplitSeqNum(seqnum);
 }
 
-SharedBuffer<u8> UDPPeer::addSplitPacket(u8 channel, const BufferedPacket &toadd,
+SharedBuffer<u8> UDPPeer::addSplitPacket(u8 channel, const BufferedPacketPtr &toadd,
 	bool reliable)
 {
 	assert(channel < CHANNEL_COUNT); // Pre-condition

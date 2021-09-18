@@ -32,6 +32,95 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <map>
 
+#define MAX_UDP_PEERS 65535
+
+/*
+=== NOTES ===
+
+A packet is sent through a channel to a peer with a basic header:
+	Header (7 bytes):
+	[0] u32 protocol_id
+	[4] session_t sender_peer_id
+	[6] u8 channel
+sender_peer_id:
+	Unique to each peer.
+	value 0 (PEER_ID_INEXISTENT) is reserved for making new connections
+	value 1 (PEER_ID_SERVER) is reserved for server
+	these constants are defined in constants.h
+channel:
+	Channel numbers have no intrinsic meaning. Currently only 0, 1, 2 exist.
+*/
+#define BASE_HEADER_SIZE 7
+#define CHANNEL_COUNT 3
+
+/*
+Packet types:
+
+CONTROL: This is a packet used by the protocol.
+- When this is processed, nothing is handed to the user.
+	Header (2 byte):
+	[0] u8 type
+	[1] u8 controltype
+controltype and data description:
+	CONTROLTYPE_ACK
+		[2] u16 seqnum
+	CONTROLTYPE_SET_PEER_ID
+		[2] session_t peer_id_new
+	CONTROLTYPE_PING
+	- There is no actual reply, but this can be sent in a reliable
+	  packet to get a reply
+	CONTROLTYPE_DISCO
+*/
+enum ControlType : u8 {
+	CONTROLTYPE_ACK = 0,
+	CONTROLTYPE_SET_PEER_ID = 1,
+	CONTROLTYPE_PING = 2,
+	CONTROLTYPE_DISCO = 3,
+};
+
+/*
+ORIGINAL: This is a plain packet with no control and no error
+checking at all.
+- When this is processed, it is directly handed to the user.
+	Header (1 byte):
+	[0] u8 type
+*/
+//#define TYPE_ORIGINAL 1
+#define ORIGINAL_HEADER_SIZE 1
+
+/*
+SPLIT: These are sequences of packets forming one bigger piece of
+data.
+- When processed and all the packet_nums 0...packet_count-1 are
+  present (this should be buffered), the resulting data shall be
+  directly handed to the user.
+- If the data fails to come up in a reasonable time, the buffer shall
+  be silently discarded.
+- These can be sent as-is or atop of a RELIABLE packet stream.
+	Header (7 bytes):
+	[0] u8 type
+	[1] u16 seqnum
+	[3] u16 chunk_count
+	[5] u16 chunk_num
+*/
+//#define TYPE_SPLIT 2
+
+/*
+RELIABLE: Delivery of all RELIABLE packets shall be forced by ACKs,
+and they shall be delivered in the same order as sent. This is done
+with a buffer in the receiving and transmitting end.
+- When this is processed, the contents of each packet is recursively
+  processed as packets.
+	Header (3 bytes):
+	[0] u8 type
+	[1] u16 seqnum
+
+*/
+//#define TYPE_RELIABLE 3
+#define RELIABLE_HEADER_SIZE 3
+#define SEQNUM_INITIAL 65500
+#define SEQNUM_MAX 65535
+
 class NetworkPacket;
 
 namespace con
@@ -46,9 +135,13 @@ typedef enum MTProtocols {
 	MTP_MINETEST_RELIABLE_UDP
 } MTProtocols;
 
-#define MAX_UDP_PEERS 65535
-
-#define SEQNUM_MAX 65535
+enum PacketType : u8 {
+	PACKET_TYPE_CONTROL = 0,
+	PACKET_TYPE_ORIGINAL = 1,
+	PACKET_TYPE_SPLIT = 2,
+	PACKET_TYPE_RELIABLE = 3,
+	PACKET_TYPE_MAX
+};
 
 inline bool seqnum_higher(u16 totest, u16 base)
 {
@@ -85,33 +178,58 @@ static inline float CALC_DTIME(u64 lasttime, u64 curtime)
 	return MYMAX(MYMIN(value,0.1),0.0);
 }
 
-struct BufferedPacket
-{
-	BufferedPacket(u8 *a_data, u32 a_size):
-		data(a_data, a_size)
-	{}
-	BufferedPacket(u32 a_size):
-		data(a_size)
-	{}
+/*
+	Struct for all kinds of packets. Includes following data:
+		BASE_HEADER
+		SharedBuffer<u8> packet data
+*/
+struct BufferedPacket {
+	BufferedPacket(u32 a_size)
+	{
+		m_data.resize(a_size);
+		data = &m_data[0];
+	}
+
+	DISABLE_CLASS_COPY(BufferedPacket)
+
 	void copyTo(BufferedPacket &p) const
 	{
-		data.copyTo(p.data);
+		p.m_data = m_data;
+		p.m_write_locked = m_write_locked;
+		p.data = data;
 		p.time = time;
 		p.totaltime = totaltime;
 		p.absolute_send_time = absolute_send_time;
 		p.address = address;
 		p.resend_count = resend_count;
 	}
-	Buffer<u8> data; // Data of the packet, including headers
+
+	void lock() { m_write_locked = true; }
+
+	u16 getSeqnum() const;
+
+	inline const size_t size() const { return m_data.size(); }
+
+	inline u8 *ptr_write()
+	{ return m_write_locked ? nullptr : &m_data[0]; }
+
+	const u8 *data; // Read-only access
 	float time = 0.0f; // Seconds from buffering the packet or re-sending
 	float totaltime = 0.0f; // Seconds from buffering the packet
 	u64 absolute_send_time = -1;
 	Address address; // Sender or destination
 	unsigned int resend_count = 0;
+
+private:
+	std::vector<u8> m_data; // Data of the packet, including headers
+	bool m_write_locked = false;
 };
 
+typedef std::shared_ptr<BufferedPacket> BufferedPacketPtr;
+
+
 // This adds the base headers to the data and makes a packet out of it
-BufferedPacket makePacket(Address &address, const SharedBuffer<u8> &data,
+BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel);
 
 // Depending on size, make a TYPE_ORIGINAL or TYPE_SPLIT packet
@@ -146,100 +264,11 @@ private:
 };
 
 /*
-=== NOTES ===
-
-A packet is sent through a channel to a peer with a basic header:
-	Header (7 bytes):
-	[0] u32 protocol_id
-	[4] session_t sender_peer_id
-	[6] u8 channel
-sender_peer_id:
-	Unique to each peer.
-	value 0 (PEER_ID_INEXISTENT) is reserved for making new connections
-	value 1 (PEER_ID_SERVER) is reserved for server
-	these constants are defined in constants.h
-channel:
-	Channel numbers have no intrinsic meaning. Currently only 0, 1, 2 exist.
-*/
-#define BASE_HEADER_SIZE 7
-#define CHANNEL_COUNT 3
-/*
-Packet types:
-
-CONTROL: This is a packet used by the protocol.
-- When this is processed, nothing is handed to the user.
-	Header (2 byte):
-	[0] u8 type
-	[1] u8 controltype
-controltype and data description:
-	CONTROLTYPE_ACK
-		[2] u16 seqnum
-	CONTROLTYPE_SET_PEER_ID
-		[2] session_t peer_id_new
-	CONTROLTYPE_PING
-	- There is no actual reply, but this can be sent in a reliable
-	  packet to get a reply
-	CONTROLTYPE_DISCO
-*/
-//#define TYPE_CONTROL 0
-#define CONTROLTYPE_ACK 0
-#define CONTROLTYPE_SET_PEER_ID 1
-#define CONTROLTYPE_PING 2
-#define CONTROLTYPE_DISCO 3
-
-/*
-ORIGINAL: This is a plain packet with no control and no error
-checking at all.
-- When this is processed, it is directly handed to the user.
-	Header (1 byte):
-	[0] u8 type
-*/
-//#define TYPE_ORIGINAL 1
-#define ORIGINAL_HEADER_SIZE 1
-/*
-SPLIT: These are sequences of packets forming one bigger piece of
-data.
-- When processed and all the packet_nums 0...packet_count-1 are
-  present (this should be buffered), the resulting data shall be
-  directly handed to the user.
-- If the data fails to come up in a reasonable time, the buffer shall
-  be silently discarded.
-- These can be sent as-is or atop of a RELIABLE packet stream.
-	Header (7 bytes):
-	[0] u8 type
-	[1] u16 seqnum
-	[3] u16 chunk_count
-	[5] u16 chunk_num
-*/
-//#define TYPE_SPLIT 2
-/*
-RELIABLE: Delivery of all RELIABLE packets shall be forced by ACKs,
-and they shall be delivered in the same order as sent. This is done
-with a buffer in the receiving and transmitting end.
-- When this is processed, the contents of each packet is recursively
-  processed as packets.
-	Header (3 bytes):
-	[0] u8 type
-	[1] u16 seqnum
-
-*/
-//#define TYPE_RELIABLE 3
-#define RELIABLE_HEADER_SIZE 3
-#define SEQNUM_INITIAL 65500
-
-enum PacketType: u8 {
-	PACKET_TYPE_CONTROL = 0,
-	PACKET_TYPE_ORIGINAL = 1,
-	PACKET_TYPE_SPLIT = 2,
-	PACKET_TYPE_RELIABLE = 3,
-	PACKET_TYPE_MAX
-};
-/*
 	A buffer which stores reliable packets and sorts them internally
 	for fast access to the smallest one.
 */
 
-typedef std::list<BufferedPacket>::iterator RPBSearchResult;
+typedef std::list<BufferedPacketPtr>::iterator RPBSearchResult;
 
 class ReliablePacketBuffer
 {
@@ -248,12 +277,12 @@ public:
 
 	bool getFirstSeqnum(u16& result);
 
-	BufferedPacket popFirst();
-	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(const BufferedPacket &p, u16 next_expected);
+	BufferedPacketPtr popFirst();
+	BufferedPacketPtr popSeqnum(u16 seqnum);
+	void insert(const BufferedPacketPtr &p_ptr, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<BufferedPacket> getTimedOuts(float timeout, u32 max_packets);
+	std::list<BufferedPacketPtr> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();
@@ -261,10 +290,9 @@ public:
 
 
 private:
-	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
-	inline RPBSearchResult notFound() { return m_list.end(); }
+	RPBSearchResult findPacketNoLock(u16 seqnum);
 
-	std::list<BufferedPacket> m_list;
+	std::list<BufferedPacketPtr> m_list;
 
 	u16 m_oldest_non_answered_ack;
 
@@ -283,7 +311,7 @@ public:
 		Returns a reference counted buffer of length != 0 when a full split
 		packet is constructed. If not, returns one of length 0.
 	*/
-	SharedBuffer<u8> insert(const BufferedPacket &p, bool reliable);
+	SharedBuffer<u8> insert(const BufferedPacketPtr &p_ptr, bool reliable);
 
 	void removeUnreliableTimedOuts(float dtime, float timeout);
 
@@ -292,25 +320,6 @@ private:
 	std::map<u16, IncomingSplitPacket*> m_buf;
 
 	std::mutex m_map_mutex;
-};
-
-struct OutgoingPacket
-{
-	session_t peer_id;
-	u8 channelnum;
-	SharedBuffer<u8> data;
-	bool reliable;
-	bool ack;
-
-	OutgoingPacket(session_t peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_,
-			bool reliable_,bool ack_=false):
-		peer_id(peer_id_),
-		channelnum(channelnum_),
-		data(data_),
-		reliable(reliable_),
-		ack(ack_)
-	{
-	}
 };
 
 enum ConnectionCommandType{
@@ -411,7 +420,7 @@ public:
 	ReliablePacketBuffer outgoing_reliables_sent;
 
 	//queued reliable packets
-	std::queue<BufferedPacket> queued_reliables;
+	std::queue<BufferedPacketPtr> queued_reliables;
 
 	//queue commands prior splitting to packets
 	std::deque<ConnectionCommand> queued_commands;
@@ -558,7 +567,7 @@ class Peer {
 
 		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
 		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
-		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
+		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacketPtr &toadd,
 				bool reliable)
 		{
 			errorstream << "Peer::addSplitPacket called,"
@@ -651,7 +660,7 @@ public:
 	u16 getNextSplitSequenceNumber(u8 channel);
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
 
-	SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
+	SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacketPtr &toadd,
 		bool reliable);
 
 protected:
