@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-09-16 16:37+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
+"PO-Revision-Date: 2021-09-19 07:38+0000\n"
+"Last-Translator: Markus Mikkonen <markus.mikkonen@outlook.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/minetest/"
 "minetest/fi/>\n"
 "Language: fi\n"
@@ -288,7 +288,7 @@ msgstr "Pelit"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr "Asenna"
+msgstr "Asentaa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
