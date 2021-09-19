@@ -606,26 +606,24 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 	const char *destination	= luaL_checkstring(L, 2);
 
 	bool keep_source = true;
+	if (!lua_isnoneornil(L, 3))
+		keep_source = readParam<bool>(L, 3);
 
-	if ((!lua_isnone(L,3)) &&
-			(!lua_isnil(L,3))) {
-		keep_source = readParam<bool>(L,3);
-	}
+	std::string abs_destination = fs::RemoveRelativePathComponents(destination);
+	std::string abs_source = fs::RemoveRelativePathComponents(source);
 
-	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
-	std::string absolute_source = fs::RemoveRelativePathComponents(source);
-
-	if ((ModApiMainMenu::mayModifyPath(absolute_destination))) {
-		bool retval = fs::CopyDir(absolute_source,absolute_destination);
-
-		if (retval && (!keep_source)) {
-
-			retval &= fs::RecursiveDelete(absolute_source);
-		}
-		lua_pushboolean(L,retval);
+	if (!ModApiMainMenu::mayModifyPath(abs_destination) ||
+		(!keep_source && !ModApiMainMenu::mayModifyPath(abs_source))) {
+		lua_pushboolean(L, false);
 		return 1;
 	}
-	lua_pushboolean(L,false);
+
+	bool retval;
+	if (keep_source)
+		retval = fs::CopyDir(abs_source, abs_destination);
+	else
+		retval = fs::MoveDir(abs_source, abs_destination);
+	lua_pushboolean(L, retval);
 	return 1;
 }
 

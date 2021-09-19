@@ -106,6 +106,10 @@ bool CopyFileContents(const std::string &source, const std::string &target);
 // Omits files and subdirectories that start with a period
 bool CopyDir(const std::string &source, const std::string &target);
 
+// Move directory and all subdirectories
+// Behavior with files/subdirs that start with a period is undefined
+bool MoveDir(const std::string &source, const std::string &target);
+
 // Check if one path is prefix of another
 // For example, "/tmp" is a prefix of "/tmp" and "/tmp/file" but not "/tmp2"
 // Ignores case differences and '/' vs. '\\' on Windows

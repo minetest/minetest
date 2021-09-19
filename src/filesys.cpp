@@ -558,6 +558,30 @@ bool CopyDir(const std::string &source, const std::string &target)
 	return false;
 }
 
+bool MoveDir(const std::string &source, const std::string &target)
+{
+	infostream << "Moving \"" << source << "\" to \"" << target << "\"" << std::endl;
+
+	// If target exists as empty folder delete, otherwise error
+	if (fs::PathExists(target)) {
+		if (rmdir(target.c_str()) != 0) {
+			errorstream << "MoveDir: target \"" << target
+				<< "\" exists as file or non-empty folder" << std::endl;
+			return false;
+		}
+	}
+
+	// Try renaming first which is instant
+	if (fs::Rename(source, target))
+		return true;
+
+	infostream << "MoveDir: rename not possible, will copy instead" << std::endl;
+	bool retval = fs::CopyDir(source, target);
+	if (retval)
+		retval &= fs::RecursiveDelete(source);
+	return retval;
+}
+
 bool PathStartsWith(const std::string &path, const std::string &prefix)
 {
 	size_t pathsize = path.size();
