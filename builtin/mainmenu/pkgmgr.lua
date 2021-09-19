@@ -546,11 +546,10 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		local from = basefolder and basefolder.path or path
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
 		end
-		if not core.copy_dir(from, targetpath) then
+		if not core.copy_dir(from, targetpath, false) then
 			return nil,
 				fgettext("Failed to install $1 to $2", basename, targetpath)
 		end
@@ -571,7 +570,6 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		-- Get destination name for modpack
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			local clean_path = nil
 			if basename ~= nil then
@@ -595,7 +593,6 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			local targetfolder = basename
 			if targetfolder == nil then
@@ -621,14 +618,13 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
 		end
 	end
 
 	-- Copy it
-	if not core.copy_dir(basefolder.path, targetpath) then
+	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)
 	end
