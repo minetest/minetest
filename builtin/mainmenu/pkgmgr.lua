@@ -181,21 +181,6 @@ function pkgmgr.get_texture_packs()
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.extract(modfile)
-	if modfile.type == "zip" then
-		local tempfolder = os.tempfolder()
-
-		if tempfolder ~= nil and
-			tempfolder ~= "" then
-			core.create_dir(tempfolder)
-			if core.extract_zip(modfile.name,tempfolder) then
-				return tempfolder
-			end
-		end
-	end
-	return nil
-end
-
 function pkgmgr.get_folder_type(path)
 	local testfile = io.open(path .. DIR_DELIM .. "init.lua","r")
 	if testfile ~= nil then
@@ -658,23 +643,6 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.install(type, modfilename, basename, dest)
-	local archive_info = pkgmgr.identify_filetype(modfilename)
-	local path = pkgmgr.extract(archive_info)
-
-	if path == nil then
-		return nil,
-			fgettext("Install: file: \"$1\"", archive_info.name) .. "\n" ..
-			fgettext("Install: Unsupported file type \"$1\" or broken archive",
-				archive_info.type)
-	end
-
-	local targetpath, msg = pkgmgr.install_dir(type, path, basename, dest)
-	core.delete_dir(path)
-	return targetpath, msg
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.preparemodlist(data)
 	local retval = {}
 
@@ -818,45 +786,6 @@ function pkgmgr.refresh_globals()
 	pkgmgr.global_mods:add_sort_mechanism("alphabetic", sort_mod_list)
 	pkgmgr.global_mods:set_sortmode("alphabetic")
 end
-
---------------------------------------------------------------------------------
-function pkgmgr.identify_filetype(name)
-
-	if name:sub(-3):lower() == "zip" then
-		return {
-				name = name,
-				type = "zip"
-				}
-	end
-
-	if name:sub(-6):lower() == "tar.gz" or
-		name:sub(-3):lower() == "tgz"then
-		return {
-				name = name,
-				type = "tgz"
-				}
-	end
-
-	if name:sub(-6):lower() == "tar.bz2" then
-		return {
-				name = name,
-				type = "tbz"
-				}
-	end
-
-	if name:sub(-2):lower() == "7z" then
-		return {
-				name = name,
-				type = "7z"
-				}
-	end
-
-	return {
-		name = name,
-		type = "ukn"
-	}
-end
-
 
 --------------------------------------------------------------------------------
 function pkgmgr.find_by_gameid(gameid)

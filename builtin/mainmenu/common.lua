@@ -119,17 +119,9 @@ function render_serverlist_row(spec)
 
 	return table.concat(details, ",")
 end
-
---------------------------------------------------------------------------------
-os.tempfolder = function()
-	local temp = core.get_temp_path()
-	return temp .. DIR_DELIM .. "MT_" .. math.random(0, 10000)
-end
-
+---------------------------------------------------------------------------------
 os.tmpname = function()
-	local path = os.tempfolder()
-	io.open(path, "w"):close()
-	return path
+	error('do not use') -- instead use core.get_temp_path()
 end
 --------------------------------------------------------------------------------
 
