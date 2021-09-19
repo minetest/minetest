@@ -252,7 +252,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	// force a shutdown of an application if it doesn't respond to the destroy
 	// window message.
 
-	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager property"
+	verbosestream << "Client: Setting Xorg _NET_WM_PID extended window manager property"
 		<< std::endl;
 
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);

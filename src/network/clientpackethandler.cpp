@@ -88,7 +88,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	// This is only neccessary though when we actually want to add casing support
 
 	if (m_chosen_auth_mech != AUTH_MECHANISM_NONE) {
-		// we recieved a TOCLIENT_HELLO while auth was already going on
+		// we received a TOCLIENT_HELLO while auth was already going on
 		errorstream << "Client: TOCLIENT_HELLO while auth was already going on"
 			<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
 		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
@@ -156,7 +156,7 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 
 	m_password = m_new_password;
 
-	verbosestream << "Client: Recieved TOCLIENT_ACCEPT_SUDO_MODE." << std::endl;
+	verbosestream << "Client: Received TOCLIENT_ACCEPT_SUDO_MODE." << std::endl;
 
 	// send packet to actually set the password
 	startAuth(AUTH_MECHANISM_FIRST_SRP);

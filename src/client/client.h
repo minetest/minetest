@@ -327,7 +327,7 @@ public:
 	}
 	inline void setFatalError(const LuaError &e)
 	{
-		setFatalError(std::string("Lua :") + e.what());
+		setFatalError(std::string("Lua: ") + e.what());
 	}
 
 	// Renaming accessDeniedReason to better name could be good as it's used to
