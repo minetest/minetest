@@ -108,7 +108,6 @@ std::wstring utf8_to_wide(const std::string &input)
 	out.resize(outbuf_size / sizeof(wchar_t));
 
 #if defined(__ANDROID__) || defined(__NetBSD__)
-	// Android need manual caring to support the full character set possible with wchar_t
 	SANITY_CHECK(sizeof(wchar_t) == 4);
 #endif
 
