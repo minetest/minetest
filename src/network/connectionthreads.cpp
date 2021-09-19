@@ -114,9 +114,9 @@ void *ConnectionSendThread::run()
 		}
 
 		/* translate commands to packets */
-		ConnectionCommand c = m_connection->m_command_queue.pop_frontNoEx(0);
-		while (c.type != CONNCMD_NONE) {
-			if (c.reliable)
+		auto c = m_connection->m_command_queue.pop_frontNoEx(0);
+		while (c && c->type != CONNCMD_NONE) {
+			if (c->reliable)
 				processReliableCommand(c);
 			else
 				processNonReliableCommand(c);
@@ -371,11 +371,11 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 	return false;
 }
 
-void ConnectionSendThread::processReliableCommand(ConnectionCommand &c)
+void ConnectionSendThread::processReliableCommand(ConnectionCommandPtr &c)
 {
-	assert(c.reliable);  // Pre-condition
+	assert(c->reliable);  // Pre-condition
 
-	switch (c.type) {
+	switch (c->type) {
 		case CONNCMD_NONE:
 			LOG(dout_con << m_connection->getDesc()
 				<< "UDP processing reliable CONNCMD_NONE" << std::endl);
@@ -396,7 +396,7 @@ void ConnectionSendThread::processReliableCommand(ConnectionCommand &c)
 		case CONCMD_CREATE_PEER:
 			LOG(dout_con << m_connection->getDesc()
 				<< "UDP processing reliable CONCMD_CREATE_PEER" << std::endl);
-			if (!rawSendAsPacket(c.peer_id, c.channelnum, c.data, c.reliable)) {
+			if (!rawSendAsPacket(c->peer_id, c->channelnum, c->data, c->reliable)) {
 				/* put to queue if we couldn't send it immediately */
 				sendReliable(c);
 			}
@@ -409,13 +409,14 @@ void ConnectionSendThread::processReliableCommand(ConnectionCommand &c)
 			FATAL_ERROR("Got command that shouldn't be reliable as reliable command");
 		default:
 			LOG(dout_con << m_connection->getDesc()
-				<< " Invalid reliable command type: " << c.type << std::endl);
+				<< " Invalid reliable command type: " << c->type << std::endl);
 	}
 }
 
 
-void ConnectionSendThread::processNonReliableCommand(ConnectionCommand &c)
+void ConnectionSendThread::processNonReliableCommand(ConnectionCommandPtr &c_ptr)
 {
+	const ConnectionCommand &c = *c_ptr;
 	assert(!c.reliable); // Pre-condition
 
 	switch (c.type) {
@@ -477,9 +478,7 @@ void ConnectionSendThread::serve(Address bind_address)
 	}
 	catch (SocketException &e) {
 		// Create event
-		ConnectionEvent ce;
-		ce.bindFailed();
-		m_connection->putEvent(std::move(ce));
+		m_connection->putEvent(ConnectionEvent::bindFailed());
 	}
 }
 
@@ -492,9 +491,7 @@ void ConnectionSendThread::connect(Address address)
 	UDPPeer *peer = m_connection->createServerPeer(address);
 
 	// Create event
-	ConnectionEvent e;
-	e.peerAdded(peer->id, peer->address);
-	m_connection->putEvent(std::move(e));
+	m_connection->putEvent(ConnectionEvent::peerAdded(peer->id, peer->address));
 
 	Address bind_addr;
 
@@ -583,9 +580,9 @@ void ConnectionSendThread::send(session_t peer_id, u8 channelnum,
 	}
 }
 
-void ConnectionSendThread::sendReliable(ConnectionCommand &c)
+void ConnectionSendThread::sendReliable(ConnectionCommandPtr &c)
 {
-	PeerHelper peer = m_connection->getPeerNoEx(c.peer_id);
+	PeerHelper peer = m_connection->getPeerNoEx(c->peer_id);
 	if (!peer)
 		return;
 
@@ -601,7 +598,7 @@ void ConnectionSendThread::sendToAll(u8 channelnum, const SharedBuffer<u8> &data
 	}
 }
 
-void ConnectionSendThread::sendToAllReliable(ConnectionCommand &c)
+void ConnectionSendThread::sendToAllReliable(ConnectionCommandPtr &c)
 {
 	std::vector<session_t> peerids = m_connection->getPeerIDs();
 
@@ -882,17 +879,14 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 	try {
 		// First, see if there any buffered packets we can process now
 		if (packet_queued) {
-			bool data_left = true;
 			session_t peer_id;
 			SharedBuffer<u8> resultdata;
-			while (data_left) {
+			while (true) {
 				try {
-					data_left = getFromBuffers(peer_id, resultdata);
-					if (data_left) {
-						ConnectionEvent e;
-						e.dataReceived(peer_id, resultdata);
-						m_connection->putEvent(std::move(e));
-					}
+					if (!getFromBuffers(peer_id, resultdata))
+						break;
+
+					m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata));
 				}
 				catch (ProcessedSilentlyException &e) {
 					/* try reading again */
@@ -1000,9 +994,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 				<< ", channel: " << (u32)channelnum << ", returned "
 				<< resultdata.getSize() << " bytes" << std::endl);
 
-			ConnectionEvent e;
-			e.dataReceived(peer_id, resultdata);
-			m_connection->putEvent(std::move(e));
+			m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata));
 		}
 		catch (ProcessedSilentlyException &e) {
 		}
@@ -1027,10 +1019,11 @@ bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, SharedBuffer<u8
 		if (!peer)
 			continue;
 
-		if (dynamic_cast<UDPPeer *>(&peer) == 0)
+		UDPPeer *p = dynamic_cast<UDPPeer *>(&peer);
+		if (!p)
 			continue;
 
-		for (Channel &channel : (dynamic_cast<UDPPeer *>(&peer))->channels) {
+		for (Channel &channel : p->channels) {
 			if (checkIncomingBuffers(&channel, peer_id, dst)) {
 				return true;
 			}
@@ -1043,32 +1036,34 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 	session_t &peer_id, SharedBuffer<u8> &dst)
 {
 	u16 firstseqnum = 0;
-	if (channel->incoming_reliables.getFirstSeqnum(firstseqnum)) {
-		if (firstseqnum == channel->readNextIncomingSeqNum()) {
-			BufferedPacketPtr p = channel->incoming_reliables.popFirst();
-			session_t peer_id = readPeerId(p->data);
-			u8 channelnum = readChannel(p->data);
-			u16 seqnum = p->getSeqnum();
+	if (!channel->incoming_reliables.getFirstSeqnum(firstseqnum))
+		return false;
 
-			LOG(dout_con << m_connection->getDesc()
-				<< "UNBUFFERING TYPE_RELIABLE"
-				<< " seqnum=" << seqnum
-				<< " peer_id=" << peer_id
-				<< " channel=" << ((int) channelnum & 0xff)
-				<< std::endl);
+	if (firstseqnum != channel->readNextIncomingSeqNum())
+		return false;
 
-			channel->incNextIncomingSeqNum();
+	BufferedPacketPtr p = channel->incoming_reliables.popFirst();
 
-			u32 headers_size = BASE_HEADER_SIZE + RELIABLE_HEADER_SIZE;
-			// Get out the inside packet and re-process it
-			SharedBuffer<u8> payload(p->size() - headers_size);
-			memcpy(*payload, &p->data[headers_size], payload.getSize());
+	peer_id = readPeerId(p->data); // Carried over to caller function
+	u8 channelnum = readChannel(p->data);
+	u16 seqnum = p->getSeqnum();
 
-			dst = processPacket(channel, payload, peer_id, channelnum, true);
-			return true;
-		}
-	}
-	return false;
+	LOG(dout_con << m_connection->getDesc()
+		<< "UNBUFFERING TYPE_RELIABLE"
+		<< " seqnum=" << seqnum
+		<< " peer_id=" << peer_id
+		<< " channel=" << ((int) channelnum & 0xff)
+		<< std::endl);
+
+	channel->incNextIncomingSeqNum();
+
+	u32 headers_size = BASE_HEADER_SIZE + RELIABLE_HEADER_SIZE;
+	// Get out the inside packet and re-process it
+	SharedBuffer<u8> payload(p->size() - headers_size);
+	memcpy(*payload, &p->data[headers_size], payload.getSize());
+
+	dst = processPacket(channel, payload, peer_id, channelnum, true);
+	return true;
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
@@ -1329,9 +1324,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 			throw ProcessedQueued("Buffered future reliable packet");
 		} catch (AlreadyExistsException &e) {
 		} catch (IncomingDataCorruption &e) {
-			ConnectionCommand discon;
-			discon.disconnect_peer(peer->id);
-			m_connection->putCommand(std::move(discon));
+			m_connection->putCommand(ConnectionCommand::disconnect_peer(peer->id));
 
 			LOG(derr_con << m_connection->getDesc()
 				<< "INVALID, TYPE_RELIABLE peer_id: " << peer->id

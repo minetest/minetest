@@ -256,7 +256,7 @@ BufferedPacketPtr ReliablePacketBuffer::popSeqnum(u16 seqnum)
 	return p;
 }
 
-void ReliablePacketBuffer::insert(const BufferedPacketPtr &p_ptr, u16 next_expected)
+void ReliablePacketBuffer::insert(BufferedPacketPtr &p_ptr, u16 next_expected)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	const BufferedPacket &p = *p_ptr;
@@ -438,7 +438,7 @@ IncomingSplitBuffer::~IncomingSplitBuffer()
 	}
 }
 
-SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacketPtr &p_ptr, bool reliable)
+SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reliable)
 {
 	MutexAutoLock listlock(m_map_mutex);
 	const BufferedPacket &p = *p_ptr;
@@ -532,14 +532,67 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 	ConnectionCommand
  */
 
-void ConnectionCommand::send(session_t peer_id_, u8 channelnum_, NetworkPacket *pkt,
-	bool reliable_)
+ConnectionCommandPtr ConnectionCommand::create(ConnectionCommandType type)
 {
-	type = CONNCMD_SEND;
-	peer_id = peer_id_;
-	channelnum = channelnum_;
-	data = pkt->oldForgePacket();
-	reliable = reliable_;
+	return ConnectionCommandPtr(new ConnectionCommand(type));
+}
+
+ConnectionCommandPtr ConnectionCommand::serve(Address address)
+{
+	auto c = create(CONNCMD_SERVE);
+	c->address = address;
+	return c;
+}
+
+ConnectionCommandPtr ConnectionCommand::connect(Address address)
+{
+	auto c = create(CONNCMD_CONNECT);
+	c->address = address;
+	return c;
+}
+
+ConnectionCommandPtr ConnectionCommand::disconnect()
+{
+	return create(CONNCMD_DISCONNECT);
+}
+
+ConnectionCommandPtr ConnectionCommand::disconnect_peer(session_t peer_id)
+{
+	auto c = create(CONNCMD_DISCONNECT_PEER);
+	c->peer_id = peer_id;
+	return c;
+}
+
+ConnectionCommandPtr ConnectionCommand::send(session_t peer_id, u8 channelnum,
+	NetworkPacket *pkt, bool reliable)
+{
+	auto c = create(CONNCMD_SEND);
+	c->peer_id = peer_id;
+	c->channelnum = channelnum;
+	c->reliable = reliable;
+	c->data = pkt->oldForgePacket();
+	return c;
+}
+
+ConnectionCommandPtr ConnectionCommand::ack(session_t peer_id, u8 channelnum, const Buffer<u8> &data)
+{
+	auto c = create(CONCMD_ACK);
+	c->peer_id = peer_id;
+	c->channelnum = channelnum;
+	c->reliable = false;
+	data.copyTo(c->data);
+	return c;
+}
+
+ConnectionCommandPtr ConnectionCommand::createPeer(session_t peer_id, const Buffer<u8> &data)
+{
+	auto c = create(CONCMD_CREATE_PEER);
+	c->peer_id = peer_id;
+	c->channelnum = 0;
+	c->reliable = true;
+	c->raw = true;
+	data.copyTo(c->data);
+	return c;
 }
 
 /*
@@ -957,44 +1010,45 @@ bool UDPPeer::Ping(float dtime,SharedBuffer<u8>& data)
 	return false;
 }
 
-void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
+void UDPPeer::PutReliableSendCommand(ConnectionCommandPtr &c,
 		unsigned int max_packet_size)
 {
 	if (m_pending_disconnect)
 		return;
 
-	Channel &chan = channels[c.channelnum];
+	Channel &chan = channels[c->channelnum];
 
 	if (chan.queued_commands.empty() &&
 			/* don't queue more packets then window size */
 			(chan.queued_reliables.size() < chan.getWindowSize() / 2)) {
 		LOG(dout_con<<m_connection->getDesc()
-				<<" processing reliable command for peer id: " << c.peer_id
-				<<" data size: " << c.data.getSize() << std::endl);
+				<<" processing reliable command for peer id: " << c->peer_id
+				<<" data size: " << c->data.getSize() << std::endl);
 		if (processReliableSendCommand(c, max_packet_size))
 			return;
 	} else {
 		LOG(dout_con<<m_connection->getDesc()
-				<<" Queueing reliable command for peer id: " << c.peer_id
-				<<" data size: " << c.data.getSize() <<std::endl);
+				<<" Queueing reliable command for peer id: " << c->peer_id
+				<<" data size: " << c->data.getSize() <<std::endl);
 
 		if (chan.queued_commands.size() >= chan.getWindowSize() / 2) {
 			LOG(derr_con << m_connection->getDesc()
-					<< "Possible packet stall to peer id: " << c.peer_id
+					<< "Possible packet stall to peer id: " << c->peer_id
 					<< " queued_commands=" << chan.queued_commands.size()
 					<< std::endl);
 		}
 	}
-	chan.queued_commands.push_back(std::move(c));
+	chan.queued_commands.push_back(c);
 }
 
 bool UDPPeer::processReliableSendCommand(
-				ConnectionCommand &c,
+				ConnectionCommandPtr &c_ptr,
 				unsigned int max_packet_size)
 {
 	if (m_pending_disconnect)
 		return true;
 
+	const auto &c = *c_ptr;
 	Channel &chan = channels[c.channelnum];
 
 	u32 chunksize_max = max_packet_size
@@ -1105,7 +1159,7 @@ void UDPPeer::RunCommandQueues(
 				(channel.queued_reliables.size() < maxtransfer) &&
 				(commands_processed < maxcommands)) {
 			try {
-				ConnectionCommand &c = channel.queued_commands.front();
+				ConnectionCommandPtr c = channel.queued_commands.front();
 
 				LOG(dout_con << m_connection->getDesc()
 						<< " processing queued reliable command " << std::endl);
@@ -1115,8 +1169,8 @@ void UDPPeer::RunCommandQueues(
 					channel.queued_commands.pop_front();
 				} else {
 					LOG(dout_con << m_connection->getDesc()
-							<< " Failed to queue packets for peer_id: " << c.peer_id
-							<< ", delaying sending of " << c.data.getSize()
+							<< " Failed to queue packets for peer_id: " << c->peer_id
+							<< ", delaying sending of " << c->data.getSize()
 							<< " bytes" << std::endl);
 				}
 			}
@@ -1139,11 +1193,68 @@ void UDPPeer::setNextSplitSequenceNumber(u8 channel, u16 seqnum)
 	channels[channel].setNextSplitSeqNum(seqnum);
 }
 
-SharedBuffer<u8> UDPPeer::addSplitPacket(u8 channel, const BufferedPacketPtr &toadd,
+SharedBuffer<u8> UDPPeer::addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
 	bool reliable)
 {
 	assert(channel < CHANNEL_COUNT); // Pre-condition
 	return channels[channel].incoming_splits.insert(toadd, reliable);
+}
+
+/*
+	ConnectionEvent
+*/
+
+const char *ConnectionEvent::describe() const
+{
+	switch(type) {
+	case CONNEVENT_NONE:
+		return "CONNEVENT_NONE";
+	case CONNEVENT_DATA_RECEIVED:
+		return "CONNEVENT_DATA_RECEIVED";
+	case CONNEVENT_PEER_ADDED:
+		return "CONNEVENT_PEER_ADDED";
+	case CONNEVENT_PEER_REMOVED:
+		return "CONNEVENT_PEER_REMOVED";
+	case CONNEVENT_BIND_FAILED:
+		return "CONNEVENT_BIND_FAILED";
+	}
+	return "Invalid ConnectionEvent";
+}
+
+
+ConnectionEventPtr ConnectionEvent::create(ConnectionEventType type)
+{
+	return std::shared_ptr<ConnectionEvent>(new ConnectionEvent(type));
+}
+
+ConnectionEventPtr ConnectionEvent::dataReceived(session_t peer_id, const Buffer<u8> &data)
+{
+	auto e = create(CONNEVENT_DATA_RECEIVED);
+	e->peer_id = peer_id;
+	data.copyTo(e->data);
+	return e;
+}
+
+ConnectionEventPtr ConnectionEvent::peerAdded(session_t peer_id, Address address)
+{
+	auto e = create(CONNEVENT_PEER_ADDED);
+	e->peer_id = peer_id;
+	e->address = address;
+	return e;
+}
+
+ConnectionEventPtr ConnectionEvent::peerRemoved(session_t peer_id, bool is_timeout, Address address)
+{
+	auto e = create(CONNEVENT_PEER_REMOVED);
+	e->peer_id = peer_id;
+	e->timeout = is_timeout;
+	e->address = address;
+	return e;
+}
+
+ConnectionEventPtr ConnectionEvent::bindFailed()
+{
+	return create(CONNEVENT_BIND_FAILED);
 }
 
 /*
@@ -1195,10 +1306,10 @@ Connection::~Connection()
 
 /* Internal stuff */
 
-void Connection::putEvent(ConnectionEvent &&e)
+void Connection::putEvent(ConnectionEventPtr e)
 {
-	assert(e.type != CONNEVENT_NONE); // Pre-condition
-	m_event_queue.push_back(std::move(e));
+	assert(e->type != CONNEVENT_NONE); // Pre-condition
+	m_event_queue.push_back(e);
 }
 
 void Connection::TriggerSend()
@@ -1263,11 +1374,9 @@ bool Connection::deletePeer(session_t peer_id, bool timeout)
 	Address peer_address;
 	//any peer has a primary address this never fails!
 	peer->getAddress(MTP_PRIMARY, peer_address);
-	// Create event
-	ConnectionEvent e;
-	e.peerRemoved(peer_id, timeout, peer_address);
-	putEvent(std::move(e));
 
+	// Create event
+	putEvent(ConnectionEvent::peerRemoved(peer_id, timeout, peer_address));
 
 	peer->Drop();
 	return true;
@@ -1275,37 +1384,31 @@ bool Connection::deletePeer(session_t peer_id, bool timeout)
 
 /* Interface */
 
-ConnectionEvent Connection::waitEvent(u32 timeout_ms)
+ConnectionEventPtr Connection::waitEvent(u32 timeout_ms)
 {
 	try {
 		return m_event_queue.pop_front(timeout_ms);
 	} catch(ItemNotFoundException &ex) {
-		ConnectionEvent e;
-		e.type = CONNEVENT_NONE;
-		return e;
+		return ConnectionEvent::create(CONNEVENT_NONE);
 	}
 }
 
-void Connection::putCommand(ConnectionCommand &&c)
+void Connection::putCommand(ConnectionCommandPtr c)
 {
 	if (!m_shutting_down) {
-		m_command_queue.push_back(std::move(c));
+		m_command_queue.push_back(c);
 		m_sendThread->Trigger();
 	}
 }
 
 void Connection::Serve(Address bind_addr)
 {
-	ConnectionCommand c;
-	c.serve(bind_addr);
-	putCommand(std::move(c));
+	putCommand(ConnectionCommand::serve(bind_addr));
 }
 
 void Connection::Connect(Address address)
 {
-	ConnectionCommand c;
-	c.connect(address);
-	putCommand(std::move(c));
+	putCommand(ConnectionCommand::connect(address));
 }
 
 bool Connection::Connected()
@@ -1327,9 +1430,7 @@ bool Connection::Connected()
 
 void Connection::Disconnect()
 {
-	ConnectionCommand c;
-	c.disconnect();
-	putCommand(std::move(c));
+	putCommand(ConnectionCommand::disconnect());
 }
 
 bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
@@ -1340,11 +1441,15 @@ bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
 		This is not considered to be a problem (is it?)
 	*/
 	for(;;) {
-		ConnectionEvent e = waitEvent(timeout);
-		if (e.type != CONNEVENT_NONE)
+		ConnectionEventPtr e_ptr = waitEvent(timeout);
+		const ConnectionEvent &e = *e_ptr;
+
+		if (e.type != CONNEVENT_NONE) {
 			LOG(dout_con << getDesc() << ": Receive: got event: "
 					<< e.describe() << std::endl);
-		switch(e.type) {
+		}
+
+		switch (e.type) {
 		case CONNEVENT_NONE:
 			return false;
 		case CONNEVENT_DATA_RECEIVED:
@@ -1392,10 +1497,7 @@ void Connection::Send(session_t peer_id, u8 channelnum,
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
-	ConnectionCommand c;
-
-	c.send(peer_id, channelnum, pkt, reliable);
-	putCommand(std::move(c));
+	putCommand(ConnectionCommand::send(peer_id, channelnum, pkt, reliable));
 }
 
 Address Connection::GetPeerAddress(session_t peer_id)
@@ -1494,41 +1596,31 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	LOG(dout_con << getDesc()
 			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
 
-	ConnectionCommand cmd;
-	Buffer<u8> reply(4);
-	writeU8(&reply[0], PACKET_TYPE_CONTROL);
-	writeU8(&reply[1], CONTROLTYPE_SET_PEER_ID);
-	writeU16(&reply[2], peer_id_new);
-	cmd.createPeer(peer_id_new,reply);
-	putCommand(std::move(cmd));
+	{
+		Buffer<u8> reply(4);
+		writeU8(&reply[0], PACKET_TYPE_CONTROL);
+		writeU8(&reply[1], CONTROLTYPE_SET_PEER_ID);
+		writeU16(&reply[2], peer_id_new);
+		putCommand(ConnectionCommand::createPeer(peer_id_new, reply));
+	}
 
 	// Create peer addition event
-	ConnectionEvent e;
-	e.peerAdded(peer_id_new, sender);
-	putEvent(std::move(e));
+	putEvent(ConnectionEvent::peerAdded(peer_id_new, sender));
 
 	// We're now talking to a valid peer_id
 	return peer_id_new;
 }
 
-void Connection::PrintInfo(std::ostream &out)
-{
-	m_info_mutex.lock();
-	out<<getDesc()<<": ";
-	m_info_mutex.unlock();
-}
-
 const std::string Connection::getDesc()
 {
+	MutexAutoLock _(m_info_mutex);
 	return std::string("con(")+
 			itos(m_udpSocket.GetHandle())+"/"+itos(m_peer_id)+")";
 }
 
 void Connection::DisconnectPeer(session_t peer_id)
 {
-	ConnectionCommand discon;
-	discon.disconnect_peer(peer_id);
-	putCommand(std::move(discon));
+	putCommand(ConnectionCommand::disconnect_peer(peer_id));
 }
 
 void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
@@ -1540,14 +1632,12 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 			" channel: " << (channelnum & 0xFF) <<
 			" seqnum: " << seqnum << std::endl);
 
-	ConnectionCommand c;
 	SharedBuffer<u8> ack(4);
 	writeU8(&ack[0], PACKET_TYPE_CONTROL);
 	writeU8(&ack[1], CONTROLTYPE_ACK);
 	writeU16(&ack[2], seqnum);
 
-	c.ack(peer_id, channelnum, ack);
-	putCommand(std::move(c));
+	putCommand(ConnectionCommand::ack(peer_id, channelnum, ack));
 	m_sendThread->Trigger();
 }
 

@@ -74,16 +74,16 @@ private:
 	bool rawSendAsPacket(session_t peer_id, u8 channelnum,
 			const SharedBuffer<u8> &data, bool reliable);
 
-	void processReliableCommand(ConnectionCommand &c);
-	void processNonReliableCommand(ConnectionCommand &c);
+	void processReliableCommand(ConnectionCommandPtr &c);
+	void processNonReliableCommand(ConnectionCommandPtr &c);
 	void serve(Address bind_address);
 	void connect(Address address);
 	void disconnect();
 	void disconnect_peer(session_t peer_id);
 	void send(session_t peer_id, u8 channelnum, const SharedBuffer<u8> &data);
-	void sendReliable(ConnectionCommand &c);
+	void sendReliable(ConnectionCommandPtr &c);
 	void sendToAll(u8 channelnum, const SharedBuffer<u8> &data);
-	void sendToAllReliable(ConnectionCommand &c);
+	void sendToAllReliable(ConnectionCommandPtr &c);
 
 	void sendPackets(float dtime);
 

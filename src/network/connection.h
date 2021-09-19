@@ -279,7 +279,7 @@ public:
 
 	BufferedPacketPtr popFirst();
 	BufferedPacketPtr popSeqnum(u16 seqnum);
-	void insert(const BufferedPacketPtr &p_ptr, u16 next_expected);
+	void insert(BufferedPacketPtr &p_ptr, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
 	std::list<BufferedPacketPtr> getTimedOuts(float timeout, u32 max_packets);
@@ -311,7 +311,7 @@ public:
 		Returns a reference counted buffer of length != 0 when a full split
 		packet is constructed. If not, returns one of length 0.
 	*/
-	SharedBuffer<u8> insert(const BufferedPacketPtr &p_ptr, bool reliable);
+	SharedBuffer<u8> insert(BufferedPacketPtr &p_ptr, bool reliable);
 
 	void removeUnreliableTimedOuts(float dtime, float timeout);
 
@@ -334,9 +334,13 @@ enum ConnectionCommandType{
 	CONCMD_CREATE_PEER
 };
 
+struct ConnectionCommand;
+typedef std::shared_ptr<ConnectionCommand> ConnectionCommandPtr;
+
+// This is very similar to ConnectionEvent
 struct ConnectionCommand
 {
-	enum ConnectionCommandType type = CONNCMD_NONE;
+	const ConnectionCommandType type;
 	Address address;
 	session_t peer_id = PEER_ID_INEXISTENT;
 	u8 channelnum = 0;
@@ -344,48 +348,21 @@ struct ConnectionCommand
 	bool reliable = false;
 	bool raw = false;
 
-	ConnectionCommand() = default;
+	DISABLE_CLASS_COPY(ConnectionCommand);
 
-	void serve(Address address_)
-	{
-		type = CONNCMD_SERVE;
-		address = address_;
-	}
-	void connect(Address address_)
-	{
-		type = CONNCMD_CONNECT;
-		address = address_;
-	}
-	void disconnect()
-	{
-		type = CONNCMD_DISCONNECT;
-	}
-	void disconnect_peer(session_t peer_id_)
-	{
-		type = CONNCMD_DISCONNECT_PEER;
-		peer_id = peer_id_;
-	}
+	static ConnectionCommandPtr serve(Address address);
+	static ConnectionCommandPtr connect(Address address);
+	static ConnectionCommandPtr disconnect();
+	static ConnectionCommandPtr disconnect_peer(session_t peer_id);
+	static ConnectionCommandPtr send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
+	static ConnectionCommandPtr ack(session_t peer_id, u8 channelnum, const Buffer<u8> &data);
+	static ConnectionCommandPtr createPeer(session_t peer_id, const Buffer<u8> &data);
 
-	void send(session_t peer_id_, u8 channelnum_, NetworkPacket *pkt, bool reliable_);
+private:
+	ConnectionCommand(ConnectionCommandType type_) :
+		type(type_) {}
 
-	void ack(session_t peer_id_, u8 channelnum_, const Buffer<u8> &data_)
-	{
-		type = CONCMD_ACK;
-		peer_id = peer_id_;
-		channelnum = channelnum_;
-		data_.copyTo(data);
-		reliable = false;
-	}
-
-	void createPeer(session_t peer_id_, const Buffer<u8> &data_)
-	{
-		type = CONCMD_CREATE_PEER;
-		peer_id = peer_id_;
-		data_.copyTo(data);
-		channelnum = 0;
-		reliable = true;
-		raw = true;
-	}
+	static ConnectionCommandPtr create(ConnectionCommandType type);
 };
 
 /* maximum window size to use, 0xFFFF is theoretical maximum. don't think about
@@ -423,7 +400,7 @@ public:
 	std::queue<BufferedPacketPtr> queued_reliables;
 
 	//queue commands prior splitting to packets
-	std::deque<ConnectionCommand> queued_commands;
+	std::deque<ConnectionCommandPtr> queued_commands;
 
 	IncomingSplitBuffer incoming_splits;
 
@@ -532,7 +509,7 @@ class Peer {
 	public:
 		friend class PeerHelper;
 
-		Peer(Address address_,u16 id_,Connection* connection) :
+		Peer(Address address_,session_t id_,Connection* connection) :
 			id(id_),
 			m_connection(connection),
 			address(address_),
@@ -546,11 +523,11 @@ class Peer {
 		};
 
 		// Unique id of the peer
-		u16 id;
+		const session_t id;
 
 		void Drop();
 
-		virtual void PutReliableSendCommand(ConnectionCommand &c,
+		virtual void PutReliableSendCommand(ConnectionCommandPtr &c,
 						unsigned int max_packet_size) {};
 
 		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
@@ -567,7 +544,7 @@ class Peer {
 
 		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
 		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
-		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacketPtr &toadd,
+		virtual SharedBuffer<u8> addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
 				bool reliable)
 		{
 			errorstream << "Peer::addSplitPacket called,"
@@ -604,7 +581,7 @@ class Peer {
 		bool IncUseCount();
 		void DecUseCount();
 
-		std::mutex m_exclusive_access_mutex;
+		mutable std::mutex m_exclusive_access_mutex;
 
 		bool m_pending_deletion = false;
 
@@ -652,7 +629,7 @@ public:
 	UDPPeer(u16 a_id, Address a_address, Connection* connection);
 	virtual ~UDPPeer() = default;
 
-	void PutReliableSendCommand(ConnectionCommand &c,
+	void PutReliableSendCommand(ConnectionCommandPtr &c,
 							unsigned int max_packet_size);
 
 	bool getAddress(MTProtocols type, Address& toset);
@@ -660,7 +637,7 @@ public:
 	u16 getNextSplitSequenceNumber(u8 channel);
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
 
-	SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacketPtr &toadd,
+	SharedBuffer<u8> addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
 		bool reliable);
 
 protected:
@@ -689,7 +666,7 @@ private:
 	float resend_timeout = 0.5;
 
 	bool processReliableSendCommand(
-					ConnectionCommand &c,
+					ConnectionCommandPtr &c_ptr,
 					unsigned int max_packet_size);
 };
 
@@ -697,7 +674,7 @@ private:
 	Connection
 */
 
-enum ConnectionEventType{
+enum ConnectionEventType {
 	CONNEVENT_NONE,
 	CONNEVENT_DATA_RECEIVED,
 	CONNEVENT_PEER_ADDED,
@@ -705,56 +682,32 @@ enum ConnectionEventType{
 	CONNEVENT_BIND_FAILED,
 };
 
+struct ConnectionEvent;
+typedef std::shared_ptr<ConnectionEvent> ConnectionEventPtr;
+
+// This is very similar to ConnectionCommand
 struct ConnectionEvent
 {
-	enum ConnectionEventType type = CONNEVENT_NONE;
+	const ConnectionEventType type;
 	session_t peer_id = 0;
 	Buffer<u8> data;
 	bool timeout = false;
 	Address address;
 
-	ConnectionEvent() = default;
+	// We don't want to copy "data"
+	DISABLE_CLASS_COPY(ConnectionEvent);
 
-	const char *describe() const
-	{
-		switch(type) {
-		case CONNEVENT_NONE:
-			return "CONNEVENT_NONE";
-		case CONNEVENT_DATA_RECEIVED:
-			return "CONNEVENT_DATA_RECEIVED";
-		case CONNEVENT_PEER_ADDED:
-			return "CONNEVENT_PEER_ADDED";
-		case CONNEVENT_PEER_REMOVED:
-			return "CONNEVENT_PEER_REMOVED";
-		case CONNEVENT_BIND_FAILED:
-			return "CONNEVENT_BIND_FAILED";
-		}
-		return "Invalid ConnectionEvent";
-	}
+	static ConnectionEventPtr create(ConnectionEventType type);
+	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data);
+	static ConnectionEventPtr peerAdded(session_t peer_id, Address address);
+	static ConnectionEventPtr peerRemoved(session_t peer_id, bool is_timeout, Address address);
+	static ConnectionEventPtr bindFailed();
 
-	void dataReceived(session_t peer_id_, const Buffer<u8> &data_)
-	{
-		type = CONNEVENT_DATA_RECEIVED;
-		peer_id = peer_id_;
-		data_.copyTo(data);
-	}
-	void peerAdded(session_t peer_id_, Address address_)
-	{
-		type = CONNEVENT_PEER_ADDED;
-		peer_id = peer_id_;
-		address = address_;
-	}
-	void peerRemoved(session_t peer_id_, bool timeout_, Address address_)
-	{
-		type = CONNEVENT_PEER_REMOVED;
-		peer_id = peer_id_;
-		timeout = timeout_;
-		address = address_;
-	}
-	void bindFailed()
-	{
-		type = CONNEVENT_BIND_FAILED;
-	}
+	const char *describe() const;
+
+private:
+	ConnectionEvent(ConnectionEventType type_) :
+		type(type_) {}
 };
 
 class PeerHandler;
@@ -770,9 +723,9 @@ public:
 	~Connection();
 
 	/* Interface */
-	ConnectionEvent waitEvent(u32 timeout_ms);
+	ConnectionEventPtr waitEvent(u32 timeout_ms);
 
-	void putCommand(ConnectionCommand &&c);
+	void putCommand(ConnectionCommandPtr c);
 
 	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
@@ -802,8 +755,6 @@ protected:
 
 	void sendAck(session_t peer_id, u8 channelnum, u16 seqnum);
 
-	void PrintInfo(std::ostream &out);
-
 	std::vector<session_t> getPeerIDs()
 	{
 		MutexAutoLock peerlock(m_peers_mutex);
@@ -812,11 +763,11 @@ protected:
 
 	UDPSocket m_udpSocket;
 	// Command queue: user -> SendThread
-	MutexedQueue<ConnectionCommand> m_command_queue;
+	MutexedQueue<ConnectionCommandPtr> m_command_queue;
 
 	bool Receive(NetworkPacket *pkt, u32 timeout);
 
-	void putEvent(ConnectionEvent &&e);
+	void putEvent(ConnectionEventPtr e);
 
 	void TriggerSend();
 	
@@ -826,7 +777,7 @@ protected:
 	}
 private:
 	// Event queue: ReceiveThread -> user
-	MutexedQueue<ConnectionEvent> m_event_queue;
+	MutexedQueue<ConnectionEventPtr> m_event_queue;
 
 	session_t m_peer_id = 0;
 	u32 m_protocol_id;
@@ -838,7 +789,7 @@ private:
 	std::unique_ptr<ConnectionSendThread> m_sendThread;
 	std::unique_ptr<ConnectionReceiveThread> m_receiveThread;
 
-	std::mutex m_info_mutex;
+	mutable std::mutex m_info_mutex;
 
 	// Backwards compatibility
 	PeerHandler *m_bc_peerhandler;
