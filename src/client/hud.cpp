@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/hud.h"
+#include <string>
+#include <iostream>
 #include <cmath>
 #include "settings.h"
 #include "util/numeric.h"
@@ -377,15 +379,19 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
 
-				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
-				             (e->align.Y - 1.0) * (textsize.Height / 2));
+				v2s32 offset(0, (e->align.Y - 1.0) * (textsize.Height / 2));
 				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
-				                     text_height * e->scale.Y * m_scale_factor);
+						text_height * e->scale.Y * m_scale_factor);
 				v2s32 offs(e->offset.X * m_scale_factor,
-				           e->offset.Y * m_scale_factor);
-
+						e->offset.Y * m_scale_factor);
+				std::wstringstream wss(text);
+				std::wstring line;
+				while (std::getline(wss, line, L'\n'))
 				{
-					textfont->draw(text.c_str(), size + pos + offset + offs, color);
+					core::dimension2d<u32> linesize = textfont->getDimension(line.c_str());
+					v2s32 line_offset((e->align.X - 1.0) * (linesize.Width / 2), 0);
+					textfont->draw(line.c_str(), size + pos + offset + offs + line_offset, color);
+					offset.Y += linesize.Height;
 				}
 				break; }
 			case HUD_ELEM_STATBAR: {
