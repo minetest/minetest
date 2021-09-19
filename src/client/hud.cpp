@@ -381,7 +381,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 
 				v2s32 offset(0, (e->align.Y - 1.0) * (textsize.Height / 2));
 				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
-									 text_height * e->scale.Y * m_scale_factor);
+						text_height * e->scale.Y * m_scale_factor);
 				v2s32 offs(e->offset.X * m_scale_factor,
 						   e->offset.Y * m_scale_factor);
 				std::wstringstream wss(text);
