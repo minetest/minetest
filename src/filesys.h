@@ -24,12 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "exceptions.h"
 
-#ifdef _WIN32 // WINDOWS
+#ifdef _WIN32
 #define DIR_DELIM "\\"
 #define DIR_DELIM_CHAR '\\'
 #define FILESYS_CASE_INSENSITIVE true
 #define PATH_DELIM ";"
-#else // POSIX
+#else
 #define DIR_DELIM "/"
 #define DIR_DELIM_CHAR '/'
 #define FILESYS_CASE_INSENSITIVE false
@@ -133,7 +133,9 @@ const char *GetFilenameFromPath(const char *path);
 
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
+#ifndef SERVER
 bool extractZipFile(irr::io::IFileSystem *fs, const char *filename, const std::string &destination);
+#endif
 
 bool ReadFile(const std::string &path, std::string &out);
 
