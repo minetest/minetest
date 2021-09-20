@@ -391,7 +391,7 @@ struct ContentFeatures
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If true, movement (e.g. of players) inside this node is liquid-like.
-	enum LiquidMoveType liquid_move_physics;
+	bool liquid_move_physics;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
 	content_t liquid_alternative_flowing_id;
@@ -479,11 +479,6 @@ struct ContentFeatures
 
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
-	}
-	bool hasLiquidMovePhysics() const{
-		return (liquid_move_physics == LIQUID_MOVE_LIQUID) ||
-			(liquid_move_physics == LIQUID_MOVE_AUTO &&
-			liquid_type != LIQUID_NONE);
 	}
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;

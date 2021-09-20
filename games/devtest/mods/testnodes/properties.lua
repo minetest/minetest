@@ -161,7 +161,7 @@ minetest.register_node("testnodes:liquid_noswim", {
 	liquid_alternative_flowing = "testnodes:liquidflowing_noswim",
 	liquid_alternative_source = "testnodes:liquid_noswim",
 	liquid_renewable = false,
-	liquid_move_physics = "none",
+	liquid_move_physics = false,
 	groups = {dig_immediate=3},
 	walkable = false,
 
@@ -189,7 +189,7 @@ minetest.register_node("testnodes:liquidflowing_noswim", {
 	liquid_alternative_flowing = "testnodes:liquidflowing_noswim",
 	liquid_alternative_source = "testnodes:liquid_noswim",
 	liquid_renewable = false,
-	liquid_move_physics = "none",
+	liquid_move_physics = false,
 	groups = {dig_immediate=3},
 	walkable = false,
 
@@ -298,7 +298,7 @@ for r=0, 7 do
 		description = S("Move-resistant Node, liquidlike (@1)", r),
 		walkable = false,
 		move_resistance = r,
-		liquid_move_physics = "liquid",
+		liquid_move_physics = true,
 
 		drawtype = "glasslike",
 		paramtype = "light",

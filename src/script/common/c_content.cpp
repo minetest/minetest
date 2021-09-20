@@ -831,8 +831,15 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 			"move_resistance", f.move_resistance);
 
 	// Whether e.g. players in this node will have liquid movement physics
-	f.liquid_move_physics = (LiquidMoveType)getenumfield(L, index, "liquid_move_physics",
-			ScriptApiNode::es_LiquidMoveType, LIQUID_MOVE_AUTO);
+	lua_getfield(L, index, "liquid_move_physics");
+	if(lua_isboolean(L, -1)) {
+		f.liquid_move_physics = lua_toboolean(L, -1);
+	} else if(lua_isnil(L, -1)) {
+		f.liquid_move_physics = f.liquid_type != LIQUID_NONE;
+	} else {
+		errorstream << "Field \"liquid_move_physics\": Invalid type!" << std::endl;
+	}
+	lua_pop(L, 1);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)

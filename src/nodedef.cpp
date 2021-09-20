@@ -404,7 +404,7 @@ void ContentFeatures::reset()
 	palette = NULL;
 	node_dig_prediction = "air";
 	move_resistance = 0;
-	liquid_move_physics = LIQUID_MOVE_AUTO;
+	liquid_move_physics = false;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -631,10 +631,10 @@ void ContentFeatures::deSerialize(std::istream &is)
 		}
 		move_resistance = tmp;
 
-		tmp = (enum LiquidMoveType) readU8(is);
+		tmp = readU8(is);
 		if (is.eof())
 			throw SerializationError("");
-		liquid_move_physics = static_cast<enum LiquidMoveType>(tmp);
+		liquid_move_physics = tmp;
 	} catch(SerializationError &e) {};
 }
 

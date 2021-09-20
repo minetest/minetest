@@ -7669,15 +7669,15 @@ Used by `minetest.register_node`.
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
 
-        liquid_move_physics = "auto", -- specifies movement physics if inside node
-        -- * "none": No liquid movement physics apply.
-        -- * "liquid": Enables liquid movement physics. Enables things like
+        liquid_move_physics = nil, -- specifies movement physics if inside node
+        -- * false: No liquid movement physics apply.
+        -- * true: Enables liquid movement physics. Enables things like
         --   ability to "swim" up/down, sinking slowly if not moving,
         --   smoother speed change when falling into, etc. The `movement_liquid_*`
         --   settings apply.
-        -- * "auto": Will be treated as "liquid" if `liquidype ~= "none"` and
+        -- * nil: Will be treated as "liquid" if `liquidype ~= "none"` and
         --   treated as "normal" otherwise.
-        -- Default: "auto"
+        -- Default: nil
 
         leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
