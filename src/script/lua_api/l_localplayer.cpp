@@ -136,14 +136,6 @@ int LuaLocalPlayer::l_get_move_resistance(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_liquid_viscosity(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	lua_pushinteger(L, player->liquid_viscosity);
-	return 1;
-}
-
 int LuaLocalPlayer::l_is_climbing(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -474,7 +466,6 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, is_touching_ground),
 		luamethod(LuaLocalPlayer, is_in_liquid),
 		luamethod(LuaLocalPlayer, is_in_liquid_stable),
-		luamethod(LuaLocalPlayer, get_liquid_viscosity),
 		luamethod(LuaLocalPlayer, is_climbing),
 		luamethod(LuaLocalPlayer, swimming_vertical),
 		luamethod(LuaLocalPlayer, get_physics_override),
