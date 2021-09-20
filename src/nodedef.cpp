@@ -592,6 +592,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	liquid_alternative_flowing = deSerializeString16(is);
 	liquid_alternative_source = deSerializeString16(is);
 	liquid_viscosity = readU8(is);
+	move_resistance = liquid_viscosity; // set default move_resistance
 	liquid_renewable = readU8(is);
 	liquid_range = readU8(is);
 	drowning = readU8(is);
@@ -626,15 +627,14 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 		tmp = readU8(is);
 		if (is.eof()) {
-			move_resistance = liquid_viscosity;
 			throw SerializationError("");
 		}
 		move_resistance = tmp;
 
-		enum LiquidMoveType tmp_lmt = (enum LiquidMoveType) readU8(is);
+		tmp = (enum LiquidMoveType) readU8(is);
 		if (is.eof())
 			throw SerializationError("");
-		liquid_move_physics = tmp_lmt;
+		liquid_move_physics = static_cast<enum LiquidMoveType>(tmp);
 	} catch(SerializationError &e) {};
 }
 

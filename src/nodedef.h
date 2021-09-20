@@ -93,7 +93,7 @@ enum LiquidType
 enum LiquidMoveType
 {
 	LIQUID_MOVE_AUTO,
-	LIQUID_MOVE_NORMAL,
+	LIQUID_MOVE_NONE,
 	LIQUID_MOVE_LIQUID,
 };
 

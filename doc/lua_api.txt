@@ -7663,14 +7663,14 @@ Used by `minetest.register_node`.
         -- Controls speed at which the liquid spreads/flows (max. 7).
         -- 0 is fastest, 7 is slowest.
         -- By default, this also slows down movement of players inside the node
-        -- (can be overridden with move_resistance)
+        -- (can be overridden using `move_resistance`)
 
         liquid_renewable = true,
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
 
         liquid_move_physics = "auto", -- specifies movement physics if inside node
-        -- * "normal": No liquid movement physics apply.
+        -- * "none": No liquid movement physics apply.
         -- * "liquid": Enables liquid movement physics. Enables things like
         --   ability to "swim" up/down, sinking slowly if not moving,
         --   smoother speed change when falling into, etc. The `movement_liquid_*`

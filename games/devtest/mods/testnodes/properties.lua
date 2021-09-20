@@ -161,7 +161,7 @@ minetest.register_node("testnodes:liquid_noswim", {
 	liquid_alternative_flowing = "testnodes:liquidflowing_noswim",
 	liquid_alternative_source = "testnodes:liquid_noswim",
 	liquid_renewable = false,
-	liquid_move_physics = "normal",
+	liquid_move_physics = "none",
 	groups = {dig_immediate=3},
 	walkable = false,
 
@@ -189,7 +189,7 @@ minetest.register_node("testnodes:liquidflowing_noswim", {
 	liquid_alternative_flowing = "testnodes:liquidflowing_noswim",
 	liquid_alternative_source = "testnodes:liquid_noswim",
 	liquid_renewable = false,
-	liquid_move_physics = "normal",
+	liquid_move_physics = "none",
 	groups = {dig_immediate=3},
 	walkable = false,
 
