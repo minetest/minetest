@@ -1870,7 +1870,8 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_armor_groups,
 			toolcap,
 			punchitem,
-			time_from_last_punch);
+			time_from_last_punch,
+			punchitem->wear);
 
 	if(result.did_punch && result.damage != 0)
 	{

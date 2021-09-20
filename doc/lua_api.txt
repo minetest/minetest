@@ -1936,8 +1936,9 @@ to implement this.
 ### Uses (tools only)
 
 Determines how many uses the tool has when it is used for digging a node,
-of this group, of the maximum level. For lower leveled nodes, the use count
-is multiplied by `3^leveldiff`.
+of this group, of the maximum level. The maximum supported number of
+uses is 65535. The special number 0 is used for infinite uses.
+For lower leveled nodes, the use count is multiplied by `3^leveldiff`.
 `leveldiff` is the difference of the tool's `maxlevel` `groupcaps` and the
 node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 
@@ -3458,8 +3459,8 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
-* `minetest.get_dig_params(groups, tool_capabilities)`: Simulates an item
-    that digs a node.
+* `minetest.get_dig_params(groups, tool_capabilities [, wear])`:
+    Simulates an item that digs a node.
     Returns a table with the following fields:
     * `diggable`: `true` if node can be dug, `false` otherwise.
     * `time`: Time it would take to dig the node.
@@ -3468,7 +3469,8 @@ Helper functions
     Parameters:
     * `groups`: Table of the node groups of the node that would be dug
     * `tool_capabilities`: Tool capabilities table of the item
-* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch])`:
+    * `wear`: Amount of wear the tool starts with (default: 0)
+* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch [, wear]])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
     * `hp`: How much damage the punch would cause.
@@ -3477,6 +3479,7 @@ Helper functions
     * `groups`: Damage groups of the object
     * `tool_capabilities`: Tool capabilities table of the item
     * `time_from_last_punch`: time in seconds since last punch action
+    * `wear`: Amount of wear the item starts with (default: 0)
 
 
 

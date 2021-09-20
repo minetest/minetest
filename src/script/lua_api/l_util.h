@@ -50,10 +50,10 @@ private:
 	// write_json(data[, styled])
 	static int l_write_json(lua_State *L);
 
-	// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
+	// get_dig_params(groups, tool_capabilities[, wear])
 	static int l_get_dig_params(lua_State *L);
 
-	// get_hit_params(groups, tool_capabilities[, time_from_last_punch])
+	// get_hit_params(groups, tool_capabilities[, time_from_last_punch[, wear]])
 	static int l_get_hit_params(lua_State *L);
 
 	// check_password_entry(name, entry, password)
