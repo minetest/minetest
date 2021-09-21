@@ -56,7 +56,6 @@ public:
 	IRollbackManager *getRollbackManager() { return m_rollbackmgr; }
 	EmergeManager *getEmergeManager() { return m_emergemgr; }
 
-	scene::IAnimatedMesh *getMesh(const std::string &filename) { return NULL; }
 	bool checkLocalPrivilege(const std::string &priv) { return false; }
 	u16 allocateUnknownNodeId(const std::string &name) { return 0; }
 

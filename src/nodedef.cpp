@@ -955,7 +955,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		if (mesh_ptr[0]){
 			v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
 			scaleMesh(mesh_ptr[0], scale);
-			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 		}
 	}

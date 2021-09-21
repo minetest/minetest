@@ -23,6 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrMap.h"
 #include <cmath>
 #include <iostream>
+#include <IMesh.h>
+#include <SMesh.h>
+#include <IMeshBuffer.h>
+#include <SMeshBuffer.h>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
 #include <IAnimatedMeshSceneNode.h>
@@ -394,8 +398,21 @@ scene::SMesh* cloneMesh(scene::IMesh *src_mesh)
 			src_mesh->getMeshBuffer(j));
 		dst_mesh->addMeshBuffer(temp_buf);
 		temp_buf->drop();
-
 	}
+	dst_mesh->setBoundingBox(src_mesh->getBoundingBox());
+	return dst_mesh;
+}
+
+scene::SAnimatedMesh *cloneMesh(scene::IAnimatedMesh *src_mesh)
+{
+	auto dst_mesh = new scene::SAnimatedMesh();
+	for (u32 i = 0; i < src_mesh->getFrameCount(); i++) {
+		auto *temp_mesh = cloneMesh(src_mesh->getMesh(i));
+		dst_mesh->addMesh(temp_mesh);
+		temp_mesh->drop();
+	}
+	dst_mesh->setAnimationSpeed(src_mesh->getAnimationSpeed());
+	dst_mesh->setBoundingBox(src_mesh->getBoundingBox());
 	return dst_mesh;
 }
 

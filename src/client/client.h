@@ -378,8 +378,14 @@ public:
 	virtual ParticleManager* getParticleManager();
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
-	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 	const std::string* getModFile(std::string filename);
+
+	/*
+	 * Get a mesh by filename.
+	 * If cache=true the mesh is shared globally, if not it returns a copy.
+	 * The returned pointer should be dropped.
+	 */
+	scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 
 	std::string getModStoragePath() const override;
 	bool registerModStorage(ModMetadata *meta) override;
@@ -574,8 +580,8 @@ private:
 	// key = name
 	std::unordered_map<std::string, Inventory*> m_detached_inventories;
 
-	// Storage for mesh data for creating multiple instances of the same mesh
-	StringMap m_mesh_data;
+	// Storage for loaded meshes
+	std::unordered_map<std::string, scene::IAnimatedMesh*> m_meshes;
 
 	// own state
 	LocalClientState m_state;

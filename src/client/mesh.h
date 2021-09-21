@@ -19,8 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "nodedef.h"
+
+namespace irr { namespace scene {
+	class IAnimatedMesh;
+	class IAnimatedMeshSceneNode;
+	class IMesh;
+	class IMeshBuffer;
+	class SAnimatedMesh;
+	class SMesh;
+}};
 
 /*!
  * Applies shading to a color based on the surface's
@@ -104,15 +113,21 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
 
 /*
- *  Clone the mesh buffer.
+ *  Clone a mesh buffer.
  *  The returned pointer should be dropped.
+ *  Does not copy the material.
  */
 scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
 
 /*
-	Clone the mesh.
+	Clone a mesh.
 */
 scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
+
+/*
+	Clone an animated mesh.
+*/
+scene::SAnimatedMesh *cloneMesh(scene::IAnimatedMesh *src_mesh);
 
 /*
 	Convert nodeboxes to mesh. Each tile goes into a different buffer.

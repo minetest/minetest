@@ -57,6 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
+#include "mesh.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -300,6 +301,14 @@ Client::~Client()
 
 	// cleanup 3d model meshes on client shutdown
 	m_rendering_engine->cleanupMeshCache();
+	u32 leftover = 0;
+	for (auto it : m_meshes) {
+		if (it.second->getReferenceCount() > 1)
+			leftover++;
+		it.second->drop();
+	}
+	infostream << "Client: " << leftover << " (of " << m_meshes.size()
+		<< ") shared meshes not deleted on shutdown" << std::endl;
 
 	delete m_minimap;
 	m_minimap = nullptr;
@@ -667,6 +676,7 @@ void Client::step(float dtime)
 bool Client::loadMedia(const std::string &data, const std::string &filename,
 	bool from_media_push)
 {
+	io::IFileSystem *irrfs = m_rendering_engine->get_filesystem();
 	std::string name;
 
 	const char *image_ext[] = {
@@ -679,7 +689,6 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		TRACESTREAM(<< "Client: Attempting to load image "
 			<< "file \"" << filename << "\"" << std::endl);
 
-		io::IFileSystem *irrfs = m_rendering_engine->get_filesystem();
 		video::IVideoDriver *vdrv = m_rendering_engine->get_video_driver();
 
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
@@ -720,12 +729,30 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	};
 	name = removeStringEnd(filename, model_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Storing model into memory: "
-				<<"\""<<filename<<"\""<<std::endl;
-		if(m_mesh_data.count(filename))
-			errorstream<<"Multiple models with name \""<<filename.c_str()
-					<<"\" found; replacing previous model"<<std::endl;
-		m_mesh_data[filename] = data;
+		verbosestream << "Client: Loading model: \"" << filename << "\"" << std::endl;
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(
+			data.c_str(), data.size(), filename.c_str());
+		FATAL_ERROR_IF(!rfile, "Could not create RAM file");
+
+		scene::IAnimatedMesh *mesh = m_rendering_engine->get_scene_manager()->getMesh(rfile);
+		rfile->drop();
+		if (!mesh) {
+			errorstream << "Client: Cannot load mesh data from file \""
+				<< filename << "\"" << std::endl;
+			return false;
+		}
+		mesh->grab();
+		// We don't use the mesh cache so remove it from there
+		m_rendering_engine->removeMesh(mesh);
+
+		auto it = m_meshes.find(filename);
+		if (it != m_meshes.end()) {
+			errorstream << "Multiple models with name \"" << filename
+				<< "\" found; replacing previous model" << std::endl;
+			it->second->drop();
+		}
+		m_meshes[filename] = mesh;
+
 		return true;
 	}
 
@@ -1938,28 +1965,22 @@ ParticleManager* Client::getParticleManager()
 
 scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 {
-	StringMap::const_iterator it = m_mesh_data.find(filename);
-	if (it == m_mesh_data.end()) {
+	auto it = m_meshes.find(filename);
+	if (it == m_meshes.end()) {
 		errorstream << "Client::getMesh(): Mesh not found: \"" << filename
 			<< "\"" << std::endl;
-		return NULL;
-	}
-	const std::string &data    = it->second;
-
-	// Create the mesh, remove it from cache and return it
-	// This allows unique vertex colors and other properties for each instance
-	io::IReadFile *rfile = m_rendering_engine->get_filesystem()->createMemoryReadFile(
-			data.c_str(), data.size(), filename.c_str());
-	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
-
-	scene::IAnimatedMesh *mesh = m_rendering_engine->get_scene_manager()->getMesh(rfile);
-	rfile->drop();
-	if (!mesh)
 		return nullptr;
-	mesh->grab();
-	if (!cache)
-		m_rendering_engine->removeMesh(mesh);
-	return mesh;
+	}
+	scene::IAnimatedMesh *orig_mesh = it->second;
+
+	// Clone the mesh if requested by caller
+	// This allows unique vertex colors and other properties for each instance
+	if (!cache) {
+		return cloneMesh(orig_mesh);
+	} else {
+		orig_mesh->grab();
+		return orig_mesh;
+	}
 }
 
 const std::string* Client::getModFile(std::string filename)
