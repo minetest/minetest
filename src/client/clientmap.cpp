@@ -406,7 +406,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	core::matrix4 m; // Model matrix
 	v3f offset = intToFloat(m_camera_offset, BS);
 
-	// Render all layers in order
+	// Render all solid layers in order
 	for (auto &lists : drawbufs.lists) {
 		for (MeshBufList &list : lists) {
 			// Check and abort if the machine is swapping a lot
@@ -429,7 +429,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			driver->setMaterial(list.m);
 
 			drawcall_count += list.bufs.size();
-			for (auto &pair : list.bufs) {
+			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
+				auto &pair = *it;
 				scene::IMeshBuffer *buf = pair.second;
 
 				v3f block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
