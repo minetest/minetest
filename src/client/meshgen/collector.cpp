@@ -124,8 +124,14 @@ void MeshCollector::startNewMeshLayer()
 			latest_buffer = latest_buffers[tile_layer].back();
 
 		for (s16 index: latest_buffers[tile_layer])
-			if (index != latest_buffer)
-				prebuffers[tile_layer][index].closed = true;
+			if (index != latest_buffer) {
+				auto &buffer = prebuffers[tile_layer][index];
+				if (buffer.layer.material_type == TILE_MATERIAL_ALPHA ||
+						buffer.layer.material_type == TILE_MATERIAL_PLAIN_ALPHA ||
+						buffer.layer.material_type == TILE_MATERIAL_LIQUID_TRANSPARENT ||
+						buffer.layer.material_type == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT)
+					prebuffers[tile_layer][index].closed = true;
+			}
 
 		latest_buffers[tile_layer].clear();
 		if (latest_buffer != -1)
