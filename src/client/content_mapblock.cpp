@@ -694,6 +694,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 	};
 
 	std::vector<struct facePointer> faces;
+	faces.reserve(6);
 
 	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
@@ -716,7 +717,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 
 		bool apply_backface_culling = neighbor_features.solidness == 1 || neighbor_features.visual_solidness == 1;
 
-		s16 distance = abs(player_pos.X - neighbor_pos.X) + abs(player_pos.Y - neighbor_pos.Y) + abs(player_pos.Z - neighbor_pos.Z);
+		s16 distance = manhattanDistance(player_pos, neighbor_pos);
 
 		faces.emplace_back(face, distance, apply_backface_culling);
 	}
@@ -1606,9 +1607,9 @@ void MapblockMeshGenerator::generate()
 	player_pos = floatToInt(data->m_client->getCamera()->getPosition(), BS);
 
 	v3s16 player = v3s16(
-		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.X - blockpos_nodes.X)),
-		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.Y - blockpos_nodes.Y)),
-		std::max<s16>(-1, std::min<s16>(MAP_BLOCKSIZE, player_pos.Z - blockpos_nodes.Z)));
+		core::clamp(player_pos.X - blockpos_nodes.X, -1, MAP_BLOCKSIZE),
+		core::clamp(player_pos.Y - blockpos_nodes.Y, -1, MAP_BLOCKSIZE),
+		core::clamp(player_pos.Z - blockpos_nodes.Z, -1, MAP_BLOCKSIZE));
 
 	s16 s = MAP_BLOCKSIZE - 1;
 
@@ -1652,9 +1653,7 @@ void MapblockMeshGenerator::generate()
 		bounds[i].max.Z = std::min<s16>(MAP_BLOCKSIZE - 1, bounds[i].max.Z);
 
 		// calculate maximum manhattan distance == number of layers to generate
-		octants[i].distance = abs(octants[i].target.X - octants[i].origin.X) +
-				abs(octants[i].target.Y - octants[i].origin.Y) +
-				abs(octants[i].target.Z - octants[i].origin.Z);
+		octants[i].distance = manhattanDistance(octants[i].target, octants[i].origin);
 
 		if (octants[i].distance > nlayers)
 			nlayers = octants[i].distance;
@@ -1672,11 +1671,11 @@ void MapblockMeshGenerator::generate()
 		collector->startNewMeshLayer();
 		for (s16 i = 7; i >= 0; --i) {                        // loop over octants
 
-			struct octant *octant = octants + i;
-			struct boundary *boundary = bounds + i;
+			struct octant &octant = octants[i];
+			struct boundary &boundary = bounds[i];
 
 			// offset layer to create bubble around the player
-			s16 a = base_a + octant->distance - nlayers - ((i == 0) & 1);
+			s16 a = base_a + octant.distance - nlayers - ((i == 0) & 1);
 			if (a < 0)
 				continue;
 
@@ -1685,16 +1684,16 @@ void MapblockMeshGenerator::generate()
 			for (u16 c = 0; c <= (a - b); ++c) {
 
 				// translate into world coordinates and clip
-				p.X = octant->origin.X + (a - b - c) * octant->increment.X;
-				if (p.X < boundary->min.X || p.X > boundary->max.X)
+				p.X = octant.origin.X + (a - b - c) * octant.increment.X;
+				if (p.X < boundary.min.X || p.X > boundary.max.X)
 					continue;
 
-				p.Z = octant->origin.Z + b * octant->increment.Z;
-				if (p.Z < boundary->min.Z || p.Z > boundary->max.Z)
+				p.Z = octant.origin.Z + b * octant.increment.Z;
+				if (p.Z < boundary.min.Z || p.Z > boundary.max.Z)
 					continue;
 
-				p.Y = octant->origin.Y + c * octant->increment.Y;
-				if (p.Y < boundary->min.Y || p.Y > boundary->max.Y)
+				p.Y = octant.origin.Y + c * octant.increment.Y;
+				if (p.Y < boundary.min.Y || p.Y > boundary.max.Y)
 					continue;
 
 				n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);

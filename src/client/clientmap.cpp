@@ -100,6 +100,28 @@ ClientMap::ClientMap(
 
 }
 
+void ClientMap::updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
+{
+	v3s16 previous_node = floatToInt(m_camera_position, BS);
+	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
+
+	m_camera_position = pos;
+	m_camera_direction = dir;
+	m_camera_fov = fov;
+	m_camera_offset = offset;
+
+	v3s16 current_node = floatToInt(m_camera_position, BS);
+	v3s16 current_block = getContainerPos(current_node, MAP_BLOCKSIZE);
+
+	// if moved over node boundary
+	if (current_node != previous_node)
+		markBlocksDirty(current_node, previous_node, current_block, previous_block);
+
+	// reorder the blocks when camera crosses block boundary
+	if (previous_block != current_block)
+		m_needs_update_drawlist = true;
+}
+
 MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
 	// Check that it doesn't exist already
@@ -945,32 +967,31 @@ void ClientMap::markBlocksDirty(v3s16 current_node, v3s16 previous_node, v3s16 c
 			for (const auto block : sectorblocks) {
 
 				auto block_pos = block->getPos();
-				if (same_x || same_z ||
-						(block_pos.Y == pointer->Y && current_node.Y != previous_node.Y)) {
+				bool same_y = block_pos.Y == pointer->Y && current_node.Y != previous_node.Y;
 
-					++blocks_on_axis;
+				if (!same_x && !same_y && !same_z)
+					continue;
 
-					// if there is known transparency
-					auto block_distance = abs(block_pos.X - current_block.X) +
-							abs(block_pos.Y - current_block.Y) +
-							abs(block_pos.Z - current_block.Z);
+				++blocks_on_axis;
 
-					if (block_distance < 10) {
-						++blocks_in_distance;
-						if (block->mesh && block->mesh->hasTransparency()) {
-							if (block->needsRemesh()) {
-								++blocks_skipped;
-							}
-							else {
-								block->setNeedsRemesh(true);
-								++blocks_marked;
-							}
-						}
+				if (manhattanDistance(block_pos, current_block) >= 10)
+					continue;
+
+				// if there is known transparency and the block is close enough
+				++blocks_in_distance;
+				if (block->mesh && block->mesh->hasTransparency()) {
+					if (block->needsRemesh()) {
+						++blocks_skipped;
+					}
+					else {
+						block->setNeedsRemesh(true);
+						++blocks_marked;
 					}
 				}
 			}
 		}
 	}
+
 	g_profiler->avg("CM::markBlocksDirty blocks on axis [#]", blocks_on_axis);
 	g_profiler->avg("CM::markBlocksDirty blocks in distance [#]", blocks_in_distance);
 	g_profiler->avg("CM::markBlocksDirty blocks marked [#]", blocks_marked);

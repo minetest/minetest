@@ -28,3 +28,11 @@ typedef core::vector3d<double> v3d;
 typedef core::vector3d<s16> v3s16;
 typedef core::vector3d<u16> v3u16;
 typedef core::vector3d<s32> v3s32;
+
+// Calculate Manhattan distance between two vectors.
+// This is used in mesh generation to layer transparent nodes correctly
+template<class T>
+int manhattanDistance(const core::vector3d<T>& a, const core::vector3d<T>& b)
+{
+    return abs(a.X - b.X) + abs(a.Y - b.Y) + abs(a.Z - b.Z);
+}

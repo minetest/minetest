@@ -86,27 +86,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
-	{
-		v3s16 previous_node = floatToInt(m_camera_position, BS);
-		v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
-
-		m_camera_position = pos;
-		m_camera_direction = dir;
-		m_camera_fov = fov;
-		m_camera_offset = offset;
-
-		v3s16 current_node = floatToInt(m_camera_position, BS);
-		v3s16 current_block = getContainerPos(current_node, MAP_BLOCKSIZE);
-
-		// if moved over node boundary
-		if (current_node != previous_node)
-			markBlocksDirty(current_node, previous_node, current_block, previous_block);
-
-		// reorder the blocks when camera crosses block boundary
-		if (previous_block != current_block)
-			m_needs_update_drawlist = true;
-	}
+	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset);
 
 	/*
 		Forcefully get a sector from somewhere
