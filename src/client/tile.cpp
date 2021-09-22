@@ -762,6 +762,9 @@ void TextureSource::rebuildImagesAndTextures()
 
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
+		if (ti.name.empty())
+			continue; // Skip dummy entry
+
 		video::IImage *img = generateImage(ti.name);
 #if ENABLE_GLES
 		img = Align2Npot2(img, driver);
