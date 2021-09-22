@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdexcept>
 #include "log.h"
 #include "client/mesh.h"
+#include "profiler.h"
 
 void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices)
@@ -95,10 +96,27 @@ PreMeshBuffer &MeshCollector::findBuffer(
 	if (numVertices > U16_MAX)
 		throw std::invalid_argument(
 				"Mesh can't contain more than 65536 vertices");
+
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 	for (PreMeshBuffer &p : buffers)
-		if (p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
+		if (!p.closed && p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
 			return p;
+
 	buffers.emplace_back(layer);
+	latest_buffers[layernum].push_back(buffers.size()-1);
 	return buffers.back();
+}
+
+void MeshCollector::startNewMeshLayer()
+{
+	for (s16 tile_layer = 0; tile_layer < MAX_TILE_LAYERS; ++tile_layer) {
+		// do not close mesh buffer if there is only one
+		if (latest_buffers[tile_layer].size() == 1)
+			continue;
+
+		for (s16 index: latest_buffers[tile_layer])
+			prebuffers[tile_layer][index].closed = true;
+
+		latest_buffers[tile_layer].clear();
+	}
 }

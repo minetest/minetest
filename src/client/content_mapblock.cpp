@@ -1553,37 +1553,40 @@ void MapblockMeshGenerator::generate()
 	// draw each octant in layers by constant manhatan distance, starting from the most distant
 	// with each iteration, the bubble around the player will shrink
 
-	for (u16 base_a = 0; base_a <= nlayers; ++base_a)     // loop over layers
-	for (s16 i = 7; i >= 0; --i) {                        // loop over octants
+	// loop over layers
+	for (u16 base_a = 0; base_a <= nlayers; ++base_a) {
+		collector->startNewMeshLayer();
+		for (s16 i = 7; i >= 0; --i) {                        // loop over octants
 
-		struct octant *octant = octants + i;
-		struct boundary *boundary = bounds + i;
+			struct octant *octant = octants + i;
+			struct boundary *boundary = bounds + i;
 
-		// offset layer to create bubble around the player
-		s16 a = base_a + octant->distance - nlayers;
-		if (a < 0)
-			continue;
-
-		// b and c are layer's x and y
-		for (u16 b = 0; b <= a; ++b)
-		for (u16 c = 0; c <= (a - b); ++c) {
-
-			// translate into world coordinates and clip
-			p.X = octant->origin.X + (a - b - c) * octant->increment.X;
-			if (p.X < boundary->min.X || p.X > boundary->max.X)
+			// offset layer to create bubble around the player
+			s16 a = base_a + octant->distance - nlayers;
+			if (a < 0)
 				continue;
 
-			p.Z = octant->origin.Z + b * octant->increment.Z;
-			if (p.Z < boundary->min.Z || p.Z > boundary->max.Z)
-				continue;
+			// b and c are layer's x and y
+			for (u16 b = 0; b <= a; ++b)
+			for (u16 c = 0; c <= (a - b); ++c) {
 
-			p.Y = octant->origin.Y + c * octant->increment.Y;
-			if (p.Y < boundary->min.Y || p.Y > boundary->max.Y)
-				continue;
+				// translate into world coordinates and clip
+				p.X = octant->origin.X + (a - b - c) * octant->increment.X;
+				if (p.X < boundary->min.X || p.X > boundary->max.X)
+					continue;
 
-			n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-			f = &nodedef->get(n);
-			drawNode();
+				p.Z = octant->origin.Z + b * octant->increment.Z;
+				if (p.Z < boundary->min.Z || p.Z > boundary->max.Z)
+					continue;
+
+				p.Y = octant->origin.Y + c * octant->increment.Y;
+				if (p.Y < boundary->min.Y || p.Y > boundary->max.Y)
+					continue;
+
+				n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+				f = &nodedef->get(n);
+				drawNode();
+			}
 		}
 	}
 }

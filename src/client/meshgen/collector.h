@@ -29,6 +29,7 @@ struct PreMeshBuffer
 	TileLayer layer;
 	std::vector<u16> indices;
 	std::vector<video::S3DVertex> vertices;
+	bool closed;
 
 	PreMeshBuffer() = default;
 	explicit PreMeshBuffer(const TileLayer &layer) : layer(layer) {}
@@ -48,6 +49,7 @@ struct MeshCollector
 			v3f pos, video::SColor c, u8 light_source);
 	// clang-format on
 
+	void startNewMeshLayer();
 private:
 	// clang-format off
 	void append(const TileLayer &material,
@@ -62,4 +64,6 @@ private:
 	// clang-format on
 
 	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum, u32 numVertices);
+
+	std::array<std::vector<s16>, MAX_TILE_LAYERS> latest_buffers;
 };
