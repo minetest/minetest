@@ -73,7 +73,8 @@ ClientMap::ClientMap(
 		rendering_engine->get_scene_manager(), id),
 	m_client(client),
 	m_rendering_engine(rendering_engine),
-	m_control(control)
+	m_control(control),
+	m_drawlist(MapBlockComparer(v3s16(0,0,0)))
 {
 
 	/*
@@ -178,6 +179,7 @@ void ClientMap::updateDrawList()
 	const f32 camera_fov = m_camera_fov * 1.1f;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
+
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
@@ -202,6 +204,8 @@ void ClientMap::updateDrawList()
 			occlusion_culling_enabled = false;
 	}
 
+	v3s16 camera_block = getContainerPos(floatToInt(camera_position, BS), MAP_BLOCKSIZE);
+	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting

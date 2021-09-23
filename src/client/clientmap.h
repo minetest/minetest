@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
@@ -87,10 +86,18 @@ public:
 
 	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
 	{
+		v3s16 previous_block = getContainerPos(floatToInt(m_camera_position + intToFloat(m_camera_offset, BS), BS), MAP_BLOCKSIZE);
+
 		m_camera_position = pos;
 		m_camera_direction = dir;
 		m_camera_fov = fov;
 		m_camera_offset = offset;
+
+		v3s16 current_block = getContainerPos(floatToInt(m_camera_position + intToFloat(m_camera_offset, BS), BS), MAP_BLOCKSIZE);
+
+		// reorder the blocks when camera crosses block boundary
+		if (previous_block != current_block)
+			updateDrawList();
 	}
 
 	/*
@@ -140,6 +147,25 @@ public:
 	f32 getCameraFov() const { return m_camera_fov; }
 
 private:
+	// Orders blocks by distance to the camera
+	class MapBlockComparer
+	{
+	public:
+		MapBlockComparer(const v3s16 &camera_block) : m_camera_block(camera_block) {}
+
+		MapBlockComparer(const MapBlockComparer& origin) : m_camera_block(origin.m_camera_block) {}
+
+		bool operator() (const v3s16 &left, const v3s16 &right) const
+		{
+			auto distance_left = left.getDistanceFromSQ(m_camera_block);
+			auto distance_right = right.getDistanceFromSQ(m_camera_block);
+			return distance_left > distance_right || (distance_left == distance_right && left > right);
+		}
+
+	private:
+		v3s16 m_camera_block;
+	};
+
 	Client *m_client;
 	RenderingEngine *m_rendering_engine;
 
@@ -153,7 +179,7 @@ private:
 	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
 
-	std::map<v3s16, MapBlock*> m_drawlist;
+	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 
 	std::set<v2s16> m_last_drawn_sectors;
