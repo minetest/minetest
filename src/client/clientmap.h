@@ -156,8 +156,6 @@ private:
 	public:
 		MapBlockComparer(const v3s16 &camera_block) : m_camera_block(camera_block) {}
 
-		MapBlockComparer(const MapBlockComparer& origin) : m_camera_block(origin.m_camera_block) {}
-
 		bool operator() (const v3s16 &left, const v3s16 &right) const
 		{
 			auto distance_left = left.getDistanceFromSQ(m_camera_block);
