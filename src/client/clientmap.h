@@ -94,7 +94,7 @@ public:
 		m_camera_fov = fov;
 		m_camera_offset = offset;
 
-		v3s16 current_block = getContainerPos(floatToInt(m_camera_position + intToFloat(m_camera_offset, BS), BS), MAP_BLOCKSIZE);
+		v3s16 current_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
 
 		// reorder the blocks when camera crosses block boundary
 		if (previous_block != current_block)
