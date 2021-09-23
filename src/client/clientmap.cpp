@@ -206,7 +206,7 @@ void ClientMap::updateDrawList()
 			occlusion_culling_enabled = false;
 	}
 
-	v3s16 camera_block = getContainerPos(floatToInt(camera_position, BS), MAP_BLOCKSIZE);
+	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
 	// Uncomment to debug occluded blocks in the wireframe mode
@@ -431,6 +431,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			driver->setMaterial(list.m);
 
 			drawcall_count += list.bufs.size();
+			// iterate in reverse to draw closest blocks first
 			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
 				auto &pair = *it;
 				scene::IMeshBuffer *buf = pair.second;

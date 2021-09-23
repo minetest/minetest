@@ -87,7 +87,7 @@ public:
 
 	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
 	{
-		v3s16 previous_block = getContainerPos(floatToInt(m_camera_position + intToFloat(m_camera_offset, BS), BS), MAP_BLOCKSIZE);
+		v3s16 previous_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
 
 		m_camera_position = pos;
 		m_camera_direction = dir;
