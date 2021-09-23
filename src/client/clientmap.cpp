@@ -165,7 +165,7 @@ void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 
-	m_needsUpdateDrawList = false;
+	m_needs_update_drawlist = false;
 
 	for (auto &i : m_drawlist) {
 		MapBlock *block = i.second;

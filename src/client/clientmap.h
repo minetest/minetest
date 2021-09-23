@@ -98,7 +98,7 @@ public:
 
 		// reorder the blocks when camera crosses block boundary
 		if (previous_block != current_block)
-			m_needsUpdateDrawList = true;
+			m_needs_update_drawlist = true;
 	}
 
 	/*
@@ -131,7 +131,7 @@ public:
 	void updateDrawList();
 	void updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range);
 	// Returns true if draw list needs updating before drawing the next frame.
-	bool needsUpdateDrawList() { return m_needsUpdateDrawList; }
+	bool needsUpdateDrawList() { return m_needs_update_drawlist; }
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	void renderMapShadows(video::IVideoDriver *driver,
@@ -182,7 +182,7 @@ private:
 
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
-	bool m_needsUpdateDrawList;
+	bool m_needs_update_drawlist;
 
 	std::set<v2s16> m_last_drawn_sectors;
 
