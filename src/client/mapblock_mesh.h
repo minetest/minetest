@@ -132,7 +132,7 @@ public:
 			m_animation_force_timer--;
 	}
 
-	inline bool hasTransparency()
+	inline bool hasTransparency() const
 	{
 		return m_has_transparency;
 	}

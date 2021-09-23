@@ -81,7 +81,7 @@ public:
 	video::SColor color;
 	TileSpec tile;
 	float scale;
-	v3s16 player_pos;           // player's position at the time of mesh generation
+	v3s16 camera_pos;           // camera position at the time of mesh generation
 
 // lighting
 	void getSmoothLightFrame();

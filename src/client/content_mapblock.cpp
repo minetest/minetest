@@ -716,7 +716,7 @@ void MapblockMeshGenerator::drawLiquidSourceNode()
 
 		bool apply_backface_culling = neighbor_features.solidness >= SOLIDNESS_TRANSPARENT;
 
-		s16 distance = manhattanDistance(player_pos, neighbor_pos);
+		s16 distance = manhattanDistance(camera_pos, neighbor_pos);
 
 		faces.emplace_back(face, distance, apply_backface_culling);
 	}
@@ -1603,12 +1603,12 @@ void MapblockMeshGenerator::drawNode()
 
 void MapblockMeshGenerator::generate()
 {
-	player_pos = floatToInt(data->m_camera_position, BS);
+	camera_pos = floatToInt(data->m_camera_position, BS);
 
 	v3s16 player = v3s16(
-		core::clamp(player_pos.X - blockpos_nodes.X, -1, MAP_BLOCKSIZE),
-		core::clamp(player_pos.Y - blockpos_nodes.Y, -1, MAP_BLOCKSIZE),
-		core::clamp(player_pos.Z - blockpos_nodes.Z, -1, MAP_BLOCKSIZE));
+		core::clamp(camera_pos.X - blockpos_nodes.X, -1, MAP_BLOCKSIZE),
+		core::clamp(camera_pos.Y - blockpos_nodes.Y, -1, MAP_BLOCKSIZE),
+		core::clamp(camera_pos.Z - blockpos_nodes.Z, -1, MAP_BLOCKSIZE));
 
 	s16 s = MAP_BLOCKSIZE - 1;
 
@@ -1670,8 +1670,8 @@ void MapblockMeshGenerator::generate()
 		collector->startNewMeshLayer();
 		for (s16 i = 7; i >= 0; --i) {                        // loop over octants
 
-			struct octant &octant = octants[i];
-			struct boundary &boundary = bounds[i];
+			const octant &octant = octants[i];
+			const boundary &boundary = bounds[i];
 
 			// offset layer to create bubble around the player
 			s16 a = base_a + octant.distance - nlayers - ((i == 0) & 1);
