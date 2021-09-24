@@ -57,9 +57,7 @@ if enable_gamebar then
 						mm_texture.update("singleplayer", pkgmgr.games[j])
 						core.set_topleft_text(pkgmgr.games[j].name)
 						-- Switch game theme, if found, and current game theme is not already playing
-						if pkgmgr.games[j].id ~= core.settings:get("menu_last_game") then
-							menu_music_play(pkgmgr.games[j].path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme")
-						end
+						menu_music_play(pkgmgr.games[j].path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme")
 						core.settings:set("menu_last_game",pkgmgr.games[j].id)
 						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
 						local index = filterlist.get_current_index(menudata.worldlist,

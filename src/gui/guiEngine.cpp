@@ -112,12 +112,15 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 			dst_paths.insert(base + name + "." + itos(i) +
 					 ".ogg");
 	};
-	std::string share_prefix = porting::path_share + DIR_DELIM;
-	add_paths(name, share_prefix + "sounds" + DIR_DELIM);
-	std::string user_prefix = porting::path_user + DIR_DELIM;
-	add_paths(name, user_prefix + "sounds" + DIR_DELIM);
-	// Allow for absolute paths
-	add_paths(name);
+	// Allow full paths
+	if (name.find(DIR_DELIM_CHAR) != std::string::npos) {
+		add_paths(name);
+	} else {
+		std::string share_prefix = porting::path_share + DIR_DELIM;
+		add_paths(name, share_prefix + "sounds" + DIR_DELIM);
+		std::string user_prefix = porting::path_user + DIR_DELIM;
+		add_paths(name, user_prefix + "sounds" + DIR_DELIM);
+	}
 }
 
 /******************************************************************************/

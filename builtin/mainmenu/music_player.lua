@@ -1,5 +1,5 @@
 --Minetest
---Copyright (C) 2014 sapier
+--Copyright (C) 2021 ExeVirus
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
@@ -21,12 +21,13 @@ local current_music_handle = nil
 
 -- Stops current music, if not the same as the requested file, then plays the new file on repeat
 function menu_music_play(file)
-	if file ~= current_file then
-		if current_music_handle ~= nil then
-			core.sound_stop(current_music_handle)
-		end
-		minetest.log("playing: " .. file)
-		current_music_handle = core.sound_play(file, true)
-		current_file = file
+	if file == current_file then
+		return
 	end
+	if current_music_handle ~= nil then
+		core.sound_stop(current_music_handle)
+	end
+	minetest.log("playing: " .. file)
+	current_music_handle = core.sound_play(file, true)
+	current_file = file
 end
