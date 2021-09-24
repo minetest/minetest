@@ -36,6 +36,7 @@ dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
 dofile(menupath .. DIR_DELIM .. "serverlistmgr.lua")
 dofile(menupath .. DIR_DELIM .. "textures.lua")
+dofile(menupath .. DIR_DELIM .. "music_player.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
