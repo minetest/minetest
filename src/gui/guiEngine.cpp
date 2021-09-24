@@ -105,15 +105,33 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 		return;
 	m_fetched.insert(name);
 	std::string base;
-	base = porting::path_share + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+	std::vector<fs::DirListNode> list;
+	base = porting::path_share + DIR_DELIM;
+	// Add standard main menu sounds
+	dst_paths.insert(base + "sounds" + DIR_DELIM + name + ".ogg");
 	int i;
 	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
-	base = porting::path_user + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+		dst_paths.insert(base + "sounds" + DIR_DELIM + name + "."+itos(i)+".ogg");
+	// Add game specific main menu sounds
+	dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
+			 DIR_DELIM + name + ".ogg");
+	for (i = 0; i < 10; i++)
+		dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
+				 DIR_DELIM + name +"." + itos(i) +
+				 ".ogg");
+	
+	base = porting::path_user + DIR_DELIM;
+	// Add standard main menu sounds
+	dst_paths.insert(base + "sounds" + DIR_DELIM + name + ".ogg");
+	for (i = 0; i < 10; i++)
+		dst_paths.insert(base + "sounds" + DIR_DELIM + name + "." + itos(i) +
+				 ".ogg");
+	// Add game specific main menu sounds
+	dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
+			 DIR_DELIM + name + ".ogg");
+	for (i = 0; i < 10; i++)
+		dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
+				 DIR_DELIM + name + "." + itos(i) + ".ogg");
 }
 
 /******************************************************************************/
@@ -626,4 +644,17 @@ s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 void GUIEngine::stopSound(s32 handle)
 {
 	m_sound_manager->stopSound(handle);
+}
+
+/******************************************************************************/
+void GUIEngine::stopAllSounds()
+{
+	m_sound_manager->stopAllSounds();
+}
+
+/******************************************************************************/
+unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
+		const std::string &serialized_params)
+{
+	return m_script->queueAsync(serialized_func, serialized_params);
 }

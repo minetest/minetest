@@ -46,8 +46,15 @@ int ModApiSound::l_sound_stop(lua_State *L)
 	return 1;
 }
 
+int ModApiSound::l_sound_stop_all(lua_State *L)
+{
+	getGuiEngine(L)->stopAllSounds();
+	return 0;
+}
+
 void ModApiSound::Initialize(lua_State *L, int top)
 {
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_stop_all);
 }

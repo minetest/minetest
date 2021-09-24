@@ -56,6 +56,7 @@ public:
 	virtual int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
 			float pitch = 1.0f) = 0;
 	virtual void stopSound(int sound) = 0;
+	virtual void stopAllSounds() = 0;
 	virtual bool soundExists(int sound) = 0;
 	virtual void updateSoundPosition(int sound, v3f pos) = 0;
 	virtual bool updateSoundGain(int id, float gain) = 0;
@@ -99,6 +100,7 @@ public:
 		return 0;
 	}
 	void stopSound(int sound) {}
+	void stopAllSounds() {}
 	bool soundExists(int sound) { return false; }
 	void updateSoundPosition(int sound, v3f pos) {}
 	bool updateSoundGain(int id, float gain) { return false; }

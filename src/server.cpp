@@ -2144,6 +2144,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	}
 	return id;
 }
+
 void Server::stopSound(s32 handle)
 {
 	// Get sound reference
@@ -2163,6 +2164,26 @@ void Server::stopSound(s32 handle)
 	}
 	// Remove sound reference
 	m_playing_sounds.erase(i);
+}
+
+void Server::stopAllSounds()
+{
+	// Loop through references
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
+		ServerPlayingSound &psound = it->second;
+
+		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
+		pkt << it->first;
+
+		for (std::unordered_set<session_t>::const_iterator si =
+				psound.clients.begin();
+				si != psound.clients.end(); ++si) {
+			// Send as reliable
+			m_clients.send(*si, 0, &pkt, true);
+		}
+	}
+	// Remove sound references
+	m_playing_sounds.clear();
 }
 
 void Server::fadeSound(s32 handle, float step, float gain)

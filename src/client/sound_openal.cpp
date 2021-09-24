@@ -495,6 +495,16 @@ public:
 		m_sounds_playing.erase(id);
 	}
 
+	void deleteAllSounds()
+	{
+		for (auto it = m_sounds_playing.begin(); it != m_sounds_playing.end(); it++) {
+			PlayingSound *sound = it->second;
+			alDeleteSources(1, &sound->source_id);
+			delete sound;
+		}
+		m_sounds_playing.clear();
+	}
+
 	/* If buffer does not exist, consult the fetcher */
 	SoundBuffer* getFetchBuffer(const std::string &name)
 	{
@@ -619,6 +629,12 @@ public:
 	{
 		maintain();
 		deleteSound(sound);
+	}
+
+	void stopAllSounds() 
+	{
+		maintain();
+		deleteAllSounds();
 	}
 
 	void fadeSound(int soundid, float step, float gain)

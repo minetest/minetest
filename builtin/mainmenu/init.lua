@@ -121,8 +121,6 @@ local function init_globals()
 	tv_main:show()
 
 	ui.update()
-
-	core.sound_play("main_menu", true)
 end
 
 init_globals()

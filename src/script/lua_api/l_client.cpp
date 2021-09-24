@@ -305,6 +305,14 @@ int ModApiClient::l_sound_stop(lua_State *L)
 	return 0;
 }
 
+// sound_stop(handle)
+int ModApiClient::l_sound_stop_all(lua_State *L)
+{
+	getClient(L)->getSoundManager()->stopAllSounds();
+
+	return 0;
+}
+
 // sound_fade(handle, step, gain)
 int ModApiClient::l_sound_fade(lua_State *L)
 {
@@ -433,6 +441,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_meta);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_stop_all);
 	API_FCT(sound_fade);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);

@@ -58,6 +58,11 @@ if enable_gamebar then
 						core.set_topleft_text(pkgmgr.games[j].name)
 						core.settings:set("menu_last_game",pkgmgr.games[j].id)
 						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
+						--switch game sounds, if found
+						core.sound_stop_all()
+						local _,_,technical_game_name = string.find(pkgmgr.games[j].gamemods_path, ".*\\(.*)\\.*")
+						core.sound_play(technical_game_name, true)
+						core.log("Playing sound: " .. technical_game_name)
 						local index = filterlist.get_current_index(menudata.worldlist,
 							tonumber(core.settings:get("mainmenu_last_selected_world")))
 						if not index or index < 1 then
@@ -376,6 +381,9 @@ if enable_gamebar then
 				menudata.worldlist:set_filtercriteria(game.id)
 				core.set_topleft_text(game.name)
 				mm_texture.update("singleplayer",game)
+				core.sound_stop_all()
+				local _,_,technical_game_name = string.find(game.gamemods_path, ".*\\(.*)\\.*")
+				core.sound_play(technical_game_name, true)
 			end
 
 			singleplayer_refresh_gamebar()
@@ -387,6 +395,9 @@ if enable_gamebar then
 				gamebar:hide()
 			end
 			core.set_topleft_text("")
+			core.sound_stop_all()
+			core.sound_play("main_menu", true)
+			core.log("Playing sound: " .. "main_menu")
 			mm_texture.update(new_tab,nil)
 		end
 	end
