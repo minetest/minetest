@@ -920,6 +920,23 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	return true;
 }
 
+void Server::updateWieldedItem(PlayerSAO *playersao, const ItemStack &item, const char *callback)
+{
+	// Do not apply changed item if the player died during callback.
+	// Workaround for the item duplication that could otherwise happen as follows:
+	// * on_use runs and at some point set_hp(0) is called
+	// * on_dieplayer callbacks run, inventory items are dropped by the game
+	// * on_use returns, the engine puts the returned item back into the slot
+	if (playersao->isDead()) {
+		verbosestream << "Discarding returned item \"" << item.name << "\" from "
+			<< callback << " because player is now dead." << std::endl;
+		return;
+	}
+
+	if (playersao->setWieldedItem(item))
+		SendInventory(playersao, true);
+}
+
 void Server::handleCommand_Interact(NetworkPacket *pkt)
 {
 	/*
@@ -1246,21 +1263,14 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					<< pointed.object_id << ": "
 					<< pointed_object->getDescription() << std::endl;
 
-			// Do stuff
-			if (m_script->item_OnSecondaryUse(
-					selected_item, playersao, pointed)) {
-				if (playersao->setWieldedItem(selected_item)) {
-					SendInventory(playersao, true);
-				}
-			}
+			if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed))
+				updateWieldedItem(playersao, selected_item, "on_secondary_use");
 
 			pointed_object->rightClick(playersao);
 		} else if (m_script->item_OnPlace(selected_item, playersao, pointed)) {
 			// Placement was handled in lua
 
-			// Apply returned ItemStack
-			if (playersao->setWieldedItem(selected_item))
-				SendInventory(playersao, true);
+			updateWieldedItem(playersao, selected_item, "on_place");
 		}
 
 		if (pointed.type != POINTEDTHING_NODE)
@@ -1292,11 +1302,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << player->getName() << " uses " << selected_item.name
 				<< ", pointing at " << pointed.dump() << std::endl;
 
-		if (m_script->item_OnUse(selected_item, playersao, pointed)) {
-			// Apply returned ItemStack
-			if (playersao->setWieldedItem(selected_item))
-				SendInventory(playersao, true);
-		}
+		if (m_script->item_OnUse(selected_item, playersao, pointed))
+			updateWieldedItem(playersao, selected_item, "on_use");
 
 		return;
 	}
@@ -1311,10 +1318,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
 
-		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
-			if (playersao->setWieldedItem(selected_item))
-				SendInventory(playersao, true);
-		}
+		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed))
+			updateWieldedItem(playersao, selected_item, "on_secondary_use");
 
 		return;
 	}
