@@ -415,8 +415,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 							if (new_material)
 								previous_material = material;
 						}
-						else
+						else {
 							grouped_buffers.add(buf, block_pos, layer);
+						}
 					}
 				}
 			}
