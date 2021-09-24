@@ -634,12 +634,6 @@ void GUIEngine::stopSound(s32 handle)
 }
 
 /******************************************************************************/
-void GUIEngine::stopAllSounds()
-{
-	m_sound_manager->stopAllSounds();
-}
-
-/******************************************************************************/
 unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 		const std::string &serialized_params)
 {

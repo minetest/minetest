@@ -237,7 +237,6 @@ public:
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params,
 			bool ephemeral=false);
 	void stopSound(s32 handle);
-	void stopAllSounds();
 	void fadeSound(s32 handle, float step, float gain);
 
 	// Envlock

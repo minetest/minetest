@@ -299,8 +299,6 @@ private:
 	s32 playSound(const SimpleSoundSpec &spec, bool looped);
 	/** stop playing a sound started with playSound() */
 	void stopSound(s32 handle);
-	/** stop playing all playing sounds started with playSound() */
-	void stopAllSounds();
 
 
 };

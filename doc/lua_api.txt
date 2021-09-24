@@ -119,10 +119,9 @@ Menu music
 Games can provide custom main menu music. They are put inside a `menu`
 directory inside the game directory. 
 
-The music files are named `$game_name.ogg`, where `$game_name` would be the folder
-name of the game, such as `minetest_game` or `mineclone2`.
+The music files are named `theme.ogg`.
 If you want to specify multiple music files for one game, add additional
-images named like `$game_name.$n.ogg`, with an ascending number $n starting
+images named like `theme.$n.ogg`, with an ascending number $n starting
 with 1 (max 10), and a random music file will be chosen from the provided ones.
 
 Mods

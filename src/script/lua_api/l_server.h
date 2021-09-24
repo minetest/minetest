@@ -67,9 +67,6 @@ private:
 	// sound_stop(handle)
 	static int l_sound_stop(lua_State *L);
 
-	// sound_stop_all()
-	static int l_sound_stop_all(lua_State *L);
-
 	// sound_fade(handle, step, gain)
 	static int l_sound_fade(lua_State *L);
 
