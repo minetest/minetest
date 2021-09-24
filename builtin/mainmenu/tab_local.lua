@@ -382,8 +382,7 @@ if enable_gamebar then
 				core.set_topleft_text(game.name)
 				mm_texture.update("singleplayer",game)
 				core.sound_stop_all()
-				local _,_,technical_game_name = string.find(game.gamemods_path, ".*\\(.*)\\.*")
-				core.sound_play(technical_game_name, true)
+				core.sound_play(game.id, true)
 			end
 
 			singleplayer_refresh_gamebar()
