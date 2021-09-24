@@ -224,10 +224,13 @@ Run it:
   - Debug build is slower, but gives much more useful output in a debugger.
 - If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
-- IrrlichtMt can also be installed somewhere that is not a standard install path.
-  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
-  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists
-    or that `$(CMAKE_PREFIX_PATH)` is the path of an IrrlichtMt build folder.
+
+- Minetest will look for IrrlichtMt in four steps.
+  1. If the `IRRLICHTMT_BUILD_DIR` variable is set, it takes precedence above all else.
+  2. If no build directory is selected, CMake will use `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` if it exists.
+  3. If the first two steps fail, CMake will look for an IrrlichtMt install in standard root paths.
+  4. If all else fails, `IRRLICHT_INCLUDE_DIR` is set and `BUILD_CLIENT` is turned off, the headers from the include dir will be used.
+  - NOTE: Changing the IrrlichtMt build dir (includes system installs) will require regenerating CMakeCache.txt or clearing the `IrrlichtMt_DIR` variable.
 
 ### CMake options
 
