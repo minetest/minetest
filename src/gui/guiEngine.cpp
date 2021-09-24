@@ -107,31 +107,21 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 	std::string base;
 	std::vector<fs::DirListNode> list;
 	base = porting::path_share + DIR_DELIM;
-	// Add standard main menu sounds
-	dst_paths.insert(base + "sounds" + DIR_DELIM + name + ".ogg");
-	int i;
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + "sounds" + DIR_DELIM + name + "."+itos(i)+".ogg");
-	// Add game specific main menu sounds
-	dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
-			 DIR_DELIM + name + ".ogg");
-	for (i = 0; i < 10; i++)
-		dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
-				 DIR_DELIM + name +"." + itos(i) +
-				 ".ogg");
-	
+	//Reusable local function
+	auto add_paths = [base, &dst_paths, name](const std::string &loc) {
+		dst_paths.insert(base + loc + DIR_DELIM + name + ".ogg");
+		for (int i = 0; i < 10; i++)
+			dst_paths.insert(base + loc + DIR_DELIM + name + "." + itos(i) +
+					 ".ogg");
+	};
+	add_paths("sounds");
+	add_paths((std::string)"games" + DIR_DELIM + name);
+	add_paths((std::string)"games" + DIR_DELIM + name + DIR_DELIM + "menu");
+
 	base = porting::path_user + DIR_DELIM;
-	// Add standard main menu sounds
-	dst_paths.insert(base + "sounds" + DIR_DELIM + name + ".ogg");
-	for (i = 0; i < 10; i++)
-		dst_paths.insert(base + "sounds" + DIR_DELIM + name + "." + itos(i) +
-				 ".ogg");
-	// Add game specific main menu sounds
-	dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
-			 DIR_DELIM + name + ".ogg");
-	for (i = 0; i < 10; i++)
-		dst_paths.insert(base + "games" + DIR_DELIM + name + DIR_DELIM + "menu" +
-				 DIR_DELIM + name + "." + itos(i) + ".ogg");
+	add_paths("sounds");
+	add_paths((std::string) "games" + DIR_DELIM + name);
+	add_paths((std::string) "games" + DIR_DELIM + name + DIR_DELIM + "menu");
 }
 
 /******************************************************************************/

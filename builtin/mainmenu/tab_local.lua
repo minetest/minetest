@@ -56,11 +56,11 @@ if enable_gamebar then
 					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
 						mm_texture.update("singleplayer", pkgmgr.games[j])
 						core.set_topleft_text(pkgmgr.games[j].name)
-						core.settings:set("menu_last_game",pkgmgr.games[j].id)
-						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
+						local technical_game_name = pkgmgr.games[j].id
+						core.settings:set("menu_last_game",technical_game_name)
+						menudata.worldlist:set_filtercriteria(technical_game_name)
 						--switch game sounds, if found
 						core.sound_stop_all()
-						local _,_,technical_game_name = string.find(pkgmgr.games[j].gamemods_path, ".*\\(.*)\\.*")
 						core.sound_play(technical_game_name, true)
 						core.log("Playing sound: " .. technical_game_name)
 						local index = filterlist.get_current_index(menudata.worldlist,

@@ -2157,10 +2157,9 @@ void Server::stopSound(s32 handle)
 	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
 	pkt << handle;
 
-	for (std::unordered_set<session_t>::const_iterator si = psound.clients.begin();
-			si != psound.clients.end(); ++si) {
+	for (session_t peer_id : psound.clients) {
 		// Send as reliable
-		m_clients.send(*si, 0, &pkt, true);
+		m_clients.send(peer_id, 0, &pkt, true);
 	}
 	// Remove sound reference
 	m_playing_sounds.erase(i);
@@ -2169,17 +2168,15 @@ void Server::stopSound(s32 handle)
 void Server::stopAllSounds()
 {
 	// Loop through references
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
-		ServerPlayingSound &psound = it->second;
+	for (auto sound_ref : m_playing_sounds) {
+		ServerPlayingSound &psound = sound_ref.second;
 
 		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
-		pkt << it->first;
+		pkt << sound_ref.first;
 
-		for (std::unordered_set<session_t>::const_iterator si =
-				psound.clients.begin();
-				si != psound.clients.end(); ++si) {
+		for (session_t peer_id : psound.clients) {
 			// Send as reliable
-			m_clients.send(*si, 0, &pkt, true);
+			m_clients.send(peer_id, 0, &pkt, true);
 		}
 	}
 	// Remove sound references
