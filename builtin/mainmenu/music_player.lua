@@ -19,7 +19,7 @@
 local current_file = ""
 local current_music_handle = nil
 
---stops current music, if not the same as the requested file, then plays the new file on repeat
+-- Stops current music, if not the same as the requested file, then plays the new file on repeat
 function menu_music_play(file)
 	if file ~= current_file then
 		if current_music_handle ~= nil then

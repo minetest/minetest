@@ -56,8 +56,8 @@ if enable_gamebar then
 					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
 						mm_texture.update("singleplayer", pkgmgr.games[j])
 						core.set_topleft_text(pkgmgr.games[j].name)
-						--switch game theme, if found, and current game theme is not already playing
-						if(pkgmgr.games[j].id ~= core.settings:get("menu_last_game")) then
+						-- Switch game theme, if found, and current game theme is not already playing
+						if pkgmgr.games[j].id ~= core.settings:get("menu_last_game") then
 							menu_music_play(pkgmgr.games[j].path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme")
 						end
 						core.settings:set("menu_last_game",pkgmgr.games[j].id)
@@ -380,7 +380,7 @@ if enable_gamebar then
 				menudata.worldlist:set_filtercriteria(game.id)
 				core.set_topleft_text(game.name)
 				mm_texture.update("singleplayer",game)
-				if(old_tab ~= new_tab) then
+				if old_tab ~= new_tab then
 					menu_music_play(game.path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme")
 				end
 			end
