@@ -108,20 +108,17 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 	std::vector<fs::DirListNode> list;
 	base = porting::path_share + DIR_DELIM;
 	//Reusable local function
-	auto add_paths = [base, &dst_paths, name](const std::string &loc) {
-		dst_paths.insert(base + loc + DIR_DELIM + name + ".ogg");
+	auto add_paths = [&dst_paths](const std::string name, const std::string base = "") {
+		dst_paths.insert(base + name + ".ogg");
 		for (int i = 0; i < 10; i++)
-			dst_paths.insert(base + loc + DIR_DELIM + name + "." + itos(i) +
+			dst_paths.insert(base + name + "." + itos(i) +
 					 ".ogg");
 	};
-	add_paths("sounds");
-	add_paths((std::string)"games" + DIR_DELIM + name);
-	add_paths((std::string)"games" + DIR_DELIM + name + DIR_DELIM + "menu");
-
+	add_paths(name, base + "sounds" + DIR_DELIM);
+	add_paths(name);
 	base = porting::path_user + DIR_DELIM;
-	add_paths("sounds");
-	add_paths((std::string) "games" + DIR_DELIM + name);
-	add_paths((std::string) "games" + DIR_DELIM + name + DIR_DELIM + "menu");
+	add_paths(name, base + "sounds" + DIR_DELIM);
+	add_paths(name);
 }
 
 /******************************************************************************/

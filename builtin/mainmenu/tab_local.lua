@@ -56,13 +56,14 @@ if enable_gamebar then
 					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
 						mm_texture.update("singleplayer", pkgmgr.games[j])
 						core.set_topleft_text(pkgmgr.games[j].name)
-						local technical_game_name = pkgmgr.games[j].id
-						core.settings:set("menu_last_game",technical_game_name)
-						menudata.worldlist:set_filtercriteria(technical_game_name)
-						--switch game sounds, if found
-						core.sound_stop_all()
-						core.sound_play(technical_game_name, true)
-						core.log("Playing sound: " .. technical_game_name)
+						--switch game theme, if found, and current game theme is not already playing
+						if(pkgmgr.games[j].id ~= core.settings:get("menu_last_game")) then
+							core.sound_stop_all()
+							core.sound_play(pkgmgr.games[j].path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme", true)
+							core.log("Playing: " .. pkgmgr.games[j].path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme")
+						end
+						core.settings:set("menu_last_game",pkgmgr.games[j].id)
+						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
 						local index = filterlist.get_current_index(menudata.worldlist,
 							tonumber(core.settings:get("mainmenu_last_selected_world")))
 						if not index or index < 1 then
@@ -381,8 +382,10 @@ if enable_gamebar then
 				menudata.worldlist:set_filtercriteria(game.id)
 				core.set_topleft_text(game.name)
 				mm_texture.update("singleplayer",game)
-				core.sound_stop_all()
-				core.sound_play(game.id, true)
+				if(old_tab ~= new_tab) then
+					core.sound_stop_all()
+					core.sound_play(game.path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme", true)
+				end
 			end
 
 			singleplayer_refresh_gamebar()
