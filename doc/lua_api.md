@@ -594,18 +594,28 @@ Example:
 Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 `dirt.png^grass_side.png` textures
 
-#### `[fill:<w>x<h>:<color>`
+#### `[fill:<w>x<h>:<x>,<y>:<color>`
 
 * `<w>`: width
 * `<h>`: height
+* `<x>`: x position
+* `<y>`: y position
 * `<color>`: a `ColorString`.
 
-Creates a texture of the given size and color, optionally with alpha specified
-in the colorstring.
+Creates a texture of the given size and color, optionally with an <x>,<y>
+position. An alpha value may be specified in the `Colorstring`.
 
-Example:
+The optional <x>,<y> position is only used if the [fill is being overlaid
+onto another texture with '^'.
+
+When [fill is overlaid onto another texture it will not upscale or change
+the resolution of the texture, the base texture will determine the output
+resolution.
+
+Examples:
 
     [fill:16x16:#20F02080
+    texture.png^[fill:8x8:4,4:red
 
 #### `[lowpart:<percent>:<file>`
 
