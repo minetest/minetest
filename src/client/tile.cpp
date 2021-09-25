@@ -1352,11 +1352,11 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 		}
 		/*
-			[rect:WxH:color
+			[fill:WxH:color
 			Creates a texture of the given size and color, optionally with alpha
 			specified in the colorstring
 		*/
-		else if (str_starts_with(part_of_name, "[rect"))
+		else if (str_starts_with(part_of_name, "[fill"))
 		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1367,7 +1367,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			video::SColor color;
 			if (!parseColorString(color_str, color, false))
 				return false;
-
+			
 			if (baseimg != NULL) {
 				// Even though ^[combine hasn't conformed to this, the
 				// expected ^ overlay behavior is the lower resolution
@@ -1667,7 +1667,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 		[multiply:color
-		or
+		or 
 		[screen:color
 			Multiply and Screen blend modes are basic blend modes for darkening and lightening
 			images, respectively.
@@ -1693,7 +1693,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			if (!parseColorString(color_str, color, false))
 				return false;
 			if (str_starts_with(part_of_name, "[multiply:")) {
-				apply_multiplication(baseimg, v2u32(0, 0),
+				apply_multiplication(baseimg, v2u32(0, 0), 
 					baseimg->getDimension(), color);
 			} else {
 				apply_screen(baseimg, v2u32(0, 0), baseimg->getDimension(), color);
@@ -1972,7 +1972,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 			[hsl:hue:saturation:lightness
-			or
+			or 
 			[colorizehsl:hue:saturation:lightness
 
 			Adjust the hue, saturation, and lightness of the base image. Like
@@ -1983,7 +1983,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Hue should be from -180 to +180
 			Saturation and lightness are optional, and both from -100 to +100
 		*/
-		else if (str_starts_with(part_of_name, "[hsl:") ||
+		else if (str_starts_with(part_of_name, "[hsl:") || 
 		         str_starts_with(part_of_name, "[colorizehsl:")) {
 
 			if (baseimg == NULL) {
@@ -2006,7 +2006,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 			[overlay:filename
-			or
+			or 
 			[hardlight:filename
 
 			"A.png^[hardlight:B.png" is the same as "B.png^[overlay:A.Png"
@@ -2070,7 +2070,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 contrast = mystoi(sf.next(":"), -127, 127);
 			u32 brightness = sf.at_end() ? 0 : mystoi(sf.next(":"), -127, 127);
 
-			apply_brightness_contrast(baseimg, v2u32(0, 0),
+			apply_brightness_contrast(baseimg, v2u32(0, 0), 
 				baseimg->getDimension(), brightness, contrast);
 		}
 		else
@@ -2329,14 +2329,14 @@ static void apply_overlay(video::IImage *blend, video::IImage *dst,
 	v2s32 blend_layer_pos = hardlight ? dst_pos : blend_pos;
 	v2s32 base_layer_pos  = hardlight ? blend_pos : dst_pos;
 
-	for (u32 y = 0; y < size.Y; y++)
+	for (u32 y = 0; y < size.Y; y++) 
 	for (u32 x = 0; x < size.X; x++) {
 		s32 base_x = x + base_layer_pos.X;
 		s32 base_y = y + base_layer_pos.Y;
 
 		video::SColor blend_c =
 			blend_layer->getPixel(x + blend_layer_pos.X, y + blend_layer_pos.Y);
-		video::SColor base_c = base_layer->getPixel(base_x, base_y);
+		video::SColor base_c = base_layer->getPixel(base_x, base_y);		
 		double blend_r = blend_c.getRed()   / 255.0;
 		double blend_g = blend_c.getGreen() / 255.0;
 		double blend_b = blend_c.getBlue()  / 255.0;
@@ -2355,7 +2355,7 @@ static void apply_overlay(video::IImage *blend, video::IImage *dst,
 	}
 }
 
-/*
+/* 
 	Adjust the brightness and contrast of the base image.
 
 	Conceptually like GIMP's "Brightness-Contrast" feature but allows brightness to be
@@ -2369,17 +2369,17 @@ static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 s
 	// (we could technically allow -128/128 here as that would just result in 0 slope)
 	double norm_c = core::clamp(contrast,   -127, 127) / 128.0;
 	double norm_b = core::clamp(brightness, -127, 127) / 127.0;
-
+	
 	// Scale brightness so its range is -127.5 to 127.5, otherwise brightness
 	// adjustments will outputs values from 0.5 to 254.5 instead of 0 to 255.
 	double scaled_b = brightness * 127.5 / 127;
 
-	// Calculate a contrast slope such that that no colors will get clamped due
+	// Calculate a contrast slope such that that no colors will get clamped due 
 	// to the brightness setting.
 	// This allows the texture modifier to used as a brightness modifier without
 	// the user having to calculate a contrast to avoid clipping at that brightness.
 	double slope = 1 - std::fabs(norm_b);
-
+	
 	// Apply the user's contrast adjustment to the calculated slope, such that
 	// -127 will make it near-vertical and +127 will make it horizontal
 	double angle = std::atan(slope);

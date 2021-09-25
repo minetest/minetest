@@ -594,7 +594,7 @@ Example:
 Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 `dirt.png^grass_side.png` textures
 
-#### `[rect:<w>x<h>:<color>`
+#### `[fill:<w>x<h>:<color>`
 
 * `<w>`: width
 * `<h>`: height
@@ -605,7 +605,7 @@ in the colorstring.
 
 Example:
 
-    [rect:16x16:#20F02080
+    [fill:16x16:#20F02080
 
 #### `[lowpart:<percent>:<file>`
 
