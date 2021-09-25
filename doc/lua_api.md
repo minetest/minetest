@@ -641,7 +641,7 @@ which it assumes to be a tilesheet with dimensions w,h.
 
 Colorize the textures with the given color.
 `<color>` is specified as a `ColorString`.
-`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".  If
+`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`". If
 it is an int, then it specifies how far to interpolate between the
 colors where 0 is only the texture color and 255 is only `<color>`. If
 omitted, the alpha of `<color>` will be used as the ratio.  If it is
@@ -667,7 +667,7 @@ Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
 
-A Multiply blend can be applied between two textures by using the overlay 
+A Multiply blend can be applied between two textures by using the overlay
 modifier with a brightness adjustment:
 
     textureA.png^[contrast:0:-64^[overlay:textureB.png
@@ -679,7 +679,7 @@ a Multiply blend, lightening images instead of darkening them.
 
 `<color>` is specified as a `ColorString`.
 
-A Screen blend can be applied between two textures by using the overlay 
+A Screen blend can be applied between two textures by using the overlay
 modifier with a brightness adjustment:
 
     textureA.png^[contrast:0:64^[overlay:textureB.png
@@ -696,30 +696,38 @@ Adjust the hue, saturation, and lightness of the texture. Like
 #### `[contrast:<contrast>:<brightness>`
 
 Adjust the brightness and contrast of the texture. Conceptually like
-GIMP's "Brightness-Contrast" feature but allows brightness to be wound 
+GIMP's "Brightness-Contrast" feature but allows brightness to be wound
 all the way up to white or down to black.
 
-`<contrast>` and `<brightness>` are both values from -127 to +127.
+`<contrast>` is a value from -127 to +127.
 
-`<brightness>` is optional.
+`<brightness>` is an optional value, from -127 to +127.
+
+If only a boost in contrast is required, an alternative technique is to
+hardlight blend the texture with itself, this increases contrast in the same
+way as an S-shaped color-curve, which avoids dark colors clipping to black
+and light colors clipping to white:
+
+    texture.png^[hardlight:texture.png
 
 #### `[overlay:<file>`
 
-Applies an Overlay blend with the two textures, like the Overlay layer mode 
-in GIMP. Overlay is the same as Hard light but with the role of the two 
+Applies an Overlay blend with the two textures, like the Overlay layer mode
+in GIMP. Overlay is the same as Hard light but with the role of the two
 textures swapped, see the `[hardlight` modifier description for more detail
 about these blend modes.
 
 #### `[hardlight:<file>`
 
-Applies a Hard light blend with the two textures, like the Hard light layer 
-mode in GIMP. 
+Applies a Hard light blend with the two textures, like the Hard light layer
+mode in GIMP.
 
-Hard light combines Multiply and Screen blend modes. Light parts of the 
+Hard light combines Multiply and Screen blend modes. Light parts of the
 `<file>` texture will lighten (screen) the base texture, and dark parts of the
 `<file>` texture will darken (multiply) the base texture. This can be useful
 for applying embossing or chiselled effects to textures. A Hard light with the
-same texture looks like an S-curve.
+same texture acts like applying an S-shaped color-curve, and can be used to
+increase contrast without clipping.
 
 Hard light is the same as Overlay but with the roles of the two textures
 swapped, i.e. `A.png^[hardlight:B.png` is the same as `B.png^[overlay:A.png`
