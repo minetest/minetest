@@ -3244,6 +3244,11 @@ A spatial vector is similar to a position, but instead using
 absolute world coordinates, it uses *relative* coordinates, relative to
 no particular point.
 
+Vectors can be modified in-place, but keep in mind that some functions such as
+`minetest.facedir_to_dir` do not create a new vector each time they are called.
+Modifying the vectors returned by such functions would therefore break the
+functions. Think twice before changing vectors you did not create yourself.
+
 Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
 However, one should *never* create a vector manually as above, such misbehavior
