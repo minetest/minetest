@@ -1,5 +1,6 @@
-_G.vector = {}
+_G.core = {}
 dofile("builtin/common/vector.lua")
+dofile("builtin/common/misc_helpers.lua") -- For math.round
 
 describe("vector", function()
 	describe("new()", function()
