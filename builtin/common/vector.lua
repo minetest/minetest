@@ -52,6 +52,12 @@ function vector.copy(v)
 	return fast_new(v.x, v.y, v.z)
 end
 
+function vector.set_copy(v, w)
+	v.x = w.x
+	v.y = w.y
+	v.z = w.z
+end
+
 function vector.from_string(s, init)
 	local x, y, z, np = string.match(s, "^%s*%(%s*([^%s,]+)%s*[,%s]%s*([^%s,]+)%s*[,%s]" ..
 			"%s*([^%s,]+)%s*[,%s]?%s*%)()", init)
@@ -110,6 +116,12 @@ function vector.apply(v, func)
 		func(v.y),
 		func(v.z)
 	)
+end
+
+function vector.set_apply(v, w, func)
+	v.x = func(w.x)
+	v.y = func(w.y)
+	v.z = func(w.z)
 end
 
 function vector.distance(a, b)
@@ -247,6 +259,42 @@ function metatable.__div(a, b)
 		a.y / b,
 		a.z / b
 	)
+end
+
+function vector.set_add(a, b, c)
+	if type(c) == "table" then
+		a.x = b.x + c.x
+		a.y = b.y + c.y
+		a.z = b.z + c.z
+	else
+		a.x = b.x + c
+		a.y = b.y + c
+		a.z = b.z + c
+	end
+end
+
+function vector.set_subtract(a, b, c)
+	if type(c) == "table" then
+		a.x = b.x - c.x
+		a.y = b.y - c.y
+		a.z = b.z - c.z
+	else
+		a.x = b.x - c
+		a.y = b.y - c
+		a.z = b.z - c
+	end
+end
+
+function vector.set_multiply(a, b, s)
+	a.x = b.x * s
+	a.y = b.y * s
+	a.z = b.z * s
+end
+
+function vector.set_divide(a, b, s)
+	a.x = b.x / s
+	a.y = b.y / s
+	a.z = b.z / s
 end
 
 -- misc stuff

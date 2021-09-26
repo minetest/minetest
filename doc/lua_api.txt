@@ -3278,6 +3278,8 @@ vectors are written like this: `(x, y, z)`:
     * Returns a new vector `(0, 0, 0)`.
 * `vector.copy(v)`:
     * Returns a copy of the vector `v`.
+* `vector.set_copy(v, w)`:
+    * Sets the components of vector `v` to those of vector `w`.
 * `vector.from_string(s[, init])`:
     * Returns `v, np`, where `v` is a vector read from the given string `s` and
       `np` is the next position in the string after the vector.
@@ -3306,6 +3308,9 @@ vectors are written like this: `(x, y, z)`:
 * `vector.apply(v, func)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+* `vector.set_apply(v, w, func)`:
+    * Sets the components of vector `v` to the components of `w` with `func`
+      applied to each component.
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -3339,6 +3344,25 @@ For the following functions `x` can be either a vector or a number:
 * `vector.divide(v, s)`:
     * Returns a scaled vector.
     * Deprecated: If `s` is a vector: Returns the Schur quotient.
+
+These arithmetic functions have in-place equivalents. For the following
+functions, the second argument can refer to the same vector as the first:
+
+* `vector.set_add(v, w, x)`:
+    * Sets the components of `v` to the transformed components of `w`.
+    * If `x` is a vector: Each `w` component is transformed by adding the
+      corresponding component of `x`.
+    * If `x` is a number: Each `w` component is transformed by adding `x`.
+* `vector.set_subtract(v, w, x)`:
+    * Sets the components of `v` to the transformed components of `w`.
+    * If `x` is a vector: Each `w` component is transformed by subtracting the
+      corresponding component of `x`.
+    * If `x` is a number: Each `w` component is transformed by subtracting `x`.
+* `vector.set_multiply(v, w, x)`:
+    * Sets the components of `v` to the components of `w` each multiplied by
+      `x`.
+* `vector.set_divide(v, w, x)`:
+    * Sets the components of `v` to the components of `w` each divided by `x`.
 
 Operators can be used if all of the involved vectors have metatables:
 * `v1 == v2`:
