@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 #include "client/guiscalingfilter.h"
+#include "client/renderingengine.h"
 
 #include <iostream>
 #include <algorithm>
@@ -426,7 +427,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	button_size = MYMIN(m_screensize.Y / 4.5f,
-			porting::getDisplayDensity() *
+			RenderingEngine::getDisplayDensity() *
 			g_settings->getFloat("hud_scaling") * 65.0f);
 }
 
@@ -668,9 +669,9 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 	if (button != after_last_element_id) {
 		// handle button events
 		handleButtonEvent(button, evt_id, false);
-	} else if (evt_id == m_move_id) {
+	} else if (m_has_move_id && evt_id == m_move_id) {
 		// handle the point used for moving view
-		m_move_id = -1;
+		m_has_move_id = false;
 
 		// if this pointer issued a mouse event issue symmetric release here
 		if (m_move_sent_as_mouse_event) {
@@ -692,8 +693,8 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 	}
 
 	// handle joystick
-	else if (evt_id == m_joystick_id) {
-		m_joystick_id = -1;
+	else if (m_has_joystick_id && evt_id == m_joystick_id) {
+		m_has_joystick_id = false;
 
 		// reset joystick
 		for (unsigned int i = 0; i < 4; i++)
@@ -776,7 +777,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			if ((m_fixed_joystick && dxj * dxj + dyj * dyj <= button_size * button_size * 1.5 * 1.5) ||
 					(!m_fixed_joystick && event.TouchInput.X < m_screensize.X / 3.0f)) {
 				// If we don't already have a starting point for joystick make this the one.
-				if (m_joystick_id == -1) {
+				if (!m_has_joystick_id) {
+					m_has_joystick_id           = true;
 					m_joystick_id               = event.TouchInput.ID;
 					m_joystick_has_really_moved = false;
 
@@ -796,7 +798,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				}
 			} else {
 				// If we don't already have a moving point make this the moving one.
-				if (m_move_id == -1) {
+				if (!m_has_move_id) {
+					m_has_move_id              = true;
 					m_move_id                  = event.TouchInput.ID;
 					m_move_has_really_moved    = false;
 					m_move_downtime            = porting::getTimeMs();
@@ -819,7 +822,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				v2s32(event.TouchInput.X, event.TouchInput.Y))
 			return;
 
-		if (m_move_id != -1) {
+		if (m_has_move_id) {
 			if ((event.TouchInput.ID == m_move_id) &&
 				(!m_move_sent_as_mouse_event)) {
 
@@ -862,7 +865,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			}
 		}
 
-		if (m_joystick_id != -1 && event.TouchInput.ID == m_joystick_id) {
+		if (m_has_joystick_id && event.TouchInput.ID == m_joystick_id) {
 			s32 X = event.TouchInput.X;
 			s32 Y = event.TouchInput.Y;
 
@@ -941,7 +944,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			}
 		}
 
-		if (m_move_id == -1 && m_joystick_id == -1)
+		if (!m_has_move_id && !m_has_joystick_id)
 			handleChangedButton(event);
 	}
 }
@@ -1086,7 +1089,7 @@ void TouchScreenGUI::step(float dtime)
 			button.repeatcounter += dtime;
 
 			// in case we're moving around digging does not happen
-			if (m_move_id != -1)
+			if (m_has_move_id)
 				m_move_has_really_moved = true;
 
 			if (button.repeatcounter < button.repeatdelay)
@@ -1114,7 +1117,7 @@ void TouchScreenGUI::step(float dtime)
 	}
 
 	// if a new placed pointer isn't moved for some time start digging
-	if ((m_move_id != -1) &&
+	if (m_has_move_id &&
 			(!m_move_has_really_moved) &&
 			(!m_move_sent_as_mouse_event)) {
 

@@ -1,3 +1,8 @@
+set(extra_gui_SRCS "")
+if(ENABLE_TOUCH)
+	set(extra_gui_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/touchscreengui.cpp)
+endif()
+
 set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiAnimatedImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBackgroundImage.cpp
@@ -25,5 +30,6 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiVolumeChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/modalMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/profilergraph.cpp
+	${extra_gui_SRCS}
 	PARENT_SCOPE
 )

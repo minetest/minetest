@@ -308,7 +308,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-#ifndef __ANDROID__
+#ifndef HAVE_TOUCHSCREENGUI
 		if (parts.size() == 3) {
 			if (parts[2] == "true") {
 				lockSize(true,v2u32(800,600));
@@ -3278,7 +3278,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 						((15.0 / 13.0) * (0.85 + mydata.invsize.Y));
 			}
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 			// In Android, the preferred imgsize should be larger to accommodate the
 			// smaller screensize.
 			double prefer_imgsize = padded_screensize.Y / 10 * gui_scaling;
@@ -3741,7 +3741,7 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	v2u32 screenSize = Environment->getVideoDriver()->getScreenSize();
 	int tooltip_offset_x = m_btn_height;
 	int tooltip_offset_y = m_btn_height;
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	tooltip_offset_x *= 3;
 	tooltip_offset_y  = 0;
 	if (m_pointer.X > (s32)screenSize.X / 2)

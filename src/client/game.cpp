@@ -566,7 +566,7 @@ public:
 	}
 };
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 #define SIZE_TAG "size[11,5.5]"
 #else
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
@@ -901,8 +901,10 @@ private:
 	bool m_does_lost_focus_pause_game = false;
 
 	int m_reset_HW_buffer_counter = 0;
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
+#endif
+#ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
 };
@@ -940,7 +942,7 @@ Game::Game() :
 
 	readSettings();
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = false;	// This is initialised properly later
 #endif
 
@@ -1065,7 +1067,7 @@ void Game::run()
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = g_settings->getBool("fast_move")
 			&& client->checkPrivilege("fast");
 #endif
@@ -1845,6 +1847,7 @@ void Game::processUserInput(f32 dtime)
 	else if (g_touchscreengui) {
 		/* on touchscreengui step may generate own input events which ain't
 		 * what we want in case we just did clear them */
+		g_touchscreengui->show();
 		g_touchscreengui->step(dtime);
 	}
 #endif
@@ -2157,7 +2160,7 @@ void Game::toggleFast()
 		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = fast_move && has_fast_privs;
 #endif
 }
@@ -2495,10 +2498,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		control.movement_direction = 0.0f;
 	}
 
-#ifdef ANDROID
-	/* For Android, simulate holding down AUX1 (fast move) if the user has
+#ifdef HAVE_TOUCHSCREENGUI
+	/* For touch, simulate holding down AUX1 (fast move) if the user has
 	 * the fast_move setting toggled on. If there is an aux1 key defined for
-	 * Android then its meaning is inverted (i.e. holding aux1 means walk and
+	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
 	if (m_cache_hold_aux1) {
@@ -4184,7 +4187,7 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	static const std::string control_text = strgettext("Default Controls:\n"
 		"No menu visible:\n"
 		"- single tap: button activate\n"

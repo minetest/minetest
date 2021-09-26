@@ -228,13 +228,15 @@ private:
 	 */
 	line3d<f32> m_shootline;
 
-	int m_move_id = -1;
+	bool m_has_move_id = false;
+	size_t m_move_id;
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
 	bool m_move_sent_as_mouse_event = false;
 	v2s32 m_move_downlocation = v2s32(-10000, -10000);
 
-	int m_joystick_id = -1;
+	bool m_has_joystick_id = false;
+	size_t m_joystick_id;
 	bool m_joystick_has_really_moved = false;
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;

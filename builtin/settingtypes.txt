@@ -949,6 +949,9 @@ screenshot_quality (Screenshot quality) int 0 0 100
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 screen_dpi (DPI) int 72 1
 
+#    Adjust the detected display density, used for scaling UI elements.
+display_density_factor (Display Density Scaling Factor) float 1
+
 #    Windows systems only: Start Minetest with the command line window in the background.
 #    Contains the same information as the file debug.txt (default name).
 enable_console (Enable console window) bool false
