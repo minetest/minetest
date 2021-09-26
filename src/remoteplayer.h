@@ -47,7 +47,7 @@ public:
 	PlayerSAO *getPlayerSAO() { return m_sao; }
 	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
 
-	const RemotePlayerChatResult canSendChatMessage();
+	RemotePlayerChatResult canSendChatMessage();
 
 	void setHotbarItemcount(s32 hotbar_itemcount)
 	{
