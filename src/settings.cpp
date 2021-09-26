@@ -104,8 +104,7 @@ Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 
 Settings *Settings::getLayer(SettingsLayer sl)
 {
-	sanity_check((int)sl >= 0 && sl < SL_TOTAL_COUNT);
-	return g_hierarchy.layers[(int)sl];
+	return g_hierarchy.getLayer(sl);
 }
 
 

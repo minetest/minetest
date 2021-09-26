@@ -83,11 +83,6 @@ void Map::addEventReceiver(MapEventReceiver *event_receiver)
 	m_event_receivers.insert(event_receiver);
 }
 
-void Map::removeEventReceiver(MapEventReceiver *event_receiver)
-{
-	m_event_receivers.erase(event_receiver);
-}
-
 void Map::dispatchEvent(const MapEditEvent &event)
 {
 	for (MapEventReceiver *event_receiver : m_event_receivers) {
@@ -137,13 +132,6 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	if(block == NULL)
 		throw InvalidPositionException();
 	return block;
-}
-
-bool Map::isNodeUnderground(v3s16 p)
-{
-	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	return block && block->getIsUnderground();
 }
 
 bool Map::isValidPosition(v3s16 p)

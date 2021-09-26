@@ -154,9 +154,7 @@ public:
 	float getHumidity(v2s16 p);
 	float getTreeAmount(v2s16 p);
 	bool getHaveAppleTree(v2s16 p);
-	float getMudAmount(v2s16 p);
-	virtual float getMudAmount(int index);
-	bool getHaveBeach(v2s16 p);
+	float getMudAmount(int index);
 	bool getHaveBeach(int index);
 	BiomeV6Type getBiome(v2s16 p);
 	BiomeV6Type getBiome(int index, v2s16 p);

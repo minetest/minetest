@@ -141,7 +141,6 @@ public:
 	}
 
 	void addEventReceiver(MapEventReceiver *event_receiver);
-	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
 	void dispatchEvent(const MapEditEvent &event);
 
@@ -166,9 +165,6 @@ public:
 	{ return getBlockNoCreateNoEx(p); }
 
 	inline const NodeDefManager * getNodeDefManager() { return m_nodedef; }
-
-	// Returns InvalidPositionException if not found
-	bool isNodeUnderground(v3s16 p);
 
 	bool isValidPosition(v3s16 p);
 

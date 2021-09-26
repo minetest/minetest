@@ -360,19 +360,6 @@ int MapgenV6::getSpawnLevelAtPoint(v2s16 p)
 
 //////////////////////// Noise functions
 
-float MapgenV6::getMudAmount(v2s16 p)
-{
-	int index = (p.Y - node_min.Z) * ystride + (p.X - node_min.X);
-	return getMudAmount(index);
-}
-
-
-bool MapgenV6::getHaveBeach(v2s16 p)
-{
-	int index = (p.Y - node_min.Z) * ystride + (p.X - node_min.X);
-	return getHaveBeach(index);
-}
-
 
 BiomeV6Type MapgenV6::getBiome(v2s16 p)
 {
