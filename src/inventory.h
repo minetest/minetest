@@ -336,7 +336,7 @@ public:
 	}
 private:
 	// -1 if not found
-	const s32 getListIndex(const std::string &name) const;
+	s32 getListIndex(const std::string &name) const;
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;

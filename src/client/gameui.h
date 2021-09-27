@@ -84,7 +84,7 @@ public:
 	void showTranslatedStatusText(const char *str);
 	inline void clearStatusText() { m_statustext.clear(); }
 
-	const bool isChatVisible()
+	bool isChatVisible()
 	{
 		return m_flags.show_chat && m_recent_chat_count != 0 && m_profiler_current_page == 0;
 	}

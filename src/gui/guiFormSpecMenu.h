@@ -229,7 +229,7 @@ public:
 		return m_selected_item;
 	}
 
-	const u16 getSelectedAmount() const
+	u16 getSelectedAmount() const
 	{
 		return m_selected_amount;
 	}
