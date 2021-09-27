@@ -3897,8 +3897,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
-			|| m_camera_offset_changed) {
-
+			|| m_camera_offset_changed
+			|| client->getEnv().getClientMap().needsUpdateDrawList()) {
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;

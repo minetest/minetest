@@ -73,7 +73,8 @@ ClientMap::ClientMap(
 		rendering_engine->get_scene_manager(), id),
 	m_client(client),
 	m_rendering_engine(rendering_engine),
-	m_control(control)
+	m_control(control),
+	m_drawlist(MapBlockComparer(v3s16(0,0,0)))
 {
 
 	/*
@@ -164,6 +165,8 @@ void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 
+	m_needs_update_drawlist = false;
+
 	for (auto &i : m_drawlist) {
 		MapBlock *block = i.second;
 		block->refDrop();
@@ -178,6 +181,7 @@ void ClientMap::updateDrawList()
 	const f32 camera_fov = m_camera_fov * 1.1f;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
+
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
@@ -202,6 +206,8 @@ void ClientMap::updateDrawList()
 			occlusion_culling_enabled = false;
 	}
 
+	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
+	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -321,7 +327,20 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Draw the selected MapBlocks
 	*/
 
-	MeshBufListList drawbufs;
+	MeshBufListList grouped_buffers;
+
+	struct DrawDescriptor {
+		v3s16 m_pos;
+		scene::IMeshBuffer *m_buffer;
+		bool m_reuse_material;
+
+		DrawDescriptor(const v3s16 &pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material)
+		{}
+	};
+
+	std::vector<DrawDescriptor> draw_order;
+	video::SMaterial previous_material;
 
 	for (auto &i : m_drawlist) {
 		v3s16 block_pos = i.first;
@@ -386,9 +405,31 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 						material.setFlag(video::EMF_WIREFRAME,
 							m_control.show_wireframe);
 
-						drawbufs.add(buf, block_pos, layer);
+						if (is_transparent_pass) {
+							// Same comparison as in MeshBufListList
+							bool new_material = material.getTexture(0) != previous_material.getTexture(0) ||
+									material != previous_material;
+
+							draw_order.emplace_back(block_pos, buf, !new_material);
+
+							if (new_material)
+								previous_material = material;
+						}
+						else {
+							grouped_buffers.add(buf, block_pos, layer);
+						}
 					}
 				}
+			}
+		}
+	}
+
+	// Capture draw order for all solid meshes
+	for (auto &lists : grouped_buffers.lists) {
+		for (MeshBufList &list : lists) {
+			// iterate in reverse to draw closest blocks first
+			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
 			}
 		}
 	}
@@ -397,42 +438,43 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	core::matrix4 m; // Model matrix
 	v3f offset = intToFloat(m_camera_offset, BS);
+	u32 material_swaps = 0;
 
-	// Render all layers in order
-	for (auto &lists : drawbufs.lists) {
-		for (MeshBufList &list : lists) {
-			// Check and abort if the machine is swapping a lot
-			if (draw.getTimerTime() > 2000) {
-				infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
-						"returning." << std::endl;
-				return;
-			}
+	// Render all mesh buffers in order
+	drawcall_count += draw_order.size();
+	for (auto &descriptor : draw_order) {
+		scene::IMeshBuffer *buf = descriptor.m_buffer;
 
+		// Check and abort if the machine is swapping a lot
+		if (draw.getTimerTime() > 2000) {
+			infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
+					"returning." << std::endl;
+			return;
+		}
+
+		if (!descriptor.m_reuse_material) {
+			auto &material = buf->getMaterial();
 			// pass the shadow map texture to the buffer texture
 			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
 			if (shadow && shadow->is_active()) {
-				auto &layer = list.m.TextureLayer[3];
+				auto &layer = material.TextureLayer[3];
 				layer.Texture = shadow->get_texture();
 				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TrilinearFilter = true;
 			}
-
-			driver->setMaterial(list.m);
-
-			drawcall_count += list.bufs.size();
-			for (auto &pair : list.bufs) {
-				scene::IMeshBuffer *buf = pair.second;
-
-				v3f block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
-				m.setTranslation(block_wpos - offset);
-
-				driver->setTransform(video::ETS_WORLD, m);
-				driver->drawMeshBuffer(buf);
-				vertex_count += buf->getVertexCount();
-			}
+			driver->setMaterial(material);
+			++material_swaps;
 		}
+
+		v3f block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, BS);
+		m.setTranslation(block_wpos - offset);
+
+		driver->setTransform(video::ETS_WORLD, m);
+		driver->drawMeshBuffer(buf);
+		vertex_count += buf->getVertexCount();
 	}
+
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 
 	// Log only on solid pass because values are the same
@@ -440,8 +482,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
 	}
 
+	if (pass == scene::ESNRP_TRANSPARENT) {
+		g_profiler->avg("renderMap(): transparent buffers [#]", draw_order.size());
+	}
+
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
+	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
