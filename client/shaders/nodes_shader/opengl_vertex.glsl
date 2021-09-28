@@ -1,6 +1,4 @@
-uniform mat4 mWorldViewProj;
 uniform mat4 mWorld;
-
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
@@ -9,6 +7,7 @@ uniform vec3 eyePosition;
 uniform vec3 cameraOffset;
 uniform float animationTimer;
 
+varying vec3 vNormal;
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
 // This can be used for many shader effects without loss of precision.
@@ -16,17 +15,46 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
+varying lowp vec4 varColor;
+// The centroid keyword ensures that after interpolation the texture coordinates
+// lie within the same bounds when MSAA is en- and disabled.
+// This fixes the stripes problem with nearest-neighbour textures and MSAA.
+#ifdef GL_ES
+varying mediump vec2 varTexCoord;
+#else
+centroid varying vec2 varTexCoord;
+#endif
+#ifdef ENABLE_DYNAMIC_SHADOWS
+	// shadow uniforms
+	uniform vec3 v_LightDirection;
+	uniform float f_textureresolution;
+	uniform mat4 m_ShadowViewProj;
+	uniform float f_shadowfar;
+	uniform float f_shadow_strength;
+	uniform float f_timeofday;
+	varying float cosLight;
+	varying float normalOffsetScale;
+	varying float adj_shadow_strength;
+	varying float f_normal_length;
+#endif
+
 
 varying vec3 eyeVec;
-varying vec3 lightVec;
-varying vec3 tsEyeVec;
-varying vec3 tsLightVec;
-varying float area_enable_parallax;
-
+varying float nightRatio;
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
+
+#ifdef ENABLE_DYNAMIC_SHADOWS
+// custom smoothstep implementation because it's not defined in glsl1.2
+// https://docs.gl/sl4/smoothstep
+float mtsmoothstep(in float edge0, in float edge1, in float x)
+{
+	float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+	return t * t * (3.0 - 2.0 * t);
+}
+#endif
 
 
 float smoothCurve(float x)
@@ -83,27 +111,18 @@ float snoise(vec3 p)
 
 #endif
 
+
+
+
 void main(void)
 {
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	//TODO: make offset depending on view angle and parallax uv displacement
-	//thats for textures that doesnt align vertically, like dirt with grass
-	//gl_TexCoord[0].y += 0.008;
+	varTexCoord = inTexCoord0.st;
 
-	//Allow parallax/relief mapping only for certain kind of nodes
-	//Variable is also used to control area of the effect
-#if (DRAW_TYPE == NDT_NORMAL || DRAW_TYPE == NDT_LIQUID || DRAW_TYPE == NDT_FLOWINGLIQUID)
-	area_enable_parallax = 1.0;
-#else
-	area_enable_parallax = 0.0;
-#endif
-
-
-float disp_x;
-float disp_z;
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || \
-	(MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
-	vec4 pos2 = mWorld * gl_Vertex;
+	float disp_x;
+	float disp_z;
+// OpenGL < 4.3 does not support continued preprocessor lines
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
+	vec4 pos2 = mWorld * inVertexPosition;
 	float tOffset = (pos2.x + pos2.y) * 0.001 + pos2.z * 0.002;
 	disp_x = (smoothTriangleWave(animationTimer * 23.0 + tOffset) +
 		smoothTriangleWave(animationTimer * 11.0 + tOffset)) * 0.4;
@@ -112,86 +131,86 @@ float disp_z;
 		smoothTriangleWave(animationTimer * 13.0 + tOffset)) * 0.5;
 #endif
 
-	worldPosition = (mWorld * gl_Vertex).xyz;
+	worldPosition = (mWorld * inVertexPosition).xyz;
 
 // OpenGL < 4.3 does not support continued preprocessor lines
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.
-	vec4 pos = gl_Vertex;
+	vec4 pos = inVertexPosition;
 	vec3 wavePos = worldPosition + cameraOffset;
 	// The waves are slightly compressed along the z-axis to get
 	// wave-fronts along the x-axis.
-	wavePos.x /= WATER_WAVE_LENGTH * 3;
-	wavePos.z /= WATER_WAVE_LENGTH * 2;
-	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10;
-	pos.y += (snoise(wavePos) - 1) * WATER_WAVE_HEIGHT * 5;
+	wavePos.x /= WATER_WAVE_LENGTH * 3.0;
+	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
+	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
+	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
-	vec4 pos = gl_Vertex;
+	vec4 pos = inVertexPosition;
 	pos.x += disp_x;
 	pos.y += disp_z * 0.1;
 	pos.z += disp_z;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
-	vec4 pos = gl_Vertex;
-	if (gl_TexCoord[0].y < 0.05) {
+	vec4 pos = inVertexPosition;
+	if (varTexCoord.y < 0.05) {
 		pos.x += disp_x;
 		pos.z += disp_z;
 	}
 	gl_Position = mWorldViewProj * pos;
 #else
-	gl_Position = mWorldViewProj * gl_Vertex;
+	gl_Position = mWorldViewProj * inVertexPosition;
 #endif
 
-
 	vPosition = gl_Position.xyz;
-
-	// Don't generate heightmaps when too far from the eye
-	float dist = distance (vec3(0.0, 0.0, 0.0), vPosition);
-	if (dist > 150.0) {
-		area_enable_parallax = 0.0;
-	}
-
-	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
-
-	vec3 normal, tangent, binormal;
-	normal = normalize(gl_NormalMatrix * gl_Normal);
-	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
-	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
-
-	vec3 v;
-
-	lightVec = sunPosition - worldPosition;
-	v.x = dot(lightVec, tangent);
-	v.y = dot(lightVec, binormal);
-	v.z = dot(lightVec, normal);
-	tsLightVec = normalize (v);
-
-	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
-	v.x = dot(eyeVec, tangent);
-	v.y = dot(eyeVec, binormal);
-	v.z = dot(eyeVec, normal);
-	tsEyeVec = normalize (v);
+	eyeVec = -(mWorldView * inVertexPosition).xyz;
+	vNormal = inVertexNormal;
 
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
 	// colors with the color of the incoming light.
 	// The pre-baked colors are halved to prevent overflow.
-	vec4 color;
+#ifdef GL_ES
+	vec4 color = inVertexColor.bgra;
+#else
+	vec4 color = inVertexColor;
+#endif
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1 - gl_Color.a;
-	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
-		nightRatio * artificialLight.rgb) * 2;
-	color.a = 1;
+	nightRatio = 1.0 - color.a;
+	color.rgb = color.rgb * (color.a * dayLight.rgb +
+		nightRatio * artificialLight.rgb) * 2.0;
+	color.a = 1.0;
 
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
-	float brightness = (color.r + color.g + color.b) / 3;
+	float brightness = (color.r + color.g + color.b) / 3.0;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 
-	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
+	varColor = clamp(color, 0.0, 1.0);
+
+#ifdef ENABLE_DYNAMIC_SHADOWS
+	vec3 nNormal = normalize(vNormal);
+	cosLight = dot(nNormal, -v_LightDirection);
+	float texelSize = 767.0 / f_textureresolution;
+	float slopeScale = clamp(1.0 - abs(cosLight), 0.0, 1.0);
+	normalOffsetScale = texelSize * slopeScale;
+	
+	if (f_timeofday < 0.2) {
+		adj_shadow_strength = f_shadow_strength * 0.5 *
+			(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
+	} else if (f_timeofday >= 0.8) {
+		adj_shadow_strength = f_shadow_strength * 0.5 *
+			mtsmoothstep(0.8, 0.83, f_timeofday);
+	} else {
+		adj_shadow_strength = f_shadow_strength *
+			mtsmoothstep(0.20, 0.25, f_timeofday) *
+			(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
+	}
+	f_normal_length = length(vNormal);
+#endif
+
 }

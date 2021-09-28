@@ -55,9 +55,6 @@ ClientScripting::ClientScripting(Client *client):
 	InitializeModApi(L, top);
 	lua_pop(L, 1);
 
-	if (client->getMinimap())
-		LuaMinimap::create(L, client->getMinimap());
-
 	// Push builtin initialization type
 	lua_pushstring(L, "client");
 	lua_setglobal(L, "INIT");
@@ -93,4 +90,9 @@ void ClientScripting::on_client_ready(LocalPlayer *localplayer)
 void ClientScripting::on_camera_ready(Camera *camera)
 {
 	LuaCamera::create(getStack(), camera);
+}
+
+void ClientScripting::on_minimap_ready(Minimap *minimap)
+{
+	LuaMinimap::create(getStack(), minimap);
 }

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
+#include "server/serverinventorymgr.h"
 #include "remoteplayer.h"
 
 /*
@@ -38,7 +39,7 @@ InvRef* InvRef::checkobject(lua_State *L, int narg)
 
 Inventory* InvRef::getinv(lua_State *L, InvRef *ref)
 {
-	return getServer(L)->getInventory(ref->m_loc);
+	return getServerInventoryMgr(L)->getInventory(ref->m_loc);
 }
 
 InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
@@ -54,7 +55,7 @@ InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
 void InvRef::reportInventoryChange(lua_State *L, InvRef *ref)
 {
 	// Inform other things that the inventory has changed
-	getServer(L)->setInventoryModified(ref->m_loc);
+	getServerInventoryMgr(L)->setInventoryModified(ref->m_loc);
 }
 
 // Exported functions
@@ -279,6 +280,7 @@ int InvRef::l_set_lists(lua_State *L)
 	Server *server = getServer(L);
 
 	lua_pushnil(L);
+	luaL_checktype(L, 2, LUA_TTABLE);
 	while (lua_next(L, 2)) {
 		const char *listname = lua_tostring(L, -2);
 		read_inventory_list(L, -1, tempInv, listname, server);
@@ -454,7 +456,7 @@ void InvRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_register(L, nullptr, methods);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Cannot be created from Lua
@@ -487,7 +489,9 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 {
 	InventoryLocation loc;
 
-	std::string type = checkstringfield(L, 1, "type");
+	lua_getfield(L, 1, "type");
+	std::string type = luaL_checkstring(L, -1);
+	lua_pop(L, 1);
 
 	if(type == "node"){
 		MAP_LOCK_REQUIRED;
@@ -495,7 +499,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		v3s16 pos = check_v3s16(L, -1);
 		loc.setNodeMeta(pos);
 
-		if (getServer(L)->getInventory(loc) != NULL)
+		if (getServerInventoryMgr(L)->getInventory(loc) != NULL)
 			InvRef::create(L, loc);
 		else
 			lua_pushnil(L);
@@ -504,14 +508,16 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 
 	NO_MAP_LOCK_REQUIRED;
 	if (type == "player") {
-		std::string name = checkstringfield(L, 1, "name");
-		loc.setPlayer(name);
+		lua_getfield(L, 1, "name");
+		loc.setPlayer(luaL_checkstring(L, -1));
+		lua_pop(L, 1);
 	} else if (type == "detached") {
-		std::string name = checkstringfield(L, 1, "name");
-		loc.setDetached(name);
+		lua_getfield(L, 1, "name");
+		loc.setDetached(luaL_checkstring(L, -1));
+		lua_pop(L, 1);
 	}
 
-	if (getServer(L)->getInventory(loc) != NULL)
+	if (getServerInventoryMgr(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L);
@@ -526,7 +532,7 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	std::string player = readParam<std::string>(L, 2, "");
-	if (getServer(L)->createDetachedInventory(name, player) != NULL) {
+	if (getServerInventoryMgr(L)->createDetachedInventory(name, getServer(L)->idef(), player) != NULL) {
 		InventoryLocation loc;
 		loc.setDetached(name);
 		InvRef::create(L, loc);
@@ -541,7 +547,7 @@ int ModApiInventory::l_remove_detached_inventory_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const std::string &name = luaL_checkstring(L, 1);
-	lua_pushboolean(L, getServer(L)->removeDetachedInventory(name));
+	lua_pushboolean(L, getServerInventoryMgr(L)->removeDetachedInventory(name));
 	return 1;
 }
 

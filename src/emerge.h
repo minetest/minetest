@@ -44,6 +44,7 @@ class OreManager;
 class DecorationManager;
 class SchematicManager;
 class Server;
+class ModApiMapgen;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
@@ -51,7 +52,6 @@ struct BlockMakeData {
 	u64 seed = 0;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;
-	v3s16 blockpos_requested;
 	UniqueQueue<v3s16> transforming_liquid;
 	const NodeDefManager *nodedef = nullptr;
 
@@ -86,7 +86,38 @@ struct BlockEmergeData {
 	EmergeCallbackList callbacks;
 };
 
+class EmergeParams {
+	friend class EmergeManager;
+public:
+	EmergeParams() = delete;
+	~EmergeParams();
+	DISABLE_CLASS_COPY(EmergeParams);
+
+	const NodeDefManager *ndef; // shared
+	bool enable_mapgen_debug_info;
+
+	u32 gen_notify_on;
+	const std::set<u32> *gen_notify_on_deco_ids; // shared
+
+	BiomeGen *biomegen;
+	BiomeManager *biomemgr;
+	OreManager *oremgr;
+	DecorationManager *decomgr;
+	SchematicManager *schemmgr;
+
+private:
+	EmergeParams(EmergeManager *parent, const BiomeGen *biomegen,
+		const BiomeManager *biomemgr,
+		const OreManager *oremgr, const DecorationManager *decomgr,
+		const SchematicManager *schemmgr);
+};
+
 class EmergeManager {
+	/* The mod API needs unchecked access to allow:
+	 * - using decomgr or oremgr to place decos/ores
+	 * - using schemmgr to load and place schematics
+	 */
+	friend class ModApiMapgen;
 public:
 	const NodeDefManager *ndef;
 	bool enable_mapgen_debug_info;
@@ -106,16 +137,23 @@ public:
 	// Environment is not created until after script initialization.
 	MapSettingsManager *map_settings_mgr;
 
-	// Managers of various map generation-related components
-	BiomeManager *biomemgr;
-	OreManager *oremgr;
-	DecorationManager *decomgr;
-	SchematicManager *schemmgr;
-
 	// Methods
 	EmergeManager(Server *server);
 	~EmergeManager();
 	DISABLE_CLASS_COPY(EmergeManager);
+
+	const BiomeGen *getBiomeGen() const { return biomegen; }
+
+	// no usage restrictions
+	const BiomeManager *getBiomeManager() const { return biomemgr; }
+	const OreManager *getOreManager() const { return oremgr; }
+	const DecorationManager *getDecorationManager() const { return decomgr; }
+	const SchematicManager *getSchematicManager() const { return schemmgr; }
+	// only usable before mapgen init
+	BiomeManager *getWritableBiomeManager();
+	OreManager *getWritableOreManager();
+	DecorationManager *getWritableDecorationManager();
+	SchematicManager *getWritableSchematicManager();
 
 	void initMapgens(MapgenParams *mgparams);
 
@@ -136,6 +174,8 @@ public:
 		EmergeCompletionCallback callback,
 		void *callback_param);
 
+	bool isBlockInQueue(v3s16 pos);
+
 	v3s16 getContainingChunk(v3s16 blockpos);
 
 	Mapgen *getCurrentMapgen();
@@ -154,11 +194,19 @@ private:
 
 	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	std::unordered_map<u16, u16> m_peer_queue_count;
+	std::unordered_map<u16, u32> m_peer_queue_count;
 
-	u16 m_qlimit_total;
-	u16 m_qlimit_diskonly;
-	u16 m_qlimit_generate;
+	u32 m_qlimit_total;
+	u32 m_qlimit_diskonly;
+	u32 m_qlimit_generate;
+
+	// Managers of various map generation-related components
+	// Note that each Mapgen gets a copy(!) of these to work with
+	BiomeGen *biomegen;
+	BiomeManager *biomemgr;
+	OreManager *oremgr;
+	DecorationManager *decomgr;
+	SchematicManager *schemmgr;
 
 	// Requires m_queue_mutex held
 	EmergeThread *getOptimalThread();

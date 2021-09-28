@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mods.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_http.h"
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
@@ -30,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern "C" {
 #include "lualib.h"
 }
-
 #define MAINMENU_NUM_ASYNC_THREADS 4
 
 
@@ -67,10 +67,12 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiSound::Initialize(L, top);
+	ModApiHttp::Initialize(L, top);
 
 	asyncEngine.registerStateInitializer(registerLuaClasses);
 	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiHttp::InitializeAsync);
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable
@@ -90,9 +92,9 @@ void MainMenuScripting::step()
 }
 
 /******************************************************************************/
-unsigned int MainMenuScripting::queueAsync(const std::string &serialized_func,
-		const std::string &serialized_param)
+u32 MainMenuScripting::queueAsync(std::string &&serialized_func,
+		std::string &&serialized_param)
 {
-	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
+	return asyncEngine.queueAsyncJob(std::move(serialized_func), std::move(serialized_param));
 }
 

@@ -21,15 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <cerrno>
 #include <fstream>
 #include "log.h"
 #include "config.h"
 #include "porting.h"
-#ifdef __ANDROID__
-#include "settings.h" // For g_settings
-#endif
 
 namespace fs
 {
@@ -39,6 +37,7 @@ namespace fs
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <shlwapi.h>
+#include <io.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
@@ -179,13 +178,27 @@ std::string TempPath()
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
 	}
-	std::vector<char> buf(bufsize);
+	std::string buf;
+	buf.resize(bufsize);
 	DWORD len = GetTempPath(bufsize, &buf[0]);
 	if(len == 0 || len > bufsize){
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
 	}
-	return std::string(buf.begin(), buf.begin() + len);
+	buf.resize(len);
+	return buf;
+}
+
+std::string CreateTempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	_mktemp_s(&path[0], path.size() + 1); // modifies path
+	HANDLE file = CreateFile(path.c_str(), GENERIC_WRITE, 0, nullptr,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (file == INVALID_HANDLE_VALUE)
+		return "";
+	CloseHandle(file);
+	return path;
 }
 
 #else // POSIX
@@ -295,31 +308,26 @@ bool RecursiveDelete(const std::string &path)
 
 	infostream<<"Removing \""<<path<<"\""<<std::endl;
 
-	//return false;
-
 	pid_t child_pid = fork();
 
 	if(child_pid == 0)
 	{
 		// Child
-		char argv_data[3][10000];
+		const char *argv[4] = {
 #ifdef __ANDROID__
-		strcpy(argv_data[0], "/system/bin/rm");
+			"/system/bin/rm",
 #else
-		strcpy(argv_data[0], "/bin/rm");
+			"/bin/rm",
 #endif
-		strcpy(argv_data[1], "-rf");
-		strncpy(argv_data[2], path.c_str(), sizeof(argv_data[2]) - 1);
-		char *argv[4];
-		argv[0] = argv_data[0];
-		argv[1] = argv_data[1];
-		argv[2] = argv_data[2];
-		argv[3] = NULL;
+			"-rf",
+			path.c_str(),
+			NULL
+		};
 
 		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
 				<<argv[2]<<"'"<<std::endl;
 
-		execv(argv[0], argv);
+		execv(argv[0], const_cast<char**>(argv));
 
 		// Execv shouldn't return. Failed.
 		_exit(1);
@@ -331,7 +339,6 @@ bool RecursiveDelete(const std::string &path)
 		pid_t tpid;
 		do{
 			tpid = wait(&child_status);
-			//if(tpid != child_pid) process_terminated(tpid);
 		}while(tpid != child_pid);
 		return (child_status == 0);
 	}
@@ -365,11 +372,22 @@ std::string TempPath()
 		compatible with lua's os.tmpname which under the default
 		configuration hardcodes mkstemp("/tmp/lua_XXXXXX").
 	*/
+
 #ifdef __ANDROID__
-	return g_settings->get("TMPFolder");
+	return porting::path_cache;
 #else
 	return DIR_DELIM "tmp";
 #endif
+}
+
+std::string CreateTempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	int fd = mkstemp(&path[0]); // modifies path
+	if (fd == -1)
+		return "";
+	close(fd);
+	return path;
 }
 
 #endif
@@ -405,21 +423,6 @@ void GetRecursiveSubPaths(const std::string &path,
 		if (n.dir)
 			GetRecursiveSubPaths(fullpath, dst, list_files, ignore);
 	}
-}
-
-bool DeletePaths(const std::vector<std::string> &paths)
-{
-	bool success = true;
-	// Go backwards to succesfully delete the output of GetRecursiveSubPaths
-	for(int i=paths.size()-1; i>=0; i--){
-		const std::string &path = paths[i];
-		bool did = DeleteSingleFileOrEmptyDirectory(path);
-		if(!did){
-			errorstream<<"Failed to delete "<<path<<std::endl;
-			success = false;
-		}
-	}
-	return success;
 }
 
 bool RecursiveDeleteContent(const std::string &path)
@@ -691,6 +694,12 @@ std::string AbsolutePath(const std::string &path)
 const char *GetFilenameFromPath(const char *path)
 {
 	const char *filename = strrchr(path, DIR_DELIM_CHAR);
+	// Consistent with IsDirDelimiter this function handles '/' too
+	if (DIR_DELIM_CHAR != '/') {
+		const char *tmp = strrchr(path, '/');
+		if (tmp && tmp > filename)
+			filename = tmp;
+	}
 	return filename ? filename + 1 : path;
 }
 
@@ -740,6 +749,85 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 		remove(tmp_file.c_str());
 		return false;
 	}
+
+	return true;
+}
+
+bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string &destination)
+{
+	if (!fs->addFileArchive(filename, false, false, io::EFAT_ZIP)) {
+		return false;
+	}
+
+	sanity_check(fs->getFileArchiveCount() > 0);
+
+	/**********************************************************************/
+	/* WARNING this is not threadsafe!!                                   */
+	/**********************************************************************/
+	io::IFileArchive* opened_zip = fs->getFileArchive(fs->getFileArchiveCount() - 1);
+
+	const io::IFileList* files_in_zip = opened_zip->getFileList();
+
+	unsigned int number_of_files = files_in_zip->getFileCount();
+
+	for (unsigned int i=0; i < number_of_files; i++) {
+		std::string fullpath = destination;
+		fullpath += DIR_DELIM;
+		fullpath += files_in_zip->getFullFileName(i).c_str();
+		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
+
+		if (!files_in_zip->isDirectory(i)) {
+			if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir)) {
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+				return false;
+			}
+
+			io::IReadFile* toread = opened_zip->createAndOpenFile(i);
+
+			FILE *targetfile = fopen(fullpath.c_str(),"wb");
+
+			if (targetfile == NULL) {
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+				return false;
+			}
+
+			char read_buffer[1024];
+			long total_read = 0;
+
+			while (total_read < toread->getSize()) {
+
+				unsigned int bytes_read =
+						toread->read(read_buffer,sizeof(read_buffer));
+				if ((bytes_read == 0 ) ||
+					(fwrite(read_buffer, 1, bytes_read, targetfile) != bytes_read))
+				{
+					fclose(targetfile);
+					fs->removeFileArchive(fs->getFileArchiveCount() - 1);
+					return false;
+				}
+				total_read += bytes_read;
+			}
+
+			fclose(targetfile);
+		}
+
+	}
+
+	fs->removeFileArchive(fs->getFileArchiveCount() - 1);
+	return true;
+}
+
+bool ReadFile(const std::string &path, std::string &out)
+{
+	std::ifstream is(path, std::ios::binary | std::ios::ate);
+	if (!is.good()) {
+		return false;
+	}
+
+	auto size = is.tellg();
+	out.resize(size);
+	is.seekg(0);
+	is.read(&out[0], size);
 
 	return true;
 }

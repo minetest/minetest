@@ -70,6 +70,7 @@ class Server;
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
 #define MTSCHEM_FILE_VER_HIGHEST_READ  4
 #define MTSCHEM_FILE_VER_HIGHEST_WRITE 4
+#define MTSCHEM_MAPNODE_SER_FMT_VER    28 // Fixed serialization version for schematics since these still need to use Zlib
 
 #define MTSCHEM_PROB_MASK       0x7F
 
@@ -92,8 +93,10 @@ enum SchematicFormatType {
 
 class Schematic : public ObjDef, public NodeResolver {
 public:
-	Schematic();
+	Schematic() = default;
 	virtual ~Schematic();
+
+	ObjDef *clone() const;
 
 	virtual void resolveNodeNames();
 
@@ -103,10 +106,9 @@ public:
 		const NodeDefManager *ndef);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 
-	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names);
-	bool serializeToMts(std::ostream *os, const std::vector<std::string> &names);
-	bool serializeToLua(std::ostream *os, const std::vector<std::string> &names,
-		bool use_comments, u32 indent_spaces);
+	bool deserializeFromMts(std::istream *is);
+	bool serializeToMts(std::ostream *os) const;
+	bool serializeToLua(std::ostream *os, bool use_comments, u32 indent_spaces) const;
 
 	void blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place);
 	bool placeOnVManip(MMVManip *vm, v3s16 p, u32 flags, Rotation rot, bool force_place);
@@ -121,12 +123,18 @@ public:
 	v3s16 size;
 	MapNode *schemdata = nullptr;
 	u8 *slice_probs = nullptr;
+
+private:
+	// Counterpart to the node resolver: Condense content_t to a sequential "m_nodenames" list
+	void condenseContentIds();
 };
 
 class SchematicManager : public ObjDefManager {
 public:
 	SchematicManager(Server *server);
 	virtual ~SchematicManager() = default;
+
+	SchematicManager *clone() const;
 
 	virtual void clear();
 
@@ -141,8 +149,8 @@ public:
 	}
 
 private:
+	SchematicManager() {};
+
 	Server *m_server;
 };
 
-void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
-	std::vector<std::string> *usednodes, const NodeDefManager *ndef);

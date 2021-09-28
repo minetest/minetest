@@ -182,3 +182,22 @@ bool ObjDefManager::decodeHandle(ObjDefHandle handle, u32 *index,
 	*uid   = get_bits(handle, 24, 7);
 	return true;
 }
+
+// Cloning
+
+void ObjDef::cloneTo(ObjDef *def) const
+{
+	def->index = index;
+	def->uid = uid;
+	def->handle = handle;
+	def->name = name;
+}
+
+void ObjDefManager::cloneTo(ObjDefManager *mgr) const
+{
+	mgr->m_ndef = m_ndef;
+	mgr->m_objects.reserve(m_objects.size());
+	for (const auto &obj : m_objects)
+		mgr->m_objects.push_back(obj->clone());
+	mgr->m_objtype = m_objtype;
+}

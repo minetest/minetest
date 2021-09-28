@@ -20,7 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "content/mods.h"
+#include <memory>
 
+class MetricsBackend;
+class MetricCounter;
 class ServerScripting;
 
 /**
@@ -39,5 +42,13 @@ public:
 	void loadMods(ServerScripting *script);
 	const ModSpec *getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist) const;
+	/**
+	 * Recursively gets all paths of mod folders that can contain media files.
+	 *
+	 * Result is ordered in descending priority, ie. files from an earlier path
+	 * should not be replaced by files from a latter one.
+	 *
+	 * @param paths result vector
+	 */
 	void getModsMediaPaths(std::vector<std::string> &paths) const;
 };

@@ -39,7 +39,7 @@ struct SimpleSoundSpec
 	// keep in sync with item definitions
 	void serialize(std::ostream &os, u8 cf_version) const
 	{
-		os << serializeString(name);
+		os << serializeString16(name);
 		writeF32(os, gain);
 		writeF32(os, pitch);
 		writeF32(os, fade);
@@ -49,7 +49,7 @@ struct SimpleSoundSpec
 
 	void deSerialize(std::istream &is, u8 cf_version)
 	{
-		name = deSerializeString(is);
+		name = deSerializeString16(is);
 		gain = readF32(is);
 		pitch = readF32(is);
 		fade = readF32(is);

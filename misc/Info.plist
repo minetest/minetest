@@ -8,7 +8,13 @@
 	<string>minetest</string>
 	<key>CFBundleIconFile</key>
 	<string>minetest-icon.icns</string>
+	<key>CFBundleName</key>
+	<string>Minetest</string>
+	<key>CFBundleDisplayName</key>
+	<string>Minetest</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.minetest.minetest</string>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 </dict>
 </plist>

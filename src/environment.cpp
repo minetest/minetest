@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "collision.h"
 #include "raycast.h"
-#include "serverobject.h"
 #include "scripting_server.h"
 #include "server.h"
 #include "daynightratio.h"
@@ -37,6 +36,7 @@ Environment::Environment(IGameDef *gamedef):
 	m_cache_active_block_mgmt_interval = g_settings->getFloat("active_block_mgmt_interval");
 	m_cache_abm_interval = g_settings->getFloat("abm_interval");
 	m_cache_nodetimer_interval = g_settings->getFloat("nodetimer_interval");
+	m_cache_abm_time_budget = g_settings->getFloat("abm_time_budget");
 
 	m_time_of_day = g_settings->getU32("world_start_time");
 	m_time_of_day_f = (float)m_time_of_day / 24000.0f;
@@ -81,6 +81,24 @@ float Environment::getTimeOfDayF()
 {
 	MutexAutoLock lock(this->m_time_lock);
 	return m_time_of_day_f;
+}
+
+bool Environment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
+{
+	// Iterate trough nodes on the line
+	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
+	do {
+		MapNode n = getMap().getNode(iterator.m_current_node_pos);
+
+		// Return non-air
+		if (n.param0 != CONTENT_AIR) {
+			if (p)
+				*p = iterator.m_current_node_pos;
+			return false;
+		}
+		iterator.next();
+	} while (iterator.m_current_index <= iterator.m_last_index);
+	return true;
 }
 
 /*

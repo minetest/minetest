@@ -34,15 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
 
-
-#if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-#include <GLES/gl.h>
-#else
-#include <GLES2/gl2.h>
-#endif
-#endif
-
 /*
 	A cache from texture name to texture path
 */
@@ -90,12 +81,8 @@ static bool replace_ext(std::string &path, const char *ext)
 std::string getImagePath(std::string path)
 {
 	// A NULL-ended list of possible image extensions
-	const char *extensions[] = {
-		"png", "jpg", "bmp", "tga",
-		"pcx", "ppm", "psd", "wal", "rgb",
-		NULL
-	};
-	// If there is no extension, add one
+	const char *extensions[] = { "png", "jpg", "bmp", "tga", NULL };
+	// If there is no extension, assume PNG
 	if (removeStringEnd(path, extensions).empty())
 		path = path + ".png";
 	// Check paths until something is found to exist
@@ -427,9 +414,9 @@ private:
 	std::unordered_map<std::string, Palette> m_palettes;
 
 	// Cached settings needed for making textures from meshes
+	bool m_setting_mipmap;
 	bool m_setting_trilinear_filter;
 	bool m_setting_bilinear_filter;
-	bool m_setting_anisotropic_filter;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -448,9 +435,9 @@ TextureSource::TextureSource()
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
 	// for these settings to take effect
+	m_setting_mipmap = g_settings->getBool("mip_map");
 	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
 	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()
@@ -471,8 +458,8 @@ TextureSource::~TextureSource()
 		driver->removeTexture(t);
 	}
 
-	infostream << "~TextureSource() "<< textures_before << "/"
-			<< driver->getTextureCount() << std::endl;
+	infostream << "~TextureSource() before cleanup: "<< textures_before
+			<< " after: " << driver->getTextureCount() << std::endl;
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
@@ -668,7 +655,14 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
-	return getTexture(name + "^[applyfiltersformesh", id);
+	static thread_local bool filter_needed =
+		g_settings->getBool("texture_clean_transparent") || m_setting_mipmap ||
+		((m_setting_trilinear_filter || m_setting_bilinear_filter) &&
+		g_settings->getS32("texture_min_size") > 1);
+	// Avoid duplicating texture if it won't actually change
+	if (filter_needed)
+		return getTexture(name + "^[applyfiltersformesh", id);
+	return getTexture(name, id);
 }
 
 Palette* TextureSource::getPalette(const std::string &name)
@@ -763,8 +757,14 @@ void TextureSource::rebuildImagesAndTextures()
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
+	infostream << "TextureSource: recreating " << m_textureinfo_cache.size()
+		<< " textures" << std::endl;
+
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
+		if (ti.name.empty())
+			continue; // Skip dummy entry
+
 		video::IImage *img = generateImage(ti.name);
 #if ENABLE_GLES
 		img = Align2Npot2(img, driver);
@@ -829,17 +829,16 @@ static video::IImage *createInventoryCubeImage(
 			image = scaled;
 		}
 		sanity_check(image->getPitch() == 4 * size);
-		return reinterpret_cast<u32 *>(image->lock());
+		return reinterpret_cast<u32 *>(image->getData());
 	};
 	auto free_image = [] (video::IImage *image) -> void {
-		image->unlock();
 		image->drop();
 	};
 
 	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {cube_size, cube_size});
 	sanity_check(result->getPitch() == 4 * cube_size);
 	result->fill(video::SColor(0x00000000u));
-	u32 *target = reinterpret_cast<u32 *>(result->lock());
+	u32 *target = reinterpret_cast<u32 *>(result->getData());
 
 	// Draws single cube face
 	// `shade_factor` is face brightness, in range [0.0, 1.0]
@@ -898,7 +897,6 @@ static video::IImage *createInventoryCubeImage(
 				{0, 5}, {1, 5},
 			});
 
-	result->unlock();
 	return result;
 }
 
@@ -1005,42 +1003,19 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 
 #if ENABLE_GLES
 
-
-static inline u16 get_GL_major_version()
-{
-	const GLubyte *gl_version = glGetString(GL_VERSION);
-	return (u16) (gl_version[0] - '0');
-}
-
-/**
- * Check if hardware requires npot2 aligned textures
- * @return true if alignment NOT(!) requires, false otherwise
- */
-
-bool hasNPotSupport()
-{
-	// Only GLES2 is trusted to correctly report npot support
-	// Note: we cache the boolean result, the GL context will never change.
-	static const bool supported = get_GL_major_version() > 1 &&
-		glGetString(GL_EXTENSIONS) &&
-		strstr((char *)glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
-	return supported;
-}
-
 /**
  * Check and align image to npot2 if required by hardware
  * @param image image to check for npot2 alignment
  * @param driver driver to use for image operations
  * @return image or copy of image aligned to npot2
  */
-
-video::IImage * Align2Npot2(video::IImage * image,
-		video::IVideoDriver* driver)
+video::IImage *Align2Npot2(video::IImage *image,
+		video::IVideoDriver *driver)
 {
 	if (image == NULL)
 		return image;
 
-	if (hasNPotSupport())
+	if (driver->queryFeature(video::EVDF_TEXTURE_NPOT))
 		return image;
 
 	core::dimension2d<u32> dim = image->getDimension();
@@ -1270,8 +1245,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				video::IImage *img = generateImage(filename);
 				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
-					infostream<<"Size "<<dim.Width
-							<<"x"<<dim.Height<<std::endl;
 					core::position2d<s32> pos_base(x, y);
 					video::IImage *img2 =
 							driver->createImage(video::ECF_A8R8G8B8, dim);
@@ -1622,8 +1595,18 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
 		{
-			// Apply the "clean transparent" filter, if configured.
-			if (g_settings->getBool("texture_clean_transparent"))
+			/* IMPORTANT: When changing this, getTextureForMesh() needs to be
+			 * updated too. */
+
+			if (!baseimg) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			// Apply the "clean transparent" filter, if needed
+			if (m_setting_mipmap || g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make
@@ -2208,9 +2191,14 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::SColor c(0, 0, 0, 0);
 	video::ITexture *texture = getTexture(name);
+	if (!texture)
+		return c;
 	video::IImage *image = driver->createImage(texture,
 		core::position2d<s32>(0, 0),
 		texture->getOriginalSize());
+	if (!image)
+		return c;
+
 	u32 total = 0;
 	u32 tR = 0;
 	u32 tG = 0;

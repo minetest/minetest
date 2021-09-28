@@ -31,6 +31,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "config.h"
 #include "common/c_types.h"
 
 
@@ -54,6 +55,15 @@ extern "C" {
 #define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
 #define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
 
+// Determine if CUSTOM_RIDX_SCRIPTAPI will hold a light or full userdata
+#if defined(__aarch64__) && USE_LUAJIT
+/* LuaJIT has a 47-bit limit for lightuserdata on this platform and we cannot
+ * assume that the ScriptApi class was allocated at a fitting address. */
+#define INDIRECT_SCRIPTAPI_RIDX 1
+#else
+#define INDIRECT_SCRIPTAPI_RIDX 0
+#endif
+
 // Pushes the error handler onto the stack and returns its index
 #define PUSH_ERROR_HANDLER(L) \
 	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE), lua_gettop((L)))
@@ -64,9 +74,6 @@ extern "C" {
 		script_error((L), result_, NULL, __FUNCTION__); \
 	}                                                   \
 }
-
-#define script_run_callbacks(L, nargs, mode) \
-	script_run_callbacks_f((L), (nargs), (mode), __FUNCTION__)
 
 // What script_run_callbacks does with the return values of callbacks.
 // Regardless of the mode, if only one callback is defined,
@@ -98,9 +105,34 @@ enum RunCallbacksMode
 	// are converted by readParam<bool> to true or false, respectively.
 };
 
+// Gets a backtrace of the current execution point
 std::string script_get_backtrace(lua_State *L);
+// Wrapper for CFunction calls that converts C++ exceptions to Lua errors
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
+// Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
-void script_run_callbacks_f(lua_State *L, int nargs,
-	RunCallbacksMode mode, const char *fxn);
-void log_deprecated(lua_State *L, const std::string &message);
+
+bool script_log_unique(lua_State *L, std::string message, std::ostream &log_to,
+	int stack_depth = 1);
+
+enum DeprecatedHandlingMode {
+	Ignore,
+	Log,
+	Error
+};
+
+/**
+ * Reads `deprecated_lua_api_handling` in settings, returns cached value.
+ *
+ * @return DeprecatedHandlingMode
+ */
+DeprecatedHandlingMode get_deprecated_handling_mode();
+
+/**
+ * Handles a deprecation warning based on user settings
+ *
+ * @param L Lua State
+ * @param message The deprecation method
+ * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
+ */
+void log_deprecated(lua_State *L, std::string message, int stack_depth = 1);

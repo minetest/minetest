@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 
 
-MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeManager *emerge)
+MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(MAPGEN_SINGLENODE, params, emerge)
 {
 	const NodeDefManager *ndef = emerge->ndef;
@@ -50,12 +50,6 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
 	this->vm   = data->vmanip;

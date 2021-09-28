@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 #include "lua_api/l_object.h"
 #include "common/c_converter.h"
-#include "serverobject.h"
+#include "server/player_sao.h"
 #include "filesys.h"
 #include "content/mods.h"
 #include "porting.h"
@@ -43,7 +43,6 @@ extern "C" {
 #include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
-#include "content_sao.h"
 #include <sstream>
 
 
@@ -90,7 +89,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		luaL_openlibs(m_luastack);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
+#if INDIRECT_SCRIPTAPI_RIDX
+	*(void **)(lua_newuserdata(m_luastack, sizeof(void *))) = this;
+#else
 	lua_pushlightuserdata(m_luastack, this);
+#endif
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
 	// Add and save an error handler
@@ -184,7 +187,9 @@ void ScriptApiBase::loadScript(const std::string &script_path)
 	}
 	ok = ok && !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {
-		std::string error_msg = readParam<std::string>(L, -1);
+		const char *error_msg = lua_tostring(L, -1);
+		if (!error_msg)
+			error_msg = "(error object is not a string)";
 		lua_pop(L, 2); // Pop error message and error handler
 		throw ModError("Failed to load and run script from " +
 				script_path + ":\n" + error_msg);
@@ -216,7 +221,9 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 	if (ok)
 		ok = !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {
-		std::string error_msg = luaL_checkstring(L, -1);
+		const char *error_msg = lua_tostring(L, -1);
+		if (!error_msg)
+			error_msg = "(error object is not a string)";
 		lua_pop(L, 2); // Pop error message and error handler
 		throw ModError("Failed to load and run mod \"" +
 				mod_name + "\":\n" + error_msg);
@@ -324,14 +331,24 @@ void ScriptApiBase::setOriginDirect(const char *origin)
 
 void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 {
-#ifdef SCRIPTAPI_DEBUG
 	lua_State *L = getStack();
-
 	m_last_run_mod = lua_istable(L, index) ?
 		getstringfield_default(L, index, "mod_origin", "") : "";
-	//printf(">>>> running %s for mod: %s\n", fxn, m_last_run_mod.c_str());
-#endif
 }
+
+/*
+ * How ObjectRefs are handled in Lua:
+ * When an active object is created, an ObjectRef is created on the Lua side
+ * and stored in core.object_refs[id].
+ * Methods that require an ObjectRef to a certain object retrieve it from that
+ * table instead of creating their own.(*)
+ * When an active object is removed, the existing ObjectRef is invalidated
+ * using ::set_null() and removed from the core.object_refs table.
+ * (*) An exception to this are NULL ObjectRefs and anonymous ObjectRefs
+ *     for objects without ID.
+ *     It's unclear what the latter are needed for and their use is problematic
+ *     since we lose control over the ref and the contained pointer.
+ */
 
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 {

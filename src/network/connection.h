@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
 #include "peerhandler.h"
 #include "socket.h"
 #include "constants.h"
@@ -29,8 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "networkprotocol.h"
 #include <iostream>
-#include <fstream>
-#include <list>
+#include <vector>
 #include <map>
 
 class NetworkPacket;
@@ -141,7 +140,6 @@ private:
 === NOTES ===
 
 A packet is sent through a channel to a peer with a basic header:
-TODO: Should we have a receiver_peer_id also?
 	Header (7 bytes):
 	[0] u32 protocol_id
 	[4] session_t sender_peer_id
@@ -152,8 +150,7 @@ sender_peer_id:
 	value 1 (PEER_ID_SERVER) is reserved for server
 	these constants are defined in constants.h
 channel:
-	The lower the number, the higher the priority is.
-	Only channels 0, 1 and 2 exist.
+	Channel numbers have no intrinsic meaning. Currently only 0, 1, 2 exist.
 */
 #define BASE_HEADER_SIZE 7
 #define CHANNEL_COUNT 3
@@ -244,20 +241,19 @@ public:
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(BufferedPacket &p, u16 next_expected);
+	void insert(const BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<BufferedPacket> getTimedOuts(float timeout,
-			unsigned int max_packets);
+	std::list<BufferedPacket> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();
-	RPBSearchResult notFound();
 	u32 size();
 
 
 private:
 	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
+	inline RPBSearchResult notFound() { return m_list.end(); }
 
 	std::list<BufferedPacket> m_list;
 
@@ -331,18 +327,6 @@ struct ConnectionCommand
 	bool raw = false;
 
 	ConnectionCommand() = default;
-	ConnectionCommand &operator=(const ConnectionCommand &other)
-	{
-		type = other.type;
-		address = other.address;
-		peer_id = other.peer_id;
-		channelnum = other.channelnum;
-		// We must copy the buffer here to prevent race condition
-		data = SharedBuffer<u8>(*other.data, other.data.getSize());
-		reliable = other.reliable;
-		raw = other.raw;
-		return *this;
-	}
 
 	void serve(Address address_)
 	{
@@ -366,7 +350,7 @@ struct ConnectionCommand
 
 	void send(session_t peer_id_, u8 channelnum_, NetworkPacket *pkt, bool reliable_);
 
-	void ack(session_t peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_)
+	void ack(session_t peer_id_, u8 channelnum_, const Buffer<u8> &data_)
 	{
 		type = CONCMD_ACK;
 		peer_id = peer_id_;
@@ -375,7 +359,7 @@ struct ConnectionCommand
 		reliable = false;
 	}
 
-	void createPeer(session_t peer_id_, const SharedBuffer<u8> &data_)
+	void createPeer(session_t peer_id_, const Buffer<u8> &data_)
 	{
 		type = CONCMD_CREATE_PEER;
 		peer_id = peer_id_;
@@ -386,12 +370,14 @@ struct ConnectionCommand
 	}
 };
 
-/* maximum window size to use, 0xFFFF is theoretical maximum  don't think about
+/* maximum window size to use, 0xFFFF is theoretical maximum. don't think about
  * touching it, the less you're away from it the more likely data corruption
  * will occur
  */
 #define MAX_RELIABLE_WINDOW_SIZE 0x8000
-	/* starting value for window size */
+/* starting value for window size */
+#define START_RELIABLE_WINDOW_SIZE 0x400
+/* minimum value for window size */
 #define MIN_RELIABLE_WINDOW_SIZE 0x40
 
 class Channel
@@ -434,34 +420,38 @@ public:
 
 	void UpdateTimers(float dtime);
 
-	const float getCurrentDownloadRateKB()
+	float getCurrentDownloadRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return cur_kbps; };
-	const float getMaxDownloadRateKB()
+	float getMaxDownloadRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return max_kbps; };
 
-	const float getCurrentLossRateKB()
+	float getCurrentLossRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return cur_kbps_lost; };
-	const float getMaxLossRateKB()
+	float getMaxLossRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return max_kbps_lost; };
 
-	const float getCurrentIncomingRateKB()
+	float getCurrentIncomingRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return cur_incoming_kbps; };
-	const float getMaxIncomingRateKB()
+	float getMaxIncomingRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return max_incoming_kbps; };
 
-	const float getAvgDownloadRateKB()
+	float getAvgDownloadRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return avg_kbps; };
-	const float getAvgLossRateKB()
+	float getAvgLossRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return avg_kbps_lost; };
-	const float getAvgIncomingRateKB()
+	float getAvgIncomingRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return avg_incoming_kbps; };
 
-	const unsigned int getWindowSize() const { return window_size; };
+	u16 getWindowSize() const { return m_window_size; };
 
-	void setWindowSize(unsigned int size) { window_size = size; };
+	void setWindowSize(long size)
+	{
+		m_window_size = (u16)rangelim(size, MIN_RELIABLE_WINDOW_SIZE, MAX_RELIABLE_WINDOW_SIZE);
+	}
+
 private:
 	std::mutex m_internal_mutex;
-	int window_size = MIN_RELIABLE_WINDOW_SIZE;
+	u16 m_window_size = MIN_RELIABLE_WINDOW_SIZE;
 
 	u16 next_incoming_seqnum = SEQNUM_INITIAL;
 
@@ -555,15 +545,15 @@ class Peer {
 
 		bool isTimedOut(float timeout);
 
-		unsigned int m_increment_packets_remaining = 9;
-		unsigned int m_increment_bytes_remaining = 0;
+		unsigned int m_increment_packets_remaining = 0;
 
 		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
 		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
 		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
 				bool reliable)
 		{
-			fprintf(stderr,"Peer: addSplitPacket called, this is supposed to be never called!\n");
+			errorstream << "Peer::addSplitPacket called,"
+					<< " this is supposed to be never called!" << std::endl;
 			return SharedBuffer<u8>(0);
 		};
 
@@ -707,7 +697,7 @@ struct ConnectionEvent
 
 	ConnectionEvent() = default;
 
-	std::string describe()
+	const char *describe() const
 	{
 		switch(type) {
 		case CONNEVENT_NONE:
@@ -724,7 +714,7 @@ struct ConnectionEvent
 		return "Invalid ConnectionEvent";
 	}
 
-	void dataReceived(session_t peer_id_, const SharedBuffer<u8> &data_)
+	void dataReceived(session_t peer_id_, const Buffer<u8> &data_)
 	{
 		type = CONNEVENT_DATA_RECEIVED;
 		peer_id = peer_id_;
@@ -763,7 +753,9 @@ public:
 
 	/* Interface */
 	ConnectionEvent waitEvent(u32 timeout_ms);
-	void putCommand(ConnectionCommand &c);
+	// Warning: creates an unnecessary copy, prefer putCommand(T&&) if possible
+	void putCommand(const ConnectionCommand &c);
+	void putCommand(ConnectionCommand &&c);
 
 	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
@@ -777,7 +769,7 @@ public:
 	Address GetPeerAddress(session_t peer_id);
 	float getPeerStat(session_t peer_id, rtt_stat_type type);
 	float getLocalStat(rate_stat_type type);
-	const u32 GetProtocolID() const { return m_protocol_id; };
+	u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(session_t peer_id);
 
@@ -795,28 +787,37 @@ protected:
 
 	void PrintInfo(std::ostream &out);
 
-	std::list<session_t> getPeerIDs()
+	std::vector<session_t> getPeerIDs()
 	{
 		MutexAutoLock peerlock(m_peers_mutex);
 		return m_peer_ids;
 	}
 
 	UDPSocket m_udpSocket;
+	// Command queue: user -> SendThread
 	MutexedQueue<ConnectionCommand> m_command_queue;
 
 	bool Receive(NetworkPacket *pkt, u32 timeout);
 
-	void putEvent(ConnectionEvent &e);
+	// Warning: creates an unnecessary copy, prefer putEvent(T&&) if possible
+	void putEvent(const ConnectionEvent &e);
+	void putEvent(ConnectionEvent &&e);
 
 	void TriggerSend();
+	
+	bool ConnectedToServer() 
+	{
+		return getPeerNoEx(PEER_ID_SERVER) != nullptr;
+	}
 private:
+	// Event queue: ReceiveThread -> user
 	MutexedQueue<ConnectionEvent> m_event_queue;
 
 	session_t m_peer_id = 0;
 	u32 m_protocol_id;
 
 	std::map<session_t, Peer *> m_peers;
-	std::list<session_t> m_peer_ids;
+	std::vector<session_t> m_peer_ids;
 	std::mutex m_peers_mutex;
 
 	std::unique_ptr<ConnectionSendThread> m_sendThread;

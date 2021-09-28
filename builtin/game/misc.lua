@@ -1,5 +1,7 @@
 -- Minetest: builtin/misc.lua
 
+local S = core.get_translator("__builtin")
+
 --
 -- Misc. API functions
 --
@@ -40,20 +42,17 @@ function core.check_player_privs(name, ...)
 end
 
 
-local player_list = {}
-
-
 function core.send_join_message(player_name)
 	if not core.is_singleplayer() then
-		core.chat_send_all("*** " .. player_name .. " joined the game.")
+		core.chat_send_all("*** " .. S("@1 joined the game.", player_name))
 	end
 end
 
 
 function core.send_leave_message(player_name, timed_out)
-	local announcement = "*** " ..  player_name .. " left the game."
+	local announcement = "*** " .. S("@1 left the game.", player_name)
 	if timed_out then
-		announcement = announcement .. " (timed out)"
+		announcement = "*** " .. S("@1 left the game (timed out).", player_name)
 	end
 	core.chat_send_all(announcement)
 end
@@ -61,7 +60,6 @@ end
 
 core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
-	player_list[player_name] = player
 	if not core.is_singleplayer() then
 		local status = core.get_server_status(player_name, true)
 		if status and status ~= "" then
@@ -74,20 +72,8 @@ end)
 
 core.register_on_leaveplayer(function(player, timed_out)
 	local player_name = player:get_player_name()
-	player_list[player_name] = nil
 	core.send_leave_message(player_name, timed_out)
 end)
-
-
-function core.get_connected_players()
-	local temp_table = {}
-	for index, value in pairs(player_list) do
-		if value:is_player_connected() then
-			temp_table[#temp_table + 1] = value
-		end
-	end
-	return temp_table
-end
 
 
 function core.is_player(player)
@@ -133,13 +119,12 @@ end
 
 
 function core.get_position_from_hash(hash)
-	local pos = {}
-	pos.x = (hash % 65536) - 32768
+	local x = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
-	pos.y = (hash % 65536) - 32768
+	local y = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
-	pos.z = (hash % 65536) - 32768
-	return pos
+	local z = (hash % 65536) - 32768
+	return vector.new(x, y, z)
 end
 
 
@@ -167,6 +152,12 @@ function core.setting_get_pos(name)
 end
 
 
+-- See l_env.cpp for the other functions
+function core.get_artificial_light(param1)
+	return math.floor(param1 / 16)
+end
+
+
 -- To be overriden by protection mods
 
 function core.is_protected(pos, name)
@@ -180,6 +171,12 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+-- To be overridden by Creative mods
+
+local creative_mode_cache = core.settings:get_bool("creative_mode")
+function core.is_creative_enabled(name)
+	return creative_mode_cache
+end
 
 -- Checks if specified volume intersects a protected volume
 
@@ -217,7 +214,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			local y = math.floor(yf + 0.5)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
-				local pos = {x = x, y = y, z = z}
+				local pos = vector.new(x, y, z)
 				if core.is_protected(pos, player_name) then
 					return pos
 				end
@@ -269,4 +266,47 @@ end
 
 function core.cancel_shutdown_requests()
 	core.request_shutdown("", false, -1)
+end
+
+
+-- Used for callback handling with dynamic_add_media
+core.dynamic_media_callbacks = {}
+
+
+-- PNG encoder safety wrapper
+
+local o_encode_png = core.encode_png
+function core.encode_png(width, height, data, compression)
+	if type(width) ~= "number" then
+		error("Incorrect type for 'width', expected number, got " .. type(width))
+	end
+	if type(height) ~= "number" then
+		error("Incorrect type for 'height', expected number, got " .. type(height))
+	end
+
+	local expected_byte_count = width * height * 4
+
+	if type(data) ~= "table" and type(data) ~= "string" then
+		error("Incorrect type for 'height', expected table or string, got " .. type(height))
+	end
+
+	local data_length = type(data) == "table" and #data * 4 or string.len(data)
+
+	if data_length ~= expected_byte_count then
+		error(string.format(
+			"Incorrect length of 'data', width and height imply %d bytes but %d were provided",
+			expected_byte_count,
+			data_length
+		))
+	end
+
+	if type(data) == "table" then
+		local dataBuf = {}
+		for i = 1, #data do
+			dataBuf[i] = core.colorspec_to_bytes(data[i])
+		end
+		data = table.concat(dataBuf)
+	end
+
+	return o_encode_png(width, height, data, compression or 6)
 end

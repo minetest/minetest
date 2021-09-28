@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "nodedef.h"
 #include "server.h"
-#include "content_sao.h"
 #include "inventory.h"
 #include "log.h"
 
@@ -36,6 +35,15 @@ int LuaItemStack::gc_object(lua_State *L)
 	LuaItemStack *o = *(LuaItemStack **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
+}
+
+// __tostring metamethod
+int LuaItemStack::mt_tostring(lua_State *L)
+{
+	LuaItemStack *o = checkobject(L, 1);
+	std::string itemstring = o->m_stack.getItemString(false);
+	lua_pushfstring(L, "ItemStack(\"%s\")", itemstring.c_str());
+	return 1;
 }
 
 // is_empty(self) -> true/false
@@ -181,6 +189,16 @@ int LuaItemStack::l_get_description(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	std::string desc = o->m_stack.getDescription(getGameDef(L)->idef());
+	lua_pushstring(L, desc.c_str());
+	return 1;
+}
+
+// get_short_description(self)
+int LuaItemStack::l_get_short_description(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	std::string desc = o->m_stack.getShortDescription(getGameDef(L)->idef());
 	lua_pushstring(L, desc.c_str());
 	return 1;
 }
@@ -434,12 +452,9 @@ int LuaItemStack::create(lua_State *L, const ItemStack &item)
 	return 1;
 }
 
-LuaItemStack* LuaItemStack::checkobject(lua_State *L, int narg)
+LuaItemStack *LuaItemStack::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(LuaItemStack**)ud;  // unbox pointer
+	return *(LuaItemStack **)luaL_checkudata(L, narg, className);
 }
 
 void LuaItemStack::Register(lua_State *L)
@@ -449,9 +464,10 @@ void LuaItemStack::Register(lua_State *L)
 	luaL_newmetatable(L, className);
 	int metatable = lua_gettop(L);
 
+	// hide metatable from Lua getmetatable()
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
@@ -461,12 +477,16 @@ void LuaItemStack::Register(lua_State *L)
 	lua_pushcfunction(L, gc_object);
 	lua_settable(L, metatable);
 
+	lua_pushliteral(L, "__tostring");
+	lua_pushcfunction(L, mt_tostring);
+	lua_settable(L, metatable);
+
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_register(L, nullptr, methods);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
-	// Can be created from Lua (LuaItemStack(itemstack or itemstring or table or nil))
+	// Can be created from Lua (ItemStack(itemstack or itemstring or table or nil))
 	lua_register(L, className, create_object);
 }
 
@@ -483,6 +503,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, get_metadata),
 	luamethod(LuaItemStack, set_metadata),
 	luamethod(LuaItemStack, get_description),
+	luamethod(LuaItemStack, get_short_description),
 	luamethod(LuaItemStack, clear),
 	luamethod(LuaItemStack, replace),
 	luamethod(LuaItemStack, to_string),
@@ -522,7 +543,6 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	lua_getfield(L, table, "name");
 	if(lua_isstring(L, -1)){
 		name = readParam<std::string>(L, -1);
-		verbosestream<<"register_item_raw: "<<name<<std::endl;
 	} else {
 		throw LuaError("register_item_raw: name is not defined or not a string");
 	}
@@ -550,7 +570,8 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 
 	// Read the node definition (content features) and register it
 	if (def.type == ITEM_NODE) {
-		ContentFeatures f = read_content_features(L, table);
+		ContentFeatures f;
+		read_content_features(L, f, table);
 		// when a mod reregisters ignore, only texture changes and such should
 		// be done
 		if (f.name == "ignore")
@@ -611,10 +632,23 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 
+	const IItemDefManager *idef = getGameDef(L)->getItemDefManager();
 	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
-	content_t c = ndef->getId(name);
 
-	lua_pushinteger(L, c);
+	// If this is called at mod load time, NodeDefManager isn't aware of
+	// aliases yet, so we need to handle them manually
+	std::string alias_name = idef->getAlias(name);
+
+	content_t content_id;
+	if (alias_name != name) {
+		if (!ndef->getId(alias_name, content_id))
+			throw LuaError("Unknown node: " + alias_name +
+					" (from alias " + name + ")");
+	} else if (!ndef->getId(name, content_id)) {
+		throw LuaError("Unknown node: " + name);
+	}
+
+	lua_pushinteger(L, content_id);
 	return 1; /* number of results */
 }
 

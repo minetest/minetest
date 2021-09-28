@@ -234,21 +234,21 @@ inline u64 getTimeMs()
 {
 	struct timespec ts;
 	os_get_clock(&ts);
-	return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+	return ((u64) ts.tv_sec) * 1000LL + ((u64) ts.tv_nsec) / 1000000LL;
 }
 
 inline u64 getTimeUs()
 {
 	struct timespec ts;
 	os_get_clock(&ts);
-	return ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
+	return ((u64) ts.tv_sec) * 1000000LL + ((u64) ts.tv_nsec) / 1000LL;
 }
 
 inline u64 getTimeNs()
 {
 	struct timespec ts;
 	os_get_clock(&ts);
-	return ts.tv_sec * 1000000000 + ts.tv_nsec;
+	return ((u64) ts.tv_sec) * 1000000000LL + ((u64) ts.tv_nsec);
 }
 
 #endif
@@ -309,6 +309,8 @@ inline const char *getPlatformName()
 	#else
 		"SunOS"
 	#endif
+#elif defined(__HAIKU__)
+	"Haiku"
 #elif defined(__CYGWIN__)
 	"Cygwin"
 #elif defined(__unix__) || defined(__unix)
@@ -329,6 +331,27 @@ bool secure_rand_fill_buf(void *buf, size_t len);
 void attachOrCreateConsole();
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
+
+/**
+ * Opens URL in default web browser
+ *
+ * Must begin with http:// or https://, and not contain any new lines
+ *
+ * @param url The URL
+ * @return true on success, false on failure
+ */
+bool open_url(const std::string &url);
+
+/**
+ * Opens a directory in the default file manager
+ *
+ * The directory must exist.
+ *
+ * @param path Path to directory
+ * @return true on success, false on failure
+ */
+bool open_directory(const std::string &path);
+
 } // namespace porting
 
 #ifdef __ANDROID__

@@ -42,10 +42,10 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params_2d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * noise_params_3d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * v3f:
 #            Format is (<X>, <Y>, <Z>)
@@ -75,7 +75,7 @@ free_move (Flying) bool false
 #    If enabled, makes move directions relative to the player's pitch when flying or swimming.
 pitch_move (Pitch move mode) bool false
 
-#    Fast movement (via the "special" key).
+#    Fast movement (via the "Aux1" key).
 #    This requires the "fast" privilege on the server.
 fast_move (Fast movement) bool false
 
@@ -99,20 +99,20 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2
 
-#    If enabled, "special" key instead of "sneak" key is used for climbing down and
+#    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
-aux1_descends (Special key for climbing/descending) bool false
+aux1_descends (Aux1 key for climbing/descending) bool false
 
 #    Double-tapping the jump key toggles fly mode.
 doubletap_jump (Double tap jump for fly) bool false
 
-#    If disabled, "special" key is used to fly fast if both fly and fast mode are
+#    If disabled, "Aux1" key is used to fly fast if both fly and fast mode are
 #    enabled.
 always_fly_fast (Always fly and fast) bool true
 
-#    The time in seconds it takes between repeated right clicks when holding the right
-#    mouse button.
-repeat_rightclick_time (Rightclick repetition interval) float 0.25 0.001
+#    The time in seconds it takes between repeated node placements when holding
+#    the place button.
+repeat_place_time (Place repetition interval) float 0.25 0.001
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -135,9 +135,9 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 #    If disabled, virtual joystick will center to first-touch's position.
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
-#    (Android) Use virtual joystick to trigger "aux" button.
-#    If enabled, virtual joystick will also tap "aux" button when out of main circle.
-virtual_joystick_triggers_aux (Virtual joystick triggers aux button) bool false
+#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
+virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
 #    Enable joysticks
 enable_joysticks (Enable joysticks) bool false
@@ -152,8 +152,11 @@ joystick_type (Joystick type) enum auto auto,generic,xbox
 #    when holding down a joystick button combination.
 repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
 
+#    The dead zone of the joystick
+joystick_deadzone (Joystick dead zone) int 2048
+
 #    The sensitivity of the joystick axes for moving the
-#    ingame view frustum around.
+#    in-game view frustum around.
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
 
 #    Key for moving the player forward.
@@ -182,13 +185,21 @@ keymap_jump (Jump key) key KEY_SPACE
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_sneak (Sneak key) key KEY_LSHIFT
 
+#    Key for digging.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_dig (Dig key) key KEY_LBUTTON
+
+#    Key for placing.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_place (Place key) key KEY_RBUTTON
+
 #    Key for opening the inventory.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_inventory (Inventory key) key KEY_KEY_I
 
 #    Key for moving fast in fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_special1 (Special key) key KEY_KEY_E
+keymap_aux1 (Aux1 key) key KEY_KEY_E
 
 #    Key for opening the chat window.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -252,7 +263,7 @@ keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_minimap (Minimap key) key KEY_F9
+keymap_minimap (Minimap key) key KEY_KEY_V
 
 #    Key for taking screenshots.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -424,7 +435,7 @@ keymap_toggle_profiler (Profiler toggle key) key KEY_F6
 
 #    Key for switching between first- and third-person camera.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_camera_mode (Toggle camera mode key) key KEY_F7
+keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C
 
 #    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -439,6 +450,10 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 [*In-Game]
 
 [**Basic]
+
+#    Whether name tag backgrounds should be shown by default.
+#    Mods may still set a background.
+show_nametag_backgrounds (Show name tag backgrounds by default) bool true
 
 #    Enable vertex buffer objects.
 #    This should greatly improve graphics performance.
@@ -474,7 +489,7 @@ enable_particles (Digging particles) bool true
 
 [**Filtering]
 
-#    Use mip mapping to scale textures. May slightly increase performance,
+#    Use mipmapping to scale textures. May slightly increase performance,
 #    especially when using a high resolution texture pack.
 #    Gamma correct downscaling is not supported.
 mip_map (Mipmapping) bool false
@@ -489,24 +504,28 @@ bilinear_filter (Bilinear filtering) bool false
 trilinear_filter (Trilinear filtering) bool false
 
 #    Filtered textures can blend RGB values with fully-transparent neighbors,
-#    which PNG optimizers usually discard, sometimes resulting in a dark or
-#    light edge to transparent textures. Apply this filter to clean that up
-#    at texture load time.
+#    which PNG optimizers usually discard, often resulting in dark or
+#    light edges to transparent textures. Apply a filter to clean that up
+#    at texture load time. This is automatically enabled if mipmapping is enabled.
 texture_clean_transparent (Clean transparent textures) bool false
 
 #    When using bilinear/trilinear/anisotropic filters, low-resolution textures
 #    can be blurred, so automatically upscale them with nearest-neighbor
 #    interpolation to preserve crisp pixels. This sets the minimum texture size
 #    for the upscaled textures; higher values look sharper, but require more
-#    memory.  Powers of 2 are recommended. Setting this higher than 1 may not
-#    have a visible effect unless bilinear/trilinear/anisotropic filtering is
-#    enabled.
+#    memory. Powers of 2 are recommended. This setting is ONLY applied if
+#    bilinear/trilinear/anisotropic filtering is enabled.
 #    This is also used as the base node texture size for world-aligned
 #    texture autoscaling.
 texture_min_size (Minimum texture size) int 64
 
-#    Experimental option, might cause visible spaces between blocks
-#    when set to higher number than 0.
+#    Use multi-sample antialiasing (MSAA) to smooth out block edges.
+#    This algorithm smooths out the 3D viewport while keeping the image sharp,
+#    but it doesn't affect the insides of textures
+#    (which is especially noticeable with transparent textures).
+#    Visible spaces appear between nodes when shaders are disabled.
+#    If set to 0, MSAA is disabled.
+#    A restart is required after changing this option.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
 #    Undersampling is similar to using a lower screen resolution, but it applies
@@ -532,46 +551,6 @@ shader_path (Shader path) path
 #    appearance of high dynamic range images. Mid-range contrast is slightly
 #    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
-
-[***Bumpmapping]
-
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
-#    or need to be auto-generated.
-#    Requires shaders to be enabled.
-enable_bumpmapping (Bumpmapping) bool false
-
-#    Enables on the fly normalmap generation (Emboss effect).
-#    Requires bumpmapping to be enabled.
-generate_normalmaps (Generate normalmaps) bool false
-
-#    Strength of generated normalmaps.
-normalmaps_strength (Normalmaps strength) float 0.6
-
-#    Defines sampling step of texture.
-#    A higher value results in smoother normal maps.
-normalmaps_smooth (Normalmaps sampling) int 0 0 2
-
-[***Parallax Occlusion]
-
-#    Enables parallax occlusion mapping.
-#    Requires shaders to be enabled.
-enable_parallax_occlusion (Parallax occlusion) bool false
-
-#    0 = parallax occlusion with slope information (faster).
-#    1 = relief mapping (slower, more accurate).
-parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
-
-#    Strength of parallax.
-3d_paralax_strength (Parallax occlusion strength) float 0.025
-
-#    Number of parallax occlusion iterations.
-parallax_occlusion_iterations (Parallax occlusion iterations) int 4
-
-#    Overall scale of parallax occlusion effect.
-parallax_occlusion_scale (Parallax occlusion scale) float 0.08
-
-#    Overall bias of parallax occlusion effect, usually scale/2.
-parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 
 [***Waving Nodes]
 
@@ -603,6 +582,58 @@ enable_waving_leaves (Waving leaves) bool false
 #    Requires shaders to be enabled.
 enable_waving_plants (Waving plants) bool false
 
+[***Dynamic shadows]
+
+#    Set to true to enable Shadow Mapping.
+#    Requires shaders to be enabled.
+enable_dynamic_shadows (Dynamic shadows) bool false
+
+#    Set the shadow strength.
+#    Lower value means lighter shadows, higher value means darker shadows.
+shadow_strength (Shadow strength) float 0.2 0.05 1.0
+
+#    Maximum distance to render shadows.
+shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 120.0 10.0 1000.0
+
+#    Texture size to render the shadow map on.
+#    This must be a power of two.
+#    Bigger numbers create better shadows but it is also more expensive.
+shadow_map_texture_size (Shadow map texture size) int 1024 128 8192
+
+#    Sets shadow texture quality to 32 bits.
+#    On false, 16 bits texture will be used.
+#    This can cause much more artifacts in the shadow.
+shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
+
+#    Enable Poisson disk filtering.
+#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+shadow_poisson_filter (Poisson filtering) bool true
+
+#   Define shadow filtering quality.
+#   This simulates the soft shadows effect by applying a PCF or Poisson disk
+#   but also uses more resources.
+shadow_filters (Shadow filter quality) enum 1 0,1,2
+
+#    Enable colored shadows. 
+#    On true translucent nodes cast colored shadows. This is expensive.
+shadow_map_color (Colored shadows) bool false
+
+#    Spread a complete update of shadow map over given amount of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+shadow_update_frames (Map shadows update frames) int 8 1 16
+
+#    Set the soft shadow radius size.
+#    Lower values mean sharper shadows, bigger values mean softer shadows.
+#    Minimum value: 1.0; maximum value: 10.0
+shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
+
+#    Set the tilt of Sun/Moon orbit in degrees.
+#    Value of 0 means no tilt / vertical orbit.
+#    Minimum value: 0.0; maximum value: 60.0
+shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 0.0 60.0
+
 [**Advanced]
 
 #    Arm inertia, gives a more realistic movement of
@@ -613,26 +644,26 @@ arm_inertia (Arm inertia) bool true
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60 1
 
-#    Maximum FPS when game is paused.
-pause_fps_max (FPS in pause menu) int 20 1
+#    Maximum FPS when the window is not focused, or when the game is paused.
+fps_max_unfocused (FPS when unfocused or paused) int 20 1
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
 pause_on_lost_focus (Pause on lost window focus) bool false
 
 #    View distance in nodes.
-viewing_range (Viewing range) int 100 20 4000
+viewing_range (Viewing range) int 190 20 4000
 
-#   Camera 'near clipping plane' distance in nodes, between 0 and 0.5.
-#   Most users will not need to change this.
+#   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
+#   Only works on GLES platforms. Most users will not need to change this.
 #   Increasing can reduce artifacting on weaker GPUs.
 #   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near clipping plane) float 0.1 0 0.5
+near_plane (Near plane) float 0.1 0 0.25
 
-#    Width component of the initial window size.
+#    Width component of the initial window size. Ignored in fullscreen mode.
 screen_w (Screen width) int 1024 1
 
-#    Height component of the initial window size.
+#    Height component of the initial window size. Ignored in fullscreen mode.
 screen_h (Screen height) int 600 1
 
 #    Save window size automatically when modified.
@@ -640,9 +671,6 @@ autosave_screensize (Autosave screen size) bool true
 
 #    Fullscreen mode.
 fullscreen (Full screen) bool false
-
-#    Bits per pixel (aka color depth) in fullscreen mode.
-fullscreen_bpp (Full screen BPP) int 24
 
 #    Vertical screen synchronization.
 vsync (VSync) bool false
@@ -682,12 +710,12 @@ lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path
 
-#    The rendering back-end for Irrlicht.
+#    The rendering back-end.
 #    A restart is required after changing this.
 #    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended, and it’s the only driver with
-#    shader support currently.
-video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl,ogles1,ogles2
+#    On other platforms, OpenGL is recommended.
+#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
+video_driver (Video driver) enum opengl opengl,ogles1,ogles2
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
@@ -712,6 +740,9 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03
 #    -    pageflip: quadbuffer based 3d.
 #    Note that the interlaced mode requires shaders to be enabled.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip
+
+#    Strength of 3D mode parallax.
+3d_paralax_strength (3D mode parallax strength) float 0.025
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
 console_height (Console height) float 0.6 0.1 1.0
@@ -741,9 +772,11 @@ selectionbox_color (Selection box color) string (0,0,0)
 selectionbox_width (Selection box width) int 2 1 5
 
 #    Crosshair color (R,G,B).
+#    Also controls the object crosshair color
 crosshair_color (Crosshair color) string (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
+#    This also applies to the object crosshair.
 crosshair_alpha (Crosshair alpha) int 255 0 255
 
 #    Maximum number of recent chat messages to show
@@ -756,7 +789,7 @@ desynchronize_mapblock_texture_animation (Desynchronize block animation) bool tr
 #    Useful if there's something to be displayed right or left of hotbar.
 hud_hotbar_max_width (Maximum hotbar width) float 1.0
 
-#    Modifies the size of the hudbar elements.
+#    Modifies the size of the HUD elements.
 hud_scaling (HUD scale factor) float 1.0
 
 #    Enables caching of facedir rotated meshes.
@@ -817,7 +850,8 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
 #    Show entity selection boxes
-show_entity_selectionbox (Show entity selection boxes) bool true
+#    A restart is required after changing this.
+show_entity_selectionbox (Show entity selection boxes) bool false
 
 [*Menus]
 
@@ -873,7 +907,7 @@ font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
 
 font_path_bold (Bold font path) filepath fonts/Arimo-Bold.ttf
 font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
-font_path_bolditalic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
+font_path_bold_italic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
 
 #    Font size of the monospace font in point (pt).
 mono_font_size (Monospace font size) int 15 1
@@ -886,16 +920,7 @@ mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
 
 mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Bold.ttf
 mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Italic.ttf
-mono_font_path_bolditalic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
-
-#    Font size of the fallback font in point (pt).
-fallback_font_size (Fallback font size) int 15 1
-
-#    Shadow offset (in pixels) of the fallback font. If 0, then shadow will not be drawn.
-fallback_font_shadow (Fallback font shadow) int 1
-
-#    Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255.
-fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
+mono_font_path_bold_italic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
 
 #    Path of the fallback font.
 #    If “freetype” setting is enabled: Must be a TrueType font.
@@ -903,8 +928,13 @@ fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 
-#    Path to save screenshots at.
-screenshot_path (Screenshot folder) path
+#    Font size of the recent chat text and chat prompt in point (pt).
+#    Value 0 will use the default font size.
+chat_font_size (Chat font size) int 0
+
+#    Path to save screenshots at. Can be an absolute or relative path.
+#    The folder will be created if it doesn't already exist.
+screenshot_path (Screenshot folder) path screenshots
 
 #    Format of screenshots.
 screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
@@ -918,6 +948,9 @@ screenshot_quality (Screenshot quality) int 0 0 100
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 screen_dpi (DPI) int 72 1
+
+#    Adjust the detected display density, used for scaling UI elements.
+display_density_factor (Display Density Scaling Factor) float 1
 
 #    Windows systems only: Start Minetest with the command line window in the background.
 #    Contains the same information as the file debug.txt (default name).
@@ -943,6 +976,12 @@ mute_sound (Mute sound) bool false
 
 [Client]
 
+#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
+clickable_chat_weblinks (Chat weblinks) bool false
+
+#    Optional override for chat weblink color.
+chat_weblink_color (Weblink color) string
+
 [*Network]
 
 #    Address to connect to.
@@ -953,6 +992,12 @@ address (Server address) string
 #    Port to connect to (UDP).
 #    Note that the port field in the main menu overrides this setting.
 remote_port (Remote port) int 30000 1 65535
+
+#    Prometheus listener address.
+#    If Minetest is compiled with ENABLE_PROMETHEUS option enabled,
+#    enable metrics listener for Prometheus on that address.
+#    Metrics can be fetched on http://127.0.0.1:30000/metrics
+prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
 
 #    Save the map received by the client on disk.
 enable_local_map_saving (Saving map received from server) bool false
@@ -971,7 +1016,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 
 #    File in client/serverlist/ that contains your favorite servers displayed in the
 #    Multiplayer Tab.
-serverlist_file (Serverlist file) string favoriteservers.txt
+serverlist_file (Serverlist file) string favoriteservers.json
 
 #    Maximum size of the out chat queue.
 #    0 to disable queueing and -1 to make the queue size unlimited.
@@ -988,7 +1033,7 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
-client_mapblock_limit (Mapblock limit) int 5000
+client_mapblock_limit (Mapblock limit) int 7500
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
@@ -1058,6 +1103,12 @@ full_block_send_enable_min_time_from_building (Delay in sending blocks after bui
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024
 
+#    Compression level to use when sending mapblocks to the client.
+#    -1 - use default compression level
+#     0 - least compression, fastest
+#     9 - best compression, slowest
+map_compression_level_net (Map Compression Level for Network Transfer) int -1 -1 9
+
 [*Game]
 
 #    Default game when creating a new world.
@@ -1078,10 +1129,14 @@ map-dir (Map directory) path
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
 
+#    Specifies the default stack size of nodes, items and tools.
+#    Note that mods or games may explicitly set a stack for certain (or all) items.
+default_stack_max (Default stack size) int 99
+
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
-#    Enable creative mode for new created maps.
+#    Enable creative mode for all players
 creative_mode (Creative) bool false
 
 #    A chosen map seed for a new map, leave empty for random.
@@ -1128,6 +1183,10 @@ enable_rollback_recording (Rollback recording) bool false
 #    @name, @message, @timestamp (optional)
 chat_message_format (Chat message format) string <@name> @message
 
+#    If the execution of a chat command takes longer than this specified time in
+#    seconds, add the time information to the chat command message
+chatcommand_msg_time_threshold (Chat command time message threshold) float 0.1
+
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
 
@@ -1143,17 +1202,17 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
-active_object_send_range_blocks (Active object send range) int 4
+active_object_send_range_blocks (Active object send range) int 8
 
 #    The radius of the volume of blocks around every player that is subject to the
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
-#    This should be configured together with active_object_range.
-active_block_range (Active block range) int 3
+#    This should be configured together with active_object_send_range_blocks.
+active_block_range (Active block range) int 4
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
-max_block_send_distance (Max block send distance) int 10
+max_block_send_distance (Max block send distance) int 12
 
 #    Maximum number of forceloaded mapblocks.
 max_forceloaded_blocks (Maximum forceloaded blocks) int 16
@@ -1226,13 +1285,13 @@ movement_gravity (Gravity) float 9.81
 [**Advanced]
 
 #    Handling for deprecated Lua API calls:
-#    -    legacy: (try to) mimic old behaviour (default for release).
-#    -    log: mimic and log backtrace of deprecated call (default for debug).
+#    -    none: Do not log deprecated calls
+#    -    log: mimic and log backtrace of deprecated call (default).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
-deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
+deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,error
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
-#    This is a trade-off between sqlite transaction overhead and
+#    This is a trade-off between SQLite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
 max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
 
@@ -1246,6 +1305,12 @@ max_objects_per_block (Maximum objects per block) int 64
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
+#    Compression level to use when saving mapblocks to disk.
+#    -1 - use default compression level
+#     0 - least compression, fastest
+#     9 - best compression, slowest
+map_compression_level_disk (Map Compression Level for Disk Storage) int -1 -1 9
+
 #    Length of a server tick and the interval at which objects are generally updated over
 #    network.
 dedicated_server_step (Dedicated server step) float 0.09
@@ -1255,6 +1320,10 @@ active_block_mgmt_interval (Active block management interval) float 2.0
 
 #    Length of time between Active Block Modifier (ABM) execution cycles
 abm_interval (ABM interval) float 1.0
+
+#    The time budget allowed for ABMs to execute on each step
+#    (as a fraction of the ABM Interval)
+abm_time_budget (ABM time budget) float 0.2 0.1 0.9
 
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
@@ -1345,8 +1414,8 @@ instrument.abm (Active Block Modifiers) bool true
 #    Instrument the action function of Loading Block Modifiers on registration.
 instrument.lbm (Loading Block Modifiers) bool true
 
-#    Instrument chatcommands on registration.
-instrument.chatcommand (Chatcommands) bool true
+#    Instrument chat commands on registration.
+instrument.chatcommand (Chat commands) bool true
 
 #    Instrument global callback functions on registration.
 #    (anything you pass to a minetest.register_*() function)
@@ -1372,7 +1441,7 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,ar,ca,cs,da,de,dv,el,eo,es,et,eu,fil,fr,hu,id,it,ja,ja_KS,jbo,kk,kn,lo,lt,ms,my,nb,nl,nn,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,th,tr,uk,vi
+language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,id,it,ja,jbo,kk,ko,lt,lv,ms,nb,nl,nn,pl,pt,pt_BR,ro,ru,sk,sl,sr_Cyrl,sr_Latn,sv,sw,tr,uk,vi,zh_CN,zh_TW
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
@@ -1390,15 +1459,17 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    debug.txt is only moved if this setting is positive.
 debug_log_size_max (Debug log file size threshold) int 50
 
+#    Minimal level of logging to be written to chat.
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
+
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.
 enable_ipv6 (IPv6) bool true
 
 [*Advanced]
 
-#    Default timeout for cURL, stated in milliseconds.
-#    Only has an effect if compiled with cURL.
-curl_timeout (cURL timeout) int 5000
+#    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
+curl_timeout (cURL interactive timeout) int 20000
 
 #    Limits number of parallel HTTP requests. Affects:
 #    -    Media fetch if server uses remote_media setting.
@@ -1407,17 +1478,8 @@ curl_timeout (cURL timeout) int 5000
 #    Only has an effect if compiled with cURL.
 curl_parallel_limit (cURL parallel limit) int 8
 
-#    Maximum time in ms a file download (e.g. a mod download) may take.
+#    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
 curl_file_download_timeout (cURL file download timeout) int 300000
-
-#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
-high_precision_fpu (High-precision FPU) bool true
-
-#    Changes the main menu UI:
-#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
-#                necessary for smaller screens.
-main_menu_style (Main menu style) enum full full,simple
 
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
@@ -1438,7 +1500,7 @@ mg_name (Mapgen name) enum v7 v7,valleys,carpathian,v5,flat,fractal,singlenode,v
 water_level (Water level) int 1
 
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
-max_block_generate_distance (Max block generate distance) int 8
+max_block_generate_distance (Max block generate distance) int 10
 
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
@@ -1447,8 +1509,8 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
-#    and junglegrass, in all other mapgens this flag controls all decorations.
-mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes caves,dungeons,light,decorations,biomes,nocaves,nodungeons,nolight,nodecorations,nobiomes
+#    and jungle grass, in all other mapgens this flag controls all decorations.
+mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
 
 [*Biome API temperature and humidity noise parameters]
 
@@ -1593,11 +1655,52 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 [*Mapgen V7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    'ridges' enables the rivers.
+#    'ridges': Rivers.
+#    'floatlands': Floating land masses in the atmosphere.
+#    'caverns': Giant caves deep underground.
 mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0
+
+#    Lower Y limit of floatlands.
+mgv7_floatland_ymin (Floatland minimum Y) int 1024
+
+#    Upper Y limit of floatlands.
+mgv7_floatland_ymax (Floatland maximum Y) int 4096
+
+#    Y-distance over which floatlands taper from full density to nothing.
+#    Tapering starts at this distance from the Y limit.
+#    For a solid floatland layer, this controls the height of hills/mountains.
+#    Must be less than or equal to half the distance between the Y limits.
+mgv7_floatland_taper (Floatland tapering distance) int 256
+
+#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Value = 1.0 creates a uniform, linear tapering.
+#    Values > 1.0 create a smooth tapering suitable for the default separated
+#    floatlands.
+#    Values < 1.0 (for example 0.25) create a more defined surface level with
+#    flatter lowlands, suitable for a solid floatland layer.
+mgv7_float_taper_exp (Floatland taper exponent) float 2.0
+
+#    Adjusts the density of the floatland layer.
+#    Increase value to increase density. Can be positive or negative.
+#    Value = 0.0: 50% of volume is floatland.
+#    Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test
+#    to be sure) creates a solid floatland layer.
+mgv7_floatland_density (Floatland density) float -0.6
+
+#    Surface level of optional water placed on a solid floatland layer.
+#    Water is disabled by default and will only be placed if this value is set
+#    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
+#    upper tapering).
+#    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
+#    When enabling water placement the floatlands must be configured and tested
+#    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
+#    required value depending on 'mgv7_np_floatland'), to avoid
+#    server-intensive extreme water flow and to avoid vast flooding of the
+#    world surface below.
+mgv7_floatland_ywater (Floatland water level) int -31000
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1667,6 +1770,12 @@ mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333
 
 #    3D noise defining structure of river canyon walls.
 mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    3D noise defining structure of floatlands.
+#    If altered from the default, the noise 'scale' (0.7 by default) may need
+#    to be adjusted, as floatland tapering functions best when this noise has
+#    a value range of approximately -2.0 to 2.0.
+mgv7_np_floatland (Floatland noise) noise_params_3d 0, 0.7, (384, 96, 384), 1009, 4, 0.75, 1.618
 
 #    3D noise defining giant caverns.
 mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
@@ -1792,7 +1901,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 #    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
-mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
+mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns,nolakes,nohills,nocaverns
 
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8
@@ -1836,6 +1945,15 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 #    Controls steepness/height of hills.
 mgflat_hill_steepness (Hill steepness) float 64.0
 
+#    Y-level of cavern upper limit.
+mgflat_cavern_limit (Cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgflat_cavern_taper (Cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgflat_cavern_threshold (Cavern threshold) float 0.7
+
 #    Lower Y limit of dungeons.
 mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
 
@@ -1855,6 +1973,9 @@ mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5
 
 #    Second of two 3D noises that together define tunnels.
 mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    3D noise defining giant caverns.
+mgflat_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    3D noise that determines number of dungeons per mapchunk.
 mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
@@ -2098,20 +2219,17 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of emerge queues) int 512
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024 1 1000000
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
+#    This limit is enforced per player.
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128 1 1000000
 
 #    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_generate (Limit of emerge queues to generate) int 64
+#    This limit is enforced per player.
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128 1 1000000
 
 #    Number of emerge threads to use.
-#    WARNING: Currently there are multiple bugs that may cause crashes when
-#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
-#    strongly recommended this value is set to the default '1'.
 #    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.
@@ -2135,3 +2253,7 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 #    These flags are independent from Minetest versions,
 #    so see a full list at https://content.minetest.net/help/content_flags/
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
+
+#    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+#    This should be lower than curl_parallel_limit.
+contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3

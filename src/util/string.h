@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <unordered_map>
 
+class Translations;
+
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -62,22 +64,14 @@ struct FlagDesc {
 	u32 flag;
 };
 
-// try not to convert between wide/utf8 encodings; this can result in data loss
-// try to only convert between them when you need to input/output stuff via Irrlicht
+// Try to avoid converting between wide and UTF-8 unless you need to
+// input/output stuff via Irrlicht
 std::wstring utf8_to_wide(const std::string &input);
 std::string wide_to_utf8(const std::wstring &input);
 
-wchar_t *utf8_to_wide_c(const char *str);
-
-// NEVER use those two functions unless you have a VERY GOOD reason to
-// they just convert between wide and multibyte encoding
-// multibyte encoding depends on current locale, this is no good, especially on Windows
-
 // You must free the returned string!
-// The returned string is allocated using new
-wchar_t *narrow_to_wide_c(const char *str);
-std::wstring narrow_to_wide(const std::string &mbs);
-std::string wide_to_narrow(const std::wstring &wcs);
+// The returned string is allocated using new[]
+wchar_t *utf8_to_wide_c(const char *str);
 
 std::string urlencode(const std::string &str);
 std::string urldecode(const std::string &str);
@@ -351,11 +345,6 @@ inline s32 mystoi(const std::string &str, s32 min, s32 max)
 	return i;
 }
 
-
-// MSVC2010 includes it's own versions of these
-//#if !defined(_MSC_VER) || _MSC_VER < 1600
-
-
 /**
  * Returns a 32-bit value reprensented by the string \p str (decimal).
  * @see atoi(3) for further limitations
@@ -365,17 +354,6 @@ inline s32 mystoi(const std::string &str)
 	return atoi(str.c_str());
 }
 
-
-/**
- * Returns s 32-bit value represented by the wide string \p str (decimal).
- * @see atoi(3) for further limitations
- */
-inline s32 mystoi(const std::wstring &str)
-{
-	return mystoi(wide_to_narrow(str));
-}
-
-
 /**
  * Returns a float reprensented by the string \p str (decimal).
  * @see atof(3)
@@ -384,8 +362,6 @@ inline float mystof(const std::string &str)
 {
 	return atof(str.c_str());
 }
-
-//#endif
 
 #define stoi mystoi
 #define stof mystof
@@ -650,6 +626,8 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 	return tokens;
 }
 
+std::wstring translate_string(const std::wstring &s, Translations *translations);
+
 std::wstring translate_string(const std::wstring &s);
 
 inline std::wstring unescape_translate(const std::wstring &s) {
@@ -692,15 +670,19 @@ inline const std::string duration_to_string(int sec)
 
 	std::stringstream ss;
 	if (hour > 0) {
-		ss << hour << "h ";
+		ss << hour << "h";
+		if (min > 0 || sec > 0)
+			ss << " ";
 	}
 
 	if (min > 0) {
-		ss << min << "m ";
+		ss << min << "min";
+		if (sec > 0)
+			ss << " ";
 	}
 
 	if (sec > 0) {
-		ss << sec << "s ";
+		ss << sec << "s";
 	}
 
 	return ss.str();
@@ -726,11 +708,27 @@ inline std::string str_join(const std::vector<std::string> &list,
 }
 
 /**
- * Create a std::string from a irr::core::stringw.
+ * Create a UTF8 std::string from a irr::core::stringw.
  */
-std::string strwtostr(const irr::core::stringw &str);
+inline std::string stringw_to_utf8(const irr::core::stringw &input)
+{
+	std::wstring str(input.c_str());
+	return wide_to_utf8(str);
+}
+
+ /**
+  * Create a irr::core:stringw from a UTF8 std::string.
+  */
+inline irr::core::stringw utf8_to_stringw(const std::string &input)
+{
+	std::wstring str = utf8_to_wide(input);
+	return irr::core::stringw(str.c_str());
+}
 
 /**
- * Create a irr::core:stringw from a std::string.
+ * Sanitize the name of a new directory. This consists of two stages:
+ * 1. Check for 'reserved filenames' that can't be used on some filesystems
+ *    and prefix them
+ * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
-irr::core::stringw strtostrw(const std::string &str);
+std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix);

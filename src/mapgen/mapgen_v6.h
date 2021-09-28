@@ -83,7 +83,7 @@ struct MapgenV6Params : public MapgenParams {
 
 class MapgenV6 : public Mapgen {
 public:
-	EmergeManager *m_emerge;
+	EmergeParams *m_emerge;
 
 	int ystride;
 	u32 spflags;
@@ -133,7 +133,7 @@ public:
 	content_t c_stair_cobble;
 	content_t c_stair_desert_stone;
 
-	MapgenV6(MapgenV6Params *params, EmergeManager *emerge);
+	MapgenV6(MapgenV6Params *params, EmergeParams *emerge);
 	~MapgenV6();
 
 	virtual MapgenType getType() const { return MAPGEN_V6; }
@@ -150,7 +150,6 @@ public:
 
 	s16 find_stone_level(v2s16 p2d);
 	bool block_is_underground(u64 seed, v3s16 blockpos);
-	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
 
 	float getHumidity(v2s16 p);
 	float getTreeAmount(v2s16 p);

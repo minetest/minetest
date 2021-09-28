@@ -54,10 +54,11 @@ FlagDesc flagdesc_mapgen_valleys[] = {
 };
 
 
-MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
+MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_VALLEYS, params, emerge)
 {
-	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
+	FATAL_ERROR_IF(biomegen->getType() != BIOMEGEN_ORIGINAL,
+		"MapgenValleys has a hard dependency on BiomeGenOriginal");
 	m_bgen = (BiomeGenOriginal *)biomegen;
 
 	spflags            = params->spflags;
@@ -210,12 +211,6 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	//TimeTaker t("makeChunk");
 
@@ -268,7 +263,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Dungeon creation
 	if (flags & MG_DUNGEONS)
@@ -390,7 +386,7 @@ int MapgenValleys::generateTerrain()
 
 		// Rivers are placed where 'river' is negative
 		if (river < 0.0f) {
-			// Use the the function -sqrt(1-x^2) which models a circle
+			// Use the function -sqrt(1-x^2) which models a circle
 			float tr = river / river_size_factor + 1.0f;
 			float depth = (river_depth_bed *
 				std::sqrt(std::fmax(0.0f, 1.0f - tr * tr)));

@@ -61,6 +61,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern gui::IGUIEnvironment* guienv;
 
 /*
+	Utility classes
+*/
+
+u32 PacketCounter::sum() const
+{
+	u32 n = 0;
+	for (const auto &it : m_packets)
+		n += it.second;
+	return n;
+}
+
+void PacketCounter::print(std::ostream &o) const
+{
+	for (const auto &it : m_packets) {
+		auto name = it.first >= TOCLIENT_NUM_MSG_TYPES ? "?"
+			: toClientCommandTable[it.first].name;
+		o << "cmd " << it.first << " (" << name << ") count "
+			<< it.second << std::endl;
+	}
+}
+
+/*
 	Client
 */
 
@@ -75,6 +97,7 @@ Client::Client(
 		NodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event,
+		RenderingEngine *rendering_engine,
 		bool ipv6,
 		GameUI *game_ui
 ):
@@ -84,9 +107,10 @@ Client::Client(
 	m_nodedef(nodedef),
 	m_sound(sound),
 	m_event(event),
+	m_rendering_engine(rendering_engine),
 	m_mesh_update_thread(this),
 	m_env(
-		new ClientMap(this, control, 666),
+		new ClientMap(this, rendering_engine, control, 666),
 		tsrc, this
 	),
 	m_particle_manager(&m_env),
@@ -107,6 +131,7 @@ Client::Client(
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
+
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 }
 
@@ -136,20 +161,6 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
-	// TODO Uncomment when server-sent CSM and verifying of builtin are complete
-	/*
-	// Don't load client-provided mods if disabled by server
-	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
-		warningstream << "Client-provided mod loading is disabled by server." <<
-			std::endl;
-		// If builtin integrity is wrong, disconnect user
-		if (!checkBuiltinIntegrity()) {
-			// TODO disconnect user
-		}
-		return;
-	}
-	*/
-
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	m_mods = modconf.getMods();
 	// complain about mods with unsatisfied dependencies
@@ -164,17 +175,13 @@ void Client::loadMods()
 		infostream << mod.name << " ";
 	infostream << std::endl;
 
-	// Load and run "mod" scripts
+	// Load "mod" scripts
 	for (const ModSpec &mod : m_mods) {
-		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			throw ModError("Error loading mod \"" + mod.name +
-				"\": Mod name does not follow naming conventions: "
-					"Only characters [a-z0-9_] are allowed.");
-		}
+		mod.checkAndLog();
 		scanModIntoMemory(mod.name, mod.path);
 	}
 
-	// Load and run "mod" scripts
+	// Run them
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
@@ -183,16 +190,14 @@ void Client::loadMods()
 
 	// Run a callback when mods are loaded
 	m_script->on_mods_loaded();
+
+	// Create objects if they're ready
 	if (m_state == LC_Ready)
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	if (m_camera)
 		m_script->on_camera_ready(m_camera);
-}
-
-bool Client::checkBuiltinIntegrity()
-{
-	// TODO
-	return true;
+	if (m_minimap)
+		m_script->on_minimap_ready(m_minimap);
 }
 
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
@@ -201,6 +206,9 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
 	for (const fs::DirListNode &j : mod) {
+		if (j.name[0] == '.')
+			continue;
+
 		if (j.dir) {
 			scanModSubfolder(mod_name, mod_path, mod_subpath + j.name + DIR_DELIM);
 			continue;
@@ -212,18 +220,13 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 		infostream << "Client::scanModSubfolder(): Loading \"" << real_path
 				<< "\" as \"" << vfs_path << "\"." << std::endl;
 
-		std::ifstream is(real_path, std::ios::binary | std::ios::ate);
-		if(!is.good()) {
+		std::string contents;
+		if (!fs::ReadFile(real_path, contents)) {
 			errorstream << "Client::scanModSubfolder(): Can't read file \""
 					<< real_path << "\"." << std::endl;
 			continue;
 		}
-		auto size = is.tellg();
-		std::string contents(size, '\0');
-		is.seekg(0);
-		is.read(&contents[0], size);
 
-		infostream << "  size: " << size << " bytes" << std::endl;
 		m_mod_vfs.emplace(vfs_path, contents);
 	}
 }
@@ -296,14 +299,11 @@ Client::~Client()
 	}
 
 	// cleanup 3d model meshes on client shutdown
-	while (RenderingEngine::get_mesh_cache()->getMeshCount() != 0) {
-		scene::IAnimatedMesh *mesh = RenderingEngine::get_mesh_cache()->getMeshByIndex(0);
-
-		if (mesh)
-			RenderingEngine::get_mesh_cache()->removeMesh(mesh);
-	}
+	m_rendering_engine->cleanupMeshCache();
 
 	delete m_minimap;
+	m_minimap = nullptr;
+
 	delete m_media_downloader;
 }
 
@@ -336,12 +336,14 @@ void Client::step(float dtime)
 	{
 		float &counter = m_packetcounter_timer;
 		counter -= dtime;
-		if(counter <= 0.0)
+		if(counter <= 0.0f)
 		{
-			counter = 20.0;
+			counter = 30.0f;
+			u32 sum = m_packetcounter.sum();
+			float avg = sum / counter;
 
-			infostream << "Client packetcounter (" << m_packetcounter_timer
-					<< "):"<<std::endl;
+			infostream << "Client packetcounter (" << counter << "s): "
+					<< "sum=" << sum << " avg=" << avg << "/s" << std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -431,12 +433,9 @@ void Client::step(float dtime)
 	/*
 		Handle environment
 	*/
-	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
-	player->applyControl(dtime, &m_env);
 
-	// Step environment
+	// Step environment (also handles player controls)
 	m_env.step(dtime);
 	m_sound->step(dtime);
 
@@ -556,6 +555,29 @@ void Client::step(float dtime)
 			m_media_downloader = NULL;
 		}
 	}
+	{
+		// Acknowledge dynamic media downloads to server
+		std::vector<u32> done;
+		for (auto it = m_pending_media_downloads.begin();
+				it != m_pending_media_downloads.end();) {
+			assert(it->second->isStarted());
+			it->second->step(this);
+			if (it->second->isDone()) {
+				done.emplace_back(it->first);
+
+				it = m_pending_media_downloads.erase(it);
+			} else {
+				it++;
+			}
+
+			if (done.size() == 255) { // maximum in one packet
+				sendHaveMedia(done);
+				done.clear();
+			}
+		}
+		if (!done.empty())
+			sendHaveMedia(done);
+	}
 
 	/*
 		If the server didn't update the inventory in a while, revert
@@ -621,14 +643,17 @@ void Client::step(float dtime)
 
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
-		verbosestream << "Saving registered mod storages." << std::endl;
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		int n = 0;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
 				it->second->save(getModStoragePath());
+				n++;
 			}
 		}
+		if (n > 0)
+			infostream << "Saved " << n << " modified mod storages." << std::endl;
 	}
 
 	// Write server map
@@ -639,11 +664,9 @@ void Client::step(float dtime)
 	}
 }
 
-bool Client::loadMedia(const std::string &data, const std::string &filename)
+bool Client::loadMedia(const std::string &data, const std::string &filename,
+	bool from_media_push)
 {
-	// Silly irrlicht's const-incorrectness
-	Buffer<char> data_rw(data.c_str(), data.size());
-
 	std::string name;
 
 	const char *image_ext[] = {
@@ -653,15 +676,14 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load image "
-		<<"file \""<<filename<<"\""<<std::endl;
+		TRACESTREAM(<< "Client: Attempting to load image "
+			<< "file \"" << filename << "\"" << std::endl);
 
-		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
-		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
+		io::IFileSystem *irrfs = m_rendering_engine->get_filesystem();
+		video::IVideoDriver *vdrv = m_rendering_engine->get_video_driver();
 
-		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
-				*data_rw, data_rw.getSize(), "_tempreadfile");
+				data.c_str(), data.size(), "_tempreadfile");
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 
@@ -687,17 +709,15 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load sound "
-		<<"file \""<<filename<<"\""<<std::endl;
-		m_sound->loadSoundData(name, data);
-		return true;
+		TRACESTREAM(<< "Client: Attempting to load sound "
+			<< "file \"" << filename << "\"" << std::endl);
+		return m_sound->loadSoundData(name, data);
 	}
 
 	const char *model_ext[] = {
 		".x", ".b3d", ".md2", ".obj",
 		NULL
 	};
-
 	name = removeStringEnd(filename, model_ext);
 	if (!name.empty()) {
 		verbosestream<<"Client: Storing model into memory: "
@@ -714,9 +734,11 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
-		verbosestream << "Client: Loading translation: "
-				<< "\"" << filename << "\"" << std::endl;
-		g_translations->loadTranslation(data);
+		if (from_media_push)
+			return false;
+		TRACESTREAM(<< "Client: Loading translation: "
+				<< "\"" << filename << "\"" << std::endl);
+		g_client_translations->loadTranslation(data);
 		return true;
 	}
 
@@ -771,7 +793,8 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 	Send(&pkt);
 
 	infostream << "Client: Sending media request list to server ("
-			<< file_requests.size() << " files. packet size)" << std::endl;
+			<< file_requests.size() << " files, packet size "
+			<< pkt.getSize() << ")" << std::endl;
 }
 
 void Client::initLocalMapSaving(const Address &address,
@@ -1189,7 +1212,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	if (canSendChatMessage()) {
 		u32 now = time(NULL);
 		float time_passed = now - m_last_chat_message_sent;
-		m_last_chat_message_sent = time(NULL);
+		m_last_chat_message_sent = now;
 
 		m_chat_message_allowance += time_passed * (CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 		if (m_chat_message_allowance > CLIENT_CHAT_MESSAGE_LIMIT_PER_10S)
@@ -1268,9 +1291,8 @@ void Client::sendPlayerPos()
 	// Save bandwidth by only updating position when
 	// player is not dead and something changed
 
-	// FIXME: This part causes breakages in mods like 3d_armor, and has been commented for now
-	// if (m_activeobjects_received && player->isDead())
-	//	return;
+	if (m_activeobjects_received && player->isDead())
+		return;
 
 	if (
 			player->last_position     == player->getPosition() &&
@@ -1278,7 +1300,7 @@ void Client::sendPlayerPos()
 			player->last_pitch        == player->getPitch()    &&
 			player->last_yaw          == player->getYaw()      &&
 			player->last_keyPressed   == player->keyPressed    &&
-			player->last_camera_fov   == camera_fov              &&
+			player->last_camera_fov   == camera_fov            &&
 			player->last_wanted_range == wanted_range)
 		return;
 
@@ -1293,6 +1315,19 @@ void Client::sendPlayerPos()
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(player, &map, &pkt);
+
+	Send(&pkt);
+}
+
+void Client::sendHaveMedia(const std::vector<u32> &tokens)
+{
+	NetworkPacket pkt(TOSERVER_HAVE_MEDIA, 1 + tokens.size() * 4);
+
+	sanity_check(tokens.size() < 256);
+
+	pkt << static_cast<u8>(tokens.size());
+	for (u32 token : tokens)
+		pkt << token;
 
 	Send(&pkt);
 }
@@ -1408,6 +1443,11 @@ bool Client::updateWieldedItem()
 		list->setModified(false);
 
 	return true;
+}
+
+scene::ISceneManager* Client::getSceneManager()
+{
+	return m_rendering_engine->get_scene_manager();
 }
 
 Inventory* Client::getInventory(const InventoryLocation &loc)
@@ -1640,11 +1680,6 @@ ClientEvent *Client::getClientEvent()
 	return event;
 }
 
-bool Client::connectedToServer()
-{
-	return m_con->Connected();
-}
-
 const Address Client::getServerAddress()
 {
 	return m_con->GetPeerAddress(PEER_ID_SERVER);
@@ -1658,15 +1693,15 @@ float Client::mediaReceiveProgress()
 	return 1.0; // downloader only exists when not yet done
 }
 
-typedef struct TextureUpdateArgs {
+struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
 	ITextureSource *tsrc;
-} TextureUpdateArgs;
+};
 
-void texture_update_progress(void *args, u32 progress, u32 max_progress)
+void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progress)
 {
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
@@ -1683,9 +1718,9 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 
 		if (do_draw) {
 			targs->last_time_ms = time_ms;
-			std::basic_stringstream<wchar_t> strm;
-			strm << targs->text_base << " " << targs->last_percent << "%...";
-			RenderingEngine::draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
+			std::wostringstream strm;
+			strm << targs->text_base << L" " << targs->last_percent << L"%...";
+			m_rendering_engine->draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
 				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
 		}
 }
@@ -1706,24 +1741,27 @@ void Client::afterContentReceived()
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 70);
+	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 71);
+	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	text = wgettext("Initializing nodes...");
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
+	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	for (const auto &path : getTextureDirs())
-		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
+	for (const auto &path : getTextureDirs()) {
+		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
+		m_nodedef->applyTextureOverrides(override_source.getNodeTileOverrides());
+		m_itemdef->applyTextureOverrides(override_source.getItemTextureOverrides());
+	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;
@@ -1734,9 +1772,9 @@ void Client::afterContentReceived()
 	tu_args.guienv = guienv;
 	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
-	tu_args.text_base =  wgettext("Initializing nodes");
+	tu_args.text_base = wgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;
-	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
+	m_nodedef->updateTextures(this, &tu_args);
 	delete[] tu_args.text_base;
 
 	// Start mesh update thread after setting up content definitions
@@ -1750,7 +1788,7 @@ void Client::afterContentReceived()
 		m_script->on_client_ready(m_env.getLocalPlayer());
 
 	text = wgettext("Done!");
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);
+	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 	delete[] text;
 }
@@ -1768,7 +1806,7 @@ float Client::getCurRate()
 
 void Client::makeScreenshot()
 {
-	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 	irr::video::IImage* const raw_image = driver->createScreenShot();
 
 	if (!raw_image)
@@ -1780,12 +1818,23 @@ void Client::makeScreenshot()
 	char timetstamp_c[64];
 	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
 
-	std::string filename_base = g_settings->get("screenshot_path")
+	std::string screenshot_dir;
+
+	if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
+		screenshot_dir = g_settings->get("screenshot_path");
+	else
+		screenshot_dir = porting::path_user + DIR_DELIM + g_settings->get("screenshot_path");
+
+	std::string filename_base = screenshot_dir
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
 	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
+
+	// Create the directory if it doesn't already exist.
+	// Otherwise, saving the screenshot would fail.
+	fs::CreateDir(screenshot_dir);
 
 	u32 quality = (u32)g_settings->getS32("screenshot_quality");
 	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
@@ -1817,7 +1866,7 @@ void Client::makeScreenshot()
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
 			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-					narrow_to_wide(sstr.str())));
+					utf8_to_wide(sstr.str())));
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}
@@ -1899,16 +1948,17 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 
 	// Create the mesh, remove it from cache and return it
 	// This allows unique vertex colors and other properties for each instance
-	Buffer<char> data_rw(data.c_str(), data.size()); // Const-incorrect Irrlicht
-	io::IReadFile *rfile   = RenderingEngine::get_filesystem()->createMemoryReadFile(
-			*data_rw, data_rw.getSize(), filename.c_str());
+	io::IReadFile *rfile = m_rendering_engine->get_filesystem()->createMemoryReadFile(
+			data.c_str(), data.size(), filename.c_str());
 	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
-	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
+	scene::IAnimatedMesh *mesh = m_rendering_engine->get_scene_manager()->getMesh(rfile);
 	rfile->drop();
+	if (!mesh)
+		return nullptr;
 	mesh->grab();
 	if (!cache)
-		RenderingEngine::get_mesh_cache()->removeMesh(mesh);
+		m_rendering_engine->removeMesh(mesh);
 	return mesh;
 }
 

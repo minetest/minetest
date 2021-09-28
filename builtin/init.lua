@@ -30,17 +30,30 @@ local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
 
+dofile(commonpath .. "vector.lua")
 dofile(commonpath .. "strict.lua")
 dofile(commonpath .. "serialize.lua")
 dofile(commonpath .. "misc_helpers.lua")
 
 if INIT == "game" then
 	dofile(gamepath .. "init.lua")
+	assert(not core.get_http_api)
 elseif INIT == "mainmenu" then
 	local mm_script = core.settings:get("main_menu_script")
+	local custom_loaded = false
 	if mm_script and mm_script ~= "" then
-		dofile(mm_script)
-	else
+		local testfile = io.open(mm_script, "r")
+		if testfile then
+			testfile:close()
+			dofile(mm_script)
+			custom_loaded = true
+			core.log("info", "Loaded custom main menu script: "..mm_script)
+		else
+			core.log("error", "Failed to load custom main menu script: "..mm_script)
+			core.log("info", "Falling back to default main menu script")
+		end
+	end
+	if not custom_loaded then
 		dofile(core.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
 	end
 elseif INIT == "async" then

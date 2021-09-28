@@ -101,6 +101,9 @@ dialog_create(name, cbf_formspec, cbf_button_handler, cbf_events)
 ^ cbf_events: function to handle events
 	function(dialog, event)
 
+messagebox(name, message)
+^ creates a message dialog
+
 Class reference dialog:
 
 methods:
@@ -113,13 +116,13 @@ methods:
   ^ hide dialog
 - delete()
   ^ delete dialog from ui
-  
+
 members:
 - data
   ^ variable data attached to this dialog
 - parent
   ^ parent component to return to on exit
-  
+
 File: fst/buttonbar.lua
 -----------------------
 

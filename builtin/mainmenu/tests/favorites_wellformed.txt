@@ -1,0 +1,29 @@
+[server]
+
+127.0.0.1
+30000
+
+
+[server]
+
+localhost
+30000
+
+
+[server]
+
+vps.rubenwardy.com
+30001
+
+
+[server]
+
+gundul.ddnss.de
+39155
+
+
+[server]
+VanessaE's Dreambuilder creative Server
+daconcepts.com
+30000
+VanessaE's Dreambuilder creative-mode server. Lots of mods, whitelisted buckets.

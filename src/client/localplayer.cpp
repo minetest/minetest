@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "localplayer.h"
 #include <cmath>
-#include "event.h"
+#include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
 #include "settings.h"
@@ -200,6 +200,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (noclip && free_move) {
 		position += m_speed * dtime;
 		setPosition(position);
+
+		touching_ground = false;
 		added_velocity = v3f(0.0f); // ignored
 		return;
 	}
@@ -436,9 +438,11 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		Check properties of the node on which the player is standing
 	*/
 	const ContentFeatures &f = nodemgr->get(map->getNode(m_standing_node));
+	const ContentFeatures &f1 = nodemgr->get(map->getNode(m_standing_node + v3s16(0, 1, 0)));
 
 	// Determine if jumping is possible
-	m_disable_jump = itemgroup_get(f.groups, "disable_jump");
+	m_disable_jump = itemgroup_get(f.groups, "disable_jump") ||
+		itemgroup_get(f1.groups, "disable_jump");
 	m_can_jump = ((touching_ground && !is_climbing) || sneak_can_jump) && !m_disable_jump;
 
 	// Jump key pressed while jumping off from a bouncy block
@@ -562,23 +566,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	if (control.up)
-		speedH += v3f(0.0f, 0.0f, 1.0f);
-
-	if (control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f);
-
-	if (!control.up && !control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis / 32767.f);
-
-	if (control.left)
-		speedH += v3f(-1.0f, 0.0f, 0.0f);
-
-	if (control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f);
-
-	if (!control.left && !control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis / 32767.f);
+	speedH = v3f(sin(control.movement_direction), 0.0f, cos(control.movement_direction));
 
 	if (m_autojump) {
 		// release autojump after a given time
@@ -634,6 +622,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		speedH = speedH.normalize() * movement_speed_crouch;
 	else
 		speedH = speedH.normalize() * movement_speed_walk;
+
+	speedH *= control.movement_speed; /* Apply analog input */
 
 	// Acceleration increase
 	f32 incH = 0.0f; // Horizontal (X, Z)
@@ -785,6 +775,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (free_move) {
 		position += m_speed * dtime;
 		setPosition(position);
+
+		touching_ground = false;
 		m_sneak_node_exists = false;
 		added_velocity = v3f(0.0f);
 		return;
@@ -1100,9 +1092,7 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (m_autojump)
 		return;
 
-	bool control_forward = control.up ||
-		(!control.up && !control.down &&
-		control.forw_move_joystick_axis < -0.05f);
+	bool control_forward = keyPressed & (1 << 0);
 
 	bool could_autojump =
 		m_can_jump && !control.jump && !control.sneak && control_forward;

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	package="net.minetest.minetest"
+	android:installLocation="auto">
+
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+	<!--
+		`android:requestLegacyExternalStorage="true"` is workaround for using `/sdcard`
+		instead of the `getFilesDir()` patch for assets. Check link below for more information:
+		https://developer.android.com/training/data-storage/compatibility
+	-->
+
+	<application
+		android:allowBackup="false"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/label"
+		android:requestLegacyExternalStorage="true"
+		android:resizeableActivity="false"
+		tools:ignore="UnusedAttribute">
+
+		<meta-data
+			android:name="android.max_aspect"
+			android:value="3.0" />
+
+		<activity
+			android:name=".MainActivity"
+			android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+			android:maxAspectRatio="3.0"
+			android:screenOrientation="sensorLandscape"
+			android:theme="@style/AppTheme">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+
+		<activity
+			android:name=".GameActivity"
+			android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize"
+			android:hardwareAccelerated="true"
+			android:launchMode="singleTask"
+			android:maxAspectRatio="3.0"
+			android:screenOrientation="sensorLandscape"
+			android:theme="@style/AppTheme">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+			<meta-data
+				android:name="android.app.lib_name"
+				android:value="Minetest" />
+		</activity>
+
+		<service
+			android:name=".UnzipService"
+			android:enabled="true"
+			android:exported="false" />
+	</application>
+
+</manifest>

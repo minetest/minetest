@@ -45,10 +45,8 @@ struct MeshMakeData
 
 	Client *m_client;
 	bool m_use_shaders;
-	bool m_use_tangent_vertices;
 
-	MeshMakeData(Client *client, bool use_shaders,
-			bool use_tangent_vertices = false);
+	MeshMakeData(Client *client, bool use_shaders);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -61,11 +59,6 @@ struct MeshMakeData
 		parent of block.
 	*/
 	void fill(MapBlock *block);
-
-	/*
-		Set up with only a single node at (1,1,1)
-	*/
-	void fillSingleNode(MapNode *node);
 
 	/*
 		Set the (node) position of a crack
@@ -132,8 +125,6 @@ public:
 			m_animation_force_timer--;
 	}
 
-	void updateCameraOffset(v3s16 camera_offset);
-
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
@@ -141,7 +132,6 @@ private:
 	IShaderSource *m_shdrsrc;
 
 	bool m_enable_shaders;
-	bool m_use_tangent_vertices;
 	bool m_enable_vbo;
 
 	// Must animate() be called before rendering?
@@ -168,9 +158,6 @@ private:
 	// of sunlit vertices
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
-
-	// Camera offset info -> do we have to translate the mesh?
-	v3s16 m_camera_offset;
 };
 
 /*!

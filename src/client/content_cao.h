@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Camera;
 class Client;
 struct Nametag;
+struct MinimapMarker;
 
 /*
 	SmoothTranslator
@@ -84,6 +85,7 @@ private:
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
 	scene::IDummyTransformationSceneNode *m_matrixnode = nullptr;
 	Nametag *m_nametag = nullptr;
+	MinimapMarker *m_marker = nullptr;
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
 	v3f m_acceleration;
@@ -109,6 +111,7 @@ private:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attached_to_local = false;
+	bool m_force_visible = false;
 
 	int m_anim_frame = 0;
 	int m_anim_num_frames = 1;
@@ -129,6 +132,8 @@ private:
 	video::E_MATERIAL_TYPE m_material_type;
 	// Settings
 	bool m_enable_shaders = false;
+
+	bool visualExpiryRequired(const ObjectProperties &newprops) const;
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
@@ -169,6 +174,8 @@ public:
 
 	const bool isImmortal();
 
+	inline const ObjectProperties &getProperties() const { return m_prop; }
+
 	scene::ISceneNode *getSceneNode() const;
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
@@ -186,10 +193,11 @@ public:
 		return m_matrixnode->getRelativeTransformationMatrix();
 	}
 
-	inline const core::matrix4 &getAbsolutePosRotMatrix() const
+	inline const core::matrix4 *getAbsolutePosRotMatrix() const
 	{
-		assert(m_matrixnode);
-		return m_matrixnode->getAbsoluteTransformation();
+		if (!m_matrixnode)
+			return nullptr;
+		return &m_matrixnode->getAbsoluteTransformation();
 	}
 
 	inline f32 getStepHeight() const
@@ -213,9 +221,10 @@ public:
 	}
 
 	void setChildrenVisible(bool toset);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation, bool force_visible);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation) const;
+			v3f *rotation, bool *force_visible) const;
 	void clearChildAttachments();
 	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
@@ -227,18 +236,25 @@ public:
 
 	void removeFromScene(bool permanent);
 
-	void addToScene(ITextureSource *tsrc);
+	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 
 	inline void expireVisuals()
 	{
 		m_visuals_expired = true;
 	}
 
-	void updateLight(u8 light_at_pos);
+	void updateLight(u32 day_night_ratio);
 
-	void updateLightNoCheck(u8 light_at_pos);
+	void setNodeLight(u8 light);
 
-	v3s16 getLightPosition();
+	/* Get light position(s).
+	 * returns number of positions written into pos[], which must have space
+	 * for at least 3 vectors. */
+	u16 getLightPosition(v3s16 *pos);
+
+	void updateNametag();
+
+	void updateMarker();
 
 	void updateNodePos();
 
@@ -267,4 +283,6 @@ public:
 	{
 		return m_prop.infotext;
 	}
+
+	void updateMeshCulling();
 };

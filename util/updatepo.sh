@@ -49,14 +49,17 @@ cd ..
 # --package-name
 potfile=po/minetest.pot
 xgettext --package-name=minetest \
+	--add-comments='~' \
 	--sort-by-file \
 	--add-location=file \
 	--keyword=N_ \
 	--keyword=wgettext \
+	--keyword=fwgettext \
 	--keyword=fgettext \
 	--keyword=fgettext_ne \
 	--keyword=strgettext \
 	--keyword=wstrgettext \
+	--keyword=core.gettext \
 	--keyword=showTranslatedStatusText \
 	--output $potfile \
 	--from-code=utf-8 \

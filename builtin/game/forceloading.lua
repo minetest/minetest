@@ -86,12 +86,6 @@ local function read_file(filename)
 	return core.deserialize(t) or {}
 end
 
-local function write_file(filename, table)
-	local f = io.open(filename, "w")
-	f:write(core.serialize(table))
-	f:close()
-end
-
 blocks_forceloaded = read_file(wpath.."/force_loaded.txt")
 for _, __ in pairs(blocks_forceloaded) do
 	total_forceloaded = total_forceloaded + 1
@@ -106,7 +100,8 @@ end)
 
 -- persists the currently forceloaded blocks to disk
 local function persist_forceloaded_blocks()
-	write_file(wpath.."/force_loaded.txt", blocks_forceloaded)
+	local data = core.serialize(blocks_forceloaded)
+	core.safe_file_write(wpath.."/force_loaded.txt", data)
 end
 
 -- periodical forceload persistence

@@ -135,11 +135,16 @@ public:
 	}
 
 	v3f getPosition() const { return m_position; }
+
+	// Non-transformed eye offset getters
+	// For accurate positions, use the Camera functions
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
 	void setEyeHeight(float eye_height) { m_eye_height = eye_height; }
 
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
+
+	const aabb3f& getCollisionbox() const { return m_collisionbox; }
 
 	float getZoomFOV() const { return m_zoom_fov; }
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }

@@ -30,8 +30,9 @@ using namespace irr;
 using namespace gui;
 
 GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
-		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle, bool noclip)
-	: GUIButton (environment, parent, id, rectangle, noclip)
+		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle,
+		ISimpleTextureSource *tsrc, bool noclip)
+	: GUIButton (environment, parent, id, rectangle, tsrc, noclip)
 {
 	m_image = Environment->addImage(
 			core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), this);
@@ -39,100 +40,37 @@ GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 	sendToBack(m_image);
 }
 
-bool GUIButtonImage::OnEvent(const SEvent& event)
-{
-	bool result = GUIButton::OnEvent(event);
-
-	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), m_foreground_images);
-	video::ITexture *texture = m_foreground_images[(u32)imageState].Texture;
-	if (texture != nullptr)
-	{
-		m_image->setImage(texture);
-	}
-
-	m_image->setVisible(texture != nullptr);
-
-	return result;
-}
-
-void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state,
-		video::ITexture *image, const core::rect<s32> &sourceRect)
-{
-	if (state >= EGBIS_COUNT)
-		return;
-
-	if (image)
-		image->grab();
-
-	u32 stateIdx = (u32)state;
-	if (m_foreground_images[stateIdx].Texture)
-		m_foreground_images[stateIdx].Texture->drop();
-
-	m_foreground_images[stateIdx].Texture = image;
-	m_foreground_images[stateIdx].SourceRect = sourceRect;
-
-	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), m_foreground_images);
-	if (imageState == stateIdx)
-		m_image->setImage(image);
-}
-
 void GUIButtonImage::setForegroundImage(video::ITexture *image)
 {
-	setForegroundImage(gui::EGBIS_IMAGE_UP, image);
+	if (image == m_foreground_image)
+		return;
+
+	if (image != nullptr)
+		image->grab();
+
+	if (m_foreground_image != nullptr)
+		m_foreground_image->drop();
+
+	m_foreground_image = image;
+	m_image->setImage(image);
 }
 
-void GUIButtonImage::setForegroundImage(video::ITexture *image, const core::rect<s32> &pos)
+//! Set element properties from a StyleSpec
+void GUIButtonImage::setFromStyle(const StyleSpec& style)
 {
-	setForegroundImage(gui::EGBIS_IMAGE_UP, image, pos);
-}
-
-void GUIButtonImage::setPressedForegroundImage(video::ITexture *image)
-{
-	setForegroundImage(gui::EGBIS_IMAGE_DOWN, image);
-}
-
-void GUIButtonImage::setPressedForegroundImage(video::ITexture *image, const core::rect<s32> &pos)
-{
-	setForegroundImage(gui::EGBIS_IMAGE_DOWN, image, pos);
-}
-
-void GUIButtonImage::setHoveredForegroundImage(video::ITexture *image)
-{
-	setForegroundImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image);
-	setForegroundImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image);
-}
-
-void GUIButtonImage::setHoveredForegroundImage(video::ITexture *image, const core::rect<s32> &pos)
-{
-	setForegroundImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image, pos);
-	setForegroundImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image, pos);
-}
-
-void GUIButtonImage::setFromStyle(const StyleSpec &style, ISimpleTextureSource *tsrc)
-{
-	GUIButton::setFromStyle(style, tsrc);
+	GUIButton::setFromStyle(style);
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
-	const core::position2di buttonCenter(AbsoluteRect.getCenter());
-	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::FGIMG)) {
-		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG, tsrc);
+		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG,
+				getTextureSource());
 
-		setForegroundImage(guiScalingImageButton(driver, texture, geom.X, geom.Y));
+		setForegroundImage(guiScalingImageButton(driver, texture,
+			AbsoluteRect.getWidth(), AbsoluteRect.getHeight()));
 		setScaleImage(true);
-	}
-	if (style.isNotDefault(StyleSpec::FGIMG_HOVERED)) {
-		video::ITexture *hovered_texture = style.getTexture(StyleSpec::FGIMG_HOVERED, tsrc);
-
-		setHoveredForegroundImage(guiScalingImageButton(driver, hovered_texture, geom.X, geom.Y));
-		setScaleImage(true);
-	}
-	if (style.isNotDefault(StyleSpec::FGIMG_PRESSED)) {
-		video::ITexture *pressed_texture = style.getTexture(StyleSpec::FGIMG_PRESSED, tsrc);
-
-		setPressedForegroundImage(guiScalingImageButton(driver, pressed_texture, geom.X, geom.Y));
-		setScaleImage(true);
+	} else {
+		setForegroundImage(nullptr);
 	}
 }
 
@@ -143,11 +81,12 @@ void GUIButtonImage::setScaleImage(bool scaleImage)
 }
 
 GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
-		const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
-		const wchar_t *text, const wchar_t *tooltiptext)
+		const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
+		IGUIElement *parent, s32 id, const wchar_t *text,
+		const wchar_t *tooltiptext)
 {
 	GUIButtonImage *button = new GUIButtonImage(environment,
-			parent ? parent : environment->getRootGUIElement(), id, rectangle);
+			parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc);
 
 	if (text)
 		button->setText(text);

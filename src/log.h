@@ -124,39 +124,7 @@ public:
 #endif
 	}
 
-	void logRaw(LogLevel lev, const std::string &line)
-	{
-		bool colored_message = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
-			(Logger::color_mode == LOG_COLOR_AUTO && is_tty);
-		if (colored_message)
-			switch (lev) {
-			case LL_ERROR:
-				// error is red
-				m_stream << "\033[91m";
-				break;
-			case LL_WARNING:
-				// warning is yellow
-				m_stream << "\033[93m";
-				break;
-			case LL_INFO:
-				// info is a bit dark
-				m_stream << "\033[37m";
-				break;
-			case LL_VERBOSE:
-				// verbose is darker than info
-				m_stream << "\033[2m";
-				break;
-			default:
-				// action is white
-				colored_message = false;
-			}
-
-		m_stream << line << std::endl;
-
-		if (colored_message)
-			// reset to white color
-			m_stream << "\033[0m";
-	}
+	void logRaw(LogLevel lev, const std::string &line);
 
 private:
 	std::ostream &m_stream;
@@ -178,23 +146,27 @@ private:
 
 class LogOutputBuffer : public ICombinedLogOutput {
 public:
-	LogOutputBuffer(Logger &logger, LogLevel lev) :
+	LogOutputBuffer(Logger &logger) :
 		m_logger(logger)
 	{
-		m_logger.addOutput(this, lev);
-	}
+		updateLogLevel();
+	};
 
-	~LogOutputBuffer()
+	virtual ~LogOutputBuffer()
 	{
 		m_logger.removeOutput(this);
 	}
 
-	void logRaw(LogLevel lev, const std::string &line)
+	void updateLogLevel();
+
+	void logRaw(LogLevel lev, const std::string &line);
+
+	void clear()
 	{
-		m_buffer.push(line);
+		m_buffer = std::queue<std::string>();
 	}
 
-	bool empty()
+	bool empty() const
 	{
 		return m_buffer.empty();
 	}
@@ -220,13 +192,7 @@ extern std::ostream null_stream;
 
 extern std::ostream *dout_con_ptr;
 extern std::ostream *derr_con_ptr;
-extern std::ostream *dout_server_ptr;
 extern std::ostream *derr_server_ptr;
-
-#ifndef SERVER
-extern std::ostream *dout_client_ptr;
-extern std::ostream *derr_client_ptr;
-#endif
 
 extern Logger g_logger;
 
@@ -250,8 +216,4 @@ extern std::ostream dstream;
 
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
-#define dout_server (*dout_server_ptr)
 
-#ifndef SERVER
-	#define dout_client (*dout_client_ptr)
-#endif

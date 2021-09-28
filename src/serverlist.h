@@ -24,21 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-typedef Json::Value ServerListSpec;
-
 namespace ServerList
 {
-std::vector<ServerListSpec> getLocal();
-std::vector<ServerListSpec> getOnline();
-
-bool deleteEntry(const ServerListSpec &server);
-bool insert(const ServerListSpec &server);
-
-std::vector<ServerListSpec> deSerialize(const std::string &liststring);
-const std::string serialize(const std::vector<ServerListSpec> &serverlist);
-std::vector<ServerListSpec> deSerializeJson(const std::string &liststring);
-const std::string serializeJson(const std::vector<ServerListSpec> &serverlist);
-
 #if USE_CURL
 enum AnnounceAction {AA_START, AA_UPDATE, AA_DELETE};
 void sendAnnounce(AnnounceAction, u16 port,

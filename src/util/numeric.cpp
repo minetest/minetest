@@ -106,10 +106,6 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
-	// Maximum radius of a block.  The magic number is
-	// sqrt(3.0) / 2.0 in literal form.
-	static constexpr const f32 block_max_radius = 0.866025403784f * MAP_BLOCKSIZE * BS;
-
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 
 	// Block center position
@@ -123,7 +119,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	v3f blockpos_relative = blockpos - camera_pos;
 
 	// Total distance
-	f32 d = MYMAX(0, blockpos_relative.getLength() - block_max_radius);
+	f32 d = MYMAX(0, blockpos_relative.getLength() - BLOCK_MAX_RADIUS);
 
 	if (distance_ptr)
 		*distance_ptr = d;
@@ -141,7 +137,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	// such that a block that has any portion visible with the
 	// current camera position will have the center visible at the
 	// adjusted postion
-	f32 adjdist = block_max_radius / cos((M_PI - camera_fov) / 2);
+	f32 adjdist = BLOCK_MAX_RADIUS / cos((M_PI - camera_fov) / 2);
 
 	// Block position relative to adjusted camera
 	v3f blockpos_adj = blockpos - (camera_pos - camera_dir * adjdist);
@@ -163,7 +159,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	return true;
 }
 
-s16 adjustDist(s16 dist, float zoom_fov)
+inline float adjustDist(float dist, float zoom_fov)
 {
 	// 1.775 ~= 72 * PI / 180 * 1.4, the default FOV on the client.
 	// The heuristic threshold for zooming is half of that.
@@ -171,8 +167,13 @@ s16 adjustDist(s16 dist, float zoom_fov)
 	if (zoom_fov < 0.001f || zoom_fov > threshold_fov)
 		return dist;
 
-	return std::round(dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
-		(1.0f - std::cos(zoom_fov / 2.0f))));
+	return dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
+		(1.0f - std::cos(zoom_fov / 2.0f)));
+}
+
+s16 adjustDist(s16 dist, float zoom_fov)
+{
+	return std::round(adjustDist((float)dist, zoom_fov));
 }
 
 void setPitchYawRollRad(core::matrix4 &m, const v3f &rot)

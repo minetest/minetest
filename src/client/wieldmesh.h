@@ -27,6 +27,7 @@ struct ItemStack;
 class Client;
 class ITextureSource;
 struct ContentFeatures;
+class ShadowRenderer;
 
 /*!
  * Holds color information of an item mesh's buffer.
@@ -87,6 +88,8 @@ public:
 	// Must only be used if the constructor was called with lighting = false
 	void setColor(video::SColor color);
 
+	void setNodeLightColor(video::SColor color);
+
 	scene::IMesh *getMesh() { return m_meshnode->getMesh(); }
 
 	virtual void render();
@@ -122,6 +125,8 @@ private:
 	// so this variable is just required so we can implement
 	// getBoundingBox() and is set to an empty box.
 	aabb3f m_bounding_box;
+
+	ShadowRenderer *m_shadow;
 };
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result);

@@ -183,6 +183,18 @@ struct IMoveAction : public InventoryAction, public MoveAction
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
 
 	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
+
+	void swapDirections();
+
+	void onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player) const;
+
+	void onMove(int count, ServerActiveObject *player) const;
+
+	int allowPut(const ItemStack &dst_item, ServerActiveObject *player) const;
+
+	int allowTake(const ItemStack &src_item, ServerActiveObject *player) const;
+
+	int allowMove(int try_take_count, ServerActiveObject *player) const;
 };
 
 struct IDropAction : public InventoryAction, public MoveAction

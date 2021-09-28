@@ -55,11 +55,13 @@ Metadata* NodeMetaRef::getmeta(bool auto_create)
 
 void NodeMetaRef::clearMeta()
 {
+	SANITY_CHECK(!m_is_local);
 	m_env->getMap().removeNodeMetadata(m_p);
 }
 
 void NodeMetaRef::reportMetadataChange(const std::string *name)
 {
+	SANITY_CHECK(!m_is_local);
 	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
 	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(m_meta);
@@ -232,7 +234,7 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 void NodeMetaRef::Register(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsServer, 0);  // fill methodtable
+	luaL_register(L, nullptr, methodsServer);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 
@@ -258,7 +260,7 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 void NodeMetaRef::RegisterClient(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsClient, 0);  // fill methodtable
+	luaL_register(L, nullptr, methodsClient);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 

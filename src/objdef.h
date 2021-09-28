@@ -45,20 +45,35 @@ class ObjDef {
 public:
 	virtual ~ObjDef() = default;
 
+	// Only implemented by child classes (leafs in class hierarchy)
+	// Should create new object of its own type, call cloneTo() of parent class
+	// and copy its own instance variables over
+	virtual ObjDef *clone() const = 0;
+
 	u32 index;
 	u32 uid;
 	ObjDefHandle handle;
 	std::string name;
+
+protected:
+	// Only implemented by classes that have children themselves
+	// by copying the defintion and changing that argument type (!!!)
+	// Should defer to parent class cloneTo() if applicable and then copy
+	// over its own properties
+	void cloneTo(ObjDef *def) const;
 };
 
 // WARNING: Ownership of ObjDefs is transferred to the ObjDefManager it is
 // added/set to.  Note that ObjDefs managed by ObjDefManager are NOT refcounted,
 // so the same ObjDef instance must not be referenced multiple
+// TODO: const correctness for getter methods
 class ObjDefManager {
 public:
 	ObjDefManager(IGameDef *gamedef, ObjDefType type);
 	virtual ~ObjDefManager();
 	DISABLE_CLASS_COPY(ObjDefManager);
+
+	// T *clone() const; // implemented in child class with correct type
 
 	virtual const char *getObjectTitle() const { return "ObjDef"; }
 
@@ -88,6 +103,10 @@ public:
 		ObjDefType *type, u32 *uid);
 
 protected:
+	ObjDefManager() {};
+	// Helper for child classes to implement clone()
+	void cloneTo(ObjDefManager *mgr) const;
+
 	const NodeDefManager *m_ndef;
 	std::vector<ObjDef *> m_objects;
 	ObjDefType m_objtype;

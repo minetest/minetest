@@ -47,7 +47,8 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_fs_menu(fs_menu),
 	m_options(options),
 	m_font(font),
-	m_hovered_i(-1)
+	m_hovered_i(-1),
+	m_already_warned(false)
 {
 }
 
@@ -58,20 +59,27 @@ void GUIInventoryList::draw()
 
 	Inventory *inv = m_invmgr->getInventory(m_inventoryloc);
 	if (!inv) {
-		warningstream << "GUIInventoryList::draw(): "
-				<< "The inventory location "
-				<< "\"" << m_inventoryloc.dump() << "\" doesn't exist anymore"
-				<< std::endl;
+		if (!m_already_warned) {
+			warningstream << "GUIInventoryList::draw(): "
+					<< "The inventory location "
+					<< "\"" << m_inventoryloc.dump() << "\" doesn't exist"
+					<< std::endl;
+			m_already_warned = true;
+		}
 		return;
 	}
 	InventoryList *ilist = inv->getList(m_listname);
 	if (!ilist) {
-		warningstream << "GUIInventoryList::draw(): "
-				<< "The inventory list \"" << m_listname << "\" @ \""
-				<< m_inventoryloc.dump() << "\" doesn't exist anymore"
-				<< std::endl;
+		if (!m_already_warned) {
+			warningstream << "GUIInventoryList::draw(): "
+					<< "The inventory list \"" << m_listname << "\" @ \""
+					<< m_inventoryloc.dump() << "\" doesn't exist"
+					<< std::endl;
+			m_already_warned = true;
+		}
 		return;
 	}
+	m_already_warned = false;
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 	Client *client = m_fs_menu->getClient();
@@ -80,9 +88,11 @@ void GUIInventoryList::draw()
 	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
 	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
 
+	const s32 list_size = (s32)ilist->getSize();
+
 	for (s32 i = 0; i < m_geom.X * m_geom.Y; i++) {
 		s32 item_i = i + m_start_item_i;
-		if (item_i >= (s32)ilist->getSize())
+		if (item_i >= list_size)
 			break;
 
 		v2s32 p((i % m_geom.X) * m_slot_spacing.X,
@@ -94,8 +104,6 @@ void GUIInventoryList::draw()
 			&& m_invmgr->getInventory(selected_item->inventoryloc) == inv
 			&& selected_item->listname == m_listname
 			&& selected_item->i == item_i;
-		core::rect<s32> clipped_rect(rect);
-		clipped_rect.clipAgainst(AbsoluteClippingRect);
 		bool hovering = m_hovered_i == item_i;
 		ItemRotationKind rotation_kind = selected ? IT_ROT_SELECTED :
 			(hovering ? IT_ROT_HOVERED : IT_ROT_NONE);
@@ -176,7 +184,14 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 		Environment->getRootGUIElement()->getElementFromPoint(
 			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 
-	bool ret = hovered && hovered->OnEvent(event);
+	// if the player clicks outside of the formspec window, hovered is not
+	// m_fs_menu, but some other weird element (with ID -1). we do however need
+	// hovered to be m_fs_menu as item dropping when clicking outside of the
+	// formspec window is handled in its OnEvent callback
+	if (!hovered || hovered->getID() == -1)
+		hovered = m_fs_menu;
+
+	bool ret = hovered->OnEvent(event);
 
 	IsVisible = was_visible;
 
@@ -185,8 +200,17 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 
 s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 {
+	// no item if no gui element at pointer
 	if (!IsVisible || AbsoluteClippingRect.getArea() <= 0 ||
 			!AbsoluteClippingRect.isPointInside(p))
+		return -1;
+
+	// there can not be an item if the inventory or the inventorylist does not exist
+	Inventory *inv = m_invmgr->getInventory(m_inventoryloc);
+	if (!inv)
+		return -1;
+	InventoryList *ilist = inv->getList(m_listname);
+	if (!ilist)
 		return -1;
 
 	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
@@ -203,7 +227,8 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 
 	rect.clipAgainst(AbsoluteClippingRect);
 
-	if (rect.getArea() > 0 && rect.isPointInside(p))
+	if (rect.getArea() > 0 && rect.isPointInside(p) &&
+			i + m_start_item_i < (s32)ilist->getSize())
 		return i + m_start_item_i;
 
 	return -1;

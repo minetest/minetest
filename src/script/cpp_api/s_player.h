@@ -28,6 +28,7 @@ struct InventoryLocation;
 struct ItemStack;
 struct ToolCapabilities;
 struct PlayerHPChangeReason;
+class ServerActiveObject;
 
 class ScriptApiPlayer : virtual public ScriptApiBase
 {
@@ -40,17 +41,18 @@ public:
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 			std::string *reason);
 	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
-	void on_joinplayer(ServerActiveObject *player);
+	void on_joinplayer(ServerActiveObject *player, s64 last_login);
 	void on_leaveplayer(ServerActiveObject *player, bool timeout);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
 			float time_from_last_punch, const ToolCapabilities *toolcap,
 			v3f dir, s16 damage);
+	void on_rightclickplayer(ServerActiveObject *player, ServerActiveObject *clicker);
 	s32 on_player_hpchange(ServerActiveObject *player, s32 hp_change,
 			const PlayerHPChangeReason &reason);
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
-	void on_auth_failure(const std::string &name, const std::string &ip);
+	void on_authplayer(const std::string &name, const std::string &ip, bool is_success);
 
 	// Player inventory callbacks
 	// Return number of accepted items to be moved

@@ -32,26 +32,28 @@ extern "C" {
 
 #ifndef SERVER
 class Client;
+class GUIEngine;
 #endif
 
 class ScriptApiBase;
 class Server;
 class Environment;
-class GUIEngine;
+class ServerInventoryManager;
 
 class ModApiBase : protected LuaHelper {
-
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
+	static ServerInventoryManager *getServerInventoryMgr(lua_State *L);
 	#ifndef SERVER
 	static Client*          getClient(lua_State *L);
+	static GUIEngine*       getGuiEngine(lua_State *L);
 	#endif // !SERVER
 
 	static IGameDef*        getGameDef(lua_State *L);
 
 	static Environment*     getEnv(lua_State *L);
-	static GUIEngine*       getGuiEngine(lua_State *L);
+
 	// When we are not loading the mod, this function returns "."
 	static std::string      getCurrentModPath(lua_State *L);
 
@@ -72,10 +74,18 @@ public:
 			lua_CFunction func,
 			int top);
 
-	static int l_deprecated_function(lua_State *L);
-	static void markAliasDeprecated(luaL_Reg *reg);
-private:
-	// <old_name> = { <new_name>, <new_function> }
-	static std::unordered_map<std::string, luaL_Reg> m_deprecated_wrappers;
-	static bool m_error_deprecated_calls;
+	/**
+	 * A wrapper for deprecated functions.
+	 *
+	 * When called, handles the deprecation according to user settings and then calls `func`.
+	 *
+	 * @throws Lua Error if required by the user settings.
+	 *
+	 * @param L Lua state
+	 * @param good Name of good function/method
+	 * @param bad Name of deprecated function/method
+	 * @param func Actual implementation of function
+	 * @return value from `func`
+	 */
+	static int l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func);
 };

@@ -75,8 +75,6 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (name.empty())
 		return NULL;
 
-	m_to_delete.insert(name);
-
 #if ENABLE_GLES
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
@@ -88,6 +86,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	image = Align2Npot2(image, m_driver);
 	retval = m_driver->addTexture(name.c_str(), image);
+	m_to_delete.insert(name);
 	image->drop();
 	return retval;
 #else
@@ -122,12 +121,14 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /******************************************************************************/
 GUIEngine::GUIEngine(JoystickController *joystick,
 		gui::IGUIElement *parent,
+		RenderingEngine *rendering_engine,
 		IMenuManager *menumgr,
 		MainMenuData *data,
 		bool &kill) :
+	m_rendering_engine(rendering_engine),
 	m_parent(parent),
 	m_menumanager(menumgr),
-	m_smgr(RenderingEngine::get_scene_manager()),
+	m_smgr(rendering_engine->get_scene_manager()),
 	m_data(data),
 	m_kill(kill)
 {
@@ -139,15 +140,15 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_buttonhandler = new TextDestGuiEngine(this);
 
 	//create texture source
-	m_texture_source = new MenuTextureSource(RenderingEngine::get_video_driver());
+	m_texture_source = new MenuTextureSource(rendering_engine->get_video_driver());
 
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound"))
+	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get())
 		m_sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
 #endif
-	if(!m_sound_manager)
+	if (!m_sound_manager)
 		m_sound_manager = &dummySoundManager;
 
 	//create topleft header
@@ -157,7 +158,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 		g_fontengine->getTextHeight());
 	rect += v2s32(4, 0);
 
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = gui::StaticText::add(rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 
 	//create formspecsource
@@ -169,7 +170,9 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			-1,
 			m_menumanager,
 			NULL /* &client */,
+			m_rendering_engine->get_gui_env(),
 			m_texture_source,
+			m_sound_manager,
 			m_formspecgui,
 			m_buttonhandler,
 			"",
@@ -232,7 +235,7 @@ void GUIEngine::run()
 {
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	cloudInit();
 
@@ -259,10 +262,10 @@ void GUIEngine::run()
 				fog_pixelfog, fog_rangefog);
 	}
 
-	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
+	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
-			RenderingEngine::get_video_driver()->getScreenSize();
+			m_rendering_engine->get_video_driver()->getScreenSize();
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
@@ -293,14 +296,18 @@ void GUIEngine::run()
 		drawHeader(driver);
 		drawFooter(driver);
 
-		RenderingEngine::get_gui_env()->drawAll();
+		m_rendering_engine->get_gui_env()->drawAll();
 
 		driver->endScene();
 
+		IrrlichtDevice *device = m_rendering_engine->get_raw_device();
+		u32 frametime_min = 1000 / (device->isWindowFocused()
+			? g_settings->getFloat("fps_max")
+			: g_settings->getFloat("fps_max_unfocused"));
 		if (m_clouds_enabled)
-			cloudPostProcess();
+			cloudPostProcess(frametime_min, device);
 		else
-			sleep_ms(25);
+			sleep_ms(frametime_min);
 
 		m_script->step();
 
@@ -326,7 +333,7 @@ GUIEngine::~GUIEngine()
 	//clean up texture pointers
 	for (image_definition &texture : m_textures) {
 		if (texture.texture)
-			RenderingEngine::get_video_driver()->removeTexture(texture.texture);
+			m_rendering_engine->get_video_driver()->removeTexture(texture.texture);
 	}
 
 	delete m_texture_source;
@@ -346,13 +353,13 @@ void GUIEngine::cloudInit()
 				v3f(0,0,0), v3f(0, 60, 100));
 	m_cloud.camera->setFarValue(10000);
 
-	m_cloud.lasttime = RenderingEngine::get_timer_time();
+	m_cloud.lasttime = m_rendering_engine->get_timer_time();
 }
 
 /******************************************************************************/
 void GUIEngine::cloudPreProcess()
 {
-	u32 time = RenderingEngine::get_timer_time();
+	u32 time = m_rendering_engine->get_timer_time();
 
 	if(time > m_cloud.lasttime)
 		m_cloud.dtime = (time - m_cloud.lasttime) / 1000.0;
@@ -367,25 +374,22 @@ void GUIEngine::cloudPreProcess()
 }
 
 /******************************************************************************/
-void GUIEngine::cloudPostProcess()
+void GUIEngine::cloudPostProcess(u32 frametime_min, IrrlichtDevice *device)
 {
-	float fps_max = g_settings->getFloat("pause_fps_max");
 	// Time of frame without fps limit
 	u32 busytime_u32;
 
 	// not using getRealTime is necessary for wine
-	u32 time = RenderingEngine::get_timer_time();
+	u32 time = m_rendering_engine->get_timer_time();
 	if(time > m_cloud.lasttime)
 		busytime_u32 = time - m_cloud.lasttime;
 	else
 		busytime_u32 = 0;
 
-	// FPS limiter
-	u32 frametime_min = 1000./fps_max;
-
+	// FPS limit
 	if (busytime_u32 < frametime_min) {
 		u32 sleeptime = frametime_min - busytime_u32;
-		RenderingEngine::get_raw_device()->sleep(sleeptime);
+		device->sleep(sleeptime);
 	}
 }
 
@@ -433,9 +437,22 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 		return;
 	}
 
+	// Chop background image to the smaller screen dimension
+	v2u32 bg_size = screensize;
+	v2f32 scale(
+			(f32) bg_size.X / sourcesize.X,
+			(f32) bg_size.Y / sourcesize.Y);
+	if (scale.X < scale.Y)
+		bg_size.X = (int) (scale.Y * sourcesize.X);
+	else
+		bg_size.Y = (int) (scale.X * sourcesize.Y);
+	v2s32 offset = v2s32(
+		(s32) screensize.X - (s32) bg_size.X,
+		(s32) screensize.Y - (s32) bg_size.Y
+	) / 2;
 	/* Draw background texture */
 	draw2DImageFilterScaled(driver, texture,
-		core::rect<s32>(0, 0, screensize.X, screensize.Y),
+		core::rect<s32>(offset.X, offset.Y, bg_size.X + offset.X, bg_size.Y + offset.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
 }
@@ -484,8 +501,6 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
 				((free_space/2)-splashsize.Y/2)+10);
 
-	video::SColor bgcolor(255,50,50,50);
-
 	draw2DImageFilterScaled(driver, texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),
 		core::dimension2di(texture->getOriginalSize())),
@@ -529,7 +544,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 		bool tile_image, unsigned int minsize)
 {
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	if (m_textures[layer].texture) {
 		driver->removeTexture(m_textures[layer].texture);
@@ -596,7 +611,7 @@ void GUIEngine::updateTopLeftTextSize()
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext->remove();
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = gui::StaticText::add(m_rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 }
 
@@ -611,11 +626,4 @@ s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 void GUIEngine::stopSound(s32 handle)
 {
 	m_sound_manager->stopSound(handle);
-}
-
-/******************************************************************************/
-unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
-		const std::string &serialized_params)
-{
-	return m_script->queueAsync(serialized_func, serialized_params);
 }

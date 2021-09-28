@@ -107,7 +107,7 @@ private:
 	const InventoryLocation m_inventoryloc;
 	const std::string m_listname;
 
-	// specifies the width and height of the inventorylist in itemslots
+	// the specified width and height of the shown inventorylist in itemslots
 	const v2s32 m_geom;
 	// the first item's index in inventory
 	const s32 m_start_item_i;
@@ -127,4 +127,7 @@ private:
 
 	// the index of the hovered item; -1 if no item is hovered
 	s32 m_hovered_i;
+
+	// we do not want to write a warning on every draw
+	bool m_already_warned;
 };

@@ -18,6 +18,8 @@
 ui = {}
 ui.childlist = {}
 ui.default = nil
+-- Whether fstk is currently showing its own formspec instead of active ui elements.
+ui.overridden = false
 
 --------------------------------------------------------------------------------
 function ui.add(child)
@@ -55,6 +57,7 @@ end
 --------------------------------------------------------------------------------
 
 function ui.update()
+	ui.overridden = false
 	local formspec = {}
 
 	-- handle errors
@@ -64,12 +67,14 @@ function ui.update()
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",
+			"set_focus[btn_reconnect_yes;true]",
 			"box[0.5,1.2;13,5;#000]",
 			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
 				fgettext("The server has requested a reconnect:"), error_message),
 			"button[2,6.6;4,1;btn_reconnect_yes;" .. fgettext("Reconnect") .. "]",
 			"button[8,6.6;4,1;btn_reconnect_no;" .. fgettext("Main menu") .. "]"
 		}
+		ui.overridden = true
 	elseif gamedata ~= nil and gamedata.errormessage ~= nil then
 		local error_message = core.formspec_escape(gamedata.errormessage)
 
@@ -82,11 +87,13 @@ function ui.update()
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",
+			"set_focus[btn_error_confirm;true]",
 			"box[0.5,1.2;13,5;#000]",
 			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
 				error_title, error_message),
-			"button[5,6.6;4,1;btn_error_confirm;" .. fgettext("Ok") .. "]"
+			"button[5,6.6;4,1;btn_error_confirm;" .. fgettext("OK") .. "]"
 		}
+		ui.overridden = true
 	else
 		local active_toplevel_ui_elements = 0
 		for key,value in pairs(ui.childlist) do
@@ -183,6 +190,16 @@ end
 
 --------------------------------------------------------------------------------
 core.event_handler = function(event)
+	-- Handle error messages
+	if ui.overridden then
+		if event == "MenuQuit" then
+			gamedata.errormessage = nil
+			gamedata.reconnect_requested = false
+			ui.update()
+		end
+		return
+	end
+
 	if ui.handle_events(event) then
 		ui.update()
 		return

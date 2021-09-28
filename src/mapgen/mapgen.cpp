@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "emerge.h"
 #include "voxelalgorithms.h"
@@ -59,6 +58,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
 	{"biomes",      MG_BIOMES},
+	{"ores",        MG_ORES},
 	{NULL,          0}
 };
 
@@ -107,8 +107,8 @@ STATIC_ASSERT(
 //// Mapgen
 ////
 
-Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
-	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
+Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
+	gennotify(emerge->gen_notify_on, emerge->gen_notify_on_deco_ids)
 {
 	id           = mapgenid;
 	water_level  = params->water_level;
@@ -157,7 +157,7 @@ const char *Mapgen::getMapgenName(MapgenType mgtype)
 
 
 Mapgen *Mapgen::createMapgen(MapgenType mgtype, MapgenParams *params,
-	EmergeManager *emerge)
+	EmergeParams *emerge)
 {
 	switch (mgtype) {
 	case MAPGEN_CARPATHIAN:
@@ -218,7 +218,7 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 void Mapgen::setDefaultSettings(Settings *settings)
 {
 	settings->setDefault("mg_flags", flagdesc_mapgen,
-		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES | MG_ORES);
 
 	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
 		MapgenParams *params = createMapgenParams((MapgenType)i);
@@ -241,26 +241,6 @@ u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
 	n = (n >> 13) ^ n;
 	return (n * (n * n * 60493 + 19990303) + 1376312589);
-}
-
-
-// Returns Y one under area minimum if not found
-s16 Mapgen::findGroundLevelFull(v2s16 p2d)
-{
-	const v3s16 &em = vm->m_area.getExtent();
-	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
-	s16 y_nodes_min = vm->m_area.MinEdge.Y;
-	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
-	s16 y;
-
-	for (y = y_nodes_max; y >= y_nodes_min; y--) {
-		MapNode &n = vm->m_data[i];
-		if (ndef->get(n).walkable)
-			break;
-
-		VoxelArea::add_y(em, i, -1);
-	}
-	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
 }
 
 
@@ -586,7 +566,7 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 //// MapgenBasic
 ////
 
-MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
 	this->m_emerge = emerge;
@@ -615,7 +595,8 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	this->heightmap = new s16[csize.X * csize.Z];
 
 	//// Initialize biome generator
-	biomegen = m_bmgr->createBiomeGen(BIOMEGEN_ORIGINAL, params->bparams, csize);
+	biomegen = emerge->biomegen;
+	biomegen->assertChunkSize(csize);
 	biomemap = biomegen->biomemap;
 
 	//// Look up some commonly used content
@@ -629,13 +610,21 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	// Lava falls back to water as both are suitable as cave liquids.
 	if (c_lava_source == CONTENT_IGNORE)
 		c_lava_source = c_water_source;
+
+	if (c_stone == CONTENT_IGNORE)
+		errorstream << "Mapgen: Mapgen alias 'mapgen_stone' is invalid!" << std::endl;
+	if (c_water_source == CONTENT_IGNORE)
+		errorstream << "Mapgen: Mapgen alias 'mapgen_water_source' is invalid!" << std::endl;
+	if (c_river_water_source == CONTENT_IGNORE)
+		warningstream << "Mapgen: Mapgen alias 'mapgen_river_water_source' is invalid!" << std::endl;
 }
 
 
 MapgenBasic::~MapgenBasic()
 {
-	delete biomegen;
 	delete []heightmap;
+
+	delete m_emerge; // destroying EmergeParams is our responsibility
 }
 
 
@@ -968,21 +957,9 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 ////
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
-	std::set<u32> *notify_on_deco_ids)
+	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on = notify_on;
-	m_notify_on_deco_ids = notify_on_deco_ids;
-}
-
-
-void GenerateNotifier::setNotifyOn(u32 notify_on)
-{
-	m_notify_on = notify_on;
-}
-
-
-void GenerateNotifier::setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids)
-{
 	m_notify_on_deco_ids = notify_on_deco_ids;
 }
 
@@ -993,7 +970,7 @@ bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
 		return false;
 
 	if (type == GENNOTIFY_DECORATION &&
-		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->end())
+		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->cend())
 		return false;
 
 	GenNotifyEvent gne;

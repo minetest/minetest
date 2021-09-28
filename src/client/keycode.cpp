@@ -109,6 +109,7 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_RETURN, N_("Return"))
 	DEFINEKEY1(KEY_SHIFT, N_("Shift"))
 	DEFINEKEY1(KEY_CONTROL, N_("Control"))
+	//~ Key name, common on Windows keyboards
 	DEFINEKEY1(KEY_MENU, N_("Menu"))
 	DEFINEKEY1(KEY_PAUSE, N_("Pause"))
 	DEFINEKEY1(KEY_CAPITAL, N_("Caps Lock"))
@@ -121,7 +122,9 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_UP, N_("Up"))
 	DEFINEKEY1(KEY_RIGHT, N_("Right"))
 	DEFINEKEY1(KEY_DOWN, N_("Down"))
+	//~ Key name
 	DEFINEKEY1(KEY_SELECT, N_("Select"))
+	//~ "Print screen" key
 	DEFINEKEY1(KEY_PRINT, N_("Print"))
 	DEFINEKEY1(KEY_EXECUT, N_("Execute"))
 	DEFINEKEY1(KEY_SNAPSHOT, N_("Snapshot"))
@@ -194,7 +197,6 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_MODECHANGE, N_("IME Mode Change"))
 	DEFINEKEY1(KEY_APPS, N_("Apps"))
 	DEFINEKEY1(KEY_SLEEP, N_("Sleep"))
-#if !(IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 7 && IRRLICHT_VERSION_REVISION < 3)
 	DEFINEKEY1(KEY_OEM_1, "OEM 1") // KEY_OEM_[0-9] and KEY_OEM_102 are assigned to multiple
 	DEFINEKEY1(KEY_OEM_2, "OEM 2") // different chars (on different platforms too) and thus w/o char
 	DEFINEKEY1(KEY_OEM_3, "OEM 3")
@@ -205,7 +207,6 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_OEM_8, "OEM 8")
 	DEFINEKEY1(KEY_OEM_AX, "OEM AX")
 	DEFINEKEY1(KEY_OEM_102, "OEM 102")
-#endif
 	DEFINEKEY1(KEY_ATTN, "Attn")
 	DEFINEKEY1(KEY_CRSEL, "CrSel")
 	DEFINEKEY1(KEY_EXSEL, "ExSel")
@@ -313,7 +314,8 @@ KeyPress::KeyPress(const char *name)
 	int chars_read = mbtowc(&Char, name, 1);
 	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 	m_name = "";
-	warningstream << "KeyPress: Unknown key '" << name << "', falling back to first char.";
+	warningstream << "KeyPress: Unknown key '" << name
+		<< "', falling back to first char." << std::endl;
 }
 
 KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)

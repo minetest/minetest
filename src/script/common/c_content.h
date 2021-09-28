@@ -39,7 +39,9 @@ extern "C" {
 #include "itemgroup.h"
 #include "itemdef.h"
 #include "c_types.h"
-#include "hud.h"
+// We do a explicit path include because by default c_content.h include src/client/hud.h
+// prior to the src/hud.h, which is not good on server only build
+#include "../../hud.h"
 
 namespace Json { class Value; }
 
@@ -63,9 +65,12 @@ struct EnumString;
 struct NoiseParams;
 class Schematic;
 class ServerActiveObject;
+struct collisionMoveResult;
 
+extern struct EnumString es_TileAnimationType[];
 
-ContentFeatures    read_content_features     (lua_State *L, int index);
+void               read_content_features     (lua_State *L, ContentFeatures &f,
+                                              int index);
 void               push_content_features     (lua_State *L,
                                               const ContentFeatures &c);
 
@@ -188,12 +193,12 @@ void               read_json_value           (lua_State *L, Json::Value &root,
 void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm =
 	false, bool hitpoint = false);
 
-void               push_objectRef            (lua_State *L, const u16 id);
+void push_objectRef            (lua_State *L, const u16 id);
 
-void               read_hud_element          (lua_State *L, HudElement *elem);
+void read_hud_element          (lua_State *L, HudElement *elem);
 
-void               push_hud_element          (lua_State *L, HudElement *elem);
+void push_hud_element          (lua_State *L, HudElement *elem);
 
-HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
+bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *elem, void **value);
 
-extern struct EnumString es_TileAnimationType[];
+void push_collision_move_result(lua_State *L, const collisionMoveResult &res);

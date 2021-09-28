@@ -56,7 +56,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	m_font = skin->getFont();
 	if (m_font) {
 		m_font->grab();
-		m_rowheight = m_font->getDimension(L"A").Height + 4;
+		m_rowheight = m_font->getDimension(L"Ay").Height + 4;
 		m_rowheight = MYMAX(m_rowheight, 1);
 	}
 
@@ -77,9 +77,10 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	setTabStop(true);
 	setTabOrder(-1);
 	updateAbsolutePosition();
+#ifdef HAVE_TOUCHSCREENGUI
+	float density = 1; // dp scaling is applied by the skin
+#else
 	float density = RenderingEngine::getDisplayDensity();
-#ifdef __ANDROID__
-	density = 1; // dp scaling is applied by the skin
 #endif
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
 	s32 width = (relative_rect.getWidth() / (2.0 / 3.0)) * density *
@@ -584,6 +585,31 @@ void GUITable::setSelected(s32 index)
 	if (m_selected != old_selected || selection_invisible) {
 		autoScroll();
 	}
+}
+
+void GUITable::setOverrideFont(IGUIFont *font)
+{
+	if (m_font == font)
+		return;
+
+	if (font == nullptr)
+		font = Environment->getSkin()->getFont();
+
+	if (m_font)
+		m_font->drop();
+
+	m_font = font;
+	m_font->grab();
+
+	m_rowheight = m_font->getDimension(L"Ay").Height + 4;
+	m_rowheight = MYMAX(m_rowheight, 1);
+
+	updateScrollBar();
+}
+
+IGUIFont *GUITable::getOverrideFont() const
+{
+	return m_font;
 }
 
 GUITable::DynamicData GUITable::getDynamicData() const

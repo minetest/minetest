@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#pragma once
+
 #include "guiButton.h"
 #include "IGUIButton.h"
 
@@ -27,33 +29,23 @@ class GUIButtonImage : public GUIButton
 public:
 	//! constructor
 	GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-			s32 id, core::rect<s32> rectangle, bool noclip = false);
-
-	virtual bool OnEvent(const SEvent& event) override;
-
-	void setForegroundImage(gui::EGUI_BUTTON_IMAGE_STATE state,
-			video::ITexture *image = nullptr,
-			const core::rect<s32> &sourceRect = core::rect<s32>(0, 0, 0, 0));
+			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
+			bool noclip = false);
 
 	void setForegroundImage(video::ITexture *image = nullptr);
-	void setForegroundImage(video::ITexture *image, const core::rect<s32> &pos);
 
-	void setPressedForegroundImage(video::ITexture *image = nullptr);
-	void setPressedForegroundImage(video::ITexture *image, const core::rect<s32> &pos);
-
-	void setHoveredForegroundImage(video::ITexture *image = nullptr);
-	void setHoveredForegroundImage(video::ITexture *image, const core::rect<s32> &pos);
-
-	virtual void setFromStyle(const StyleSpec &style, ISimpleTextureSource *tsrc) override;
+	//! Set element properties from a StyleSpec
+	virtual void setFromStyle(const StyleSpec& style) override;
 
 	virtual void setScaleImage(bool scaleImage=true) override;
 
 	//! Do not drop returned handle
 	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment,
-			const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
-			const wchar_t *text, const wchar_t *tooltiptext = L"");
+			const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
+			IGUIElement *parent, s32 id, const wchar_t *text,
+			const wchar_t *tooltiptext = L"");
 
 private:
-	ButtonImage m_foreground_images[gui::EGBIS_COUNT];
+	video::ITexture *m_foreground_image = nullptr;
 	gui::IGUIImage *m_image;
 };

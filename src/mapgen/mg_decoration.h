@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "nodedef.h"
 
+typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+
 class Mapgen;
 class MMVManip;
 class PcgRandom;
@@ -72,12 +74,17 @@ public:
 	s16 nspawnby;
 	s16 place_offset_y = 0;
 
-	std::unordered_set<u8> biomes;
+	std::unordered_set<biome_t> biomes;
+
+protected:
+	void cloneTo(Decoration *def) const;
 };
 
 
 class DecoSimple : public Decoration {
 public:
+	ObjDef *clone() const;
+
 	virtual void resolveNodeNames();
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
@@ -91,12 +98,16 @@ public:
 
 class DecoSchematic : public Decoration {
 public:
+	ObjDef *clone() const;
+
 	DecoSchematic() = default;
+	virtual ~DecoSchematic();
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
 	Rotation rotation;
 	Schematic *schematic = nullptr;
+	bool was_cloned = false; // see FIXME inside DecoSchemtic::clone()
 };
 
 
@@ -112,6 +123,8 @@ class DecorationManager : public ObjDefManager {
 public:
 	DecorationManager(IGameDef *gamedef);
 	virtual ~DecorationManager() = default;
+
+	DecorationManager *clone() const;
 
 	const char *getObjectTitle() const
 	{
@@ -133,4 +146,7 @@ public:
 	}
 
 	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+
+private:
+	DecorationManager() {};
 };

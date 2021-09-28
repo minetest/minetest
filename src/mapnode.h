@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "light.h"
+#include "util/pointer.h"
 #include <string>
 #include <vector>
 
@@ -240,6 +241,9 @@ struct MapNode
 	u8 getWallMounted(const NodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(const NodeDefManager *nodemgr) const;
 
+	/// @returns Rotation in range 0–239 (in 1.5° steps)
+	u8 getDegRotate(const NodeDefManager *nodemgr) const;
+
 	void rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot);
 
 	/*!
@@ -268,12 +272,12 @@ struct MapNode
 		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
-		Liquid helpers
+		Liquid/leveled helpers
 	*/
 	u8 getMaxLevel(const NodeDefManager *nodemgr) const;
 	u8 getLevel(const NodeDefManager *nodemgr) const;
-	u8 setLevel(const NodeDefManager *nodemgr, s8 level = 1);
-	u8 addLevel(const NodeDefManager *nodemgr, s8 add = 1);
+	s8 setLevel(const NodeDefManager *nodemgr, s16 level = 1);
+	s8 addLevel(const NodeDefManager *nodemgr, s16 add = 1);
 
 	/*
 		Serialization functions
@@ -290,12 +294,12 @@ struct MapNode
 	//   content_width = the number of bytes of content per node
 	//   params_width = the number of bytes of params per node
 	//   compressed = true to zlib-compress output
-	static void serializeBulk(std::ostream &os, int version,
+	static SharedBuffer<u8> serializeBulk(int version,
 			const MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+			u8 content_width, u8 params_width);
 	static void deSerializeBulk(std::istream &is, int version,
 			MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+			u8 content_width, u8 params_width);
 
 private:
 	// Deprecated serialization methods

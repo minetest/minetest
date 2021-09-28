@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef HUD_HEADER
-#define HUD_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include <string>
@@ -33,6 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_UPPER  0
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
+
+#define HUD_STYLE_BOLD   1
+#define HUD_STYLE_ITALIC 2
+#define HUD_STYLE_MONO   4
 
 // Note that these visibility flags do not determine if the hud items are
 // actually drawn, but rather, whether to draw the item should the rest
@@ -52,7 +55,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_HOTBAR_ITEMCOUNT_DEFAULT 8
 #define HUD_HOTBAR_ITEMCOUNT_MAX     32
 
-
 #define HOTBAR_IMAGE_SIZE 48
 
 enum HudElementType {
@@ -61,6 +63,9 @@ enum HudElementType {
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
 	HUD_ELEM_WAYPOINT  = 4,
+	HUD_ELEM_IMAGE_WAYPOINT = 5,
+	HUD_ELEM_COMPASS   = 6,
+	HUD_ELEM_MINIMAP   = 7
 };
 
 enum HudElementStat {
@@ -76,6 +81,15 @@ enum HudElementStat {
 	HUD_STAT_WORLD_POS,
 	HUD_STAT_SIZE,
 	HUD_STAT_Z_INDEX,
+	HUD_STAT_TEXT2,
+	HUD_STAT_STYLE,
+};
+
+enum HudCompassDir {
+	HUD_COMPASS_ROTATE = 0,
+	HUD_COMPASS_ROTATE_REVERSE,
+	HUD_COMPASS_TRANSLATE,
+	HUD_COMPASS_TRANSLATE_REVERSE,
 };
 
 struct HudElement {
@@ -92,10 +106,20 @@ struct HudElement {
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index = 0;
+	std::string text2;
+	u32 style;
 };
 
 extern const EnumString es_HudElementType[];
 extern const EnumString es_HudElementStat[];
 extern const EnumString es_HudBuiltinElement[];
 
-#endif
+// Minimap stuff
+
+enum MinimapType {
+	MINIMAP_TYPE_OFF,
+	MINIMAP_TYPE_SURFACE,
+	MINIMAP_TYPE_RADAR,
+	MINIMAP_TYPE_TEXTURE,
+};
+

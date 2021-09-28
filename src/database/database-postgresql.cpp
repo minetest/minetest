@@ -36,23 +36,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "exceptions.h"
 #include "settings.h"
-#include "content_sao.h"
 #include "remoteplayer.h"
+#include "server/player_sao.h"
 
-Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
+Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string,
+	const char *type) :
 	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
-		throw SettingNotFoundException(
-			"Set pgsql_connection string in world.mt to "
+		// Use given type to reference the exact setting in the error message
+		std::string s = type;
+		std::string msg =
+			"Set pgsql" + s + "_connection string in world.mt to "
 			"use the postgresql backend\n"
 			"Notes:\n"
-			"pgsql_connection has the following form: \n"
-			"\tpgsql_connection = host=127.0.0.1 port=5432 user=mt_user "
-			"password=mt_password dbname=minetest_world\n"
+			"pgsql" + s + "_connection has the following form: \n"
+			"\tpgsql" + s + "_connection = host=127.0.0.1 port=5432 "
+			"user=mt_user password=mt_password dbname=minetest" + s + "\n"
 			"mt_user should have CREATE TABLE, INSERT, SELECT, UPDATE and "
-			"DELETE rights on the database.\n"
-			"Don't create mt_user as a SUPERUSER!");
+			"DELETE rights on the database. "
+			"Don't create mt_user as a SUPERUSER!";
+		throw SettingNotFoundException(msg);
 	}
 }
 
@@ -160,8 +164,13 @@ void Database_PostgreSQL::endSave()
 	checkResults(PQexec(m_conn, "COMMIT;"));
 }
 
+void Database_PostgreSQL::rollback()
+{
+	checkResults(PQexec(m_conn, "ROLLBACK;"));
+}
+
 MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string):
-	Database_PostgreSQL(connect_string),
+	Database_PostgreSQL(connect_string, ""),
 	MapDatabase()
 {
 	connectToDatabase();
@@ -265,10 +274,10 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 	PGresult *results = execPrepared("read_block", ARRLEN(args), args,
 		argLen, argFmt, false);
 
-	*block = "";
-
 	if (PQntuples(results))
-		*block = std::string(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+		block->assign(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+	else
+		block->clear();
 
 	PQclear(results);
 }
@@ -301,7 +310,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	int numrows = PQntuples(results);
 
 	for (int row = 0; row < numrows; ++row)
-		dst.push_back(pg_to_v3s16(results, 0, 0));
+		dst.push_back(pg_to_v3s16(results, row, 0));
 
 	PQclear(results);
 }
@@ -310,7 +319,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
  * Player Database
  */
 PlayerDatabasePostgreSQL::PlayerDatabasePostgreSQL(const std::string &connect_string):
-	Database_PostgreSQL(connect_string),
+	Database_PostgreSQL(connect_string, "_player"),
 	PlayerDatabase()
 {
 	connectToDatabase();
@@ -487,6 +496,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	execPrepared("remove_player_inventory_items", 1, rmvalues);
 
 	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
+	std::ostringstream oss;
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList* list = inventory_lists[i];
 		const std::string &name = list->getName();
@@ -503,9 +513,10 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 		execPrepared("add_player_inventory", 5, inv_values);
 
 		for (u32 j = 0; j < list->getSize(); j++) {
-			std::ostringstream os;
-			list->getItem(j).serialize(os);
-			std::string itemStr = os.str(), slotId = itos(j);
+			oss.str("");
+			oss.clear();
+			list->getItem(j).serialize(oss);
+			std::string itemStr = oss.str(), slotId = itos(j);
 
 			const char* invitem_values[] = {
 				player->getName(),
@@ -630,5 +641,176 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 
 	PQclear(results);
 }
+
+AuthDatabasePostgreSQL::AuthDatabasePostgreSQL(const std::string &connect_string) :
+	Database_PostgreSQL(connect_string, "_auth"),
+	AuthDatabase()
+{
+	connectToDatabase();
+}
+
+void AuthDatabasePostgreSQL::createDatabase()
+{
+	createTableIfNotExists("auth",
+		"CREATE TABLE auth ("
+			"id SERIAL,"
+			"name TEXT UNIQUE,"
+			"password TEXT,"
+			"last_login INT NOT NULL DEFAULT 0,"
+			"PRIMARY KEY (id)"
+		");");
+
+	createTableIfNotExists("user_privileges",
+		"CREATE TABLE user_privileges ("
+			"id INT,"
+			"privilege TEXT,"
+			"PRIMARY KEY (id, privilege),"
+			"CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE"
+		");");
+}
+
+void AuthDatabasePostgreSQL::initStatements()
+{
+	prepareStatement("auth_read", "SELECT id, name, password, last_login FROM auth WHERE name = $1");
+	prepareStatement("auth_write", "UPDATE auth SET name = $1, password = $2, last_login = $3 WHERE id = $4");
+	prepareStatement("auth_create", "INSERT INTO auth (name, password, last_login) VALUES ($1, $2, $3) RETURNING id");
+	prepareStatement("auth_delete", "DELETE FROM auth WHERE name = $1");
+
+	prepareStatement("auth_list_names", "SELECT name FROM auth ORDER BY name DESC");
+
+	prepareStatement("auth_read_privs", "SELECT privilege FROM user_privileges WHERE id = $1");
+	prepareStatement("auth_write_privs", "INSERT INTO user_privileges (id, privilege) VALUES ($1, $2)");
+	prepareStatement("auth_delete_privs", "DELETE FROM user_privileges WHERE id = $1");
+}
+
+bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
+{
+	verifyDatabase();
+
+	const char *values[] = { name.c_str() };
+	PGresult *result = execPrepared("auth_read", 1, values, false, false);
+	int numrows = PQntuples(result);
+	if (numrows == 0) {
+		PQclear(result);
+		return false;
+	}
+
+	res.id = pg_to_uint(result, 0, 0);
+	res.name = std::string(PQgetvalue(result, 0, 1), PQgetlength(result, 0, 1));
+	res.password = std::string(PQgetvalue(result, 0, 2), PQgetlength(result, 0, 2));
+	res.last_login = pg_to_int(result, 0, 3);
+
+	PQclear(result);
+
+	std::string playerIdStr = itos(res.id);
+	const char *privsValues[] = { playerIdStr.c_str() };
+	PGresult *results = execPrepared("auth_read_privs", 1, privsValues, false);
+
+	numrows = PQntuples(results);
+	for (int row = 0; row < numrows; row++)
+		res.privileges.emplace_back(PQgetvalue(results, row, 0));
+
+	PQclear(results);
+
+	return true;
+}
+
+bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
+{
+	verifyDatabase();
+
+	beginSave();
+
+	std::string lastLoginStr = itos(authEntry.last_login);
+	std::string idStr = itos(authEntry.id);
+	const char *values[] = {
+		authEntry.name.c_str() ,
+		authEntry.password.c_str(),
+		lastLoginStr.c_str(),
+		idStr.c_str(),
+	};
+	execPrepared("auth_write", 4, values);
+
+	writePrivileges(authEntry);
+
+	endSave();
+	return true;
+}
+
+bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
+{
+	verifyDatabase();
+
+	std::string lastLoginStr = itos(authEntry.last_login);
+	const char *values[] = {
+		authEntry.name.c_str() ,
+		authEntry.password.c_str(),
+		lastLoginStr.c_str()
+	};
+
+	beginSave();
+
+	PGresult *result = execPrepared("auth_create", 3, values, false, false);
+
+	int numrows = PQntuples(result);
+	if (numrows == 0) {
+		errorstream << "Strange behaviour on auth creation, no ID returned." << std::endl;
+		PQclear(result);
+		rollback();
+		return false;
+	}
+
+	authEntry.id = pg_to_uint(result, 0, 0);
+	PQclear(result);
+
+	writePrivileges(authEntry);
+
+	endSave();
+	return true;
+}
+
+bool AuthDatabasePostgreSQL::deleteAuth(const std::string &name)
+{
+	verifyDatabase();
+
+	const char *values[] = { name.c_str() };
+	execPrepared("auth_delete", 1, values);
+
+	// privileges deleted by foreign key on delete cascade
+	return true;
+}
+
+void AuthDatabasePostgreSQL::listNames(std::vector<std::string> &res)
+{
+	verifyDatabase();
+
+	PGresult *results = execPrepared("auth_list_names", 0,
+		NULL, NULL, NULL, false, false);
+
+	int numrows = PQntuples(results);
+
+	for (int row = 0; row < numrows; ++row)
+		res.emplace_back(PQgetvalue(results, row, 0));
+
+	PQclear(results);
+}
+
+void AuthDatabasePostgreSQL::reload()
+{
+	// noop for PgSQL
+}
+
+void AuthDatabasePostgreSQL::writePrivileges(const AuthEntry &authEntry)
+{
+	std::string authIdStr = itos(authEntry.id);
+	const char *values[] = { authIdStr.c_str() };
+	execPrepared("auth_delete_privs", 1, values);
+
+	for (const std::string &privilege : authEntry.privileges) {
+		const char *values[] = { authIdStr.c_str(), privilege.c_str() };
+		execPrepared("auth_write_privs", 2, values);
+	}
+}
+
 
 #endif // USE_POSTGRESQL

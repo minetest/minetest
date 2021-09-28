@@ -28,11 +28,11 @@ enum ActiveObjectType {
 	ACTIVEOBJECT_TYPE_INVALID = 0,
 	ACTIVEOBJECT_TYPE_TEST = 1,
 // Obsolete stuff
-	ACTIVEOBJECT_TYPE_ITEM = 2,
-//	ACTIVEOBJECT_TYPE_RAT = 3,
-//	ACTIVEOBJECT_TYPE_OERKKI1 = 4,
-//	ACTIVEOBJECT_TYPE_FIREFLY = 5,
-	ACTIVEOBJECT_TYPE_MOBV2 = 6,
+// ACTIVEOBJECT_TYPE_ITEM = 2,
+// ACTIVEOBJECT_TYPE_RAT = 3,
+// ACTIVEOBJECT_TYPE_OERKKI1 = 4,
+// ACTIVEOBJECT_TYPE_FIREFLY = 5,
+// ACTIVEOBJECT_TYPE_MOBV2 = 6,
 // End obsolete stuff
 	ACTIVEOBJECT_TYPE_LUAENTITY = 7,
 // Special type, not stored as a static object
@@ -53,6 +53,23 @@ struct ActiveObjectMessage
 	u16 id;
 	bool reliable;
 	std::string datastring;
+};
+
+enum ActiveObjectCommand {
+	AO_CMD_SET_PROPERTIES,
+	AO_CMD_UPDATE_POSITION,
+	AO_CMD_SET_TEXTURE_MOD,
+	AO_CMD_SET_SPRITE,
+	AO_CMD_PUNCHED,
+	AO_CMD_UPDATE_ARMOR_GROUPS,
+	AO_CMD_SET_ANIMATION,
+	AO_CMD_SET_BONE_POSITION,
+	AO_CMD_ATTACH_TO,
+	AO_CMD_SET_PHYSICS_OVERRIDE,
+	AO_CMD_OBSOLETE1,
+	// ^ UPDATE_NAMETAG_ATTRIBUTES deprecated since 0.4.14, removed in 5.3.0
+	AO_CMD_SPAWN_INFANT,
+	AO_CMD_SET_ANIMATION_SPEED
 };
 
 /*
@@ -103,9 +120,9 @@ public:
 
 
 	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
-			v3f rotation) {}
+			v3f rotation, bool force_visible) {}
 	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation) const {}
+			v3f *rotation, bool *force_visible) const {}
 	virtual void clearChildAttachments() {}
 	virtual void clearParentAttachment() {}
 	virtual void addAttachmentChild(int child_id) {}

@@ -49,6 +49,9 @@ struct ModSpec
 	bool part_of_modpack = false;
 	bool is_modpack = false;
 
+	// For logging purposes
+	std::vector<const char *> deprecation_msgs;
+
 	// if modpack:
 	std::map<std::string, ModSpec> modpack_content;
 	ModSpec(const std::string &name = "", const std::string &path = "") :
@@ -59,6 +62,8 @@ struct ModSpec
 			name(name), path(path), part_of_modpack(part_of_modpack)
 	{
 	}
+
+	void checkAndLog() const;
 };
 
 // Retrieves depends, optdepends, is_modpack and modpack_content
@@ -68,7 +73,7 @@ std::map<std::string, ModSpec> getModsInPath(
 		const std::string &path, bool part_of_modpack = false);
 
 // replaces modpack Modspecs with their content
-std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods);
+std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
 
 // a ModConfiguration is a subset of installed mods, expected to have
 // all dependencies fullfilled, so it can be used as a list of mods to

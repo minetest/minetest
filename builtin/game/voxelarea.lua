@@ -1,6 +1,6 @@
 VoxelArea = {
-	MinEdge = {x=1, y=1, z=1},
-	MaxEdge = {x=0, y=0, z=0},
+	MinEdge = vector.new(1, 1, 1),
+	MaxEdge = vector.new(0, 0, 0),
 	ystride = 0,
 	zstride = 0,
 }
@@ -19,11 +19,11 @@ end
 
 function VoxelArea:getExtent()
 	local MaxEdge, MinEdge = self.MaxEdge, self.MinEdge
-	return {
-		x = MaxEdge.x - MinEdge.x + 1,
-		y = MaxEdge.y - MinEdge.y + 1,
-		z = MaxEdge.z - MinEdge.z + 1,
-	}
+	return vector.new(
+		MaxEdge.x - MinEdge.x + 1,
+		MaxEdge.y - MinEdge.y + 1,
+		MaxEdge.z - MinEdge.z + 1
+	)
 end
 
 function VoxelArea:getVolume()

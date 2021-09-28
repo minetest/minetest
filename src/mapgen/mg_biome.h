@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2018 paramat
+Copyright (C) 2014-2020 paramat
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,7 @@ class BiomeManager;
 //// Biome
 ////
 
-typedef u8 biome_t;
+typedef u16 biome_t;
 
 #define BIOME_NONE ((biome_t)0)
 
@@ -42,6 +42,8 @@ enum BiomeType {
 
 class Biome : public ObjDef, public NodeResolver {
 public:
+	ObjDef *clone() const;
+
 	u32 flags;
 
 	content_t c_top;
@@ -88,11 +90,21 @@ struct BiomeParams {
 	s32 seed;
 };
 
+// WARNING: this class is not thread-safe
 class BiomeGen {
 public:
 	virtual ~BiomeGen() = default;
 
 	virtual BiomeGenType getType() const = 0;
+
+	// Clone this BiomeGen and set a the new BiomeManager to be used by the copy
+	virtual BiomeGen *clone(BiomeManager *biomemgr) const = 0;
+
+	// Check that the internal chunk size is what the mapgen expects, just to be sure.
+	inline void assertChunkSize(v3s16 expect) const
+	{
+		FATAL_ERROR_IF(m_csize != expect, "Chunk size mismatches");
+	}
 
 	// Calculates the biome at the exact position provided.  This function can
 	// be called at any time, but may be less efficient than the latter methods,
@@ -155,12 +167,18 @@ struct BiomeParamsOriginal : public BiomeParams {
 class BiomeGenOriginal : public BiomeGen {
 public:
 	BiomeGenOriginal(BiomeManager *biomemgr,
-		BiomeParamsOriginal *params, v3s16 chunksize);
+		const BiomeParamsOriginal *params, v3s16 chunksize);
 	virtual ~BiomeGenOriginal();
 
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }
 
+	BiomeGen *clone(BiomeManager *biomemgr) const;
+
+	// Slower, meant for Script API use
+	float calcHeatAtPoint(v3s16 pos) const;
+	float calcHumidityAtPoint(v3s16 pos) const;
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
+
 	void calcBiomeNoise(v3s16 pmin);
 
 	biome_t *getBiomes(s16 *heightmap, v3s16 pmin);
@@ -173,7 +191,7 @@ public:
 	float *humidmap;
 
 private:
-	BiomeParamsOriginal *m_params;
+	const BiomeParamsOriginal *m_params;
 
 	Noise *noise_heat;
 	Noise *noise_humidity;
@@ -190,6 +208,8 @@ class BiomeManager : public ObjDefManager {
 public:
 	BiomeManager(Server *server);
 	virtual ~BiomeManager() = default;
+
+	BiomeManager *clone() const;
 
 	const char *getObjectTitle() const
 	{
@@ -224,14 +244,9 @@ public:
 
 	virtual void clear();
 
-	// For BiomeGen type 'BiomeGenOriginal'
-	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-		NoiseParams &np_heat_blend, u64 seed);
-	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-		NoiseParams &np_humidity_blend, u64 seed);
-	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos);
-
 private:
+	BiomeManager() {};
+
 	Server *m_server;
 
 };

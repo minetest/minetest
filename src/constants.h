@@ -89,11 +89,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Size of player's main inventory
 #define PLAYER_INVENTORY_SIZE (8 * 4)
 
-// Default maximum hit points of a player
+// Default maximum health points of a player
 #define PLAYER_MAX_HP_DEFAULT 20
 
 // Default maximal breath of a player
-#define PLAYER_MAX_BREATH_DEFAULT 11
+#define PLAYER_MAX_BREATH_DEFAULT 10
 
 // Number of different files to try to save a player to if the first fails
 // (because of a case-insensitive filesystem)
@@ -110,10 +110,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     GUI related things
 */
 
-// TODO: implement dpi-based scaling for windows and remove this hack
-#if defined(_WIN32)
-#define TTF_DEFAULT_FONT_SIZE (18)
-#else
 #define TTF_DEFAULT_FONT_SIZE (16)
-#endif
 #define DEFAULT_FONT_SIZE (10)

@@ -43,11 +43,18 @@ public:
 	/* auth */
 	bool getAuth(const std::string &playername,
 		std::string *dst_password,
-		std::set<std::string> *dst_privs);
+		std::set<std::string> *dst_privs,
+		s64 *dst_last_login = nullptr);
 	void createAuth(const std::string &playername,
 		const std::string &password);
 	bool setPassword(const std::string &playername,
 		const std::string &password);
+
+	/* dynamic media handling */
+	u32 allocateDynamicMediaCallback(int f_idx);
+	void freeDynamicMediaCallback(u32 token);
+	void on_dynamic_media_added(u32 token, const char *playername);
+
 private:
 	void getAuthHandler();
 	void readPrivileges(int index, std::set<std::string> &result);

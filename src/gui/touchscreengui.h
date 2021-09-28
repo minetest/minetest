@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irrlichttypes.h"
 #include <IEventReceiver.h>
 #include <IGUIButton.h>
 #include <IGUIEnvironment.h>
@@ -38,7 +39,7 @@ typedef enum
 	jump_id = 0,
 	crunch_id,
 	zoom_id,
-	special1_id,
+	aux1_id,
 	after_last_element_id,
 	settings_starter_id,
 	rare_controls_starter_id,
@@ -68,7 +69,7 @@ typedef enum
 	j_backward,
 	j_left,
 	j_right,
-	j_special1
+	j_aux1
 } touch_gui_joystick_move_id;
 
 typedef enum
@@ -80,21 +81,22 @@ typedef enum
 } autohide_button_bar_dir;
 
 #define MIN_DIG_TIME_MS 500
-#define MAX_TOUCH_COUNT 64
 #define BUTTON_REPEAT_DELAY 0.2f
-
 #define SETTINGS_BAR_Y_OFFSET 5
 #define RARE_CONTROLS_BAR_Y_OFFSET 5
 
-extern const char **touchgui_button_imagenames;
-extern const char **touchgui_joystick_imagenames;
+// Very slow button repeat frequency
+#define SLOW_BUTTON_REPEAT 1.0f
+
+extern const char **button_imagenames;
+extern const char **joystick_imagenames;
 
 struct button_info
 {
 	float repeatcounter;
 	float repeatdelay;
 	irr::EKEY_CODE keycode;
-	std::vector<int> ids;
+	std::vector<size_t> ids;
 	IGUIButton *guibutton = nullptr;
 	bool immediate_release;
 
@@ -109,8 +111,8 @@ public:
 	AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver);
 
 	void init(ISimpleTextureSource *tsrc, const char *starter_img, int button_id,
-			v2s32 UpperLeft, v2s32 LowerRight, autohide_button_bar_dir dir,
-			float timeout);
+			const v2s32 &UpperLeft, const v2s32 &LowerRight,
+			autohide_button_bar_dir dir, float timeout);
 
 	~AutoHideButtonBar();
 
@@ -124,9 +126,6 @@ public:
 
 	// detect settings bar button events
 	bool isButton(const SEvent &event);
-
-	// handle released hud buttons
-	bool isReleaseButton(int eventID);
 
 	// step handler
 	void step(float dtime);
@@ -182,7 +181,7 @@ public:
 
 	double getPitch() { return m_camera_pitch; }
 
-	/*!
+	/*
 	 * Returns a line which describes what the player is pointing at.
 	 * The starting point and looking direction are significant,
 	 * the line should be scaled to match its length to the actual distance
@@ -206,9 +205,10 @@ private:
 	IEventReceiver *m_receiver;
 	ISimpleTextureSource *m_texturesource;
 	v2u32 m_screensize;
+	s32 button_size;
 	double m_touchscreen_threshold;
 	std::map<int, rect<s32>> m_hud_rects;
-	std::map<int, irr::EKEY_CODE> m_hud_ids;
+	std::map<size_t, irr::EKEY_CODE> m_hud_ids;
 	bool m_visible; // is the gui visible
 
 	// value in degree
@@ -217,10 +217,10 @@ private:
 
 	// forward, backward, left, right
 	touch_gui_button_id m_joystick_names[5] = {
-			forward_id, backward_id, left_id, right_id, special1_id};
+			forward_id, backward_id, left_id, right_id, aux1_id};
 	bool m_joystick_status[5] = {false, false, false, false, false};
 
-	/*!
+	/*
 	 * A line starting at the camera and pointing towards the
 	 * selected object.
 	 * The line ends on the camera's far plane.
@@ -228,16 +228,18 @@ private:
 	 */
 	line3d<f32> m_shootline;
 
-	int m_move_id = -1;
+	bool m_has_move_id = false;
+	size_t m_move_id;
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
 	bool m_move_sent_as_mouse_event = false;
 	v2s32 m_move_downlocation = v2s32(-10000, -10000);
 
-	int m_joystick_id = -1;
+	bool m_has_joystick_id = false;
+	size_t m_joystick_id;
 	bool m_joystick_has_really_moved = false;
 	bool m_fixed_joystick = false;
-	bool m_joystick_triggers_special1 = false;
+	bool m_joystick_triggers_aux1 = false;
 	button_info *m_joystick_btn_off = nullptr;
 	button_info *m_joystick_btn_bg = nullptr;
 	button_info *m_joystick_btn_center = nullptr;
@@ -248,23 +250,24 @@ private:
 	touch_gui_button_id getButtonID(s32 x, s32 y);
 
 	// gui button by eventID
-	touch_gui_button_id getButtonID(int eventID);
+	touch_gui_button_id getButtonID(size_t eventID);
 
 	// check if a button has changed
 	void handleChangedButton(const SEvent &event);
 
 	// initialize a button
-	void initButton(touch_gui_button_id id, rect<s32> button_rect,
-			std::wstring caption, bool immediate_release,
+	void initButton(touch_gui_button_id id, const rect<s32> &button_rect,
+			const std::wstring &caption, bool immediate_release,
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	// initialize a joystick button
-	button_info *initJoystickButton(touch_gui_button_id id, rect<s32> button_rect,
-			int texture_id, bool visible = true);
+	button_info *initJoystickButton(touch_gui_button_id id,
+			const rect<s32> &button_rect, int texture_id,
+			bool visible = true);
 
 	struct id_status
 	{
-		int id;
+		size_t id;
 		int X;
 		int Y;
 	};
@@ -273,27 +276,21 @@ private:
 	std::vector<id_status> m_known_ids;
 
 	// handle a button event
-	void handleButtonEvent(touch_gui_button_id bID, int eventID, bool action);
+	void handleButtonEvent(touch_gui_button_id bID, size_t eventID, bool action);
 
 	// handle pressed hud buttons
 	bool isHUDButton(const SEvent &event);
-
-	// handle released hud buttons
-	bool isReleaseHUDButton(int eventID);
 
 	// handle double taps
 	bool doubleTapDetection();
 
 	// handle release event
-	void handleReleaseEvent(int evt_id);
+	void handleReleaseEvent(size_t evt_id);
 
 	// apply joystick status
 	void applyJoystickStatus();
 
-	// get size of regular gui control button
-	int getGuiButtonSize();
-
-	// doubleclick detection variables
+	// double-click detection variables
 	struct key_event
 	{
 		u64 down_time;
@@ -302,9 +299,9 @@ private:
 	};
 
 	// array for saving last known position of a pointer
-	v2s32 m_pointerpos[MAX_TOUCH_COUNT];
+	std::map<size_t, v2s32> m_pointerpos;
 
-	// array for doubletap detection
+	// array for double tap detection
 	key_event m_key_events[2];
 
 	// settings bar
@@ -313,4 +310,5 @@ private:
 	// rare controls bar
 	AutoHideButtonBar m_rarecontrolsbar;
 };
+
 extern TouchScreenGUI *g_touchscreengui;

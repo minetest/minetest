@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct ObjectProperties;
 struct ToolCapabilities;
+struct collisionMoveResult;
 
 class ScriptApiEntity
 		: virtual public ScriptApiBase
@@ -32,11 +33,13 @@ public:
 	bool luaentity_Add(u16 id, const char *name);
 	void luaentity_Activate(u16 id,
 			const std::string &staticdata, u32 dtime_s);
+	void luaentity_Deactivate(u16 id);
 	void luaentity_Remove(u16 id);
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,
 			ServerActiveObject *self, ObjectProperties *prop);
-	void luaentity_Step(u16 id, float dtime);
+	void luaentity_Step(u16 id, float dtime,
+		const collisionMoveResult *moveresult);
 	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
 			const ToolCapabilities *toolcap, v3f dir, s16 damage);

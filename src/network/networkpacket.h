@@ -34,14 +34,14 @@ public:
 
 	~NetworkPacket();
 
-	void putRawPacket(u8 *data, u32 datasize, session_t peer_id);
+	void putRawPacket(const u8 *data, u32 datasize, session_t peer_id);
 	void clear();
 
 	// Getters
 	u32 getSize() const { return m_datasize; }
 	session_t getPeerId() const { return m_peer_id; }
 	u16 getCommand() { return m_command; }
-	const u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
+	u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
 	const char *getRemainingString() { return getString(m_read_offset); }
 
 	// Returns a c-string without copying.
@@ -64,7 +64,6 @@ public:
 
 	std::string readLongString();
 
-	char getChar(u32 offset);
 	NetworkPacket &operator>>(char &dst);
 	NetworkPacket &operator<<(char src);
 
@@ -116,7 +115,8 @@ public:
 	NetworkPacket &operator<<(video::SColor src);
 
 	// Temp, we remove SharedBuffer when migration finished
-	SharedBuffer<u8> oldForgePacket();
+	// ^ this comment has been here for 4 years
+	Buffer<u8> oldForgePacket();
 
 private:
 	void checkReadOffset(u32 from_offset, u32 field_size);

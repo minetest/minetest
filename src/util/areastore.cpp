@@ -96,16 +96,15 @@ void AreaStore::deserialize(std::istream &is)
 
 	u16 num_areas = readU16(is);
 	std::vector<Area> areas;
+	areas.reserve(num_areas);
 	for (u32 i = 0; i < num_areas; ++i) {
 		Area a(U32_MAX);
 		a.minedge = readV3S16(is);
 		a.maxedge = readV3S16(is);
 		u16 data_len = readU16(is);
-		char *data = new char[data_len];
-		is.read(data, data_len);
-		a.data = std::string(data, data_len);
-		areas.emplace_back(a);
-		delete [] data;
+		a.data = std::string(data_len, '\0');
+		is.read(&a.data[0], data_len);
+		areas.emplace_back(std::move(a));
 	}
 
 	bool read_ids = is.good(); // EOF for old formats

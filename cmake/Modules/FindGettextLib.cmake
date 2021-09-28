@@ -42,23 +42,14 @@ if(WIN32)
 		NAMES ${GETTEXT_LIB_NAMES}
 		PATHS "${CUSTOM_GETTEXT_PATH}/lib"
 		DOC "GetText library")
-	find_file(GETTEXT_DLL
-		NAMES libintl.dll intl.dll libintl3.dll intl3.dll
-		PATHS "${CUSTOM_GETTEXT_PATH}/bin" "${CUSTOM_GETTEXT_PATH}/lib" 
-		DOC "gettext *intl*.dll")
-	find_file(GETTEXT_ICONV_DLL
-		NAMES libiconv2.dll
-		PATHS "${CUSTOM_GETTEXT_PATH}/bin" "${CUSTOM_GETTEXT_PATH}/lib"
-		DOC "gettext *iconv*.lib")
-	set(GETTEXT_REQUIRED_VARS ${GETTEXT_REQUIRED_VARS} GETTEXT_DLL GETTEXT_ICONV_DLL)
 endif(WIN32)
 
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GetText DEFAULT_MSG ${GETTEXT_REQUIRED_VARS})
+find_package_handle_standard_args(GettextLib DEFAULT_MSG ${GETTEXT_REQUIRED_VARS})
 
 
-if(GETTEXT_FOUND)
+if(GETTEXTLIB_FOUND)
 	# BSD variants require special linkage as they don't use glibc
 	if(${CMAKE_SYSTEM_NAME} MATCHES "BSD|DragonFly")
 		set(GETTEXT_LIBRARY "intl")

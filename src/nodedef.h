@@ -33,6 +33,7 @@ class Client;
 #include "itemgroup.h"
 #include "sound.h" // SimpleSoundSpec
 #include "constants.h" // BS
+#include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 
 // PROTOCOL_VERSION >= 37
@@ -43,6 +44,9 @@ class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
+#if BUILD_UNITTESTS
+class TestSchematic;
+#endif
 
 enum ContentParamType
 {
@@ -63,7 +67,7 @@ enum ContentParamType2
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
 	CPT2_LEVELED,
-	// 2D rotation for things like plants
+	// 2D rotation
 	CPT2_DEGROTATE,
 	// Mesh options for plants
 	CPT2_MESHOPTIONS,
@@ -75,6 +79,8 @@ enum ContentParamType2
 	CPT2_COLORED_WALLMOUNTED,
 	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
+	// 3 bits of palette index, then degrotate
+	CPT2_COLORED_DEGROTATE,
 };
 
 enum LiquidType
@@ -157,7 +163,6 @@ public:
 	int node_texture_size;
 	bool opaque_water;
 	bool connected_glass;
-	bool use_normal_texture;
 	bool enable_mesh_cache;
 	bool enable_minimap;
 
@@ -231,6 +236,14 @@ enum AlignStyle : u8 {
 	ALIGN_STYLE_USER_DEFINED,
 };
 
+enum AlphaMode : u8 {
+	ALPHAMODE_BLEND,
+	ALPHAMODE_CLIP,
+	ALPHAMODE_OPAQUE,
+	ALPHAMODE_LEGACY_COMPAT, /* means either opaque or clip */
+};
+
+
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
@@ -260,6 +273,11 @@ struct TileDef
 		NodeDrawType drawtype);
 };
 
+// Defines the number of special tiles per nodedef
+//
+// NOTE: When changing this value, the enum entries of OverrideTarget and
+//       parser in TextureOverrideSource must be updated so that all special
+//       tiles can be overridden.
 #define CF_SPECIAL_COUNT 6
 
 struct ContentFeatures
@@ -310,9 +328,7 @@ struct ContentFeatures
 	// These will be drawn over the base tiles.
 	TileDef tiledef_overlay[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
-	// If 255, the node is opaque.
-	// Otherwise it uses texture alpha.
-	u8 alpha;
+	AlphaMode alpha;
 	// The color of the node.
 	video::SColor color;
 	std::string palette_name;
@@ -325,8 +341,10 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Flowing liquid or snow, value = default level
+	// Flowing liquid or leveled nodebox, value = default level
 	u8 leveled;
+	// Maximum value for leveled nodes
+	u8 leveled_max;
 
 	// --- LIGHTING-RELATED ---
 
@@ -365,8 +383,10 @@ struct ContentFeatures
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
+	content_t liquid_alternative_flowing_id;
 	// If the content is liquid, this is the source version of the liquid.
 	std::string liquid_alternative_source;
+	content_t liquid_alternative_source_id;
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
@@ -404,28 +424,54 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures() = default;
+	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
-	/*!
-	 * Since vertex alpha is no longer supported, this method
-	 * adds opacity directly to the texture pixels.
-	 *
-	 * \param tiles array of the tile definitions.
-	 * \param length length of tiles
-	 */
-	void correctAlpha(TileDef *tiles, int length);
 
 	/*
 		Some handy methods
 	*/
+	void setDefaultAlphaMode()
+	{
+		switch (drawtype) {
+		case NDT_NORMAL:
+		case NDT_LIQUID:
+		case NDT_FLOWINGLIQUID:
+			alpha = ALPHAMODE_OPAQUE;
+			break;
+		case NDT_NODEBOX:
+		case NDT_MESH:
+			alpha = ALPHAMODE_LEGACY_COMPAT; // this should eventually be OPAQUE
+			break;
+		default:
+			alpha = ALPHAMODE_CLIP;
+			break;
+		}
+	}
+
+	bool needsBackfaceCulling() const
+	{
+		switch (drawtype) {
+		case NDT_TORCHLIKE:
+		case NDT_SIGNLIKE:
+		case NDT_FIRELIKE:
+		case NDT_RAILLIKE:
+		case NDT_PLANTLIKE:
+		case NDT_PLANTLIKE_ROOTED:
+		case NDT_MESH:
+			return false;
+		default:
+			return true;
+		}
+	}
+
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
+		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
 	}
 
 	int getGroup(const std::string &group) const
@@ -437,6 +483,21 @@ struct ContentFeatures
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif
+
+private:
+#ifndef SERVER
+	/*
+	 * Checks if any tile texture has any transparent pixels.
+	 * Prints a warning and returns true if that is the case, false otherwise.
+	 * This is supposed to be used for use_texture_alpha backwards compatibility.
+	 */
+	bool textureAlphaCheck(ITextureSource *tsrc, const TileDef *tiles,
+		int length);
+#endif
+
+	void setAlphaFromLegacy(u8 legacy_alpha);
+
+	u8 getAlphaForLegacy() const;
 };
 
 /*!
@@ -583,15 +644,12 @@ public:
 	void updateAliases(IItemDefManager *idef);
 
 	/*!
-	 * Reads the used texture pack's override.txt, and replaces the textures
-	 * of registered nodes with the ones specified there.
+	 * Replaces the textures of registered nodes with the ones specified in
+	 * the texturepack's override.txt file
 	 *
-	 * Format of the input file: in each line
-	 * `node_name top|bottom|right|left|front|back|all|*|sides texture_name.png`
-	 *
-	 * @param override_filepath path to 'texturepack/override.txt'
+	 * @param overrides the texture overrides
 	 */
-	void applyTextureOverrides(const std::string &override_filepath);
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides);
 
 	/*!
 	 * Only the client uses this. Loads textures and shaders required for
@@ -602,9 +660,7 @@ public:
 	 * total ContentFeatures.
 	 * @param progress_cbk_args passed to the callback function
 	 */
-	void updateTextures(IGameDef *gamedef,
-		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args);
+	void updateTextures(IGameDef *gamedef, void *progress_cbk_args);
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
@@ -641,10 +697,11 @@ public:
 	void resetNodeResolveState();
 
 	/*!
-	 * Resolves the IDs to which connecting nodes connect from names.
+	 * Resolves (caches the IDs) cross-references between nodes,
+	 * like liquid alternatives.
 	 * Must be called after node registration has finished!
 	 */
-	void mapNodeboxConnections();
+	void resolveCrossrefs();
 
 private:
 	/*!
@@ -666,7 +723,7 @@ private:
 	 * @param i a content ID
 	 * @param name a node name
 	 */
-	void addNameIdMapping(content_t i, std::string name);
+	void addNameIdMapping(content_t i, const std::string &name);
 
 	/*!
 	 * Removes a content ID from all groups.
@@ -735,11 +792,17 @@ private:
 
 NodeDefManager *createNodeDefManager();
 
+// NodeResolver: Queue for node names which are then translated
+// to content_t after the NodeDefManager was initialized
 class NodeResolver {
 public:
 	NodeResolver();
 	virtual ~NodeResolver();
+	// Callback which is run as soon NodeDefManager is ready
 	virtual void resolveNodeNames() = 0;
+
+	// required because this class is used as mixin for ObjDef
+	void cloneTo(NodeResolver *res) const;
 
 	bool getIdFromNrBacklog(content_t *result_out,
 		const std::string &node_alt, content_t c_fallback,
@@ -747,12 +810,31 @@ public:
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
 		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
+	inline bool isResolveDone() const { return m_resolve_done; }
+	void reset(bool resolve_done = false);
+
+	// Vector containing all node names in the resolve "queue"
+	std::vector<std::string> m_nodenames;
+	// Specifies the "set size" of node names which are to be processed
+	// this is used for getIdsFromNrBacklog
+	// TODO: replace or remove
+	std::vector<size_t> m_nnlistsizes;
+
+protected:
+	friend class NodeDefManager; // m_ndef
+
+	const NodeDefManager *m_ndef = nullptr;
+	// Index of the next "m_nodenames" entry to resolve
+	u32 m_nodenames_idx = 0;
+
+private:
+#if BUILD_UNITTESTS
+	// Unittest requires access to m_resolve_done
+	friend class TestSchematic;
+#endif
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx = 0;
+	// Index of the next "m_nnlistsizes" entry to process
 	u32 m_nnlistsizes_idx = 0;
-	std::vector<std::string> m_nodenames;
-	std::vector<size_t> m_nnlistsizes;
-	const NodeDefManager *m_ndef = nullptr;
 	bool m_resolve_done = false;
 };

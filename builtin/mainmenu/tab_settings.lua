@@ -43,6 +43,14 @@ local labels = {
 		fgettext("2x"),
 		fgettext("4x"),
 		fgettext("8x")
+	},
+	shadow_levels = {
+		fgettext("Disabled"),
+		fgettext("Very Low"),
+		fgettext("Low"),
+		fgettext("Medium"),
+		fgettext("High"),
+		fgettext("Ultra High")
 	}
 }
 
@@ -66,6 +74,10 @@ local dd_options = {
 	antialiasing = {
 		table.concat(labels.antialiasing, ","),
 		{"0", "2", "4", "8"}
+	},
+	shadow_levels = {
+		table.concat(labels.shadow_levels, ","),
+		{ "0", "1", "2", "3", "4", "5" }
 	}
 }
 
@@ -110,6 +122,15 @@ local getSettingIndex = {
 			end
 		end
 		return 1
+	end,
+	ShadowMapping = function()
+		local shadow_setting = core.settings:get("shadow_levels")
+		for i = 1, #dd_options.shadow_levels[2] do
+			if shadow_setting == dd_options.shadow_levels[2][i] then
+				return i
+			end
+		end
+		return 1
 	end
 }
 
@@ -120,56 +141,6 @@ local function antialiasing_fname_to_name(fname)
 		end
 	end
 	return 0
-end
-
-local function dlg_confirm_reset_formspec(data)
-	return  "size[8,3]" ..
-		"label[1,1;" .. fgettext("Are you sure to reset your singleplayer world?") .. "]" ..
-		"button[1,2;2.6,0.5;dlg_reset_singleplayer_confirm;" .. fgettext("Yes") .. "]" ..
-		"button[4,2;2.8,0.5;dlg_reset_singleplayer_cancel;" .. fgettext("No") .. "]"
-end
-
-local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
-
-	if fields["dlg_reset_singleplayer_confirm"] ~= nil then
-		local worldlist = core.get_worlds()
-		local found_singleplayerworld = false
-
-		for i = 1, #worldlist do
-			if worldlist[i].name == "singleplayerworld" then
-				found_singleplayerworld = true
-				gamedata.worldindex = i
-			end
-		end
-
-		if found_singleplayerworld then
-			core.delete_world(gamedata.worldindex)
-		end
-
-		core.create_world("singleplayerworld", 1)
-		worldlist = core.get_worlds()
-
-		for i = 1, #worldlist do
-			if worldlist[i].name == "singleplayerworld" then
-				gamedata.worldindex = i
-			end
-		end
-	end
-
-	this.parent:show()
-	this:hide()
-	this:delete()
-	return true
-end
-
-local function showconfirm_reset(tabview)
-	local new_dlg = dialog_create("reset_spworld",
-		dlg_confirm_reset_formspec,
-		dlg_confirm_reset_btnhandler,
-		nil)
-	new_dlg:set_parent(tabview)
-	tabview:hide()
-	new_dlg:show()
 end
 
 local function formspec(tabview, name, tabdata)
@@ -204,30 +175,26 @@ local function formspec(tabview, name, tabdata)
 		"box[8,0;3.75,4.5;#999999]"
 
 	local video_driver = core.settings:get("video_driver")
-	local shaders_supported = video_driver == "opengl"
-	local shaders_enabled = false
-	if shaders_supported then
-		shaders_enabled = core.settings:get_bool("enable_shaders")
+	local shaders_enabled = core.settings:get_bool("enable_shaders")
+	if video_driver == "opengl" then
 		tab_string = tab_string ..
 			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 					.. tostring(shaders_enabled) .. "]"
+	elseif video_driver == "ogles2" then
+		tab_string = tab_string ..
+			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders (experimental)") .. ";"
+					.. tostring(shaders_enabled) .. "]"
 	else
 		core.settings:set_bool("enable_shaders", false)
+		shaders_enabled = false
 		tab_string = tab_string ..
 			"label[8.38,0.2;" .. core.colorize("#888888",
 					fgettext("Shaders (unavailable)")) .. "]"
 	end
 
-	if core.settings:get("main_menu_style") == "simple" then
-		-- 'Reset singleplayer world' only functions with simple menu
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_reset_singleplayer;"
-			.. fgettext("Reset singleplayer world") .. "]"
-	else
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_change_keys;"
-			.. fgettext("Change Keys") .. "]"
-	end
+	tab_string = tab_string ..
+		"button[8,4.75;3.95,1;btn_change_keys;"
+		.. fgettext("Change Keys") .. "]"
 
 	tab_string = tab_string ..
 		"button[0,4.75;3.95,1;btn_advanced_settings;"
@@ -244,36 +211,29 @@ local function formspec(tabview, name, tabdata)
 
 	if shaders_enabled then
 		tab_string = tab_string ..
-			"checkbox[8.25,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
-					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..
-			"checkbox[8.25,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
+			"checkbox[8.25,0.5;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
 					.. dump(core.settings:get_bool("tone_mapping")) .. "]" ..
-			"checkbox[8.25,1.5;cb_generate_normalmaps;" .. fgettext("Generate Normal Maps") .. ";"
-					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
-			"checkbox[8.25,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
-					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
-			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
+			"checkbox[8.25,1;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
-			"checkbox[8.25,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
+			"checkbox[8.25,1.5;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
-			"checkbox[8.25,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
+			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
+					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"..
+			"label[8.25,3.0;" .. fgettext("Dynamic shadows: ") .. "]" ..
+			"dropdown[8.25,3.5;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
+					.. getSettingIndex.ShadowMapping() .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
-					fgettext("Bump Mapping")) .. "]" ..
-			"label[8.38,1.2;" .. core.colorize("#888888",
 					fgettext("Tone Mapping")) .. "]" ..
-			"label[8.38,1.7;" .. core.colorize("#888888",
-					fgettext("Generate Normal Maps")) .. "]" ..
-			"label[8.38,2.2;" .. core.colorize("#888888",
-					fgettext("Parallax Occlusion")) .. "]" ..
-			"label[8.38,2.7;" .. core.colorize("#888888",
+			"label[8.38,1.2;" .. core.colorize("#888888",
 					fgettext("Waving Liquids")) .. "]" ..
-			"label[8.38,3.2;" .. core.colorize("#888888",
+			"label[8.38,1.7;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
-			"label[8.38,3.7;" .. core.colorize("#888888",
-					fgettext("Waving Plants")) .. "]"
+			"label[8.38,2.2;" .. core.colorize("#888888",
+					fgettext("Waving Plants")) .. "]"..
+			"label[8.38,2.7;" .. core.colorize("#888888",
+					fgettext("Dynamic shadows")) .. "]"
 	end
 
 	return tab_string
@@ -324,20 +284,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		end
 		return true
 	end
-	if fields["cb_bumpmapping"] then
-		core.settings:set("enable_bumpmapping", fields["cb_bumpmapping"])
-		return true
-	end
 	if fields["cb_tonemapping"] then
 		core.settings:set("tone_mapping", fields["cb_tonemapping"])
-		return true
-	end
-	if fields["cb_generate_normalmaps"] then
-		core.settings:set("generate_normalmaps", fields["cb_generate_normalmaps"])
-		return true
-	end
-	if fields["cb_parallax"] then
-		core.settings:set("enable_parallax_occlusion", fields["cb_parallax"])
 		return true
 	end
 	if fields["cb_waving_water"] then
@@ -357,10 +305,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_touchscreen_target"] then
 		core.settings:set("touchtarget", fields["cb_touchscreen_target"])
-		return true
-	end
-	if fields["btn_reset_singleplayer"] then
-		showconfirm_reset(this)
 		return true
 	end
 
@@ -413,6 +357,34 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_touchthreshold"] then
 		core.settings:set("touchscreen_threshold", fields["dd_touchthreshold"])
 		ddhandled = true
+	end
+
+	for i = 1, #labels.shadow_levels do
+		if fields["dd_shadows"] == labels.shadow_levels[i] then
+			core.settings:set("shadow_levels", dd_options.shadow_levels[2][i])
+			ddhandled = true
+		end
+	end
+
+	if fields["dd_shadows"] == labels.shadow_levels[1] then
+		core.settings:set("enable_dynamic_shadows", "false")
+	else
+		local shadow_presets = {
+			[2] = { 80,  512,  "true", 0, "false" },
+			[3] = { 120, 1024, "true", 1, "false" },
+			[4] = { 350, 2048, "true", 1, "false" },
+			[5] = { 350, 2048, "true", 2,  "true" },
+			[6] = { 450, 4096, "true", 2,  "true" },
+		}
+		local s = shadow_presets[table.indexof(labels.shadow_levels, fields["dd_shadows"])]
+		if s then
+			core.settings:set("enable_dynamic_shadows", "true")
+			core.settings:set("shadow_map_max_distance", s[1])
+			core.settings:set("shadow_map_texture_size", s[2])
+			core.settings:set("shadow_map_texture_32bit", s[3])
+			core.settings:set("shadow_filters", s[4])
+			core.settings:set("shadow_map_color", s[5])
+		end
 	end
 
 	return ddhandled

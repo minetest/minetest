@@ -77,6 +77,19 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	return readParam<bool>(L, -1);
 }
 
+void ScriptApiPlayer::on_rightclickplayer(ServerActiveObject *player,
+                ServerActiveObject *clicker)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	// Get core.registered_on_rightclickplayers
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_rightclickplayers");
+	// Call callbacks
+	objectrefGetOrCreate(L, player);
+	objectrefGetOrCreate(L, clicker);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
 s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 	s32 hp_change, const PlayerHPChangeReason &reason)
 {
@@ -147,7 +160,7 @@ bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::s
 	return lua_toboolean(L, -1);
 }
 
-void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
+void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player, s64 last_login)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -156,7 +169,11 @@ void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_joinplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	if (last_login != -1)
+		lua_pushinteger(L, last_login);
+	else
+		lua_pushnil(L);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
@@ -216,16 +233,19 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
 }
 
-void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string &ip)
+void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &ip, bool is_success)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_auth_failure
+	// Get core.registered_on_authplayers
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_auth_fail");
+	lua_getfield(L, -1, "registered_on_authplayers");
+
+	// Call callbacks
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	lua_pushboolean(L, is_success);
+	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::pushMoveArguments(

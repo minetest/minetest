@@ -38,9 +38,10 @@ const int ID_soundMuteButton = 266;
 
 GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr
+		IMenuManager *menumgr, ISimpleTextureSource *tsrc
 ):
-	GUIModalMenu(env, parent, id, menumgr)
+	GUIModalMenu(env, parent, id, menumgr),
+	m_tsrc(tsrc)
 {
 }
 
@@ -92,11 +93,12 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 70 * s);
 
-		const wchar_t *text = wgettext("Sound Volume: ");
+		wchar_t text[100];
+		const wchar_t *str = wgettext("Sound Volume: %d%%");
+		swprintf(text, sizeof(text) / sizeof(wchar_t), str, volume);
+		delete[] str;
 		core::stringw volume_text = text;
-		delete [] text;
 
-		volume_text += core::stringw(volume) + core::stringw("%");
 		Environment->addStaticText(volume_text.c_str(), rect, false,
 				true, this, ID_soundText);
 	}
@@ -104,7 +106,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 80 * s, 30 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s / 2, size.Y / 2 + 55 * s);
 		const wchar_t *text = wgettext("Exit");
-		GUIButton::addButton(Environment, rect, this, ID_soundExitButton, text);
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_soundExitButton, text);
 		delete[] text;
 	}
 	{
@@ -170,7 +172,7 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST
 				&& isVisible()) {
 			if (!canTakeFocus(event.GUIEvent.Element)) {
-				dstream << "GUIMainMenu: Not allowing focus change."
+				infostream << "GUIVolumeChange: Not allowing focus change."
 				<< std::endl;
 				// Returning true disables focus change
 				return true;
@@ -182,11 +184,13 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 				g_settings->setFloat("sound_volume", (float) pos / 100);
 
 				gui::IGUIElement *e = getElementFromId(ID_soundText);
-				const wchar_t *text = wgettext("Sound Volume: ");
-				core::stringw volume_text = text;
-				delete [] text;
+				wchar_t text[100];
+				const wchar_t *str = wgettext("Sound Volume: %d%%");
+				swprintf(text, sizeof(text) / sizeof(wchar_t), str, pos);
+				delete[] str;
 
-				volume_text += core::stringw(pos) + core::stringw("%");
+				core::stringw volume_text = text;
+
 				e->setText(volume_text.c_str());
 				return true;
 			}

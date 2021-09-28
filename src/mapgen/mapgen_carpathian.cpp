@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -50,7 +49,7 @@ FlagDesc flagdesc_mapgen_carpathian[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager *emerge)
+MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_CARPATHIAN, params, emerge)
 {
 	base_level       = params->base_level;
@@ -261,12 +260,6 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-			data->blockpos_requested.Y >= data->blockpos_min.Y &&
-			data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-			data->blockpos_requested.Y <= data->blockpos_max.Y &&
-			data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
 	this->vm = data->vmanip;
@@ -316,7 +309,8 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)

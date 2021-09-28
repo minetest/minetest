@@ -70,8 +70,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 14:
 		Added transfer of player pressed keys to the server
 		Added new messages for mesh and bone animation, as well as attachments
-		GENERIC_CMD_SET_ANIMATION
-		GENERIC_CMD_SET_BONE_POSITION
+		AO_CMD_SET_ANIMATION
+		AO_CMD_SET_BONE_POSITION
 		GENERIC_CMD_SET_ATTACHMENT
 	PROTOCOL_VERSION 15:
 		Serialization format changes
@@ -87,7 +87,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		damageGroups added to ToolCapabilities
 		sound_place added to ItemDefinition
 	PROTOCOL_VERSION 19:
-		GENERIC_CMD_SET_PHYSICS_OVERRIDE
+		AO_CMD_SET_PHYSICS_OVERRIDE
 	PROTOCOL_VERSION 20:
 		TOCLIENT_HUDADD
 		TOCLIENT_HUDRM
@@ -131,7 +131,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_HELLO for presenting server to client after client
 			presentation
 		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
-		Rename GENERIC_CMD_SET_ATTACHMENT to GENERIC_CMD_ATTACH_TO
+		Rename GENERIC_CMD_SET_ATTACHMENT to AO_CMD_ATTACH_TO
 	PROTOCOL_VERSION 26:
 		Add TileDef tileable_horizontal, tileable_vertical flags
 	PROTOCOL_VERSION 27:
@@ -201,9 +201,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Mod-specific formspec version
 		Player FOV override API
 		"ephemeral" added to TOCLIENT_PLAY_SOUND
+	PROTOCOL VERSION 39:
+		Updated set_sky packet
+		Adds new sun, moon and stars packets
+		Minimap modes
+	PROTOCOL VERSION 40:
+		Added 'basic_debug' privilege
+		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 */
 
-#define LATEST_PROTOCOL_VERSION 38
+#define LATEST_PROTOCOL_VERSION 40
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -222,20 +229,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-/*
-	Changes by FORMSPEC_API_VERSION:
-
-	FORMSPEC VERSION 1:
-		(too much)
-	FORMSPEC VERSION 2:
-		Forced real coordinates
-		background9[]: 9-slice scaling parameters
-	FORMSPEC VERSION 3:
-		Formspec elements are drawn in the order of definition
-		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
-		box[] and image[] elements enable clipping by default
-*/
-#define FORMSPEC_API_VERSION 3
+// See also: Formspec Version History in doc/lua_api.txt
+#define FORMSPEC_API_VERSION 4
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -319,6 +314,14 @@ enum ToClientCommand
 		v3f added_vel
 	 */
 
+	TOCLIENT_MEDIA_PUSH = 0x2C,
+	/*
+		std::string raw_hash
+		std::string filename
+		u32 callback_token
+		bool should_be_cached
+	*/
+
 	// (oops, there is some gap here)
 
 	TOCLIENT_CHAT_MESSAGE = 0x2F,
@@ -380,8 +383,9 @@ enum ToClientCommand
 	/*
 		Sends an FOV override/multiplier to client.
 
-		float fov
+		f32 fov
 		bool is_multiplier
+		f32 transition_time
 	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
@@ -555,10 +559,10 @@ enum ToClientCommand
 		u32 id
 		u8 type
 		v2f1000 pos
-		u32 len
+		u16 len
 		u8[len] name
 		v2f1000 scale
-		u32 len2
+		u16 len2
 		u8[len2] text
 		u32 number
 		u32 item
@@ -568,6 +572,8 @@ enum ToClientCommand
 		v3f1000 world_pos
 		v2s32 size
 		s16 z_index
+		u16 len3
+		u8[len3] text2
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,
@@ -605,7 +611,8 @@ enum ToClientCommand
 
 	TOCLIENT_SET_SKY = 0x4f,
 	/*
-		u8[4] color (ARGB)
+		Protocol 38:
+		u8[4] base_color (ARGB)
 		u8 len
 		u8[len] type
 		u16 count
@@ -613,6 +620,24 @@ enum ToClientCommand
 			u8 len
 			u8[len] param
 		u8 clouds (boolean)
+
+		Protocol 39:
+		u8[4] bgcolor (ARGB)
+		std::string type
+		int texture_count
+		std::string[6] param
+		bool clouds
+		bool bgcolor_fog
+		u8[4] day_sky (ARGB)
+		u8[4] day_horizon (ARGB)
+		u8[4] dawn_sky (ARGB)
+		u8[4] dawn_horizon (ARGB)
+		u8[4] night_sky (ARGB)
+		u8[4] night_horizon (ARGB)
+		u8[4] indoors (ARGB)
+		u8[4] fog_sun_tint (ARGB)
+		u8[4] fog_moon_tint (ARGB)
+		std::string fog_tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -688,6 +713,31 @@ enum ToClientCommand
 		serialized and compressed node metadata
 	*/
 
+	TOCLIENT_SET_SUN = 0x5a,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		std::string sunrise
+		f32 scale
+	*/
+
+	TOCLIENT_SET_MOON = 0x5b,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		f32 scale
+	*/
+
+	TOCLIENT_SET_STARS = 0x5c,
+	/*
+		bool visible
+		u32 count
+		u8[4] starcolor (ARGB)
+		f32 scale
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_SRP.
@@ -702,7 +752,18 @@ enum ToClientCommand
 		u8[len] formspec
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x62,
+	TOCLIENT_MINIMAP_MODES = 0x62,
+	/*
+		u16 count // modes
+		u16 mode  // wanted current mode index after change
+		for each mode
+			u16 type
+			std::string label
+			u16 size
+			std::string extra
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x63,
 };
 
 enum ToServerCommand
@@ -877,7 +938,13 @@ enum ToServerCommand
 		}
 	*/
 
-	TOSERVER_RECEIVED_MEDIA = 0x41, // Obsolete
+	TOSERVER_HAVE_MEDIA = 0x41,
+	/*
+		u8 number of callback tokens
+		for each:
+			u32 token
+	*/
+
 	TOSERVER_BREATH = 0x42, // Obsolete
 
 	TOSERVER_CLIENT_READY = 0x43,
@@ -972,7 +1039,7 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"This server has experienced an internal error. You will now be disconnected."
 };
 
-enum PlayerListModifer: u8
+enum PlayerListModifer : u8
 {
 	PLAYER_LIST_INIT,
 	PLAYER_LIST_ADD,

@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "gettext.h"
 #include "l_internal.h"
-#include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
 #include "map.h"
@@ -209,7 +208,7 @@ int ModApiClient::l_gettext(lua_State *L)
 	return 1;
 }
 
-// get_node(pos)
+// get_node_or_nil(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiClient::l_get_node_or_nil(lua_State *L)
 {
@@ -228,6 +227,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
+// get_langauge()
 int ModApiClient::l_get_language(lua_State *L)
 {
 #ifdef _WIN32
@@ -244,34 +244,30 @@ int ModApiClient::l_get_language(lua_State *L)
 	return 2;
 }
 
-int ModApiClient::l_get_wielded_item(lua_State *L)
-{
-	Client *client = getClient(L);
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (!player)
-		return 0;
-
-	ItemStack selected_item;
-	player->getWieldedItem(&selected_item, nullptr);
-	LuaItemStack::create(L, selected_item);
-	return 1;
-}
-
 // get_meta(pos)
 int ModApiClient::l_get_meta(lua_State *L)
 {
 	v3s16 p = read_v3s16(L, 1);
-	NodeMetadata *meta = getClient(L)->getEnv().getMap().getNodeMetadata(p);
+
+	// check restrictions first
+	bool pos_ok;
+	getClient(L)->CSMGetNode(p, &pos_ok);
+	if (!pos_ok)
+		return 0;
+
+	NodeMetadata *meta = getEnv(L)->getMap().getNodeMetadata(p);
 	NodeMetaRef::createClient(L, meta);
 	return 1;
 }
 
+// sound_play(spec, parameters)
 int ModApiClient::l_sound_play(lua_State *L)
 {
 	ISoundManager *sound = getClient(L)->getSoundManager();
 
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
+
 	float gain = 1.0f;
 	float pitch = 1.0f;
 	bool looped = false;
@@ -293,18 +289,29 @@ int ModApiClient::l_sound_play(lua_State *L)
 		}
 	}
 
-	handle = sound->playSound(spec.name, looped, gain * spec.gain, 0.0f, pitch);
+	handle = sound->playSound(spec.name, looped, gain * spec.gain, spec.fade, pitch);
 	lua_pushinteger(L, handle);
 
 	return 1;
 }
 
+// sound_stop(handle)
 int ModApiClient::l_sound_stop(lua_State *L)
 {
-	u32 handle = luaL_checkinteger(L, 1);
+	s32 handle = luaL_checkinteger(L, 1);
 
 	getClient(L)->getSoundManager()->stopSound(handle);
 
+	return 0;
+}
+
+// sound_fade(handle, step, gain)
+int ModApiClient::l_sound_fade(lua_State *L)
+{
+	s32 handle = luaL_checkinteger(L, 1);
+	float step = readParam<float>(L, 2);
+	float gain = readParam<float>(L, 3);
+	getClient(L)->getSoundManager()->fadeSound(handle, step, gain);
 	return 0;
 }
 
@@ -375,6 +382,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	return 1;
 }
 
+// get_privilege_list()
 int ModApiClient::l_get_privilege_list(lua_State *L)
 {
 	const Client *client = getClient(L);
@@ -421,11 +429,11 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_respawn);
 	API_FCT(gettext);
 	API_FCT(get_node_or_nil);
-	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
 	API_FCT(get_meta);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_fade);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);

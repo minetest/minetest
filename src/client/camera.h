@@ -25,27 +25,48 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
+#include "util/Optional.h"
 
 class LocalPlayer;
 struct MapDrawControl;
 class Client;
+class RenderingEngine;
 class WieldMeshSceneNode;
 
-struct Nametag {
+struct Nametag
+{
+	scene::ISceneNode *parent_node;
+	std::string text;
+	video::SColor textcolor;
+	Optional<video::SColor> bgcolor;
+	v3f pos;
+
 	Nametag(scene::ISceneNode *a_parent_node,
-			const std::string &a_nametag_text,
-			const video::SColor &a_nametag_color,
-			const v3f &a_nametag_pos):
+			const std::string &text,
+			const video::SColor &textcolor,
+			const Optional<video::SColor> &bgcolor,
+			const v3f &pos):
 		parent_node(a_parent_node),
-		nametag_text(a_nametag_text),
-		nametag_color(a_nametag_color),
-		nametag_pos(a_nametag_pos)
+		text(text),
+		textcolor(textcolor),
+		bgcolor(bgcolor),
+		pos(pos)
 	{
 	}
-	scene::ISceneNode *parent_node;
-	std::string nametag_text;
-	video::SColor nametag_color;
-	v3f nametag_pos;
+
+	video::SColor getBgColor(bool use_fallback) const
+	{
+		if (bgcolor)
+			return bgcolor.value();
+		else if (!use_fallback)
+			return video::SColor(0, 0, 0, 0);
+		else if (textcolor.getLuminance() > 186)
+			// Dark background for light text
+			return video::SColor(50, 50, 50, 50);
+		else
+			// Light background for dark text
+			return video::SColor(50, 255, 255, 255);
+	}
 };
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
@@ -58,7 +79,7 @@ enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 class Camera
 {
 public:
-	Camera(MapDrawControl &draw_control, Client *client);
+	Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine);
 	~Camera();
 
 	// Get camera scene node.
@@ -73,6 +94,12 @@ public:
 	inline v3f getPosition() const
 	{
 		return m_camera_position;
+	}
+
+	// Returns the absolute position of the head SceneNode in the world
+	inline v3f getHeadPosition() const
+	{
+		return m_headnode->getAbsolutePosition();
 	}
 
 	// Get the camera direction (in absolute camera coordinates).
@@ -105,6 +132,9 @@ public:
 	{
 		return MYMAX(m_fov_x, m_fov_y);
 	}
+
+	// Notify about new server-sent FOV and initialize smooth FOV transition
+	void notifyFovChange();
 
 	// Checks if the constructor was able to create the scene nodes
 	bool successfullyCreated(std::string &error_message);
@@ -155,12 +185,10 @@ public:
 	}
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
-		const std::string &nametag_text, video::SColor nametag_color,
-		const v3f &pos);
+		const std::string &text, video::SColor textcolor,
+		Optional<video::SColor> bgcolor, const v3f &pos);
 
 	void removeNametag(Nametag *nametag);
-
-	const std::list<Nametag *> &getNametags() { return m_nametags; }
 
 	void drawNametags();
 
@@ -180,12 +208,23 @@ private:
 
 	Client *m_client;
 
+	// Default Client FOV (as defined by the "fov" setting)
+	f32 m_cache_fov;
+
 	// Absolute camera position
 	v3f m_camera_position;
 	// Absolute camera direction
 	v3f m_camera_direction;
 	// Camera offset
 	v3s16 m_camera_offset;
+
+	// Server-sent FOV variables
+	bool m_server_sent_fov = false;
+	f32 m_curr_fov_degrees, m_old_fov_degrees, m_target_fov_degrees;
+
+	// FOV transition variables
+	bool m_fov_transition_active = false;
+	f32 m_fov_diff, m_transition_time;
 
 	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
 	v2f m_arm_dir;
@@ -224,8 +263,8 @@ private:
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
-	f32 m_cache_fov;
 	bool m_arm_inertia;
 
 	std::list<Nametag *> m_nametags;
+	bool m_show_nametag_backgrounds;
 };

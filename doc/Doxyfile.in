@@ -20,18 +20,10 @@ PREDEFINED             = "USE_SPATIAL=1" \
 		"USE_GETTEXT=1"
 
 # Input
-RECURSIVE              = NO
+RECURSIVE              = YES
 STRIP_FROM_PATH        = @CMAKE_CURRENT_SOURCE_DIR@/src
 INPUT = @CMAKE_CURRENT_SOURCE_DIR@/doc/main_page.dox \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/ \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/client \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/network \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/util \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/script \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/script/common \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/script/cpp_api \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/script/lua_api \
-	@CMAKE_CURRENT_SOURCE_DIR@/src/threading
+	@CMAKE_CURRENT_SOURCE_DIR@/src/
 
 # Dot graphs
 HAVE_DOT               = @DOXYGEN_DOT_FOUND@

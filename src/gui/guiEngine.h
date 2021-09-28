@@ -23,34 +23,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Includes                                                                   */
 /******************************************************************************/
 #include "irrlichttypes.h"
-#include "modalMenu.h"
 #include "guiFormSpecMenu.h"
 #include "client/sound.h"
 #include "client/tile.h"
 #include "util/enriched_string.h"
 
 /******************************************************************************/
-/* Typedefs and macros                                                        */
+/* Structs and macros                                                         */
 /******************************************************************************/
 /** texture layer ids */
-typedef enum {
+enum texture_layer {
 	TEX_LAYER_BACKGROUND = 0,
 	TEX_LAYER_OVERLAY,
 	TEX_LAYER_HEADER,
 	TEX_LAYER_FOOTER,
 	TEX_LAYER_MAX
-} texture_layer;
+};
 
-typedef struct {
+struct image_definition {
 	video::ITexture *texture = nullptr;
 	bool             tile;
 	unsigned int     minsize;
-} image_definition;
+};
 
 /******************************************************************************/
 /* forward declarations                                                       */
 /******************************************************************************/
 class GUIEngine;
+class RenderingEngine;
 class MainMenuScripting;
 class Clouds;
 struct MainMenuData;
@@ -151,6 +151,7 @@ public:
 	 */
 	GUIEngine(JoystickController *joystick,
 			gui::IGUIElement *parent,
+			RenderingEngine *rendering_engine,
 			IMenuManager *menumgr,
 			MainMenuData *data,
 			bool &kill);
@@ -174,10 +175,6 @@ public:
 		return m_scriptdir;
 	}
 
-	/** pass async callback to scriptengine **/
-	unsigned int queueAsync(const std::string &serialized_fct,
-			const std::string &serialized_params);
-
 private:
 
 	/** find and run the main menu script */
@@ -189,6 +186,7 @@ private:
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
 
+	RenderingEngine         *m_rendering_engine = nullptr;
 	/** parent gui element */
 	gui::IGUIElement        *m_parent = nullptr;
 	/** manager to add menus to */
@@ -278,7 +276,7 @@ private:
 	/** do preprocessing for cloud subsystem */
 	void cloudPreProcess();
 	/** do postprocessing for cloud subsystem */
-	void cloudPostProcess();
+	void cloudPostProcess(u32 frametime_min, IrrlichtDevice *device);
 
 	/** internam data required for drawing clouds */
 	struct clouddata {

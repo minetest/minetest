@@ -20,10 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "basic_macros.h"
+#include "constants.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
+#include "SColor.h"
 #include <matrix4.h>
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
@@ -35,6 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	y = temp; \
 } while (0)
 
+// Maximum radius of a block.  The magic number is
+// sqrt(3.0) / 2.0 in literal form.
+static constexpr const f32 BLOCK_MAX_RADIUS = 0.866025403784f * MAP_BLOCKSIZE * BS;
 
 inline s16 getContainerPos(s16 p, s16 d)
 {
@@ -431,4 +436,13 @@ v3f getPitchYawRollRad(const core::matrix4 &m);
 inline v3f getPitchYawRoll(const core::matrix4 &m)
 {
 	return getPitchYawRollRad(m) * core::RADTODEG64;
+}
+
+// Muliply the RGB value of a color linearly, and clamp to black/white
+inline irr::video::SColor multiplyColorValue(const irr::video::SColor &color, float mod)
+{
+	return irr::video::SColor(color.getAlpha(),
+			core::clamp<u32>(color.getRed() * mod, 0, 255),
+			core::clamp<u32>(color.getGreen() * mod, 0, 255),
+			core::clamp<u32>(color.getBlue() * mod, 0, 255));
 }

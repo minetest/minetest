@@ -11,6 +11,12 @@ http://creativecommons.org/licenses/by-sa/3.0/
 textures/base/pack/refresh.png is under the Apache 2 license
 https://www.apache.org/licenses/LICENSE-2.0.html
 
+Textures by Zughy are under CC BY-SA 4.0
+https://creativecommons.org/licenses/by-sa/4.0/
+
+textures/base/pack/server_public.png is under CC-BY 4.0, taken from Twitter's Twemoji set
+https://creativecommons.org/licenses/by/4.0/
+
 Authors of media files
 -----------------------
 Everything not listed in here:
@@ -21,6 +27,14 @@ ShadowNinja:
 
 paramat:
   textures/base/pack/menu_header.png
+  textures/base/pack/next_icon.png
+  textures/base/pack/prev_icon.png
+  textures/base/pack/clear.png
+  textures/base/pack/search.png
+
+rubenwardy, paramat:
+  textures/base/pack/start_icon.png
+  textures/base/pack/end_icon.png
 
 erlehmann:
   misc/minetest-icon-24x24.png
@@ -28,16 +42,27 @@ erlehmann:
   misc/minetest.svg
   textures/base/pack/logo.png
 
-JRottm
+JRottm:
   textures/base/pack/player_marker.png
 
-srifqi
+srifqi:
   textures/base/pack/chat_hide_btn.png
   textures/base/pack/chat_show_btn.png
   textures/base/pack/joystick_bg.png
   textures/base/pack/joystick_center.png
   textures/base/pack/joystick_off.png
   textures/base/pack/minimap_btn.png
+
+Zughy:
+  textures/base/pack/cdb_add.png
+  textures/base/pack/cdb_clear.png
+  textures/base/pack/cdb_downloading.png
+  textures/base/pack/cdb_queued.png
+  textures/base/pack/cdb_update.png
+  textures/base/pack/cdb_viewonline.png
+
+appgurueu:
+  textures/base/pack/server_incompatible.png
 
 License of Minetest source code
 -------------------------------
@@ -62,7 +87,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Irrlicht
 ---------------
 
-This program uses the Irrlicht Engine. http://irrlicht.sourceforge.net/
+This program uses IrrlichtMt, Minetest's fork of
+the Irrlicht Engine. http://irrlicht.sourceforge.net/
 
  The Irrlicht Engine License
 

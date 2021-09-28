@@ -35,7 +35,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct PlayerFovSpec
 {
 	f32 fov;
+
+	// Whether to multiply the client's FOV or to override it
 	bool is_multiplier;
+
+	// The time to be take to trasition to the new FOV value.
+	// Transition is instantaneous if omitted. Omitted by default.
+	f32 transition_time;
 };
 
 struct PlayerControl
@@ -43,51 +49,40 @@ struct PlayerControl
 	PlayerControl() = default;
 
 	PlayerControl(
-		bool a_up,
-		bool a_down,
-		bool a_left,
-		bool a_right,
 		bool a_jump,
 		bool a_aux1,
 		bool a_sneak,
 		bool a_zoom,
-		bool a_LMB,
-		bool a_RMB,
+		bool a_dig,
+		bool a_place,
 		float a_pitch,
 		float a_yaw,
-		float a_sidew_move_joystick_axis,
-		float a_forw_move_joystick_axis
+		float a_movement_speed,
+		float a_movement_direction
 	)
 	{
-		up = a_up;
-		down = a_down;
-		left = a_left;
-		right = a_right;
 		jump = a_jump;
 		aux1 = a_aux1;
 		sneak = a_sneak;
 		zoom = a_zoom;
-		LMB = a_LMB;
-		RMB = a_RMB;
+		dig = a_dig;
+		place = a_place;
 		pitch = a_pitch;
 		yaw = a_yaw;
-		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
-		forw_move_joystick_axis = a_forw_move_joystick_axis;
+		movement_speed = a_movement_speed;
+		movement_direction = a_movement_direction;
 	}
-	bool up = false;
-	bool down = false;
-	bool left = false;
-	bool right = false;
 	bool jump = false;
 	bool aux1 = false;
 	bool sneak = false;
 	bool zoom = false;
-	bool LMB = false;
-	bool RMB = false;
+	bool dig = false;
+	bool place = false;
 	float pitch = 0.0f;
 	float yaw = 0.0f;
-	float sidew_move_joystick_axis = 0.0f;
-	float forw_move_joystick_axis = 0.0f;
+	// Note: These two are NOT available on the server
+	float movement_speed = 0.0f;
+	float movement_direction = 0.0f;
 };
 
 struct PlayerSettings
@@ -186,12 +181,12 @@ public:
 
 	void setFov(const PlayerFovSpec &spec)
 	{
-		m_fov_spec = spec;
+		m_fov_override_spec = spec;
 	}
 
 	const PlayerFovSpec &getFov() const
 	{
-		return m_fov_spec;
+		return m_fov_override_spec;
 	}
 
 	u32 keyPressed = 0;
@@ -208,7 +203,7 @@ protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
 	u16 m_wield_index = 0;
-	PlayerFovSpec m_fov_spec = { 0.0f, false };
+	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
 private:

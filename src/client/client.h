@@ -45,6 +45,7 @@ struct ClientEvent;
 struct MeshMakeData;
 struct ChatMessage;
 class MapBlockMesh;
+class RenderingEngine;
 class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
@@ -52,6 +53,7 @@ class ISoundManager;
 class NodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
+class SingleMediaDownloader;
 struct MapDrawControl;
 class ModChannelMgr;
 class MtEventManager;
@@ -82,34 +84,24 @@ public:
 
 	void add(u16 command)
 	{
-		std::map<u16, u16>::iterator n = m_packets.find(command);
-		if(n == m_packets.end())
-		{
+		auto n = m_packets.find(command);
+		if (n == m_packets.end())
 			m_packets[command] = 1;
-		}
 		else
-		{
 			n->second++;
-		}
 	}
 
 	void clear()
 	{
-		for (auto &m_packet : m_packets) {
-			m_packet.second = 0;
-		}
+		m_packets.clear();
 	}
 
-	void print(std::ostream &o)
-	{
-		for (const auto &m_packet : m_packets) {
-			o << "cmd "<< m_packet.first <<" count "<< m_packet.second << std::endl;
-		}
-	}
+	u32 sum() const;
+	void print(std::ostream &o) const;
 
 private:
 	// command, count
-	std::map<u16, u16> m_packets;
+	std::map<u16, u32> m_packets;
 };
 
 class ClientScripting;
@@ -133,6 +125,7 @@ public:
 			NodeDefManager *nodedef,
 			ISoundManager *sound,
 			MtEventManager *event,
+			RenderingEngine *rendering_engine,
 			bool ipv6,
 			GameUI *game_ui
 	);
@@ -218,6 +211,9 @@ public:
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
+	void handleCommand_HudSetSun(NetworkPacket* pkt);
+	void handleCommand_HudSetMoon(NetworkPacket* pkt);
+	void handleCommand_HudSetStars(NetworkPacket* pkt);
 	void handleCommand_CloudParams(NetworkPacket* pkt);
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
@@ -229,6 +225,8 @@ public:
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
 	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
+	void handleCommand_MediaPush(NetworkPacket *pkt);
+	void handleCommand_MinimapModes(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -248,6 +246,7 @@ public:
 	void sendDamage(u16 damage);
 	void sendRespawn();
 	void sendReady();
+	void sendHaveMedia(const std::vector<u32> &tokens);
 
 	ClientEnvironment& getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }
@@ -326,24 +325,27 @@ public:
 		m_access_denied = true;
 		m_access_denied_reason = reason;
 	}
+	inline void setFatalError(const LuaError &e)
+	{
+		setFatalError(std::string("Lua: ") + e.what());
+	}
 
 	// Renaming accessDeniedReason to better name could be good as it's used to
 	// disconnect client when CSM failed.
 	const std::string &accessDeniedReason() const { return m_access_denied_reason; }
 
-	const bool itemdefReceived() const
+	bool itemdefReceived() const
 	{ return m_itemdef_received; }
-	const bool nodedefReceived() const
+	bool nodedefReceived() const
 	{ return m_nodedef_received; }
-	const bool mediaReceived() const
+	bool mediaReceived() const
 	{ return !m_media_downloader; }
-	const bool activeObjectsReceived() const
+	bool activeObjectsReceived() const
 	{ return m_activeobjects_received; }
 
 	u16 getProtoVersion()
 	{ return m_proto_ver; }
 
-	bool connectedToServer();
 	void confirmRegistration();
 	bool m_is_registration_confirmation_state = false;
 	bool m_simple_singleplayer_mode;
@@ -351,6 +353,7 @@ public:
 	float mediaReceiveProgress();
 
 	void afterContentReceived();
+	void showUpdateProgressTexture(void *args, u32 progress, u32 max_progress);
 
 	float getRTT();
 	float getCurRate();
@@ -359,6 +362,7 @@ public:
 	void setCamera(Camera* camera) { m_camera = camera; }
 
 	Camera* getCamera () { return m_camera; }
+	scene::ISceneManager *getSceneManager();
 
 	bool shouldShowMinimap() const;
 
@@ -383,7 +387,9 @@ public:
 
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
-	bool loadMedia(const std::string &data, const std::string &filename);
+	bool loadMedia(const std::string &data, const std::string &filename,
+		bool from_media_push = false);
+
 	// Send a request for conventional media transfer
 	void request_media(const std::vector<std::string> &file_requests);
 
@@ -420,16 +426,6 @@ public:
 		return m_csm_restriction_flags & flag;
 	}
 
-	u32 getCSMNodeRangeLimit() const
-	{
-		return m_csm_restriction_noderange;
-	}
-
-	inline std::unordered_map<u32, u32> &getHUDTranslationMap()
-	{
-		return m_hud_server_to_client;
-	}
-
 	bool joinModChannel(const std::string &channel) override;
 	bool leaveModChannel(const std::string &channel) override;
 	bool sendModChannelMessage(const std::string &channel,
@@ -442,7 +438,6 @@ public:
 	}
 private:
 	void loadMods();
-	bool checkBuiltinIntegrity();
 
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer) override;
@@ -485,6 +480,7 @@ private:
 	NodeDefManager *m_nodedef;
 	ISoundManager *m_sound;
 	MtEventManager *m_event;
+	RenderingEngine *m_rendering_engine;
 
 
 	MeshUpdateThread m_mesh_update_thread;
@@ -495,6 +491,7 @@ private:
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
 	bool m_minimap_disabled_by_server = false;
+
 	// Server serialization version
 	u8 m_server_ser_ver;
 
@@ -536,7 +533,6 @@ private:
 	AuthMechanism m_chosen_auth_mech;
 	void *m_auth_data = nullptr;
 
-
 	bool m_access_denied = false;
 	bool m_access_denied_reconnect = false;
 	std::string m_access_denied_reason = "";
@@ -545,7 +541,14 @@ private:
 	bool m_nodedef_received = false;
 	bool m_activeobjects_received = false;
 	bool m_mods_loaded = false;
+
+	std::vector<std::string> m_remote_media_servers;
+	// Media downloader, only exists during init
 	ClientMediaDownloader *m_media_downloader;
+	// Set of media filenames pushed by server at runtime
+	std::unordered_set<std::string> m_media_pushed_files;
+	// Pending downloads of dynamic media (key: token)
+	std::vector<std::pair<u32, std::unique_ptr<SingleMediaDownloader>>> m_pending_media_downloads;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set = false;
@@ -563,9 +566,6 @@ private:
 	std::unordered_map<int, s32> m_sounds_client_to_server;
 	// Relation of client id to object id
 	std::unordered_map<int, u16> m_sounds_to_objects;
-
-	// Map server hud ids to client hud ids
-	std::unordered_map<u32, u32> m_hud_server_to_client;
 
 	// Privileges
 	std::unordered_set<std::string> m_privileges;
@@ -589,7 +589,6 @@ private:
 
 	// Client modding
 	ClientScripting *m_script = nullptr;
-	bool m_modding_enabled;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;

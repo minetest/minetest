@@ -62,8 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Map
 */
 
-Map::Map(std::ostream &dout, IGameDef *gamedef):
-	m_dout(dout),
+Map::Map(IGameDef *gamedef):
 	m_gamedef(gamedef),
 	m_nodedef(gamedef->ndef())
 {
@@ -144,7 +143,7 @@ bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	return block && block->getIsUnderground(); 
+	return block && block->getIsUnderground();
 }
 
 bool Map::isValidPosition(v3s16 p)
@@ -478,6 +477,16 @@ void Map::PrintInfo(std::ostream &out)
 
 #define WATER_DROP_BOOST 4
 
+const static v3s16 liquid_6dirs[6] = {
+	// order: upper before same level before lower
+	v3s16( 0, 1, 0),
+	v3s16( 0, 0, 1),
+	v3s16( 1, 0, 0),
+	v3s16( 0, 0,-1),
+	v3s16(-1, 0, 0),
+	v3s16( 0,-1, 0)
+};
+
 enum NeighborType : u8 {
 	NEIGHBOR_UPPER,
 	NEIGHBOR_SAME_LEVEL,
@@ -521,23 +530,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
 
-#if 0
-
-	/* If liquid_loop_max is not keeping up with the queue size increase
-	 * loop_max up to a maximum of liquid_loop_max * dedicated_server_step.
-	 */
-	if (m_transforming_liquid.size() > loop_max * 2) {
-		// "Burst" mode
-		float server_step = g_settings->getFloat("dedicated_server_step");
-		if (m_transforming_liquid_loop_count_multiplier - 1.0 < server_step)
-			m_transforming_liquid_loop_count_multiplier *= 1.0 + server_step / 10;
-	} else {
-		m_transforming_liquid_loop_count_multiplier = 1.0;
-	}
-
-	loop_max *= m_transforming_liquid_loop_count_multiplier;
-#endif
-
 	while (m_transforming_liquid.size() != 0)
 	{
 		// This should be done here so that it is done when continue is used
@@ -568,7 +560,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
 				liquid_level = LIQUID_LEVEL_SOURCE;
-				liquid_kind = m_nodedef->getId(cf.liquid_alternative_flowing);
+				liquid_kind = cf.liquid_alternative_flowing_id;
 				break;
 			case LIQUID_FLOWING:
 				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
@@ -587,7 +579,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		/*
 			Collect information about the environment
 		 */
-		const v3s16 *dirs = g_6dirs;
 		NodeNeighbor sources[6]; // surrounding sources
 		int num_sources = 0;
 		NodeNeighbor flows[6]; // surrounding flowing liquid nodes
@@ -601,16 +592,16 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
-				case 1:
+				case 0:
 					nt = NEIGHBOR_UPPER;
 					break;
-				case 4:
+				case 5:
 					nt = NEIGHBOR_LOWER;
 					break;
 				default:
 					break;
 			}
-			v3s16 npos = p0 + dirs[i];
+			v3s16 npos = p0 + liquid_6dirs[i];
 			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
 			switch (m_nodedef->get(nb.n.getContent()).liquid_type) {
@@ -641,20 +632,24 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = m_nodedef->getId(cfnb.liquid_alternative_flowing);
-					if (m_nodedef->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
+						liquid_kind = cfnb.liquid_alternative_flowing_id;
+					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						// Do not count bottom source, it will screw things up
-						if(dirs[i].Y != -1)
+						if(nt != NEIGHBOR_LOWER)
 							sources[num_sources++] = nb;
 					}
 					break;
 				case LIQUID_FLOWING:
-					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
-					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = m_nodedef->getId(cfnb.liquid_alternative_flowing);
-					if (m_nodedef->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
+					if (nb.t != NEIGHBOR_SAME_LEVEL ||
+						(nb.n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK) {
+						// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
+						// but exclude falling liquids on the same level, they cannot flow here anyway
+						if (liquid_kind == CONTENT_AIR)
+							liquid_kind = cfnb.liquid_alternative_flowing_id;
+					}
+					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						flows[num_flows++] = nb;
@@ -680,7 +675,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
 			// it's perfectly safe to use liquid_kind here to determine the new node content.
-			new_node_content = m_nodedef->getId(m_nodedef->get(liquid_kind).liquid_alternative_source);
+			new_node_content = m_nodedef->get(liquid_kind).liquid_alternative_source_id;
 		} else if (num_sources >= 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
 			max_node_level = new_node_level = LIQUID_LEVEL_MAX;
@@ -834,7 +829,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		m_transforming_liquid.push_back(iter);
 
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
-
+	env->getScriptIface()->on_liquid_transformed(changed_nodes);
 
 	/* ----------------------------------------------------------------------
 	 * Manage the queue so that it does not grow indefinately
@@ -1187,9 +1182,9 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	ServerMap
 */
 ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
-		EmergeManager *emerge):
-	Map(dout_server, gamedef),
-	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
+		EmergeManager *emerge, MetricsBackend *mb):
+	Map(gamedef),
+	settings_mgr(savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
@@ -1220,6 +1215,10 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
+
+	m_save_time_counter = mb->addCounter("minetest_core_map_save_time", "Map save time (in nanoseconds)");
+
+	m_map_compression_level = rangelim(g_settings->getS16("map_compression_level_disk"), -1, 9);
 
 	try {
 		// If directory exists, check contents and load if possible
@@ -1285,20 +1284,7 @@ ServerMap::~ServerMap()
 		Close database if it was opened
 	*/
 	delete dbase;
-	if (dbase_ro)
-		delete dbase_ro;
-
-#if 0
-	/*
-		Free all MapChunks
-	*/
-	core::map<v2s16, MapChunk*>::Iterator i = m_chunks.getIterator();
-	for(; i.atEnd() == false; i++)
-	{
-		MapChunk *chunk = i.getNode()->getValue();
-		delete chunk;
-	}
-#endif
+	delete dbase_ro;
 }
 
 MapgenParams *ServerMap::getMapgenParams()
@@ -1311,11 +1297,6 @@ MapgenParams *ServerMap::getMapgenParams()
 u64 ServerMap::getSeed()
 {
 	return getMapgenParams()->seed;
-}
-
-s16 ServerMap::getWaterLevel()
-{
-	return getMapgenParams()->water_level;
 }
 
 bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
@@ -1337,6 +1318,9 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	v3s16 bpmin = EmergeManager::getContainingChunk(blockpos, csize);
 	v3s16 bpmax = bpmin + v3s16(1, 1, 1) * (csize - 1);
 
+	if (!m_chunks_in_progress.insert(bpmin).second)
+		return false;
+
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 	EMERGE_DBG_OUT("initBlockMake(): " PP(bpmin) " - " PP(bpmax));
 
@@ -1352,7 +1336,6 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	data->seed = getSeed();
 	data->blockpos_min = bpmin;
 	data->blockpos_max = bpmax;
-	data->blockpos_requested = blockpos;
 	data->nodedef = m_nodedef;
 
 	/*
@@ -1390,25 +1373,6 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	data->vmanip = new MMVManip(this);
 	data->vmanip->initialEmerge(full_bpmin, full_bpmax);
 
-	// Note: we may need this again at some point.
-#if 0
-	// Ensure none of the blocks to be generated were marked as
-	// containing CONTENT_IGNORE
-	for (s16 z = blockpos_min.Z; z <= blockpos_max.Z; z++) {
-		for (s16 y = blockpos_min.Y; y <= blockpos_max.Y; y++) {
-			for (s16 x = blockpos_min.X; x <= blockpos_max.X; x++) {
-				core::map<v3s16, u8>::Node *n;
-				n = data->vmanip->m_loaded_blocks.find(v3s16(x, y, z));
-				if (n == NULL)
-					continue;
-				u8 flags = n->getValue();
-				flags &= ~VMANIP_BLOCK_CONTAINS_CIGNORE;
-				n->setValue(flags);
-			}
-		}
-	}
-#endif
-
 	// Data is ready now.
 	return true;
 }
@@ -1418,8 +1382,6 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 {
 	v3s16 bpmin = data->blockpos_min;
 	v3s16 bpmax = data->blockpos_max;
-
-	v3s16 extra_borders(1, 1, 1);
 
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 	EMERGE_DBG_OUT("finishBlockMake(): " PP(bpmin) " - " PP(bpmax));
@@ -1474,6 +1436,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 		NOTE: Will be saved later.
 	*/
 	//save(MOD_STATE_WRITE_AT_UNLOAD);
+	m_chunks_in_progress.erase(bpmin);
 }
 
 MapSector *ServerMap::createSector(v2s16 p2d)
@@ -1511,116 +1474,6 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 
 	return sector;
 }
-
-#if 0
-/*
-	This is a quick-hand function for calling makeBlock().
-*/
-MapBlock * ServerMap::generateBlock(
-		v3s16 p,
-		std::map<v3s16, MapBlock*> &modified_blocks
-)
-{
-	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
-
-	TimeTaker timer("generateBlock");
-
-	//MapBlock *block = original_dummy;
-
-	v2s16 p2d(p.X, p.Z);
-	v2s16 p2d_nodes = p2d * MAP_BLOCKSIZE;
-
-	/*
-		Do not generate over-limit
-	*/
-	if(blockpos_over_limit(p))
-	{
-		infostream<<FUNCTION_NAME<<": Block position over limit"<<std::endl;
-		throw InvalidPositionException("generateBlock(): pos. over limit");
-	}
-
-	/*
-		Create block make data
-	*/
-	BlockMakeData data;
-	initBlockMake(&data, p);
-
-	/*
-		Generate block
-	*/
-	{
-		TimeTaker t("mapgen::make_block()");
-		mapgen->makeChunk(&data);
-		//mapgen::make_block(&data);
-
-		if(enable_mapgen_debug_info == false)
-			t.stop(true); // Hide output
-	}
-
-	/*
-		Blit data back on map, update lighting, add mobs and whatever this does
-	*/
-	finishBlockMake(&data, modified_blocks);
-
-	/*
-		Get central block
-	*/
-	MapBlock *block = getBlockNoCreateNoEx(p);
-
-#if 0
-	/*
-		Check result
-	*/
-	if(block)
-	{
-		bool erroneus_content = false;
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-		{
-			v3s16 p(x0,y0,z0);
-			MapNode n = block->getNode(p);
-			if(n.getContent() == CONTENT_IGNORE)
-			{
-				infostream<<"CONTENT_IGNORE at "
-						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-						<<std::endl;
-				erroneus_content = true;
-				assert(0);
-			}
-		}
-		if(erroneus_content)
-		{
-			assert(0);
-		}
-	}
-#endif
-
-#if 0
-	/*
-		Generate a completely empty block
-	*/
-	if(block)
-	{
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-		{
-			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-			{
-				MapNode n;
-				n.setContent(CONTENT_AIR);
-				block->setNode(v3s16(x0,y0,z0), n);
-			}
-		}
-	}
-#endif
-
-	if(enable_mapgen_debug_info == false)
-		timer.stop(true); // Hide output
-
-	return block;
-}
-#endif
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
@@ -1696,6 +1549,11 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 	return block;
 }
 
+bool ServerMap::isBlockInQueue(v3s16 pos)
+{
+	return m_emerge && m_emerge->isBlockInQueue(pos);
+}
+
 // N.B.  This requires no synchronization, since data will not be modified unless
 // the VoxelManipulator being updated belongs to the same thread.
 void ServerMap::updateVManip(v3s16 pos)
@@ -1718,65 +1576,14 @@ void ServerMap::updateVManip(v3s16 pos)
 	vm->m_is_dirty = true;
 }
 
-s16 ServerMap::findGroundLevel(v2s16 p2d)
-{
-#if 0
-	/*
-		Uh, just do something random...
-	*/
-	// Find existing map from top to down
-	s16 max=63;
-	s16 min=-64;
-	v3s16 p(p2d.X, max, p2d.Y);
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(n.getContent() != CONTENT_IGNORE)
-			break;
-	}
-	if(p.Y == min)
-		goto plan_b;
-	// If this node is not air, go to plan b
-	if(getNodeNoEx(p).getContent() != CONTENT_AIR)
-		goto plan_b;
-	// Search existing walkable and return it
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(content_walkable(n.d) && n.getContent() != CONTENT_IGNORE)
-			return p.Y;
-	}
-
-	// Move to plan b
-plan_b:
-#endif
-
-	/*
-		Determine from map generator noise functions
-	*/
-
-	s16 level = m_emerge->getGroundLevelAtPoint(p2d);
-	return level;
-
-	//double level = base_rock_level_2d(m_seed, p2d) + AVERAGE_MUD_AMOUNT;
-	//return (s16)level;
-}
-
-void ServerMap::createDirs(const std::string &path)
-{
-	if (!fs::CreateAllDirs(path)) {
-		m_dout<<"ServerMap: Failed to create directory "
-				<<"\""<<path<<"\""<<std::endl;
-		throw BaseException("ServerMap failed to create directory");
-	}
-}
-
 void ServerMap::save(ModifiedState save_level)
 {
 	if (!m_map_saving_enabled) {
 		warningstream<<"Not saving map, saving disabled."<<std::endl;
 		return;
 	}
+
+	u64 start_time = porting::getTimeNs();
 
 	if(save_level == MOD_STATE_CLEAN)
 		infostream<<"ServerMap: Saving whole map, this can take time."
@@ -1828,14 +1635,17 @@ void ServerMap::save(ModifiedState save_level)
 	*/
 	if(save_level == MOD_STATE_CLEAN
 			|| block_count != 0) {
-		infostream<<"ServerMap: Written: "
-				<<block_count<<" block files"
-				<<", "<<block_count_all<<" blocks in memory."
-				<<std::endl;
+		infostream << "ServerMap: Written: "
+				<< block_count << " blocks"
+				<< ", " << block_count_all << " blocks in memory."
+				<< std::endl;
 		PrintInfo(infostream); // ServerMap/ClientMap:
 		infostream<<"Blocks modified by: "<<std::endl;
 		modprofiler.print(infostream);
 	}
+
+	auto end_time = porting::getTimeNs();
+	m_save_time_counter->increment(end_time - start_time);
 }
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
@@ -1900,10 +1710,10 @@ void ServerMap::endSave()
 
 bool ServerMap::saveBlock(MapBlock *block)
 {
-	return saveBlock(block, dbase);
+	return saveBlock(block, dbase, m_map_compression_level);
 }
 
-bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
+bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_level)
 {
 	v3s16 p3d = block->getPos();
 
@@ -1923,7 +1733,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	*/
 	std::ostringstream o(std::ios_base::binary);
 	o.write((char*) &version, 1);
-	block->serialize(o, version, true);
+	block->serialize(o, version, true, compression_level);
 
 	bool ret = db->saveBlock(p3d, o.str());
 	if (ret) {

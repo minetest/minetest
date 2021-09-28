@@ -23,15 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 class Translations;
-extern Translations *g_translations;
+#ifndef SERVER
+extern Translations *g_client_translations;
+#endif
 
 class Translations
 {
 public:
-	Translations() = default;
-
-	~Translations();
-
 	void loadTranslation(const std::string &data);
 	void clear();
 	const std::wstring &getTranslation(

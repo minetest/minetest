@@ -45,13 +45,15 @@ float              getfloatfield_default(lua_State *L, int table,
 int                getintfield_default(lua_State *L, int table,
                              const char *fieldname, int default_);
 
+bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname);
+
 template<typename T>
 bool getintfield(lua_State *L, int table,
 		const char *fieldname, T &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if (lua_isnumber(L, -1)){
+	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)){
 		result = lua_tointeger(L, -1);
 		got = true;
 	}
@@ -87,8 +89,6 @@ bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,
                              const char *fieldname, float &result);
-std::string        checkstringfield(lua_State *L, int table,
-                             const char *fieldname);
 
 void               setstringfield(lua_State *L, int table,
                              const char *fieldname, const std::string &value);
@@ -110,6 +110,7 @@ v2s32               read_v2s32          (lua_State *L, int index);
 video::SColor       read_ARGB8          (lua_State *L, int index);
 bool                read_color          (lua_State *L, int index,
                                          video::SColor *color);
+bool                is_color_table      (lua_State *L, int index);
 
 aabb3f              read_aabb3f         (lua_State *L, int index, f32 scale);
 v3s16               read_v3s16          (lua_State *L, int index);
@@ -134,6 +135,4 @@ void                warn_if_field_exists(lua_State *L, int table,
                                          const std::string &message);
 
 size_t write_array_slice_float(lua_State *L, int table_index, float *data,
-	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
-size_t write_array_slice_u16(lua_State *L, int table_index, u16 *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);

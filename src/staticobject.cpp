@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "staticobject.h"
 #include "util/serialize.h"
-#include "content_sao.h"
+#include "server/serveractiveobject.h"
 
 StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3f &pos_):
 	type(s_obj->getType()),
@@ -35,8 +35,9 @@ void StaticObject::serialize(std::ostream &os)
 	// pos
 	writeV3F1000(os, pos);
 	// data
-	os<<serializeString(data);
+	os<<serializeString16(data);
 }
+
 void StaticObject::deSerialize(std::istream &is, u8 version)
 {
 	// type
@@ -44,11 +45,34 @@ void StaticObject::deSerialize(std::istream &is, u8 version)
 	// pos
 	pos = readV3F1000(is);
 	// data
-	data = deSerializeString(is);
+	data = deSerializeString16(is);
 }
 
 void StaticObjectList::serialize(std::ostream &os)
 {
+	// Check for problems first
+	auto problematic = [] (StaticObject &obj) -> bool {
+		if (obj.data.size() > U16_MAX) {
+			errorstream << "StaticObjectList::serialize(): "
+				"object has excessive static data (" << obj.data.size() <<
+				"), deleting it." << std::endl;
+			return true;
+		}
+		return false;
+	};
+	for (auto it = m_stored.begin(); it != m_stored.end(); ) {
+		if (problematic(*it))
+			it = m_stored.erase(it);
+		else
+			it++;
+	}
+	for (auto it = m_active.begin(); it != m_active.end(); ) {
+		if (problematic(it->second))
+			it = m_active.erase(it);
+		else
+			it++;
+	}
+
 	// version
 	u8 version = 0;
 	writeU8(os, version);

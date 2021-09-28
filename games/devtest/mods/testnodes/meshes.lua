@@ -1,0 +1,145 @@
+-- Meshes
+
+local S = minetest.get_translator("testnodes")
+
+local ocorner_cbox = {
+	type = "fixed",
+	fixed = {
+		{-0.5,  -0.5,  -0.5,   0.5, -0.25, 0.5},
+		{-0.5, -0.25, -0.25,  0.25,     0, 0.5},
+		{-0.5,     0,     0,     0,  0.25, 0.5},
+		{-0.5,  0.25,  0.25, -0.25,   0.5, 0.5}
+	}
+}
+
+local tall_pyr_cbox = {
+	type = "fixed",
+	fixed = {
+		{ -0.5,   -0.5,  -0.5,   0.5,  -0.25, 0.5 },
+		{ -0.375, -0.25, -0.375, 0.375, 0,    0.375},
+		{ -0.25,   0,    -0.25,  0.25,  0.25, 0.25},
+		{ -0.125,  0.25, -0.125, 0.125, 0.5,  0.125}
+	}
+}
+
+-- Normal mesh
+minetest.register_node("testnodes:mesh", {
+	description = S("Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes2.png"},
+	paramtype = "light",
+	collision_box = tall_pyr_cbox,
+
+	groups = {dig_immediate=3},
+})
+
+-- Facedir mesh: outer corner slope
+minetest.register_node("testnodes:mesh_facedir", {
+	description = S("Facedir Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_ocorner.obj",
+	tiles = {"testnodes_mesh_stripes.png"},
+	paramtype = "light",
+	paramtype2 = "facedir",
+	collision_box = ocorner_cbox,
+
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:mesh_colorfacedir", {
+	description = S("Color Facedir Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_ocorner.obj",
+	tiles = {"testnodes_mesh_stripes3.png"},
+	paramtype = "light",
+	paramtype2 = "colorfacedir",
+	palette = "testnodes_palette_facedir.png",
+	collision_box = ocorner_cbox,
+
+	groups = {dig_immediate=3},
+})
+
+-- Wallmounted mesh: pyramid
+minetest.register_node("testnodes:mesh_wallmounted", {
+	description = S("Wallmounted Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes2.png"},
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	collision_box = tall_pyr_cbox,
+
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:mesh_colorwallmounted", {
+	description = S("Color Wallmounted Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes3.png"},
+	paramtype = "light",
+	paramtype2 = "colorwallmounted",
+	palette = "testnodes_palette_wallmounted.png",
+	collision_box = tall_pyr_cbox,
+
+	groups = {dig_immediate=3},
+})
+
+
+minetest.register_node("testnodes:mesh_double", {
+	description = S("Double-sized Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes2.png"},
+	paramtype = "light",
+	collision_box = tall_pyr_cbox,
+	visual_scale = 2,
+
+	groups = {dig_immediate=3},
+})
+minetest.register_node("testnodes:mesh_half", {
+	description = S("Half-sized Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes2.png"},
+	paramtype = "light",
+	collision_box = tall_pyr_cbox,
+	visual_scale = 0.5,
+
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:mesh_waving1", {
+	description = S("Plantlike-waving Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes4.png^[multiply:#B0FFB0"},
+	paramtype = "light",
+	collision_box = tall_pyr_cbox,
+	waving = 1,
+
+	groups = {dig_immediate=3},
+})
+minetest.register_node("testnodes:mesh_waving2", {
+	description = S("Leaflike-waving Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes4.png^[multiply:#FFFFB0"},
+	paramtype = "light",
+	collision_box = tall_pyr_cbox,
+	waving = 2,
+
+	groups = {dig_immediate=3},
+})
+minetest.register_node("testnodes:mesh_waving3", {
+	description = S("Liquidlike-waving Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_pyramid.obj",
+	tiles = {"testnodes_mesh_stripes4.png^[multiply:#B0B0FF"},
+	paramtype = "light",
+	collision_box = tall_pyr_cbox,
+	waving = 3,
+
+	groups = {dig_immediate=3},
+})

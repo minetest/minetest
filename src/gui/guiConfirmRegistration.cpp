@@ -25,8 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include "intlGUIEditBox.h"
+#include "guiEditBoxWithScrollbar.h"
 #include "porting.h"
+
+#ifdef HAVE_TOUCHSCREENGUI
+	#include "client/renderingengine.h"
+#endif
 
 #include "gettext.h"
 
@@ -40,12 +44,12 @@ const int ID_message = 266;
 GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr, Client *client,
 		const std::string &playername, const std::string &password,
-		bool *aborted) :
+		bool *aborted, ISimpleTextureSource *tsrc) :
 		GUIModalMenu(env, parent, id, menumgr),
 		m_client(client), m_playername(playername), m_password(password),
-		m_aborted(aborted)
+		m_aborted(aborted), m_tsrc(tsrc)
 {
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_touchscreen_visible = false;
 #endif
 }
@@ -73,7 +77,11 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
+#ifdef HAVE_TOUCHSCREENGUI
+	const float s = m_gui_scale * RenderingEngine::getDisplayDensity() / 2;
+#else
 	const float s = m_gui_scale;
+#endif
 	DesiredRect = core::rect<s32>(
 		screensize.X / 2 - 600 * s / 2,
 		screensize.Y / 2 - 360 * s / 2,
@@ -105,10 +113,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		porting::mt_snprintf(info_text_buf, sizeof(info_text_buf),
 				info_text_template.c_str(), m_playername.c_str());
 
-		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
-		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,
-				Environment, this, ID_intotext, rect2, false, true);
-		delete[] info_text_buf_wide;
+		std::wstring info_text_w = utf8_to_wide(info_text_buf);
+		gui::IGUIEditBox *e = new GUIEditBoxWithScrollBar(info_text_w.c_str(),
+				true, Environment, this, ID_intotext, rect2, false, true);
 		e->drop();
 		e->setMultiLine(true);
 		e->setWordWrap(true);
@@ -130,14 +137,14 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect2(0, 0, 230 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 - 220 * s, ypos);
 		text = wgettext("Register and Join");
-		GUIButton::addButton(Environment, rect2, this, ID_confirm, text);
+		GUIButton::addButton(Environment, rect2, m_tsrc, this, ID_confirm, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect2(0, 0, 120 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 + 70 * s, ypos);
 		text = wgettext("Cancel");
-		GUIButton::addButton(Environment, rect2, this, ID_cancel, text);
+		GUIButton::addButton(Environment, rect2, m_tsrc, this, ID_cancel, text);
 		delete[] text;
 	}
 	{
@@ -188,8 +195,7 @@ void GUIConfirmRegistration::acceptInput()
 
 bool GUIConfirmRegistration::processInput()
 {
-	std::wstring m_password_ws = narrow_to_wide(m_password);
-	if (m_password_ws != m_pass_confirm) {
+	if (utf8_to_wide(m_password) != m_pass_confirm) {
 		gui::IGUIElement *e = getElementFromId(ID_message);
 		if (e)
 			e->setVisible(true);
@@ -222,7 +228,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 
 	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 		if (!canTakeFocus(event.GUIEvent.Element)) {
-			dstream << "GUIConfirmRegistration: Not allowing focus change."
+			infostream << "GUIConfirmRegistration: Not allowing focus change."
 				<< std::endl;
 			// Returning true disables focus change
 			return true;
@@ -257,12 +263,19 @@ bool GUIConfirmRegistration::getAndroidUIInput()
 	if (!hasAndroidUIInput() || m_jni_field_name != "password")
 		return false;
 
-	std::string text = porting::getInputDialogValue();
-	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
-	if (e)
-		e->setText(utf8_to_wide(text).c_str());
+	// still waiting
+	if (porting::getInputDialogState() == -1)
+		return true;
 
 	m_jni_field_name.clear();
+
+	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
+
+	if (!e || e->getType() != irr::gui::EGUIET_EDIT_BOX)
+		return false;
+
+	std::string text = porting::getInputDialogValue();
+	e->setText(utf8_to_wide(text).c_str());
 	return false;
 }
 #endif

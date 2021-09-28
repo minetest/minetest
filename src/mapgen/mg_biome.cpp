@@ -78,7 +78,7 @@ void BiomeManager::clear()
 	EmergeManager *emerge = m_server->getEmergeManager();
 
 	// Remove all dangling references in Decorations
-	DecorationManager *decomgr = emerge->decomgr;
+	DecorationManager *decomgr = emerge->getWritableDecorationManager();
 	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
 		Decoration *deco = (Decoration *)decomgr->getRaw(i);
 		deco->biomes.clear();
@@ -92,66 +92,14 @@ void BiomeManager::clear()
 }
 
 
-// For BiomeGen type 'BiomeGenOriginal'
-float BiomeManager::getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-	NoiseParams &np_heat_blend, u64 seed)
+BiomeManager *BiomeManager::clone() const
 {
-	return
-		NoisePerlin2D(&np_heat,       pos.X, pos.Z, seed) +
-		NoisePerlin2D(&np_heat_blend, pos.X, pos.Z, seed);
+	auto mgr = new BiomeManager();
+	assert(mgr);
+	ObjDefManager::cloneTo(mgr);
+	mgr->m_server = m_server;
+	return mgr;
 }
-
-
-// For BiomeGen type 'BiomeGenOriginal'
-float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-	NoiseParams &np_humidity_blend, u64 seed)
-{
-	return
-		NoisePerlin2D(&np_humidity,       pos.X, pos.Z, seed) +
-		NoisePerlin2D(&np_humidity_blend, pos.X, pos.Z, seed);
-}
-
-
-// For BiomeGen type 'BiomeGenOriginal'
-Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos)
-{
-	Biome *biome_closest = nullptr;
-	Biome *biome_closest_blend = nullptr;
-	float dist_min = FLT_MAX;
-	float dist_min_blend = FLT_MAX;
-
-	for (size_t i = 1; i < getNumObjects(); i++) {
-		Biome *b = (Biome *)getRaw(i);
-		if (!b ||
-				pos.Y < b->min_pos.Y || pos.Y > b->max_pos.Y + b->vertical_blend ||
-				pos.X < b->min_pos.X || pos.X > b->max_pos.X ||
-				pos.Z < b->min_pos.Z || pos.Z > b->max_pos.Z)
-			continue;
-
-		float d_heat = heat - b->heat_point;
-		float d_humidity = humidity - b->humidity_point;
-		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
-
-		if (pos.Y <= b->max_pos.Y) { // Within y limits of biome b
-			if (dist < dist_min) {
-				dist_min = dist;
-				biome_closest = b;
-			}
-		} else if (dist < dist_min_blend) { // Blend area above biome b
-			dist_min_blend = dist;
-			biome_closest_blend = b;
-		}
-	}
-
-	mysrand(pos.Y + (heat + humidity) * 0.9f);
-	if (biome_closest_blend && dist_min_blend <= dist_min &&
-			myrand_range(0, biome_closest_blend->vertical_blend) >=
-			pos.Y - biome_closest_blend->max_pos.Y)
-		return biome_closest_blend;
-
-	return (biome_closest) ? biome_closest : (Biome *)getRaw(BIOME_NONE);
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -176,7 +124,7 @@ void BiomeParamsOriginal::writeParams(Settings *settings) const
 ////////////////////////////////////////////////////////////////////////////////
 
 BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
-	BiomeParamsOriginal *params, v3s16 chunksize)
+	const BiomeParamsOriginal *params, v3s16 chunksize)
 {
 	m_bmgr   = biomemgr;
 	m_params = params;
@@ -211,17 +159,26 @@ BiomeGenOriginal::~BiomeGenOriginal()
 	delete noise_humidity_blend;
 }
 
-// Only usable in a mapgen thread
+BiomeGen *BiomeGenOriginal::clone(BiomeManager *biomemgr) const
+{
+	return new BiomeGenOriginal(biomemgr, m_params, m_csize);
+}
+
+float BiomeGenOriginal::calcHeatAtPoint(v3s16 pos) const
+{
+	return NoisePerlin2D(&m_params->np_heat, pos.X, pos.Z, m_params->seed) +
+		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
+}
+
+float BiomeGenOriginal::calcHumidityAtPoint(v3s16 pos) const
+{
+	return NoisePerlin2D(&m_params->np_humidity, pos.X, pos.Z, m_params->seed) +
+		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
+}
+
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
-	float heat =
-		NoisePerlin2D(&m_params->np_heat,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
-	float humidity =
-		NoisePerlin2D(&m_params->np_humidity,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
-
-	return calcBiomeFromNoise(heat, humidity, pos);
+	return calcBiomeFromNoise(calcHeatAtPoint(pos), calcHumidityAtPoint(pos), pos);
 }
 
 
@@ -308,10 +265,11 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 	// Carefully tune pseudorandom seed variation to avoid single node dither
 	// and create larger scale blending patterns similar to horizontal biome
 	// blend.
-	mysrand(pos.Y + (heat + humidity) * 0.9f);
+	const u64 seed = pos.Y + (heat + humidity) * 0.9f;
+	PcgRandom rng(seed);
 
 	if (biome_closest_blend && dist_min_blend <= dist_min &&
-			myrand_range(0, biome_closest_blend->vertical_blend) >=
+			rng.range(0, biome_closest_blend->vertical_blend) >=
 			pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
 
@@ -320,6 +278,41 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+ObjDef *Biome::clone() const
+{
+	auto obj = new Biome();
+	ObjDef::cloneTo(obj);
+	NodeResolver::cloneTo(obj);
+
+	obj->flags = flags;
+
+	obj->c_top = c_top;
+	obj->c_filler = c_filler;
+	obj->c_stone = c_stone;
+	obj->c_water_top = c_water_top;
+	obj->c_water = c_water;
+	obj->c_river_water = c_river_water;
+	obj->c_riverbed = c_riverbed;
+	obj->c_dust = c_dust;
+	obj->c_cave_liquid = c_cave_liquid;
+	obj->c_dungeon = c_dungeon;
+	obj->c_dungeon_alt = c_dungeon_alt;
+	obj->c_dungeon_stair = c_dungeon_stair;
+
+	obj->depth_top = depth_top;
+	obj->depth_filler = depth_filler;
+	obj->depth_water_top = depth_water_top;
+	obj->depth_riverbed = depth_riverbed;
+
+	obj->min_pos = min_pos;
+	obj->max_pos = max_pos;
+	obj->heat_point = heat_point;
+	obj->humidity_point = humidity_point;
+	obj->vertical_blend = vertical_blend;
+
+	return obj;
+}
 
 void Biome::resolveNodeNames()
 {

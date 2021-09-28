@@ -32,14 +32,15 @@ public:
 	bool deleteBlock(const v3s16 &pos);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
-	void savePlayer(RemotePlayer *player) {}
-	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) { return true; }
-	bool removePlayer(const std::string &name) { return true; }
-	void listPlayers(std::vector<std::string> &res) {}
+	void savePlayer(RemotePlayer *player);
+	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
+	bool removePlayer(const std::string &name);
+	void listPlayers(std::vector<std::string> &res);
 
 	void beginSave() {}
 	void endSave() {}
 
 private:
 	std::map<s64, std::string> m_database;
+	std::set<std::string> m_player_database;
 };

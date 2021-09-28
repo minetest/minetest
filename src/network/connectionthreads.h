@@ -101,7 +101,7 @@ public:
 	}
 
 private:
-	void receive();
+	void receive(SharedBuffer<u8> &packetdata, bool &packet_queued);
 
 	// Returns next data from a buffer if possible
 	// If found, returns true; if not, false.

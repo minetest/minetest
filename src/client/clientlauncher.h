@@ -32,39 +32,24 @@ public:
 
 	~ClientLauncher();
 
-	bool run(GameParams &game_params, const Settings &cmd_args);
+	bool run(GameStartData &start_data, const Settings &cmd_args);
 
-protected:
-	void init_args(GameParams &game_params, const Settings &cmd_args);
+private:
+	void init_args(GameStartData &start_data, const Settings &cmd_args);
 	bool init_engine();
 	void init_input();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
-		GameParams &game_params, const Settings &cmd_args);
+		GameStartData &start_data, const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);
 
 	void speed_tests();
 
-	bool list_video_modes = false;
 	bool skip_main_menu = false;
-	bool use_freetype = false;
 	bool random_input = false;
-	std::string address = "";
-	std::string playername = "";
-	std::string password = "";
+	RenderingEngine *m_rendering_engine = nullptr;
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
 	gui::IGUISkin *skin = nullptr;
-	gui::IGUIFont *font = nullptr;
-	SubgameSpec gamespec;
-	WorldSpec worldspec;
-	bool simple_singleplayer_mode = false;
-
-	// These are set up based on the menu and other things
-	// TODO: Are these required since there's already playername, password, etc
-	std::string current_playername = "inv£lid";
-	std::string current_password = "";
-	std::string current_address = "does-not-exist";
-	int current_port = 0;
 };

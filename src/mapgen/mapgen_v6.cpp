@@ -27,8 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-//#include "serverobject.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -56,7 +54,7 @@ FlagDesc flagdesc_mapgen_v6[] = {
 /////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
+MapgenV6::MapgenV6(MapgenV6Params *params, EmergeParams *emerge)
 	: Mapgen(MAPGEN_V6, params, emerge)
 {
 	m_emerge = emerge;
@@ -132,6 +130,21 @@ MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
 		c_stair_cobble = c_cobble;
 	if (c_stair_desert_stone == CONTENT_IGNORE)
 		c_stair_desert_stone = c_desert_stone;
+
+	if (c_stone == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_stone' is invalid!" << std::endl;
+	if (c_dirt == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_dirt' is invalid!" << std::endl;
+	if (c_dirt_with_grass == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_dirt_with_grass' is invalid!" << std::endl;
+	if (c_sand == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_sand' is invalid!" << std::endl;
+	if (c_water_source == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_water_source' is invalid!" << std::endl;
+	if (c_lava_source == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_lava_source' is invalid!" << std::endl;
+	if (c_cobble == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_cobble' is invalid!" << std::endl;
 }
 
 
@@ -147,6 +160,8 @@ MapgenV6::~MapgenV6()
 	delete noise_humidity;
 
 	delete[] heightmap;
+
+	delete m_emerge; // our responsibility
 }
 
 
@@ -326,12 +341,6 @@ float MapgenV6::baseTerrainLevelFromMap(int index)
 }
 
 
-s16 MapgenV6::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
-{
-	return baseTerrainLevelFromNoise(p2d) + MGV6_AVERAGE_MUD_AMOUNT;
-}
-
-
 int MapgenV6::getGroundLevelAtPoint(v2s16 p)
 {
 	return baseTerrainLevelFromNoise(p) + MGV6_AVERAGE_MUD_AMOUNT;
@@ -503,12 +512,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
 	this->vm   = data->vmanip;
@@ -637,7 +640,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)
@@ -788,7 +792,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 		v3s16(0, 0, -1), // Front
 		v3s16(-1, 0, 0), // Left
 	};
-	
+
 	// Iterate twice
 	for (s16 k = 0; k < 2; k++) {
 		for (s16 z = mudflow_minpos; z <= mudflow_maxpos; z++)
@@ -1051,7 +1055,6 @@ void MapgenV6::growGrass() // Add surface nodes
 	MapNode n_dirt_with_grass(c_dirt_with_grass);
 	MapNode n_dirt_with_snow(c_dirt_with_snow);
 	MapNode n_snowblock(c_snowblock);
-	MapNode n_snow(c_snow);
 	const v3s16 &em = vm->m_area.getExtent();
 
 	u32 index = 0;

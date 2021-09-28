@@ -39,6 +39,7 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
+	void testNetworkPacketSerialize();
 	void testHelpers();
 	void testConnectSendReceive();
 };
@@ -47,6 +48,7 @@ static TestConnection g_test_instance;
 
 void TestConnection::runTests(IGameDef *gamedef)
 {
+	TEST(testNetworkPacketSerialize);
 	TEST(testHelpers);
 	TEST(testConnectSendReceive);
 }
@@ -77,6 +79,39 @@ struct Handler : public con::PeerHandler
 	u16 last_id = 0;
 	const char *name;
 };
+
+void TestConnection::testNetworkPacketSerialize()
+{
+	const static u8 expected[] = {
+		0x00, 0x7b,
+		0x00, 0x02, 0xd8, 0x42, 0xdf, 0x9a
+	};
+
+	if (sizeof(wchar_t) == 2)
+		warningstream << __FUNCTION__ << " may fail on this platform." << std::endl;
+
+	{
+		NetworkPacket pkt(123, 0);
+
+		// serializing wide strings should do surrogate encoding, we test that here
+		pkt << std::wstring(L"\U00020b9a");
+
+		auto buf = pkt.oldForgePacket();
+		UASSERTEQ(int, buf.getSize(), sizeof(expected));
+		UASSERT(!memcmp(expected, &buf[0], buf.getSize()));
+	}
+
+	{
+		NetworkPacket pkt;
+		pkt.putRawPacket(expected, sizeof(expected), 0);
+
+		// same for decoding
+		std::wstring pkt_s;
+		pkt >> pkt_s;
+
+		UASSERT(pkt_s == L"\U00020b9a");
+	}
+}
 
 void TestConnection::testHelpers()
 {
@@ -245,7 +280,7 @@ void TestConnection::testConnectSendReceive()
 		NetworkPacket pkt;
 		pkt.putRawPacket((u8*) "Hello World !", 14, 0);
 
-		SharedBuffer<u8> sentdata = pkt.oldForgePacket();
+		auto sentdata = pkt.oldForgePacket();
 
 		infostream<<"** running client.Send()"<<std::endl;
 		client.Send(PEER_ID_SERVER, 0, &pkt, true);
@@ -260,7 +295,7 @@ void TestConnection::testConnectSendReceive()
 				<< ", data=" << (const char*)pkt.getU8Ptr(0)
 				<< std::endl;
 
-		SharedBuffer<u8> recvdata = pkt.oldForgePacket();
+		auto recvdata = pkt.oldForgePacket();
 
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 	}
@@ -289,13 +324,13 @@ void TestConnection::testConnectSendReceive()
 			infostream << "...";
 		infostream << std::endl;
 
-		SharedBuffer<u8> sentdata = pkt.oldForgePacket();
+		auto sentdata = pkt.oldForgePacket();
 
 		server.Send(peer_id_client, 0, &pkt, true);
 
 		//sleep_ms(3000);
 
-		SharedBuffer<u8> recvdata;
+		Buffer<u8> recvdata;
 		infostream << "** running client.Receive()" << std::endl;
 		session_t peer_id = 132;
 		u16 size = 0;

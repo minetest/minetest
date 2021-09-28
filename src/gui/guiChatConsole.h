@@ -55,10 +55,6 @@ public:
 	// Set whether to close the console after the user presses enter.
 	void setCloseOnEnter(bool close) { m_close_on_enter = close; }
 
-	// Return the desired height (fraction of screen size)
-	// Zero if the console is closed or getting closed
-	f32 getDesiredHeight() const;
-
 	// Replace actual line when adding the actual to the history (if there is any)
 	void replaceAndAddToHistory(const std::wstring &line);
 
@@ -72,11 +68,11 @@ public:
 	// Irrlicht draw method
 	virtual void draw();
 
-	bool canTakeFocus(gui::IGUIElement* element) { return false; }
-
 	virtual bool OnEvent(const SEvent& event);
 
 	virtual void setVisible(bool visible);
+
+	virtual bool acceptsIME() { return true; }
 
 private:
 	void reformatConsole();
@@ -87,6 +83,9 @@ private:
 	void drawBackground();
 	void drawText();
 	void drawPrompt();
+
+	// If clicked fragment has a web url, send it to the system default web browser
+	void middleClick(s32 col, s32 row);
 
 private:
 	ChatBackend* m_chat_backend;
@@ -130,4 +129,9 @@ private:
 	// font
 	gui::IGUIFont *m_font = nullptr;
 	v2u32 m_fontsize;
+
+	// Enable clickable chat weblinks
+	bool m_cache_clickable_chat_weblinks;
+	// Track if a ctrl key is currently held down
+	bool m_is_ctrl_down;
 };

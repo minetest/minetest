@@ -41,7 +41,6 @@ core.builtin_auth_handler = {
 		return {
 			password = auth_entry.password,
 			privileges = privileges,
-			-- Is set to nil if unknown
 			last_login = auth_entry.last_login,
 		}
 	end,
@@ -53,7 +52,7 @@ core.builtin_auth_handler = {
 			name = name,
 			password = password,
 			privileges = core.string_to_privs(core.settings:get("default_privs")),
-			last_login = os.time(),
+			last_login = -1,  -- Defer login time calculation until record_login (called by on_joinplayer)
 		})
 	end,
 	delete_auth = function(name)
@@ -88,6 +87,10 @@ core.builtin_auth_handler = {
 					core.settings:get("default_password")))
 		end
 
+		auth_entry.privileges = privileges
+
+		core_auth.save(auth_entry)
+
 		-- Run grant callbacks
 		for priv, _ in pairs(privileges) do
 			if not auth_entry.privileges[priv] then
@@ -101,9 +104,6 @@ core.builtin_auth_handler = {
 				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end
 		end
-
-		auth_entry.privileges = privileges
-		core_auth.save(auth_entry)
 		core.notify_authentication_modified(name)
 	end,
 	reload = function()

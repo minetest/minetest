@@ -82,7 +82,7 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os, u8 blockver, bool disk = true,
-		bool absolute_pos = false) const;
+		bool absolute_pos = false, bool include_empty = false) const;
 	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr,
 		bool absolute_pos = false);
 

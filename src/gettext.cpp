@@ -127,6 +127,10 @@ void init_gettext(const char *path, const std::string &configured_language,
 		// Add user specified locale to environment
 		setenv("LANGUAGE", configured_language.c_str(), 1);
 
+#ifdef __ANDROID__
+		setenv("LANG", configured_language.c_str(), 1);
+#endif
+
 		// Reload locale with changed environment
 		setlocale(LC_ALL, "");
 #elif defined(_MSC_VER)
@@ -217,7 +221,10 @@ void init_gettext(const char *path, const std::string &configured_language,
 #endif
 #endif
 
-	static std::string name = lowercase(PROJECT_NAME);
+	std::string name = lowercase(PROJECT_NAME);
+	infostream << "Gettext: domainname=\"" << name
+		<< "\" path=\"" << path << "\"" << std::endl;
+
 	bindtextdomain(name.c_str(), path);
 	textdomain(name.c_str());
 

@@ -54,4 +54,5 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
  */
 void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 		const core::rect<s32> &rect, const core::rect<s32> &middle,
-		const core::rect<s32> *cliprect = nullptr);
+		const core::rect<s32> *cliprect = nullptr,
+		const video::SColor *const colors = nullptr);

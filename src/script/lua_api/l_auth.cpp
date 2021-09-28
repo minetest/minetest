@@ -32,8 +32,11 @@ AuthDatabase *ModApiAuth::getAuthDb(lua_State *L)
 {
 	ServerEnvironment *server_environment =
 			dynamic_cast<ServerEnvironment *>(getEnv(L));
-	if (!server_environment)
+	if (!server_environment) {
+		luaL_error(L, "Attempt to access an auth function but the auth"
+			" system is yet not initialized. This causes bugs.");
 		return nullptr;
+	}
 	return server_environment->getAuthDatabase();
 }
 

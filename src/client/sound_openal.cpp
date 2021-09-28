@@ -28,6 +28,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <alc.h>
 	//#include <alext.h>
 #elif defined(__APPLE__)
+	#define OPENAL_DEPRECATED
 	#include <OpenAL/al.h>
 	#include <OpenAL/alc.h>
 	//#include <OpenAL/alext.h>
@@ -165,8 +166,8 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 				<< "preparing sound buffer" << std::endl;
 	}
 
-	infostream << "Audio file "
-		<< filename_for_logging << " loaded" << std::endl;
+	//infostream << "Audio file "
+	//	<< filename_for_logging << " loaded" << std::endl;
 
 	// Clean up!
 	ov_clear(oggFile);
@@ -275,25 +276,38 @@ public:
 		m_device(nullptr, delete_alcdevice),
 		m_context(nullptr, delete_alccontext)
 	{
-		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(nullptr), delete_alcdevice)))
-			throw std::runtime_error("Audio: Global Initialization: Device Open");
+	}
+
+	bool init()
+	{
+		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(nullptr), delete_alcdevice))) {
+			errorstream << "Audio: Global Initialization: Failed to open device" << std::endl;
+			return false;
+		}
 
 		if (!(m_context = unique_ptr_alccontext(
 				alcCreateContext(m_device.get(), nullptr), delete_alccontext))) {
-			throw std::runtime_error("Audio: Global Initialization: Context Create");
+			errorstream << "Audio: Global Initialization: Failed to create context" << std::endl;
+			return false;
 		}
 
-		if (!alcMakeContextCurrent(m_context.get()))
-			throw std::runtime_error("Audio: Global Initialization: Context Current");
+		if (!alcMakeContextCurrent(m_context.get())) {
+			errorstream << "Audio: Global Initialization: Failed to make current context" << std::endl;
+			return false;
+		}
 
 		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
-		if (alGetError() != AL_NO_ERROR)
-			throw std::runtime_error("Audio: Global Initialization: OpenAL Error");
+		if (alGetError() != AL_NO_ERROR) {
+			errorstream << "Audio: Global Initialization: OpenAL Error " << alGetError() << std::endl;
+			return false;
+		}
 
 		infostream << "Audio: Global Initialized: OpenAL " << alGetString(AL_VERSION)
 			<< ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER)
 			<< std::endl;
+
+		return true;
 	}
 
 	~SoundManagerSingleton()
@@ -324,14 +338,12 @@ private:
 	};
 
 	std::unordered_map<int, FadeState> m_sounds_fading;
-	float m_fade_delay;
 public:
 	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
 		m_device(smg->m_device.get()),
 		m_context(smg->m_context.get()),
-		m_next_id(1),
-		m_fade_delay(0)
+		m_next_id(1)
 	{
 		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
@@ -350,6 +362,14 @@ public:
 
 		for (auto &buffer : m_buffers) {
 			for (SoundBuffer *sb : buffer.second) {
+				alDeleteBuffers(1, &sb->buffer_id);
+
+				ALenum error = alGetError();
+				if (error != AL_NO_ERROR) {
+					warningstream << "Audio: Failed to free stream for "
+						<< buffer.first << ": " << alErrorString(error) << std::endl;
+				}
+
 				delete sb;
 			}
 			buffer.second.clear();
@@ -498,9 +518,11 @@ public:
 	// Remove stopped sounds
 	void maintain()
 	{
-		verbosestream<<"OpenALSoundManager::maintain(): "
-				<<m_sounds_playing.size()<<" playing sounds, "
-				<<m_buffers.size()<<" sound names loaded"<<std::endl;
+		if (!m_sounds_playing.empty()) {
+			verbosestream << "OpenALSoundManager::maintain(): "
+					<< m_sounds_playing.size() <<" playing sounds, "
+					<< m_buffers.size() <<" sound names loaded"<<std::endl;
+		}
 		std::unordered_set<int> del_list;
 		for (const auto &sp : m_sounds_playing) {
 			int id = sp.first;
@@ -530,7 +552,7 @@ public:
 		SoundBuffer *buf = load_ogg_from_file(filepath);
 		if (buf)
 			addBuffer(name, buf);
-		return false;
+		return !!buf;
 	}
 
 	bool loadSoundData(const std::string &name,
@@ -539,7 +561,7 @@ public:
 		SoundBuffer *buf = load_ogg_from_buffer(filedata, name);
 		if (buf)
 			addBuffer(name, buf);
-		return false;
+		return !!buf;
 	}
 
 	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up)
@@ -601,38 +623,45 @@ public:
 
 	void fadeSound(int soundid, float step, float gain)
 	{
-		m_sounds_fading[soundid] = FadeState(step, getSoundGain(soundid), gain);
+		// Ignore the command if step isn't valid.
+		if (step == 0)
+			return;
+		float current_gain = getSoundGain(soundid);
+		step = gain - current_gain > 0 ? abs(step) : -abs(step);
+		if (m_sounds_fading.find(soundid) != m_sounds_fading.end()) {
+			auto current_fade = m_sounds_fading[soundid];
+			// Do not replace the fade if it's equivalent.
+			if (current_fade.target_gain == gain && current_fade.step == step)
+				return;
+			m_sounds_fading.erase(soundid);
+		}
+		gain = rangelim(gain, 0, 1);
+		m_sounds_fading[soundid] = FadeState(step, current_gain, gain);
 	}
 
 	void doFades(float dtime)
 	{
-		m_fade_delay += dtime;
+		for (auto i = m_sounds_fading.begin(); i != m_sounds_fading.end();) {
+			FadeState& fade = i->second;
+			assert(fade.step != 0);
+			fade.current_gain += (fade.step * dtime);
 
-		if (m_fade_delay < 0.1f)
-			return;
-
-		float chkGain = 0;
-		for (auto i = m_sounds_fading.begin();
-				i != m_sounds_fading.end();) {
-			if (i->second.step < 0.f)
-				chkGain = -(i->second.current_gain);
+			if (fade.step < 0.f)
+				fade.current_gain = std::max(fade.current_gain, fade.target_gain);
 			else
-				chkGain = i->second.current_gain;
+				fade.current_gain = std::min(fade.current_gain, fade.target_gain);
 
-			if (chkGain < i->second.target_gain) {
-				i->second.current_gain += (i->second.step * m_fade_delay);
-				i->second.current_gain = rangelim(i->second.current_gain, 0, 1);
+			if (fade.current_gain <= 0.f)
+				stopSound(i->first);
+			else
+				updateSoundGain(i->first, fade.current_gain);
 
-				updateSoundGain(i->first, i->second.current_gain);
-				++i;
-			} else {
-				if (i->second.target_gain <= 0.f)
-					stopSound(i->first);
-
+			// The increment must happen during the erase call, or else it'll segfault.
+			if (fade.current_gain == fade.target_gain)
 				m_sounds_fading.erase(i++);
-			}
+			else
+				i++;
 		}
-		m_fade_delay = 0;
 	}
 
 	bool soundExists(int sound)
@@ -650,8 +679,8 @@ public:
 
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
-		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
+		alSource3f(sound->source_id, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
+		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 10.0f);
 	}
 
 	bool updateSoundGain(int id, float gain)
@@ -680,7 +709,11 @@ public:
 
 std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
 {
-	return std::shared_ptr<SoundManagerSingleton>(new SoundManagerSingleton());
+	auto smg = std::make_shared<SoundManagerSingleton>();
+	if (!smg->init()) {
+		smg.reset();
+	}
+	return smg;
 }
 
 ISoundManager *createOpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)

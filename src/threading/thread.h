@@ -36,6 +36,10 @@ DEALINGS IN THE SOFTWARE.
 	#include <sys/thread.h> // for tid_t
 #endif
 
+#ifdef __HAIKU__
+	#include <kernel/OS.h>
+#endif
+
 /*
  * On platforms using pthreads, these five priority classes correlate to
  * even divisions between the minimum and maximum reported thread priority.
@@ -69,14 +73,6 @@ public:
 	 * a subsequent call to Thread::wait.
 	 */
 	bool stop();
-
-	/*
-	 * Immediately terminates the thread.
-	 * This should be used with extreme caution, as the thread will not have
-	 * any opportunity to release resources it may be holding (such as memory
-	 * or locks).
-	 */
-	bool kill();
 
 	/*
 	 * Waits for thread to finish.

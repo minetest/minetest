@@ -1,13 +1,13 @@
 Minetest
 ========
 
-[![Build Status](https://travis-ci.org/minetest/minetest.svg?branch=master)](https://travis-ci.org/minetest/minetest)
+![Build Status](https://github.com/minetest/minetest/workflows/build/badge.svg)
 [![Translation status](https://hosted.weblate.org/widgets/minetest/-/svg-badge.svg)](https://hosted.weblate.org/engage/minetest/?utm_source=widget)
 [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
 Minetest is a free open-source voxel game engine with easy modding and game creation.
 
-Copyright (C) 2010-2019 Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2020 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code
@@ -31,10 +31,10 @@ Table of Contents
 
 Further documentation
 ----------------------
-- Website: http://minetest.net/
-- Wiki: http://wiki.minetest.net/
-- Developer wiki: http://dev.minetest.net/
-- Forum: http://forum.minetest.net/
+- Website: https://minetest.net/
+- Wiki: https://wiki.minetest.net/
+- Developer wiki: https://dev.minetest.net/
+- Forum: https://forum.minetest.net/
 - GitHub: https://github.com/minetest/minetest/
 - [doc/](doc/) directory of source distribution
 
@@ -68,16 +68,16 @@ Some can be changed in the key config dialog in the settings tab.
 | P                             | Enable/disable pitch move mode                                 |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
-| E                             | Move fast in fast mode                                         |
+| E                             | Aux1 (Move fast in fast mode. Games may add special features)  |
+| C                             | Cycle through camera modes                                     |
+| V                             | Cycle through minimap modes                                    |
+| Shift + V                     | Change minimap orientation                                     |
 | F1                            | Hide/show HUD                                                  |
 | F2                            | Hide/show chat                                                 |
 | F3                            | Disable/enable fog                                             |
 | F4                            | Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
 | F5                            | Cycle through debug information screens                        |
 | F6                            | Cycle through profiler info screens                            |
-| F7                            | Cycle through camera modes                                     |
-| F9                            | Cycle through minimap modes                                    |
-| Shift + F9                    | Change minimap orientation                                     |
 | F10                           | Show/hide console                                              |
 | F12                           | Take screenshot                                                |
 
@@ -133,28 +133,29 @@ Compiling
 | Dependency | Version | Commentary |
 |------------|---------|------------|
 | GCC        | 4.9+    | Can be replaced with Clang 3.4+ |
-| CMake      | 2.6+    |            |
-| Irrlicht   | 1.7.3+  |            |
+| CMake      | 3.5+    |            |
+| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | SQLite3    | 3.0+    |            |
+| Zstd       | 1.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 
 For Debian/Ubuntu users:
 
-    sudo apt install g++ make libc6-dev libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
 
 For Fedora users:
 
-    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
     
 For Arch users:
 
-    sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm irrlicht libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses
+    sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd
 
 For Alpine users:
 
-    sudo apk add build-base irrlicht-dev cmake bzip2-dev libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev
+    sudo apk add build-base cmake libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev zstd-dev
 
 #### Download
 
@@ -173,9 +174,13 @@ Download source (this is the URL to the latest of source repository, which might
     git clone --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
-Download minetest_game (otherwise only the "Minimal development test" game is available) using Git:
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+
+Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
+
+    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 
 Download source, without using Git:
 
@@ -189,6 +194,14 @@ Download minetest_game, without using Git:
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
     tar xf master.tar.gz
     mv minetest_game-master minetest_game
+    cd ..
+
+Download IrrlichtMt, without using Git:
+
+    cd lib/
+    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
+    tar xf master.tar.gz
+    mv irrlicht-master irrlichtmt
     cd ..
 
 #### Build
@@ -209,8 +222,12 @@ Run it:
 - You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
   - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to have Irrlicht installed.
-  - In that case use `-DIRRLICHT_SOURCE_DIR=/the/irrlicht/source`.
+- If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
+  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
+- IrrlichtMt can also be installed somewhere that is not a standard install path.
+  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
+  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists
+    or that `$(CMAKE_PREFIX_PATH)` is the path of an IrrlichtMt build folder.
 
 ### CMake options
 
@@ -218,6 +235,7 @@ General options and their default values:
 
     BUILD_CLIENT=TRUE          - Build Minetest client
     BUILD_SERVER=FALSE         - Build Minetest server
+    BUILD_UNITTESTS=TRUE       - Build unittest sources
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build
@@ -228,24 +246,24 @@ General options and their default values:
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
     ENABLE_FREETYPE=ON         - Build with FreeType2; Allows using TTF fonts
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
-    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by Irrlicht)
+    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by IrrlichtMt)
     ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
     ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
     ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game sounds
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
+    ENABLE_PROMETHEUS=OFF      - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
-    ENABLE_SYSTEM_JSONCPP=OFF  - Use JsonCPP from system
+    ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
     OPENGL_GL_PREFERENCE=LEGACY - Linux client build only; See CMake Policy CMP0072 for reference
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+    ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)
 
 Library specific options:
 
-    BZIP2_INCLUDE_DIR               - Linux only; directory where bzlib.h is located
-    BZIP2_LIBRARY                   - Linux only; path to libbz2.a/libbz2.so
     CURL_DLL                        - Only if building with cURL on Windows; path to libcurl.dll
     CURL_INCLUDE_DIR                - Only if building with cURL; directory where curl.h is located
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
@@ -255,14 +273,12 @@ Library specific options:
     FREETYPE_INCLUDE_DIR_ft2build   - Only if building with FreeType 2; directory that contains ft2build.h
     FREETYPE_LIBRARY                - Only if building with FreeType 2; path to libfreetype.a/libfreetype.so/freetype.lib
     FREETYPE_DLL                    - Only if building with FreeType 2 on Windows; path to libfreetype.dll
-    GETTEXT_DLL                     - Only when building with gettext on Windows; path to libintl3.dll
-    GETTEXT_ICONV_DLL               - Only when building with gettext on Windows; path to libiconv2.dll
+    GETTEXT_DLL                     - Only when building with gettext on Windows; paths to libintl + libiconv DLLs
     GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains iconv.h
     GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
-    IRRLICHT_DLL                    - Only on Windows; path to Irrlicht.dll
-    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h
-    IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a/Irrlicht.lib
+    IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
+    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
@@ -274,7 +290,6 @@ Library specific options:
     SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex_c.so/spatialindex-32.lib
     LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
     LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
-    MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
     OGG_DLL                         - Only if building with sound on Windows; path to libogg.dll
     OGG_INCLUDE_DIR                 - Only if building with sound; directory that contains an ogg directory which contains ogg.h
     OGG_LIBRARY                     - Only if building with sound; path to libogg.a/libogg.so/libogg.dll.a
@@ -285,17 +300,19 @@ Library specific options:
     OPENGLES2_LIBRARY               - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
     SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
     SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
-    VORBISFILE_DLL                  - Only if building with sound on Windows; path to libvorbisfile-3.dll
     VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
-    VORBIS_DLL                      - Only if building with sound on Windows; path to libvorbis-0.dll
+    VORBIS_DLL                      - Only if building with sound on Windows; paths to vorbis DLLs
     VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
     VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
     XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
     ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib
+    ZSTD_DLL                        - Only on Windows; path to libzstd.dll
+    ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
+    ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
-### Compiling on Windows
+### Compiling on Windows using MSVC
 
 ### Requirements
 
@@ -308,25 +325,21 @@ Library specific options:
 
 It is highly recommended to use vcpkg as package manager.
 
-#### a) Using vcpkg to install dependencies
-
 After you successfully built vcpkg you can easily install the required libraries:
 ```powershell
-vcpkg install irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit --triplet x64-windows
+vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit gmp jsoncpp --triplet x64-windows
 ```
 
+- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
 - `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 - `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 - `freetype` is optional, it allows true-type font rendering.
 - `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
+- `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
 
 There are other optional libraries, but they are not tested if they can build and link correctly.
 
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
-
-#### b) Compile the dependencies on your own
-
-This is outdated and not recommended. Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Compile Minetest
 
@@ -351,16 +364,10 @@ This is outdated and not recommended. Follow the instructions on https://dev.min
 Run the following script in PowerShell:
 
 ```powershell
-cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=0 -DENABLE_CURSES=0
+cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
 cmake --build . --config Release
 ```
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
-
-#### c) Using your own compiled libraries
-
-**This is outdated and not recommended**
-
-Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Windows Installer using WiX Toolset
 

@@ -40,15 +40,16 @@ struct ItemStack
 	~ItemStack() = default;
 
 	// Serialization
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, bool serialize_meta = true) const;
 	// Deserialization. Pass itemdef unless you don't want aliases resolved.
 	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
 	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
 	// Returns the string used for inventory
-	std::string getItemString() const;
+	std::string getItemString(bool include_meta = true) const;
 	// Returns the tooltip
 	std::string getDescription(IItemDefManager *itemdef) const;
+	std::string getShortDescription(IItemDefManager *itemdef) const;
 
 	/*
 		Quantity methods
@@ -297,6 +298,7 @@ public:
 	void serialize(std::ostream &os, bool incremental = false) const;
 	void deSerialize(std::istream &is);
 
+	// Creates a new list if none exists or truncates existing lists
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);
 	const InventoryList * getList(const std::string &name) const;
@@ -334,7 +336,7 @@ public:
 	}
 private:
 	// -1 if not found
-	const s32 getListIndex(const std::string &name) const;
+	s32 getListIndex(const std::string &name) const;
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;

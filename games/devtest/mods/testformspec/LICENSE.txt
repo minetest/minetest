@@ -1,0 +1,14 @@
+License of media files
+----------------------
+Content imported from minetest_game.
+
+
+BlockMen (CC BY-SA 3.0)
+  default_chest_front.png
+  default_chest_lock.png
+  default_chest_side.png
+  default_chest_top.png
+
+stujones11 (CC BY-SA 3.0)
+An0n3m0us (CC BY-SA 3.0)
+  testformspec_character.b3d

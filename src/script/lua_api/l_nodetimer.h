@@ -22,13 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
 
-class ServerEnvironment;
+class ServerMap;
 
 class NodeTimerRef : public ModApiBase
 {
 private:
 	v3s16 m_p;
-	ServerEnvironment *m_env = nullptr;
+	ServerMap *m_map;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -50,14 +50,12 @@ private:
 	static int l_get_elapsed(lua_State *L);
 
 public:
-	NodeTimerRef(v3s16 p, ServerEnvironment *env);
+	NodeTimerRef(v3s16 p, ServerMap *map) : m_p(p), m_map(map) {}
 	~NodeTimerRef() = default;
 
 	// Creates an NodeTimerRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, v3s16 p, ServerEnvironment *env);
-
-	static void set_null(lua_State *L);
+	static void create(lua_State *L, v3s16 p, ServerMap *map);
 
 	static void Register(lua_State *L);
 };

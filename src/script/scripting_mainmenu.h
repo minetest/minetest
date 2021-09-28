@@ -38,8 +38,9 @@ public:
 	void step();
 
 	// Pass async events from engine to async threads
-	unsigned int queueAsync(const std::string &serialized_func,
-			const std::string &serialized_params);
+	u32 queueAsync(std::string &&serialized_func,
+		std::string &&serialized_param);
+
 private:
 	void initializeModApi(lua_State *L, int top);
 	static void registerLuaClasses(lua_State *L, int top);

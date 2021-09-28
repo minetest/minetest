@@ -57,6 +57,8 @@ struct ChatFormattedFragment
 	EnrichedString text;
 	// starting column
 	u32 column;
+	// web link is empty for most frags
+	std::string weblink;
 	// formatting
 	//u8 bold:1;
 };
@@ -94,8 +96,6 @@ public:
 	// Delete lines older than maxAge.
 	void deleteByAge(f32 maxAge);
 
-	// Get number of columns, 0 if reformat has not been called yet.
-	u32 getColumns() const;
 	// Get number of rows, 0 if reformat has not been called yet.
 	u32 getRows() const;
 	// Update console size and reformat all formatted lines.
@@ -113,6 +113,13 @@ public:
 	// Scroll to top of buffer (oldest)
 	void scrollTop();
 
+	// Functions for keeping track of whether the lines were modified by any
+	// preceding operations
+	// If they were not changed, getLineCount() and getLine() output the same as
+	// before
+	bool getLinesModified() const { return m_lines_modified; }
+	void resetLinesModified() { m_lines_modified = false; }
+
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and
 	// returns the number of formatted lines.
@@ -120,6 +127,7 @@ public:
 			std::vector<ChatFormattedLine>& destination) const;
 
 	void resize(u32 scrollback);
+
 protected:
 	s32 getTopScrollPos() const;
 	s32 getBottomScrollPos() const;
@@ -140,6 +148,16 @@ private:
 	std::vector<ChatFormattedLine> m_formatted;
 	// Empty formatted line, for error returns
 	ChatFormattedLine m_empty_formatted_line;
+
+	// Enable clickable chat weblinks
+	bool m_cache_clickable_chat_weblinks;
+	// Color of clickable chat weblinks
+	irr::video::SColor m_cache_chat_weblink_color;
+
+	// Whether the lines were modified since last markLinesUnchanged()
+	// Is always set to true when m_unformatted is modified, because that's what
+	// determines the output of getLineCount() and getLine()
+	bool m_lines_modified = true;
 };
 
 class ChatPrompt

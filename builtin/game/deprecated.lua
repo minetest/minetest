@@ -1,29 +1,6 @@
 -- Minetest: builtin/deprecated.lua
 
 --
--- Default material types
---
-local function digprop_err()
-	core.log("deprecated", "The core.digprop_* functions are obsolete and need to be replaced by item groups.")
-end
-
-core.digprop_constanttime = digprop_err
-core.digprop_stonelike = digprop_err
-core.digprop_dirtlike = digprop_err
-core.digprop_gravellike = digprop_err
-core.digprop_woodlike = digprop_err
-core.digprop_leaveslike = digprop_err
-core.digprop_glasslike = digprop_err
-
-function core.node_metadata_inventory_move_allow_all()
-	core.log("deprecated", "core.node_metadata_inventory_move_allow_all is obsolete and does nothing.")
-end
-
-function core.add_to_creative_inventory(itemstring)
-	core.log("deprecated", "core.add_to_creative_inventory is obsolete and does nothing.")
-end
-
---
 -- EnvRef
 --
 core.env = {}
@@ -70,3 +47,19 @@ core.setting_get = setting_proxy("get")
 core.setting_setbool = setting_proxy("set_bool")
 core.setting_getbool = setting_proxy("get_bool")
 core.setting_save = setting_proxy("write")
+
+--
+-- core.register_on_auth_fail
+--
+
+function core.register_on_auth_fail(func)
+	core.log("deprecated", "core.register_on_auth_fail " ..
+		"is deprecated and should be replaced by " ..
+		"core.register_on_authplayer instead.")
+
+	core.register_on_authplayer(function (player_name, ip, is_success)
+		if not is_success then
+			func(player_name, ip)
+		end
+	end)
+end
