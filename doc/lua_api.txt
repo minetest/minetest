@@ -7519,12 +7519,15 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         on_place = function(itemstack, placer, pointed_thing),
         -- When the 'place' key was pressed with the item in hand
         -- and a node was pointed at.
-        -- Shall place item and return the leftover itemstack.
+        -- Shall place item and return the leftover itemstack
+        -- or nil to not modify the inventory.
         -- The placer may be any ObjectRef or nil.
         -- default: minetest.item_place
 
         on_secondary_use = function(itemstack, user, pointed_thing),
         -- Same as on_place but called when not pointing at a node.
+        -- Function must return either nil if inventory shall not be modified,
+        -- or an itemstack to replace the original itemstack.
         -- The user may be any ObjectRef or nil.
         -- default: nil
 
@@ -7536,8 +7539,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
         -- When user pressed the 'punch/mine' key with the item in hand.
-        -- Function must return either nil if no item shall be removed from
-        -- inventory, or an itemstack to replace the original itemstack.
+        -- Function must return either nil if inventory shall not be modified,
+        -- or an itemstack to replace the original itemstack.
         -- e.g. itemstack:take_item(); return itemstack
         -- Otherwise, the function is free to do what it wants.
         -- The user may be any ObjectRef or nil.
