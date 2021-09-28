@@ -70,7 +70,7 @@ public:
 
 private:
 	void runTimeouts(float dtime);
-	void rawSend(const BufferedPacketPtr &p);
+	void rawSend(const BufferedPacket *p);
 	bool rawSendAsPacket(session_t peer_id, u8 channelnum,
 			const SharedBuffer<u8> &data, bool reliable);
 

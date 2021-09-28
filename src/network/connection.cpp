@@ -64,10 +64,8 @@ namespace con
 
 u16 BufferedPacket::getSeqnum() const
 {
-	if (size() < BASE_HEADER_SIZE + 3) {
-		//std::cout << (int)data[0xFFFFFFFFF] << std::endl;
-		throw ConnectionException("Packet too short to contain a seqnum");
-	}
+	if (size() < BASE_HEADER_SIZE + 3)
+		return 0; // should never happen
 
 	return readU16(&data[BASE_HEADER_SIZE + 1]);
 }
@@ -76,17 +74,15 @@ BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel)
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
-	auto p = std::make_shared<BufferedPacket>(packet_size);
+
+	BufferedPacketPtr p(new BufferedPacket(packet_size));
 	p->address = address;
 
-	u8 *packet = p->ptr_write();
+	writeU32(&p->data[0], protocol_id);
+	writeU16(&p->data[4], sender_peer_id);
+	writeU8(&p->data[6], channel);
 
-	writeU32(&packet[0], protocol_id);
-	writeU16(&packet[4], sender_peer_id);
-	writeU8(&packet[6], channel);
-
-	memcpy(&packet[BASE_HEADER_SIZE], *data, data.getSize());
-	p->lock();
+	memcpy(&p->data[BASE_HEADER_SIZE], *data, data.getSize());
 
 	return p;
 }
@@ -363,11 +359,11 @@ void ReliablePacketBuffer::incrementTimeouts(float dtime)
 	}
 }
 
-std::list<BufferedPacketPtr>
+std::list<ConstSharedPtr<BufferedPacket>>
 	ReliablePacketBuffer::getTimedOuts(float timeout, u32 max_packets)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	std::list<BufferedPacketPtr> timed_outs;
+	std::list<ConstSharedPtr<BufferedPacket>> timed_outs;
 	for (auto &packet : m_list) {
 		if (packet->time < timeout)
 			continue;
@@ -376,7 +372,7 @@ std::list<BufferedPacketPtr>
 		packet->time = 0.0f;
 		packet->resend_count++;
 
-		timed_outs.push_back(packet);
+		timed_outs.emplace_back(packet);
 
 		if (timed_outs.size() >= max_packets)
 			break;
@@ -1020,7 +1016,7 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommandPtr &c,
 
 	if (chan.queued_commands.empty() &&
 			/* don't queue more packets then window size */
-			(chan.queued_reliables.size() < chan.getWindowSize() / 2)) {
+			(chan.queued_reliables.size() + 1 < chan.getWindowSize() / 2)) {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" processing reliable command for peer id: " << c->peer_id
 				<<" data size: " << c->data.getSize() << std::endl);
@@ -1031,7 +1027,7 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommandPtr &c,
 				<<" Queueing reliable command for peer id: " << c->peer_id
 				<<" data size: " << c->data.getSize() <<std::endl);
 
-		if (chan.queued_commands.size() >= chan.getWindowSize() / 2) {
+		if (chan.queued_commands.size() + 1 >= chan.getWindowSize() / 2) {
 			LOG(derr_con << m_connection->getDesc()
 					<< "Possible packet stall to peer id: " << c->peer_id
 					<< " queued_commands=" << chan.queued_commands.size()
@@ -1113,7 +1109,7 @@ bool UDPPeer::processReliableSendCommand(
 	volatile u16 packets_available = toadd.size();
 	/* we didn't get a single sequence number no need to fill queue */
 	if (!have_initial_sequence_number) {
-		LOG(derr_con << "Ran out of sequence numbers!" << std::endl);
+		LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers!" << std::endl);
 		return false;
 	}
 

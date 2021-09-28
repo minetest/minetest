@@ -236,12 +236,12 @@ void ConnectionSendThread::runTimeouts(float dtime)
 					<< "RE-SENDING timed-out RELIABLE to "
 					<< k->address.serializeString()
 					<< "(t/o=" << resend_timeout << "): "
-					<< "count=" << k.resend_count
+					<< "count=" << k->resend_count
 					<< ", channel=" << ((int) channelnum & 0xff)
 					<< ", seqnum=" << seqnum
 					<< std::endl);
 
-				rawSend(k);
+				rawSend(k.get());
 
 				// do not handle rtt here as we can't decide if this packet was
 				// lost or really takes more time to transmit
@@ -274,7 +274,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 	}
 }
 
-void ConnectionSendThread::rawSend(const BufferedPacketPtr &p)
+void ConnectionSendThread::rawSend(const BufferedPacket *p)
 {
 	try {
 		m_connection->m_udpSocket.Send(p->address, p->data, p->size());
@@ -304,7 +304,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacketPtr &p, Channel *c
 	}
 
 	// Send the packet
-	rawSend(p);
+	rawSend(p.get());
 }
 
 bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
@@ -361,7 +361,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			channelnum);
 
 		// Send the packet
-		rawSend(p);
+		rawSend(p.get());
 		return true;
 	}
 

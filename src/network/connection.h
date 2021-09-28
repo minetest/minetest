@@ -181,7 +181,7 @@ static inline float CALC_DTIME(u64 lasttime, u64 curtime)
 /*
 	Struct for all kinds of packets. Includes following data:
 		BASE_HEADER
-		SharedBuffer<u8> packet data
+		u8[] packet data (usually copied from SharedBuffer<u8>)
 */
 struct BufferedPacket {
 	BufferedPacket(u32 a_size)
@@ -192,28 +192,11 @@ struct BufferedPacket {
 
 	DISABLE_CLASS_COPY(BufferedPacket)
 
-	void copyTo(BufferedPacket &p) const
-	{
-		p.m_data = m_data;
-		p.m_write_locked = m_write_locked;
-		p.data = data;
-		p.time = time;
-		p.totaltime = totaltime;
-		p.absolute_send_time = absolute_send_time;
-		p.address = address;
-		p.resend_count = resend_count;
-	}
-
-	void lock() { m_write_locked = true; }
-
 	u16 getSeqnum() const;
 
 	inline const size_t size() const { return m_data.size(); }
 
-	inline u8 *ptr_write()
-	{ return m_write_locked ? nullptr : &m_data[0]; }
-
-	const u8 *data; // Read-only access
+	u8 *data; // Direct memory access
 	float time = 0.0f; // Seconds from buffering the packet or re-sending
 	float totaltime = 0.0f; // Seconds from buffering the packet
 	u64 absolute_send_time = -1;
@@ -222,7 +205,6 @@ struct BufferedPacket {
 
 private:
 	std::vector<u8> m_data; // Data of the packet, including headers
-	bool m_write_locked = false;
 };
 
 typedef std::shared_ptr<BufferedPacket> BufferedPacketPtr;
@@ -282,7 +264,7 @@ public:
 	void insert(BufferedPacketPtr &p_ptr, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<BufferedPacketPtr> getTimedOuts(float timeout, u32 max_packets);
+	std::list<ConstSharedPtr<BufferedPacket>> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();
