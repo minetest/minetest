@@ -79,19 +79,31 @@ inline std::wstring fwgettext(const char *src, Args&&... args)
 	return std::wstring(buf);
 }
 
+/**
+ * Returns translated string with format args applied
+ *
+ * @tparam Args Template parameter for format args
+ * @param format Translation source string
+ * @param buf_size The maximum number of characters to store. size 0 means
+ * @param args Variable format args
+ * @return translated string
+ */
 template <typename ...Args>
 inline std::string fmtgettext(const char *format, std::size_t buf_size, Args&&... args)
 {
 	format = gettext(format);
-	if (buf_size <= 0) {
-		buf_size = porting::mt_snprintf(nullptr, 0, format, std::forward<Args>(args)...) + 1;
-		if (buf_size <= 0) {
+	if (buf_size == 0) {
+		int l = porting::mt_snprintf(nullptr, 0, format, std::forward<Args>(args)...);
+		if (l <= 0) {
 			throw std::runtime_error("gettext format error: " + std::string(format));
+		} else {
+			buf_size = static_cast<size_t>(l);
 		}
 	}
-	auto size = static_cast<size_t>(buf_size);
-	char buf[size];
-	porting::mt_snprintf(buf, size, format, std::forward<Args>(args)...);
+	std::string buf;
+	buf.resize(buf_size+1); // extra null byte
+	porting::mt_snprintf(&buf[0], buf.size(), format, std::forward<Args>(args)...);
+	buf.resize(buf_size);
 
-	return std::string(buf);
+	return buf;
 }
