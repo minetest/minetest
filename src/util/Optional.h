@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <utility>
 #include "debug.h"
 
 struct nullopt_t
@@ -43,18 +44,38 @@ class Optional
 public:
 	Optional() noexcept {}
 	Optional(nullopt_t) noexcept {}
+
 	Optional(const T &value) noexcept : m_has_value(true), m_value(value) {}
+	Optional(T &&value) noexcept : m_has_value(true), m_value(std::move(value)) {}
+
 	Optional(const Optional<T> &other) noexcept :
 			m_has_value(other.m_has_value), m_value(other.m_value)
+	{}
+	Optional(Optional<T> &&other) noexcept :
+			m_has_value(other.m_has_value), m_value(std::move(other.m_value))
 	{
+		other.m_has_value = false;
 	}
 
-	void operator=(nullopt_t) noexcept { m_has_value = false; }
+	Optional<T> &operator=(nullopt_t) noexcept { m_has_value = false; return *this; }
 
-	void operator=(const Optional<T> &other) noexcept
+	Optional<T> &operator=(const Optional<T> &other) noexcept
 	{
+		if (&other == this)
+			return *this;
 		m_has_value = other.m_has_value;
 		m_value = other.m_value;
+		return *this;
+	}
+
+	Optional<T> &operator=(Optional<T> &&other) noexcept
+	{
+		if (&other == this)
+			return *this;
+		m_has_value = other.m_has_value;
+		m_value = std::move(other.m_value);
+		other.m_has_value = false;
+		return *this;
 	}
 
 	T &value()
@@ -70,6 +91,13 @@ public:
 	}
 
 	const T &value_or(const T &def) const { return m_has_value ? m_value : def; }
+
+	// Unchecked access consistent with std::optional
+	T* operator->() { return &m_value; }
+	const T* operator->() const { return &m_value; }
+
+	T& operator*() { return m_value; }
+	const T& operator*() const { return m_value; }
 
 	bool has_value() const noexcept { return m_has_value; }
 
