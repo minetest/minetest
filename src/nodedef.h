@@ -90,13 +90,6 @@ enum LiquidType
 	LIQUID_SOURCE,
 };
 
-enum LiquidMoveType
-{
-	LIQUID_MOVE_AUTO,
-	LIQUID_MOVE_NONE,
-	LIQUID_MOVE_LIQUID,
-};
-
 enum NodeBoxType
 {
 	NODEBOX_REGULAR, // Regular block; allows buildable_to

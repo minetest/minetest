@@ -720,7 +720,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	f.liquid_viscosity = getintfield_default(L, index,
 			"liquid_viscosity", f.liquid_viscosity);
 	// If move_resistance is not set explicitly,
-        // move_resistance is equal to liquid_viscosity
+	// move_resistance is equal to liquid_viscosity
 	f.move_resistance = f.liquid_viscosity;
 	f.liquid_range = getintfield_default(L, index,
 			"liquid_range", f.liquid_range);
@@ -848,7 +848,6 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	std::string paramtype2(ScriptApiNode::es_ContentParamType2[(int)c.param_type_2].str);
 	std::string drawtype(ScriptApiNode::es_DrawType[(int)c.drawtype].str);
 	std::string liquid_type(ScriptApiNode::es_LiquidType[(int)c.liquid_type].str);
-	std::string liquid_move_physics(ScriptApiNode::es_LiquidMoveType[(int)c.liquid_move_physics].str);
 
 	/* Missing "tiles" because I don't see a usecase (at least not yet). */
 
@@ -970,7 +969,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "node_dig_prediction");
 	lua_pushnumber(L, c.move_resistance);
 	lua_setfield(L, -2, "move_resistance");
-	lua_pushstring(L, liquid_move_physics.c_str());
+	lua_pushboolean(L, c.liquid_move_physics);
 	lua_setfield(L, -2, "liquid_move_physics");
 }
 

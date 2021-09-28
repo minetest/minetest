@@ -77,14 +77,6 @@ struct EnumString ScriptApiNode::es_LiquidType[] =
 		{0, NULL},
 	};
 
-struct EnumString ScriptApiNode::es_LiquidMoveType[] =
-	{
-		{LIQUID_MOVE_AUTO, "auto"},
-		{LIQUID_MOVE_NONE, "none"},
-		{LIQUID_MOVE_LIQUID, "liquid"},
-		{0, NULL},
-	};
-
 struct EnumString ScriptApiNode::es_ContentParamType[] =
 	{
 		{CPT_NONE, "none"},

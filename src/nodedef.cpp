@@ -626,9 +626,8 @@ void ContentFeatures::deSerialize(std::istream &is)
 		alpha = static_cast<enum AlphaMode>(tmp);
 
 		tmp = readU8(is);
-		if (is.eof()) {
+		if (is.eof())
 			throw SerializationError("");
-		}
 		move_resistance = tmp;
 
 		tmp = readU8(is);
