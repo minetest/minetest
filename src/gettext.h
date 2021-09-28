@@ -84,7 +84,7 @@ inline std::wstring fwgettext(const char *src, Args&&... args)
  *
  * @tparam Args Template parameter for format args
  * @param format Translation source string
- * @param buf_size The maximum number of characters to store. size 0 means
+ * @param buf_size The maximum number of characters (0 = automatically determined) 
  * @param args Variable format args
  * @return translated string
  */
