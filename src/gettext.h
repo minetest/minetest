@@ -80,30 +80,44 @@ inline std::wstring fwgettext(const char *src, Args&&... args)
 }
 
 /**
+ * Write translated output with format to sized buffer
+ *
+ * @tparam Args Template parameter for format args
+ * @param buf The translated string buffer.
+ * @param buf_size Maximum number of bytes to be used in the buffer.
+ * @param format Translation source string
+ * @param args Variable format args
+ * @return The number of characters that would have been written if buf_size had been sufficiently large, not counting the terminating null character. If an encoding error occurs, a negative number is returned. Notice that only when this returned value is non-negative and less than buf_size, the string has been completely written.
+ */
+template <typename ...Args>
+inline int snfmtgettext(char *buf, std::size_t buf_size, const char *format, Args&&... args)
+{
+	return porting::mt_snprintf(buf, buf_size, gettext(format), std::forward<Args>(args)...);
+}
+
+/**
  * Returns translated string with format args applied
  *
  * @tparam Args Template parameter for format args
  * @param format Translation source string
- * @param buf_size The maximum number of characters (0 = automatically determined) 
+ * @param buf_size The maximum number of characters (expand the size automatically if the size is not enough)
  * @param args Variable format args
- * @return translated string
+ * @return translated string.
  */
 template <typename ...Args>
 inline std::string fmtgettext(const char *format, std::size_t buf_size, Args&&... args)
 {
-	format = gettext(format);
-	if (buf_size == 0) {
-		int l = porting::mt_snprintf(nullptr, 0, format, std::forward<Args>(args)...);
-		if (l <= 0) {
-			throw std::runtime_error("gettext format error: " + std::string(format));
-		} else {
-			buf_size = static_cast<size_t>(l);
-		}
-	}
 	std::string buf;
+	if (buf_size == 0) buf_size = 128;
 	buf.resize(buf_size+1); // extra null byte
-	porting::mt_snprintf(&buf[0], buf.size(), format, std::forward<Args>(args)...);
-	buf.resize(buf_size);
+
+	int len = snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
+	if (len <= 0) throw std::runtime_error("gettext format error: " + std::string(format));
+	if ((size_t)len >= buf.size()) {
+		buf.resize(len+1); // extra null byte
+		snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
+	}
+	buf.pop_back();
 
 	return buf;
 }
