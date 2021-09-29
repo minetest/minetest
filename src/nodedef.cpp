@@ -589,6 +589,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	// liquid
 	liquid_type = (enum LiquidType) readU8(is);
+	liquid_move_physics = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);
 	liquid_alternative_source = deSerializeString16(is);
 	liquid_viscosity = readU8(is);

@@ -7679,8 +7679,8 @@ Used by `minetest.register_node`.
         --   ability to "swim" up/down, sinking slowly if not moving,
         --   smoother speed change when falling into, etc. The `movement_liquid_*`
         --   settings apply.
-        -- * nil: Will be treated as "liquid" if `liquidype ~= "none"` and
-        --   treated as "normal" otherwise.
+        -- * nil: Will be treated as true if `liquidype ~= "none"`
+        --   and as false otherwise.
         -- Default: nil
 
         leveled = 0,
