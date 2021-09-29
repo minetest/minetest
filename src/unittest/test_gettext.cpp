@@ -50,5 +50,5 @@ void TestGettext::testFmtgettext()
   std::string buf = fmtgettext("Viewing range changed to %d", 8,  12);
   UASSERTEQ(std::string, buf, "Viewing range changed to 12");
   buf = fmtgettext("Viewing range changed to %d", 0,  12);
-  UASSERTEQ(std::string, (char*)&buf[0], "Viewing range changed to 12");
+  UASSERTEQ(std::string, buf, "Viewing range changed to 12");
 }

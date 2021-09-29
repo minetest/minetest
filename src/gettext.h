@@ -117,7 +117,7 @@ inline std::string fmtgettext(const char *format, std::size_t buf_size, Args&&..
 		buf.resize(len+1); // extra null byte
 		snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
 	}
-	buf.pop_back();
+	buf.resize(len); // remove null byte
 
 	return buf;
 }
