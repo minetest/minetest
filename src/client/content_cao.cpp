@@ -1789,6 +1789,16 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_liquid_sink = readF32(is);
 		float override_acceleration_default = readF32(is);
 		float override_acceleration_air = readF32(is);
+		// fallback for new overrides (since 5.5.0)
+		if (is.eof()) {
+			override_speed_climb = 1.0f;
+			override_speed_crouch = 1.0f;
+			override_liquid_fluidity = 1.0f;
+			override_liquid_fluidity_smooth = 1.0f;
+			override_liquid_sink = 1.0f;
+			override_acceleration_default = 1.0f;
+			override_acceleration_air = 1.0f;
+		}
 
 		if (m_is_local_player) {
 			auto &phys = m_env->getLocalPlayer()->physics_override;
