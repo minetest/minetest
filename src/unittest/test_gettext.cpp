@@ -47,8 +47,22 @@ void TestGettext::testSnfmtgettext()
 
 void TestGettext::testFmtgettext()
 {
-  std::string buf = fmtgettext("Viewing range changed to %d", 8,  12);
+  std::string buf = fmtgettext("Viewing range changed to %d",  12);
   UASSERTEQ(std::string, buf, "Viewing range changed to 12");
-  buf = fmtgettext("Viewing range changed to %d", 0,  12);
-  UASSERTEQ(std::string, buf, "Viewing range changed to 12");
+  buf = fmtgettext(
+    "You are about to join this server with the name \"%s\" for the "
+    "first time.\n"
+    "If you proceed, a new account using your credentials will be "
+    "created on this server.\n"
+    "Please retype your password and click 'Register and Join' to "
+    "confirm account creation, or click 'Cancel' to abort."
+    ,  "A");
+  UASSERTEQ(std::string, buf,
+    "You are about to join this server with the name \"A\" for the "
+    "first time.\n"
+    "If you proceed, a new account using your credentials will be "
+    "created on this server.\n"
+    "Please retype your password and click 'Register and Join' to "
+    "confirm account creation, or click 'Cancel' to abort."
+  );
 }

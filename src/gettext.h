@@ -100,16 +100,15 @@ inline int snfmtgettext(char *buf, std::size_t buf_size, const char *format, Arg
  *
  * @tparam Args Template parameter for format args
  * @param format Translation source string
- * @param buf_size The maximum number of characters (expand the size automatically if the size is not enough)
  * @param args Variable format args
  * @return translated string.
  */
 template <typename ...Args>
-inline std::string fmtgettext(const char *format, std::size_t buf_size, Args&&... args)
+inline std::string fmtgettext(const char *format, Args&&... args)
 {
 	std::string buf;
-	if (buf_size == 0) buf_size = 128;
-	buf.resize(buf_size+1); // extra null byte
+	std::size_t buf_size = 256;
+	buf.resize(buf_size);
 
 	int len = snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
 	if (len <= 0) throw std::runtime_error("gettext format error: " + std::string(format));
@@ -117,7 +116,7 @@ inline std::string fmtgettext(const char *format, std::size_t buf_size, Args&&..
 		buf.resize(len+1); // extra null byte
 		snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
 	}
-	buf.resize(len); // remove null byte
+	buf.resize(len); // remove null bytes
 
 	return buf;
 }

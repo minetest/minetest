@@ -1282,7 +1282,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled", 128,
+		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
 			bind_addr.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
@@ -1455,14 +1455,14 @@ bool Game::connectToServer(const GameStartData &start_data,
 			local_server_mode = true;
 		}
 	} catch (ResolveError &e) {
-		*error_message = fmtgettext("Couldn't resolve address: %s", 128, e.what());
+		*error_message = fmtgettext("Couldn't resolve address: %s", e.what());
 
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
 	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", 128, connect_address.serializeString().c_str());
+		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", connect_address.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1516,7 +1516,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 
 			if (client->accessDenied()) {
-				*error_message = fmtgettext("Access denied. Reason: %s", 0, client->accessDeniedReason().c_str());
+				*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 				*reconnect_requested = client->reconnectRequested();
 				errorstream << *error_message << std::endl;
 				break;
@@ -4348,7 +4348,7 @@ void the_game(bool *kill,
 		}
 
 	} catch (SerializationError &e) {
-		const std::string ver_err = fmtgettext("The server is probably running a different version of %s.", 128, PROJECT_NAME_C);
+		const std::string ver_err = fmtgettext("The server is probably running a different version of %s.", PROJECT_NAME_C);
 		error_message = strgettext("A serialization error occurred:") +"\n"
 				+ e.what() + "\n\n" + ver_err;
 		errorstream << error_message << std::endl;
