@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define HTTP_API(name) \
 	lua_pushstring(L, #name); \
-	lua_pushcfunction(L, l_http_##name); \
+	lua_pushcfunction(L, WRAP_CFUNCTION(l_http_##name)); \
 	lua_settable(L, -3);
 
 #if USE_CURL

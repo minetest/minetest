@@ -228,11 +228,11 @@ void LuaRaycast::Register(lua_State *L)
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
+	lua_pushcfunction(L, WRAP_CFUNCTION(gc_object));
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__call");
-	lua_pushcfunction(L, l_next);
+	lua_pushcfunction(L, WRAP_CFUNCTION(l_next));
 	lua_settable(L, metatable);
 
 	lua_pop(L, 1);

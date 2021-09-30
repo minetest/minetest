@@ -208,12 +208,12 @@ void ModApiAuth::Initialize(lua_State *L, int top)
 	lua_newtable(L);
 	int auth_top = lua_gettop(L);
 
-	registerFunction(L, "read", l_auth_read, auth_top);
-	registerFunction(L, "save", l_auth_save, auth_top);
-	registerFunction(L, "create", l_auth_create, auth_top);
-	registerFunction(L, "delete", l_auth_delete, auth_top);
-	registerFunction(L, "list_names", l_auth_list_names, auth_top);
-	registerFunction(L, "reload", l_auth_reload, auth_top);
+	registerFunction(L, "read", WRAP_CFUNCTION(l_auth_read), auth_top);
+	registerFunction(L, "save", WRAP_CFUNCTION(l_auth_save), auth_top);
+	registerFunction(L, "create", WRAP_CFUNCTION(l_auth_create), auth_top);
+	registerFunction(L, "delete", WRAP_CFUNCTION(l_auth_delete), auth_top);
+	registerFunction(L, "list_names", WRAP_CFUNCTION(l_auth_list_names), auth_top);
+	registerFunction(L, "reload", WRAP_CFUNCTION(l_auth_reload), auth_top);
 
 	lua_setfield(L, top, "auth");
 }

@@ -105,11 +105,11 @@ void ItemStackMetaRef::Register(lua_State *L)
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
+	lua_pushcfunction(L, WRAP_CFUNCTION(gc_object));
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__eq");
-	lua_pushcfunction(L, l_equals);
+	lua_pushcfunction(L, WRAP_CFUNCTION(l_equals));
 	lua_settable(L, metatable);
 
 	lua_pop(L, 1);  // drop metatable

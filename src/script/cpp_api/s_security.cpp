@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #define SECURE_API(lib, name) \
-	lua_pushcfunction(L, sl_##lib##_##name); \
+	lua_pushcfunction(L, WRAP_CFUNCTION(sl_##lib##_##name)); \
 	lua_setfield(L, -2, #name);
 
 

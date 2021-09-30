@@ -474,11 +474,11 @@ void LuaItemStack::Register(lua_State *L)
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
+	lua_pushcfunction(L, WRAP_CFUNCTION(gc_object));
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__tostring");
-	lua_pushcfunction(L, mt_tostring);
+	lua_pushcfunction(L, WRAP_CFUNCTION(mt_tostring));
 	lua_settable(L, metatable);
 
 	lua_pop(L, 1);  // drop metatable

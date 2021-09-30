@@ -112,6 +112,14 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f);
 // Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 
+// Wraps a global function in the script_exception_wrapper if needed
+#if USE_LUAJIT
+// With LuaJIT, script_exception_wrapper is already used through LUAJIT_MODE_WRAPCFUNC.
+#define WRAP_CFUNCTION(f) f
+#else
+#define WRAP_CFUNCTION(f) [](lua_State *L) -> int { return script_exception_wrapper(L, f); }
+#endif
+
 bool script_log_unique(lua_State *L, std::string message, std::ostream &log_to,
 	int stack_depth = 1);
 

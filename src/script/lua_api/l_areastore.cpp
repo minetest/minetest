@@ -367,7 +367,7 @@ void LuaAreaStore::Register(lua_State *L)
 	lua_settable(L, metatable);
 
 	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
+	lua_pushcfunction(L, WRAP_CFUNCTION(gc_object));
 	lua_settable(L, metatable);
 
 	lua_pop(L, 1);  // drop metatable
@@ -376,7 +376,7 @@ void LuaAreaStore::Register(lua_State *L)
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (AreaStore())
-	lua_register(L, className, create_object);
+	lua_register(L, className, WRAP_CFUNCTION(create_object));
 }
 
 const char LuaAreaStore::className[] = "AreaStore";
