@@ -82,6 +82,35 @@ minetest.register_node("testnodes:climbable", {
 	drawtype = "glasslike",
 	groups = {dig_immediate=3},
 })
+minetest.register_node("testnodes:climbable_fast", {
+	description = S("Climbable Node (fast)"),
+	climbable = true,
+	climb_factor = 2.0,
+	walkable = false,
+
+
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	tiles = {"testnodes_climbable_side.png^[colorize:#FFFFFF:140"},
+	drawtype = "glasslike",
+	groups = {dig_immediate=3},
+})
+minetest.register_node("testnodes:climbable_slow", {
+	description = S("Climbable Node (slow)"),
+	climbable = true,
+	climb_factor = 0.5,
+	walkable = false,
+
+
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	tiles = {"testnodes_climbable_side.png^[colorize:#000000:140"},
+	drawtype = "glasslike",
+	groups = {dig_immediate=3},
+})
+
 
 -- Climbable only downwards with sneak key
 minetest.register_node("testnodes:climbable_nojump", {

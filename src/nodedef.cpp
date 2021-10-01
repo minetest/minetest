@@ -405,6 +405,7 @@ void ContentFeatures::reset()
 	node_dig_prediction = "air";
 	move_resistance = 0;
 	liquid_move_physics = false;
+	climb_factor = 1.0;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -520,6 +521,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, alpha);
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
+	writeF32(os, climb_factor);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -635,6 +637,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 		if (is.eof())
 			throw SerializationError("");
 		liquid_move_physics = tmp;
+
+		f32 ftmp = readF32(is);
+		if (is.eof())
+			throw SerializationError("");
+		climb_factor = ftmp;
 	} catch(SerializationError &e) {};
 }
 
