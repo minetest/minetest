@@ -1804,7 +1804,7 @@ to games.
       - (14)                                           -- constant tolerance
   Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
-* `float`: the node will not fall through liquids
+* `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
 * `level`: Can be used to give an additional sense of progression in the game.
      * A larger level will cause e.g. a weapon of a lower level make much less
        damage, and get worn out much faster, or not be able to get drops
@@ -4147,7 +4147,7 @@ differences:
 
 ### Other API functions operating on a VoxelManip
 
-If any VoxelManip contents were set to a liquid node,
+If any VoxelManip contents were set to a liquid node (`liquidtype ~= "none"`),
 `VoxelManip:update_liquids()` must be called for these liquid nodes to begin
 flowing. It is recommended to call this function only after having written all
 buffered data back to the VoxelManip object, save for special situations where
@@ -4958,8 +4958,8 @@ Call these functions only at load time!
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
 * `minetest.register_on_liquid_transformed(function(pos_list, node_list))`
-    * Called after liquid nodes are modified by the engine's liquid transformation
-      process.
+    * Called after liquid nodes (`liquidtype ~= "none"`) are modified by the
+      engine's liquid transformation process.
     * `pos_list` is an array of all modified positions.
     * `node_list` is an array of the old node that was previously at the position
       with the corresponding index in pos_list.
@@ -5301,7 +5301,8 @@ Environment access
     * `pos1`: start of the ray
     * `pos2`: end of the ray
     * `objects`: if false, only nodes will be returned. Default is `true`.
-    * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
+    * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
+                 returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
@@ -5325,7 +5326,7 @@ Environment access
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `minetest.transforming_liquid_add(pos)`
-    * add node to liquid update queue
+    * add node to liquid flow update queue
 * `minetest.get_node_max_level(pos)`
     * get max available level for leveled node
 * `minetest.get_node_level(pos)`
@@ -6978,7 +6979,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 * `pos1`: start of the ray
 * `pos2`: end of the ray
 * `objects`: if false, only nodes will be returned. Default is true.
-* `liquids`: if false, liquid nodes won't be returned. Default is false.
+* `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
+             returned. Default is false.
 
 ### Methods
 
@@ -7462,6 +7464,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         range = 4.0,
 
         liquids_pointable = false,
+        -- If true, item points to all liquid nodes (`liquidtype ~= "none"`),
+        -- even those for which `pointable = false`
 
         light_source = 0,
         -- When used for nodes: Defines amount of light emitted by node.
@@ -7647,14 +7651,21 @@ Used by `minetest.register_node`.
 
         climbable = false,  -- If true, can be climbed on (ladder)
 
+        move_resistance = 0,
+        -- Slows down movement of players through this node (max. 7).
+        -- If this is nil, it will be equal to liquid_viscosity.
+        -- Note: If liquid movement physics apply to the node
+        -- (see `liquid_move_physics`), the movement speed will also be
+        -- affected by the `movement_liquid_*` settings.
+
         buildable_to = false,  -- If true, placed nodes can replace this node
 
         floodable = false,
         -- If true, liquids flow into and replace this node.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
-        liquidtype = "none",  -- specifies liquid physics
-        -- * "none":    no liquid physics
+        liquidtype = "none",  -- specifies liquid flowing physics
+        -- * "none":    no liquid flowing physics
         -- * "source":  spawns flowing liquid nodes at all 4 sides and below;
         --              recommended drawtype: "liquid".
         -- * "flowing": spawned from source, spawns more flowing liquid nodes
@@ -7668,11 +7679,25 @@ Used by `minetest.register_node`.
 
         liquid_alternative_source = "",  -- Source version of flowing liquid
 
-        liquid_viscosity = 0,  -- Higher viscosity = slower flow (max. 7)
+        liquid_viscosity = 0,
+        -- Controls speed at which the liquid spreads/flows (max. 7).
+        -- 0 is fastest, 7 is slowest.
+        -- By default, this also slows down movement of players inside the node
+        -- (can be overridden using `move_resistance`)
 
         liquid_renewable = true,
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
+
+        liquid_move_physics = nil, -- specifies movement physics if inside node
+        -- * false: No liquid movement physics apply.
+        -- * true: Enables liquid movement physics. Enables things like
+        --   ability to "swim" up/down, sinking slowly if not moving,
+        --   smoother speed change when falling into, etc. The `movement_liquid_*`
+        --   settings apply.
+        -- * nil: Will be treated as true if `liquidype ~= "none"`
+        --   and as false otherwise.
+        -- Default: nil
 
         leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
