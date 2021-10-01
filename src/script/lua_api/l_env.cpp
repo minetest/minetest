@@ -736,34 +736,28 @@ int ModApiEnvMod::l_activate_objects_in_area(lua_State *L)
 
 	v3f minp = checkFloatPos(L, 1);
 	v3f maxp = checkFloatPos(L, 2);
-	aabb3f box(minp, maxp);
-	box.repair();
 
 	v3s16 bpmin = getNodeBlockPos(check_v3s16(L, 1));
 	v3s16 bpmax = getNodeBlockPos(check_v3s16(L, 2));
+
+	aabb3f box(minp, maxp);
+	box.repair();
+	ServerEnvironment::ObjectActivationCondition condition =
+		[box](const StaticObject &s_obj) -> bool { return box.isPointInside(s_obj.pos); };
+
 	sortBoxVerticies(bpmin, bpmax);
 
-	try {
-		ServerEnvironment::ObjectActivationCondition condition =
-			[box](const StaticObject &s_obj) -> bool { return box.isPointInside(s_obj.pos); };
-
-		Map &map = env->getMap();
-		for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
-		for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
-		for (s16 x = bpmin.X; x <= bpmax.X; x++) {
-			MapBlock *block = map.emergeBlock(v3s16(x, y, z), false);
-			// Only existing blocks are operated upon
-			if (block)
-				env->activateObjects(block, condition);
-		}
-
-		return 0;
-
-	} catch (const IllegalObjectActivationException &e) {
-		lua_pop(L, 1); // Make space on the stack
-		lua_pushstring(L, e.what());
+	Map &map = env->getMap();
+	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
+	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
+	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+		MapBlock *block = map.emergeBlock(v3s16(x, y, z), false);
+		// Only existing blocks are operated upon
+		if (block)
+			env->activateObjects(block, condition);
 	}
-	return lua_error(L); // Rethrow as Lua error
+
+	return 0;
 }
 
 // get_objects_inside_radius(pos, radius)
