@@ -180,6 +180,13 @@ minetest.register_tool("testtools:falling_node_tool", {
 	end,
 })
 
+minetest.register_tool("testtools:liquids_pointer", {
+	description = S("Liquids Pointer"),
+	liquids_pointable = true,
+	inventory_image = "testtools_liquids_pointer.png",
+	groups = { testtool = 1, disable_repair = 1 },
+})
+
 minetest.register_tool("testtools:rotator", {
 	description = S("Entity Rotator") .. "\n" ..
 		S("Rotate pointed entity") .."\n"..

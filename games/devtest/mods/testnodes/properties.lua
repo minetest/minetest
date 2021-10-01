@@ -381,3 +381,70 @@ minetest.register_node("testnodes:drowning_1", {
 	groups = {dig_immediate=3},
 })
 
+-- Node that is considered a liquid for raycasts
+-- but is not a liquid otherwise
+minetest.register_node("testnodes:fake_liquid_raycast", {
+	description = S("Raycast Liquid") .. "\n" ..
+		S("Should be pointable by Liquids Pointer"),
+	liquid_raycast = true,
+	pointable = false,
+
+
+	buildable_to = true,
+	walkable = false,
+	is_ground_content = false,
+	drawtype = "allfaces",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_fake_liquid_raycast.png" },
+	groups = {dig_immediate=3},
+})
+
+-- This liquid node is not considered to be a liquid for raycasts,
+-- meaning that no item is able to point it (including `liquids_pointable` items)
+minetest.register_node("testnodes:liquid_noraycast", {
+	description = "No-Raycast Liquid Source" .. "\n" ..
+		"Shouldn't be pointable by Liquids Pointer",
+	pointable = false,
+	liquid_raycast = false,
+
+	drawtype = "liquid",
+	tiles = {"testnodes_liquid_noraycast.png"},
+	special_tiles = {
+		{name = "testnodes_liquid_noraycast.png", backface_culling = false},
+		{name = "testnodes_liquid_noraycast.png", backface_culling = true},
+	},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	walkable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	liquidtype = "source",
+	liquid_range = 1,
+	liquid_alternative_flowing = "testnodes:liquidflowing_noraycast",
+	liquid_alternative_source = "testnodes:liquid_noraycast",
+})
+minetest.register_node("testnodes:liquidflowing_noraycast", {
+	description = "Flowing No-Raycast Liquid" .. "\n" ..
+		"Shouldn't be pointable by Liquids Pointer",
+	pointable = false,
+	liquid_raycast = false,
+
+	drawtype = "flowingliquid",
+	tiles = {"testnodes_liquid_noraycast_flowing.png"},
+	special_tiles = {
+		{name = "testnodes_liquid_noraycast_flowing.png", backface_culling = false},
+		{name = "testnodes_liquid_noraycast_flowing.png", backface_culling = false},
+	},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	paramtype2 = "flowingliquid",
+	walkable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	liquidtype = "flowing",
+	liquid_range = 1,
+	liquid_alternative_flowing = "testnodes:liquidflowing_noraycast",
+	liquid_alternative_source = "testnodes:liquid_noraycast",
+})
+

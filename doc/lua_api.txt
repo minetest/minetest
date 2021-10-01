@@ -7464,8 +7464,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         range = 4.0,
 
         liquids_pointable = false,
-        -- If true, item points to all liquid nodes (`liquidtype ~= "none"`),
-        -- even those for which `pointable = false`
+        -- If true, item points to all nodes for which `liquid_raycast`
+        -- is true (or implicitly true), even if `pointable = false`
 
         light_source = 0,
         -- When used for nodes: Defines amount of light emitted by node.
@@ -7698,6 +7698,13 @@ Used by `minetest.register_node`.
         -- * nil: Will be treated as true if `liquidype ~= "none"`
         --   and as false otherwise.
         -- Default: nil
+
+        liquid_raycast = nil,
+        -- `true`: This node is considered a liquid for raycasts/pointing,
+        --         (`liquids_pointable` items will point it)
+        -- `false`: This is not the case.
+        -- `nil`: Interpreted as `true` if `liquidtype ~= "none"`,
+        --        `false` otherwise (default)
 
         leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.

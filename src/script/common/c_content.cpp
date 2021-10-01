@@ -729,6 +729,17 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 			"leveled_max", f.leveled_max);
 
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
+
+	lua_getfield(L, index, "liquid_raycast");
+	if(lua_isboolean(L, -1)) {
+		f.liquid_raycast = lua_toboolean(L, -1);
+	} else if(lua_isnil(L, -1)) {
+		f.liquid_raycast = f.liquid_type != LIQUID_NONE;
+	} else {
+		errorstream << "Field \"liquid_raycast\": Invalid type!" << std::endl;
+	}
+	lua_pop(L, 1);
+
 	f.drowning = getintfield_default(L, index,
 			"drowning", f.drowning);
 	// Amount of light the node emits
@@ -943,6 +954,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 		lua_pushnumber(L, c.liquid_range);
 		lua_setfield(L, -2, "liquid_range");
 	}
+	lua_pushboolean(L, c.liquid_raycast);
+	lua_setfield(L, -2, "liquid_raycast");
 	lua_pushnumber(L, c.drowning);
 	lua_setfield(L, -2, "drowning");
 	lua_pushboolean(L, c.floodable);

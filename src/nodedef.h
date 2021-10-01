@@ -397,6 +397,8 @@ struct ContentFeatures
 	u8 liquid_viscosity;
 	// Is liquid renewable (new liquid source will be created between 2 existing)
 	bool liquid_renewable;
+	// Is considered a liquid for raycasts
+	bool liquid_raycast;
 	// Number of flowing liquids surrounding source
 	u8 liquid_range;
 	u8 drowning;

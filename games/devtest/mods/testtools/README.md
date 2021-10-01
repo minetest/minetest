@@ -33,6 +33,10 @@ Usage:
 * Punch node: Make it fall
 * Place: Try to teleport up to 2 units upwards, then make it fall
 
+## Liquids Pointer
+Capable of pointing to liquids. Does nothing otherwise.
+Use it to test `liquids_pointable`, `liquid_raycast`, etc.
+
 ## Node Meta Editor
 Edit and view metadata of nodes.
 

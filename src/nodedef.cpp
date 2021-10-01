@@ -383,6 +383,7 @@ void ContentFeatures::reset()
 	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
+	liquid_raycast = false;
 	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = 0;
 	light_source = 0;
@@ -520,6 +521,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, alpha);
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
+	writeU8(os, liquid_raycast);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -590,6 +592,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// liquid
 	liquid_type = (enum LiquidType) readU8(is);
 	liquid_move_physics = liquid_type != LIQUID_NONE;
+	liquid_raycast = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);
 	liquid_alternative_source = deSerializeString16(is);
 	liquid_viscosity = readU8(is);
@@ -635,6 +638,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 		if (is.eof())
 			throw SerializationError("");
 		liquid_move_physics = tmp;
+
+		tmp = readU8(is);
+		if (is.eof())
+			throw SerializationError("");
+		liquid_raycast = tmp;
 	} catch(SerializationError &e) {};
 }
 
