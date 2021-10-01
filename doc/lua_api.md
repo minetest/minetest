@@ -7690,15 +7690,17 @@ child will follow movement and rotation of that bone.
             * Note: The actual climb speed is the product of `speed` and `speed_climb`
         * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
             * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
-        * `liquid_fluidity`: multiplier to liquid movement resistance value;
-          the higher this value, the lower the resistance to movement.
-          At `math.huge`, the resistance is zero and you can move through any
-          liquid like air. (default: `1`)
+        * `liquid_fluidity`: multiplier to liquid movement resistance value
+          (for nodes with `liquid_move_physics`); the higher this value, the lower the
+          resistance to movement. At `math.huge`, the resistance is zero and you can
+          move through any liquid like air. (default: `1`)
           Warning: Values below 1 are currently unsupported.
-        * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value;
-          controls deceleration when entering liquid at high speed. At higher values
-          you come to a halt more quickly (default: `1`)
-        * `liquid_sink`: multiplier to default liquid sinking speed value (default: `1`)
+        * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value
+          (for nodes with `liquid_move_physics`); controls deceleration when entering
+          node at high speed. At higher values you come to a halt more quickly
+          (default: `1`)
+        * `liquid_sink`: multiplier to default liquid sinking speed value;
+          (for nodes with `liquid_move_physics`) (default: `1`)
         * `acceleration_default`: multiplier to horizontal and vertical acceleration
           on ground or when climbing (default: `1`)
         * `acceleration_air`: multiplier to acceleration
