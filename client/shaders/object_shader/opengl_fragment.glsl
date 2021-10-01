@@ -351,7 +351,11 @@ void main(void)
 	vec3 posLightSpace = getLightSpacePosition();
 
 #ifdef COLORED_SHADOWS
-	vec4 visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+	vec4 visibility;
+	if (cosLight > 0.0)
+		visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+	else
+		visibility = vec4(1.0, 0.0, 0.0, 0.0);
 	shadow_int = visibility.r;
 	shadow_color = visibility.gba;
 #else
