@@ -100,6 +100,28 @@ ClientMap::ClientMap(
 
 }
 
+void ClientMap::updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
+{
+	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
+	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
+
+	m_camera_position = pos;
+	m_camera_direction = dir;
+	m_camera_fov = fov;
+	m_camera_offset = offset;
+
+	v3s16 current_node = floatToInt(m_camera_position, BS) + m_camera_offset;
+	v3s16 current_block = getContainerPos(current_node, MAP_BLOCKSIZE);
+
+	// reorder the blocks when camera crosses block boundary
+	if (previous_block != current_block)
+		m_needs_update_drawlist = true;
+
+	// reorder transparent meshes when camera crosses node boundary
+	if (previous_node != current_node)
+		m_needs_update_transparent_meshes = true;
+}
+
 MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
 	// Check that it doesn't exist already
@@ -326,7 +348,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	/*
 		Update transparent meshes
 	*/
-	this->updateTransparentMeshBuffers();
+	if (is_transparent_pass)
+		this->updateTransparentMeshBuffers();
 
 	/*
 		Draw the selected MapBlocks
@@ -336,11 +359,19 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	struct DrawDescriptor {
 		v3s16 m_pos;
-		scene::IMeshBuffer *m_buffer;
-		bool m_reuse_material;
+		union {
+			scene::IMeshBuffer *m_buffer;
+			PartialMeshBuffer *m_partial_buffer;
+		};
+		bool m_reuse_material:1;
+		bool m_use_partial_buffer:1;
 
 		DrawDescriptor(const v3s16 &pos, scene::IMeshBuffer *buffer, bool reuse_material) :
-			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material)
+			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
+		{}
+
+		DrawDescriptor(const v3s16 &pos, PartialMeshBuffer *buffer) :
+			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
 	};
 
@@ -380,7 +411,16 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		/*
 			Get the meshbuffers of the block
 		*/
-		{
+		if (is_transparent_pass) {
+			// In transparent pass, the mesh will give us
+			// the partial buffers in the correct order
+			for (auto &buffer : block->mesh->getTransparentBuffers()) {
+				draw_order.emplace_back(block_pos, &buffer);
+			}
+		}
+		else {
+			// otherwise, group buffers across meshes
+			// using MeshBufListList
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
@@ -396,33 +436,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					video::IMaterialRenderer* rnd =
 						driver->getMaterialRenderer(material.MaterialType);
 					bool transparent = (rnd && rnd->isTransparent());
-					if (transparent == is_transparent_pass) {
+					if (!transparent) {
 						if (buf->getVertexCount() == 0)
 							errorstream << "Block [" << analyze_block(block)
 								<< "] contains an empty meshbuf" << std::endl;
 
-						material.setFlag(video::EMF_TRILINEAR_FILTER,
-							m_cache_trilinear_filter);
-						material.setFlag(video::EMF_BILINEAR_FILTER,
-							m_cache_bilinear_filter);
-						material.setFlag(video::EMF_ANISOTROPIC_FILTER,
-							m_cache_anistropic_filter);
-						material.setFlag(video::EMF_WIREFRAME,
-							m_control.show_wireframe);
-
-						if (is_transparent_pass) {
-							// Same comparison as in MeshBufListList
-							bool new_material = material.getTexture(0) != previous_material.getTexture(0) ||
-									material != previous_material;
-
-							draw_order.emplace_back(block_pos, buf, !new_material);
-
-							if (new_material)
-								previous_material = material;
-						}
-						else {
-							grouped_buffers.add(buf, block_pos, layer);
-						}
+						grouped_buffers.add(buf, block_pos, layer);
 					}
 				}
 			}
@@ -448,7 +467,15 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	// Render all mesh buffers in order
 	drawcall_count += draw_order.size();
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf = descriptor.m_buffer;
+		scene::IMeshBuffer *buf;
+		
+		if (descriptor.m_use_partial_buffer) {
+			descriptor.m_partial_buffer->beforeDraw();
+			buf = descriptor.m_partial_buffer->getBuffer();
+		}
+		else {
+			buf = descriptor.m_buffer;
+		}
 
 		// Check and abort if the machine is swapping a lot
 		if (draw.getTimerTime() > 2000) {
@@ -459,6 +486,17 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		if (!descriptor.m_reuse_material) {
 			auto &material = buf->getMaterial();
+
+			// Apply filter settings
+			material.setFlag(video::EMF_TRILINEAR_FILTER,
+				m_cache_trilinear_filter);
+			material.setFlag(video::EMF_BILINEAR_FILTER,
+				m_cache_bilinear_filter);
+			material.setFlag(video::EMF_ANISOTROPIC_FILTER,
+				m_cache_anistropic_filter);
+			material.setFlag(video::EMF_WIREFRAME,
+				m_control.show_wireframe);
+
 			// pass the shadow map texture to the buffer texture
 			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
 			if (shadow && shadow->is_active()) {
@@ -899,13 +937,19 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 
 void ClientMap::updateTransparentMeshBuffers()
 {
-	u16 blocks_queued = 0;
-	// Update block meshes if the blocks are marked dirty by camera movement
-	for (auto it = m_drawlist.rbegin(); it != m_drawlist.rend(); it++) {
+	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
+
+	// Update the order of transparent mesh buffers in each mesh
+	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
 		MapBlock* block = it->second;
-		block->mesh->updateTransparentBuffers(m_camera_position, block->getPos());
+		if (!block->mesh)
+			continue;
+		
+		if (m_needs_update_transparent_meshes || 
+				block->mesh->getTransparentBuffers().size() == 0)
+			block->mesh->updateTransparentBuffers(m_camera_position, block->getPos());
 	}
 
-	g_profiler->avg("MapBlocks queued for remesh [#]", blocks_queued);
+	m_needs_update_transparent_meshes = false;
 }
 

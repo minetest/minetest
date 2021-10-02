@@ -85,21 +85,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
-	{
-		v3s16 previous_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
-
-		m_camera_position = pos;
-		m_camera_direction = dir;
-		m_camera_fov = fov;
-		m_camera_offset = offset;
-
-		v3s16 current_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
-
-		// reorder the blocks when camera crosses block boundary
-		if (previous_block != current_block)
-			m_needs_update_drawlist = true;
-	}
+	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset);
 
 	/*
 		Forcefully get a sector from somewhere
@@ -183,6 +169,7 @@ private:
 	v3f m_camera_direction = v3f(0,0,1);
 	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
+	bool m_needs_update_transparent_meshes = true;
 
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;

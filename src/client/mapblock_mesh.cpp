@@ -1005,6 +1005,22 @@ static void applyTileColor(PreMeshBuffer &pmb)
 }
 
 /*
+	MeshBufferReference
+*/
+
+void PartialMeshBuffer::beforeDraw()
+{
+	// Patch the indexes in the mesh buffer before draw
+
+	if (m_vertex_indexes.size() > 0) {
+		m_buffer->Indices.clear();
+		for (auto index : m_vertex_indexes)
+			m_buffer->Indices.push_back(index);
+		m_buffer->setDirty(scene::EBT_INDEX);
+	}
+}
+
+/*
 	MapBlockMesh
 */
 
@@ -1299,7 +1315,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	return true;
 }
 
-bool MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos)
+void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos)
 {
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
@@ -1307,10 +1323,7 @@ bool MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &
 	struct triangle {
 		u16 p1, p2, p3;
 		f32 centroid_distance;
-	};
-
-	struct material_ref {
-
+		scene::SMeshBuffer *buffer;
 	};
 
 	// compares triangles by distance to centroid, descending
@@ -1320,61 +1333,80 @@ bool MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &
 		}
 	};
 
-	u32 transparent_buffer_count = 0;
 	v3f block_posf = intToFloat(block_pos * MAP_BLOCKSIZE, BS);
 
-	std::vector<triangle> triangles;
+	std::vector<struct triangle> tris;
 
-	for (u8 layer = 0; layer < MAX_TILE_LAYERS; ++layer) {
-		scene::IMesh *mesh = getMesh(layer);
-		u32 buffer_count = mesh->getMeshBufferCount();
-		for (u32 buffer_index = 0; buffer_index < buffer_count; ++buffer_index)
-		{
-			scene::IMeshBuffer *buffer = mesh->getMeshBuffer(buffer_index);
-			if (!driver->getMaterialRenderer(buffer->getMaterial().MaterialType)->isTransparent())
-				continue;
-
-			if (transparent_buffer_count > 0)
-				return false;
-
-			++transparent_buffer_count;
-
-			// map centroids and distance to them for all tris
-			std::vector<struct triangle> tris;
-			u32 index_count = buffer->getIndexCount();
-			tris.reserve(index_count / 3);
-
-			// copy indices to the triangles
-			u16 *indices = buffer->getIndices();
+	if (this->m_transparent_buffers.size() > 0) {
+		for (const PartialMeshBuffer &partial_buffer : this->m_transparent_buffers) {
+			scene::SMeshBuffer *buffer = partial_buffer.m_buffer;
+			const std::vector<u16> &indices = partial_buffer.getVertexIndexes();
 			struct triangle t;
-			for (u32 i = 0; i < index_count; i += 3) {
+			for (u32 i = 0; i < indices.size(); i += 3)
+			{
 				t.p1 = indices[i];
 				t.p2 = indices[i + 1];
 				t.p3 = indices[i + 2];
 				v3f centroid = (buffer->getPosition(t.p1) + buffer->getPosition(t.p2) + buffer->getPosition(t.p3)) / 3;
 				t.centroid_distance = camera_pos.getDistanceFrom(centroid + block_posf);
+				t.buffer = buffer;
 				tris.push_back(t);
 			}
-
-			// sort the triangles by distance to the camera
-			static struct triangle_comparer comp;
-			std::sort(tris.begin(), tris.end(), comp);
-
-			// copy the indices back to the mesh buffer
-			u32 vi = 0;
-			for (const struct triangle &t : tris) {
-				indices[vi++] = t.p1;
-				indices[vi++] = t.p2;
-				indices[vi++] = t.p3;
-			}
-
-			// update the VBO
-			buffer->setDirty();
-			buffer->setHardwareMappingHint(scene::E_HARDWARE_MAPPING::EHM_STATIC, scene::E_BUFFER_TYPE::EBT_VERTEX);
 		}
 	}
-	g_profiler->add("AMesh::Fast transparency #", 1);
-	return true;
+	else {
+		for (u8 layer = 0; layer < MAX_TILE_LAYERS; ++layer) {
+			scene::IMesh *mesh = getMesh(layer);
+			u32 buffer_count = mesh->getMeshBufferCount();
+			for (u32 buffer_index = 0; buffer_index < buffer_count; ++buffer_index)
+			{
+				scene::IMeshBuffer *buffer = mesh->getMeshBuffer(buffer_index);
+				if (!driver->getMaterialRenderer(buffer->getMaterial().MaterialType)->isTransparent())
+					continue;
+
+				u32 index_count = buffer->getIndexCount();
+
+				// copy indices to the triangles
+				u16 *indices = buffer->getIndices();
+				struct triangle t;
+				for (u32 i = 0; i < index_count; i += 3) {
+					t.p1 = indices[i];
+					t.p2 = indices[i + 1];
+					t.p3 = indices[i + 2];
+					v3f centroid = (buffer->getPosition(t.p1) + buffer->getPosition(t.p2) + buffer->getPosition(t.p3)) / 3;
+					t.centroid_distance = camera_pos.getDistanceFrom(centroid + block_posf);
+					t.buffer = static_cast<scene::SMeshBuffer *>(buffer);
+					tris.push_back(t);
+				}
+			}
+		}
+	}
+
+	// sort the triangles by distance to the camera
+	static struct triangle_comparer comp;
+	std::sort(tris.begin(), tris.end(), comp);
+
+	// arrange index sequences into partial buffers
+	this->m_transparent_buffers.clear();
+
+	scene::SMeshBuffer *prev_buffer = nullptr;
+	std::vector<u16> current_strain;
+	for (const auto &t : tris) {
+		if (prev_buffer != t.buffer) {
+			if (prev_buffer != nullptr) {
+				this->m_transparent_buffers.emplace_back(prev_buffer, current_strain);
+				current_strain.clear();
+			}
+			prev_buffer = t.buffer;
+		}
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (current_strain.size() > 0) {
+		this->m_transparent_buffers.emplace_back(prev_buffer, current_strain);
+	}
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)

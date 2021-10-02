@@ -71,6 +71,24 @@ struct MeshMakeData
 	void setSmoothLighting(bool smooth_lighting);
 };
 
+class PartialMeshBuffer
+{
+public:
+	PartialMeshBuffer(scene::SMeshBuffer *buffer, const std::vector<u16> &vertex_indexes) :
+			m_buffer(buffer), m_vertex_indexes(vertex_indexes)
+	{}
+
+	scene::IMeshBuffer *getBuffer() const { return m_buffer; }
+	const std::vector<u16> &getVertexIndexes() const { return m_vertex_indexes; }
+
+	void beforeDraw();
+private:
+	scene::SMeshBuffer *m_buffer;
+	std::vector<u16> m_vertex_indexes;
+
+	friend class MapBlockMesh;
+};
+
 /*
 	Holds a mesh for a mapblock.
 
@@ -125,8 +143,14 @@ public:
 			m_animation_force_timer--;
 	}
 
-	/// attempt to update transparent buffers for camera movement to avoid full mesh regeneration
-	bool updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos);
+	/// update transparent buffers to render towards the camera
+	void updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos);
+
+	/// get the list of transparent buffers
+	std::vector<PartialMeshBuffer> &getTransparentBuffers()
+	{
+		return this->m_transparent_buffers;
+	}
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
@@ -160,6 +184,9 @@ private:
 	// of sunlit vertices
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
+
+	// Ordered list of references to parts of transparent buffers to draw
+	std::vector<PartialMeshBuffer> m_transparent_buffers;
 };
 
 /*!
