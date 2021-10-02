@@ -311,7 +311,7 @@ public:
 		Throws an IllegalObjectActivationException and changes nothing
 		if called at a time when object activation is not allowed.
 	*/
-	void activateObjects(MapBlock *block, ObjectActivationCondition condition=nullptr,
+	void activateObjects(MapBlock *block, const ObjectActivationCondition &condition=nullptr,
 		u32 additional_dtime=0);
 
 	/*
@@ -425,7 +425,7 @@ private:
 		If given, the predicate is a precondition to activation
 	*/
 	void activateStoredObjects(MapBlock *block, u32 dtime_s,
-		ObjectActivationCondition condition = nullptr);
+		const ObjectActivationCondition &condition = nullptr);
 
 	/*
 		Convert objects that are not in active blocks to static.

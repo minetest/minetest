@@ -995,8 +995,8 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	}
 }
 
-void ServerEnvironment::activateObjects(MapBlock *block, ObjectActivationCondition condition,
-	u32 additional_dtime)
+void ServerEnvironment::activateObjects(MapBlock *block,
+	const ObjectActivationCondition &condition, u32 additional_dtime)
 {
 	if (m_object_activation_locked)
 		throw IllegalObjectActivationException();
@@ -1938,7 +1938,7 @@ ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
 	Convert stored objects from blocks near the players to active.
 */
 void ServerEnvironment::activateStoredObjects(MapBlock *block, u32 dtime_s,
-	ObjectActivationCondition condition)
+	const ObjectActivationCondition &condition)
 {
 	if(block == NULL)
 		return;
