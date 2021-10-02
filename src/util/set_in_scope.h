@@ -32,7 +32,7 @@ template<typename T>
 class SetInScope
 {
 public:
-	SetInScope(T &ref, const T &&val):
+	SetInScope(T &ref, const T &val):
 		m_ref(ref),
 		m_old_val(std::move(m_ref))
 	{
