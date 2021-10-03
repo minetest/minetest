@@ -402,22 +402,39 @@ core.register_entity(":__builtin:falling_node", {
 })
 
 local function convert_to_falling_node(pos, node)
-	local obj = core.add_entity(pos, "__builtin:falling_node")
-	if not obj then
-		return false
-	end
 	-- remember node level, the entities' set_node() uses this
 	node.level = core.get_node_level(pos)
 	local meta = core.get_meta(pos)
 	local metatable = meta and meta:to_table() or {}
+	local oldmeta = metatable.fields
 
 	local def = core.registered_nodes[node.name]
+
+	if def and def.on_fall then
+		local ok, obj = def.on_fall(vector.new(pos),
+			{name=node.name, param1=node.param1, param2=node.param2})
+		if type(ok) == "boolean" then
+			return ok, obj
+		end
+	end
+
+	local obj = core.add_entity(pos, "__builtin:falling_node")
+	if not obj then
+		return false
+	end
 	if def and def.sounds and def.sounds.fall then
 		core.sound_play(def.sounds.fall, {pos = pos}, true)
 	end
 
 	obj:get_luaentity():set_node(node, metatable)
 	core.remove_node(pos)
+
+	if def and def.after_fall then
+		def.after_fall(vector.new(pos),
+				{name=node.name, param1=node.param1, param2=node.param2},
+				oldmeta, obj)
+	end
+
 	return true, obj
 end
 
@@ -498,23 +515,37 @@ function core.check_single_for_falling(p)
 			if same and d_bottom.paramtype2 == "leveled" and
 					core.get_node_level(p_bottom) <
 					core.get_node_max_level(p_bottom) then
-				convert_to_falling_node(p, n)
-				return true
+				return convert_to_falling_node(p, n)
 			end
 			-- Otherwise only if the bottom node is considered "fall through"
 			if not same and
 					(not d_bottom.walkable or d_bottom.buildable_to) and
 					(core.get_item_group(n.name, "float") == 0 or
 					d_bottom.liquidtype == "none") then
-				convert_to_falling_node(p, n)
-				return true
+				return convert_to_falling_node(p, n)
 			end
 		end
 	end
 
 	if core.get_item_group(n.name, "attached_node") ~= 0 then
+		local def = core.registered_nodes[n.name]
 		if not builtin_shared.check_attached_node(p, n) then
+			if def and def.on_detach then
+				local ok = def.on_detach(vector.new(p),
+						{name=n.name, param1=n.param1, param2=n.param2})
+				if type(ok) == "boolean" then
+					return ok
+				end
+			end
+			local oldmeta = core.get_meta(p):to_table().fields
+
 			drop_attached_node(p)
+
+			if def and def.after_detach then
+				def.after_detach(vector.new(p),
+						{name=n.name, param1=n.param1, param2=n.param2},
+						oldmeta)
+			end
 			return true
 		end
 	end

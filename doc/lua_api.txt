@@ -7885,6 +7885,30 @@ Used by `minetest.register_node`.
         -- Default: nil
         -- Warning: making a liquid node 'floodable' will cause problems.
 
+        on_fall = function(pos, node)
+        -- Called before node starts to fall.
+        -- If a boolean is returned, the builtin falling node
+        -- handling is skipped. `true` denotes successful falling.
+        -- By default, the node is removed and a falling node
+        -- entity is spawned at `pos`.
+        -- default: nil
+
+        after_fall = function(pos, oldnode, oldmeta, obj),
+        -- Called when node started to fall and a falling node entity
+        -- has been spawned. `obj` is the falling node entity.
+        -- default: nil
+
+        on_detach = function(pos, oldnode)
+        -- Called when an `attached_node` is about to be detached.
+        -- If a boolean is returned, the builtin node detachment
+        -- handling is skipped. `true` denotes a successful detachment.
+        -- By default, the node is removed and is turned into drops.
+        -- default: nil
+
+        after_detach = function(pos, oldnode, oldmeta)
+        -- Called when an `attached_node` was detached.
+        -- default: nil
+
         preserve_metadata = function(pos, oldnode, oldmeta, drops),
         -- Called when oldnode is about be converted to an item, but before the
         -- node is deleted from the world or the drops are added. This is
