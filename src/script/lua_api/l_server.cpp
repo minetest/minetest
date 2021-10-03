@@ -57,6 +57,17 @@ int ModApiServer::l_get_server_uptime(lua_State *L)
 	return 1;
 }
 
+// get_server_max_lag()
+int ModApiServer::l_get_server_max_lag(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
+	if (!s_env)
+		lua_pushnil(L);
+	else
+		lua_pushnumber(L, s_env->getMaxLagEstimate());
+	return 1;
+}
 
 // print(text)
 int ModApiServer::l_print(lua_State *L)
@@ -512,6 +523,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(request_shutdown);
 	API_FCT(get_server_status);
 	API_FCT(get_server_uptime);
+	API_FCT(get_server_max_lag);
 	API_FCT(get_worldpath);
 	API_FCT(is_singleplayer);
 
