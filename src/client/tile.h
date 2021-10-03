@@ -232,24 +232,30 @@ struct TileLayer
 			break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		}
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		if (!isLiquid()) {
+			// Flowing liquid needs texture wrapping to render correctly
+			if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
+				material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			}
+			if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+				material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			}
 		}
 	}
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
 	{
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		}
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		if (!isLiquid()) {
+			// Flowing liquid needs texture wrapping to render correctly
+			if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
+				material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+				material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			}
+			if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+				material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+				material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			}
 		}
 	}
 
@@ -257,6 +263,19 @@ struct TileLayer
 	{
 		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
 			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
+	}
+
+	bool isLiquid() const
+	{
+		switch (material_type) {
+		case TILE_MATERIAL_LIQUID_OPAQUE:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
+		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+			return true;
+		}
+		return false;
 	}
 
 	// Ordered for size, please do not reorder

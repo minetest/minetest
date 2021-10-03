@@ -666,7 +666,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		const TileSpec &tile, const TileDef &tiledef, video::SColor color,
 		u8 material_type, u32 shader_id, bool backface_culling,
-		const TextureSettings &tsettings)
+		const TextureSettings &tsettings, AlphaMode alpha)
 {
 	layer->shader_id     = shader_id;
 	layer->texture       = tsrc->getTextureForMesh(tiledef.name, &layer->texture_id);
@@ -700,6 +700,10 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 	if (tiledef.tileable_vertical)
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+
+	// Semi-transparent materials can never be tiled
+	if (alpha == ALPHAMODE_BLEND)
+		layer->material_flags &= ~(MATERIAL_FLAG_TILEABLE_HORIZONTAL | MATERIAL_FLAG_TILEABLE_VERTICAL);
 
 	// Color
 	layer->has_color = tiledef.has_color;
@@ -964,11 +968,11 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				tsettings.world_aligned_mode, drawtype);
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
 				color, material_type, tile_shader,
-				tdef[j].backface_culling, tsettings);
+				tdef[j].backface_culling, tsettings, alpha);
 		if (!tdef_overlay[j].name.empty())
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
 					color, overlay_material, overlay_shader,
-					tdef[j].backface_culling, tsettings);
+					tdef[j].backface_culling, tsettings, alpha);
 	}
 
 	MaterialType special_material = material_type;
@@ -984,7 +988,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
-				tdef_spec[j].backface_culling, tsettings);
+				tdef_spec[j].backface_culling, tsettings, alpha);
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
