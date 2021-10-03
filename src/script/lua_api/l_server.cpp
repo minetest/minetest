@@ -282,8 +282,10 @@ int ModApiServer::l_ban_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	Server *server = getServer(L);
+	if (!getEnv(L))
+		throw LuaError("Can't ban player before server has started up");
 
+	Server *server = getServer(L);
 	const char *name = luaL_checkstring(L, 1);
 	RemotePlayer *player = server->getEnv().getPlayer(name);
 	if (!player) {
@@ -301,6 +303,10 @@ int ModApiServer::l_ban_player(lua_State *L)
 int ModApiServer::l_kick_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	if (!getEnv(L))
+		throw LuaError("Can't kick player before server has started up");
+
 	const char *name = luaL_checkstring(L, 1);
 	std::string message("Kicked");
 	if (lua_isstring(L, 2))
@@ -323,7 +329,8 @@ int ModApiServer::l_remove_player(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
-	assert(s_env);
+	if (!s_env)
+		throw LuaError("Can't remove player before server has started up");
 
 	RemotePlayer *player = s_env->getPlayer(name.c_str());
 	if (!player)
