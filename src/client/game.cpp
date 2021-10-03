@@ -4283,16 +4283,18 @@ void Game::showPauseMenu()
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
-		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
-		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
+		// Note: Status of enable_damage and creative_mode settings is intentionally
+		// NOT shown here because the game might roll its own damage system and/or do
+		// a per-player Creative Mode, in which case writing it here would mislead.
+		bool damage = g_settings->getBool("enable_damage");
 		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
-		os << strgettext("- Damage: ") << damage << "\n"
-				<< strgettext("- Creative Mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
-			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
-			//~ PvP = Player versus Player
-			os << strgettext("- PvP: ") << pvp << "\n"
-					<< strgettext("- Public: ") << announced << "\n";
+			if (damage) {
+				const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
+				//~ PvP = Player versus Player
+				os << strgettext("- PvP: ") << pvp << "\n";
+			}
+			os << strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");
 			str_formspec_escape(server_name);
 			if (announced == on && !server_name.empty())
