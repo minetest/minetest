@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-08-25 16:34+0000\n"
-"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
+"PO-Revision-Date: 2021-10-05 08:09+0000\n"
+"Last-Translator: phlostically <phlostically@mailinator.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -86,7 +86,7 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <komando>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -785,9 +785,8 @@ msgid "Active Contributors"
 msgstr "Aktivaj kontribuantoj"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "Aktiva senda amplekso de objektoj"
+msgstr "Aktiva bildigilo:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -965,16 +964,14 @@ msgid "Ping"
 msgstr "Retprokrasto"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Enlistigi servilon"
+msgstr "Publikaj serviloj"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Reŝargi"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
 msgstr "Priskribo pri servilo"
 
@@ -1032,15 +1029,15 @@ msgstr "Ŝikaj folioj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Alta"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Malalta"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Mezalta"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1132,11 +1129,11 @@ msgstr "Trilineara filtrilo"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "Altega"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Malaltega"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1453,9 +1450,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "Mapeto nuntempe malŝaltita de ludo aŭ modifaĵo"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Ludo por unu"
+msgstr "Ludo por pluraj ludantoj"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -2711,9 +2707,8 @@ msgid "Colored fog"
 msgstr "Kolora nebulo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Kolora nebulo"
+msgstr "Koloraj ombroj"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6427,7 +6422,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shadow strength"
-msgstr ""
+msgstr "Forto de ombro"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -6544,9 +6539,8 @@ msgid "Sneaking speed, in nodes per second."
 msgstr "Rapido de kaŝirado, en monderoj sekunde."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft shadow radius"
-msgstr "Travidebleco de tipara ombro"
+msgstr "Radiuso de mola ombro"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6808,7 +6802,6 @@ msgstr ""
 "Ĉi tio devas esti agordita kune kun active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "A restart is required after changing this.\n"
@@ -6817,8 +6810,8 @@ msgid ""
 "On other platforms, OpenGL is recommended.\n"
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
-"La bildiga internaĵo por Irrlicht.\n"
-"Rerulo necesas post ĉi tiu ŝanĝo.\n"
+"La bildiga internaĵo.\n"
+"Relanĉo necesas post ĉi tiu ŝanĝo.\n"
 "Rimarko: Sur Androido, restu ĉe OGLES1, se vi ne certas! Aplikaĵo alie "
 "povus\n"
 "malsukcesi ruliĝon. Sur aliaj sistemoj, OpenGL estas rekomendata.\n"
@@ -7337,9 +7330,9 @@ msgstr ""
 "Ĉu montri erarserĉajn informojn de la kliento (efikas samkiel premo de F5)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width component of the initial window size. Ignored in fullscreen mode."
-msgstr "Larĝeco de la fenestro je ĝia komenca grando."
+msgstr ""
+"Larĝo de la fenestro je ĝia komenca grando. Ignorata en plenekrana reĝimo."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -7475,9 +7468,8 @@ msgid "cURL file download timeout"
 msgstr "Tempolimo de dosiere elŝuto de cURL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "cURL interactive timeout"
-msgstr "cURL tempolimo"
+msgstr "Interaga tempolimo de cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
