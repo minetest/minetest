@@ -7887,26 +7887,38 @@ Used by `minetest.register_node`.
 
         on_fall = function(pos, node)
         -- Called before node starts to fall.
-        -- If a boolean is returned, the builtin falling node
-        -- handling is skipped. `true` denotes successful falling.
-        -- By default, the node is removed and a falling node
-        -- entity is spawned at `pos`.
+        -- Optionally should return `<boolean>, <obj>`.
+        -- If `boolean` is returned as a boolean, the builtin falling node
+        -- handling is skipped.
+        -- `boolean=true` means an object was created by the function which
+        -- must be returned in `obj`.
+        -- `boolean=false` means no object was created and `obj` must be `nil`;
+        -- `boolean=nil` means the builtin falling handling is executed.
+        -- The builtin falling node falling means that the node at `pos` is
+        -- removed and a `__builtin:falling_node` entity spawns in its place.
+        -- `after_fall` is only called if `boolean` `nil`.
         -- default: nil
 
         after_fall = function(pos, oldnode, oldmeta, obj),
         -- Called when node started to fall and a falling node entity
-        -- has been spawned. `obj` is the falling node entity.
+        -- has been spawned due to the builtin falling node handler.
+        -- `obj` is the falling node entity.
         -- default: nil
 
-        on_detach = function(pos, oldnode)
+        on_detach = function(pos, node)
         -- Called when an `attached_node` is about to be detached.
         -- If a boolean is returned, the builtin node detachment
-        -- handling is skipped. `true` denotes a successful detachment.
-        -- By default, the node is removed and is turned into drops.
+        -- handling is skipped.
+        -- `true` means that one or more objects were created,
+        -- `false` means this was not the case.
+        -- The builtin node attachment handling means that the node
+        -- is removed, drops as item(s).
+        -- `after_detach` is only called if `nil` is returned.
         -- default: nil
 
         after_detach = function(pos, oldnode, oldmeta)
-        -- Called when an `attached_node` was detached.
+        -- Called when an `attached_node` was detached using the builtin
+        -- node detachment handler.
         -- default: nil
 
         preserve_metadata = function(pos, oldnode, oldmeta, drops),
