@@ -614,7 +614,7 @@ shadow_poisson_filter (Poisson filtering) bool true
 #   but also uses more resources.
 shadow_filters (Shadow filter quality) enum 1 0,1,2
 
-#    Enable colored shadows. 
+#    Enable colored shadows.
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
@@ -937,7 +937,7 @@ chat_font_size (Chat font size) int 0
 screenshot_path (Screenshot folder) path screenshots
 
 #    Format of screenshots.
-screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
+screenshot_format (Screenshot format) enum png png,jpg
 
 #    Screenshot quality. Only used for JPEG format.
 #    1 means worst quality; 100 means best quality.
