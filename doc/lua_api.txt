@@ -5647,6 +5647,8 @@ Server
       a player joined.
     * This function may be overwritten by mods to customize the status message.
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
+* `minetest.get_server_max_lag()`: returns the current maximum lag
+  of the server in seconds or nil if server is not fully loaded yet
 * `minetest.remove_player(name)`: remove player from database (if they are not
   connected).
     * As auth data is not removed, minetest.player_exists will continue to
