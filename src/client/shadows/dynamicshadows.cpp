@@ -65,24 +65,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	// boundVec.getLength();
 	float vvolume = radius * 2.0f;
 
-	float texelsPerUnit = getMapResolution() / vvolume;
-	m4f mTexelScaling;
-	mTexelScaling.setScale(texelsPerUnit);
-
-	m4f mLookAt, mLookAtInv;
-
-	mLookAt.buildCameraLookAtMatrixLH(v3f(0.0f, 0.0f, 0.0f), -direction, v3f(0.0f, 1.0f, 0.0f));
-
-	mLookAt *= mTexelScaling;
-	mLookAtInv = mLookAt;
-	mLookAtInv.makeInverse();
-
 	v3f frustumCenter = newCenter;
-	mLookAt.transformVect(frustumCenter);
-	frustumCenter.X = floorf(frustumCenter.X); // clamp to texel increment
-	frustumCenter.Y = floorf(frustumCenter.Y); // clamp to texel increment
-	frustumCenter.Z = floorf(frustumCenter.Z);
-	mLookAtInv.transformVect(frustumCenter);
 	// probar radius multipliacdor en funcion del I, a menor I mas multiplicador
 	v3f eye_displacement = direction * vvolume;
 
