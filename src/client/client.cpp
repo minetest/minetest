@@ -1836,8 +1836,15 @@ void Client::makeScreenshot()
 	// Otherwise, saving the screenshot would fail.
 	fs::CreateDir(screenshot_dir);
 
-	u32 quality = (u32)g_settings->getS32("screenshot_quality");
-	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
+	u32 encoding_param;
+	if (filename_ext == ".png") {
+		bool enable_interlacing = g_settings->getBool("screenshot_interlacing");
+		encoding_param = enable_interlacing ? 1 : 0;
+	} else {
+		u32 quality = (u32)g_settings->getS32("screenshot_quality");
+		quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
+		encoding_param = quality;
+	}
 
 	// Try to find a unique filename
 	unsigned serial = 0;
@@ -1860,7 +1867,8 @@ void Client::makeScreenshot()
 			raw_image->copyTo(image);
 
 			std::ostringstream sstr;
-			if (driver->writeImageToFile(image, filename.c_str(), quality)) {
+			if (driver->writeImageToFile(image, filename.c_str(),
+					encoding_param)) {
 				sstr << "Saved screenshot to '" << filename << "'";
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
