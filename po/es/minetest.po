@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-08-02 16:34+0000\n"
-"Last-Translator: David Leal <halfpacho@gmail.com>\n"
+"PO-Revision-Date: 2021-10-06 14:41+0000\n"
+"Last-Translator: Manuel González <mgoopazo@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1137,7 +1137,7 @@ msgstr "Ultra Alto"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Muy bajo"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1906,7 +1906,7 @@ msgstr "Salto automático"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -2477,7 +2477,7 @@ msgstr "Tecla Aux1"
 
 #: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
-msgstr ""
+msgstr "Tecla Aux1 para subir/bajar"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -3145,6 +3145,9 @@ msgid ""
 "Enable colored shadows. \n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
+"Habilitar las sombras a color.\n"
+"Si el valor es verdadero los nodos traslúcidos proyectarán sombras a color. "
+"Esta opción usa muchos recursos."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3176,6 +3179,9 @@ msgid ""
 "On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
+"Habilitar filtrado \"poisson disk\".\n"
+"Si el valor es \"verdadero\", utiliza \"poisson disk\" para proyectar "
+"sombras suaves. De otro modo utiliza filtrado PCF."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -4088,6 +4094,8 @@ msgid ""
 "If the execution of a chat command takes longer than this specified time in\n"
 "seconds, add the time information to the chat command message"
 msgstr ""
+"Si la ejecución de un comando toma más tiempo del especificado en\n"
+"segundos, agrega la información del tiempo al mensaje del comando"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5679,7 +5687,7 @@ msgstr "Ruido 3D que determina la cantidad de mazmorras por chunk."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of small caves per mapchunk."
-msgstr ""
+msgstr "Límite mínimo del número aleatorio de cavernas pequeñas por mapchunk."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size"
