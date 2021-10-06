@@ -219,7 +219,13 @@ Package - content which is downloadable from the content db, may or may not be i
     * returns path to global user data,
       the directory that contains user-provided mods, worlds, games, and texture packs.
 * core.get_modpath() (possible in async calls)
-    * returns path to global modpath
+    * returns path to global modpath, where mods can be installed
+* core.get_modpaths() (possible in async calls)
+    * returns list of paths to global modpaths, where mods have been installed
+
+      The difference with "core.get_modpath" is that no mods should be installed in these
+      directories by Minetest -- they might be read-only.
+
 * core.get_clientmodpath() (possible in async calls)
     * returns path to global client-side modpath
 * core.get_gamepath() (possible in async calls)

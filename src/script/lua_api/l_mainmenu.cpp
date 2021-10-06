@@ -503,6 +503,21 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_modpaths(lua_State *L)
+{
+	int index = 1;
+	lua_newtable(L);
+	ModApiMainMenu::l_get_modpath(L);
+	lua_rawseti(L, -2, index);
+	for (const std::string &component : getEnvModPaths()) {
+		index++;
+		lua_pushstring(L, component.c_str());
+		lua_rawseti(L, -2, index);
+	}
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
 {
 	std::string modpath = fs::RemoveRelativePathComponents(
@@ -856,6 +871,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_mapgen_names);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
+	API_FCT(get_modpaths);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
@@ -889,6 +905,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_mapgen_names);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
+	API_FCT(get_modpaths);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
