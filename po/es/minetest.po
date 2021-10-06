@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
 "PO-Revision-Date: 2021-10-06 14:41+0000\n"
-"Last-Translator: Manuel González <mgoopazo@gmail.com>\n"
+"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5691,7 +5691,7 @@ msgstr "Límite mínimo del número aleatorio de cavernas pequeñas por mapchunk
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size"
-msgstr ""
+msgstr "Tamaño mínimo de textura"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
