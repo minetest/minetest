@@ -586,6 +586,7 @@ enable_waving_plants (Waving plants) bool false
 
 #    Set to true to enable Shadow Mapping.
 #    Requires shaders to be enabled.
+#    Shadows are EXPERIMENTAL and may not work properly.
 enable_dynamic_shadows (Dynamic shadows) bool false
 
 #    Set the shadow strength.
