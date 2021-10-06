@@ -1672,8 +1672,7 @@ inline void Game::updateInteractTimers(f32 dtime)
 inline bool Game::checkConnection()
 {
 	if (client->accessDenied()) {
-		*error_message = gettext("Access denied. Reason: ")
-				+ client->accessDeniedReason();
+		*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 		*reconnect_requested = client->reconnectRequested();
 		errorstream << *error_message << std::endl;
 		return false;
