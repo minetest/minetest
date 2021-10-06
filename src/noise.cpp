@@ -425,6 +425,32 @@ void Noise::allocBuffers()
 }
 
 
+void Noise::setSize(u32 sx, u32 sy, u32 sz)
+{
+	this->sx = sx;
+	this->sy = sy;
+	this->sz = sz;
+
+	allocBuffers();
+}
+
+
+void Noise::setSpreadFactor(v3f spread)
+{
+	this->np.spread = spread;
+
+	resizeNoiseBuf(sz > 1);
+}
+
+
+void Noise::setOctaves(int octaves)
+{
+	this->np.octaves = octaves;
+
+	resizeNoiseBuf(sz > 1);
+}
+
+
 void Noise::resizeNoiseBuf(bool is3d)
 {
 	// Maximum possible spread value factor

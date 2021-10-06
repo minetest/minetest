@@ -83,6 +83,11 @@ void Map::addEventReceiver(MapEventReceiver *event_receiver)
 	m_event_receivers.insert(event_receiver);
 }
 
+void Map::removeEventReceiver(MapEventReceiver *event_receiver)
+{
+	m_event_receivers.erase(event_receiver);
+}
+
 void Map::dispatchEvent(const MapEditEvent &event)
 {
 	for (MapEventReceiver *event_receiver : m_event_receivers) {

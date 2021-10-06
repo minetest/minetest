@@ -149,6 +149,10 @@ public:
 	Noise(const NoiseParams *np, s32 seed, u32 sx, u32 sy, u32 sz=1);
 	~Noise();
 
+	void setSize(u32 sx, u32 sy, u32 sz=1);
+	void setSpreadFactor(v3f spread);
+	void setOctaves(int octaves);
+
 	void gradientMap2D(
 		float x, float y,
 		float step_x, float step_y,

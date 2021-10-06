@@ -141,6 +141,7 @@ public:
 	}
 
 	void addEventReceiver(MapEventReceiver *event_receiver);
+	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
 	void dispatchEvent(const MapEditEvent &event);
 
