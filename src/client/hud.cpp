@@ -1008,11 +1008,10 @@ void drawItemStack(
 	bool draw_overlay = false;
 
 	bool has_mesh = false;
-	bool anim_or_no_inv_img = (enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty();
 	ItemMesh *imesh;
 
 	// Render as mesh if animated or no inventory image
-	if (anim_or_no_inv_img) {
+	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
 		imesh = client->idef()->getWieldMesh(def.name, client);
 		has_mesh = imesh && imesh->mesh;
 	}
@@ -1113,10 +1112,10 @@ void drawItemStack(
 			color = client->idef()->getItemstackColor(item, client);
 		} else {
 			color = video::SColor(255, 255, 255, 255);
-			texture = driver->getTexture("no_texture.png");
-			if (!texture) {
+			ITextureSource *tsrc = client->getTextureSource();
+			texture = tsrc->getTexture("no_texture.png");
+			if (!texture)
 				return;
-			}
 		}
 
 		const video::SColor colors[] = { color, color, color, color };
