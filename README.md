@@ -312,6 +312,10 @@ Library specific options:
     ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
     ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
+### Compiling on MacOS
+
+[TODO]
+
 ### Compiling on Windows using MSVC
 
 ### Requirements
