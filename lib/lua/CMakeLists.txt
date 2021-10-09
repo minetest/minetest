@@ -11,6 +11,13 @@ set(COMMON_CFLAGS)
 set(COMMON_LDFLAGS)
 set(LIBS)
 
+# Force compilation as C++.
+if(WIN32)
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -TP")
+else()
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -xc++")
+endif()
+
 if(APPLE)
 	set(DEFAULT_POSIX TRUE)
 	set(DEFAULT_DLOPEN OFF)
@@ -56,7 +63,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
 
 # Standard flags to use for each build type.
 if(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic -std=gnu99")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic -std=gnu++11")
 	set(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}     -O2")
 	set(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}       -O0 -g")
 	set(CMAKE_C_FLAGS_PROFILE        "${CMAKE_C_FLAGS_PROFILE}     -O1 -g")
