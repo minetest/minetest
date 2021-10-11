@@ -566,7 +566,7 @@ public:
 	}
 };
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 #define SIZE_TAG "size[11,5.5]"
 #else
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
@@ -804,7 +804,7 @@ private:
 		CameraOrientation *cam);
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
 
-	void updateChat(f32 dtime, const v2u32 &screensize);
+	void updateChat(f32 dtime);
 
 	bool nodePlacement(const ItemDefinition &selected_def, const ItemStack &selected_item,
 		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed,
@@ -901,8 +901,10 @@ private:
 	bool m_does_lost_focus_pause_game = false;
 
 	int m_reset_HW_buffer_counter = 0;
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
+#endif
+#ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
 };
@@ -940,7 +942,7 @@ Game::Game() :
 
 	readSettings();
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = false;	// This is initialised properly later
 #endif
 
@@ -1065,7 +1067,7 @@ void Game::run()
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = g_settings->getBool("fast_move")
 			&& client->checkPrivilege("fast");
 #endif
@@ -1618,7 +1620,7 @@ bool Game::getServerContent(bool *aborted)
 				dtime, progress);
 			delete[] text;
 		} else {
-			std::stringstream message;
+			std::ostringstream message;
 			std::fixed(message);
 			message.precision(0);
 			float receive = client->mediaReceiveProgress() * 100;
@@ -1845,6 +1847,7 @@ void Game::processUserInput(f32 dtime)
 	else if (g_touchscreengui) {
 		/* on touchscreengui step may generate own input events which ain't
 		 * what we want in case we just did clear them */
+		g_touchscreengui->show();
 		g_touchscreengui->step(dtime);
 	}
 #endif
@@ -1927,24 +1930,18 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
 			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-			wchar_t buf[100];
 			g_settings->setFloat("sound_volume", new_volume);
-			const wchar_t *str = wgettext("Volume changed to %d%%");
-			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-			delete[] str;
-			m_game_ui->showStatusText(buf);
+			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+			m_game_ui->showStatusText(msg);
 		} else {
 			m_game_ui->showTranslatedStatusText("Sound system is disabled");
 		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
 			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-			wchar_t buf[100];
 			g_settings->setFloat("sound_volume", new_volume);
-			const wchar_t *str = wgettext("Volume changed to %d%%");
-			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-			delete[] str;
-			m_game_ui->showStatusText(buf);
+			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+			m_game_ui->showStatusText(msg);
 		} else {
 			m_game_ui->showTranslatedStatusText("Sound system is disabled");
 		}
@@ -2163,7 +2160,7 @@ void Game::toggleFast()
 		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = fast_move && has_fast_privs;
 #endif
 }
@@ -2199,7 +2196,24 @@ void Game::toggleCinematic()
 void Game::toggleBlockBounds()
 {
 	if (client->checkPrivilege("basic_debug")) {
-		hud->toggleBlockBounds();
+		enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
+		switch (newmode) {
+			case Hud::BLOCK_BOUNDS_OFF:
+				m_game_ui->showTranslatedStatusText("Block bounds hidden");
+				break;
+			case Hud::BLOCK_BOUNDS_CURRENT:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for current block");
+				break;
+			case Hud::BLOCK_BOUNDS_NEAR:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
+				break;
+			case Hud::BLOCK_BOUNDS_MAX:
+				m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
+				break;
+			default:
+				break;
+		}
+
 	} else {
 		m_game_ui->showTranslatedStatusText("Can't show block bounds (need 'basic_debug' privilege)");
 	}
@@ -2329,20 +2343,13 @@ void Game::increaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
 
-	wchar_t buf[255];
-	const wchar_t *str;
 	if (range_new > 4000) {
 		range_new = 4000;
-		str = wgettext("Viewing range is at maximum: %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
-
+		std::wstring msg = fwgettext("Viewing range is at maximum: %d", range_new);
+		m_game_ui->showStatusText(msg);
 	} else {
-		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
 }
@@ -2353,19 +2360,13 @@ void Game::decreaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
-	wchar_t buf[255];
-	const wchar_t *str;
 	if (range_new < 20) {
 		range_new = 20;
-		str = wgettext("Viewing range is at minimum: %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range is at minimum: %d", range_new);
+		m_game_ui->showStatusText(msg);
 	} else {
-		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
 }
@@ -2462,7 +2463,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 
 	if (m_cache_enable_joysticks) {
 		f32 sens_scale = getSensitivityScaleFactor();
-		f32 c = m_cache_joystick_frustum_sensitivity * (1.f / 32767.f) * dtime * sens_scale;
+		f32 c = m_cache_joystick_frustum_sensitivity * dtime * sens_scale;
 		cam->camera_yaw -= input->joystick.getAxisWithoutDead(JA_FRUSTUM_HORIZONTAL) * c;
 		cam->camera_pitch += input->joystick.getAxisWithoutDead(JA_FRUSTUM_VERTICAL) * c;
 	}
@@ -2473,18 +2474,12 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 
 void Game::updatePlayerControl(const CameraOrientation &cam)
 {
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
 
-	// DO NOT use the isKeyDown method for the forward, backward, left, right
-	// buttons, as the code that uses the controls needs to be able to
-	// distinguish between the two in order to know when to use joysticks.
-
 	PlayerControl control(
-		input->isKeyDown(KeyType::FORWARD),
-		input->isKeyDown(KeyType::BACKWARD),
-		input->isKeyDown(KeyType::LEFT),
-		input->isKeyDown(KeyType::RIGHT),
-		isKeyDown(KeyType::JUMP),
+		isKeyDown(KeyType::JUMP) || player->getAutojump(),
 		isKeyDown(KeyType::AUX1),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
@@ -2492,48 +2487,57 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,
 		cam.camera_yaw,
-		input->joystick.getAxisWithoutDead(JA_SIDEWARD_MOVE),
-		input->joystick.getAxisWithoutDead(JA_FORWARD_MOVE)
+		input->getMovementSpeed(),
+		input->getMovementDirection()
 	);
 
-	u32 keypress_bits = (
-			( (u32)(isKeyDown(KeyType::FORWARD)                       & 0x1) << 0) |
-			( (u32)(isKeyDown(KeyType::BACKWARD)                      & 0x1) << 1) |
-			( (u32)(isKeyDown(KeyType::LEFT)                          & 0x1) << 2) |
-			( (u32)(isKeyDown(KeyType::RIGHT)                         & 0x1) << 3) |
-			( (u32)(isKeyDown(KeyType::JUMP)                          & 0x1) << 4) |
-			( (u32)(isKeyDown(KeyType::AUX1)                          & 0x1) << 5) |
-			( (u32)(isKeyDown(KeyType::SNEAK)                         & 0x1) << 6) |
-			( (u32)(isKeyDown(KeyType::DIG)                           & 0x1) << 7) |
-			( (u32)(isKeyDown(KeyType::PLACE)                         & 0x1) << 8) |
-			( (u32)(isKeyDown(KeyType::ZOOM)                          & 0x1) << 9)
-		);
+	// autoforward if set: move towards pointed position at maximum speed
+	if (player->getPlayerSettings().continuous_forward &&
+			client->activeObjectsReceived() && !player->isDead()) {
+		control.movement_speed = 1.0f;
+		control.movement_direction = 0.0f;
+	}
 
-#ifdef ANDROID
-	/* For Android, simulate holding down AUX1 (fast move) if the user has
+#ifdef HAVE_TOUCHSCREENGUI
+	/* For touch, simulate holding down AUX1 (fast move) if the user has
 	 * the fast_move setting toggled on. If there is an aux1 key defined for
-	 * Android then its meaning is inverted (i.e. holding aux1 means walk and
+	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
 	if (m_cache_hold_aux1) {
 		control.aux1 = control.aux1 ^ true;
-		keypress_bits ^= ((u32)(1U << 5));
 	}
 #endif
 
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	u32 keypress_bits = (
+			( (u32)(control.jump  & 0x1) << 4) |
+			( (u32)(control.aux1  & 0x1) << 5) |
+			( (u32)(control.sneak & 0x1) << 6) |
+			( (u32)(control.dig   & 0x1) << 7) |
+			( (u32)(control.place & 0x1) << 8) |
+			( (u32)(control.zoom  & 0x1) << 9)
+		);
 
-	// autojump if set: simulate "jump" key
-	if (player->getAutojump()) {
-		control.jump = true;
-		keypress_bits |= 1U << 4;
-	}
+	// Set direction keys to ensure mod compatibility
+	if (control.movement_speed > 0.001f) {
+		float absolute_direction;
 
-	// autoforward if set: simulate "up" key
-	if (player->getPlayerSettings().continuous_forward &&
-			client->activeObjectsReceived() && !player->isDead()) {
-		control.up = true;
-		keypress_bits |= 1U << 0;
+		// Check in original orientation (absolute value indicates forward / backward)
+		absolute_direction = abs(control.movement_direction);
+		if (absolute_direction < (3.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 0); // Forward
+		if (absolute_direction > (5.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 1); // Backward
+
+		// Rotate entire coordinate system by 90 degrees (absolute value indicates left / right)
+		absolute_direction = control.movement_direction + M_PI_2;
+		if (absolute_direction >= M_PI)
+			absolute_direction -= 2 * M_PI;
+		absolute_direction = abs(absolute_direction);
+		if (absolute_direction < (3.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 2); // Left
+		if (absolute_direction > (5.0f / 8.0f * M_PI))
+			keypress_bits |= (u32)(0x1 << 3); // Right
 	}
 
 	client->setPlayerControl(control);
@@ -2921,7 +2925,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 	}
 }
 
-void Game::updateChat(f32 dtime, const v2u32 &screensize)
+void Game::updateChat(f32 dtime)
 {
 	// Get new messages from error log buffer
 	while (!m_chat_log_buf.empty())
@@ -2937,8 +2941,14 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	chat_backend->step(dtime);
 
 	// Display all messages in a static text element
-	m_game_ui->setChatText(chat_backend->getRecentChat(),
-		chat_backend->getRecentBuffer().getLineCount());
+	auto &buf = chat_backend->getRecentBuffer();
+	if (buf.getLinesModified()) {
+		buf.resetLinesModified();
+		m_game_ui->setChatText(chat_backend->getRecentChat(), buf.getLineCount());
+	}
+
+	// Make sure that the size is still correct
+	m_game_ui->updateChatSize();
 }
 
 void Game::updateCamera(u32 busy_time, f32 dtime)
@@ -3860,9 +3870,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Get chat messages from client
 	*/
 
-	v2u32 screensize = driver->getScreenSize();
-
-	updateChat(dtime, screensize);
+	updateChat(dtime);
 
 	/*
 		Inventory
@@ -3889,8 +3897,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
-			|| m_camera_offset_changed) {
-
+			|| m_camera_offset_changed
+			|| client->getEnv().getClientMap().needsUpdateDrawList()) {
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
@@ -3956,6 +3964,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Profiler graph
 	*/
+	v2u32 screensize = driver->getScreenSize();
+
 	if (m_game_ui->m_flags.show_profiler_graph)
 		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
 
@@ -4177,7 +4187,7 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	static const std::string control_text = strgettext("Default Controls:\n"
 		"No menu visible:\n"
 		"- single tap: button activate\n"

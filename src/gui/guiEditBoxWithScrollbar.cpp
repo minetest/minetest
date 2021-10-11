@@ -620,6 +620,17 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 	if (Environment)
 		skin = Environment->getSkin();
 
+	s32 fontHeight = 1;
+
+	if (m_override_font) {
+		fontHeight = m_override_font->getDimension(L"Ay").Height;
+	} else {
+		IGUIFont *font;
+		if (skin && (font = skin->getFont())) {
+			fontHeight = font->getDimension(L"Ay").Height;
+		}
+	}
+
 	m_scrollbar_width = skin ? skin->getSize(gui::EGDS_SCROLLBAR_SIZE) : 16;
 
 	irr::core::rect<s32> scrollbarrect = m_frame_rect;
@@ -628,8 +639,8 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 			scrollbarrect, false, true);
 
 	m_vscrollbar->setVisible(false);
-	m_vscrollbar->setSmallStep(1);
-	m_vscrollbar->setLargeStep(1);
+	m_vscrollbar->setSmallStep(3 * fontHeight);
+	m_vscrollbar->setLargeStep(10 * fontHeight);
 }
 
 

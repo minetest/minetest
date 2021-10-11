@@ -403,6 +403,8 @@ void ContentFeatures::reset()
 	palette_name = "";
 	palette = NULL;
 	node_dig_prediction = "air";
+	move_resistance = 0;
+	liquid_move_physics = false;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -512,9 +514,12 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
 
+	// new attributes
 	os << serializeString16(node_dig_prediction);
 	writeU8(os, leveled_max);
 	writeU8(os, alpha);
+	writeU8(os, move_resistance);
+	writeU8(os, liquid_move_physics);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -584,9 +589,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	// liquid
 	liquid_type = (enum LiquidType) readU8(is);
+	liquid_move_physics = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);
 	liquid_alternative_source = deSerializeString16(is);
 	liquid_viscosity = readU8(is);
+	move_resistance = liquid_viscosity; // set default move_resistance
 	liquid_renewable = readU8(is);
 	liquid_range = readU8(is);
 	drowning = readU8(is);
@@ -618,6 +625,16 @@ void ContentFeatures::deSerialize(std::istream &is)
 		if (is.eof())
 			throw SerializationError("");
 		alpha = static_cast<enum AlphaMode>(tmp);
+
+		tmp = readU8(is);
+		if (is.eof())
+			throw SerializationError("");
+		move_resistance = tmp;
+
+		tmp = readU8(is);
+		if (is.eof())
+			throw SerializationError("");
+		liquid_move_physics = tmp;
 	} catch(SerializationError &e) {};
 }
 

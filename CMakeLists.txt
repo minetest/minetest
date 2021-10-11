@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
+# Set policies up to 3.9 since we want to enable the IPO option
+if(${CMAKE_VERSION} VERSION_LESS 3.9)
+	cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+else()
+	cmake_policy(VERSION 3.9)
+endif()
+
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
@@ -60,20 +67,27 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # This is done here so that relative search paths are more reasonable
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
-	# tell IrrlichtMt to create a static library
-	set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
-	add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
-	unset(BUILD_SHARED_LIBS CACHE)
+	if(BUILD_CLIENT)
+		# tell IrrlichtMt to create a static library
+		set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
+		add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
+		unset(BUILD_SHARED_LIBS CACHE)
 
-	if(NOT TARGET IrrlichtMt)
-		message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		if(NOT TARGET IrrlichtMt)
+			message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		endif()
+	else()
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
 	endif()
 else()
 	find_package(IrrlichtMt QUIET)
 	if(NOT TARGET IrrlichtMt::IrrlichtMt)
 		string(CONCAT explanation_msg
 			"The Minetest team has forked Irrlicht to make their own customizations. "
-			"It can be found here: https://github.com/minetest/irrlicht")
+			"It can be found here: https://github.com/minetest/irrlicht\n"
+			"For example use: git clone --depth=1 https://github.com/minetest/irrlicht lib/irrlichtmt\n")
 		if(BUILD_CLIENT)
 			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.\n${explanation_msg}")
 		endif()
@@ -84,7 +98,9 @@ else()
 		endif()
 		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
-		target_include_directories(IrrlichtMt::IrrlichtMt INTERFACE "${IRRLICHT_INCLUDE_DIR}")
+		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${IRRLICHT_INCLUDE_DIR}")
 	else()
 		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 	endif()
@@ -119,15 +135,16 @@ elseif(UNIX) # Linux, BSD etc
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
-		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}")
-		set(BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
-		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}")
-		set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
+		include(GNUInstallDirs)
+		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+		set(BINDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
+		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}")
+		set(MANDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
-		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
-		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/metainfo")
-		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/locale")
+		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/applications")
+		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/metainfo")
+		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/icons")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LOCALEDIR}")
 	endif()
 endif()
 

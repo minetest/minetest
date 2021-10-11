@@ -272,11 +272,11 @@ int ModApiUtil::l_compress(lua_State *L)
 	const char *data = luaL_checklstring(L, 1, &size);
 
 	int level = -1;
-	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
-		level = readParam<float>(L, 3);
+	if (!lua_isnoneornil(L, 3))
+		level = readParam<int>(L, 3);
 
-	std::ostringstream os;
-	compressZlib(std::string(data, size), os, level);
+	std::ostringstream os(std::ios_base::binary);
+	compressZlib(reinterpret_cast<const u8 *>(data), size, os, level);
 
 	std::string out = os.str();
 
@@ -292,8 +292,8 @@ int ModApiUtil::l_decompress(lua_State *L)
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 
-	std::istringstream is(std::string(data, size));
-	std::ostringstream os;
+	std::istringstream is(std::string(data, size), std::ios_base::binary);
+	std::ostringstream os(std::ios_base::binary);
 	decompressZlib(is, os);
 
 	std::string out = os.str();
@@ -535,6 +535,30 @@ int ModApiUtil::l_encode_png(lua_State *L)
 	return 1;
 }
 
+// get_last_run_mod()
+int ModApiUtil::l_get_last_run_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	std::string current_mod = readParam<std::string>(L, -1, "");
+	if (current_mod.empty()) {
+		lua_pop(L, 1);
+		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
+	}
+	return 1;
+}
+
+// set_last_run_mod(modname)
+int ModApiUtil::l_set_last_run_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	const char *mod = luaL_checkstring(L, 1);
+	getScriptApiBase(L)->setOriginDirect(mod);
+	return 0;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(log);
@@ -573,6 +597,9 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(colorspec_to_bytes);
 
 	API_FCT(encode_png);
+
+	API_FCT(get_last_run_mod);
+	API_FCT(set_last_run_mod);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
@@ -628,6 +655,9 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+
+	API_FCT(get_last_run_mod);
+	API_FCT(set_last_run_mod);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");

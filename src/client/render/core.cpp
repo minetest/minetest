@@ -76,19 +76,18 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	draw_wield_tool = _draw_wield_tool;
 	draw_crosshair = _draw_crosshair;
 
+	if (shadow_renderer)
+		shadow_renderer->update();
+
 	beforeDraw();
 	drawAll();
 }
 
 void RenderingCore::draw3D()
 {
-	if (shadow_renderer) {
-		// Shadow renderer will handle the draw stage
-		shadow_renderer->setClearColor(skycolor);
-		shadow_renderer->update();
-	} else {
-		smgr->drawAll();
-	}
+	smgr->drawAll();
+	if (shadow_renderer)
+		shadow_renderer->drawDebug();
 
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (!show_hud)

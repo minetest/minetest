@@ -71,11 +71,14 @@ void GameUI::init()
 			chat_font_size, FM_Unspecified));
 	}
 
-	// At the middle of the screen
-	// Object infos are shown in this
+
+	// Infotext of nodes and objects.
+	// If in debug mode, object debug infos shown here, too.
+	// Located on the left on the screen, below chat.
 	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
 	m_guitext_info = gui::StaticText::add(guienv, L"",
-		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
+		// Size is limited; text will be truncated after 6 lines.
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 6) +
 			v2s32(100, chat_font_height *
 			(g_settings->getU16("recent_chat_messages") + 3)),
 			false, true, guiroot);
@@ -224,7 +227,13 @@ void GameUI::showTranslatedStatusText(const char *str)
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 {
+	setStaticText(m_guitext_chat, chat_text);
 
+	m_recent_chat_count = recent_chat_count;
+}
+
+void GameUI::updateChatSize()
+{
 	// Update gui element size and position
 	s32 chat_y = 5;
 
@@ -235,15 +244,15 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
-	core::rect<s32> chat_size(10, chat_y,
-		window_size.X - 20, 0);
+	core::rect<s32> chat_size(10, chat_y, window_size.X - 20, 0);
 	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y,
-		m_guitext_chat->getTextHeight() + chat_y);
+			m_guitext_chat->getTextHeight() + chat_y);
+
+	if (chat_size == m_current_chat_size)
+		return;
+	m_current_chat_size = chat_size;
 
 	m_guitext_chat->setRelativePosition(chat_size);
-	setStaticText(m_guitext_chat, chat_text);
-
-	m_recent_chat_count = recent_chat_count;
 }
 
 void GameUI::updateProfiler()
@@ -299,12 +308,9 @@ void GameUI::toggleProfiler()
 	updateProfiler();
 
 	if (m_profiler_current_page != 0) {
-		wchar_t buf[255];
-		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
-			m_profiler_current_page, m_profiler_max_page);
-		delete[] str;
-		showStatusText(buf);
+		std::wstring msg = fwgettext("Profiler shown (page %d of %d)",
+				m_profiler_current_page, m_profiler_max_page);
+		showStatusText(msg);
 	} else {
 		showTranslatedStatusText("Profiler hidden");
 	}

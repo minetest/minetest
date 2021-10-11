@@ -274,10 +274,10 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 	PGresult *results = execPrepared("read_block", ARRLEN(args), args,
 		argLen, argFmt, false);
 
-	*block = "";
-
 	if (PQntuples(results))
-		*block = std::string(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+		block->assign(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+	else
+		block->clear();
 
 	PQclear(results);
 }
@@ -496,6 +496,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	execPrepared("remove_player_inventory_items", 1, rmvalues);
 
 	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
+	std::ostringstream oss;
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList* list = inventory_lists[i];
 		const std::string &name = list->getName();
@@ -512,9 +513,10 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 		execPrepared("add_player_inventory", 5, inv_values);
 
 		for (u32 j = 0; j < list->getSize(); j++) {
-			std::ostringstream os;
-			list->getItem(j).serialize(os);
-			std::string itemStr = os.str(), slotId = itos(j);
+			oss.str("");
+			oss.clear();
+			list->getItem(j).serialize(oss);
+			std::string itemStr = oss.str(), slotId = itos(j);
 
 			const char* invitem_values[] = {
 				player->getName(),

@@ -73,9 +73,8 @@ public:
 			E_SHADOW_MODE shadowMode = ESM_BOTH);
 	void removeNodeFromShadowList(scene::ISceneNode *node);
 
-	void setClearColor(video::SColor ClearColor);
-
 	void update(video::ITexture *outputTarget = nullptr);
+	void drawDebug();
 
 	video::ITexture *get_texture()
 	{
@@ -112,7 +111,6 @@ private:
 	video::ITexture *shadowMapTextureFinal{nullptr};
 	video::ITexture *shadowMapTextureDynamicObjects{nullptr};
 	video::ITexture *shadowMapTextureColors{nullptr};
-	video::SColor m_clear_color{0x0};
 
 	std::vector<DirectionalLight> m_light_list;
 	std::vector<NodeToApply> m_shadow_node_array;

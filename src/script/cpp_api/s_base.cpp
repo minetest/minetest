@@ -331,13 +331,9 @@ void ScriptApiBase::setOriginDirect(const char *origin)
 
 void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 {
-#ifdef SCRIPTAPI_DEBUG
 	lua_State *L = getStack();
-
 	m_last_run_mod = lua_istable(L, index) ?
 		getstringfield_default(L, index, "mod_origin", "") : "";
-	//printf(">>>> running %s for mod: %s\n", fxn, m_last_run_mod.c_str());
-#endif
 }
 
 /*

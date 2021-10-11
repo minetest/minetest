@@ -338,7 +338,7 @@ void GUIChatConsole::drawText()
 					false,
 					false,
 					&AbsoluteClippingRect);
-			} else 
+			} else
 #endif
 			{
 				// Otherwise use standard text
@@ -580,8 +580,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			const c8 *text = os_operator->getTextFromClipboard();
 			if (!text)
 				return true;
-			std::basic_string<unsigned char> str((const unsigned char*)text);
-			prompt.input(std::wstring(str.begin(), str.end()));
+			prompt.input(utf8_to_wide(text));
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control)
@@ -730,7 +729,6 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 			msg << gettext("Failed to open webpage");
 		}
 		msg << " '" << weblink << "'";
-		msg.flush();
 		m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
 	}
 }

@@ -51,7 +51,6 @@ private:
 	static int l_is_touching_ground(lua_State *L);
 	static int l_is_in_liquid(lua_State *L);
 	static int l_is_in_liquid_stable(lua_State *L);
-	static int l_get_liquid_viscosity(lua_State *L);
 	static int l_is_climbing(lua_State *L);
 	static int l_swimming_vertical(lua_State *L);
 
@@ -95,6 +94,8 @@ private:
 	static int l_hud_change(lua_State *L);
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
+
+	static int l_get_move_resistance(lua_State *L);
 
 	LocalPlayer *m_localplayer = nullptr;
 

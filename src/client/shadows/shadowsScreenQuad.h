@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <IMaterialRendererServices.h>
 #include <IShaderConstantSetCallBack.h>
+#include "client/shader.h"
 
 class shadowScreenQuad
 {
@@ -38,8 +39,16 @@ private:
 class shadowScreenQuadCB : public video::IShaderConstantSetCallBack
 {
 public:
-	shadowScreenQuadCB(){};
+	shadowScreenQuadCB() :
+			m_sm_client_map_setting("ShadowMapClientMap"),
+			m_sm_client_map_trans_setting("ShadowMapClientMapTraslucent"),
+			m_sm_dynamic_sampler_setting("ShadowMapSamplerdynamic")
+	{}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services,
 			s32 userData);
+private:
+	CachedPixelShaderSetting<s32> m_sm_client_map_setting;
+	CachedPixelShaderSetting<s32> m_sm_client_map_trans_setting;
+	CachedPixelShaderSetting<s32> m_sm_dynamic_sampler_setting;
 };

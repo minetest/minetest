@@ -58,6 +58,8 @@ SubgameSpec findWorldSubgame(const std::string &world_path);
 
 std::set<std::string> getAvailableGameIds();
 std::vector<SubgameSpec> getAvailableGames();
+// Get the list of paths to mods in the environment variable $MINETEST_MOD_PATH
+std::vector<std::string> getEnvModPaths();
 
 bool getWorldExists(const std::string &world_path);
 //! Try to get the displayed name of a world

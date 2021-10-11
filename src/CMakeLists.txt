@@ -101,6 +101,12 @@ endif()
 
 option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
 mark_as_advanced(ENABLE_GLES)
+
+option(ENABLE_TOUCH "Enable Touchscreen support" FALSE)
+if(ENABLE_TOUCH)
+	add_definitions(-DHAVE_TOUCHSCREENGUI)
+endif()
+
 if(BUILD_CLIENT)
 	# transitive dependency from Irrlicht (see longer explanation below)
 	if(NOT WIN32)
@@ -203,6 +209,7 @@ endif(ENABLE_REDIS)
 
 find_package(SQLite3 REQUIRED)
 
+
 OPTION(ENABLE_PROMETHEUS "Enable prometheus client support" FALSE)
 set(USE_PROMETHEUS FALSE)
 
@@ -239,6 +246,10 @@ if(ENABLE_SPATIAL)
 endif(ENABLE_SPATIAL)
 
 
+find_package(ZLIB REQUIRED)
+find_package(Zstd REQUIRED)
+
+
 if(NOT MSVC)
 	set(USE_GPROF FALSE CACHE BOOL "Use -pg flag for g++")
 endif()
@@ -267,13 +278,10 @@ if(WIN32)
 	endif()
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
 
-	# Zlib stuff
-	find_path(ZLIB_INCLUDE_DIR "zlib.h" DOC "Zlib include directory")
-	find_library(ZLIB_LIBRARIES "zlib" DOC "Path to zlib library")
-
-	# Dll's are automatically copied to the output directory by vcpkg when VCPKG_APPLOCAL_DEPS=ON
+	# DLLs are automatically copied to the output directory by vcpkg when VCPKG_APPLOCAL_DEPS=ON
 	if(NOT VCPKG_APPLOCAL_DEPS)
-		find_file(ZLIB_DLL NAMES "zlib.dll" "zlib1.dll" DOC "Path to zlib.dll for installation (optional)")
+		find_file(ZLIB_DLL NAMES "" DOC "Path to Zlib DLL for installation (optional)")
+		find_file(ZSTD_DLL NAMES "" DOC "Path to Zstd DLL for installation (optional)")
 		if(ENABLE_SOUND)
 			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
 			set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
@@ -295,7 +303,6 @@ else()
 		endif(NOT HAIKU AND NOT APPLE)
 	endif()
 
-	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
 	if(APPLE)
 		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
@@ -486,6 +493,7 @@ include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
 	${ZLIB_INCLUDE_DIR}
+	${ZSTD_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
@@ -521,6 +529,7 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		IrrlichtMt::IrrlichtMt
+		${ZSTD_LIBRARY}
 		${X11_LIBRARIES}
 		${SOUND_LIBRARIES}
 		${SQLITE3_LIBRARY}
@@ -605,6 +614,7 @@ if(BUILD_SERVER)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
+		${ZSTD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_LIBRARY}
@@ -820,6 +830,9 @@ if(WIN32)
 		endif()
 		if(ZLIB_DLL)
 			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
+		endif()
+		if(ZSTD_DLL)
+			install(FILES ${ZSTD_DLL} DESTINATION ${BINDIR})
 		endif()
 		if(BUILD_CLIENT AND FREETYPE_DLL)
 			install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})

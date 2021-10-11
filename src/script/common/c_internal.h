@@ -75,9 +75,6 @@ extern "C" {
 	}                                                   \
 }
 
-#define script_run_callbacks(L, nargs, mode) \
-	script_run_callbacks_f((L), (nargs), (mode), __FUNCTION__)
-
 // What script_run_callbacks does with the return values of callbacks.
 // Regardless of the mode, if only one callback is defined,
 // its return value is the total return value.
@@ -108,13 +105,17 @@ enum RunCallbacksMode
 	// are converted by readParam<bool> to true or false, respectively.
 };
 
+// Gets a backtrace of the current execution point
 std::string script_get_backtrace(lua_State *L);
+// Wrapper for CFunction calls that converts C++ exceptions to Lua errors
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
+// Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
-void script_run_callbacks_f(lua_State *L, int nargs,
-	RunCallbacksMode mode, const char *fxn);
 
-enum class DeprecatedHandlingMode {
+bool script_log_unique(lua_State *L, std::string message, std::ostream &log_to,
+	int stack_depth = 1);
+
+enum DeprecatedHandlingMode {
 	Ignore,
 	Log,
 	Error
@@ -134,5 +135,4 @@ DeprecatedHandlingMode get_deprecated_handling_mode();
  * @param message The deprecation method
  * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
  */
-void log_deprecated(lua_State *L, const std::string &message,
-	int stack_depth=1);
+void log_deprecated(lua_State *L, std::string message, int stack_depth = 1);

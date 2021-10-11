@@ -76,10 +76,7 @@ static void set_vector_metatable(lua_State *L)
 
 void push_float_string(lua_State *L, float value)
 {
-	std::stringstream ss;
-	std::string str;
-	ss << value;
-	str = ss.str();
+	auto str = ftos(value);
 	lua_pushstring(L, str.c_str());
 }
 

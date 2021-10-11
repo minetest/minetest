@@ -252,7 +252,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	// force a shutdown of an application if it doesn't respond to the destroy
 	// window message.
 
-	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager property"
+	verbosestream << "Client: Setting Xorg _NET_WM_PID extended window manager property"
 		<< std::endl;
 
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
@@ -598,7 +598,7 @@ static float calcDisplayDensity()
 float RenderingEngine::getDisplayDensity()
 {
 	static float cached_display_density = calcDisplayDensity();
-	return cached_display_density;
+	return cached_display_density * g_settings->getFloat("display_density_factor");
 }
 
 #elif defined(_WIN32)
@@ -626,14 +626,14 @@ float RenderingEngine::getDisplayDensity()
 		display_density = calcDisplayDensity(get_video_driver());
 		cached = true;
 	}
-	return display_density;
+	return display_density * g_settings->getFloat("display_density_factor");
 }
 
 #else
 
 float RenderingEngine::getDisplayDensity()
 {
-	return g_settings->getFloat("screen_dpi") / 96.0;
+	return (g_settings->getFloat("screen_dpi") / 96.0) * g_settings->getFloat("display_density_factor");
 }
 
 #endif

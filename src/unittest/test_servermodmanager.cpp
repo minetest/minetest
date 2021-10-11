@@ -48,14 +48,20 @@ static TestServerModManager g_test_instance;
 void TestServerModManager::runTests(IGameDef *gamedef)
 {
 	const char *saved_env_mt_subgame_path = getenv("MINETEST_SUBGAME_PATH");
+	const char *saved_env_mt_mod_path = getenv("MINETEST_MOD_PATH");
 #ifdef WIN32
 	{
 		std::string subgame_path("MINETEST_SUBGAME_PATH=");
 		subgame_path.append(TEST_SUBGAME_PATH);
 		_putenv(subgame_path.c_str());
+
+		std::string mod_path("MINETEST_MOD_PATH=");
+		mod_path.append(TEST_MOD_PATH);
+		_putenv(mod_path.c_str());
 	}
 #else
 	setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
+	setenv("MINETEST_MOD_PATH", TEST_MOD_PATH, 1);
 #endif
 
 	TEST(testCreation);
@@ -75,12 +81,21 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 		if (saved_env_mt_subgame_path)
 			subgame_path.append(saved_env_mt_subgame_path);
 		_putenv(subgame_path.c_str());
+
+		std::string mod_path("MINETEST_MOD_PATH=");
+		if (saved_env_mt_mod_path)
+			mod_path.append(saved_env_mt_mod_path);
+		_putenv(mod_path.c_str());
 	}
 #else
 	if (saved_env_mt_subgame_path)
 		setenv("MINETEST_SUBGAME_PATH", saved_env_mt_subgame_path, 1);
 	else
 		unsetenv("MINETEST_SUBGAME_PATH");
+	if (saved_env_mt_mod_path)
+		setenv("MINETEST_MOD_PATH", saved_env_mt_mod_path, 1);
+	else
+		unsetenv("MINETEST_MOD_PATH");
 #endif
 }
 
@@ -89,6 +104,7 @@ void TestServerModManager::testCreation()
 	std::string path = std::string(TEST_WORLDDIR) + DIR_DELIM + "world.mt";
 	Settings world_config;
 	world_config.set("gameid", "devtest");
+	world_config.set("load_mod_test_mod", "true");
 	UASSERTEQ(bool, world_config.updateConfigFile(path.c_str()), true);
 	ServerModManager sm(TEST_WORLDDIR);
 }
@@ -119,16 +135,21 @@ void TestServerModManager::testGetMods()
 	UASSERTEQ(bool, mods.empty(), false);
 
 	// Ensure we found basenodes mod (part of devtest)
+	// and test_mod (for testing MINETEST_MOD_PATH).
 	bool default_found = false;
+	bool test_mod_found = false;
 	for (const auto &m : mods) {
 		if (m.name == "basenodes")
 			default_found = true;
+		if (m.name == "test_mod")
+			test_mod_found = true;
 
 		// Verify if paths are not empty
 		UASSERTEQ(bool, m.path.empty(), false);
 	}
 
 	UASSERTEQ(bool, default_found, true);
+	UASSERTEQ(bool, test_mod_found, true);
 }
 
 void TestServerModManager::testGetModspec()

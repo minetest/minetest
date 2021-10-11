@@ -21,7 +21,8 @@ core.features = {
 	use_texture_alpha_string_modes = true,
 	degrotate_240_steps = true,
 	abm_min_max_y = true,
-	particlespawner_tweenable = true
+	particlespawner_tweenable = true,
+	dynamic_add_media_table = true,
 }
 
 function core.has_feature(arg)

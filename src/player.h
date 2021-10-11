@@ -49,10 +49,6 @@ struct PlayerControl
 	PlayerControl() = default;
 
 	PlayerControl(
-		bool a_up,
-		bool a_down,
-		bool a_left,
-		bool a_right,
 		bool a_jump,
 		bool a_aux1,
 		bool a_sneak,
@@ -61,14 +57,10 @@ struct PlayerControl
 		bool a_place,
 		float a_pitch,
 		float a_yaw,
-		float a_sidew_move_joystick_axis,
-		float a_forw_move_joystick_axis
+		float a_movement_speed,
+		float a_movement_direction
 	)
 	{
-		up = a_up;
-		down = a_down;
-		left = a_left;
-		right = a_right;
 		jump = a_jump;
 		aux1 = a_aux1;
 		sneak = a_sneak;
@@ -77,13 +69,9 @@ struct PlayerControl
 		place = a_place;
 		pitch = a_pitch;
 		yaw = a_yaw;
-		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
-		forw_move_joystick_axis = a_forw_move_joystick_axis;
+		movement_speed = a_movement_speed;
+		movement_direction = a_movement_direction;
 	}
-	bool up = false;
-	bool down = false;
-	bool left = false;
-	bool right = false;
 	bool jump = false;
 	bool aux1 = false;
 	bool sneak = false;
@@ -92,8 +80,9 @@ struct PlayerControl
 	bool place = false;
 	float pitch = 0.0f;
 	float yaw = 0.0f;
-	float sidew_move_joystick_axis = 0.0f;
-	float forw_move_joystick_axis = 0.0f;
+	// Note: These two are NOT available on the server
+	float movement_speed = 0.0f;
+	float movement_direction = 0.0f;
 };
 
 struct PlayerSettings
