@@ -35,25 +35,19 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	// LuaJIT is 3rd party and only calls destructors on some platforms, unfortunately.
-#if !USE_LUAJIT
-	void testBundledLuaDestructors();
-#endif
+	void testLuaDestructors();
 };
 
 static TestLua g_test_instance;
 
 void TestLua::runTests(IGameDef *gamedef)
 {
-#if !USE_LUAJIT
-	TEST(testBundledLuaDestructors);
-#endif
+	TEST(testLuaDestructors);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#if !USE_LUAJIT
-void TestLua::testBundledLuaDestructors()
+void TestLua::testLuaDestructors()
 {
 	bool did_destruct = false;
 
@@ -81,4 +75,3 @@ void TestLua::testBundledLuaDestructors()
 
 	UASSERT(did_destruct);
 }
-#endif
