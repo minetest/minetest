@@ -231,8 +231,27 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		LuaParticleParams::readTweenTable(L, "size", p.size);
 		LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
 		LuaParticleParams::readTweenTable(L, "drag", p.drag);
-		LuaParticleParams::readTweenTable(L, "attract", p.attract);
-		LuaParticleParams::readTweenTable(L, "attractor", p.attractor);
+		lua_getfield(L, 1, "attract");
+		if (!lua_isnil(L, -1)) {
+			luaL_checktype(L, -1, LUA_TTABLE);
+			lua_getfield(L, -1, "kind");
+			LuaParticleParams::readLuaValue(L, p.attractor_kind);
+			lua_pop(L,1);
+			if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
+				LuaParticleParams::readTweenTable(L, "strength", p.attract);
+				LuaParticleParams::readTweenTable(L, "origin", p.attractor);
+				p.attractor_attachment = LuaParticleParams::readAttachmentID(L, "origin_attached");
+				if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
+					LuaParticleParams::readTweenTable(L, "angle", p.attractor_angle);
+					p.attractor_angle_attachment = LuaParticleParams::readAttachmentID(L, "angle_attached");
+				}
+			}
+		} else {
+			p.attractor_kind = ParticleParamTypes::AttractorKind::none;
+		}
+// 		using ParticleParamTypes::dump;
+// 		std::cerr<<((u16)p.attractor_kind)<<" :: attractor strength " << (f32)p.attract.start.min <<":" << dump(p.attract)<< " / att origin " << dump(p.attractor) << " / angle " << dump(p.attractor_angle)<<"\n";
+		lua_pop(L,1);
 		LuaParticleParams::readTweenTable(L, "radius", p.radius);
 
 		p.collisiondetection = getboolfield_default(L, 1,

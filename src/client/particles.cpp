@@ -305,6 +305,13 @@ ParticleSpawner::ParticleSpawner(
 	p_manager -> reserveParticleSpace(max_particles * 1.2);
 }
 
+namespace {
+	GenericCAO* findObjectByID(ClientEnvironment* env, u16 id) {
+		if (id == 0) return nullptr;
+		return dynamic_cast<GenericCAO *>(env->getActiveObject(id));
+	}
+}
+
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
@@ -318,7 +325,10 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto r_acc = p.acc.blend(fac);
 	auto r_drag = p.drag.blend(fac);
 	auto r_radius = p.radius.blend(fac);
-	auto attractor = p.attractor.blend(fac);
+	v3f  attractor = p.attractor.blend(fac);
+	v3f  attractor_angle = p.attractor_angle.blend(fac);
+	auto attractor_obj       = findObjectByID(env, p.attractor_attachment);
+	auto attractor_angle_obj = findObjectByID(env, p.attractor_angle_attachment);
 
 	auto r_exp = p.exptime.blend(fac);
 	auto r_size = p.size.blend(fac);
@@ -360,6 +370,11 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		attached_absolute_pos_rot_matrix->rotateVect(pp.acc);
 	}
 
+	if (attractor_obj)
+		attractor       += attractor_obj       -> getPosition() / BS;
+	if (attractor_angle_obj)
+		attractor_angle += attractor_angle_obj -> getPosition() / BS;
+
 	pp.expirationtime = r_exp.pickWithin();
 
 	if (sphere_radius != v3f()) {
@@ -375,11 +390,51 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pp.pos += ofs * mag;
 	}
 
-	if (attract != 0) {
-		f32 dist = pp.pos.getDistanceFrom(attractor);
+	if ((p.attractor_kind != ParticleParamTypes::AttractorKind::none) && (attract != 0)) {
+		v3f dir;
+		f32 dist=0; /* =0 necessary to silence warning */
+		switch (p.attractor_kind) {
+			case ParticleParamTypes::AttractorKind::none: /* silence warning */ break;
+
+			case ParticleParamTypes::AttractorKind::point: {
+				dist = pp.pos.getDistanceFrom(attractor);
+				dir = pp.pos - attractor;
+				dir.normalize();
+			} break;
+
+			case ParticleParamTypes::AttractorKind::line: {
+			// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				const auto& lorigin = attractor;
+				v3f ldir = attractor_angle;
+				ldir.normalize();
+				auto origin_to_point = pp.pos - lorigin;
+				auto scalar_projection = origin_to_point.dotProduct(ldir);
+				auto point_on_line = lorigin + (ldir * scalar_projection);
+
+				dist = pp.pos.getDistanceFrom(point_on_line);
+				dir = (point_on_line - pp.pos);
+				dir.normalize();
+				dir *= -1; // flip it around so strength=1 attracts, not repulses
+			} break;
+
+			case ParticleParamTypes::AttractorKind::plane: {
+			// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				const v3f& porigin = attractor;
+				v3f normal = attractor_angle;
+				normal.normalize();
+				v3f point_to_origin = porigin - pp.pos;
+				f32 factor = normal.dotProduct(point_to_origin);
+				if (numericAbsolute(factor) == 0.0f) { /* does -0.f == 0.f in C++? TODO */
+					dir = normal;
+				} else {
+					factor = numericSign(factor);
+					dir = normal * factor;
+				}
+				dist = numericAbsolute(normal.dotProduct(pp.pos - porigin));
+				dir *= -1; // flip it around so strength=1 attracts, not repulses
+			} break;
+		}
 		f32 speedTowards = numericAbsolute(attract) * dist;
-		v3f dir = pp.pos - attractor;
-		dir.normalize();
 		v3f avel = dir * speedTowards;
 		if (attract > 0 and speedTowards > 0) {
 			avel *= -1;

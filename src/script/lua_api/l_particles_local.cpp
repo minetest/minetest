@@ -112,7 +112,25 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	LuaParticleParams::readTweenTable(L, "size", p.size);
 	LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
 	LuaParticleParams::readTweenTable(L, "drag", p.drag);
-	LuaParticleParams::readTweenTable(L, "attract", p.attract);
+	lua_getfield(L, 1, "attract");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "kind");
+		LuaParticleParams::readLuaValue(L, p.attractor_kind);
+		lua_pop(L,1);
+		if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
+			LuaParticleParams::readTweenTable(L, "strength", p.attract);
+			LuaParticleParams::readTweenTable(L, "origin", p.attractor);
+			p.attractor_attachment = LuaParticleParams::readAttachmentID(L, "origin_attached");
+			if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
+				LuaParticleParams::readTweenTable(L, "angle", p.attractor_angle);
+				p.attractor_angle_attachment = LuaParticleParams::readAttachmentID(L, "angle_attached");
+			}
+		}
+	} else {
+		p.attractor_kind = ParticleParamTypes::AttractorKind::none;
+	}
+	lua_pop(L,1);
 	LuaParticleParams::readTweenTable(L, "attractor", p.attractor);
 	LuaParticleParams::readTweenTable(L, "radius", p.radius);
 

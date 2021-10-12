@@ -8743,7 +8743,7 @@ will be ignored):
             -- exponential and there is no particular maximum or minimum value
         };
 
-        pos_tween = …
+        pos_tween = … ;
         -- like `pos`, except the possible values will change over the lifetime of
         -- the particle spawner. a tween table should consist of a list of frames
         -- which the engine will interpolate between, and optionally a number of
@@ -8807,20 +8807,47 @@ unless otherwise specified.
   be used instead of a uniform value.
 * float range `exptime`: the number of seconds after which the particle
   disappears.
-* vec3 `attractor`: the point towards which particles will initially be
-  oriented if `attract` > 0. this can be used to implement effects like a shell
-  of particles moving inward or outward together from a single point. the
-  velocity will be added to `vel` if it is also set.
-* float range `attract`: the speed with which particles will move towards
-  `attractor`. If negative, the particles will instead move away from that
-  point.
+* table `attract`: sets the birth orientation of particles relative to various
+  shapes defined in world coordinate space. this is an alternative means of
+  setting the velocity which allows particles to emerge from or enter into
+  some entity or node on the map, rather than simply being assigned random
+  velocity values within a range. the velocity calculated by this method will
+  be **added** to that specified by `vel` if `vel` is also set, so in most
+  cases **`vel` should be set to 0**. `attract` has the fields:
+  * string `kind`: selects the kind of shape towards which the particles will
+    be oriented. it must have one of the following values:
+    * `'none'`: no attractor is set and the `attractor` table is ignored
+    * `'point'`: the particles are attracted to a specific point in space.
+      use this also if you want a sphere-like effect, in combination with
+      the `radius` property.
+    * `'line'`: the particles are attracted to an (infinite) line passing
+      through the points `origin` and `angle`. use this for e.g. beacon
+      effects, energy beam effects, etc.
+    * `'plane'`: the particles are attracted to an (infinite) plane on whose
+      surface `origin` designates a point in world coordinate space. use this
+      for e.g. particles entering or emerging from a portal.
+  * vec3 `origin`: the origin point of the shape towards which particles will
+    initially be oriented. functions as an offset if `origin_attached` is also
+    set.
+  * vec3 `angle`: sets the direction in which the attractor shape faces. for
+    lines, this can simply be any second point on the (infinite) line. for
+    planes, `angle` is the surface normal of an infinite plane on whose surface
+    `origin` is a point. functions as an offset is `angle_attached` is also set.
+  * vec3 `origin_attached`: allows the origin to be specified as an offset from
+    the position of an entity rather than a coordinate in world space.
+  * vec3 `angle_attached`: allows the angle to be specified as an offset from
+    the position of an entity rather than a coordinate in world space.
+  * float range `strength`: the speed with which particles will move towards
+    `attractor`. If negative, the particles will instead move away from that
+    point.
 * vec3 range `radius`: if set, particles will be arranged in a sphere around
   `pos`. A constant can be used to create a spherical shell of particles, a
   vector to create an ovoid shell, and a range to create a volume; e.g.
   `{min = 0.5, max = 1, bias = 1}` will allow particles to appear between 0.5
   and 1 nodes away from `pos` but will cluster them towards the center of the
   sphere. Usually if `radius` is used, `pos` should be a single point, but it
-  can still be a range if you really know what you're doing.
+  can still be a range if you really know what you're doing (e.g. to create a
+  "roundcube" emitter volume).
 
 ### Textures
 In versions before v5.5.0, particlespawner textures could only be specified as a single
@@ -8835,8 +8862,8 @@ table contains options that allow simple animations to be applied to the texture
         -- controls how visible the particle is; at 1.0 the particle is fully
         -- visible, at 0, it is completely invisible.
 
-	    scale = {x = 0, y = 0};
-	    -- scales the texture onscreen
+        scale = {x = 0, y = 0};
+        -- scales the texture onscreen
 
         fade_start = 0.0;
         -- controls where along the particle's lifetime the fading effect begins,
@@ -8848,8 +8875,8 @@ table contains options that allow simple animations to be applied to the texture
         -- flicker 5 times before disappearing for good.
 
         animation = {Tile Animation definition};
-	    -- overrides the particlespawner's global animation property for a single
-	    -- specific texture
+        -- overrides the particlespawner's global animation property for a single
+        -- specific texture
     }
 
 Instead of setting a single texture definition, it is also possible to set a

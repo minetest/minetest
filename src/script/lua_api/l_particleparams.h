@@ -69,7 +69,7 @@ namespace LuaParticleParams {
 	}
 
 	inline void readLuaValue(lua_State* L, TweenStyle& ret) {
-		EnumString opts[] = {
+		static const EnumString opts[] = {
 			{(int)TweenStyle::fwd,     "fwd"},
 			{(int)TweenStyle::rev,     "rev"},
 			{(int)TweenStyle::pulse,   "pulse"},
@@ -77,11 +77,31 @@ namespace LuaParticleParams {
 			{0, nullptr},
 		};
 
-		if (lua_isstring(L, -1)) {
-			int v = (int)TweenStyle::fwd;
-			string_to_enum(opts, v, std::string(lua_tostring(L, -1)));
-			ret = (TweenStyle)v;
+		luaL_checktype(L, -1, LUA_TSTRING);
+		int v = (int)TweenStyle::fwd;
+		if (string_to_enum(opts, v, std::string(lua_tostring(L, -1))) == false) {
+			lua_pushliteral(L, "tween style must be one of ('fwd', 'rev', 'pulse', 'flicker')");
+			lua_error(L);
 		}
+		ret = (TweenStyle)v;
+	}
+
+	inline void readLuaValue(lua_State* L, AttractorKind& ret) {
+		static const EnumString opts[] = {
+			{(int)AttractorKind::none,  "none"},
+			{(int)AttractorKind::point, "point"},
+			{(int)AttractorKind::line,  "line"},
+			{(int)AttractorKind::plane, "plane"},
+			{0, nullptr},
+		};
+
+		luaL_checktype(L, -1, LUA_TSTRING);
+		int v = (int)AttractorKind::none;
+		if (string_to_enum(opts, v, std::string(lua_tostring(L, -1))) == false) {
+			lua_pushliteral(L, "attractor kind must be one of ('none', 'point', 'line', 'plane')");
+			lua_error(L);
+		}
+		ret = (AttractorKind)v;
 	}
 
 	template <typename T> void
@@ -140,7 +160,6 @@ namespace LuaParticleParams {
 		lua_settop(L, tbl);
 	}
 
-
 	template <typename T> void
 	readTweenTable(lua_State* L, const char* name, TweenedParameter<T>& field)
 	{
@@ -150,46 +169,59 @@ namespace LuaParticleParams {
 		lua_concat(L, 2);
 		lua_gettable(L, tbl);
 		if(lua_istable(L, -1)) {
+			int tween = lua_gettop(L);
 			// get the starting value
-			lua_pushinteger(L, 1), lua_gettable(L, -2);
+			lua_pushinteger(L, 1), lua_gettable(L, tween);
 			readLuaValue(L, field.start);
 			lua_pop(L, 1);
 
 			// get the final value -- use len instead of 2 so that this
 			// gracefully degrades if keyframe support is later added
-			lua_pushinteger(L, (lua_Integer)lua_objlen(L, -1)), lua_gettable(L, -2);
+			lua_pushinteger(L, (lua_Integer)lua_objlen(L, -1)), lua_gettable(L, tween);
 			readLuaValue(L, field.end);
 			lua_pop(L, 1);
 
 			// get the effect settings
 			lua_getfield(L, -1, "style");
-			readLuaValue(L, field.style);
+			lua_isnil(L,-1) || (readLuaValue(L, field.style), true);
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "reps");
-			readLuaValue(L, field.reps);
+			lua_isnil(L,-1) || (readLuaValue(L, field.reps), true);
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "start");
-			readLuaValue(L, field.beginning);
+			lua_isnil(L,-1) || (readLuaValue(L, field.beginning), true);
 			lua_pop(L, 1);
 
 			goto done;
 		} else lua_pop(L,1);
 		// the table is not present; check for nonanimated values
 
-		lua_getfield(L, 1, name);
+		lua_getfield(L, tbl, name);
 		if(!lua_isnil(L, -1)) {
 			readLuaValue(L, field.start);
 			lua_settop(L, tbl);
 			goto set_uniform;
 		} else lua_pop(L,1);
 
-		// this table is not present either; check for legacy values
+		// the goto did not trigger, so this table is not present either
+		// check for pre-5.5.0 legacy values
 		readLegacyValue(L, name, field.start);
 
 		set_uniform: field.end = field.start;
 		done: lua_settop(L, tbl); // clean up after ourselves
+	}
+
+	inline u16 readAttachmentID(lua_State* L, const char* name) {
+		u16 id = 0;
+		lua_getfield(L, -1, name);
+		if (!lua_isnil(L, -1)) {
+			ObjectRef *ref = ObjectRef::checkobject(L, -1);
+			id = ObjectRef::getobject(ref) -> getId();
+		}
+		lua_pop(L, 1);
+		return id;
 	}
 
 	void readTexValue(lua_State* L, ServerParticleTexture& tex);

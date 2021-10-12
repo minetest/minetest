@@ -576,13 +576,28 @@ enum ToClientCommand
 		--      v3f1000 drag_end_min
 		--      v3f1000 drag_end_max
 		--      f32	    drag_end_bias
-		tween<range<f32>> attract
-		tween<range<v3f1000>> attractor
+
+		u8 attraction_kind
+			none  = 0
+			point = 1
+			line  = 2
+			plane = 3
+
+		if attraction_kind > none {
+			tween<range<f32>> attract_strength
+			tween<v3f1000>    attractor_origin
+			u16               attractor_origin_attachment_object_id
+			if attraction_mode > point {
+				tween<v3f1000> attractor_angle
+				u16            attractor_origin_attachment_object_id
+			}
+		}
+
 		tween<range<v3f1000>> radius
 		tween<range<v3f1000>> drag
 
 		u16 texpool_sz
-		foreach texpool_sz {
+		texpool_sz.times {
 			u8 flags
 			-- bit 0: animated
 			-- other bits free & ignored as of proto v40

@@ -44,16 +44,24 @@ v3f ParticleParamTypes::interpolateParameterValue(float fac, const v3f a, const 
 	void PARAM_PVFN(serialize)  (std::ostream& os, T  v) {wr(os,v);  } \
 	void PARAM_PVFN(deSerialize)(std::istream& is, T& v) {v = rd(is);}
 
+#define PARAM_DEF_ENUM(enumerator,underlying_type) \
+	void PARAM_PVFN(serialize) (std::ostream& os, enumerator k) \
+		{ PARAM_PVFN(serialize)(os, (underlying_type)k); }      \
+	void PARAM_PVFN(deSerialize) (std::istream& is, enumerator& k) \
+		{ underlying_type v; PARAM_PVFN(deSerialize)(is,v); k = (enumerator)v; }
+	// strong typing: not always such a good thing
+
 #define PARAM_DEF_NUM(T, wr, rd) PARAM_DEF_SRZR(T, wr, rd) \
-	T PARAM_PVFN(interpolate)(float fac, const T a, const T b)      \
+	T PARAM_PVFN(interpolate)(float fac, const T a, const T b) \
 			{ return numericalBlend<T>(fac,a,b); } \
-	T PARAM_PVFN(pick)       (float* f, const T a, const T b)       \
+	T PARAM_PVFN(pick)       (float* f, const T a, const T b) \
 			{ return numericalBlend<T>(f[0],a,b); }
 
 PARAM_DEF_NUM(u8,  writeU8,    readU8);
 PARAM_DEF_NUM(u16, writeU16,   readU16);
 PARAM_DEF_NUM(u32, writeU32,   readU32);
 PARAM_DEF_NUM(f32, writeF32,   readF32);
+PARAM_DEF_ENUM(ParticleParamTypes::AttractorKind, u8);
 PARAM_DEF_SRZR(v2f, writeV2F32, readV2F32);
 PARAM_DEF_SRZR(v3f, writeV3F32, readV3F32);
 

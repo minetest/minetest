@@ -33,11 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace ParticleParamTypes {
 	template<typename T> using BlendFunction = T(float,T,T);
-	#define DECL_PARAM_OVERLOADS(type) \
-		void serializeParameterValue(std::ostream& os, type v);                \
-		void deSerializeParameterValue(std::istream& is, type&  r);            \
-		type interpolateParameterValue(float fac, const type a, const type b); \
-		type pickParameterValue(float* f, const type a, const type b);
+	#define DECL_PARAM_SRZRS(type) \
+		void serializeParameterValue  (std::ostream& os, type   v); \
+		void deSerializeParameterValue(std::istream& is, type&  r);
+	#define DECL_PARAM_OVERLOADS(type) DECL_PARAM_SRZRS(type) \
+		type interpolateParameterValue(float  fac,  const type a, const type b); \
+		type pickParameterValue       (float* facs, const type a, const type b);
 
 	DECL_PARAM_OVERLOADS(u8);
 	DECL_PARAM_OVERLOADS(u16);
@@ -45,8 +46,6 @@ namespace ParticleParamTypes {
 	DECL_PARAM_OVERLOADS(f32);
 	DECL_PARAM_OVERLOADS(v2f);
 	DECL_PARAM_OVERLOADS(v3f);
-
-	#undef DECL_PARAM_OVERLOADS
 
 	template <typename T, size_t PN>
 	struct Parameter {
@@ -77,6 +76,7 @@ namespace ParticleParamTypes {
 
 		operator T() const { return val; }
 		T operator = (T b) { return val = b; }
+
 	};
 
 	template <typename T> T numericalBlend(float fac, T min, T max)
@@ -88,8 +88,26 @@ namespace ParticleParamTypes {
 		using This = VectorParameter<T,N>;
 		template <typename... Args>
 		VectorParameter(Args... args) : Parameter<T,N>(args...) {};
-
 	};
+
+	template <typename T, size_t PN>
+	std::string dump(const Parameter<T,PN>& p) {
+		std::stringstream s;
+		s << p.val;
+		return s.str();
+	}
+
+	template <typename T, size_t N>
+	std::string dump(const VectorParameter<T,N>& v) {
+		std::stringstream s;
+		s << "vec"<<N<<"<"<< v.val.X
+					<< "," << v.val.Y;
+		if (N==3) {
+			s << "," << v.val.Z;
+		}
+		s << ">";
+		return s.str();
+	}
 
 	using u8Parameter  = Parameter<u8,  1>;
 	using u16Parameter = Parameter<u16, 1>;
@@ -97,9 +115,8 @@ namespace ParticleParamTypes {
 
 	using f32Parameter = Parameter<f32, 1>;
 
-	using v2fParameter = Parameter<v2f, 2>;
-	using v3fParameter = Parameter<v3f, 3>;
-
+	using v2fParameter = VectorParameter<v2f, 2>;
+	using v3fParameter = VectorParameter<v3f, 3>;
 
 	template <typename T>
 	struct RangedParameter {
@@ -154,7 +171,15 @@ namespace ParticleParamTypes {
 			}
 			return T::pick(values, min, max);
 		}
+
 	};
+
+	template <typename T>
+	std::string dump(const RangedParameter<T>& r) {
+		std::stringstream s;
+		s << "range<" << dump(r.min) << " ~ " << dump(r.max) << ">";
+		return s.str();
+	}
 
 	enum class TweenStyle { fwd, rev, pulse, flicker };
 
@@ -229,7 +254,18 @@ namespace ParticleParamTypes {
 			start.deSerialize(is);
 			end.deSerialize(is);
 		};
+
 	};
+
+	template <typename T>
+	std::string dump(const TweenedParameter<T>& t) {
+		std::stringstream s;
+		s << "tween<" << dump(t.start) << " → " << dump(t.end) << ">";
+		return s.str();
+	}
+
+	enum class AttractorKind { none, point, line, plane };
+	DECL_PARAM_SRZRS(AttractorKind);
 
 	// these are consistently-named convenience aliases to make code more readable without `using ParticleParamTypes` declarations
 	using v3fRange = RangedParameter<v3fParameter>;
@@ -241,6 +277,9 @@ namespace ParticleParamTypes {
 	using f32Tween      = TweenedParameter<f32Parameter>;
 	using v3fRangeTween = TweenedParameter<v3fRange>;
 	using f32RangeTween = TweenedParameter<f32Range>;
+
+	#undef DECL_PARAM_SRZRS
+	#undef DECL_PARAM_OVERLOADS
 }
 
 struct ParticleTexture {
@@ -305,15 +344,17 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 	u16 amount = 1;
 	f32 time = 1;
 
-	// texture is used for the fallback texture on outdated clients
-
 	std::vector<ServerParticleTexture> texpool;
 
 	ParticleParamTypes::v3fRangeTween
 		pos, vel, acc, drag, radius;
 
+	ParticleParamTypes::AttractorKind
+		attractor_kind;
 	ParticleParamTypes::v3fTween
-		attractor;
+		attractor, attractor_angle;
+	u16 attractor_attachment = 0, /* object IDs */
+	    attractor_angle_attachment = 0;
 
 	ParticleParamTypes::f32RangeTween
 		exptime = (f32)1, size = (f32)1, attract = (f32)0;

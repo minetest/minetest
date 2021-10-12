@@ -1044,8 +1044,17 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.size.end.deSerialize(is);
 
 		p.drag.deSerialize(is);
-		p.attract.deSerialize(is);
-		p.attractor.deSerialize(is);
+		ParticleParamTypes::deSerializeParameterValue(is, p.attractor_kind);
+		using ParticleParamTypes::AttractorKind;
+		if (p.attractor_kind != AttractorKind::none) {
+			p.attract.deSerialize(is);
+			p.attractor.deSerialize(is);
+			p.attractor_attachment = readU16(is);
+			if (p.attractor_kind != AttractorKind::point) {
+				p.attractor_angle.deSerialize(is);
+				p.attractor_angle_attachment = readU16(is);
+			}
+		}
 		p.radius.deSerialize(is);
 
 		u16 texpoolsz = readU16(is);

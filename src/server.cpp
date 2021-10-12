@@ -1645,14 +1645,14 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
 
 	/* serialize v5.5.0 particle fields */ {
-		std::ostringstream os(std::ios_base::binary);
-
 		// initial bias for older properties
 		pkt << p.pos.start.bias
 			<< p.vel.start.bias
 			<< p.acc.start.bias
 			<< p.exptime.start.bias
 			<< p.size.start.bias;
+
+		std::ostringstream os(std::ios_base::binary);
 
 		// final tween frames of older properties
 		p.pos.end.serialize(os);
@@ -1663,20 +1663,25 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 		// new properties
 		p.drag.serialize(os);
-		p.attract.serialize(os);
-		p.attractor.serialize(os);
+		ParticleParamTypes::serializeParameterValue(os, p.attractor_kind);
+		if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
+			p.attract.serialize(os);
+			p.attractor.serialize(os);
+			writeU16(os, p.attractor_attachment); /* object ID */
+			if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
+				p.attractor_angle.serialize(os);
+				writeU16(os, p.attractor_angle_attachment);
+			}
+		}
 		p.radius.serialize(os);
 
-		pkt.putRawString(os.str());
-
-		pkt << (u16)p.texpool.size();
+		ParticleParamTypes::serializeParameterValue(os, (u16)p.texpool.size());
 		for(const auto& tex : p.texpool) {
-			std::ostringstream os(std::ios_base::binary);
 			tex.serialize(os, protocol_version);
-			pkt.putRawString(os.str());
 		}
-	}
 
+		pkt.putRawString(os.str());
+	}
 
 	Send(&pkt);
 }
