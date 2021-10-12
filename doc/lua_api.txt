@@ -8830,9 +8830,10 @@ unless otherwise specified.
     initially be oriented. functions as an offset if `origin_attached` is also
     set.
   * vec3 `angle`: sets the direction in which the attractor shape faces. for
-    lines, this can simply be any second point on the (infinite) line. for
-    planes, `angle` is the surface normal of an infinite plane on whose surface
-    `origin` is a point. functions as an offset is `angle_attached` is also set.
+    lines, this sets the angle of the line; e.g. a vector of (0,1,0) will
+	create a vertical line that passes through `origin`. for planes, `angle`
+	is the surface normal of an infinite plane on whose surface `origin` is
+	a point. functions as an offset if `angle_attached` is also set.
   * vec3 `origin_attached`: allows the origin to be specified as an offset from
     the position of an entity rather than a coordinate in world space.
   * vec3 `angle_attached`: allows the angle to be specified as an offset from
@@ -8840,6 +8841,10 @@ unless otherwise specified.
   * float range `strength`: the speed with which particles will move towards
     `attractor`. If negative, the particles will instead move away from that
     point.
+  * bool `die_on_contact`: if true, the particles' lifetimes are adjusted so
+    that they will die as they cross the attractor threshold. this behavior
+    is the default but is undesirable for some kinds of animations; set it to
+    false to allow particles to live out their natural lives.
 * vec3 range `radius`: if set, particles will be arranged in a sphere around
   `pos`. A constant can be used to create a spherical shell of particles, a
   vector to create an ovoid shell, and a range to create a volume; e.g.

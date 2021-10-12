@@ -1050,6 +1050,9 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			p.attract.deSerialize(is);
 			p.attractor.deSerialize(is);
 			p.attractor_attachment = readU16(is);
+			p.attractor_kill = (bool)(readU8(is) & 1);
+			/* we only check the first bit, in order to allow this value
+			 * to be turned into a bit flag field later if needed */
 			if (p.attractor_kind != AttractorKind::point) {
 				p.attractor_angle.deSerialize(is);
 				p.attractor_angle_attachment = readU16(is);

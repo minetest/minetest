@@ -237,6 +237,13 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			lua_getfield(L, -1, "kind");
 			LuaParticleParams::readLuaValue(L, p.attractor_kind);
 			lua_pop(L,1);
+			lua_getfield(L, -1, "die_on_contact");
+			if (!lua_isnil(L,-1)) {
+				bool v = lua_toboolean(L, -1);
+				p.attractor_kill = v;
+			}
+			lua_pop(L,1);
+
 			if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
 				LuaParticleParams::readTweenTable(L, "strength", p.attract);
 				LuaParticleParams::readTweenTable(L, "origin", p.attractor);

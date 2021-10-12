@@ -355,6 +355,8 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 		attractor, attractor_angle;
 	u16 attractor_attachment = 0, /* object IDs */
 	    attractor_angle_attachment = 0;
+	bool attractor_kill = true;
+	/* do particles disappear when they cross the attractor threshold? */
 
 	ParticleParamTypes::f32RangeTween
 		exptime = (f32)1, size = (f32)1, attract = (f32)0;

@@ -587,6 +587,8 @@ enum ToClientCommand
 			tween<range<f32>> attract_strength
 			tween<v3f1000>    attractor_origin
 			u16               attractor_origin_attachment_object_id
+			u8                spawner_flags
+			                    bit 1: attractor_kill (particles dies on contact)
 			if attraction_mode > point {
 				tween<v3f1000> attractor_angle
 				u16            attractor_origin_attachment_object_id

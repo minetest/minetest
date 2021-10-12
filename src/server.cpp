@@ -1668,6 +1668,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 			p.attract.serialize(os);
 			p.attractor.serialize(os);
 			writeU16(os, p.attractor_attachment); /* object ID */
+			writeU8(os, p.attractor_kill);
 			if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
 				p.attractor_angle.serialize(os);
 				writeU16(os, p.attractor_angle_attachment);

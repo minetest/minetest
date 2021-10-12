@@ -438,11 +438,12 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		v3f avel = dir * speedTowards;
 		if (attract > 0 and speedTowards > 0) {
 			avel *= -1;
-			// make sure the particle dies after crossing the center
-			// TODO maybe add a flag that disables this
-			f32 timeToCenter = dist / speedTowards;
-			if (timeToCenter < pp.expirationtime)
-				pp.expirationtime = timeToCenter;
+			if (p.attractor_kill) {
+			// make sure the particle dies after crossing the attractor threshold
+				f32 timeToCenter = dist / speedTowards;
+				if (timeToCenter < pp.expirationtime)
+					pp.expirationtime = timeToCenter;
+			}
 		}
 		pp.vel += avel;
 	}
