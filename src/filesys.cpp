@@ -25,11 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <cerrno>
 #include <fstream>
-
-#ifdef _WIN32
-#include <direct.h>
-#endif
-
 #include "log.h"
 #include "config.h"
 #include "porting.h"
@@ -50,6 +45,7 @@ namespace fs
 #include <windows.h>
 #include <shlwapi.h>
 #include <io.h>
+#include <direct.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
