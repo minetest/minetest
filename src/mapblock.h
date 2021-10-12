@@ -364,20 +364,6 @@ public:
 	}
 
 	////
-	//// Miscellaneous stuff
-	////
-
-	/*
-		Tries to measure ground level.
-		Return value:
-			-1 = only air
-			-2 = only ground
-			-3 = random fail
-			0...MAP_BLOCKSIZE-1 = ground level
-	*/
-	s16 getGroundLevel(v2s16 p2d);
-
-	////
 	//// Timestamp (see m_timestamp)
 	////
 
