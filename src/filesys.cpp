@@ -25,7 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <cerrno>
 #include <fstream>
+
+#ifdef _WIN32
 #include <direct.h>
+#endif
+
 #include "log.h"
 #include "config.h"
 #include "porting.h"
