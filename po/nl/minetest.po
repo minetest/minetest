@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
-"PO-Revision-Date: 2021-02-01 05:52+0000\n"
-"Last-Translator: eol <joshua.de.clercq@gmail.com>\n"
+"PO-Revision-Date: 2021-10-14 07:35+0000\n"
+"Last-Translator: Vancha March <tjipkevdh@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -12,49 +12,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "Maximale omvang van de wachtrij uitgezonden berichten"
+msgstr "Wachtrij voor uitgezonden berichten legen"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Chat-commando's"
+msgstr "Instructie voor legen."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Terug naar menu"
+msgstr "Terug naar hoofd menu"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Lokale commando"
+msgstr "Ongeldige instructie "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Opgegeven instructie: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Singleplayer"
+msgstr "Online spelers weergeven"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Singleplayer"
+msgstr "Online spelers: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "De wachtrij voor uitgezonden berichten is nu leeg."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Deze instructie is uitgeschakeld door de server."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -65,36 +59,35 @@ msgid "You died"
 msgstr "Je bent gestorven"
 
 #: builtin/client/death_formspec.lua
-#, fuzzy
 msgid "You died."
-msgstr "Je bent gestorven"
+msgstr "Je bent gestorven."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Lokale commando"
+msgstr "Beschikbare instructies:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Lokale commando"
+msgstr "Beschikbare instructies: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Instructie niet beschikbaar: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Krijg hulp voor instructies"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Gebruik '.help <cmd>' om meer informatie te verkrijgen, of '.help all' om "
+"alles weer te geven."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -792,7 +785,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Over"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -936,9 +929,8 @@ msgid "Start Game"
 msgstr "Start spel"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Adres: "
+msgstr "Adres"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -954,9 +946,8 @@ msgstr "Creatieve modus"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Verwondingen/schade"
+msgstr "Schade / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
@@ -969,7 +960,7 @@ msgstr "Favorieten"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Incompatibele Servers"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -980,18 +971,16 @@ msgid "Ping"
 msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Server aanmelden bij de server-lijst"
+msgstr "Publieke Servers"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Verversen"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "Omschrijving van de server"
+msgstr "Omschrijving van de Server"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1034,13 +1023,12 @@ msgid "Connected Glass"
 msgstr "Verbonden Glas"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dynamic shadows"
-msgstr "Fontschaduw"
+msgstr "Dynamische schaduwen"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Dynamische schaduwen: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1048,15 +1036,15 @@ msgstr "Mooie bladeren"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Hoog"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Laag"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Gemiddeld"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1148,11 +1136,11 @@ msgstr "Tri-Lineare Filtering"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "Zeer Hoog"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Zeer Laag"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1469,9 +1457,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "Mini-kaart momenteel uitgeschakeld door spel of mod"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Singleplayer"
+msgstr "Multiplayer"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1909,9 +1896,8 @@ msgid "Proceed"
 msgstr "Doorgaan"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Speciaal\" = naar beneden klimmen"
+msgstr "\"Aux1\" = naar beneden klimmen"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -1923,7 +1909,7 @@ msgstr "Automatisch springen"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -2745,9 +2731,8 @@ msgid "Colored fog"
 msgstr "Gekleurde mist"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Gekleurde mist"
+msgstr "Gekleurde schaduwen"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3166,9 +3151,8 @@ msgid "Enable console window"
 msgstr "Schakel het console venster in"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "Schakel creatieve modus in voor nieuwe kaarten."
+msgstr "Schakel creatieve modus in voor alle spelers"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
