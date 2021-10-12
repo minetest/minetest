@@ -4,62 +4,82 @@ LOCAL_PATH := $(call my-dir)/..
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := Curl
-LOCAL_SRC_FILES := deps/Android/Curl/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libcurl.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Curl/libcurl.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libmbedcrypto
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Curl/libmbedcrypto.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libmbedtls
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Curl/libmbedtls.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libmbedx509
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Curl/libmbedx509.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := Freetype
-LOCAL_SRC_FILES := deps/Android/Freetype/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libfreetype.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Freetype/libfreetype.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := Iconv
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Iconv/libiconv.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libcharset
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Iconv/libcharset.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := Irrlicht
-LOCAL_SRC_FILES := deps/Android/Irrlicht/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libIrrlichtMt.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Irrlicht/libIrrlichtMt.a
 include $(PREBUILT_STATIC_LIBRARY)
-
-#include $(CLEAR_VARS)
-#LOCAL_MODULE := LevelDB
-#LOCAL_SRC_FILES := deps/Android/LevelDB/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libleveldb.a
-#include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := LuaJIT
-LOCAL_SRC_FILES := deps/Android/LuaJIT/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libluajit.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := mbedTLS
-LOCAL_SRC_FILES := deps/Android/mbedTLS/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libmbedtls.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := mbedx509
-LOCAL_SRC_FILES := deps/Android/mbedTLS/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libmbedx509.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := mbedcrypto
-LOCAL_SRC_FILES := deps/Android/mbedTLS/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libmbedcrypto.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/LuaJIT/libluajit.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := OpenAL
-LOCAL_SRC_FILES := deps/Android/OpenAL-Soft/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libopenal.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/OpenAL-Soft/libopenal.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := GetText
-LOCAL_SRC_FILES := deps/Android/GetText/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libintl.a
+LOCAL_MODULE := Gettext
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Gettext/libintl.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := SQLite3
+LOCAL_SRC_FILES := deps/$(APP_ABI)/SQLite/libsqlite3.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := Vorbis
-LOCAL_SRC_FILES := deps/Android/Vorbis/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libvorbis.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Vorbis/libvorbis.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libvorbisfile
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Vorbis/libvorbisfile.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libogg
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Vorbis/libogg.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := Zstd
-LOCAL_SRC_FILES := deps/Android/Zstd/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libzstd.a
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Zstd/libzstd.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -96,18 +116,16 @@ LOCAL_C_INCLUDES := \
 	../../src/script                             \
 	../../lib/gmp                                \
 	../../lib/jsoncpp                            \
-	deps/Android/Curl/include                       \
-	deps/Android/Freetype/include                   \
-	deps/Android/Irrlicht/include                   \
-	deps/Android/LevelDB/include                    \
-	deps/Android/GetText/include                    \
-	deps/Android/libiconv/include                   \
-	deps/Android/libiconv/libcharset/include        \
-	deps/Android/LuaJIT/src                         \
-	deps/Android/OpenAL-Soft/include                \
-	deps/Android/sqlite                             \
-	deps/Android/Vorbis/include                     \
-	deps/Android/Zstd/include
+	deps/$(APP_ABI)/Curl/include                       \
+	deps/$(APP_ABI)/Freetype/include/freetype2         \
+	deps/$(APP_ABI)/Irrlicht/include                   \
+	deps/$(APP_ABI)/Gettext/include                    \
+	deps/$(APP_ABI)/Iconv/include                      \
+	deps/$(APP_ABI)/LuaJIT/include                     \
+	deps/$(APP_ABI)/OpenAL-Soft/include                \
+	deps/$(APP_ABI)/SQLite/include                     \
+	deps/$(APP_ABI)/Vorbis/include                     \
+	deps/$(APP_ABI)/Zstd/include
 
 LOCAL_SRC_FILES := \
 	$(wildcard ../../src/client/*.cpp)           \
@@ -190,24 +208,24 @@ LOCAL_SRC_FILES := \
 	../../src/voxel.cpp                          \
 	../../src/voxelalgorithms.cpp
 
-# LevelDB backend is disabled
-#	../../src/database/database-leveldb.cpp
-
 # GMP
 LOCAL_SRC_FILES += ../../lib/gmp/mini-gmp.c
 
 # JSONCPP
 LOCAL_SRC_FILES += ../../lib/jsoncpp/jsoncpp.cpp
 
-# iconv
-LOCAL_SRC_FILES += \
-	deps/Android/libiconv/lib/iconv.c               \
-	deps/Android/libiconv/libcharset/lib/localcharset.c
-
-# SQLite3
-LOCAL_SRC_FILES += deps/Android/sqlite/sqlite3.c
-
-LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT GetText Zstd android_native_app_glue $(PROFILER_LIBS) #LevelDB
+LOCAL_STATIC_LIBRARIES += \
+	Curl libmbedcrypto libmbedtls libmbedx509 \
+	Freetype \
+	Iconv libcharset \
+	Irrlicht \
+	LuaJIT \
+	OpenAL \
+	Gettext \
+	SQLite3 \
+	Vorbis libvorbisfile libogg \
+	Zstd
+LOCAL_STATIC_LIBRARIES += android_native_app_glue $(PROFILER_LIBS)
 
 LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES
 
