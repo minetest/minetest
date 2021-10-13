@@ -71,6 +71,56 @@ struct MeshMakeData
 	void setSmoothLighting(bool smooth_lighting);
 };
 
+// represents a triangle as indexes into the vertex buffer in SMeshBuffer
+class MeshTriangle
+{
+public:
+	scene::SMeshBuffer *buffer;
+	u16 p1, p2, p3;
+	v3f centroid;
+
+	void fillCentroid()
+	{
+		const v3f &v1 = buffer->getPosition(p1);
+		const v3f &v2 = buffer->getPosition(p2);
+		const v3f &v3 = buffer->getPosition(p3);
+
+		centroid = (v1 + v2 + v3) / 3;
+	}
+};
+
+class MapBlockBspTree
+{
+public:
+	MapBlockBspTree() {}
+
+	void buildTree(const std::vector<MeshTriangle> *triangles);
+
+	void traverse(const v3f &viewpoint, std::vector<s32> &output) const
+	{
+		traverse(root, viewpoint, output);
+	}
+
+private:
+	// Tree node definition;
+	struct TreeNode
+	{
+		v3f normal;
+		v3f origin;
+		std::vector<s32> triangle_refs;
+		s32 front_ref;
+		s32 back_ref;
+	};
+
+
+	s32 buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list);
+	void traverse(s32 node, const v3f &viewpoint, std::vector<s32> &output) const;
+
+	const std::vector<MeshTriangle> *triangles = nullptr; // this reference is managed externally
+	std::vector<TreeNode> nodes; // list of nodes
+	s32 root = -1; // index of the root node
+};
+
 class PartialMeshBuffer
 {
 public:
@@ -185,6 +235,10 @@ private:
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
 
+	// list of all semitransparent triangles in the mapblock
+	std::vector<MeshTriangle> m_transparent_triangles;
+	// Binary Space Partitioning tree for the block
+	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
 	std::vector<PartialMeshBuffer> m_transparent_buffers;
 };

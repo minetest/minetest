@@ -1005,19 +1005,133 @@ static void applyTileColor(PreMeshBuffer &pmb)
 }
 
 /*
-	MeshBufferReference
+	MapBlockBspTree
+*/
+
+void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
+{
+	this->triangles = triangles;
+
+	nodes.clear();
+
+	std::vector<s32> indexes;
+	for (u16 i = 0; i < triangles->size(); i++)
+		indexes.push_back(i);
+
+	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes);
+}
+
+s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list)
+{
+	// if the list is empty, don't bother
+	if (list.size() == 0) {
+		return -1;
+	}
+
+	// if there is only one triangle, or the delta is insanely small, this is a leaf node
+	if (list.size() == 1 || delta < 0.01) {
+		struct TreeNode node;
+		node.normal = normal;
+		node.origin = origin;
+		node.triangle_refs = list;
+		node.front_ref = -1;
+		node.back_ref = -1;
+		nodes.push_back(node);
+
+		return nodes.size() - 1;
+	}
+
+	std::vector<s32> front_list;
+	std::vector<s32> back_list;
+	std::vector<s32> node_list;
+
+	// split the list
+	for (s32 i : list) {
+		const MeshTriangle &triangle = (*triangles)[i];
+		float factor = normal.dotProduct(triangle.centroid - origin);
+		if (factor == 0)
+			node_list.push_back(i);
+		else if (factor > 0)
+			front_list.push_back(i);
+		else
+			back_list.push_back(i);
+	}
+
+	// define the new split-plane
+	v3f next_normal(normal.Z, normal.X, normal.Y);
+	float next_delta = delta;
+	if (next_normal.X > 0) {
+		next_delta /= 2;
+	}
+
+	s32 front_index = -1;
+	s32 back_index = -1;
+
+	if (front_list.size() > 0) {
+		front_index = buildTree(next_normal, origin + delta * normal, next_delta, front_list);
+
+		// if there are no other triangles, don't create a new node
+		if (back_list.size() == 0 && node_list.size() == 0)
+			return front_index;
+	}
+
+	if (back_list.size() >= 0) {
+		back_index = buildTree(next_normal, origin - delta * normal, next_delta, back_list);
+
+		// if there are no other triangles, don't create a new node
+		if (front_list.size() == 0 && node_list.size() == 0)
+			return back_index;
+	}
+
+	struct TreeNode node;
+	node.normal = normal;
+	node.origin = origin;
+	node.triangle_refs = node_list;
+	node.front_ref = front_index;
+	node.back_ref = back_index;
+	nodes.push_back(node);
+
+	return nodes.size() - 1;
+}
+
+void MapBlockBspTree::traverse(s32 node, const v3f &viewpoint, std::vector<s32> &output) const
+{
+	if (node < 0) return; // recursion break;
+
+	const TreeNode &n = nodes[node];
+	float factor = n.normal.dotProduct(viewpoint - n.origin);
+
+	if (factor > 0)
+		traverse(n.back_ref, viewpoint, output);
+	else
+		traverse(n.front_ref, viewpoint, output);
+
+	if (factor != 0)
+		for (s32 i : n.triangle_refs)
+			output.push_back(i);
+
+	if (factor > 0)
+		traverse(n.front_ref, viewpoint, output);
+	else
+		traverse(n.back_ref, viewpoint, output);
+}
+
+
+
+/*
+	PartialMeshBuffer
 */
 
 void PartialMeshBuffer::beforeDraw()
 {
 	// Patch the indexes in the mesh buffer before draw
 
+	m_buffer->Indices.clear();
 	if (m_vertex_indexes.size() > 0) {
-		m_buffer->Indices.clear();
 		for (auto index : m_vertex_indexes)
 			m_buffer->Indices.push_back(index);
-		m_buffer->setDirty(scene::EBT_INDEX);
 	}
+	m_buffer->setDirty();
 }
 
 /*
@@ -1190,8 +1304,31 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material = material;
-			buf->append(&p.vertices[0], p.vertices.size(),
-				&p.indices[0], p.indices.size());
+			switch (p.layer.material_type) {
+			case TILE_MATERIAL_ALPHA:
+			case TILE_MATERIAL_PLAIN_ALPHA:
+			case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+				{
+					buf->append(&p.vertices[0], p.vertices.size(),
+						&p.indices[0], 0);
+
+					MeshTriangle t;
+					t.buffer = buf;
+					for (u32 i = 0; i < p.indices.size(); i += 3) {
+						t.p1 = p.indices[i];
+						t.p2 = p.indices[i + 1];
+						t.p3 = p.indices[i + 2];
+						t.fillCentroid();
+						m_transparent_triangles.push_back(t);
+					}
+				}
+				break;
+			default:
+				buf->append(&p.vertices[0], p.vertices.size(),
+					&p.indices[0], p.indices.size());
+				break;
+			}
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
@@ -1204,6 +1341,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	}
 
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+	m_bsp_tree.buildTree(&m_transparent_triangles);
 
 	// Check if animation is required for this mesh
 	m_has_animation =
@@ -1315,222 +1453,25 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	return true;
 }
 
-// represents a triangle as indexes into the vertex buffer
-class MeshTriangle
-{
-public:
-	scene::SMeshBuffer *buffer;
-	u16 p1, p2, p3;
-	v3f centroid;
-
-	void fillCentroid()
-	{
-		const v3f &v1 = buffer->getPosition(p1);
-		const v3f &v2 = buffer->getPosition(p2);
-		const v3f &v3 = buffer->getPosition(p3);
-
-		centroid = (v1 + v2 + v3) / 3;
-	}
-};
-
-class MapBlockBspTree
-{
-public:
-	MapBlockBspTree() {}
-
-	MapBlockBspTree(const std::vector<MeshTriangle> *triangles) : triangles(triangles)
-	{
-		nodes.reserve(triangles->size()); // worst case every node holds only one triangle
-
-		std::vector<s32> indexes;
-		for (u16 i = 0; i < triangles->size(); i++)
-			indexes.push_back(i);
-
-		root = build_tree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes);
-	}
-
-	void traverse(const v3f &viewpoint, std::vector<s32> &output)
-	{
-		traverse(root, viewpoint, output);
-	}
-
-private:
-	// Tree node definition;
-	struct TreeNode
-	{
-		v3f normal;
-		v3f origin;
-		std::vector<s32> triangle_refs;
-		s32 front_ref;
-		s32 back_ref;
-	};
-
-	s32 build_tree(v3f normal, v3f origin, float delta, const std::vector<s32> &list)
-	{
-		// if the list is empty, don't bother
-		if (list.size() == 0) {
-			return -1;
-		}
-
-		// if there is only one triangle, or the delta is insanely small, this is a leaf node
-		if (list.size() == 1 || delta < 0.01) {
-			struct TreeNode node;
-			node.normal = normal;
-			node.origin = origin;
-			node.triangle_refs = list;
-			node.front_ref = -1;
-			node.back_ref = -1;
-			nodes.push_back(node);
-
-			return nodes.size() - 1;
-		}
-
-		std::vector<s32> front_list;
-		std::vector<s32> back_list;
-		std::vector<s32> node_list;
-
-		// split the list
-		for (s32 i : list) {
-			const MeshTriangle &triangle = (*triangles)[i];
-			float factor = normal.dotProduct(triangle.centroid - origin);
-			if (factor == 0)
-				node_list.push_back(i);
-			else if (factor > 0)
-				front_list.push_back(i);
-			else
-				back_list.push_back(i);
-		}
-
-		// define the new split-plane
-		v3f next_normal(normal.Z, normal.X, normal.Y);
-		float next_delta = delta;
-		if (next_normal.X > 0) {
-			next_delta /= 2;
-		}
-
-		s32 front_index = -1;
-		s32 back_index = -1;
-
-		if (front_list.size() > 0) {
-			front_index = build_tree(next_normal, origin + delta * normal, next_delta, front_list);
-
-			// if there are no other triangles, don't create a new node
-			if (back_list.size() == 0 && node_list.size() == 0)
-				return front_index;
-		}
-
-		if (back_list.size() >= 0) {
-			back_index = build_tree(next_normal, origin - delta * normal, next_delta, back_list);
-
-			// if there are no other triangles, don't create a new node
-			if (front_list.size() == 0 && node_list.size() == 0)
-				return back_index;
-		}
-
-		struct TreeNode node;
-		node.normal = normal;
-		node.origin = origin;
-		node.triangle_refs = node_list;
-		node.front_ref = front_index;
-		node.back_ref = back_index;
-		nodes.push_back(node);
-
-		return nodes.size() - 1;
-	}
-
-	void traverse(s32 node, const v3f &viewpoint, std::vector<s32> &output)
-	{
-		if (node < 0) return; // recursion break;
-
-		const TreeNode &n = nodes[node];
-		float factor = n.normal.dotProduct(viewpoint - n.origin);
-
-		if (factor > 0)
-			traverse(n.back_ref, viewpoint, output);
-		else
-			traverse(n.front_ref, viewpoint, output);
-
-		if (factor != 0)
-			for (s32 i : n.triangle_refs)
-				output.push_back(i);
-
-		if (factor > 0)
-			traverse(n.front_ref, viewpoint, output);
-		else
-			traverse(n.back_ref, viewpoint, output);
-	}
-
-	const std::vector<MeshTriangle> *triangles = nullptr; // this reference is managed externally
-	std::vector<TreeNode> nodes; // list of nodes
-	s32 root = -1; // index of the root node
-};
-
 void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos)
 {
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	// nothing to do if the entire block is opaque
+	if (m_transparent_triangles.size() == 0)
+		return;
 
 	v3f block_posf = intToFloat(block_pos * MAP_BLOCKSIZE, BS);
 	v3f rel_camera_pos = camera_pos - block_posf;
 
-	std::vector<MeshTriangle> tris;
-
-	if (this->m_transparent_buffers.size() > 0) {
-		for (const PartialMeshBuffer &partial_buffer : this->m_transparent_buffers) {
-			scene::SMeshBuffer *buffer = partial_buffer.m_buffer;
-			const std::vector<u16> &indices = partial_buffer.getVertexIndexes();
-			MeshTriangle t;
-			for (u32 i = 0; i < indices.size(); i += 3)
-			{
-				t.p1 = indices[i];
-				t.p2 = indices[i + 1];
-				t.p3 = indices[i + 2];
-				t.buffer = buffer;
-				t.fillCentroid();
-				tris.push_back(t);
-			}
-		}
-	}
-	else {
-		for (u8 layer = 0; layer < MAX_TILE_LAYERS; ++layer) {
-			scene::IMesh *mesh = getMesh(layer);
-			u32 buffer_count = mesh->getMeshBufferCount();
-			for (u32 buffer_index = 0; buffer_index < buffer_count; ++buffer_index)
-			{
-				scene::SMeshBuffer *buffer = static_cast<scene::SMeshBuffer *>(mesh->getMeshBuffer(buffer_index));
-				video::IMaterialRenderer *renderer = driver == nullptr ? nullptr : driver->getMaterialRenderer(buffer->getMaterial().MaterialType);
-
-				if (renderer == nullptr || !renderer->isTransparent())
-					continue;
-
-				u32 index_count = buffer->getIndexCount();
-
-				// copy indices to the triangles
-				u16 *indices = buffer->getIndices();
-				MeshTriangle t;
-				for (u32 i = 0; i < index_count; i += 3) {
-					t.p1 = indices[i];
-					t.p2 = indices[i + 1];
-					t.p3 = indices[i + 2];
-					t.buffer = buffer;
-					t.fillCentroid();
-					tris.push_back(t);
-				}
-			}
-		}
-	}
-
-	// sort the triangles by distance to the camera
-	struct MapBlockBspTree tree(&tris);
 	std::vector<s32> triangle_refs;
-	tree.traverse(rel_camera_pos, triangle_refs);
+	m_bsp_tree.traverse(rel_camera_pos, triangle_refs);
 
 	// arrange index sequences into partial buffers
-	this->m_transparent_buffers.clear();
+	m_transparent_buffers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
 	std::vector<u16> current_strain;
 	for (auto i : triangle_refs) {
-		const auto &t = tris[i];
+		const auto &t = m_transparent_triangles[i];
 		if (current_buffer != t.buffer) {
 			if (current_buffer != nullptr) {
 				this->m_transparent_buffers.emplace_back(current_buffer, current_strain);

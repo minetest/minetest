@@ -414,9 +414,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (is_transparent_pass) {
 			// In transparent pass, the mesh will give us
 			// the partial buffers in the correct order
-			for (auto &buffer : block->mesh->getTransparentBuffers()) {
+			for (auto &buffer : block->mesh->getTransparentBuffers())
 				draw_order.emplace_back(block_pos, &buffer);
-			}
 		}
 		else {
 			// otherwise, group buffers across meshes
@@ -434,12 +433,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 					video::SMaterial& material = buf->getMaterial();
 					video::IMaterialRenderer* rnd =
-						driver->getMaterialRenderer(material.MaterialType);
+							driver->getMaterialRenderer(material.MaterialType);
 					bool transparent = (rnd && rnd->isTransparent());
 					if (!transparent) {
 						if (buf->getVertexCount() == 0)
 							errorstream << "Block [" << analyze_block(block)
-								<< "] contains an empty meshbuf" << std::endl;
+									<< "] contains an empty meshbuf" << std::endl;
 
 						grouped_buffers.add(buf, block_pos, layer);
 					}
@@ -466,6 +465,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	// Render all mesh buffers in order
 	drawcall_count += draw_order.size();
+
 	for (auto &descriptor : draw_order) {
 		scene::IMeshBuffer *buf;
 		
@@ -478,11 +478,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 
 		// Check and abort if the machine is swapping a lot
-		if (draw.getTimerTime() > 2000) {
-			infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
-					"returning." << std::endl;
-			return;
-		}
+		// if (draw.getTimerTime() > 2000) {
+		// 	infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
+		// 			"returning." << std::endl;
+		// 	return;
+		// }
 
 		if (!descriptor.m_reuse_material) {
 			auto &material = buf->getMaterial();
@@ -518,7 +518,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		driver->setTransform(video::ETS_WORLD, m);
 		driver->drawMeshBuffer(buf);
-		vertex_count += buf->getVertexCount();
+		vertex_count += buf->getIndexCount();
 	}
 
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
