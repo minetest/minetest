@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 18:27+0200\n"
 "PO-Revision-Date: 2021-10-14 07:35+0000\n"
-"Last-Translator: Vancha March <tjipkevdh@gmail.com>\n"
+"Last-Translator: Molly <arthur@garsi.de>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -1917,7 +1917,7 @@ msgstr "Achteruit"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Blok grenzen"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2967,6 +2967,10 @@ msgid ""
 "This simulates the soft shadows effect by applying a PCF or poisson disk\n"
 "but also uses more resources."
 msgstr ""
+"Defineer schaduw filtering kwaliteit\n"
+"Dit simuleert de zachte schaduw effect door een PCF of poisson schijf te "
+"toepassen\n"
+"maar gebruikt meer middelen."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
