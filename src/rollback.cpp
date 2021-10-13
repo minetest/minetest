@@ -941,12 +941,6 @@ void RollbackManager::addAction(const RollbackAction & action)
 	}
 }
 
-std::list<RollbackAction> RollbackManager::getEntriesSince(time_t first_time)
-{
-	flush();
-	return getActionsSince(first_time);
-}
-
 std::list<RollbackAction> RollbackManager::getNodeActors(v3s16 pos, int range,
 		time_t seconds, int limit)
 {

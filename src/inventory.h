@@ -211,7 +211,6 @@ public:
 	u32 getWidth() const;
 	// Count used slots
 	u32 getUsedSlots() const;
-	u32 getFreeSlots() const;
 
 	// Get reference to item
 	const ItemStack& getItem(u32 i) const;

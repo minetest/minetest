@@ -112,7 +112,11 @@ public:
 	u16 punch(v3f dir, const ToolCapabilities *toolcap, ServerActiveObject *puncher,
 			float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
-	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	void setHP(s32 hp, const PlayerHPChangeReason &reason) override
+	{
+		return setHP(hp, reason, true);
+	}
+	void setHP(s32 hp, const PlayerHPChangeReason &reason, bool send);
 	void setHPRaw(u16 hp) { m_hp = hp; }
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);

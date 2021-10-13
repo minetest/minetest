@@ -48,9 +48,6 @@ std::mutex log_conthread_mutex;
 #undef DEBUG_CONNECTION_KBPS
 #endif
 
-/* maximum number of retries for reliable packets */
-#define MAX_RELIABLE_RETRY 5
-
 #define WINDOW_SIZE 5
 
 static session_t readPeerId(u8 *packetdata)
@@ -212,7 +209,6 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		}
 
 		float resend_timeout = udpPeer->getResendTimeout();
-		bool retry_count_exceeded = false;
 		for (Channel &channel : udpPeer->channels) {
 
 			// Remove timed out incomplete unreliable split packets
@@ -231,24 +227,16 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			m_iteration_packets_avaialble -= timed_outs.size();
 
 			for (const auto &k : timed_outs) {
-				session_t peer_id = readPeerId(*k.data);
 				u8 channelnum = readChannel(*k.data);
 				u16 seqnum = readU16(&(k.data[BASE_HEADER_SIZE + 1]));
 
 				channel.UpdateBytesLost(k.data.getSize());
 
-				if (k.resend_count > MAX_RELIABLE_RETRY) {
-					retry_count_exceeded = true;
-					timeouted_peers.push_back(peer->id);
-					/* no need to check additional packets if a single one did timeout*/
-					break;
-				}
-
 				LOG(derr_con << m_connection->getDesc()
 					<< "RE-SENDING timed-out RELIABLE to "
 					<< k.address.serializeString()
 					<< "(t/o=" << resend_timeout << "): "
-					<< "from_peer_id=" << peer_id
+					<< "count=" << k.resend_count
 					<< ", channel=" << ((int) channelnum & 0xff)
 					<< ", seqnum=" << seqnum
 					<< std::endl);
@@ -259,16 +247,8 @@ void ConnectionSendThread::runTimeouts(float dtime)
 				// lost or really takes more time to transmit
 			}
 
-			if (retry_count_exceeded) {
-				break; /* no need to check other channels if we already did timeout */
-			}
-
 			channel.UpdateTimers(dtime);
 		}
-
-		/* skip to next peer if we did timeout */
-		if (retry_count_exceeded)
-			continue;
 
 		/* send ping if necessary */
 		if (udpPeer->Ping(dtime, data)) {
@@ -1153,8 +1133,8 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 		try {
 			BufferedPacket p = channel->outgoing_reliables_sent.popSeqnum(seqnum);
 
-			// only calculate rtt from straight sent packets
-			if (p.resend_count == 0) {
+			// the rtt calculation will be a bit off for re-sent packets but that's okay
+			{
 				// Get round trip time
 				u64 current_time = porting::getTimeMs();
 
@@ -1174,6 +1154,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 					dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
 				}
 			}
+
 			// put bytes for max bandwidth calculation
 			channel->UpdateBytesSent(p.data.getSize(), 1);
 			if (channel->outgoing_reliables_sent.size() == 0)
