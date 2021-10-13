@@ -465,7 +465,6 @@ public:
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);
-	void sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt, u16 min_proto_ver);
 
 	/* delete a client */
 	void DeleteClient(session_t peer_id);

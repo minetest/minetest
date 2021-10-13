@@ -503,6 +503,21 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_modpaths(lua_State *L)
+{
+	int index = 1;
+	lua_newtable(L);
+	ModApiMainMenu::l_get_modpath(L);
+	lua_rawseti(L, -2, index);
+	for (const std::string &component : getEnvModPaths()) {
+		index++;
+		lua_pushstring(L, component.c_str());
+		lua_rawseti(L, -2, index);
+	}
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
 {
 	std::string modpath = fs::RemoveRelativePathComponents(
@@ -548,7 +563,10 @@ int ModApiMainMenu::l_get_cache_path(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_temp_path(lua_State *L)
 {
-	lua_pushstring(L, fs::TempPath().c_str());
+	if (lua_isnoneornil(L, 1) || !lua_toboolean(L, 1))
+		lua_pushstring(L, fs::TempPath().c_str());
+	else
+		lua_pushstring(L, fs::CreateTempFile().c_str());
 	return 1;
 }
 
@@ -588,26 +606,24 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 	const char *destination	= luaL_checkstring(L, 2);
 
 	bool keep_source = true;
+	if (!lua_isnoneornil(L, 3))
+		keep_source = readParam<bool>(L, 3);
 
-	if ((!lua_isnone(L,3)) &&
-			(!lua_isnil(L,3))) {
-		keep_source = readParam<bool>(L,3);
-	}
+	std::string abs_destination = fs::RemoveRelativePathComponents(destination);
+	std::string abs_source = fs::RemoveRelativePathComponents(source);
 
-	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
-	std::string absolute_source = fs::RemoveRelativePathComponents(source);
-
-	if ((ModApiMainMenu::mayModifyPath(absolute_destination))) {
-		bool retval = fs::CopyDir(absolute_source,absolute_destination);
-
-		if (retval && (!keep_source)) {
-
-			retval &= fs::RecursiveDelete(absolute_source);
-		}
-		lua_pushboolean(L,retval);
+	if (!ModApiMainMenu::mayModifyPath(abs_destination) ||
+		(!keep_source && !ModApiMainMenu::mayModifyPath(abs_source))) {
+		lua_pushboolean(L, false);
 		return 1;
 	}
-	lua_pushboolean(L,false);
+
+	bool retval;
+	if (keep_source)
+		retval = fs::CopyDir(abs_source, abs_destination);
+	else
+		retval = fs::MoveDir(abs_source, abs_destination);
+	lua_pushboolean(L, retval);
 	return 1;
 }
 
@@ -629,9 +645,9 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
 
 	if (ModApiMainMenu::mayModifyPath(absolute_destination)) {
-		auto rendering_engine = getGuiEngine(L)->m_rendering_engine;
-		fs::CreateAllDirs(absolute_destination);
-		lua_pushboolean(L, fs::extractZipFile(rendering_engine->get_filesystem(), zipfile, destination));
+		auto fs = RenderingEngine::get_raw_device()->getFileSystem();
+		bool ok = fs::extractZipFile(fs, zipfile, destination);
+		lua_pushboolean(L, ok);
 		return 1;
 	}
 
@@ -755,8 +771,9 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_gettext(lua_State *L)
 {
-	std::string text = strgettext(std::string(luaL_checkstring(L, 1)));
-	lua_pushstring(L, text.c_str());
+	const char *srctext = luaL_checkstring(L, 1);
+	const char *text = *srctext ? gettext(srctext) : "";
+	lua_pushstring(L, text);
 
 	return 1;
 }
@@ -856,6 +873,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_mapgen_names);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
+	API_FCT(get_modpaths);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
@@ -889,6 +907,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_mapgen_names);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
+	API_FCT(get_modpaths);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
@@ -899,10 +918,10 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(delete_dir);
 	API_FCT(copy_dir);
 	API_FCT(is_dir);
-	//API_FCT(extract_zip); //TODO remove dependency to GuiEngine
+	API_FCT(extract_zip);
 	API_FCT(may_modify_path);
 	API_FCT(download_file);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
-	//API_FCT(gettext); (gettext lib isn't threadsafe)
+	API_FCT(gettext);
 }

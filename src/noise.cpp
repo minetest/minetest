@@ -312,51 +312,6 @@ float noise2d_perlin(float x, float y, s32 seed,
 }
 
 
-float noise2d_perlin_abs(float x, float y, s32 seed,
-	int octaves, float persistence, bool eased)
-{
-	float a = 0;
-	float f = 1.0;
-	float g = 1.0;
-	for (int i = 0; i < octaves; i++) {
-		a += g * std::fabs(noise2d_gradient(x * f, y * f, seed + i, eased));
-		f *= 2.0;
-		g *= persistence;
-	}
-	return a;
-}
-
-
-float noise3d_perlin(float x, float y, float z, s32 seed,
-	int octaves, float persistence, bool eased)
-{
-	float a = 0;
-	float f = 1.0;
-	float g = 1.0;
-	for (int i = 0; i < octaves; i++) {
-		a += g * noise3d_gradient(x * f, y * f, z * f, seed + i, eased);
-		f *= 2.0;
-		g *= persistence;
-	}
-	return a;
-}
-
-
-float noise3d_perlin_abs(float x, float y, float z, s32 seed,
-	int octaves, float persistence, bool eased)
-{
-	float a = 0;
-	float f = 1.0;
-	float g = 1.0;
-	for (int i = 0; i < octaves; i++) {
-		a += g * std::fabs(noise3d_gradient(x * f, y * f, z * f, seed + i, eased));
-		f *= 2.0;
-		g *= persistence;
-	}
-	return a;
-}
-
-
 float contour(float v)
 {
 	v = std::fabs(v);

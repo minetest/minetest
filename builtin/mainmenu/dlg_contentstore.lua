@@ -72,34 +72,52 @@ local function get_download_url(package, reason)
 end
 
 
-local function download_package(param)
-	if core.download_file(param.url, param.filename) then
+local function download_and_extract(param)
+	local package = param.package
+
+	local filename = core.get_temp_path(true)
+	if filename == "" or not core.download_file(param.url, filename) then
+		core.log("error", "Downloading " .. dump(param.url) .. " failed")
 		return {
-			filename = param.filename,
-			successful = true,
-		}
-	else
-		core.log("error", "downloading " .. dump(param.url) .. " failed")
-		return {
-			successful = false,
+			msg = fgettext("Failed to download $1", package.name)
 		}
 	end
+
+	local tempfolder = core.get_temp_path()
+	if tempfolder ~= "" then
+		tempfolder = tempfolder .. DIR_DELIM .. "MT_" .. math.random(1, 1024000)
+		if not core.extract_zip(filename, tempfolder) then
+			tempfolder = nil
+		end
+	else
+		tempfolder = nil
+	end
+	os.remove(filename)
+	if not tempfolder then
+		return {
+			msg = fgettext("Install: Unsupported file type or broken archive"),
+		}
+	end
+
+	return {
+		path = tempfolder
+	}
 end
 
 local function start_install(package, reason)
 	local params = {
 		package = package,
 		url = get_download_url(package, reason),
-		filename = os.tempfolder() .. "_MODNAME_" .. package.name .. ".zip",
 	}
 
 	number_downloading = number_downloading + 1
 
 	local function callback(result)
-		if result.successful then
-			local path, msg = pkgmgr.install(package.type,
-					result.filename, package.name,
-					package.path)
+		if result.msg then
+			gamedata.errormessage = result.msg
+		else
+			local path, msg = pkgmgr.install_dir(package.type, result.path, package.name, package.path)
+			core.delete_dir(result.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -137,9 +155,6 @@ local function start_install(package, reason)
 					conf:write()
 				end
 			end
-			os.remove(result.filename)
-		else
-			gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		end
 
 		package.downloading = false
@@ -159,7 +174,7 @@ local function start_install(package, reason)
 	package.queued = false
 	package.downloading = true
 
-	if not core.handle_async(download_package, params, callback) then
+	if not core.handle_async(download_and_extract, params, callback) then
 		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		return

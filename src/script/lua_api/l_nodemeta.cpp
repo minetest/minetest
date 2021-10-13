@@ -89,7 +89,10 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 
 	NodeMetaRef *ref = checkobject(L, 1);
 	ref->getmeta(true);  // try to ensure the metadata exists
-	InvRef::createNodeMeta(L, ref->m_p);
+
+	InventoryLocation loc;
+	loc.setNodeMeta(ref->m_p);
+	InvRef::create(L, loc);
 	return 1;
 }
 

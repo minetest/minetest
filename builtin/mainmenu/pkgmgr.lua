@@ -181,21 +181,6 @@ function pkgmgr.get_texture_packs()
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.extract(modfile)
-	if modfile.type == "zip" then
-		local tempfolder = os.tempfolder()
-
-		if tempfolder ~= nil and
-			tempfolder ~= "" then
-			core.create_dir(tempfolder)
-			if core.extract_zip(modfile.name,tempfolder) then
-				return tempfolder
-			end
-		end
-	end
-	return nil
-end
-
 function pkgmgr.get_folder_type(path)
 	local testfile = io.open(path .. DIR_DELIM .. "init.lua","r")
 	if testfile ~= nil then
@@ -561,11 +546,10 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		local from = basefolder and basefolder.path or path
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
 		end
-		if not core.copy_dir(from, targetpath) then
+		if not core.copy_dir(from, targetpath, false) then
 			return nil,
 				fgettext("Failed to install $1 to $2", basename, targetpath)
 		end
@@ -586,7 +570,6 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		-- Get destination name for modpack
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			local clean_path = nil
 			if basename ~= nil then
@@ -610,7 +593,6 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			local targetfolder = basename
 			if targetfolder == nil then
@@ -636,14 +618,13 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 		if targetpath then
 			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
 		else
 			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
 		end
 	end
 
 	-- Copy it
-	if not core.copy_dir(basefolder.path, targetpath) then
+	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)
 	end
@@ -658,23 +639,6 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.install(type, modfilename, basename, dest)
-	local archive_info = pkgmgr.identify_filetype(modfilename)
-	local path = pkgmgr.extract(archive_info)
-
-	if path == nil then
-		return nil,
-			fgettext("Install: file: \"$1\"", archive_info.name) .. "\n" ..
-			fgettext("Install: Unsupported file type \"$1\" or broken archive",
-				archive_info.type)
-	end
-
-	local targetpath, msg = pkgmgr.install_dir(type, path, basename, dest)
-	core.delete_dir(path)
-	return targetpath, msg
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.preparemodlist(data)
 	local retval = {}
 
@@ -682,11 +646,9 @@ function pkgmgr.preparemodlist(data)
 	local game_mods = {}
 
 	--read global mods
-	local modpath = core.get_modpath()
-
-	if modpath ~= nil and
-		modpath ~= "" then
-		get_mods(modpath,global_mods)
+	local modpaths = core.get_modpaths()
+	for _, modpath in ipairs(modpaths) do
+		get_mods(modpath, global_mods)
 	end
 
 	for i=1,#global_mods,1 do
@@ -818,45 +780,6 @@ function pkgmgr.refresh_globals()
 	pkgmgr.global_mods:add_sort_mechanism("alphabetic", sort_mod_list)
 	pkgmgr.global_mods:set_sortmode("alphabetic")
 end
-
---------------------------------------------------------------------------------
-function pkgmgr.identify_filetype(name)
-
-	if name:sub(-3):lower() == "zip" then
-		return {
-				name = name,
-				type = "zip"
-				}
-	end
-
-	if name:sub(-6):lower() == "tar.gz" or
-		name:sub(-3):lower() == "tgz"then
-		return {
-				name = name,
-				type = "tgz"
-				}
-	end
-
-	if name:sub(-6):lower() == "tar.bz2" then
-		return {
-				name = name,
-				type = "tbz"
-				}
-	end
-
-	if name:sub(-2):lower() == "7z" then
-		return {
-				name = name,
-				type = "7z"
-				}
-	end
-
-	return {
-		name = name,
-		type = "ukn"
-	}
-end
-
 
 --------------------------------------------------------------------------------
 function pkgmgr.find_by_gameid(gameid)

@@ -224,15 +224,6 @@ float noise3d_gradient(float x, float y, float z, s32 seed, bool eased=false);
 float noise2d_perlin(float x, float y, s32 seed,
 		int octaves, float persistence, bool eased=true);
 
-float noise2d_perlin_abs(float x, float y, s32 seed,
-		int octaves, float persistence, bool eased=true);
-
-float noise3d_perlin(float x, float y, float z, s32 seed,
-		int octaves, float persistence, bool eased=false);
-
-float noise3d_perlin_abs(float x, float y, float z, s32 seed,
-		int octaves, float persistence, bool eased=false);
-
 inline float easeCurve(float t)
 {
 	return t * t * t * (t * (6.f * t - 15.f) + 10.f);

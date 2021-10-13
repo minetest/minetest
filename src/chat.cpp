@@ -142,11 +142,6 @@ u32 ChatBuffer::getRows() const
 	return m_rows;
 }
 
-void ChatBuffer::scrollTop()
-{
-	m_scroll = getTopScrollPos();
-}
-
 void ChatBuffer::reformat(u32 cols, u32 rows)
 {
 	if (cols == 0 || rows == 0)

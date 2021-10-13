@@ -489,7 +489,11 @@ void main(void)
 	if (distance_rate > 1e-7) {
 	
 #ifdef COLORED_SHADOWS
-		vec4 visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		vec4 visibility;
+		if (cosLight > 0.0)
+			visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		else
+			visibility = vec4(1.0, 0.0, 0.0, 0.0);
 		shadow_int = visibility.r;
 		shadow_color = visibility.gba;
 #else
@@ -507,7 +511,8 @@ void main(void)
 
 	shadow_int = 1.0 - (shadow_int * f_adj_shadow_strength);
 	
-	col.rgb = mix(shadow_color,col.rgb,shadow_int)*shadow_int;
+	// apply shadow (+color) as a factor to the material color
+	col.rgb = col.rgb * (1.0 - (1.0 - shadow_color) * (1.0 - pow(shadow_int, 2.0)));
 	// col.r = 0.5 * clamp(getPenumbraRadius(ShadowMapSampler, posLightSpace.xy, posLightSpace.z, 1.0) / SOFTSHADOWRADIUS, 0.0, 1.0) + 0.5 * col.r;
 #endif
 

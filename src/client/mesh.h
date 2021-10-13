@@ -133,10 +133,3 @@ void recalculateBoundingBox(scene::IMesh *src_mesh);
 	We assume normal to be valid when it's 0 < length < Inf. and not NaN
  */
 bool checkMeshNormals(scene::IMesh *mesh);
-
-/*
-	Vertex cache optimization according to the Forsyth paper:
-	http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
-	Ported from irrlicht 1.8
-*/
-scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh);

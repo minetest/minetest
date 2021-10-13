@@ -110,8 +110,6 @@ public:
 	void scrollAbsolute(s32 scroll);
 	// Scroll to bottom of buffer (newest)
 	void scrollBottom();
-	// Scroll to top of buffer (oldest)
-	void scrollTop();
 
 	// Functions for keeping track of whether the lines were modified by any
 	// preceding operations

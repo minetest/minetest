@@ -24,12 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "exceptions.h"
 
-#ifdef _WIN32 // WINDOWS
+#ifdef _WIN32
 #define DIR_DELIM "\\"
 #define DIR_DELIM_CHAR '\\'
 #define FILESYS_CASE_INSENSITIVE true
 #define PATH_DELIM ";"
-#else // POSIX
+#else
 #define DIR_DELIM "/"
 #define DIR_DELIM_CHAR '/'
 #define FILESYS_CASE_INSENSITIVE false
@@ -106,6 +106,10 @@ bool CopyFileContents(const std::string &source, const std::string &target);
 // Omits files and subdirectories that start with a period
 bool CopyDir(const std::string &source, const std::string &target);
 
+// Move directory and all subdirectories
+// Behavior with files/subdirs that start with a period is undefined
+bool MoveDir(const std::string &source, const std::string &target);
+
 // Check if one path is prefix of another
 // For example, "/tmp" is a prefix of "/tmp" and "/tmp/file" but not "/tmp2"
 // Ignores case differences and '/' vs. '\\' on Windows
@@ -133,7 +137,9 @@ const char *GetFilenameFromPath(const char *path);
 
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
+#ifndef SERVER
 bool extractZipFile(irr::io::IFileSystem *fs, const char *filename, const std::string &destination);
+#endif
 
 bool ReadFile(const std::string &path, std::string &out);
 
