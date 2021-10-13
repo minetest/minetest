@@ -178,7 +178,10 @@ namespace ParticleParamTypes {
 	template <typename T>
 	std::string dump(const RangedParameter<T>& r) {
 		std::stringstream s;
-		s << "range<" << dump(r.min) << " ~ " << dump(r.max) << ">";
+		s << "range<" << dump(r.min) << " ~ " << dump(r.max);
+		if (r.bias != 0)
+			s << " :: " << r.bias;
+		s << ">";
 		return s.str();
 	}
 
@@ -261,7 +264,17 @@ namespace ParticleParamTypes {
 	template <typename T>
 	std::string dump(const TweenedParameter<T>& t) {
 		std::stringstream s;
-		s << "tween<" << dump(t.start) << " → " << dump(t.end) << ">";
+		const char* icon;
+		switch (t.style) {
+			case TweenStyle::fwd: icon = "→"; break;
+			case TweenStyle::rev: icon = "←"; break;
+			case TweenStyle::pulse: icon = "↔"; break;
+			case TweenStyle::flicker: icon = "↯"; break;
+		}
+		s << "tween<";
+		if (t.reps != 1)
+			s << t.reps << "x ";
+		s << dump(t.start) << " "<<icon<<" " << dump(t.end) << ">";
 		return s.str();
 	}
 
@@ -336,6 +349,7 @@ struct ParticleParameters : CommonParticleParams {
 	v3f drag;
 	f32 expirationtime = 1;
 	f32 size = 1;
+	ParticleParamTypes::f32Range bounce;
 
 	void serialize(std::ostream &os, u16 protocol_ver) const;
 	void deSerialize(std::istream &is, u16 protocol_ver);
@@ -360,7 +374,10 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 	/* do particles disappear when they cross the attractor threshold? */
 
 	ParticleParamTypes::f32RangeTween
-		exptime = (f32)1, size = (f32)1, attract = (f32)0;
+		exptime = (f32)1,
+		size    = (f32)1,
+		attract = (f32)0,
+		bounce  = (f32)0;
 
 	// For historical reasons no (de-)serialization methods here
 };

@@ -81,6 +81,7 @@ Particle::Particle(
 	m_velocity = p.vel;
 	m_acceleration = p.acc;
 	m_drag = p.drag;
+	m_bounce = p.bounce;
 	m_expiration = p.expirationtime;
 	m_player = player;
 	m_size = p.size;
@@ -134,6 +135,12 @@ void Particle::render()
 void Particle::step(float dtime)
 {
 	m_time += dtime;
+
+	// apply drag (not handled by collisionMoveSimple)
+	v3f av = vecAbsolute(m_velocity);
+	av -= av * (m_drag * dtime);
+	m_velocity = av * vecSign(m_velocity);
+
 	if (m_collisiondetection) {
 		aabb3f box = m_collisionbox;
 		v3f p_pos = m_pos * BS;
@@ -141,19 +148,32 @@ void Particle::step(float dtime)
 		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
 			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
 			m_object_collision);
-		if (m_collision_removal && r.collides) {
-			// force expiration of the particle
-			m_expiration = -1.0;
+		f32 bounciness = m_bounce.pickWithin();
+		if (r.collides && (m_collision_removal || (bounciness > 0))) {
+			if (m_collision_removal) {
+				// force expiration of the particle
+				m_expiration = -1.0;
+			} else if (bounciness > 0) {
+				/* cheap way to get a decent bounce effect is to only invert the
+				 * largest component of the velocity vector, so e.g. you don't
+				 * have a rock immediately bounce back in your face when you try
+				 * to skip it across the water (as would happen if we simply
+				 * downscaled and negated the velocity vector) */
+				if ((av.Y > av.X) && (av.Y > av.Z)) {
+					m_velocity.Y = -(m_velocity.Y * bounciness);
+				} else if ((av.X > av.Y) && (av.X > av.Z)) {
+					m_velocity.X = -(m_velocity.X * bounciness);
+				} else if ((av.Z > av.Y) && (av.Z > av.X)) {
+					m_velocity.Z = -(m_velocity.Z * bounciness);
+				} else { /* well now we're in a bit of a pickle */
+					m_velocity = -(m_velocity * bounciness);
+				}
+			}
 		} else {
-			m_pos = p_pos / BS;
 			m_velocity = p_velocity / BS;
 		}
+		m_pos = p_pos / BS;
 	} else {
-		// apply drag
-		v3f absvel = vecAbsolute(m_velocity);
-		absvel -= absvel * (m_drag * dtime);
-		m_velocity = absvel * vecSign(m_velocity);
-
 		// apply acceleration
 		m_velocity += m_acceleration * dtime;
 		m_pos += m_velocity * dtime;
@@ -325,6 +345,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto r_acc = p.acc.blend(fac);
 	auto r_drag = p.drag.blend(fac);
 	auto r_radius = p.radius.blend(fac);
+	auto r_bounce = p.bounce.blend(fac);
 	v3f  attractor = p.attractor.blend(fac);
 	v3f  attractor_angle = p.attractor_angle.blend(fac);
 	auto attractor_obj       = findObjectByID(env, p.attractor_attachment);
@@ -363,6 +384,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	pp.vel = r_vel.pickWithin();
 	pp.acc = r_acc.pickWithin();
 	pp.drag = r_drag.pickWithin();
+	pp.bounce = r_bounce;
 
 	if (attached_absolute_pos_rot_matrix) {
 		// Apply attachment rotation

@@ -8805,6 +8805,11 @@ unless otherwise specified.
   that the particle speed will be doubled every second. to avoid interfering
   with gravity provided by `acc`, a drag vector like `vector.new(1,0,1)` can
   be used instead of a uniform value.
+* float range `bounce`: how bouncy the particles are when `collisiondetection`
+  is turned on. `0` turns off particle bounce; `1` makes the particles bounce
+  without losing any energy, and `2` makes them double their kinetic energy
+  with every bounce. negative values also disable particle bounce. `bounce`
+  is not bounded but values much larger than `1.0` probably aren't very useful.
 * float range `exptime`: the number of seconds after which the particle
   disappears.
 * table `attract`: sets the birth orientation of particles relative to various

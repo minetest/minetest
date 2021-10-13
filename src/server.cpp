@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "server.h"
+# include "server.h"
 #include <iostream>
 #include <queue>
 #include <algorithm>
@@ -1663,6 +1663,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 		// new properties
 		p.drag.serialize(os);
+		p.bounce.serialize(os);
 		ParticleParamTypes::serializeParameterValue(os, p.attractor_kind);
 		if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
 			p.attract.serialize(os);

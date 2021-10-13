@@ -231,6 +231,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		LuaParticleParams::readTweenTable(L, "size", p.size);
 		LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
 		LuaParticleParams::readTweenTable(L, "drag", p.drag);
+		LuaParticleParams::readTweenTable(L, "bounce", p.bounce);
 		lua_getfield(L, 1, "attract");
 		if (!lua_isnil(L, -1)) {
 			luaL_checktype(L, -1, LUA_TTABLE);

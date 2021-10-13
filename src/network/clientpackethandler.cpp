@@ -1044,6 +1044,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.size.end.deSerialize(is);
 
 		p.drag.deSerialize(is);
+		p.bounce.deSerialize(is);
 		ParticleParamTypes::deSerializeParameterValue(is, p.attractor_kind);
 		using ParticleParamTypes::AttractorKind;
 		if (p.attractor_kind != AttractorKind::none) {

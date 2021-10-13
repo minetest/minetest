@@ -121,6 +121,7 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 	v3f m_drag;
+	ParticleParamTypes::f32Range m_bounce;
 	LocalPlayer *m_player;
 	float m_size;
 
