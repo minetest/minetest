@@ -110,12 +110,7 @@ android.applicationVariants.all { variant ->
 	}
 }
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation project(':native')
 	implementation 'androidx.appcompat:appcompat:1.2.0'
-	implementation "commons-io:commons-io:2.11.0"
 }

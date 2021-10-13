@@ -45,13 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.minetest.minetest.UnzipService.ACTION_FAILURE;
-import static net.minetest.minetest.UnzipService.ACTION_PROGRESS;
-import static net.minetest.minetest.UnzipService.ACTION_PROGRESS_MESSAGE;
-import static net.minetest.minetest.UnzipService.ACTION_UPDATE;
-import static net.minetest.minetest.UnzipService.FAILURE;
-import static net.minetest.minetest.UnzipService.INDETERMINATE;
-import static net.minetest.minetest.UnzipService.SUCCESS;
+import static net.minetest.minetest.UnzipService.*;
 
 public class MainActivity extends AppCompatActivity {
 	private final static int versionCode = BuildConfig.VERSION_CODE;

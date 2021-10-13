@@ -30,10 +30,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -82,7 +81,13 @@ public class UnzipService extends IntentService {
 			}
 
 			try (InputStream in = this.getAssets().open(zipFile.getName())) {
-				FileUtils.copyToFile(in, zipFile);
+				try (OutputStream out = new FileOutputStream(zipFile)) {
+					int readLen;
+					byte[] readBuffer = new byte[16384];
+					while ((readLen = in.read(readBuffer)) != -1) {
+						out.write(readBuffer, 0, readLen);
+					}
+				}
 			}
 
 			migrate(notificationBuilder, userDataDirectory);
@@ -148,7 +153,7 @@ public class UnzipService extends IntentService {
 		}
 
 		int readLen;
-		byte[] readBuffer = new byte[8192];
+		byte[] readBuffer = new byte[16384];
 		try (FileInputStream fileInputStream = new FileInputStream(zipFile);
 		     ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
 			ZipEntry ze;
@@ -156,16 +161,38 @@ public class UnzipService extends IntentService {
 				if (ze.isDirectory()) {
 					++per;
 					Utils.createDirs(userDataDirectory, ze.getName());
-				} else {
-					publishProgress(notificationBuilder, R.string.loading, 100 * ++per / size);
-					try (OutputStream outputStream = new FileOutputStream(
-							new File(userDataDirectory, ze.getName()))) {
-						while ((readLen = zipInputStream.read(readBuffer)) != -1) {
-							outputStream.write(readBuffer, 0, readLen);
-						}
+					continue;
+				}
+				publishProgress(notificationBuilder, R.string.loading, 100 * ++per / size);
+				try (OutputStream outputStream = new FileOutputStream(
+						new File(userDataDirectory, ze.getName()))) {
+					while ((readLen = zipInputStream.read(readBuffer)) != -1) {
+						outputStream.write(readBuffer, 0, readLen);
 					}
 				}
 			}
+		}
+	}
+
+	void moveFileOrDir(@NonNull File src, @NonNull File dst) throws IOException {
+		try {
+			Process p = new ProcessBuilder("/system/bin/mv",
+				src.getAbsolutePath(), dst.getAbsolutePath()).start();
+			int exitcode = p.waitFor();
+			if (exitcode != 0)
+				throw new IOException("Move failed with exit code " + exitcode);
+		} catch (InterruptedException e) {
+			throw new IOException("Move operation interrupted");
+		}
+	}
+
+	boolean recursivelyDeleteDirectory(@NonNull File loc) {
+		try {
+			Process p = new ProcessBuilder("/system/bin/rm", "-rf",
+				loc.getAbsolutePath()).start();
+			return p.waitFor() == 0;
+		} catch (IOException | InterruptedException e) {
+			return false;
 		}
 	}
 
@@ -178,24 +205,25 @@ public class UnzipService extends IntentService {
 			return;
 
 		publishProgress(notificationBuilder, R.string.migrating, 0);
+		newLocation.mkdir();
 
 		String[] dirs = new String[] { "worlds", "games", "mods", "textures", "client" };
 		for (int i = 0; i < dirs.length; i++) {
 			publishProgress(notificationBuilder, R.string.migrating, 100 * i / dirs.length);
-			File dir = new File(oldLocation, dirs[i]);
-			if (dir.isDirectory() && !new File(newLocation, dirs[i]).isDirectory()) {
-				FileUtils.moveDirectoryToDirectory(dir, newLocation, true);
+			File dir = new File(oldLocation, dirs[i]), dir2 = new File(newLocation, dirs[i]);
+			if (dir.isDirectory() && !dir2.isDirectory()) {
+				moveFileOrDir(dir, dir2);
 			}
 		}
 
 		for (String filename : new String[] { "minetest.conf" }) {
-			File file = new File(oldLocation, filename);
-			if (file.isFile() && !new File(newLocation, filename).isFile()) {
-				FileUtils.moveFileToDirectory(file, newLocation, true);
+			File file = new File(oldLocation, filename), file2 = new File(newLocation, filename);
+			if (file.isFile() && !file2.isFile()) {
+				moveFileOrDir(file, file2);
 			}
 		}
 
-		FileUtils.deleteDirectory(oldLocation);
+		recursivelyDeleteDirectory(oldLocation);
 	}
 
 	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
