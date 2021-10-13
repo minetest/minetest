@@ -629,10 +629,12 @@ refer to the documentation of these functions for details.
 You can use this to send disposable images such as captchas
 to individual clients, or render things that would be too
 expensive to compose with `[combine:`.
-Avoid sending large images in this way. This is not a replacement
-for asset files, do not use it to do anything that you could instead
-achieve by just using a file. Test whether using other
-texture modifiers could result in a shorter string than
+
+IMPORTANT: Avoid sending large images this way.
+This is not a replacement for asset files, do not use it to do anything
+that you could instead achieve by just using a file.
+In particular consider `minetest.dynamic_add_media` and test whether
+using other texture modifiers could result in a shorter string than
 embedding a whole image, this may vary by use case.
 
 Hardware coloring
