@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include <json/json.h>
 
-#define MAX_TOOL_WEAR (65535)
-
 struct ItemDefinition;
 
 struct ToolGroupCap

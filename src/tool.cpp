@@ -85,7 +85,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 	}
 
 	if (protocol_version >= 38)
-		writeU16(os, rangelim(punch_attack_uses, 0, MAX_TOOL_WEAR));
+		writeU16(os, rangelim(punch_attack_uses, 0, U16_MAX));
 }
 
 void ToolCapabilities::deSerialize(std::istream &is)
@@ -183,67 +183,67 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 	}
 }
 
-u32 getToolWearAfterUse(const u32 uses, const u16 initial_wear) {
+static u32 calculateResultWear(const u32 uses, const u16 initial_wear)
+{
 	if (uses == 0) {
 		// Trivial case: Infinite uses
 		return 0;
-	} else {
-		/* Finite uses. This is not trivial,
-		as the maximum wear is not neatly evenly divisible by
-		most possible uses numbers. For example, for 128
-		uses, the calculation of wear is trivial, as
-		65536 / 128 uses = 512 wear,
-		so the tool will get 512 wear 128 times in its lifetime.
-		But for a number like 130, this does not work:
-		65536 / 130 uses = 504.123... wear.
-		Since wear must be an integer, we will get
-		504*130 = 65520, which would lead to the wrong number
-		of uses.
-
-		Instead, we partition the "wear range" into blocks:
-		A block represents a single use and can be
-		of two possible sizes: normal and oversized.
-		A normal block is equal to floor(65536 / uses).
-		An oversized block is a normal block plus 1.
-		Then we determine how many oversized and normal
-		blocks we need and finally, whether we add
-		the normal wear or the oversized wear.
-
-		Example for 130 uses:
-		* Normal wear = 504
-		* Number of normal blocks = 114
-		* Oversized wear = 505
-		* Number of oversized blocks = 16
-
-		If we add everything together, we get:
-		  114*504 + 16*505 = 65536
-		*/
-		float result_wear;
-		u32 wear_normal = (u32) ((MAX_TOOL_WEAR+1) / uses);
-		// Will be non-zero if its not evenly divisible
-		u16 blocks_oversize = (MAX_TOOL_WEAR+1) % uses;
-		// Whether to add one extra wear point in case
-		// of oversized wear.
-		u16 wear_extra = 0;
-		if (blocks_oversize > 0) {
-			u16 blocks_normal = uses - blocks_oversize;
-			/* When the wear has reached this value, we
-			   know that wear_normal has been applied
-			   for blocks_normal times, therefore,
-			   only oversized blocks remain.
-                           This also implies the raw tool wear number
-			   increases a bit faster after this point,
-			   but this should be barely noticable by the
-			   player.
-			*/
-			u16 wear_extra_at = blocks_normal * wear_normal;
-			if (initial_wear >= wear_extra_at) {
-				wear_extra = 1;
-			}
-		}
-		result_wear = wear_normal + wear_extra;
-		return (u32) result_wear;
 	}
+	/* Finite uses. This is not trivial,
+	as the maximum wear is not neatly evenly divisible by
+	most possible uses numbers. For example, for 128
+	uses, the calculation of wear is trivial, as
+	65536 / 128 uses = 512 wear,
+	so the tool will get 512 wear 128 times in its lifetime.
+	But for a number like 130, this does not work:
+	65536 / 130 uses = 504.123... wear.
+	Since wear must be an integer, we will get
+	504*130 = 65520, which would lead to the wrong number
+	of uses.
+
+	Instead, we partition the "wear range" into blocks:
+	A block represents a single use and can be
+	of two possible sizes: normal and oversized.
+	A normal block is equal to floor(65536 / uses).
+	An oversized block is a normal block plus 1.
+	Then we determine how many oversized and normal
+	blocks we need and finally, whether we add
+	the normal wear or the oversized wear.
+
+	Example for 130 uses:
+	* Normal wear = 504
+	* Number of normal blocks = 114
+	* Oversized wear = 505
+	* Number of oversized blocks = 16
+
+	If we add everything together, we get:
+	  114*504 + 16*505 = 65536
+	*/
+	float result_wear;
+	u32 wear_normal = (u32) ((U16_MAX+1) / uses);
+	// Will be non-zero if its not evenly divisible
+	u16 blocks_oversize = (U16_MAX+1) % uses;
+	// Whether to add one extra wear point in case
+	// of oversized wear.
+	u16 wear_extra = 0;
+	if (blocks_oversize > 0) {
+		u16 blocks_normal = uses - blocks_oversize;
+		/* When the wear has reached this value, we
+		   know that wear_normal has been applied
+		   for blocks_normal times, therefore,
+		   only oversized blocks remain.
+		   This also implies the raw tool wear number
+		   increases a bit faster after this point,
+		   but this should be barely noticable by the
+		   player.
+		*/
+		u16 wear_extra_at = blocks_normal * wear_normal;
+		if (initial_wear >= wear_extra_at) {
+			wear_extra = 1;
+		}
+	}
+	result_wear = wear_normal + wear_extra;
+	return (u32) result_wear;
 }
 
 DigParams getDigParams(const ItemGroupList &groups,
@@ -293,10 +293,8 @@ DigParams getDigParams(const ItemGroupList &groups,
 			// exponentially with leveldiff.
 			// If the levels are equal, real_uses equals cap.uses.
 			u32 real_uses = cap.uses * pow(3.0, leveldiff);
-			if (real_uses > MAX_TOOL_WEAR) {
-				real_uses = MAX_TOOL_WEAR;
-			}
-			result_wear = getToolWearAfterUse(real_uses, initial_wear);
+			real_uses = MYMIN(real_uses, U16_MAX);
+			result_wear = calculateResultWear(real_uses, initial_wear);
 			result_main_group = groupname;
 		}
 	}
@@ -320,7 +318,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 	}
 
 	if (tp->punch_attack_uses > 0) {
-		result_wear = getToolWearAfterUse(tp->punch_attack_uses, initial_wear);
+		result_wear = calculateResultWear(tp->punch_attack_uses, initial_wear);
 		result_wear *= punch_interval_multiplier;
 	}
 
