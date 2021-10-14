@@ -25,24 +25,7 @@ static TestGettext g_test_instance;
 
 void TestGettext::runTests(IGameDef *gamedef)
 {
-	TEST(testSnfmtgettext);
 	TEST(testFmtgettext);
-}
-
-void TestGettext::testSnfmtgettext()
-{
-  std::string buf = "";
-  buf.resize(8);
-  int len = snfmtgettext(&buf[0], 8, "Viewing range changed to %d", 12);
-  UASSERTEQ(int, len, 27);
-  buf.pop_back();
-  UASSERTEQ(std::string, buf, "Viewing");
-
-  buf.resize(28);
-  len = snfmtgettext(&buf[0], 28, "Viewing range changed to %d", 12);
-  UASSERTEQ(int, len, 27);
-  buf.pop_back();
-  UASSERTEQ(std::string, buf, "Viewing range changed to 12");
 }
 
 void TestGettext::testFmtgettext()

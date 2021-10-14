@@ -80,22 +80,6 @@ inline std::wstring fwgettext(const char *src, Args&&... args)
 }
 
 /**
- * Write translated output with format to sized buffer
- *
- * @tparam Args Template parameter for format args
- * @param buf The translated string buffer.
- * @param buf_size Maximum number of bytes to be used in the buffer.
- * @param format Translation source string
- * @param args Variable format args
- * @return The number of characters that would have been written if buf_size had been sufficiently large, not counting the terminating null character. If an encoding error occurs, a negative number is returned. Notice that only when this returned value is non-negative and less than buf_size, the string has been completely written.
- */
-template <typename ...Args>
-inline int snfmtgettext(char *buf, std::size_t buf_size, const char *format, Args&&... args)
-{
-	return porting::mt_snprintf(buf, buf_size, gettext(format), std::forward<Args>(args)...);
-}
-
-/**
  * Returns translated string with format args applied
  *
  * @tparam Args Template parameter for format args
@@ -110,11 +94,13 @@ inline std::string fmtgettext(const char *format, Args&&... args)
 	std::size_t buf_size = 256;
 	buf.resize(buf_size);
 
-	int len = snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
+  format = gettext(format);
+
+	int len = porting::mt_snprintf(&buf[0], buf_size, format, std::forward<Args>(args)...);
 	if (len <= 0) throw std::runtime_error("gettext format error: " + std::string(format));
 	if ((size_t)len >= buf.size()) {
 		buf.resize(len+1); // extra null byte
-		snfmtgettext(&buf[0], buf.size(), format, std::forward<Args>(args)...);
+		porting::mt_snprintf(&buf[0], buf.size(), format, std::forward<Args>(args)...);
 	}
 	buf.resize(len); // remove null bytes
 
