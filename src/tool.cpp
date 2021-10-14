@@ -219,8 +219,8 @@ static u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 	If we add everything together, we get:
 	  114*504 + 16*505 = 65536
 	*/
-	float result_wear;
-	u32 wear_normal = (u32) ((U16_MAX+1) / uses);
+	u32 result_wear;
+	u32 wear_normal = ((U16_MAX+1) / uses);
 	// Will be non-zero if its not evenly divisible
 	u16 blocks_oversize = (U16_MAX+1) % uses;
 	// Whether to add one extra wear point in case
@@ -243,7 +243,7 @@ static u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 		}
 	}
 	result_wear = wear_normal + wear_extra;
-	return (u32) result_wear;
+	return result_wear;
 }
 
 DigParams getDigParams(const ItemGroupList &groups,
@@ -266,7 +266,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 	// Values to be returned (with a bit of conversion)
 	bool result_diggable = false;
 	float result_time = 0.0;
-	float result_wear = 0.0;
+	u32 result_wear = 0;
 	std::string result_main_group;
 
 	int level = itemgroup_get(groups, "level");
@@ -299,8 +299,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 		}
 	}
 
-	u32 wear_i = (u32) result_wear;
-	return DigParams(result_diggable, result_time, wear_i, result_main_group);
+	return DigParams(result_diggable, result_time, result_wear, result_main_group);
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
