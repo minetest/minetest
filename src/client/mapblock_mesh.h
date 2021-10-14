@@ -78,14 +78,24 @@ public:
 	scene::SMeshBuffer *buffer;
 	u16 p1, p2, p3;
 	v3f centroid;
+	float areaSQ;
 
-	void fillCentroid()
+	void updateAttributes()
 	{
 		const v3f &v1 = buffer->getPosition(p1);
 		const v3f &v2 = buffer->getPosition(p2);
 		const v3f &v3 = buffer->getPosition(p3);
 
 		centroid = (v1 + v2 + v3) / 3;
+		areaSQ = (v2-v1).crossProduct(v3-v1).getLengthSQ() / 4;
+	}
+
+	v3f getNormal() const {
+		const v3f &v1 = buffer->getPosition(p1);
+		const v3f &v2 = buffer->getPosition(p2);
+		const v3f &v3 = buffer->getPosition(p3);
+
+		return (v2-v1).crossProduct(v3-v1);
 	}
 };
 
@@ -113,7 +123,7 @@ private:
 	};
 
 
-	s32 buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list);
+	s32 buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list, u32 depth);
 	void traverse(s32 node, const v3f &viewpoint, std::vector<s32> &output) const;
 
 	const std::vector<MeshTriangle> *triangles = nullptr; // this reference is managed externally

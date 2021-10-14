@@ -1018,10 +1018,33 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 	for (u16 i = 0; i < triangles->size(); i++)
 		indexes.push_back(i);
 
-	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes);
+	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes, 0);
 }
 
-s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list)
+static const MeshTriangle *findSplitCandidate(const std::vector<s32> &list, const std::vector<MeshTriangle> &triangles)
+{
+	// find best origin as a center of the cluster.
+	v3f origin(0, 0, 0);
+	size_t n = list.size();
+	for (s32 i : list) {
+		origin += triangles[i].centroid / n;
+	}
+
+	// find the triangle with the largest area and closest to the center
+	const MeshTriangle *candidate_triangle = &triangles[list[0]];
+	const MeshTriangle *ith_triangle;
+	for (s32 i : list) {
+		ith_triangle = &triangles[i];
+		if (ith_triangle->areaSQ > candidate_triangle->areaSQ ||
+				(ith_triangle->areaSQ == candidate_triangle->areaSQ &&
+				ith_triangle->centroid.getDistanceFromSQ(origin) < candidate_triangle->centroid.getDistanceFromSQ(origin))) {
+			candidate_triangle = ith_triangle;
+		}
+	}
+	return candidate_triangle;
+}
+
+s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list, u32 depth)
 {
 	// if the list is empty, don't bother
 	if (list.size() == 0) {
@@ -1058,25 +1081,42 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 	}
 
 	// define the new split-plane
-	v3f next_normal(normal.Z, normal.X, normal.Y);
-	float next_delta = delta;
-	if (next_normal.X > 0) {
-		next_delta /= 2;
+	v3f candidate_normal(normal.Z, normal.X, normal.Y);
+	float candidate_delta = delta;
+	if (depth % 3 == 2) {
+		candidate_delta /= 2;
 	}
 
 	s32 front_index = -1;
 	s32 back_index = -1;
 
 	if (front_list.size() > 0) {
-		front_index = buildTree(next_normal, origin + delta * normal, next_delta, front_list);
+		v3f next_normal = candidate_normal;
+		v3f next_origin = origin + delta * normal;
+		float next_delta = candidate_delta;
+		if (next_delta < 10) {
+			const MeshTriangle *candidate = findSplitCandidate(front_list, *triangles);
+			next_normal = candidate->getNormal();
+			next_origin = candidate->centroid;
+		}
+		front_index = buildTree(next_normal, next_origin, next_delta, front_list, depth + 1);
 
 		// if there are no other triangles, don't create a new node
 		if (back_list.size() == 0 && node_list.size() == 0)
 			return front_index;
 	}
 
-	if (back_list.size() >= 0) {
-		back_index = buildTree(next_normal, origin - delta * normal, next_delta, back_list);
+	if (back_list.size() > 0) {
+		v3f next_normal = candidate_normal;
+		v3f next_origin = origin - delta * normal;
+		float next_delta = candidate_delta;
+		if (next_delta < 10) {
+			const MeshTriangle *candidate = findSplitCandidate(back_list, *triangles);
+			next_normal = candidate->getNormal();
+			next_origin = candidate->centroid;
+		}
+
+		back_index = buildTree(next_normal, next_origin, next_delta, back_list, depth + 1);
 
 		// if there are no other triangles, don't create a new node
 		if (front_list.size() == 0 && node_list.size() == 0)
@@ -1319,7 +1359,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 						t.p1 = p.indices[i];
 						t.p2 = p.indices[i + 1];
 						t.p3 = p.indices[i + 2];
-						t.fillCentroid();
+						t.updateAttributes();
 						m_transparent_triangles.push_back(t);
 					}
 				}

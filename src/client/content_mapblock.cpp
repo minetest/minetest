@@ -1377,6 +1377,40 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
+
+	bool isTransparent = false;
+
+	for (const TileSpec &tile : tiles) {
+		if (tile.layers[0].isTransparent()) {
+			isTransparent = true;
+			break;
+		}
+	}
+
+	if (isTransparent) {
+		for (int axis = 0; axis < 3; axis++) {
+			// identify sections
+			std::vector<float> sections;
+			for (size_t i = 0; i < boxes.size(); i++) {
+				sections.push_back(boxes[i].MinEdge[axis]);
+				sections.push_back(boxes[i].MaxEdge[axis]);
+			}
+
+			// split the boxes as necessary
+			for (size_t i = 0; i < boxes.size(); i++) {
+				aabb3f &box = boxes[i];
+				for (float section : sections) {
+					if (box.MinEdge[axis] < section && box.MaxEdge[axis] > section) {
+						aabb3f copy = box;
+						copy.MinEdge[axis] = section;
+						box.MaxEdge[axis] = section;
+						boxes.push_back(copy);
+					}
+				}
+			}
+		}
+	}
+
 	for (auto &box : boxes)
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }

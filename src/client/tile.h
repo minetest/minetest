@@ -278,6 +278,18 @@ struct TileLayer
 		return false;
 	}
 
+	bool isTransparent() const
+	{
+		switch (material_type) {
+		case TILE_MATERIAL_BASIC:
+		case TILE_MATERIAL_ALPHA:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+			return true;
+		}
+		return false;
+	}
+
 	// Ordered for size, please do not reorder
 
 	video::ITexture *texture = nullptr;
@@ -333,6 +345,14 @@ struct TileSpec
 			&& rotation == other.rotation
 			&& emissive_light == other.emissive_light;
 	}
+
+	bool isTransparent() const
+	{
+		for (const TileLayer &layer : layers)
+			if (!layer.isTransparent())
+				return false;
+		return true;
+	}	
 
 	//! If true, the tile rotation is ignored.
 	bool world_aligned = false;
