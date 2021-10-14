@@ -6,12 +6,8 @@ class TestGettext : public TestBase
 {
 public:
 	TestGettext() {
-		// init_gettext(porting::path_locale.c_str(), "en", 0, nullptr);
-		// setenv("LANGUAGE", "en", 1);
-		// setlocale(LC_ALL, "");
-
 		TestManager::registerTestModule(this);
-		}
+  }
 
 	const char *getName() { return "TestGettext"; }
 
