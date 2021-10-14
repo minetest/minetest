@@ -186,9 +186,7 @@ void Camera::step(f32 dtime)
 				m_view_bobbing_anim -= offset;
 			} else if (m_view_bobbing_anim > 0.75) {
 				m_view_bobbing_anim += offset;
-			}
-
-			if (m_view_bobbing_anim < 0.5) {
+			} else if (m_view_bobbing_anim < 0.5) {
 				m_view_bobbing_anim += offset;
 				if (m_view_bobbing_anim > 0.5)
 					m_view_bobbing_anim = 0.5;
