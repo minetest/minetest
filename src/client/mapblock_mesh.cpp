@@ -1305,8 +1305,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material = material;
 			switch (p.layer.material_type) {
+			// list of transparent materials taken from tile.h
 			case TILE_MATERIAL_ALPHA:
-			case TILE_MATERIAL_PLAIN_ALPHA:
 			case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 				{
