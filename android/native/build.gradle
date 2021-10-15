@@ -41,6 +41,10 @@ android {
 					arguments 'NDEBUG=1'
 				}
 			}
+
+			ndk {
+				debugSymbolLevel 'SYMBOL_TABLE'
+			}
 		}
 	}
 }
