@@ -45,6 +45,7 @@ namespace fs
 #include <windows.h>
 #include <shlwapi.h>
 #include <io.h>
+#include <direct.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
