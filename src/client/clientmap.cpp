@@ -477,7 +477,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			buf = descriptor.m_buffer;
 		}
 
-		Check and abort if the machine is swapping a lot
+		// Check and abort if the machine is swapping a lot
 		if (draw.getTimerTime() > 2000) {
 			infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
 					"returning." << std::endl;
