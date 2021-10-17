@@ -1391,6 +1391,11 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		for (int axis = 0; axis < 3; axis++) {
 			// identify sections
 			std::vector<float> sections;
+
+			// Default split at node bounds, up to 3 nodes in each direction
+			for (float s = -35; s < 40; s += 10)
+				sections.push_back(s);
+
 			for (size_t i = 0; i < boxes.size(); i++) {
 				sections.push_back(boxes[i].MinEdge[axis]);
 				sections.push_back(boxes[i].MaxEdge[axis]);
