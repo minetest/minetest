@@ -701,10 +701,6 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	if (tiledef.tileable_vertical)
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 
-	// Semi-transparent materials can never be tiled
-	if (alpha == ALPHAMODE_BLEND)
-		layer->material_flags &= ~(MATERIAL_FLAG_TILEABLE_HORIZONTAL | MATERIAL_FLAG_TILEABLE_VERTICAL);
-
 	// Color
 	layer->has_color = tiledef.has_color;
 	if (tiledef.has_color)

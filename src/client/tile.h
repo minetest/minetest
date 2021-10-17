@@ -232,30 +232,24 @@ struct TileLayer
 			break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
-		if (!isLiquid()) {
-			// Flowing liquid needs texture wrapping to render correctly
-			if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-				material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			}
-			if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-				material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			}
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
+			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		}
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
 	{
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
-		if (!isLiquid()) {
-			// Flowing liquid needs texture wrapping to render correctly
-			if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-				material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-				material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			}
-			if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-				material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-				material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			}
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
+			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		}
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 
@@ -338,21 +332,14 @@ struct TileSpec
 		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 			if (layers[layer] != other.layers[layer])
 				return false;
-			if (!layers[layer].isTileable())
+			// Only non-transparent tiles can be merged into fast faces
+			if (layers[layer].isTransparent() || !layers[layer].isTileable())
 				return false;
 		}
 		return rotation == 0
 			&& rotation == other.rotation
 			&& emissive_light == other.emissive_light;
 	}
-
-	bool isTransparent() const
-	{
-		for (const TileLayer &layer : layers)
-			if (!layer.isTransparent())
-				return false;
-		return true;
-	}	
 
 	//! If true, the tile rotation is ignored.
 	bool world_aligned = false;
