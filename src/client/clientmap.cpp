@@ -356,25 +356,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 
 	MeshBufListList grouped_buffers;
-
-	struct DrawDescriptor {
-		v3s16 m_pos;
-		union {
-			scene::IMeshBuffer *m_buffer;
-			PartialMeshBuffer *m_partial_buffer;
-		};
-		bool m_reuse_material:1;
-		bool m_use_partial_buffer:1;
-
-		DrawDescriptor(const v3s16 &pos, scene::IMeshBuffer *buffer, bool reuse_material) :
-			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
-		{}
-
-		DrawDescriptor(const v3s16 &pos, PartialMeshBuffer *buffer) :
-			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
-		{}
-	};
-
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
@@ -741,7 +722,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	u32 drawcall_count = 0;
 	u32 vertex_count = 0;
 
-	MeshBufListList drawbufs;
+	MeshBufListList grouped_buffers;
+	std::vector<DrawDescriptor> draw_order;
+
 
 	int count = 0;
 	int low_bound = is_transparent_pass ? 0 : m_drawlist_shadow.size() / total_frames * frame;
@@ -770,7 +753,15 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		/*
 			Get the meshbuffers of the block
 		*/
-		{
+		if (is_transparent_pass) {
+			// In transparent pass, the mesh will give us
+			// the partial buffers in the correct order
+			for (auto &buffer : block->mesh->getTransparentBuffers())
+				draw_order.emplace_back(block_pos, &buffer);
+		}
+		else {
+			// otherwise, group buffers across meshes
+			// using MeshBufListList
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
@@ -785,9 +776,19 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 					video::SMaterial &mat = buf->getMaterial();
 					auto rnd = driver->getMaterialRenderer(mat.MaterialType);
 					bool transparent = rnd && rnd->isTransparent();
-					if (transparent == is_transparent_pass)
-						drawbufs.add(buf, block_pos, layer);
+					if (!transparent)
+						grouped_buffers.add(buf, block_pos, layer);
 				}
+			}
+		}
+	}
+
+	// Capture draw order for all solid meshes
+	for (auto &lists : grouped_buffers.lists) {
+		for (MeshBufList &list : lists) {
+			// iterate in reverse to draw closest blocks first
+			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
 			}
 		}
 	}
@@ -796,38 +797,47 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	core::matrix4 m; // Model matrix
 	v3f offset = intToFloat(m_camera_offset, BS);
+	u32 material_swaps = 0;
 
-	// Render all layers in order
-	for (auto &lists : drawbufs.lists) {
-		for (MeshBufList &list : lists) {
-			// Check and abort if the machine is swapping a lot
-			if (draw.getTimerTime() > 1000) {
-				infostream << "ClientMap::renderMapShadows(): Rendering "
-						"took >1s, returning." << std::endl;
-				break;
-			}
-			for (auto &pair : list.bufs) {
-				scene::IMeshBuffer *buf = pair.second;
+	// Render all mesh buffers in order
+	drawcall_count += draw_order.size();
 
-				// override some material properties
-				video::SMaterial local_material = buf->getMaterial();
-				local_material.MaterialType = material.MaterialType;
-				local_material.BackfaceCulling = material.BackfaceCulling;
-				local_material.FrontfaceCulling = material.FrontfaceCulling;
-				local_material.BlendOperation = material.BlendOperation;
-				local_material.Lighting = false;
-				driver->setMaterial(local_material);
-
-				v3f block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
-				m.setTranslation(block_wpos - offset);
-
-				driver->setTransform(video::ETS_WORLD, m);
-				driver->drawMeshBuffer(buf);
-				vertex_count += buf->getVertexCount();
-			}
-
-			drawcall_count += list.bufs.size();
+	for (auto &descriptor : draw_order) {
+		scene::IMeshBuffer *buf;
+		
+		if (descriptor.m_use_partial_buffer) {
+			descriptor.m_partial_buffer->beforeDraw();
+			buf = descriptor.m_partial_buffer->getBuffer();
 		}
+		else {
+			buf = descriptor.m_buffer;
+		}
+
+		// Check and abort if the machine is swapping a lot
+		if (draw.getTimerTime() > 1000) {
+			infostream << "ClientMap::renderMapShadows(): Rendering "
+					"took >1s, returning." << std::endl;
+			break;
+		}
+
+		if (!descriptor.m_reuse_material) {
+			// override some material properties
+			video::SMaterial local_material = buf->getMaterial();
+			local_material.MaterialType = material.MaterialType;
+			local_material.BackfaceCulling = material.BackfaceCulling;
+			local_material.FrontfaceCulling = material.FrontfaceCulling;
+			local_material.BlendOperation = material.BlendOperation;
+			local_material.Lighting = false;
+			driver->setMaterial(local_material);
+			++material_swaps;
+		}
+
+		v3f block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, BS);
+		m.setTranslation(block_wpos - offset);
+
+		driver->setTransform(video::ETS_WORLD, m);
+		driver->drawMeshBuffer(buf);
+		vertex_count += buf->getIndexCount();
 	}
 
 	// restore the driver material state 
@@ -839,6 +849,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
+	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
 }
 
 /*
