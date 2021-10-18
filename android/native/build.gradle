@@ -51,16 +51,17 @@ android {
 
 // get precompiled deps
 def folder = 'minetest_android_deps_binaries'
+def deps_ref = "342eb18b7512462585a33bc9eef0b68298087151"
 
 task downloadDeps(type: Download) {
-	src 'https://github.com/minetest/' + folder + '/archive/master.zip'
+	src 'https://github.com/minetest/' + folder + '/archive/' + deps_ref + '.zip'
 	dest new File(buildDir, 'deps.zip')
 	overwrite false
 }
 
 task getDeps(dependsOn: downloadDeps, type: Copy) {
 	def deps = file('deps')
-	def f = file("$buildDir/" + folder + "-master")
+	def f = file("$buildDir/" + folder + "-" + deps_ref)
 
 	if (!deps.exists() && !f.exists()) {
 		from zipTree(downloadDeps.dest)
