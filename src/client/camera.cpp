@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include <cmath>
 #include "client/renderingengine.h"
+#include "client/content_cao.h"
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
@@ -349,7 +350,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Disable smoothing if climbing or flying, to avoid upwards offset of player model
 	// when seen in 3rd person view.
 	bool flying = g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly");
-	if (player_position.Y > old_player_position.Y && !player->is_climbing && !flying) {
+	float player_stepheight = player->getCAO() ? player->getCAO()->getStepHeight() : HUGE_VALF;
+	float upward_movement = player_position.Y - old_player_position.Y;
+	if (!player->is_climbing && !flying
+			&& upward_movement > 0 && upward_movement <= player_stepheight) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
