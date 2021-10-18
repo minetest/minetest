@@ -345,14 +345,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		player_position = player->getParent()->getPosition();
 
 	// Smooth the camera movement when the player instantly moves upward due to stepheight.
-	// To smooth the 'not touching_ground' stepheight, smoothing is necessary when jumping
+	// To smooth the 'not touching_ground' stepheight, smoothing is necessary after jumping
 	// or swimming (for when moving from liquid to land).
-	// Disable smoothing if climbing or flying, to avoid upwards offset of player model
-	// when seen in 3rd person view.
-	bool flying = g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly");
 	float player_stepheight = player->getCAO() ? player->getCAO()->getStepHeight() : HUGE_VALF;
 	float upward_movement = player_position.Y - old_player_position.Y;
-	if (!player->is_climbing && !flying
+	if (player->touching_ground
 			&& upward_movement > 0 && upward_movement <= player_stepheight) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
@@ -617,6 +614,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
+	const bool flying = g_settings->getBool("free_move")
+		&& m_client->checkLocalPrivilege("fly");
 	if ((walking || swimming || climbing) && !flying) {
 		// Start animation
 		m_view_bobbing_state = 1;
