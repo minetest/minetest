@@ -19,6 +19,8 @@
 		android:label="@string/label"
 		android:requestLegacyExternalStorage="true"
 		android:resizeableActivity="false"
+		android:hasFragileUserData="true"
+		android:isGame="true"
 		tools:ignore="UnusedAttribute">
 
 		<meta-data
