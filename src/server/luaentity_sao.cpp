@@ -108,7 +108,12 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		m_env->getScriptIface()->
 			luaentity_Activate(m_id, m_init_state, dtime_s);
 	} else {
+		// It's an unknown object
+		// Use entitystring as infotext for debugging
 		m_prop.infotext = m_init_name;
+		// Set unknown object texture
+		m_prop.textures.clear();
+		m_prop.textures.emplace_back("unknown_object.png");
 	}
 }
 

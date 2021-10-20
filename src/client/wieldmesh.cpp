@@ -458,9 +458,14 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
 		return;
-	} else if (!def.inventory_image.empty()) {
-		setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
-			tsrc, 1);
+	} else {
+		if (!def.inventory_image.empty()) {
+			setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
+				tsrc, 1);
+		} else {
+			setExtruded("no_texture.png", "", def.wield_scale, tsrc, 1);
+		}
+
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));

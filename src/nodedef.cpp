@@ -796,8 +796,10 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	TileDef tdef[6];
 	for (u32 j = 0; j < 6; j++) {
 		tdef[j] = tiledef[j];
-		if (tdef[j].name.empty())
-			tdef[j].name = "unknown_node.png";
+		if (tdef[j].name.empty()) {
+			tdef[j].name = "no_texture.png";
+			tdef[j].backface_culling = false;
+		}
 	}
 	// also the overlay tiles
 	TileDef tdef_overlay[6];
@@ -805,8 +807,13 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		tdef_overlay[j] = tiledef_overlay[j];
 	// also the special tiles
 	TileDef tdef_spec[6];
-	for (u32 j = 0; j < CF_SPECIAL_COUNT; j++)
+	for (u32 j = 0; j < CF_SPECIAL_COUNT; j++) {
 		tdef_spec[j] = tiledef_special[j];
+		if (tdef_spec[j].name.empty()) {
+			tdef_spec[j].name = "no_texture.png";
+			tdef_spec[j].backface_culling = false;
+		}
+	}
 
 	bool is_liquid = false;
 
@@ -1052,6 +1059,10 @@ void NodeDefManager::clear()
 	{
 		ContentFeatures f;
 		f.name = "unknown";
+		TileDef unknownTile;
+		unknownTile.name = "unknown_node.png";
+		for (int t = 0; t < 6; t++)
+			f.tiledef[t] = unknownTile;
 		// Insert directly into containers
 		content_t c = CONTENT_UNKNOWN;
 		m_content_features[c] = f;
