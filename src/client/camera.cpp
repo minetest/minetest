@@ -186,9 +186,7 @@ void Camera::step(f32 dtime)
 				m_view_bobbing_anim -= offset;
 			} else if (m_view_bobbing_anim > 0.75) {
 				m_view_bobbing_anim += offset;
-			}
-
-			if (m_view_bobbing_anim < 0.5) {
+			} else if (m_view_bobbing_anim < 0.5) {
 				m_view_bobbing_anim += offset;
 				if (m_view_bobbing_anim > 0.5)
 					m_view_bobbing_anim = 0.5;
@@ -410,41 +408,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
-		#if 1
 		f32 bobknob = 1.2;
 		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
-		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(
 			0.3 * bobdir * sin(bobfrac * M_PI),
 			-0.28 * bobtmp * bobtmp,
 			0.);
 
-		//rel_cam_pos += 0.2 * bobvec;
-		//rel_cam_target += 0.03 * bobvec;
-		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * M_PI);
-		float f = 1.0;
-		f *= m_cache_view_bobbing_amount;
-		rel_cam_pos += bobvec * f;
-		//rel_cam_target += 0.995 * bobvec * f;
-		rel_cam_target += bobvec * f;
-		rel_cam_target.Z -= 0.005 * bobvec.Z * f;
-		//rel_cam_target.X -= 0.005 * bobvec.X * f;
-		//rel_cam_target.Y -= 0.005 * bobvec.Y * f;
-		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * M_PI * f);
-		#else
-		f32 angle_deg = 1 * bobdir * sin(bobfrac * M_PI);
-		f32 angle_rad = angle_deg * M_PI / 180;
-		f32 r = 0.05;
-		v3f off = v3f(
-			r * sin(angle_rad),
-			r * (cos(angle_rad) - 1),
-			0);
-		rel_cam_pos += off;
-		//rel_cam_target += off;
-		rel_cam_up.rotateXYBy(angle_deg);
-		#endif
-
+		rel_cam_pos += bobvec * m_cache_view_bobbing_amount;
+		rel_cam_target += bobvec * m_cache_view_bobbing_amount;
+		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * M_PI * m_cache_view_bobbing_amount);
 	}
 
 	// Compute absolute camera position and target
