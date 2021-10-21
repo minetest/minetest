@@ -809,10 +809,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	TileDef tdef_spec[6];
 	for (u32 j = 0; j < CF_SPECIAL_COUNT; j++) {
 		tdef_spec[j] = tiledef_special[j];
-		if (tdef_spec[j].name.empty()) {
-			tdef_spec[j].name = "no_texture.png";
-			tdef_spec[j].backface_culling = false;
-		}
 	}
 
 	bool is_liquid = false;
