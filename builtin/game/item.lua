@@ -499,7 +499,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			return result
 		end
 	end
-	if itemstack:take_item() == nil then
+	if itemstack:take_item():is_empty() then
 		return itemstack
 	end
 
