@@ -614,7 +614,7 @@ shadow_poisson_filter (Poisson filtering) bool true
 #   but also uses more resources.
 shadow_filters (Shadow filter quality) enum 1 0,1,2
 
-#    Enable colored shadows.
+#    Enable colored shadows. 
 #    On true translucent nodes cast colored shadows. This is expensive.
 shadow_map_color (Colored shadows) bool false
 
@@ -943,10 +943,6 @@ screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
 #    1 means worst quality; 100 means best quality.
 #    Use 0 for default quality.
 screenshot_quality (Screenshot quality) int 0 0 100
-
-#    Screenshot interlacing. Only used for PNG format.
-#    true means Adam7 interlacing; false means no interlacing.
-screenshot_interlacing (Screenshot interlacing) bool true
 
 [*Advanced]
 

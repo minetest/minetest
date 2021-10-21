@@ -1838,8 +1838,8 @@ void Client::makeScreenshot()
 
 	u32 encoding_param;
 	if (filename_ext == ".png") {
-		bool enable_interlacing = g_settings->getBool("screenshot_interlacing");
-		encoding_param = enable_interlacing ? 1 : 0;
+		// Enable interlacing
+		encoding_param = 1;
 	} else {
 		u32 quality = (u32)g_settings->getS32("screenshot_quality");
 		quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
