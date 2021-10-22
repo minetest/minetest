@@ -344,13 +344,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (player->getParent())
 		player_position = player->getParent()->getPosition();
 
-	// Smooth the camera movement when the player instantly moves upward due to stepheight.
-	// To smooth the 'not touching_ground' stepheight, smoothing is necessary after jumping
-	// or swimming (for when moving from liquid to land).
+	// Smooth the camera movement after the player instantly moves upward due to stepheight.
+	// The smoothing usually continues until the camera position reaches the player position.
 	float player_stepheight = player->getCAO() ? player->getCAO()->getStepHeight() : HUGE_VALF;
 	float upward_movement = player_position.Y - old_player_position.Y;
-	if (player->touching_ground
-			&& upward_movement > 0 && upward_movement <= player_stepheight) {
+	if (upward_movement < 0.01f || upward_movement > player_stepheight) {
+		m_stepheight_smooth_active = false;
+	} else if (player->touching_ground) {
+		m_stepheight_smooth_active = true;
+	}
+	if (m_stepheight_smooth_active) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
