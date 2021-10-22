@@ -65,7 +65,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
 if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
-	find_package(IrrlichtMt QUIET PATHS "${IRRLICHTMT_BUILD_DIR}")
+	find_package(IrrlichtMt QUIET
+		PATHS "${IRRLICHTMT_BUILD_DIR}"
+		NO_DEFAULT_PATH
+)
 
 	if(NOT TARGET IrrlichtMt::IrrlichtMt)
 		# find_package() searches certain subdirectories. ${PATH}/cmake is not
