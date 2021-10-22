@@ -287,7 +287,7 @@ function core.encode_png(width, height, data, compression)
 	local expected_byte_count = width * height * 4
 
 	if type(data) ~= "table" and type(data) ~= "string" then
-		error("Incorrect type for 'height', expected table or string, got " .. type(height))
+		error("Incorrect type for 'data', expected table or string, got " .. type(data))
 	end
 
 	local data_length = type(data) == "table" and #data * 4 or string.len(data)
