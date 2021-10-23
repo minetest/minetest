@@ -402,6 +402,20 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	m_hp = rangelim(hp, 0, U16_MAX);
 }
 
+void LuaEntitySAO::setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation, bool force_visible)
+{
+	auto *old_parent = getParent();
+	UnitSAO::setAttachment(parent_id, bone, position, rotation, force_visible);
+	if (old_parent && !getParent()) {
+		// Detached. Preserve velocity from the moving parent.
+		while (old_parent->getParent())
+			old_parent = old_parent->getParent();
+
+		setVelocity(old_parent->getVelocity());
+	}
+}
+
 void LuaEntitySAO::setVelocity(v3f velocity)
 {
 	m_velocity = velocity;

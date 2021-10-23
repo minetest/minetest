@@ -62,6 +62,9 @@ public:
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	u16 getHP() const { return m_hp; }
 
+	void setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation, bool force_visible);
+
 	/*
 		LuaEntitySAO-specific functions
 	*/
