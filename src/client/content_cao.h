@@ -157,18 +157,23 @@ public:
 
 	void processInitData(const std::string &data);
 
+	/*
+		Physics-related
+	*/
 	bool getCollisionBox(aabb3f *toset) const;
 
 	bool collideWithObjects() const;
 
 	virtual bool getSelectionBox(aabb3f *toset) const;
 
-	const v3f getPosition() const;
+	v3f getPosition() const;
 
 	void setPosition(const v3f &pos)
 	{
 		pos_translator.val_current = pos;
 	}
+
+	v3f getVelocity() const;
 
 	inline const v3f &getRotation() const { return m_rotation; }
 
@@ -220,6 +225,9 @@ public:
 		m_is_visible = toset;
 	}
 
+	/*
+		Attachments
+	*/
 	void setChildrenVisible(bool toset);
 	void setAttachment(int parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible);

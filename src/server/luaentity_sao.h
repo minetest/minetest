@@ -36,9 +36,13 @@ public:
 	{
 	}
 	~LuaEntitySAO();
+
+	/*
+		Overloaded functions from ServerActiveObject
+	*/
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
-	virtual void addedToEnvironment(u32 dtime_s);
+	void addedToEnvironment(u32 dtime_s);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
 	bool isStaticAllowed() const { return m_prop.static_save; }
@@ -48,19 +52,23 @@ public:
 			ServerActiveObject *puncher = nullptr,
 			float time_from_last_punch = 1000000.0f);
 	void rightClick(ServerActiveObject *clicker);
+
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
+	v3f getVelocity() const { return m_velocity; }
+
 	float getMinimumSavedMovement();
 	std::string getDescription();
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
-	u16 getHP() const;
+	u16 getHP() const { return m_hp; }
 
-	/* LuaEntitySAO-specific */
+	/*
+		LuaEntitySAO-specific functions
+	*/
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity) { m_velocity += velocity; }
-	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
-	v3f getAcceleration();
+	v3f getAcceleration() { return m_acceleration; }
 
 	void setTextureMod(const std::string &mod);
 	std::string getTextureMod() const;

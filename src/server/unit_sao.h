@@ -63,9 +63,9 @@ public:
 	// Attachments
 	ServerActiveObject *getParent() const;
 	inline bool isAttached() const { return getParent(); }
-	void setAttachment(int parent_id, const std::string &bone, v3f position,
+	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position,
+	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const;
 	void clearChildAttachments();
 	void clearParentAttachment();

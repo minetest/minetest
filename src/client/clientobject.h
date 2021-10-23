@@ -44,22 +44,28 @@ public:
 
 	virtual void updateLight(u32 day_night_ratio) {}
 
-	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
-	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
-	virtual bool collideWithObjects() const { return false; }
-	virtual const v3f getPosition() const { return v3f(0.0f); }
-	virtual scene::ISceneNode *getSceneNode() const
-	{ return NULL; }
+	virtual scene::ISceneNode *getSceneNode() const { return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const
 	{ return NULL; }
 	virtual bool isLocalPlayer() const { return false; }
 
+	/*
+		Physics-related
+	*/
+	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
+	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
+	virtual bool collideWithObjects() const { return false; }
+	virtual bool doShowSelectionBox() { return true; }
+	virtual v3f getPosition() const { return v3f(0.0f); }
+	virtual v3f getVelocity() const { return v3f(0.0f); }
+
+	/*
+		Attachments
+	*/
 	virtual ClientActiveObject *getParent() const { return nullptr; };
 	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual void updateAttachments() {};
-
-	virtual bool doShowSelectionBox() { return true; }
 
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env) {}

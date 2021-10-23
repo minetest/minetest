@@ -87,9 +87,19 @@ public:
 	std::string getClientInitializationData(u16 protocol_version);
 	void getStaticData(std::string *result) const;
 	void step(float dtime, bool send_recommended);
+
+	void setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation, bool force_visible);
+
+	/*
+		Physics: position, direction, view, etc
+	*/
+
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
+	v3f getVelocity() const;
+
 	void setPlayerYaw(const float yaw);
 	// Data should not be sent at player initialization
 	void setPlayerYawAndSend(const float yaw);
@@ -141,7 +151,9 @@ public:
 	RemotePlayer *getPlayer() { return m_player; }
 	session_t getPeerID() const { return m_peer_id; }
 
-	// Cheat prevention
+	/*
+		Cheat prevention
+	*/
 
 	v3f getLastGoodPosition() const { return m_last_good_position; }
 	float resetTimeFromLastPunch()

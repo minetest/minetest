@@ -406,7 +406,7 @@ bool GenericCAO::getSelectionBox(aabb3f *toset) const
 	return true;
 }
 
-const v3f GenericCAO::getPosition() const
+v3f GenericCAO::getPosition() const
 {
 	if (!getParent())
 		return pos_translator.val_current;
@@ -419,6 +419,15 @@ const v3f GenericCAO::getPosition() const
 	}
 
 	return m_position;
+}
+
+v3f GenericCAO::getVelocity() const
+{
+	if (m_is_local_player) {
+		LocalPlayer *player = m_env->getLocalPlayer();
+		return player->getSpeed();
+	}
+	return m_velocity;
 }
 
 const bool GenericCAO::isImmortal()
@@ -465,7 +474,7 @@ void GenericCAO::setChildrenVisible(bool toset)
 void GenericCAO::setAttachment(int parent_id, const std::string &bone,
 		v3f position, v3f rotation, bool force_visible)
 {
-	int old_parent = m_attachment_parent_id;
+	auto *old_parent = m_env->getActiveObject(m_attachment_parent_id);
 	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
@@ -474,9 +483,9 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone,
 
 	ClientActiveObject *parent = m_env->getActiveObject(parent_id);
 
-	if (parent_id != old_parent) {
-		if (auto *o = m_env->getActiveObject(old_parent))
-			o->removeAttachmentChild(m_id);
+	if (parent != old_parent) {
+		if (old_parent)
+			old_parent->removeAttachmentChild(m_id);
 		if (parent)
 			parent->addAttachmentChild(m_id);
 	}
@@ -494,6 +503,18 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone,
 		// Local players need to have this set,
 		// otherwise first person attachments fail.
 		m_is_visible = true;
+	}
+
+	if (old_parent && !parent && m_client->getProtoVersion() >= 40) {
+		// Detached. Preserve velocity from the moving parent.
+		while (old_parent->getParent())
+			old_parent = old_parent->getParent();
+
+		m_velocity = old_parent->getVelocity();
+		if (m_is_local_player) {
+			LocalPlayer *player = m_env->getLocalPlayer();
+			player->setSpeed(m_velocity);
+		}
 	}
 }
 

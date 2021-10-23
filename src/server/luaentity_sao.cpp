@@ -402,29 +402,14 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	m_hp = rangelim(hp, 0, U16_MAX);
 }
 
-u16 LuaEntitySAO::getHP() const
-{
-	return m_hp;
-}
-
 void LuaEntitySAO::setVelocity(v3f velocity)
 {
 	m_velocity = velocity;
 }
 
-v3f LuaEntitySAO::getVelocity()
-{
-	return m_velocity;
-}
-
 void LuaEntitySAO::setAcceleration(v3f acceleration)
 {
 	m_acceleration = acceleration;
-}
-
-v3f LuaEntitySAO::getAcceleration()
-{
-	return m_acceleration;
 }
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)

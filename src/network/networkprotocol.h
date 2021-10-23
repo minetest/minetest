@@ -208,6 +208,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 40:
 		Added 'basic_debug' privilege
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
+		Preserved velocity on detach
 */
 
 #define LATEST_PROTOCOL_VERSION 40

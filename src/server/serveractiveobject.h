@@ -95,6 +95,7 @@ public:
 	// continuous: if true, object does not stop immediately at pos
 	virtual void moveTo(v3f pos, bool continuous)
 		{ setBasePosition(pos); }
+	virtual v3f getVelocity() const { return v3f(); }
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
 	virtual float getMinimumSavedMovement();

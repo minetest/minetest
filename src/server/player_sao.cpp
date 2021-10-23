@@ -303,6 +303,20 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	sendOutdatedData();
 }
 
+void PlayerSAO::setAttachment(int parent_id, const std::string &bone, v3f position,
+	v3f rotation, bool force_visible)
+{
+	auto *old_parent = getParent();
+	UnitSAO::setAttachment(parent_id, bone, position, rotation, force_visible);
+	if (old_parent && !getParent() && m_player->protocol_version >= 40) {
+		// Detached. Preserve velocity from the moving parent.
+		while (old_parent->getParent())
+			old_parent = old_parent->getParent();
+
+		setMaxSpeedOverride(old_parent->getVelocity());
+	}
+}
+
 std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 {
 	std::ostringstream os(std::ios::binary);
@@ -361,6 +375,11 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+}
+
+v3f PlayerSAO::getVelocity() const
+{
+	return m_player ? m_player->getSpeed() : v3f();
 }
 
 void PlayerSAO::setPlayerYaw(const float yaw)
