@@ -6436,19 +6436,19 @@ object you are working with still exists.
 
 It is possible to attach objects to other objects (`set_attach` method).
 
-When an object is attached, its position gets relative to the parent`s one and
-rotation is a sum of its own, the parent`s and relative rotations. Standard
-methods like 'set_pos' and 'set_rotation' won`t work, you should call repeatedly
-`set_attach` with already new position or rotation tables.
+When an object is attached, its position and rotation are set relatively to the parent`s position and
+rotation. Note, the resulted child's rotation is a sum of its own, the parent`s and relative rotations.
 
-**Bug**: keep in mind to multiply relative position by 10 when attaching to make it actually proper!
+`get_pos` and `get_rotation` will always return the parent's values and can't be set directly.
+To change position or rotation call `set_attach` again with the new values.
+
+**Note**: the relative position in 'set_attach' must be multiplied by 10 to set it actually correctly.
 
 Example:
 `child:set_attach(parent, "", vector.multiply(vector.subtract(child:get_pos(), parent:get_pos()), 10))`.
 
-It is also possible to set bones for parent objects like in Blender (`set_bone_position` method)
-and use them for child ones to adjust their position/rotation. After assignment a bone to an attached object,
-it will follow movement and rotation of that bone.
+It is also possible to attach to a bone of the parent object.
+After assignment a bone to an attached object, the child will follow movement and rotation of that bone.
 
 
 ### Methods
