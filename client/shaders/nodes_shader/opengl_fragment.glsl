@@ -1,5 +1,6 @@
 uniform sampler2D baseTexture;
 
+uniform vec3 dayLight;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
@@ -518,8 +519,12 @@ void main(void)
 
 	shadow_int *= f_adj_shadow_strength;
 	
-	// apply shadow (+color) as a factor to the natural light portion of the color
-	col.rgb *= adjusted_night_ratio + (1.0 - adjusted_night_ratio) * (1.0 - shadow_int * (1.0 - shadow_color));
+	// calculate fragment color from components:
+	col.rgb =
+			adjusted_night_ratio * col.rgb + // artificial light
+			(1.0 - adjusted_night_ratio) * ( // natural light
+					col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
+					dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	// col.r = 0.5 * clamp(getPenumbraRadius(ShadowMapSampler, posLightSpace.xy, posLightSpace.z, 1.0) / SOFTSHADOWRADIUS, 0.0, 1.0) + 0.5 * col.r;
 	// col.r = adjusted_night_ratio; // debug night ratio adjustment
 #endif
