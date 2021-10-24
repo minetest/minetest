@@ -240,6 +240,14 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_pop(L, 1);  // Pop old package
 
 #if USE_LUAJIT
+	// Copy bit functions, if they exist
+	lua_getfield(L, -1, "bit");
+	if (!lua_isnil(L, -1)) {
+		lua_newtable(L);
+		shallow_copy_table(L);
+		lua_setglobal(L, "bit");
+	}
+	lua_pop(L, 1);  // Pop old bit
 	// Copy safe jit functions, if they exist
 	lua_getfield(L, -1, "jit");
 	if (!lua_isnil(L, -1)) {
