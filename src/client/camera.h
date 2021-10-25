@@ -218,6 +218,8 @@ private:
 	// Camera offset
 	v3s16 m_camera_offset;
 
+	bool m_stepheight_smooth_active = false;
+
 	// Server-sent FOV variables
 	bool m_server_sent_fov = false;
 	f32 m_curr_fov_degrees, m_old_fov_degrees, m_target_fov_degrees;
