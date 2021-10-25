@@ -499,34 +499,40 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			return result
 		end
 	end
+	if itemstack:take_item():is_empty() then
+		return itemstack
+	end
+
 	local def = itemstack:get_definition()
-	if itemstack:take_item() ~= nil then
-		user:set_hp(user:get_hp() + hp_change)
+	if def and def.sound and def.sound.eat then
+		core.sound_play(def.sound.eat, {
+			pos = user:get_pos(),
+			max_hear_distance = 16
+		}, true)
+	end
 
-		if def and def.sound and def.sound.eat then
-			core.sound_play(def.sound.eat, {
-				pos = user:get_pos(),
-				max_hear_distance = 16
-			}, true)
-		end
-
-		if replace_with_item then
-			if itemstack:is_empty() then
-				itemstack:add_item(replace_with_item)
+	-- Changing hp might kill the player causing mods to do who-knows-what to the
+	-- inventory, so do this before set_hp().
+	if replace_with_item then
+		if itemstack:is_empty() then
+			itemstack:add_item(replace_with_item)
+		else
+			local inv = user:get_inventory()
+			-- Check if inv is null, since non-players don't have one
+			if inv and inv:room_for_item("main", {name=replace_with_item}) then
+				inv:add_item("main", replace_with_item)
 			else
-				local inv = user:get_inventory()
-				-- Check if inv is null, since non-players don't have one
-				if inv and inv:room_for_item("main", {name=replace_with_item}) then
-					inv:add_item("main", replace_with_item)
-				else
-					local pos = user:get_pos()
-					pos.y = math.floor(pos.y + 0.5)
-					core.add_item(pos, replace_with_item)
-				end
+				local pos = user:get_pos()
+				pos.y = math.floor(pos.y + 0.5)
+				core.add_item(pos, replace_with_item)
 			end
 		end
 	end
-	return itemstack
+	user:set_wielded_item(itemstack)
+
+	user:set_hp(user:get_hp() + hp_change)
+
+	return nil -- don't overwrite wield item a second time
 end
 
 function core.item_eat(hp_change, replace_with_item)

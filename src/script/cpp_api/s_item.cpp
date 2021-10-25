@@ -59,13 +59,14 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 	return true;
 }
 
-bool ScriptApiItem::item_OnPlace(ItemStack &item,
+bool ScriptApiItem::item_OnPlace(Optional<ItemStack> &ret_item,
 		ServerActiveObject *placer, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	const ItemStack &item = *ret_item;
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_place"))
 		return false;
@@ -82,22 +83,25 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer()->idef());
+			ret_item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
+	} else {
+		ret_item = nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnUse(ItemStack &item,
+bool ScriptApiItem::item_OnUse(Optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	const ItemStack &item = *ret_item;
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_use"))
 		return false;
@@ -109,22 +113,25 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if(!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer()->idef());
+			ret_item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
+	} else {
+		ret_item = nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item,
+bool ScriptApiItem::item_OnSecondaryUse(Optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	const ItemStack &item = *ret_item;
 	if (!getItemCallback(item.name.c_str(), "on_secondary_use"))
 		return false;
 
@@ -134,10 +141,12 @@ bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer()->idef());
+			ret_item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
+	} else {
+		ret_item = nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
