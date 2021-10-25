@@ -19,9 +19,9 @@ builddir="$( cd "$builddir" && pwd )"
 libdir=$builddir/libs
 
 # Test which win32 compiler is present
-which i686-w64-mingw32-gcc &>/dev/null &&
+command -v i686-w64-mingw32-gcc >/dev/null &&
 	toolchain_file=$dir/toolchain_i686-w64-mingw32.cmake
-which i686-w64-mingw32-gcc-posix &>/dev/null &&
+command -v i686-w64-mingw32-gcc-posix >/dev/null &&
 	toolchain_file=$dir/toolchain_i686-w64-mingw32-posix.cmake
 
 if [ -z "$toolchain_file" ]; then
@@ -146,7 +146,7 @@ cmake -S $sourcedir -B . \
 	-DCURL_INCLUDE_DIR=$libdir/curl/include \
 	-DCURL_LIBRARY=$libdir/curl/lib/libcurl.dll.a \
 	\
-	-DGETTEXT_MSGFMT=`which msgfmt` \
+	-DGETTEXT_MSGFMT=`command -v msgfmt` \
 	-DGETTEXT_DLL="$gettext_dlls" \
 	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
 	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \
