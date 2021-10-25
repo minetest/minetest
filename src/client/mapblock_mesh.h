@@ -205,6 +205,7 @@ public:
 
 	/// update transparent buffers to render towards the camera
 	void updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos);
+	void consolidateTransparentBuffers();
 
 	/// get the list of transparent buffers
 	std::vector<PartialMeshBuffer> &getTransparentBuffers()

@@ -1529,6 +1529,32 @@ void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &
 	}
 }
 
+void MapBlockMesh::consolidateTransparentBuffers()
+{
+	m_transparent_buffers.clear();
+
+	scene::SMeshBuffer *current_buffer = nullptr;
+	std::vector<u16> current_strain;
+
+	// use the fact that m_transparent_triangles is already arranged by buffer
+	for (const auto &t : m_transparent_triangles) {
+		if (current_buffer != t.buffer) {
+			if (current_buffer != nullptr) {
+				this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+				current_strain.clear();
+			}
+			current_buffer = t.buffer;
+		}
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (current_strain.size() > 0) {
+		this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+	}
+}
+
 video::SColor encode_light(u16 light, u8 emissive_light)
 {
 	// Get components

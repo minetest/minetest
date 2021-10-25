@@ -949,6 +949,9 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 void ClientMap::updateTransparentMeshBuffers()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
+	u32 sorted_blocks = 0;
+	u32 unsorted_blocks = 0;
+	const f32 MAX_SORT_DISTANCE = BS * BS * 75 * 75; // 75 nodes, 1.5x animation threshold
 
 	// Update the order of transparent mesh buffers in each mesh
 	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
@@ -957,10 +960,24 @@ void ClientMap::updateTransparentMeshBuffers()
 			continue;
 		
 		if (m_needs_update_transparent_meshes || 
-				block->mesh->getTransparentBuffers().size() == 0)
-			block->mesh->updateTransparentBuffers(m_camera_position, block->getPos());
+				block->mesh->getTransparentBuffers().size() == 0) {
+
+			v3s16 block_pos = block->getPos();
+			v3f block_pos_f = intToFloat(block_pos * MAP_BLOCKSIZE + MAP_BLOCKSIZE / 2, BS);
+			f32 distance = m_camera_position.getDistanceFromSQ(block_pos_f);
+			if (distance <= MAX_SORT_DISTANCE) {
+				block->mesh->updateTransparentBuffers(m_camera_position, block_pos);
+				++sorted_blocks;
+			}
+			else {
+				block->mesh->consolidateTransparentBuffers();
+				++unsorted_blocks;
+			}
+		}
 	}
 
+	g_profiler->avg("CM::Transparent Buffers - Sorted", sorted_blocks);
+	g_profiler->avg("CM::Transparent Buffers - Unsorted", unsorted_blocks);
 	m_needs_update_transparent_meshes = false;
 }
 
