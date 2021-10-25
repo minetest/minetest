@@ -1730,8 +1730,9 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() != 4 && m_formspec_version < FORMSPEC_API_VERSION) {
-		errorstream << "Invalid text element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	if (parts.size() != 4 &&
+			(parts.size() < 4 || m_formspec_version <= FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid hypertext element(" << parts.size() << "): '" << element << "'"  << std::endl;
 		return;
 	}
 
