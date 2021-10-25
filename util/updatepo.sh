@@ -13,7 +13,7 @@ abort() {
 # this script is. Relative paths are fine for us so we can just
 # use the following trick (works both for manual invocations and for
 # script found from PATH)
-scriptisin="$(dirname "$(which "$0")")"
+scriptisin="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # The script is executed from the parent of po/, which is also the
 # parent of the script directory and of the src/ directory.
