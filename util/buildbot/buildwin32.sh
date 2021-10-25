@@ -20,16 +20,24 @@ libdir=$builddir/libs
 
 # Test which win32 compiler is present
 command -v i686-w64-mingw32-gcc >/dev/null &&
-	toolchain_file=$dir/toolchain_i686-w64-mingw32.cmake
+	compiler=i686-w64-mingw32-gcc
 command -v i686-w64-mingw32-gcc-posix >/dev/null &&
-	toolchain_file=$dir/toolchain_i686-w64-mingw32-posix.cmake
+	compiler=i686-w64-mingw32-gcc-posix
 
-if [ -z "$toolchain_file" ]; then
+if [ -z "$compiler" ]; then
 	echo "Unable to determine which mingw32 compiler to use"
 	exit 1
 fi
+toolchain_file=$dir/toolchain_${compiler%-gcc}.cmake
 echo "Using $toolchain_file"
 
+tmp=$(dirname "$(command -v $compiler)")/../i686-w64-mingw32/bin
+runtime_dlls=
+[ -d "$tmp" ] && runtime_dlls=$(echo $tmp/lib{gcc_,stdc++-,winpthread-}*.dll | tr ' ' ';')
+[ -z "$runtime_dlls" ] &&
+	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
+
+# Get stuff
 irrlicht_version=1.9.0mt3
 ogg_version=1.3.4
 vorbis_version=1.3.7
@@ -63,7 +71,6 @@ download () {
 	fi
 }
 
-# Get stuff
 cd $libdir
 download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip"
@@ -108,6 +115,7 @@ cmake -S $sourcedir -B . \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
 	-DBUILD_CLIENT=1 -DBUILD_SERVER=0 \
+	-DEXTRA_DLL="$runtime_dll" \
 	\
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
