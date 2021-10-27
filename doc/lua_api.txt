@@ -7029,7 +7029,7 @@ It can be created via `Settings(filename)`.
 ### Methods
 
 * `get(key)`: returns a value.
-	* Returns `nil` if `key` is not found or default was not changed.
+    * Returns `nil` if `key` is not found or default was not changed.
 * `get_bool(key, [default])`: returns a boolean.
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found or default was not changed.
