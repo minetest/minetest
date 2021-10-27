@@ -7028,10 +7028,11 @@ It can be created via `Settings(filename)`.
 
 ### Methods
 
-* `get(key)`: returns a value
-* `get_bool(key, [default])`: returns a boolean
+* `get(key)`: returns a value.
+	* Returns `nil` if `key` is not found or default was not changed.
+* `get_bool(key, [default])`: returns a boolean.
     * `default` is the value returned if `key` is not found.
-    * Returns `nil` if `key` is not found and `default` not specified.
+    * Returns `nil` if `key` is not found or default was not changed.
 * `get_np_group(key)`: returns a NoiseParams table
 * `get_flags(key)`:
     * Returns `{flag = true/false, ...}` according to the set flags.
