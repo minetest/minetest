@@ -385,11 +385,8 @@ bool PrioritySortedMod::addDependingMod(const std::string &modname,
 			// Step 4: Reached the very same mod again.
 			// Stop the circular dependencies
 
-			// clang-format off
 			warningstream << "Detected circular dependencies in mod '" <<
 					modname << "'" << std::endl;
-			// clang-format on
-
 			return false;
 		}
 		return true; // The dependency trees merge. Nothing unusual
@@ -476,10 +473,8 @@ void ModConfiguration::resolveDependencies()
 
 	for (auto &mod : mods) {
 		m_sorted_mods.push_back(*mod->spec);
-		// clang-format off
 		verbosestream << "Sorted mod: " << mod->spec->name <<
 				"\t depending=" << mod->deps_chain.size() << std::endl;
-		// clang-format on
 	}
 
 	// Step 6: Update the list of unsatisfied mods

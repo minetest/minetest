@@ -41,6 +41,7 @@ public:
 	void testGetModNames();
 	void testGetModMediaPathsWrongDir();
 	void testGetModMediaPaths();
+	void testModDependencies();
 };
 
 static TestServerModManager g_test_instance;
@@ -74,6 +75,7 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 	TEST(testGetModNames);
 	TEST(testGetModMediaPathsWrongDir);
 	TEST(testGetModMediaPaths);
+	TEST(testModDependencies);
 
 #ifdef WIN32
 	{
@@ -190,4 +192,85 @@ void TestServerModManager::testGetModMediaPaths()
 	std::vector<std::string> result;
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), false);
+}
+
+void TestServerModManager::testModDependencies()
+{
+	ModConfiguration mc(TEST_WORLDDIR);
+
+	/* Dependencies
+		NAME       HARD-DEPEND         OPT-DEPEND
+		default    (none)
+		dye        default
+		wool       default, dye
+		mesecons   default, invalid
+		pipeworks  default             mesecons
+		technic    pipeworks, mesecons
+		circ_1     default             circ_2
+		circ_2     circ_3
+		circ_3     circ_1
+
+		Expected:
+			mesecons:  unsatisfied dependencies (error)
+			pipeworks: opt-depend "mesecons" unsatisfied (ok)
+			technic:   unsatisfied dependencies (error)
+			circ_1:    circular reference. circ_2 not met
+	*/
+	std::vector<ModSpec> mods;
+	mods.push_back(ModSpec("default"));
+	mods.push_back(ModSpec("dye"));
+	mods[mods.size() - 1].depends.insert("default");
+
+	mods.push_back(ModSpec("wool"));
+	mods[mods.size() - 1].depends.insert("default");
+	mods[mods.size() - 1].depends.insert("dye");
+
+	mods.push_back(ModSpec("mesecons"));
+	mods[mods.size() - 1].depends.insert("default");
+	mods[mods.size() - 1].depends.insert("invalid"); // unknown mod
+
+	mods.push_back(ModSpec("pipeworks"));
+	mods[mods.size() - 1].depends.insert("default");
+	mods[mods.size() - 1].optdepends.insert("mesecons");
+
+	mods.push_back(ModSpec("technic"));
+	mods[mods.size() - 1].depends.insert("pipeworks");
+	mods[mods.size() - 1].depends.insert("mesecons");
+
+	mods.push_back(ModSpec("circ_1"));
+	mods[mods.size() - 1].depends.insert("default");
+	mods[mods.size() - 1].optdepends.insert("circ_2");
+
+	mods.push_back(ModSpec("circ_2"));
+	mods[mods.size() - 1].depends.insert("circ_3");
+	mods.push_back(ModSpec("circ_3"));
+	mods[mods.size() - 1].depends.insert("circ_1");
+
+	mc.addMods(mods);
+	mc.resolveDependencies();
+
+	const auto &unsatisfied = mc.getUnsatisfiedMods();
+	const auto &sorted = mc.getMods();
+	UASSERT(unsatisfied.size() == 2); // mesecons, technic
+	UASSERT(sorted.size() == mods.size() - 2); // the rest
+
+	auto find_mod = [] (const std::vector<ModSpec> &where, const std::string &name) {
+		return std::find_if(where.begin(), where.end(), [&] (const ModSpec &spec) {
+			return spec.name == name;
+		});
+	};
+	UASSERT(find_mod(unsatisfied, "mesecons") != unsatisfied.end());
+	UASSERT(find_mod(unsatisfied, "technic") != unsatisfied.end());
+
+	// Check whether mods are correctly loaded after each other
+	auto pos_default = find_mod(sorted, "default");
+	auto pos_dye     = find_mod(sorted, "dye");
+	auto pos_wool    = find_mod(sorted, "wool");
+	UASSERT(pos_dye > pos_default);
+	UASSERT(pos_wool > pos_dye);
+
+	auto pos_circ_1 = find_mod(sorted, "circ_1");
+	auto pos_circ_3 = find_mod(sorted, "circ_3");
+	UASSERT(pos_circ_1 > pos_default);
+	UASSERT(pos_circ_3 > pos_circ_1);
 }

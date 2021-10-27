@@ -94,6 +94,10 @@ public:
 	void printUnsatisfiedModsError() const;
 
 protected:
+#if BUILD_UNITTESTS
+	friend class TestServerModManager;
+#endif
+
 	ModConfiguration(const std::string &worldpath);
 	// adds all mods in the given path. used for games, modpacks
 	// and world-specific mods (worldmods-folders)
