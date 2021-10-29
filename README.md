@@ -427,6 +427,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=../build/macos/ \
     -DRUN_IN_PLACE=FALSE \
     -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
+
 make -j2
 make install
 ```
