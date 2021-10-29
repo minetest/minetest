@@ -148,7 +148,7 @@ For Debian/Ubuntu users:
 For Fedora users:
 
     sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
-    
+
 For Arch users:
 
     sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd
@@ -312,10 +312,6 @@ Library specific options:
     ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
     ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
-### Compiling on MacOS
-
-[TODO]
-
 ### Compiling on Windows using MSVC
 
 ### Requirements
@@ -386,6 +382,16 @@ Build the binaries as described above, but make sure you unselect `RUN_IN_PLACE`
 Open the generated project file with Visual Studio. Right-click **Package** and choose **Generate**.
 It may take some minutes to generate the installer.
 
+### Compiling on MacOS
+
+#### Requirements
+- [Homebrew](https://brew.sh/)
+
+Dependencies can be installed using the popular macOS package manager Homebrew:
+
+```
+brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
+```
 
 Docker
 ------
