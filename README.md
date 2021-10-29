@@ -417,7 +417,6 @@ git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 
 #### Build
 
-Using cmake:
 ```
 mkdir cmakebuild
 cd cmakebuild
@@ -430,6 +429,12 @@ cmake .. \
     -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
 make -j2
 make install
+```
+
+#### Run
+
+```
+./build/macos/minetest.app/Contents/MacOS/minetest
 ```
 
 Docker
