@@ -217,33 +217,33 @@ void TestServerModManager::testModDependencies()
 			circ_1:    circular reference. circ_2 not met
 	*/
 	std::vector<ModSpec> mods;
-	mods.push_back(ModSpec("default"));
-	mods.push_back(ModSpec("dye"));
+	mods.emplace_back(ModSpec("default"));
+	mods.emplace_back(ModSpec("dye"));
 	mods[mods.size() - 1].depends.insert("default");
 
-	mods.push_back(ModSpec("wool"));
+	mods.emplace_back(ModSpec("wool"));
 	mods[mods.size() - 1].depends.insert("default");
 	mods[mods.size() - 1].depends.insert("dye");
 
-	mods.push_back(ModSpec("mesecons"));
+	mods.emplace_back(ModSpec("mesecons"));
 	mods[mods.size() - 1].depends.insert("default");
 	mods[mods.size() - 1].depends.insert("invalid"); // unknown mod
 
-	mods.push_back(ModSpec("pipeworks"));
+	mods.emplace_back(ModSpec("pipeworks"));
 	mods[mods.size() - 1].depends.insert("default");
 	mods[mods.size() - 1].optdepends.insert("mesecons");
 
-	mods.push_back(ModSpec("technic"));
+	mods.emplace_back(ModSpec("technic"));
 	mods[mods.size() - 1].depends.insert("pipeworks");
 	mods[mods.size() - 1].depends.insert("mesecons");
 
-	mods.push_back(ModSpec("circ_1"));
+	mods.emplace_back(ModSpec("circ_1"));
 	mods[mods.size() - 1].depends.insert("default");
 	mods[mods.size() - 1].optdepends.insert("circ_2");
 
-	mods.push_back(ModSpec("circ_2"));
+	mods.emplace_back(ModSpec("circ_2"));
 	mods[mods.size() - 1].depends.insert("circ_3");
-	mods.push_back(ModSpec("circ_3"));
+	mods.emplace_back(ModSpec("circ_3"));
 	mods[mods.size() - 1].depends.insert("circ_1");
 
 	mc.addMods(mods);
