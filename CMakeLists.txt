@@ -52,7 +52,6 @@ set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 
-
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -64,8 +63,21 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
+set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
+if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
+	find_package(IrrlichtMt QUIET
+		PATHS "${IRRLICHTMT_BUILD_DIR}"
+		NO_DEFAULT_PATH
+)
+
+	if(NOT TARGET IrrlichtMt::IrrlichtMt)
+		# find_package() searches certain subdirectories. ${PATH}/cmake is not
+		# the only one, but it is the one where IrrlichtMt is supposed to export
+		# IrrlichtMtConfig.cmake
+		message(FATAL_ERROR "Could not find IrrlichtMtConfig.cmake in ${IRRLICHTMT_BUILD_DIR}/cmake.")
+	endif()
 # This is done here so that relative search paths are more reasonable
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
 	if(BUILD_CLIENT)
 		# tell IrrlichtMt to create a static library
@@ -101,9 +113,11 @@ else()
 		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
 		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
 			INTERFACE_INCLUDE_DIRECTORIES "${IRRLICHT_INCLUDE_DIR}")
-	else()
-		message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 	endif()
+endif()
+
+if(TARGET IrrlichtMt::IrrlichtMt)
+	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 endif()
 
 
