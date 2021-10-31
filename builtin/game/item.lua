@@ -613,7 +613,7 @@ function core.node_dig(pos, node, digger)
 	if wielded then
 		local wdef = wielded:get_definition()
 		local tp = wielded:get_tool_capabilities()
-		local dp = core.get_dig_params(def and def.groups, tp)
+		local dp = core.get_dig_params(def and def.groups, tp, wielded:get_wear())
 		if wdef and wdef.after_use then
 			wielded = wdef.after_use(wielded, digger, node, dp) or wielded
 		else

@@ -109,8 +109,8 @@ public:
 		Interaction interface
 	*/
 
-	u16 punch(v3f dir, const ToolCapabilities *toolcap, ServerActiveObject *puncher,
-			float time_from_last_punch);
+	u32 punch(v3f dir, const ToolCapabilities *toolcap, ServerActiveObject *puncher,
+			float time_from_last_punch, u16 initial_wear = 0);
 	void rightClick(ServerActiveObject *clicker);
 	void setHP(s32 hp, const PlayerHPChangeReason &reason) override
 	{

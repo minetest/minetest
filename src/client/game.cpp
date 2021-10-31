@@ -3619,7 +3619,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// cheat detection.
 	// Get digging parameters
 	DigParams params = getDigParams(nodedef_manager->get(n).groups,
-			&selected_item.getToolCapabilities(itemdef_manager));
+			&selected_item.getToolCapabilities(itemdef_manager),
+			selected_item.wear);
 
 	// If can't dig, try hand
 	if (!params.diggable) {

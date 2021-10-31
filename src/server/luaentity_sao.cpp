@@ -305,10 +305,11 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	*result = os.str();
 }
 
-u16 LuaEntitySAO::punch(v3f dir,
+u32 LuaEntitySAO::punch(v3f dir,
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
-		float time_from_last_punch)
+		float time_from_last_punch,
+		u16 initial_wear)
 {
 	if (!m_registered) {
 		// Delete unknown LuaEntities when punched
@@ -326,7 +327,8 @@ u16 LuaEntitySAO::punch(v3f dir,
 			m_armor_groups,
 			toolcap,
 			&tool_item,
-			time_from_last_punch);
+			time_from_last_punch,
+			initial_wear);
 
 	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir, result.did_punch ? result.damage : 0);

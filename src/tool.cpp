@@ -183,9 +183,74 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 	}
 }
 
-DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp)
+static u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 {
+	if (uses == 0) {
+		// Trivial case: Infinite uses
+		return 0;
+	}
+	/* Finite uses. This is not trivial,
+	as the maximum wear is not neatly evenly divisible by
+	most possible uses numbers. For example, for 128
+	uses, the calculation of wear is trivial, as
+	65536 / 128 uses = 512 wear,
+	so the tool will get 512 wear 128 times in its lifetime.
+	But for a number like 130, this does not work:
+	65536 / 130 uses = 504.123... wear.
+	Since wear must be an integer, we will get
+	504*130 = 65520, which would lead to the wrong number
+	of uses.
+
+	Instead, we partition the "wear range" into blocks:
+	A block represents a single use and can be
+	of two possible sizes: normal and oversized.
+	A normal block is equal to floor(65536 / uses).
+	An oversized block is a normal block plus 1.
+	Then we determine how many oversized and normal
+	blocks we need and finally, whether we add
+	the normal wear or the oversized wear.
+
+	Example for 130 uses:
+	* Normal wear = 504
+	* Number of normal blocks = 114
+	* Oversized wear = 505
+	* Number of oversized blocks = 16
+
+	If we add everything together, we get:
+	  114*504 + 16*505 = 65536
+	*/
+	u32 result_wear;
+	u32 wear_normal = ((U16_MAX+1) / uses);
+	// Will be non-zero if its not evenly divisible
+	u16 blocks_oversize = (U16_MAX+1) % uses;
+	// Whether to add one extra wear point in case
+	// of oversized wear.
+	u16 wear_extra = 0;
+	if (blocks_oversize > 0) {
+		u16 blocks_normal = uses - blocks_oversize;
+		/* When the wear has reached this value, we
+		   know that wear_normal has been applied
+		   for blocks_normal times, therefore,
+		   only oversized blocks remain.
+		   This also implies the raw tool wear number
+		   increases a bit faster after this point,
+		   but this should be barely noticable by the
+		   player.
+		*/
+		u16 wear_extra_at = blocks_normal * wear_normal;
+		if (initial_wear >= wear_extra_at) {
+			wear_extra = 1;
+		}
+	}
+	result_wear = wear_normal + wear_extra;
+	return result_wear;
+}
+
+DigParams getDigParams(const ItemGroupList &groups,
+		const ToolCapabilities *tp,
+		const u16 initial_wear)
+{
+
 	// Group dig_immediate defaults to fixed time and no wear
 	if (tp->groupcaps.find("dig_immediate") == tp->groupcaps.cend()) {
 		switch (itemgroup_get(groups, "dig_immediate")) {
@@ -201,7 +266,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 	// Values to be returned (with a bit of conversion)
 	bool result_diggable = false;
 	float result_time = 0.0;
-	float result_wear = 0.0;
+	u32 result_wear = 0;
 	std::string result_main_group;
 
 	int level = itemgroup_get(groups, "level");
@@ -224,20 +289,22 @@ DigParams getDigParams(const ItemGroupList &groups,
 		if (!result_diggable || time < result_time) {
 			result_time = time;
 			result_diggable = true;
-			if (cap.uses != 0)
-				result_wear = 1.0 / cap.uses / pow(3.0, leveldiff);
-			else
-				result_wear = 0;
+			// The actual number of uses increases
+			// exponentially with leveldiff.
+			// If the levels are equal, real_uses equals cap.uses.
+			u32 real_uses = cap.uses * pow(3.0, leveldiff);
+			real_uses = MYMIN(real_uses, U16_MAX);
+			result_wear = calculateResultWear(real_uses, initial_wear);
 			result_main_group = groupname;
 		}
 	}
 
-	u16 wear_i = U16_MAX * result_wear;
-	return DigParams(result_diggable, result_time, wear_i, result_main_group);
+	return DigParams(result_diggable, result_time, result_wear, result_main_group);
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
-		const ToolCapabilities *tp, float time_from_last_punch)
+		const ToolCapabilities *tp, float time_from_last_punch,
+		u16 initial_wear)
 {
 	s16 damage = 0;
 	float result_wear = 0.0f;
@@ -249,10 +316,12 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		damage += damageGroup.second * punch_interval_multiplier * armor / 100.0;
 	}
 
-	if (tp->punch_attack_uses > 0)
-		result_wear = 1.0f / tp->punch_attack_uses * punch_interval_multiplier;
+	if (tp->punch_attack_uses > 0) {
+		result_wear = calculateResultWear(tp->punch_attack_uses, initial_wear);
+		result_wear *= punch_interval_multiplier;
+	}
 
-	u16 wear_i = U16_MAX * result_wear;
+	u32 wear_i = (u32) result_wear;
 	return {damage, wear_i};
 }
 
@@ -266,7 +335,8 @@ PunchDamageResult getPunchDamage(
 		const ItemGroupList &armor_groups,
 		const ToolCapabilities *toolcap,
 		const ItemStack *punchitem,
-		float time_from_last_punch
+		float time_from_last_punch,
+		u16 initial_wear
 ){
 	bool do_hit = true;
 	{
@@ -286,7 +356,8 @@ PunchDamageResult getPunchDamage(
 	if(do_hit)
 	{
 		HitParams hitparams = getHitParams(armor_groups, toolcap,
-				time_from_last_punch);
+				time_from_last_punch,
+				punchitem->wear);
 		result.did_punch = true;
 		result.wear = hitparams.wear;
 		result.damage = hitparams.hp;
