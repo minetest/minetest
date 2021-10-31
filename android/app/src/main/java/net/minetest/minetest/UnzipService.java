@@ -32,6 +32,7 @@ import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 
 import java.io.File;
@@ -200,6 +201,10 @@ public class UnzipService extends IntentService {
 	 * Migrates user data from deprecated external storage to app scoped storage
 	 */
 	private void migrate(Notification.Builder notificationBuilder, File newLocation) throws IOException {
+		if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.R) {
+			return;
+		}
+
 		File oldLocation = new File(Environment.getExternalStorageDirectory(), "Minetest");
 		if (!oldLocation.isDirectory())
 			return;

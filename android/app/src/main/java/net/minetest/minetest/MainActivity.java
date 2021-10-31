@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+				Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
 			checkPermission();
 		else
 			checkAppVersion();
