@@ -4,7 +4,7 @@ apply plugin: 'de.undercouch.download'
 android {
 	compileSdkVersion 29
 	buildToolsVersion '30.0.3'
-	ndkVersion '22.0.7026061'
+	ndkVersion "$ndk_version"
 	defaultConfig {
 		minSdkVersion 16
 		targetSdkVersion 29
@@ -50,53 +50,19 @@ android {
 }
 
 // get precompiled deps
-def folder = 'minetest_android_deps_binaries'
-
 task downloadDeps(type: Download) {
-	src 'https://github.com/minetest/' + folder + '/archive/master.zip'
+	src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
 	dest new File(buildDir, 'deps.zip')
 	overwrite false
 }
 
 task getDeps(dependsOn: downloadDeps, type: Copy) {
-	def deps = file('deps')
-	def f = file("$buildDir/" + folder + "-master")
-
-	if (!deps.exists() && !f.exists()) {
+	def deps = new File(buildDir.parent, 'deps')
+	if (!deps.exists()) {
+		deps.mkdir()
 		from zipTree(downloadDeps.dest)
-		into buildDir
-	}
-
-	doLast {
-		if (!deps.exists()) {
-			file(f).renameTo(file(deps))
-		}
-	}
-}
-
-// get sqlite
-def sqlite_ver = '3340000'
-task downloadSqlite(dependsOn: getDeps, type: Download) {
-	src 'https://www.sqlite.org/2020/sqlite-amalgamation-' + sqlite_ver + '.zip'
-	dest new File(buildDir, 'sqlite.zip')
-	overwrite false
-}
-
-task getSqlite(dependsOn: downloadSqlite, type: Copy) {
-	def sqlite = file('deps/Android/sqlite')
-	def f = file("$buildDir/sqlite-amalgamation-" + sqlite_ver)
-
-	if (!sqlite.exists() && !f.exists()) {
-		from zipTree(downloadSqlite.dest)
-		into buildDir
-	}
-
-	doLast {
-		if (!sqlite.exists()) {
-			file(f).renameTo(file(sqlite))
-		}
+		into deps
 	}
 }
 
 preBuild.dependsOn getDeps
-preBuild.dependsOn getSqlite
