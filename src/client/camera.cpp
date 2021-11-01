@@ -136,7 +136,7 @@ void Camera::notifyFovChange()
 bool Camera::successfullyCreated(std::string &error_message)
 {
 	if (!m_playernode) {
-		error_message = gettext("Failed to create the player scene node");
+		error_message = "Failed to create the player scene node";
 	} else if (!m_headnode) {
 		error_message = gettext("Failed to create the head scene node");
 	} else if (!m_cameranode) {

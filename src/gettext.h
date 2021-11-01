@@ -94,7 +94,7 @@ inline std::string fmtgettext(const char *format, Args&&... args)
 	std::size_t buf_size = 256;
 	buf.resize(buf_size);
 
-  format = gettext(format);
+	format = gettext(format);
 
 	int len = porting::mt_snprintf(&buf[0], buf_size, format, std::forward<Args>(args)...);
 	if (len <= 0) throw std::runtime_error("gettext format error: " + std::string(format));
