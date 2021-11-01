@@ -385,7 +385,7 @@ int ModApiUtil::l_mvdir(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *source = luaL_checkstring(L, 1);
 	const char *destination = luaL_checkstring(L, 2);
-	CHECK_SECURE_PATH(L, source, false);
+	CHECK_SECURE_PATH(L, source, true);
 	CHECK_SECURE_PATH(L, destination, true);
 
 	lua_pushboolean(L, fs::MoveDir(source, destination));
