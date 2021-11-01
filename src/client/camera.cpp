@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "fontengine.h"
 #include "script/scripting_client.h"
+#include "gettext.h"
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -131,28 +132,6 @@ void Camera::notifyFovChange()
 		m_transition_time = spec.transition_time;
 		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
 	}
-}
-
-bool Camera::successfullyCreated(std::string &error_message)
-{
-	if (!m_playernode) {
-		error_message = "Failed to create the player scene node";
-	} else if (!m_headnode) {
-		error_message = "Failed to create the head scene node";
-	} else if (!m_cameranode) {
-		error_message = "Failed to create the camera scene node";
-	} else if (!m_wieldmgr) {
-		error_message = "Failed to create the wielded item scene manager";
-	} else if (!m_wieldnode) {
-		error_message = "Failed to create the wielded item scene node";
-	} else {
-		error_message.clear();
-	}
-
-	if (m_client->modsLoaded())
-		m_client->getScript()->on_camera_ready(this);
-
-	return error_message.empty();
 }
 
 // Returns the fractional part of x
