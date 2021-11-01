@@ -86,6 +86,9 @@ private:
 	// cpdir(source, destination, remove_source)
 	static int l_cpdir(lua_State *L);
 
+	// mvdir(source, destination)
+	static int l_mvdir(lua_State *L);
+
 	// get_dir_list(path, is_dir)
 	static int l_get_dir_list(lua_State *L);
 

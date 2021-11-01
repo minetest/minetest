@@ -369,7 +369,7 @@ int ModApiUtil::l_rmdir(lua_State *L)
 	return 1;
 }
 
-// cpdir(source, destination, remove_source)
+// cpdir(source, destination)
 int ModApiUtil::l_cpdir(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -378,18 +378,20 @@ int ModApiUtil::l_cpdir(lua_State *L)
 	CHECK_SECURE_PATH(L, source, false);
 	CHECK_SECURE_PATH(L, destination, true);
 
-	bool remove_source = false;
+	lua_pushboolean(L, fs::CopyDir(source, destination));
+	return 1;
+}
 
-	if (!lua_isnil(L, 3))
-		remove_source = lua_toboolean(L, 3);
+// mpdir(source, destination)
+int ModApiUtil::l_mvdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *source = luaL_checkstring(L, 1);
+	const char *destination = luaL_checkstring(L, 2);
+	CHECK_SECURE_PATH(L, source, false);
+	CHECK_SECURE_PATH(L, destination, true);
 
-	bool retval = fs::CopyDir(source, destination);
-
-	if (retval && (remove_source)) {
-		CHECK_SECURE_PATH(L, source, true);
-		retval &= fs::RecursiveDelete(source);
-	}
-	lua_pushboolean(L, retval);
+	lua_pushboolean(L, fs::MoveDir(source, destination));
 	return 1;
 }
 
@@ -634,6 +636,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(mkdir);
 	API_FCT(rmdir);
 	API_FCT(cpdir);
+	API_FCT(mvdir);
 	API_FCT(get_dir_list);
 	API_FCT(safe_file_write);
 

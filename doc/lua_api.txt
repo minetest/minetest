@@ -4628,11 +4628,12 @@ Utilities
     * Removes a directory specified by `path`.
     * If `recursive` is set to `true`, the directory is recursively removed.
       Otherwise, the directory will only be removed if it is empty.
-* `minetest.cpdir(source, destination, remove_source)`: returns success.
+* `minetest.cpdir(source, destination)`: returns success.
     * Copies a directory specified by `path` to `destination`, `destination` is
       overwritten if it already exists.
-    * If `remove_source` is set to `true`, the `source` directory is removed
-      after copying to the `destination`.
+* `minetest.mvdir(source, destination)`: returns success.
+    * Moves a directory specified by `path` to `destination`, `destination` is
+      overwritten if it already exists.
 * `minetest.get_dir_list(path, [is_dir])`: returns list of entry names
     * is_dir is one of:
         * nil: return all entries,
