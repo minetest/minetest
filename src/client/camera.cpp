@@ -133,28 +133,6 @@ void Camera::notifyFovChange()
 	}
 }
 
-bool Camera::successfullyCreated(std::string &error_message)
-{
-	if (!m_playernode) {
-		error_message = "Failed to create the player scene node";
-	} else if (!m_headnode) {
-		error_message = gettext("Failed to create the head scene node");
-	} else if (!m_cameranode) {
-		error_message = gettext("Failed to create the camera scene node");
-	} else if (!m_wieldmgr) {
-		error_message = gettext("Failed to create the wielded item scene manager");
-	} else if (!m_wieldnode) {
-		error_message = gettext("Failed to create the wielded item scene node");
-	} else {
-		error_message.clear();
-	}
-
-	if (m_client->modsLoaded())
-		m_client->getScript()->on_camera_ready(this);
-
-	return error_message.empty();
-}
-
 // Returns the fractional part of x
 inline f32 my_modf(f32 x)
 {

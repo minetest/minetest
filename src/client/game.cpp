@@ -1341,8 +1341,8 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Camera
 	 */
 	camera = new Camera(*draw_control, client, m_rendering_engine);
-	if (!camera->successfullyCreated(*error_message))
-		return false;
+	if (client->modsLoaded())
+		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
 	/* Clouds

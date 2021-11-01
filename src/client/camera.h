@@ -136,9 +136,6 @@ public:
 	// Notify about new server-sent FOV and initialize smooth FOV transition
 	void notifyFovChange();
 
-	// Checks if the constructor was able to create the scene nodes
-	bool successfullyCreated(std::string &error_message);
-
 	// Step the camera: updates the viewing range and view bobbing.
 	void step(f32 dtime);
 
