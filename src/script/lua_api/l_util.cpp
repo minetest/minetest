@@ -356,10 +356,7 @@ int ModApiUtil::l_rmdir(lua_State *L)
 	const char *path = luaL_checkstring(L, 1);
 	CHECK_SECURE_PATH(L, path, true);
 
-	bool recursive = false;
-
-	if (!lua_isnil(L, 2))
-		recursive = lua_toboolean(L, 2);
+	bool recursive = readParam<bool>(L, 2, false);
 
 	if (recursive)
 		lua_pushboolean(L, fs::RecursiveDelete(path));
