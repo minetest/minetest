@@ -399,7 +399,7 @@ brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libp
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
 ```
- git clone --depth 1 https://github.com/minetest/minetest.git
+git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
