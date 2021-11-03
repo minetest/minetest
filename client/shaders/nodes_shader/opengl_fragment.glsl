@@ -514,8 +514,12 @@ void main(void)
 	// Power ratio was measured on torches in MTG (brightness = 14).
 	float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
 
-	if (f_normal_length != 0 && cosLight < 0.035) {
-		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, 0.035)/0.035);
+	// Apply self-shadowing when light falls at a narrow angle to the surface
+	// Cosine of the cut-off angle.
+	const float self_shadow_cutoff_cosine = 0.035;
+	if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
+		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+		shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 	}
 
 	shadow_int *= f_adj_shadow_strength;
