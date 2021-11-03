@@ -28,6 +28,8 @@ centroid varying vec2 varTexCoord;
 #endif
 
 varying vec3 eyeVec;
+varying float nightRatio;
+
 varying float vIDiff;
 
 const float e = 2.718281828459;
@@ -60,7 +62,7 @@ void main(void)
 	gl_Position = mWorldViewProj * inVertexPosition;
 
 	vPosition = gl_Position.xyz;
-	vNormal = inVertexNormal;
+	vNormal = (mWorld * vec4(inVertexNormal, 0.0)).xyz;
 	worldPosition = (mWorld * inVertexPosition).xyz;
 	eyeVec = -(mWorldView * inVertexPosition).xyz;
 
@@ -73,6 +75,7 @@ void main(void)
 		? 1.0
 		: directional_ambient(normalize(inVertexNormal));
 #endif
+	nightRatio = 0.0;
 
 #ifdef GL_ES
 	varColor = inVertexColor.bgra;
@@ -81,11 +84,12 @@ void main(void)
 #endif
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-
-	cosLight = max(0.0, dot(vNormal, -v_LightDirection));
-	float texelSize = 0.51;
-	float slopeScale = clamp(1.0 - cosLight, 0.0, 1.0);
+	vec3 nNormal = normalize(vNormal);
+	cosLight = dot(nNormal, -v_LightDirection);
+	float texelSize = 767.0 / f_textureresolution;
+	float slopeScale = clamp(1.0 - abs(cosLight), 0.0, 1.0);
 	normalOffsetScale = texelSize * slopeScale;
+	
 	if (f_timeofday < 0.2) {
 		adj_shadow_strength = f_shadow_strength * 0.5 *
 			(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
@@ -98,6 +102,5 @@ void main(void)
 			(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
 	}
 	f_normal_length = length(vNormal);
-
 #endif
 }
