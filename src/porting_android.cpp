@@ -152,48 +152,35 @@ static std::string javaStringToUTF8(jstring js)
 	return str;
 }
 
-// Calls static method if obj is NULL
-static std::string getAndroidPath(
-		jclass cls, jobject obj, jmethodID mt_getAbsPath, const char *getter)
-{
-	// Get getter method
-	jmethodID mt_getter;
-	if (obj)
-		mt_getter = jnienv->GetMethodID(cls, getter, "()Ljava/io/File;");
-	else
-		mt_getter = jnienv->GetStaticMethodID(cls, getter, "()Ljava/io/File;");
-
-	// Call getter
-	jobject ob_file;
-	if (obj)
-		ob_file = jnienv->CallObjectMethod(obj, mt_getter);
-	else
-		ob_file = jnienv->CallStaticObjectMethod(cls, mt_getter);
-
-	// Call getAbsolutePath
-	auto js_path = (jstring) jnienv->CallObjectMethod(ob_file, mt_getAbsPath);
-
-	return javaStringToUTF8(js_path);
-}
-
 void initializePathsAndroid()
 {
-	// Get Environment class
-	jclass cls_Env = jnienv->FindClass("android/os/Environment");
-	// Get File class
-	jclass cls_File = jnienv->FindClass("java/io/File");
-	// Get getAbsolutePath method
-	jmethodID mt_getAbsPath = jnienv->GetMethodID(cls_File,
-				"getAbsolutePath", "()Ljava/lang/String;");
-	std::string path_storage = getAndroidPath(cls_Env, nullptr,
-				mt_getAbsPath, "getExternalStorageDirectory");
+	// Set user and share paths
+	{
+		jmethodID getUserDataPath = jnienv->GetMethodID(nativeActivity,
+				"getUserDataPath", "()Ljava/lang/String;");
+		FATAL_ERROR_IF(getUserDataPath==nullptr,
+				"porting::initializePathsAndroid unable to find Java getUserDataPath method");
+		jobject result = jnienv->CallObjectMethod(app_global->activity->clazz, getUserDataPath);
+		const char *javachars = jnienv->GetStringUTFChars((jstring) result, nullptr);
+		path_user = javachars;
+		path_share = javachars;
+		path_locale  = path_share + DIR_DELIM + "locale";
+		jnienv->ReleaseStringUTFChars((jstring) result, javachars);
+	}
 
-	path_user    = path_storage + DIR_DELIM + PROJECT_NAME_C;
-	path_share   = path_storage + DIR_DELIM + PROJECT_NAME_C;
-	path_locale  = path_share + DIR_DELIM + "locale";
-	path_cache   = getAndroidPath(nativeActivity,
-			app_global->activity->clazz, mt_getAbsPath, "getCacheDir");
-	migrateCachePath();
+	// Set cache path
+	{
+		jmethodID getCachePath = jnienv->GetMethodID(nativeActivity,
+				"getCachePath", "()Ljava/lang/String;");
+		FATAL_ERROR_IF(getCachePath==nullptr,
+				"porting::initializePathsAndroid unable to find Java getCachePath method");
+		jobject result = jnienv->CallObjectMethod(app_global->activity->clazz, getCachePath);
+		const char *javachars = jnienv->GetStringUTFChars((jstring) result, nullptr);
+		path_cache = javachars;
+		jnienv->ReleaseStringUTFChars((jstring) result, javachars);
+
+		migrateCachePath();
+	}
 }
 
 void showInputDialog(const std::string &acceptButton, const std::string &hint,

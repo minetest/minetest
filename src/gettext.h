@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h" // for USE_GETTEXT
 #include <string>
+#include "porting.h"
 
 #if USE_GETTEXT
 	#include <libintl.h>
@@ -76,4 +77,32 @@ inline std::wstring fwgettext(const char *src, Args&&... args)
 	swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, std::forward<Args>(args)...);
 	delete[] str;
 	return std::wstring(buf);
+}
+
+/**
+ * Returns translated string with format args applied
+ *
+ * @tparam Args Template parameter for format args
+ * @param format Translation source string
+ * @param args Variable format args
+ * @return translated string.
+ */
+template <typename ...Args>
+inline std::string fmtgettext(const char *format, Args&&... args)
+{
+	std::string buf;
+	std::size_t buf_size = 256;
+	buf.resize(buf_size);
+
+	format = gettext(format);
+
+	int len = porting::mt_snprintf(&buf[0], buf_size, format, std::forward<Args>(args)...);
+	if (len <= 0) throw std::runtime_error("gettext format error: " + std::string(format));
+	if ((size_t)len >= buf.size()) {
+		buf.resize(len+1); // extra null byte
+		porting::mt_snprintf(&buf[0], buf.size(), format, std::forward<Args>(args)...);
+	}
+	buf.resize(len); // remove null bytes
+
+	return buf;
 }

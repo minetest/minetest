@@ -171,4 +171,12 @@ public class GameActivity extends NativeActivity {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 		startActivity(browserIntent);
 	}
+
+	public String getUserDataPath() {
+		return Utils.getUserDataDirectory(this).getAbsolutePath();
+	}
+
+	public String getCachePath() {
+		return Utils.getCacheDirectory(this).getAbsolutePath();
+	}
 }

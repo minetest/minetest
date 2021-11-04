@@ -46,7 +46,6 @@ public:
 	void flush();
 
 	void addAction(const RollbackAction & action);
-	std::list<RollbackAction> getEntriesSince(time_t first_time);
 	std::list<RollbackAction> getNodeActors(v3s16 pos, int range,
 			time_t seconds, int limit);
 	std::list<RollbackAction> getRevertActions(

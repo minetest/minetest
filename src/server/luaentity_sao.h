@@ -44,9 +44,10 @@ public:
 	bool isStaticAllowed() const { return m_prop.static_save; }
 	bool shouldUnload() const { return true; }
 	void getStaticData(std::string *result) const;
-	u16 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
+	u32 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
 			ServerActiveObject *puncher = nullptr,
-			float time_from_last_punch = 1000000.0f);
+			float time_from_last_punch = 1000000.0f,
+			u16 initial_wear = 0);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);

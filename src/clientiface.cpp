@@ -714,31 +714,6 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 	}
 }
 
-void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt,
-		u16 min_proto_ver)
-{
-	RecursiveMutexAutoLock clientslock(m_clients_mutex);
-	for (auto &client_it : m_clients) {
-		RemoteClient *client = client_it.second;
-		NetworkPacket *pkt_to_send = nullptr;
-
-		if (client->net_proto_version >= min_proto_ver) {
-			pkt_to_send = pkt;
-		} else if (client->net_proto_version != 0) {
-			pkt_to_send = legacypkt;
-		} else {
-			warningstream << "Client with unhandled version to handle: '"
-				<< client->net_proto_version << "'";
-			continue;
-		}
-
-		m_con->Send(client->peer_id,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].channel,
-			pkt_to_send,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].reliable);
-	}
-}
-
 RemoteClient* ClientInterface::getClientNoEx(session_t peer_id, ClientState state_min)
 {
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);

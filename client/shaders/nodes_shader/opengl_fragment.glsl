@@ -1,5 +1,6 @@
 uniform sampler2D baseTexture;
 
+uniform vec3 dayLight;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
@@ -497,23 +498,35 @@ void main(void)
 		shadow_int = visibility.r;
 		shadow_color = visibility.gba;
 #else
-		shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		if (cosLight > 0.0)
+			shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		else
+			shadow_int = 1.0;
 #endif
 		shadow_int *= distance_rate;
-		shadow_int *= 1.0 - nightRatio;
-
+		shadow_int = clamp(shadow_int, 0.0, 1.0);
 
 	}
+
+	// turns out that nightRatio falls off much faster than
+	// actual brightness of artificial light in relation to natual light.
+	// Power ratio was measured on torches in MTG (brightness = 14).
+	float adjusted_night_ratio = pow(nightRatio, 0.6);
 
 	if (f_normal_length != 0 && cosLight < 0.035) {
-		shadow_int = max(shadow_int, min(clamp(1.0-nightRatio, 0.0, 1.0), 1 - clamp(cosLight, 0.0, 0.035)/0.035));
+		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, 0.035)/0.035);
 	}
 
-	shadow_int = 1.0 - (shadow_int * f_adj_shadow_strength);
+	shadow_int *= f_adj_shadow_strength;
 	
-	// apply shadow (+color) as a factor to the material color
-	col.rgb = col.rgb * (1.0 - (1.0 - shadow_color) * (1.0 - pow(shadow_int, 2.0)));
+	// calculate fragment color from components:
+	col.rgb =
+			adjusted_night_ratio * col.rgb + // artificial light
+			(1.0 - adjusted_night_ratio) * ( // natural light
+					col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
+					dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	// col.r = 0.5 * clamp(getPenumbraRadius(ShadowMapSampler, posLightSpace.xy, posLightSpace.z, 1.0) / SOFTSHADOWRADIUS, 0.0, 1.0) + 0.5 * col.r;
+	// col.r = adjusted_night_ratio; // debug night ratio adjustment
 #endif
 
 #if ENABLE_TONE_MAPPING

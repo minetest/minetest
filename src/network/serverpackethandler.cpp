@@ -826,7 +826,8 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 				<< std::endl;
 
 		PlayerHPChangeReason reason(PlayerHPChangeReason::FALL);
-		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason);
+		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason, false);
+		SendPlayerHPOrDie(playersao, reason); // correct client side prediction
 	}
 }
 
@@ -918,6 +919,13 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 		return false;
 	}
 	return true;
+}
+
+// Tiny helper to retrieve the selected item into an Optional
+static inline void getWieldedItem(const PlayerSAO *playersao, Optional<ItemStack> &ret)
+{
+	ret = ItemStack();
+	playersao->getWieldedItem(&(*ret));
 }
 
 void Server::handleCommand_Interact(NetworkPacket *pkt)
@@ -1111,8 +1119,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		float time_from_last_punch =
 			playersao->resetTimeFromLastPunch();
 
-		u16 wear = pointed_object->punch(dir, &toolcap, playersao,
-				time_from_last_punch);
+		u32 wear = pointed_object->punch(dir, &toolcap, playersao,
+				time_from_last_punch, tool_item.wear);
 
 		// Callback may have changed item, so get it again
 		playersao->getWieldedItem(&selected_item);
@@ -1165,7 +1173,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Get diggability and expected digging time
 			DigParams params = getDigParams(m_nodedef->get(n).groups,
-					&selected_item.getToolCapabilities(m_itemdef));
+					&selected_item.getToolCapabilities(m_itemdef),
+					selected_item.wear);
 			// If can't dig, try hand
 			if (!params.diggable) {
 				params = getDigParams(m_nodedef->get(n).groups,
@@ -1227,13 +1236,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Place block or right-click object
 	case INTERACT_PLACE: {
-		ItemStack selected_item;
-		playersao->getWieldedItem(&selected_item, nullptr);
+		Optional<ItemStack> selected_item;
+		getWieldedItem(playersao, selected_item);
 
 		// Reset build time counter
 		if (pointed.type == POINTEDTHING_NODE &&
-				selected_item.getDefinition(m_itemdef).type == ITEM_NODE)
+				selected_item->getDefinition(m_itemdef).type == ITEM_NODE)
 			getClient(peer_id)->m_time_from_building = 0.0;
+
+		const bool had_prediction = !selected_item->getDefinition(m_itemdef).
+			node_placement_prediction.empty();
 
 		if (pointed.type == POINTEDTHING_OBJECT) {
 			// Right click object
@@ -1247,11 +1259,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					<< pointed_object->getDescription() << std::endl;
 
 			// Do stuff
-			if (m_script->item_OnSecondaryUse(
-					selected_item, playersao, pointed)) {
-				if (playersao->setWieldedItem(selected_item)) {
+			if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
+				if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 					SendInventory(playersao, true);
-				}
 			}
 
 			pointed_object->rightClick(playersao);
@@ -1259,7 +1269,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			// Placement was handled in lua
 
 			// Apply returned ItemStack
-			if (playersao->setWieldedItem(selected_item))
+			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 				SendInventory(playersao, true);
 		}
 
@@ -1271,8 +1281,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		RemoteClient *client = getClient(peer_id);
 		v3s16 blockpos = getNodeBlockPos(pointed.node_abovesurface);
 		v3s16 blockpos2 = getNodeBlockPos(pointed.node_undersurface);
-		if (!selected_item.getDefinition(m_itemdef
-				).node_placement_prediction.empty()) {
+		if (had_prediction) {
 			client->SetBlockNotSent(blockpos);
 			if (blockpos2 != blockpos)
 				client->SetBlockNotSent(blockpos2);
@@ -1286,15 +1295,15 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	} // action == INTERACT_PLACE
 
 	case INTERACT_USE: {
-		ItemStack selected_item;
-		playersao->getWieldedItem(&selected_item, nullptr);
+		Optional<ItemStack> selected_item;
+		getWieldedItem(playersao, selected_item);
 
-		actionstream << player->getName() << " uses " << selected_item.name
+		actionstream << player->getName() << " uses " << selected_item->name
 				<< ", pointing at " << pointed.dump() << std::endl;
 
 		if (m_script->item_OnUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
-			if (playersao->setWieldedItem(selected_item))
+			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 				SendInventory(playersao, true);
 		}
 
@@ -1303,16 +1312,17 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Rightclick air
 	case INTERACT_ACTIVATE: {
-		ItemStack selected_item;
-		playersao->getWieldedItem(&selected_item, nullptr);
+		Optional<ItemStack> selected_item;
+		getWieldedItem(playersao, selected_item);
 
 		actionstream << player->getName() << " activates "
-				<< selected_item.name << std::endl;
+				<< selected_item->name << std::endl;
 
 		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
 
 		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
-			if (playersao->setWieldedItem(selected_item))
+			// Apply returned ItemStack
+			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 				SendInventory(playersao, true);
 		}
 

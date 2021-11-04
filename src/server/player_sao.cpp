@@ -409,10 +409,11 @@ void PlayerSAO::setLookPitchAndSend(const float pitch)
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-u16 PlayerSAO::punch(v3f dir,
+u32 PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,
-	float time_from_last_punch)
+	float time_from_last_punch,
+	u16 initial_wear)
 {
 	if (!toolcap)
 		return 0;
@@ -430,7 +431,7 @@ u16 PlayerSAO::punch(v3f dir,
 
 	s32 old_hp = getHP();
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
-			time_from_last_punch);
+			time_from_last_punch, initial_wear);
 
 	PlayerSAO *playersao = m_player->getPlayerSAO();
 
@@ -462,7 +463,7 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
 }
 
-void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
+void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason, bool send)
 {
 	if (hp == (s32)m_hp)
 		return; // Nothing to do
@@ -490,7 +491,8 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	if ((hp == 0) != (oldhp == 0))
 		m_properties_sent = false;
 
-	m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
+	if (send)
+		m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)

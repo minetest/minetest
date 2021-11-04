@@ -160,28 +160,33 @@ int ModApiUtil::l_write_json(lua_State *L)
 	return 1;
 }
 
-// get_dig_params(groups, tool_capabilities)
+// get_dig_params(groups, tool_capabilities[, wear])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ItemGroupList groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
-	push_dig_params(L, getDigParams(groups, &tp));
+	if (lua_isnoneornil(L, 3)) {
+		push_dig_params(L, getDigParams(groups, &tp));
+	} else {
+		u16 wear = readParam<int>(L, 3);
+		push_dig_params(L, getDigParams(groups, &tp, wear));
+	}
 	return 1;
 }
 
-// get_hit_params(groups, tool_capabilities[, time_from_last_punch])
+// get_hit_params(groups, tool_capabilities[, time_from_last_punch, [, wear]])
 int ModApiUtil::l_get_hit_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::unordered_map<std::string, int> groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
-	if(lua_isnoneornil(L, 3))
-		push_hit_params(L, getHitParams(groups, &tp));
-	else
-		push_hit_params(L, getHitParams(groups, &tp, readParam<float>(L, 3)));
+	float time_from_last_punch = readParam<float>(L, 3, 1000000);
+	int wear = readParam<int>(L, 4, 0);
+	push_hit_params(L, getHitParams(groups, &tp,
+		time_from_last_punch, wear));
 	return 1;
 }
 

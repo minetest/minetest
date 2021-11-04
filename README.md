@@ -224,10 +224,13 @@ Run it:
   - Debug build is slower, but gives much more useful output in a debugger.
 - If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
-- IrrlichtMt can also be installed somewhere that is not a standard install path.
-  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
-  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists
-    or that `$(CMAKE_PREFIX_PATH)` is the path of an IrrlichtMt build folder.
+
+- Minetest will use the IrrlichtMt package that is found first, given by the following order:
+  1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
+  2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
+  3. Installation of IrrlichtMt in the system-specific library paths
+  4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
+  - NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
 
 ### CMake options
 
@@ -269,6 +272,7 @@ Library specific options:
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
     EGL_INCLUDE_DIR                 - Only if building with GLES; directory that contains egl.h
     EGL_LIBRARY                     - Only if building with GLES; path to libEGL.a/libEGL.so
+    EXTRA_DLL                       - Only on Windows; optional paths to additional DLLs that should be packaged
     FREETYPE_INCLUDE_DIR_freetype2  - Only if building with FreeType 2; directory that contains an freetype directory with files such as ftimage.h in it
     FREETYPE_INCLUDE_DIR_ft2build   - Only if building with FreeType 2; directory that contains ft2build.h
     FREETYPE_LIBRARY                - Only if building with FreeType 2; path to libfreetype.a/libfreetype.so/freetype.lib
@@ -327,7 +331,7 @@ It is highly recommended to use vcpkg as package manager.
 
 After you successfully built vcpkg you can easily install the required libraries:
 ```powershell
-vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit gmp jsoncpp --triplet x64-windows
+vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry --triplet x64-windows
 ```
 
 - **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.

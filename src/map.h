@@ -167,9 +167,6 @@ public:
 
 	inline const NodeDefManager * getNodeDefManager() { return m_nodedef; }
 
-	// Returns InvalidPositionException if not found
-	bool isNodeUnderground(v3s16 p);
-
 	bool isValidPosition(v3s16 p);
 
 	// throws InvalidPositionException if not found

@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/activity_main"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -14,7 +15,8 @@
 		android:layout_marginRight="90dp"
 		android:indeterminate="false"
 		android:max="100"
-		android:visibility="gone" />
+		android:visibility="gone"
+		tools:visibility="visible" />
 
 	<TextView
 		android:id="@+id/textView"
@@ -25,6 +27,7 @@
 		android:background="@android:color/transparent"
 		android:text="@string/loading"
 		android:textColor="#FEFEFE"
-		android:visibility="gone" />
+		android:visibility="gone"
+		tools:visibility="visible" />
 
 </RelativeLayout>

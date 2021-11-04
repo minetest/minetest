@@ -560,11 +560,6 @@ u32 InventoryList::getUsedSlots() const
 	return num;
 }
 
-u32 InventoryList::getFreeSlots() const
-{
-	return getSize() - getUsedSlots();
-}
-
 const ItemStack& InventoryList::getItem(u32 i) const
 {
 	assert(i < m_size); // Pre-condition

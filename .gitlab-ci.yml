@@ -205,19 +205,6 @@ build:fedora-28:
   extends: .generic_win_template
   stage: build
   artifacts:
-    expire_in: 1h
-    paths:
-      - build/build/*.zip
-
-.package_win_template:
-  extends: .generic_win_template
-  stage: package
-  script:
-    - unzip build/build/*.zip
-    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-*-win*/bin/
-    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-*-win*/bin/
-    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-*-win*/bin/
-  artifacts:
     expire_in: 90 day
     paths:
       - minetest-*-win*/*
@@ -226,28 +213,15 @@ build:win32:
   extends: .build_win_template
   script:
     - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh build
+    - unzip -q build/build/*.zip
   variables:
     WIN_ARCH: "i686"
-
-package:win32:
-  extends: .package_win_template
-  needs:
-    - build:win32
-  variables:
-    WIN_ARCH: "i686"
-
 
 build:win64:
   extends: .build_win_template
   script:
     - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh build
-  variables:
-    WIN_ARCH: "x86_64"
-
-package:win64:
-  extends: .package_win_template
-  needs:
-    - build:win64
+    - unzip -q build/build/*.zip
   variables:
     WIN_ARCH: "x86_64"
 
