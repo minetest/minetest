@@ -515,8 +515,9 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 			material.EmissiveColor = color;
 		}
 	}
-
-	setColor(color);
+	else {
+		setColor(color);
+	}
 }
 
 void WieldMeshSceneNode::render()
