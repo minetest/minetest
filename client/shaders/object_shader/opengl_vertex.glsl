@@ -1,7 +1,9 @@
 uniform mat4 mWorld;
-
+uniform vec3 dayLight;
 uniform vec3 eyePosition;
 uniform float animationTimer;
+uniform vec4 emissiveColor;
+
 
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -29,9 +31,9 @@ centroid varying vec2 varTexCoord;
 
 varying vec3 eyeVec;
 varying float nightRatio;
-
+// Color of the light emitted by the light sources.
+const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 varying float vIDiff;
-
 const float e = 2.718281828459;
 const float BS = 10.0;
 
@@ -75,13 +77,29 @@ void main(void)
 		? 1.0
 		: directional_ambient(normalize(inVertexNormal));
 #endif
-	nightRatio = 0.0;
 
 #ifdef GL_ES
-	varColor = inVertexColor.bgra;
+	vec4 color = inVertexColor.bgra;
 #else
-	varColor = inVertexColor;
+	vec4 color = inVertexColor;
 #endif
+
+	color *= emissiveColor;
+
+	// The alpha gives the ratio of sunlight in the incoming light.
+	nightRatio = 1.0 - color.a;
+	color.rgb = color.rgb * (color.a * dayLight.rgb +
+		nightRatio * artificialLight.rgb) * 2.0;
+	color.a = 1.0;
+
+	// Emphase blue a bit in darker places
+	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
+	float brightness = (color.r + color.g + color.b) / 3.0;
+	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
+		0.07 * brightness);
+
+	varColor = clamp(color, 0.0, 1.0);
+
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	vec3 nNormal = normalize(vNormal);
