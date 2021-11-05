@@ -109,8 +109,7 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 	auto add_paths = [&dst_paths](const std::string name, const std::string base = "") {
 		dst_paths.insert(base + name + ".ogg");
 		for (int i = 0; i < 10; i++)
-			dst_paths.insert(base + name + "." + itos(i) +
-					 ".ogg");
+			dst_paths.insert(base + name + "." + itos(i) + ".ogg");
 	};
 	// Allow full paths
 	if (name.find(DIR_DELIM_CHAR) != std::string::npos) {
