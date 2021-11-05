@@ -432,14 +432,14 @@ cmake .. \
     -DRUN_IN_PLACE=FALSE \
     -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
 
-make -j2
+make -j$(nproc)
 make install
 ```
 
 #### Run
 
 ```
-./build/macos/minetest.app/Contents/MacOS/minetest
+open ./build/macos/minetest.app
 ```
 
 Docker
