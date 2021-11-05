@@ -316,6 +316,71 @@ Library specific options:
     ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
     ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
+### Compiling for Windows using MinGW on GNU/Linux
+
+It is highly recommeded to compile on Ubuntu 18.04 or newer.
+
+#### Dependencies
+
+Install Ubuntu packages:
+
+    sudo apt install wget xz-utils unzip git cmake gettext
+
+Download the MinGW toolchain for 64-bit Windows and extract to `/usr`:
+
+    wget -nv http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw-w32.tar.xz
+    sudo tar -xaf mingw-w32.tar.xz -C /usr
+
+Download the MinGW toolchain for 64-bit Windows and extract to `/usr`:
+
+    wget -nv http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw-w64.tar.xz
+    sudo tar -xaf mingw-w64.tar.xz -C /usr
+
+#### Download
+
+You can install Git for easily keeping your copy up to date.
+If you don’t want Git, read below on how to get the source without Git.
+This is an example for installing Git on Debian/Ubuntu:
+
+    sudo apt install git
+
+Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
+
+    git clone --depth 1 https://github.com/minetest/minetest.git
+    cd minetest
+
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
+
+    git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+
+Download source, without using Git:
+
+    wget https://github.com/minetest/minetest/archive/master.tar.gz
+    tar xf master.tar.gz
+    cd minetest-master
+
+Download minetest_game, without using Git:
+
+    cd games/
+    wget https://github.com/minetest/minetest_game/archive/master.tar.gz
+    tar xf master.tar.gz
+    mv minetest_game-master minetest_game
+    cd ..
+
+#### Build
+
+To build executables for Windows, `cd` into the source directory, and run the provided build scripts.
+
+Build for 32-bit Windows:
+
+    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh buildwin32
+
+Build for 64-bit Windows:
+
+    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh buildwin64
+
+The commands above create Windows builds at `buildwin32/build/minetest-*-win32.zip` (32-bit) and `buildwin64/build/minetest-*-win64.zip` (64-bit).
+
 ### Compiling on Windows using MSVC
 
 ### Requirements
