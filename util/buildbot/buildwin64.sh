@@ -20,15 +20,15 @@ libdir=$builddir/libs
 
 # Test which win64 compiler is present
 command -v x86_64-w64-mingw32-gcc >/dev/null &&
-	compiler=x86_64-w64-mingw32
+	compiler=x86_64-w64-mingw32-gcc
 command -v x86_64-w64-mingw32-gcc-posix >/dev/null &&
-	compiler=x86_64-w64-mingw32-posix
+	compiler=x86_64-w64-mingw32-gcc-posix
 
 if [ -z "$compiler" ]; then
-	echo "Unable to determine which mingw32 compiler to use"
+	echo "Unable to determine which MinGW compiler to use"
 	exit 1
 fi
-toolchain_file=$dir/toolchain_${compiler%-gcc}.cmake
+toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
 tmp=$(dirname "$(command -v $compiler)")/../x86_64-w64-mingw32/bin
