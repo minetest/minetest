@@ -382,7 +382,6 @@ public:
 	const std::string* getModFile(std::string filename);
 	ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
-	std::string getModStoragePath() const override;
 	bool registerModStorage(ModMetadata *meta) override;
 	void unregisterModStorage(const std::string &name) override;
 

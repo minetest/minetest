@@ -1988,11 +1988,6 @@ void Client::unregisterModStorage(const std::string &name)
 		m_mod_storages.erase(name);
 }
 
-std::string Client::getModStoragePath() const
-{
-	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
-}
-
 /*
  * Mod channels
  */

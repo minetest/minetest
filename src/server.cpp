@@ -3679,11 +3679,6 @@ std::string Server::getBuiltinLuaPath()
 	return porting::path_share + DIR_DELIM + "builtin";
 }
 
-std::string Server::getModStoragePath() const
-{
-	return m_path_world + DIR_DELIM + "mod_storage";
-}
-
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();

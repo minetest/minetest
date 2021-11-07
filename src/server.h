@@ -294,7 +294,6 @@ public:
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
-	virtual std::string getModStoragePath() const;
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
