@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/tile.h"
+#include "database/database-dummy.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -123,6 +124,7 @@ Client::Client(
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
 	m_game_ui(game_ui),
+	m_mod_storage_database(new Database_Dummy()),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
@@ -305,6 +307,8 @@ Client::~Client()
 	m_minimap = nullptr;
 
 	delete m_media_downloader;
+
+	delete m_mod_storage_database;
 }
 
 void Client::connect(Address address, bool is_local_server)
@@ -644,6 +648,7 @@ void Client::step(float dtime)
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+#if 0
 		int n = 0;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
@@ -654,6 +659,7 @@ void Client::step(float dtime)
 		}
 		if (n > 0)
 			infostream << "Saved " << n << " modified mod storages." << std::endl;
+#endif
 	}
 
 	// Write server map
@@ -1997,7 +2003,7 @@ void Client::unregisterModStorage(const std::string &name)
 		m_mod_storages.find(name);
 	if (it != m_mod_storages.end()) {
 		// Save unconditionaly on unregistration
-		it->second->save(getModStoragePath());
+		//it->second->save(getModStoragePath());
 		m_mod_storages.erase(name);
 	}
 }

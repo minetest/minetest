@@ -779,3 +779,88 @@ void AuthDatabaseSQLite3::writePrivileges(const AuthEntry &authEntry)
 		sqlite3_reset(m_stmt_write_privs);
 	}
 }
+
+ModMetadataDatabaseSQLite3::ModMetadataDatabaseSQLite3(const std::string &savedir):
+	Database_SQLite3(savedir, "mod_storage"), ModMetadataDatabase()
+{
+}
+
+ModMetadataDatabaseSQLite3::~ModMetadataDatabaseSQLite3()
+{
+	FINALIZE_STATEMENT(m_stmt_remove)
+	FINALIZE_STATEMENT(m_stmt_set)
+	FINALIZE_STATEMENT(m_stmt_get)
+}
+
+void ModMetadataDatabaseSQLite3::createDatabase()
+{
+	assert(m_database); // Pre-condition
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE TABLE IF NOT EXISTS `pairs` (\n"
+			"	`modname` TEXT,\n"
+			"	`key` BLOB,\n"
+			"	`value` BLOB,\n"
+			"	PRIMARY KEY (`modname`, `key`)\n"
+			");\n",
+		NULL, NULL, NULL),
+		"Failed to create database table");
+}
+
+void ModMetadataDatabaseSQLite3::initStatements()
+{
+	PREPARE_STATEMENT(get, "SELECT `key`, `value` FROM `pairs` WHERE `modname` = ?");
+	PREPARE_STATEMENT(set, "REPLACE INTO `pairs` (`modname`, `key`, `value`) VALUES (?, ?, ?)");
+	PREPARE_STATEMENT(remove, "DELETE FROM `pairs` WHERE `modname` = ? AND `key` = ?");
+}
+
+bool ModMetadataDatabaseSQLite3::getPairs(const std::string &modname, StringMap *storage)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_get, 1, modname);
+	while (sqlite3_step(m_stmt_get) == SQLITE_ROW) {
+		const char *key_data = (const char *) sqlite3_column_blob(m_stmt_get, 0);
+		size_t key_len = sqlite3_column_bytes(m_stmt_get, 0);
+		const char *value_data = (const char *) sqlite3_column_blob(m_stmt_get, 1);
+		size_t value_len = sqlite3_column_bytes(m_stmt_get, 1);
+		(*storage)[std::string(key_data, key_len)] = std::string(value_data, value_len);
+	}
+	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
+
+	sqlite3_reset(m_stmt_get);
+
+	return true;
+}
+
+bool ModMetadataDatabaseSQLite3::setPair(const std::string &modname,
+	const std::string &key, const std::string &value)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_set, 1, modname);
+	SQLOK(sqlite3_bind_blob(m_stmt_set, 2, key.data(), key.size(), NULL),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
+	SQLOK(sqlite3_bind_blob(m_stmt_set, 3, value.data(), value.size(), NULL),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
+	SQLRES(sqlite3_step(m_stmt_set), SQLITE_DONE, "Failed to save block")
+
+	sqlite3_reset(m_stmt_set);
+
+	return true;
+}
+
+bool ModMetadataDatabaseSQLite3::removePair(const std::string &modname, const std::string &key)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_remove, 1, modname);
+	SQLOK(sqlite3_bind_blob(m_stmt_remove, 2, key.data(), key.size(), NULL),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
+	sqlite3_vrfy(sqlite3_step(m_stmt_remove), SQLITE_DONE);
+	int changes = sqlite3_changes(m_database);
+
+	sqlite3_reset(m_stmt_remove);
+
+	return changes > 0;
+}

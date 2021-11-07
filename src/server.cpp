@@ -66,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "translation.h"
+#include "database/database-sqlite3.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -348,6 +349,7 @@ Server::~Server()
 	delete m_emerge;
 	delete m_env;
 	delete m_rollback;
+	delete m_mod_storage_database;
 	delete m_banmanager;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -392,6 +394,9 @@ void Server::init()
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
+
+	// Create mod storage database
+	m_mod_storage_database = new ModMetadataDatabaseSQLite3(m_path_world);
 
 	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(m_path_world));
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
@@ -742,7 +747,7 @@ void Server::AsyncRunStep(bool initial_step)
 			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 				if (it->second->isModified()) {
-					it->second->save(getModStoragePath());
+					//it->second->save(getModStoragePath());
 					n++;
 				}
 			}
@@ -3860,7 +3865,7 @@ void Server::unregisterModStorage(const std::string &name)
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
 	if (it != m_mod_storages.end()) {
 		// Save unconditionaly on unregistration
-		it->second->save(getModStoragePath());
+		//it->second->save(getModStoragePath());
 		m_mod_storages.erase(name);
 	}
 }

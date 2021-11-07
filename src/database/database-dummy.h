@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "irrlichttypes.h"
 
-class Database_Dummy : public MapDatabase, public PlayerDatabase
+class Database_Dummy : public MapDatabase, public PlayerDatabase, public ModMetadataDatabase
 {
 public:
 	bool saveBlock(const v3s16 &pos, const std::string &data);
@@ -36,6 +36,10 @@ public:
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
 	bool removePlayer(const std::string &name);
 	void listPlayers(std::vector<std::string> &res);
+
+	bool getPairs(const std::string &modname, StringMap *storage);
+	bool setPair(const std::string &modname, const std::string &key, const std::string &value);
+	bool removePair(const std::string &modname, const std::string &key);
 
 	void beginSave() {}
 	void endSave() {}

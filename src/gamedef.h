@@ -33,6 +33,7 @@ class EmergeManager;
 class Camera;
 class ModChannel;
 class ModMetadata;
+class ModMetadataDatabase;
 
 namespace irr { namespace scene {
 	class IAnimatedMesh;
@@ -73,6 +74,7 @@ public:
 	virtual std::string getModStoragePath() const = 0;
 	virtual bool registerModStorage(ModMetadata *storage) = 0;
 	virtual void unregisterModStorage(const std::string &name) = 0;
+	virtual ModMetadataDatabase *getModStorageDatabase() = 0;
 
 	virtual bool joinModChannel(const std::string &channel) = 0;
 	virtual bool leaveModChannel(const std::string &channel) = 0;

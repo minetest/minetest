@@ -80,3 +80,19 @@ void Database_Dummy::listPlayers(std::vector<std::string> &res)
 		res.emplace_back(player);
 	}
 }
+
+bool Database_Dummy::getPairs(const std::string &modname, StringMap *storage)
+{
+	return false;
+}
+
+bool Database_Dummy::setPair(const std::string &modname,
+	const std::string &key, const std::string &value)
+{
+	return false;
+}
+
+bool Database_Dummy::removePair(const std::string &modname, const std::string &key)
+{
+	return false;
+}

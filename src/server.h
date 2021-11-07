@@ -283,6 +283,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
+	virtual ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	NodeDefManager* getWritableNodeDefManager();
@@ -678,6 +679,7 @@ private:
 	s32 nextSoundId();
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
+	ModMetadataDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM restrictions byteflag

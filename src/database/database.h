@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
 #include "util/basic_macros.h"
+#include "util/string.h"
 
 class Database
 {
@@ -83,4 +84,15 @@ public:
 	virtual bool deleteAuth(const std::string &name) = 0;
 	virtual void listNames(std::vector<std::string> &res) = 0;
 	virtual void reload() = 0;
+};
+
+class ModMetadataDatabase
+{
+public:
+	virtual ~ModMetadataDatabase() = default;
+
+	virtual bool getPairs(const std::string &modname, StringMap *storage) = 0;
+	virtual bool setPair(const std::string &modname,
+		const std::string &key, const std::string &value) = 0;
+	virtual bool removePair(const std::string &modname, const std::string &key) = 0;
 };
