@@ -680,7 +680,6 @@ private:
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	ModMetadataDatabase *m_mod_storage_database = nullptr;
-	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM restrictions byteflag
 	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;

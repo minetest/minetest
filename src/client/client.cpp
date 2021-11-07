@@ -645,23 +645,6 @@ void Client::step(float dtime)
 		}
 	}
 
-	m_mod_storage_save_timer -= dtime;
-	if (m_mod_storage_save_timer <= 0.0f) {
-		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-#if 0
-		int n = 0;
-		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-			if (it->second->isModified()) {
-				it->second->save(getModStoragePath());
-				n++;
-			}
-		}
-		if (n > 0)
-			infostream << "Saved " << n << " modified mod storages." << std::endl;
-#endif
-	}
-
 	// Write server map
 	if (m_localdb && m_localdb_save_interval.step(dtime,
 			m_cache_save_interval)) {
@@ -2001,11 +1984,8 @@ void Client::unregisterModStorage(const std::string &name)
 {
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
 		m_mod_storages.find(name);
-	if (it != m_mod_storages.end()) {
-		// Save unconditionaly on unregistration
-		//it->second->save(getModStoragePath());
+	if (it != m_mod_storages.end())
 		m_mod_storages.erase(name);
-	}
 }
 
 std::string Client::getModStoragePath() const

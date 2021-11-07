@@ -738,22 +738,6 @@ void Server::AsyncRunStep(bool initial_step)
 			SendActiveObjectRemoveAdd(client, playersao);
 		}
 		m_clients.unlock();
-
-		// Save mod storages if modified
-		m_mod_storage_save_timer -= dtime;
-		if (m_mod_storage_save_timer <= 0.0f) {
-			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-			int n = 0;
-			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-				if (it->second->isModified()) {
-					//it->second->save(getModStoragePath());
-					n++;
-				}
-			}
-			if (n > 0)
-				infostream << "Saved " << n << " modified mod storages." << std::endl;
-		}
 	}
 
 	/*
@@ -3863,11 +3847,8 @@ bool Server::registerModStorage(ModMetadata *storage)
 void Server::unregisterModStorage(const std::string &name)
 {
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
-	if (it != m_mod_storages.end()) {
-		// Save unconditionaly on unregistration
-		//it->second->save(getModStoragePath());
+	if (it != m_mod_storages.end())
 		m_mod_storages.erase(name);
-	}
 }
 
 void dedicated_server_loop(Server &server, bool &kill)
