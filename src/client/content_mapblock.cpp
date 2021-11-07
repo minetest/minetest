@@ -1393,23 +1393,25 @@ void MapblockMeshGenerator::drawNodeboxNode()
 			std::vector<float> sections;
 
 			// Default split at node bounds, up to 3 nodes in each direction
-			for (float s = -35; s < 40; s += 10)
+			for (float s = -3.5f * BS; s < 4.0f * BS; s += 1.0f * BS)
 				sections.push_back(s);
 
+			// Add edges of existing node boxes, rounded to 1E-3
 			for (size_t i = 0; i < boxes.size(); i++) {
-				sections.push_back(boxes[i].MinEdge[axis]);
-				sections.push_back(boxes[i].MaxEdge[axis]);
+				sections.push_back(std::floor(boxes[i].MinEdge[axis] * 1E3) * 1E-3);
+				sections.push_back(std::floor(boxes[i].MaxEdge[axis] * 1E3) * 1E-3);
 			}
 
-			// split the boxes as necessary
-			for (size_t i = 0; i < boxes.size(); i++) {
-				aabb3f &box = boxes[i];
+			// split the boxes at recorded sections
+			for (size_t i = 0; i < boxes.size() && i < 100; i++) {
+				aabb3f *box = &boxes[i];
 				for (float section : sections) {
-					if (box.MinEdge[axis] < section && box.MaxEdge[axis] > section) {
-						aabb3f copy = box;
+					if (box->MinEdge[axis] < section && box->MaxEdge[axis] > section) {
+						aabb3f copy(*box);
 						copy.MinEdge[axis] = section;
-						box.MaxEdge[axis] = section;
+						box->MaxEdge[axis] = section;
 						boxes.push_back(copy);
+						box = &boxes[i]; // find new address of the box in case of reallocation
 					}
 				}
 			}
