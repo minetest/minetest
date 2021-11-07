@@ -47,4 +47,5 @@ public:
 private:
 	std::map<s64, std::string> m_database;
 	std::set<std::string> m_player_database;
+	std::unordered_map<std::string, StringMap> m_mod_meta_database;
 };
