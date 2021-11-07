@@ -318,7 +318,7 @@ Library specific options:
 
 ### Compiling for Windows using MinGW on GNU/Linux
 
-It is highly recommeded to compile on Ubuntu 18.04 or newer.
+It is highly recommeded to compile on Ubuntu 20.04 or newer.
 
 #### Dependencies
 
@@ -353,20 +353,6 @@ Download minetest_game (otherwise only the "Development Test" game is available)
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
-Download source, without using Git:
-
-    wget https://github.com/minetest/minetest/archive/master.tar.gz
-    tar xf master.tar.gz
-    cd minetest-master
-
-Download minetest_game, without using Git:
-
-    cd games/
-    wget https://github.com/minetest/minetest_game/archive/master.tar.gz
-    tar xf master.tar.gz
-    mv minetest_game-master minetest_game
-    cd ..
-
 #### Build
 
 To build executables for Windows, `cd` into the source directory, and run the provided build scripts.
@@ -379,7 +365,7 @@ Build for 64-bit Windows:
 
     EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh buildwin64
 
-The commands above create Windows builds at `buildwin32/build/minetest-*-win32.zip` (32-bit) and `buildwin64/build/minetest-*-win64.zip` (64-bit).
+The commands above will use the current source directory. Windows builds will be created at `buildwin32/build/minetest-*-win32.zip` (32-bit) and `buildwin64/build/minetest-*-win64.zip` (64-bit).
 
 ### Compiling on Windows using MSVC
 
