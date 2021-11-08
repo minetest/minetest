@@ -331,6 +331,9 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 
 bool checkMeshNormals(scene::IMesh *mesh)
 {
+	// Assume correct normals if this many first faces get it right.
+	static const u16 MAX_FACES_TO_CHECK = 9;
+
 	u32 buffer_count = mesh->getMeshBufferCount();
 
 	for (u32 i = 0; i < buffer_count; i++) {
@@ -344,6 +347,19 @@ bool checkMeshNormals(scene::IMesh *mesh)
 
 		if (!std::isfinite(length) || length < 1e-10f)
 			return false;
+
+		const u16 count = MYMIN(MAX_FACES_TO_CHECK * 3, buffer->getIndexCount());
+		for (u16 i = 0; i < count; i += 3) {
+
+			core::plane3df plane(buffer->getPosition(buffer->getIndices()[i]),
+					buffer->getPosition(buffer->getIndices()[i+1]),
+					buffer->getPosition(buffer->getIndices()[i+2]));
+
+			for (u16 j = 0; j < 3; j++)
+				if (plane.Normal.dotProduct(buffer->getNormal(buffer->getIndices()[j])) < 0)
+					return false;
+		}
+
 	}
 
 	return true;
