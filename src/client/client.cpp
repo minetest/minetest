@@ -312,7 +312,8 @@ Client::~Client()
 	delete m_media_downloader;
 
 	// Write the changes and delete
-	m_mod_storage_database->endSave();
+	if (m_mod_storage_database)
+		m_mod_storage_database->endSave();
 	delete m_mod_storage_database;
 }
 

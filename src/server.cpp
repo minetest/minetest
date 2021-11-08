@@ -346,7 +346,8 @@ Server::~Server()
 	}
 
 	// Write any changes before deletion.
-	m_mod_storage_database->endSave();
+	if (m_mod_storage_database)
+		m_mod_storage_database->endSave();
 
 	// Delete things in the reverse order of creation
 	delete m_emerge;
