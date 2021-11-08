@@ -40,6 +40,7 @@ public:
 	bool getPairs(const std::string &modname, StringMap *storage);
 	bool setPair(const std::string &modname, const std::string &key, const std::string &value);
 	bool removePair(const std::string &modname, const std::string &key);
+	void listMods(std::vector<std::string> *res);
 
 	void beginSave() {}
 	void endSave() {}

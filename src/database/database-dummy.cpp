@@ -111,3 +111,10 @@ bool Database_Dummy::removePair(const std::string &modname, const std::string &k
 		return mod_pair->second.erase(key) > 0;
 	return false;
 }
+
+void Database_Dummy::listMods(std::vector<std::string> *res)
+{
+	for (const auto &pair : m_mod_meta_database) {
+		res->push_back(pair.first);
+	}
+}

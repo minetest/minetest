@@ -243,6 +243,7 @@ public:
 	virtual bool setPair(const std::string &modname,
 		const std::string &key, const std::string &value);
 	virtual bool removePair(const std::string &modname, const std::string &key);
+	virtual void listMods(std::vector<std::string> *res);
 
 protected:
 	virtual void createDatabase();

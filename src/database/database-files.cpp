@@ -465,6 +465,20 @@ void ModMetadataDatabaseFiles::endSave()
 	}
 }
 
+void ModMetadataDatabaseFiles::listMods(std::vector<std::string> *res)
+{
+	// List in-memory metadata first.
+	for (const auto &pair : m_mod_meta) {
+		res->push_back(pair.first);
+	}
+
+	// List other metadata present in the filesystem.
+	for (const auto &entry : fs::GetDirListing(m_storage_dir)) {
+		if (!entry.dir && m_mod_meta.count(entry.name) == 0)
+			res->push_back(entry.name);
+	}
+}
+
 Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modname)
 {
 	auto found = m_mod_meta.find(modname);
