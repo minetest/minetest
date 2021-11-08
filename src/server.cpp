@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "translation.h"
 #include "database/database-sqlite3.h"
 #include "database/database-files.h"
+#include "database/database-dummy.h"
 #include "gameparams.h"
 
 class ClientNotFoundException : public BaseException
@@ -4023,6 +4024,9 @@ ModMetadataDatabase *Server::openModStorageDatabase(const std::string &backend,
 
 	if (backend == "files")
 		return new ModMetadataDatabaseFiles(world_path);
+
+	if (backend == "dummy")
+		return new Database_Dummy();
 
 	throw BaseException("Mod storage database backend " + backend + " not supported");
 }
