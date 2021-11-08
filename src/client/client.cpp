@@ -51,7 +51,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmedia.h"
 #include "version.h"
 #include "database/database-sqlite3.h"
-#include "database/database-files.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
 #include "script/scripting_client.h"
@@ -131,7 +130,7 @@ Client::Client(
 
 	// Make the mod storage database and begin the save for later
 	m_mod_storage_database =
-		new ModMetadataDatabaseFiles(porting::path_user + DIR_DELIM + "client");
+		new ModMetadataDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
 	m_mod_storage_database->beginSave();
 
 	if (g_settings->getBool("enable_minimap")) {
