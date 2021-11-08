@@ -338,12 +338,6 @@ Download the MinGW toolchain for 64-bit Windows and extract to `/usr`:
 
 #### Download
 
-You can install Git for easily keeping your copy up to date.
-If you don’t want Git, read below on how to get the source without Git.
-This is an example for installing Git on Debian/Ubuntu:
-
-    sudo apt install git
-
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest.git
