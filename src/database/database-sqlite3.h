@@ -245,6 +245,9 @@ public:
 	virtual bool removePair(const std::string &modname, const std::string &key);
 	virtual void listMods(std::vector<std::string> *res);
 
+	virtual void beginSave() { Database_SQLite3::beginSave(); }
+	virtual void endSave() { Database_SQLite3::endSave(); }
+
 protected:
 	virtual void createDatabase();
 	virtual void initStatements();
