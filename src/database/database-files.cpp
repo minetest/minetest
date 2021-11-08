@@ -377,7 +377,7 @@ bool AuthDatabaseFiles::writeAuthFile()
 }
 
 ModMetadataDatabaseFiles::ModMetadataDatabaseFiles(const std::string &savedir):
-	m_storage_dir(savedir + DIR_DELIM + "mod_storage" + DIR_DELIM)
+	m_storage_dir(savedir + DIR_DELIM + "mod_storage")
 {
 }
 
