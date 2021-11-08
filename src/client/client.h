@@ -380,7 +380,7 @@ public:
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 	const std::string* getModFile(std::string filename);
-	ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
+	ModMetadataDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
 
 	bool registerModStorage(ModMetadata *meta) override;
 	void unregisterModStorage(const std::string &name) override;
