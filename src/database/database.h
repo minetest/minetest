@@ -86,7 +86,7 @@ public:
 	virtual void reload() = 0;
 };
 
-class ModMetadataDatabase
+class ModMetadataDatabase : public Database
 {
 public:
 	virtual ~ModMetadataDatabase() = default;

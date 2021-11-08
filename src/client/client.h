@@ -591,6 +591,7 @@ private:
 	ClientScripting *m_script = nullptr;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	ModMetadataDatabase *m_mod_storage_database = nullptr;
+	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
 	StringMap m_mod_vfs;
 

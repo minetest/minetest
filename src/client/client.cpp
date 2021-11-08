@@ -130,6 +130,9 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
+	// Begin the save for later
+	m_mod_storage_database->beginSave();
+
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
@@ -308,6 +311,8 @@ Client::~Client()
 
 	delete m_media_downloader;
 
+	// Write the changes and delete
+	m_mod_storage_database->endSave();
 	delete m_mod_storage_database;
 }
 
@@ -643,6 +648,14 @@ void Client::step(float dtime)
 		if(!removed_server_ids.empty()) {
 			sendRemovedSounds(removed_server_ids);
 		}
+	}
+
+	// Write changes to the mod storage
+	m_mod_storage_save_timer -= dtime;
+	if (m_mod_storage_save_timer <= 0.0f) {
+		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		m_mod_storage_database->endSave();
+		m_mod_storage_database->beginSave();
 	}
 
 	// Write server map

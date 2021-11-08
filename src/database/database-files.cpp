@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <cassert>
-#include <json/json.h>
 #include "convert_json.h"
 #include "database-files.h"
 #include "remoteplayer.h"
@@ -375,4 +374,124 @@ bool AuthDatabaseFiles::writeAuthFile()
 		return false;
 	}
 	return true;
+}
+
+ModMetadataDatabaseFiles::ModMetadataDatabaseFiles(const std::string &savedir):
+	m_storage_dir(savedir + DIR_DELIM + "mod_storage" + DIR_DELIM)
+{
+}
+
+bool ModMetadataDatabaseFiles::getPairs(const std::string &modname, StringMap *storage)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return false;
+
+	const Json::Value::Members attr_list = meta->getMemberNames();
+	for (const auto &it : attr_list) {
+		Json::Value attr_value = (*meta)[it];
+		(*storage)[it] = attr_value.asString();
+	}
+
+	return true;
+}
+
+bool ModMetadataDatabaseFiles::setPair(const std::string &modname,
+	const std::string &key, const std::string &value)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return false;
+
+	(*meta)[key] = Json::Value(value);
+	m_modified.insert(modname);
+
+	return true;
+}
+
+bool ModMetadataDatabaseFiles::removePair(const std::string &modname, const std::string &key)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return false;
+
+	Json::Value removed;
+	if (meta->removeMember(key, &removed)) {
+		m_modified.insert(modname);
+		return true;
+	}
+	return false;
+}
+
+void ModMetadataDatabaseFiles::beginSave()
+{
+}
+
+void ModMetadataDatabaseFiles::endSave()
+{
+	if (!fs::CreateAllDirs(m_storage_dir)) {
+		errorstream << "ModMetadata: Unable to save. '" << m_storage_dir
+				<< "' tree cannot be created." << std::endl;
+		return;
+	}
+
+	for (auto it = m_modified.begin(); it != m_modified.end();) {
+		const std::string &modname = *it;
+
+		if (!fs::PathExists(m_storage_dir)) {
+			if (!fs::CreateAllDirs(m_storage_dir)) {
+				errorstream << "ModMetadata[" << modname
+						<< "]: Unable to save. '" << m_storage_dir
+						<< "' tree cannot be created." << std::endl;
+				++it;
+				continue;
+			}
+		} else if (!fs::IsDir(m_storage_dir)) {
+			errorstream << "ModMetadata[" << modname << "]: Unable to save. '"
+					<< m_storage_dir << "' is not a directory." << std::endl;
+			++it;
+			continue;
+		}
+
+		const Json::Value &json = m_mod_meta[modname];
+
+		if (!fs::safeWriteToFile(m_storage_dir + DIR_DELIM + modname, fastWriteJson(json))) {
+			errorstream << "ModMetadata[" << modname << "]: failed write file." << std::endl;
+			++it;
+			continue;
+		}
+
+		it = m_modified.erase(it);
+	}
+}
+
+Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modname)
+{
+	auto found = m_mod_meta.find(modname);
+	if (found == m_mod_meta.end()) {
+		fs::CreateAllDirs(m_storage_dir);
+
+		Json::Value meta(Json::objectValue);
+
+		std::string path = m_storage_dir + DIR_DELIM + modname;
+		if (fs::PathExists(path)) {
+			std::ifstream is(path.c_str(), std::ios_base::binary);
+
+			Json::CharReaderBuilder builder;
+			builder.settings_["collectComments"] = false;
+			std::string errs;
+
+			if (!Json::parseFromStream(builder, is, &meta, &errs)) {
+				errorstream << "ModMetadataDatabaseFiles[" << modname
+					    << "]: failed read data "
+					       "(Json decoding failure). Message: "
+					    << errs << std::endl;
+				return nullptr;
+			}
+		}
+
+		return &(m_mod_meta[modname] = meta);
+	} else {
+		return &found->second;
+	}
 }

@@ -66,7 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "translation.h"
-#include "database/database-sqlite3.h"
+#include "database/database-files.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -345,6 +345,9 @@ Server::~Server()
 		delete m_thread;
 	}
 
+	// Write any changes before deletion.
+	m_mod_storage_database->endSave();
+
 	// Delete things in the reverse order of creation
 	delete m_emerge;
 	delete m_env;
@@ -395,8 +398,9 @@ void Server::init()
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	// Create mod storage database
-	m_mod_storage_database = new ModMetadataDatabaseSQLite3(m_path_world);
+	// Create mod storage database and begin a save for later
+	m_mod_storage_database = new ModMetadataDatabaseFiles(m_path_world);
+	m_mod_storage_database->beginSave();
 
 	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(m_path_world));
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
@@ -738,6 +742,14 @@ void Server::AsyncRunStep(bool initial_step)
 			SendActiveObjectRemoveAdd(client, playersao);
 		}
 		m_clients.unlock();
+
+		// Write changes to the mod storage
+		m_mod_storage_save_timer -= dtime;
+		if (m_mod_storage_save_timer <= 0.0f) {
+			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+			m_mod_storage_database->endSave();
+			m_mod_storage_database->beginSave();
+		}
 	}
 
 	/*
