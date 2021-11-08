@@ -377,6 +377,14 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
+	static ModMetadataDatabase *openModStorageDatabase(const std::string &world_path);
+
+	static ModMetadataDatabase *openModStorageDatabase(const std::string &backend,
+			const std::string &world_path, const Settings &world_mt);
+
+	static bool migrateModStorageDatabase(const GameParams &game_params,
+			const Settings &cmd_args);
+
 	// Bind address
 	Address m_bind_addr;
 
