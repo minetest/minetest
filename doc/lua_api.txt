@@ -7161,6 +7161,7 @@ Player properties need to be saved manually.
         -- "sprite" uses 1 texture.
         -- "upright_sprite" uses 2 textures: {front, back}.
         -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
+        -- "mesh" requires one texture for each mesh buffer/material (in order)
 
         colors = {},
         -- Number of required colors depends on visual
