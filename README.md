@@ -421,7 +421,7 @@ git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 
 #### Build
 
-```
+```bash
 mkdir cmakebuild
 cd cmakebuild
 
