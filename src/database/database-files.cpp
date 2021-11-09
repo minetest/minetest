@@ -430,7 +430,7 @@ void ModMetadataDatabaseFiles::beginSave()
 void ModMetadataDatabaseFiles::endSave()
 {
 	if (!fs::CreateAllDirs(m_storage_dir)) {
-		errorstream << "ModMetadata: Unable to save. '" << m_storage_dir
+		errorstream << "ModMetadataDatabaseFiles: Unable to save. '" << m_storage_dir
 				<< "' tree cannot be created." << std::endl;
 		return;
 	}
@@ -440,14 +440,14 @@ void ModMetadataDatabaseFiles::endSave()
 
 		if (!fs::PathExists(m_storage_dir)) {
 			if (!fs::CreateAllDirs(m_storage_dir)) {
-				errorstream << "ModMetadata[" << modname
+				errorstream << "ModMetadataDatabaseFiles[" << modname
 						<< "]: Unable to save. '" << m_storage_dir
 						<< "' tree cannot be created." << std::endl;
 				++it;
 				continue;
 			}
 		} else if (!fs::IsDir(m_storage_dir)) {
-			errorstream << "ModMetadata[" << modname << "]: Unable to save. '"
+			errorstream << "ModMetadataDatabaseFiles[" << modname << "]: Unable to save. '"
 					<< m_storage_dir << "' is not a directory." << std::endl;
 			++it;
 			continue;
@@ -456,7 +456,8 @@ void ModMetadataDatabaseFiles::endSave()
 		const Json::Value &json = m_mod_meta[modname];
 
 		if (!fs::safeWriteToFile(m_storage_dir + DIR_DELIM + modname, fastWriteJson(json))) {
-			errorstream << "ModMetadata[" << modname << "]: failed write file." << std::endl;
+			errorstream << "ModMetadataDatabaseFiles[" << modname
+					<< "]: failed write file." << std::endl;
 			++it;
 			continue;
 		}
@@ -497,9 +498,8 @@ Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modnam
 
 			if (!Json::parseFromStream(builder, is, &meta, &errs)) {
 				errorstream << "ModMetadataDatabaseFiles[" << modname
-					    << "]: failed read data "
-					       "(Json decoding failure). Message: "
-					    << errs << std::endl;
+						<< "]: failed read data (Json decoding failure). Message: "
+						<< errs << std::endl;
 				return nullptr;
 			}
 		}
