@@ -187,6 +187,9 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 
 	if (PCFBOUND == 0.0) return 0.0;
 	// Return fast if sharp shadows are requested
+	if (PCFBOUND == 0.0)
+		return 0.0;
+
 	if (SOFTSHADOWRADIUS <= 1.0) {
 		perspectiveFactor = getDeltaPerspectiveFactor(baseLength);
 		return max(2 * length(smTexCoord.xy) * 2048 / f_textureresolution / pow(perspectiveFactor, 3), SOFTSHADOWRADIUS);
