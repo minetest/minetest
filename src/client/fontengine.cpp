@@ -352,7 +352,7 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 		return nullptr;
 	}
 
-	if (ending == ".xml" || ending == ".png")
+	if (ending == ".tsv" || ending == ".png")
 		basename = font_path.substr(0, pos_dot);
 
 	u32 size = std::floor(
@@ -361,7 +361,7 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 			spec.size);
 
 	irr::gui::IGUIFont *font = nullptr;
-	std::string font_extensions[] = { ".png", ".xml" };
+	std::string font_extensions[] = { ".tsv", ".png" };
 
 	// Find nearest matching font scale
 	// Does a "zig-zag motion" (positibe/negative), from 0 to MAX_FONT_SIZE_OFFSET

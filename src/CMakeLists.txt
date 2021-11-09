@@ -889,7 +889,7 @@ if(BUILD_CLIENT)
 				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
 	else()
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
-				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
+				FILES_MATCHING PATTERN "*.png" PATTERN "*.tsv")
 	endif()
 endif(BUILD_CLIENT)
 
