@@ -798,9 +798,9 @@ void ModMetadataDatabaseSQLite3::createDatabase()
 
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `pairs` (\n"
-			"	`modname` TEXT,\n"
-			"	`key` BLOB,\n"
-			"	`value` BLOB,\n"
+			"	`modname` TEXT NOT NULL,\n"
+			"	`key` BLOB NOT NULL,\n"
+			"	`value` BLOB NOT NULL,\n"
 			"	PRIMARY KEY (`modname`, `key`)\n"
 			");\n",
 		NULL, NULL, NULL),
