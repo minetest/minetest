@@ -115,7 +115,7 @@ cmake -S $sourcedir -B . \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
 	-DBUILD_CLIENT=1 -DBUILD_SERVER=0 \
-	-DEXTRA_DLL="$runtime_dll" \
+	-DEXTRA_DLL="$runtime_dlls" \
 	\
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
