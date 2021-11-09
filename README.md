@@ -394,7 +394,7 @@ It may take some minutes to generate the installer.
 
 Install dependencies with homebrew:
 
-```
+```bash
 brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
 ```
 
@@ -402,20 +402,20 @@ brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libp
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-```
+```bash
 git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
 Download minetest_game (otherwise only the "Development Test" game is available) using Git:
 
-```
+```bash
 git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 ```
 
 Download Minetest's fork of Irrlicht:
 
-```
+```bash
 git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 ```
 
@@ -438,7 +438,7 @@ make install
 
 #### Run
 
-```
+```bash
 open ./build/macos/minetest.app
 ```
 
