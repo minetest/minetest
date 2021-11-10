@@ -38,9 +38,9 @@ echo "Using $toolchain_file"
 # Look for runtime DLLs to add
 runtime_dlls=
 extra_dlls_prefix="libgcc_ libstdc++- libwinpthread-"
-dll_search_dirs="/usr/i686-w64-mingw32-mingw32/bin
-/usr/i686-w64-mingw32-mingw32/lib
-/usr/lib/gcc/i686-w64-mingw32-mingw32/$compiler_version"
+dll_search_dirs="/usr/i686-w64-mingw32/bin
+/usr/i686-w64-mingw32/lib
+/usr/lib/gcc/i686-w64-mingw32/$compiler_version"
 for dll in $extra_dlls_prefix; do
 	for dir in $dll_search_dirs; do
 		add_dll=$(find "$dir" -name "$dll*.dll")
