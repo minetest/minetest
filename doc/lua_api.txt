@@ -4624,6 +4624,19 @@ Utilities
 * `minetest.mkdir(path)`: returns success.
     * Creates a directory specified by `path`, creating parent directories
       if they don't exist.
+* `minetest.rmdir(path, recursive)`: returns success.
+    * Removes a directory specified by `path`.
+    * If `recursive` is set to `true`, the directory is recursively removed.
+      Otherwise, the directory will only be removed if it is empty.
+    * Returns true on success, false on failure.
+* `minetest.cpdir(source, destination)`: returns success.
+    * Copies a directory specified by `path` to `destination`
+    * Any files in `destination` will be overwritten if they already exist.
+    * Returns true on success, false on failure.
+* `minetest.mvdir(source, destination)`: returns success.
+    * Moves a directory specified by `path` to `destination`.
+    * If the `destination` is a non-empty directory, then the move will fail.
+    * Returns true on success, false on failure.
 * `minetest.get_dir_list(path, [is_dir])`: returns list of entry names
     * is_dir is one of:
         * nil: return all entries,
