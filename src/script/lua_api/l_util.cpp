@@ -699,6 +699,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(mkdir);
 	API_FCT(rmdir);
 	API_FCT(cpdir);
+	API_FCT(mvdir);
 	API_FCT(get_dir_list);
 
 	API_FCT(encode_base64);
