@@ -324,17 +324,7 @@ It is highly recommeded to compile on Ubuntu 20.04 or newer.
 
 Install Ubuntu packages:
 
-    sudo apt install wget xz-utils unzip git cmake gettext
-
-Download the MinGW toolchain for 64-bit Windows and extract to `/usr`:
-
-    wget -nv http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw-w32.tar.xz
-    sudo tar -xaf mingw-w32.tar.xz -C /usr
-
-Download the MinGW toolchain for 64-bit Windows and extract to `/usr`:
-
-    wget -nv http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw-w64.tar.xz
-    sudo tar -xaf mingw-w64.tar.xz -C /usr
+    sudo apt install wget xz-utils unzip git cmake gettext g++-mingw-w64-i686 g++-mingw-w64-x86-64
 
 #### Download
 
@@ -353,13 +343,13 @@ To build executables for Windows, `cd` into the source directory, and run the pr
 
 Build for 32-bit Windows:
 
-    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh buildwin32
+    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh build/win32
 
 Build for 64-bit Windows:
 
-    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh buildwin64
+    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh build/win64
 
-The commands above will use the current source directory. Windows builds will be created at `buildwin32/build/minetest-*-win32.zip` (32-bit) and `buildwin64/build/minetest-*-win64.zip` (64-bit).
+The commands above will use the current source directory. Windows builds will be created at `build/win32/build/minetest-*-win32.zip` (32-bit) and `build/win64/build/minetest-*-win64.zip` (64-bit).
 
 ### Compiling on Windows using MSVC
 
