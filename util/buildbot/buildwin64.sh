@@ -28,12 +28,25 @@ if [ -z "$compiler" ]; then
 	echo "Unable to determine which MinGW compiler to use"
 	exit 1
 fi
+
+# Determine compiler version
+compiler_version=`$compiler --version | head -n1 | cut -f3 -d ' '`
+
 toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
-tmp=$(dirname "$(command -v $compiler)")/../x86_64-w64-mingw32/bin
+# Look for runtime DLLs to add
 runtime_dlls=
-[ -d "$tmp" ] && runtime_dlls=$(echo $tmp/lib{gcc_,stdc++-,winpthread-}*.dll | tr ' ' ';')
+extra_dlls_prefix="libgcc_ libstdc++- libwinpthread-"
+dll_search_dirs="/usr/x86_64-w64-mingw32/bin
+/usr/x86_64-w64-mingw32/lib
+/usr/lib/gcc/x86_64-w64-mingw32/$compiler_version"
+for dll in $extra_dlls_prefix; do
+	for dir in $dll_search_dirs; do
+		add_dll=$(find "$dir" -name "$dll*.dll")
+		[ ! -z "$add_dll" ] && runtime_dlls="$add_dll;$runtime_dlls" && break
+	done
+done
 [ -z "$runtime_dlls" ] &&
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
