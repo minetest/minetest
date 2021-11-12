@@ -386,7 +386,7 @@ Build the binaries as described above, but make sure you unselect `RUN_IN_PLACE`
 Open the generated project file with Visual Studio. Right-click **Package** and choose **Generate**.
 It may take some minutes to generate the installer.
 
-### Compiling on MacOS
+### Compiling on MacOS (Intel Architecture)
 
 #### Requirements
 - [Homebrew](https://brew.sh/)
