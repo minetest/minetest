@@ -113,6 +113,8 @@ function core.register_item(name, itemdef)
 	-- Check name
 	if name == nil then
 		error("Unable to register item: Name is nil")
+	elseif name == ":" and itemdef.type ~= "none" then
+		error("Unable to register item: Cannot use \":\" as a name except to override the player's hand")
 	end
 	name = check_modname_prefix(tostring(name))
 	if forbidden_item_names[name] then
