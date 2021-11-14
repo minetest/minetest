@@ -388,9 +388,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		// FIXME: I don't think this is needed here
 		map_node->OnAnimate(m_device->getTimer()->getTime());
 
-		m_driver->setTransform(video::ETS_WORLD,
-				map_node->getAbsoluteTransformation());
-
 		map_node->renderMapShadows(m_driver, material, pass, m_current_frame, m_map_shadow_update_frames);
 		break;
 	}
@@ -439,8 +436,6 @@ void ShadowRenderer::renderShadowObjects(
 			//current_mat.PolygonOffsetSlopeScale = -1.f;
 		}
 
-		m_driver->setTransform(video::ETS_WORLD,
-				shadow_node.node->getAbsoluteTransformation());
 		shadow_node.node->render();
 
 		// restore the material.
