@@ -309,25 +309,29 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 void ShadowRenderer::drawDebug()
 {
 	/* this code just shows shadows textures in screen and in ONLY for debugging*/
-	#if 0
+	#if 1
+	u16 offset = 50;
+	u16 size = 250;
 	// this is debug, ignore for now.
-	m_driver->draw2DImage(shadowMapTextureFinal,
-			core::rect<s32>(0, 50, 128, 128 + 50),
-			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
-
 	m_driver->draw2DImage(shadowMapClientMap,
-			core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
+			core::rect<s32>(0, offset, size, offset + size),
 			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
+	offset += size;
+
 	m_driver->draw2DImage(shadowMapTextureDynamicObjects,
-			core::rect<s32>(0, 128 + 50 + 128, 128,
-					128 + 50 + 128 + 128),
+			core::rect<s32>(0, offset, size, offset + size),
 			core::rect<s32>({0, 0}, shadowMapTextureDynamicObjects->getSize()));
+	offset += size;
+
+	m_driver->draw2DImage(shadowMapTextureFinal,
+			core::rect<s32>(0, offset, size, offset + size),
+			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
+	offset += size;
 
 	if (m_shadow_map_colored) {
 
 		m_driver->draw2DImage(shadowMapTextureColors,
-				core::rect<s32>(128,128 + 50 + 128 + 128,
-						128 + 128, 128 + 50 + 128 + 128 + 128),
+				core::rect<s32>(size, offset, size + size, offset + size),
 				core::rect<s32>({0, 0}, shadowMapTextureColors->getSize()));
 	}
 	#endif
