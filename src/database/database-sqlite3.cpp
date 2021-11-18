@@ -797,7 +797,7 @@ void ModMetadataDatabaseSQLite3::createDatabase()
 	assert(m_database); // Pre-condition
 
 	SQLOK(sqlite3_exec(m_database,
-		"CREATE TABLE IF NOT EXISTS `pairs` (\n"
+		"CREATE TABLE IF NOT EXISTS `entries` (\n"
 			"	`modname` TEXT NOT NULL,\n"
 			"	`key` BLOB NOT NULL,\n"
 			"	`value` BLOB NOT NULL,\n"
@@ -809,9 +809,10 @@ void ModMetadataDatabaseSQLite3::createDatabase()
 
 void ModMetadataDatabaseSQLite3::initStatements()
 {
-	PREPARE_STATEMENT(get, "SELECT `key`, `value` FROM `pairs` WHERE `modname` = ?");
-	PREPARE_STATEMENT(set, "REPLACE INTO `pairs` (`modname`, `key`, `value`) VALUES (?, ?, ?)");
-	PREPARE_STATEMENT(remove, "DELETE FROM `pairs` WHERE `modname` = ? AND `key` = ?");
+	PREPARE_STATEMENT(get, "SELECT `key`, `value` FROM `entries` WHERE `modname` = ?");
+	PREPARE_STATEMENT(set,
+		"REPLACE INTO `entries` (`modname`, `key`, `value`) VALUES (?, ?, ?)");
+	PREPARE_STATEMENT(remove, "DELETE FROM `entries` WHERE `modname` = ? AND `key` = ?");
 }
 
 bool ModMetadataDatabaseSQLite3::getPairs(const std::string &modname, StringMap *storage)
@@ -870,7 +871,8 @@ void ModMetadataDatabaseSQLite3::listMods(std::vector<std::string> *res)
 	verifyDatabase();
 
 	char *errmsg;
-	int status = sqlite3_exec(m_database, "SELECT `modname` FROM `pairs` GROUP BY `modname`;",
+	int status = sqlite3_exec(m_database,
+		"SELECT `modname` FROM `entries` GROUP BY `modname`;",
 		[](void *res_vp, int n_col, char **cols, char **col_names) -> int {
 			((decltype(res)) res_vp)->emplace_back(cols[0]);
 			return 0;
