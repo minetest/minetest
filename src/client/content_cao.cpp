@@ -996,12 +996,14 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
 			const PlayerControl &controls = player->getPlayerControl();
+			f32 new_speed = player->local_animation_speed;
 
 			bool walking = false;
-			if (controls.movement_speed > 0.001f)
+			if (controls.movement_speed > 0.001f) {
+				new_speed *= controls.movement_speed;
 				walking = true;
+			}
 
-			f32 new_speed = player->local_animation_speed;
 			v2s32 new_anim = v2s32(0,0);
 			bool allow_update = false;
 
@@ -1016,7 +1018,6 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			// slowdown speed if sneaking
 			if (controls.sneak && walking)
 				new_speed /= 2;
-			new_speed *= controls.movement_speed;
 
 			if (walking && (controls.dig || controls.place)) {
 				new_anim = player->local_animations[3];
