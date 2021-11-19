@@ -27,58 +27,129 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using m4f = core::matrix4;
 
+extern std::string current_debug_message;
+
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
-	float radius;
-	v3f newCenter;
-	v3f look = cam->getDirection();
+	v3f corners[] = {
+		v3f(-1.0f, -1.0f, 0.0f),
+		v3f(-1.0f, 1.0f, 0.0f),
+		v3f(1.0f, -1.0f, 0.0f),
+		v3f(1.0f, 1.0f, 0.0f),
+		v3f(-1.0f, -1.0f, 1.0f),
+		v3f(-1.0f, 1.0f, 1.0f),
+		v3f(1.0f, -1.0f, 1.0f),
+		v3f(1.0f, 1.0f, 1.0f),
+	};
 
-	// camera view tangents
-	float tanFovY = tanf(cam->getFovY() * 0.5f);
-	float tanFovX = tanf(cam->getFovX() * 0.5f);
+	// camera properties
+	scene::ICameraSceneNode *cam_node = cam->getCameraNode();
+	v3f cam_pos = cam_node->getAbsolutePosition();
+	v3f cam_dir = cam->getDirection().normalize();
+	v3f cam_up = v3f(cam->getCameraNode()->getUpVector()).normalize();
+	v3f cam_right = cam_up.crossProduct(cam_dir).normalize();
+	float cam_near = cam_node->getNearValue();
+	float cam_far = MYMIN(80 * BS, cam_node->getFarValue());
 
-	// adjusted frustum boundaries
-	float sfNear = future_frustum.zNear;
-	float sfFar = adjustDist(future_frustum.zFar, cam->getFovY());
+	// find corners of the camera frustum in world coordinates
+	for (u16 i = 0; i < 8; i++) {
+		float depth = cam_near + 
+				corners[i].Z * (cam_far - cam_near);
+		corners[i] = cam_pos + 
+				depth * cam_dir + 
+				corners[i].X * depth * tan(0.5 * cam_node->getAspectRatio() * cam_node->getFOV()) * cam_right + 
+				corners[i].Y * depth * tan(0.5 * cam_node->getFOV()) * cam_up;
+	}
+ 
+	// constructing light space
+	// Y (up) axis points towards the light
+	// Z (dir) axis is in the same plane as Y and camera_dir and orthogonal to Y
+	// X (right) axis complements the Y and Z
 
-	// adjusted camera positions
-	v3f camPos2 = cam->getPosition();
-	v3f camPos = v3f(camPos2.X - cam->getOffset().X * BS,
-			camPos2.Y - cam->getOffset().Y * BS,
-			camPos2.Z - cam->getOffset().Z * BS);
-	camPos += look * sfNear;
-	camPos2 += look * sfNear;
+	// When looking towards or away from the light, use player's X axis as light space X
+	float r = pow(abs(cam_dir.dotProduct(direction)), 1.0);
+	v3f light_up = -direction;
+	v3f light_right = (1 - r) * light_up.crossProduct(cam_dir).normalize() + r * cam_right;
+	v3f light_dir = light_right.crossProduct(light_up).normalize();
 
-	// center point of light frustum
-	float end = sfNear + sfFar;
-	newCenter = camPos + look * (sfNear + 0.05f * end);
-	v3f world_center = camPos2 + look * (sfNear + 0.05f * end);
+	// Define camera position and focus point in the view frustum
+	v3f center = cam_pos + cam_dir * 20.0f; //(0.5 * cam_near + 0.5 * cam_far);
 
-	// Create a vector to the frustum far corner
-	const v3f &viewUp = cam->getCameraNode()->getUpVector();
-	v3f viewRight = look.crossProduct(viewUp);
+	// Find the minimal value on Z axis relative to light_dir
+	float nearest = -INFINITY;
+	for (u16 i = 0; i < 8; i++) {
+		float distance = (center - corners[i]).dotProduct(light_dir);
+		// corner nearest to the virtual camera has the longest distance to the center along light_dir
+		if (distance > nearest)
+			nearest = distance;
+	}
 
-	v3f farCorner = look + viewRight * tanFovX + viewUp * tanFovY;
-	// Compute the frustumBoundingSphere radius
-	v3f boundVec = (camPos + farCorner * sfFar) - newCenter;
-	radius = boundVec.getLength() * 2.0f;
-	// boundVec.getLength();
-	float vvolume = radius * 2.0f;
+	float n = (cam_near + sqrt(cam_near * cam_far)) / (1.001 - r);
+	v3f p = center - (n + nearest) * light_dir;
 
-	v3f frustumCenter = newCenter;
-	// probar radius multipliacdor en funcion del I, a menor I mas multiplicador
-	v3f eye_displacement = direction * vvolume;
+	m4f viewmatrix;
+	viewmatrix.buildCameraLookAtMatrixLH(p, center, light_up);
 
-	// we must compute the viewmat with the position - the camera offset
-	// but the future_frustum position must be the actual world position
-	v3f eye = frustumCenter - eye_displacement;
-	future_frustum.position = world_center - eye_displacement;
-	future_frustum.length = vvolume;
-	future_frustum.ViewMat.buildCameraLookAtMatrixLH(eye, frustumCenter, v3f(0.0f, 1.0f, 0.0f));
-	future_frustum.ProjOrthMat.buildProjectionMatrixOrthoLH(future_frustum.length,
-			future_frustum.length, -future_frustum.length,
-			future_frustum.length,false);
+	// Identify the near and far plane and the field of view
+	float light_near = +INFINITY;
+	float light_far = -INFINITY;
+	float max_dx = 0.0f;
+	float max_dy = 0.0f;
+	for (u16 i = 0; i < 8; i++) {
+		viewmatrix.transformVect(corners[i]);
+		if (corners[i].Z < light_near)
+			light_near = corners[i].Z;
+		if (corners[i].Z > light_far)
+			light_far = corners[i].Z;
+		float dx = abs(v3f(corners[i].X, 0, corners[i].Z).normalize().X);
+		if (dx > max_dx)
+			max_dx = dx;
+		float dy = abs(v3f(0, corners[i].Y, corners[i].Z).normalize().Y);
+		if (dy > max_dy)
+			max_dy = dy;
+	}
+
+	light_near -= MYMIN(10.0, 0.1 * light_near);
+	light_far += MYMIN(10.0, 0.1 * light_far);
+
+	max_dy = MYMAX(max_dy, v3f(0, 2000.f, light_far).normalize().Y);
+
+	float aspect = max_dx/max_dy;
+
+	// Define projection matrix
+	// s swaps Y and Z axes, so that we render from the direction of light
+	m4f projmatrix;
+	projmatrix.buildProjectionMatrixPerspectiveFovLH(asin(max_dy) * 2.0f, aspect, light_near, light_far, false);
+	m4f s(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, -1.0f / mapRes, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+	s *= projmatrix;
+	projmatrix = s;
+
+	// update the frustum settings
+	future_frustum.position = cam->getPosition() - 1600.0f * direction;
+	future_frustum.length = 1600.0f;
+	future_frustum.ViewMat = viewmatrix;
+	future_frustum.ProjOrthMat = projmatrix;
 	future_frustum.camera_offset = cam->getOffset();
+
+	std::stringstream debug;
+	debug << std::fixed
+			// << "direction: " << direction.X << "," << direction.Y << "," << direction.Z << " | "
+			// << "look: " << cam_dir.X << "," << cam_dir.Y << "," << cam_dir.Z << " | "
+			// << "cos: " << direction.dotProduct(cam_dir) << " | "
+			// << "right: " << cam_right.X << "," << cam_right.Y << "," << cam_right.Z << " | "
+			// << "light_dir: " << light_dir.X << "," << light_dir.Y << "," << light_dir.Z << " | "
+			// << "light_right: " << light_right.X << "," << light_right.Y << "," << light_right.Z << " | "
+			<< "nearest: " << nearest << " | "
+			<< "r: " << r << " | n: " << n << " | "
+			<< "Fov X: " << max_dx << " | Fov Y: " << max_dy << " | Aspect: " << aspect << " | "
+			<< "Near: " << light_near << " | Far: " << light_far << " | "
+			;
+	current_debug_message = debug.str();
 }
 
 DirectionalLight::DirectionalLight(const u32 shadowMapResolution,

@@ -71,7 +71,7 @@ vec3 getLightSpacePosition()
 	float offsetScale = (0.0057 * getLinearDepth() + normalOffsetScale);
 	pLightSpace = m_ShadowViewProj * vec4(worldPosition + offsetScale * normalize(vNormal), 1.0);
 	#endif
-	pLightSpace = getPerspectiveFactor(pLightSpace);
+	pLightSpace /= pLightSpace.w;
 	return pLightSpace.xyz * 0.5 + 0.5;
 }
 // custom smoothstep implementation because it's not defined in glsl1.2
@@ -479,7 +479,7 @@ void main(void)
 	vec3 shadow_color = vec3(0.0, 0.0, 0.0);
 	vec3 posLightSpace = getLightSpacePosition();
 
-	float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 20.0));
+	float distance_rate = 1; //(1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 20.0));
 	float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z  ),0.0);
 
 	if (distance_rate > 1e-7) {
@@ -522,6 +522,12 @@ void main(void)
 					dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	// col.r = 0.5 * clamp(getPenumbraRadius(ShadowMapSampler, posLightSpace.xy, posLightSpace.z, 1.0) / SOFTSHADOWRADIUS, 0.0, 1.0) + 0.5 * col.r;
 	// col.r = adjusted_night_ratio; // debug night ratio adjustment
+	// col.r = posLightSpace.x;
+	// col.g = posLightSpace.y;
+	// col.rgb = vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+	// col.rgb = vec3(posLightSpace.x, posLightSpace.y, posLightSpace.z);
+	// col.r = getHardShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+	// col.g = texture2D(ShadowMapSampler, posLightSpace.xy).r;
 #endif
 
 #if ENABLE_TONE_MAPPING
