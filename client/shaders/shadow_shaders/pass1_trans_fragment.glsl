@@ -26,7 +26,7 @@ void main()
 		discard;
 #endif
 
-	float depth = 0.5 + tPos.z * 0.5;
+	float depth = 0.5 + (tPos.z / tPos.w) * 0.5;
 	// ToDo: Liso: Apply movement on waving plants
 	// depth in [0, 1] for texture
 

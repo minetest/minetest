@@ -8,6 +8,6 @@ void main()
 	if (col.a < 0.70)
 		discard;
 
-	float depth = 0.5 + tPos.z * 0.5;
+	float depth = 0.5 + (tPos.z/tPos.w) * 0.5;
 	gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
 }
