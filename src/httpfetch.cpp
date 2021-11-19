@@ -100,7 +100,8 @@ u64 httpfetch_caller_alloc_secure()
 			FATAL_ERROR("httpfetch_caller_alloc_secure: ran out of caller IDs");
 			return HTTPFETCH_DISCARD;
 		}
-	} while (g_httpfetch_results.find(caller) != g_httpfetch_results.end());
+	} while (caller != HTTPFETCH_DISCARD &&
+		g_httpfetch_results.find(caller) != g_httpfetch_results.end());
 
 	verbosestream << "httpfetch_caller_alloc_secure: allocating "
 		<< caller << std::endl;
