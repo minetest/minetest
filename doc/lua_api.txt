@@ -5435,7 +5435,7 @@ Bans
     * Returns boolean indicating success (false if player nonexistant)
 * `minetest.disconnect_player(name, [reason])`: disconnect a player with an
   optional reason, this will not prefix with 'Kicked: ' like kick_player.
-  If no reason is given defaults to 'Disconnected.'
+  If no reason is given, it will default to 'Disconnected.'
     * Returns boolean indicating success (false if player nonexistant)
 
 Particles
