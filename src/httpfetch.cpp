@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 
 static std::mutex g_httpfetch_mutex;
-static std::unordered_map<unsigned long, std::queue<HTTPFetchResult>>
+static std::unordered_map<u64, std::queue<HTTPFetchResult>>
 	g_httpfetch_results;
 static PcgRandom g_callerid_randomness;
 
@@ -52,22 +52,22 @@ HTTPFetchRequest::HTTPFetchRequest() :
 
 static void httpfetch_deliver_result(const HTTPFetchResult &fetch_result)
 {
-	unsigned long caller = fetch_result.caller;
+	u64 caller = fetch_result.caller;
 	if (caller != HTTPFETCH_DISCARD) {
 		MutexAutoLock lock(g_httpfetch_mutex);
 		g_httpfetch_results[caller].emplace(fetch_result);
 	}
 }
 
-static void httpfetch_request_clear(unsigned long caller);
+static void httpfetch_request_clear(u64 caller);
 
-unsigned long httpfetch_caller_alloc()
+u64 httpfetch_caller_alloc()
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Check each caller ID except HTTPFETCH_DISCARD
-	const unsigned long discard = HTTPFETCH_DISCARD;
-	for (unsigned long caller = discard + 1; caller != discard; ++caller) {
+	const u64 discard = HTTPFETCH_DISCARD;
+	for (u64 caller = discard + 1; caller != discard; ++caller) {
 		auto it = g_httpfetch_results.find(caller);
 		if (it == g_httpfetch_results.end()) {
 			verbosestream << "httpfetch_caller_alloc: allocating "
@@ -82,15 +82,15 @@ unsigned long httpfetch_caller_alloc()
 	return discard;
 }
 
-unsigned long httpfetch_caller_alloc_secure()
+u64 httpfetch_caller_alloc_secure()
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Generate random caller IDs and make sure they're not
 	// already used or equal to HTTPFETCH_DISCARD
 	// Give up after 100 tries to prevent infinite loop
-	u8 tries = 100;
-	unsigned long caller;
+	size_t tries = 100;
+	u64 caller;
 
 	do {
 		caller = (((u64) g_callerid_randomness.next()) << 32) |
@@ -110,7 +110,7 @@ unsigned long httpfetch_caller_alloc_secure()
 	return caller;
 }
 
-void httpfetch_caller_free(unsigned long caller)
+void httpfetch_caller_free(u64 caller)
 {
 	verbosestream<<"httpfetch_caller_free: freeing "
 			<<caller<<std::endl;
@@ -122,7 +122,7 @@ void httpfetch_caller_free(unsigned long caller)
 	}
 }
 
-bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
+bool httpfetch_async_get(u64 caller, HTTPFetchResult &fetch_result)
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
@@ -474,7 +474,7 @@ public:
 		m_requests.push_back(req);
 	}
 
-	void requestClear(unsigned long caller, Event *event)
+	void requestClear(u64 caller, Event *event)
 	{
 		Request req;
 		req.type = RT_CLEAR;
@@ -505,7 +505,7 @@ protected:
 
 		}
 		else if (req.type == RT_CLEAR) {
-			unsigned long caller = req.fetch_request.caller;
+			u64 caller = req.fetch_request.caller;
 
 			// Abort all ongoing fetches for the caller
 			for (std::vector<HTTPFetchOngoing*>::iterator
@@ -778,7 +778,7 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 		g_httpfetch_thread->start();
 }
 
-static void httpfetch_request_clear(unsigned long caller)
+static void httpfetch_request_clear(u64 caller)
 {
 	if (g_httpfetch_thread->isRunning()) {
 		Event event;
@@ -827,7 +827,7 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 	httpfetch_deliver_result(fetch_result);
 }
 
-static void httpfetch_request_clear(unsigned long caller)
+static void httpfetch_request_clear(u64 caller)
 {
 }
 
