@@ -148,7 +148,7 @@ For Debian/Ubuntu users:
 For Fedora users:
 
     sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
-    
+
 For Arch users:
 
     sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd
@@ -386,6 +386,61 @@ Build the binaries as described above, but make sure you unselect `RUN_IN_PLACE`
 Open the generated project file with Visual Studio. Right-click **Package** and choose **Generate**.
 It may take some minutes to generate the installer.
 
+### Compiling on MacOS
+
+#### Requirements
+- [Homebrew](https://brew.sh/)
+- [Git](https://git-scm.com/downloads)
+
+Install dependencies with homebrew:
+
+```
+brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
+```
+
+#### Download
+
+Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
+
+```bash
+git clone --depth 1 https://github.com/minetest/minetest.git
+cd minetest
+```
+
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
+
+```
+git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+```
+
+Download Minetest's fork of Irrlicht:
+
+```
+git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+```
+
+#### Build
+
+```bash
+mkdir cmakebuild
+cd cmakebuild
+
+cmake .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+    -DCMAKE_FIND_FRAMEWORK=LAST \
+    -DCMAKE_INSTALL_PREFIX=../build/macos/ \
+    -DRUN_IN_PLACE=FALSE \
+    -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
+
+make -j$(nproc)
+make install
+```
+
+#### Run
+
+```
+open ./build/macos/minetest.app
+```
 
 Docker
 ------
