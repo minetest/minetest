@@ -31,17 +31,6 @@ extern std::string current_debug_message;
 
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
-	v3f corners[] = {
-		v3f(-1.0f, -1.0f, 0.0f),
-		v3f(-1.0f, 1.0f, 0.0f),
-		v3f(1.0f, -1.0f, 0.0f),
-		v3f(1.0f, 1.0f, 0.0f),
-		v3f(-1.0f, -1.0f, 1.0f),
-		v3f(-1.0f, 1.0f, 1.0f),
-		v3f(1.0f, -1.0f, 1.0f),
-		v3f(1.0f, 1.0f, 1.0f),
-	};
-
 	// camera properties
 	scene::ICameraSceneNode *cam_node = cam->getCameraNode();
 	v3f cam_pos = cam_node->getAbsolutePosition();
@@ -51,15 +40,10 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float cam_near = cam_node->getNearValue();
 	float cam_far = MYMIN(farPlane * BS, cam_node->getFarValue());
 
-	// find corners of the camera frustum in world coordinates
-	for (u16 i = 0; i < 8; i++) {
-		float depth = cam_near + 
-				corners[i].Z * (cam_far - cam_near);
-		corners[i] = cam_pos + 
-				depth * cam_dir + 
-				corners[i].X * depth * tan(0.5 * cam_node->getAspectRatio() * cam_node->getFOV()) * cam_right + 
-				corners[i].Y * depth * tan(0.5 * cam_node->getFOV()) * cam_up;
-	}
+	v3f top_right_corner = cam_pos + 
+				cam_near * cam_dir + 
+				cam_near * tan(0.5 * cam_node->getAspectRatio() * cam_node->getFOV()) * cam_right + 
+				cam_near * tan(0.5 * cam_node->getFOV()) * cam_up;
  
 	// constructing light space
 	// Y (up) axis points towards the light.
@@ -75,7 +59,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	// Define camera position and focus point in the view frustum
 	v3f center = cam_pos + cam_dir * (0.9 * cam_near + 0.1 * cam_far);
-	float radius = (center - corners[0]).getLength();
+	float radius = (center - top_right_corner).getLength();
 
 	float n = (cam_near + sqrt(cam_near * cam_far)) / MYMAX(0.0001, pow(1 - r, 3.0));
 	v3f p = center - (n + radius) * light_dir;
