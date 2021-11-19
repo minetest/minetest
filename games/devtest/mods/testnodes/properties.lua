@@ -366,11 +366,11 @@ for d=-3,3 do
 	end
 end
 
+
 -- Causes drowning damage
 minetest.register_node("testnodes:drowning_1", {
 	description = S("Drowning Node (@1 damage)", 1),
 	drowning = 1,
-
 
 	walkable = false,
 	is_ground_content = false,
@@ -381,3 +381,22 @@ minetest.register_node("testnodes:drowning_1", {
 	groups = {dig_immediate=3},
 })
 
+
+-- Slow block, nonwalkable
+minetest.register_node("testnodes:speed_slow_nonwalkable", {
+	description = "Cobweb",
+	drawtype = "plantlike",
+	tiles = {"testnodes_speed_slow.png"},
+	paramtype = "light",
+	sunlight_propagates = true,
+	walkable = false,
+	groups = {snappy = 1, disable_jump = 1, speed = -50},
+})
+
+-- Slow block, walkable
+minetest.register_node("testnodes:speed_slow_walkable", {
+	description = "Cobweb",
+	tiles = {"testnodes_speed_slow.png"},
+	walkable = true,
+	groups = {snappy = 1, disable_jump = 1, speed = -50},
+})
