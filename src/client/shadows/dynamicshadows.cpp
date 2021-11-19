@@ -49,7 +49,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	v3f cam_up = v3f(cam->getCameraNode()->getUpVector()).normalize();
 	v3f cam_right = cam_up.crossProduct(cam_dir).normalize();
 	float cam_near = cam_node->getNearValue();
-	float cam_far = MYMIN(80 * BS, cam_node->getFarValue());
+	float cam_far = MYMIN(farPlane * BS, cam_node->getFarValue());
 
 	// find corners of the camera frustum in world coordinates
 	for (u16 i = 0; i < 8; i++) {
@@ -62,59 +62,35 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	}
  
 	// constructing light space
-	// Y (up) axis points towards the light
+	// Y (up) axis points towards the light.
 	// Z (dir) axis is in the same plane as Y and camera_dir and orthogonal to Y
 	// X (right) axis complements the Y and Z
 
 	// When looking towards or away from the light, use player's X axis as light space X
-	float r = pow(abs(cam_dir.dotProduct(direction)), 1.0);
+	float r = abs(cam_dir.dotProduct(direction));
+
 	v3f light_up = -direction;
 	v3f light_right = (1 - r) * light_up.crossProduct(cam_dir).normalize() + r * cam_right;
 	v3f light_dir = light_right.crossProduct(light_up).normalize();
 
 	// Define camera position and focus point in the view frustum
-	v3f center = cam_pos + cam_dir * 20.0f; //(0.5 * cam_near + 0.5 * cam_far);
+	v3f center = cam_pos + cam_dir * (0.9 * cam_near + 0.1 * cam_far);
+	float radius = (center - corners[0]).getLength();
 
-	// Find the minimal value on Z axis relative to light_dir
-	float nearest = -INFINITY;
-	for (u16 i = 0; i < 8; i++) {
-		float distance = (center - corners[i]).dotProduct(light_dir);
-		// corner nearest to the virtual camera has the longest distance to the center along light_dir
-		if (distance > nearest)
-			nearest = distance;
-	}
-
-	float n = (cam_near + sqrt(cam_near * cam_far)) / (1.001 - r);
-	v3f p = center - (n + nearest) * light_dir;
+	float n = (cam_near + sqrt(cam_near * cam_far)) / MYMAX(0.0001, pow(1 - r, 3.0));
+	v3f p = center - (n + radius) * light_dir;
 
 	m4f viewmatrix;
 	viewmatrix.buildCameraLookAtMatrixLH(p, center, light_up);
 
-	// Identify the near and far plane and the field of view
-	float light_near = +INFINITY;
-	float light_far = -INFINITY;
-	float max_dx = 0.0f;
-	float max_dy = 0.0f;
-	for (u16 i = 0; i < 8; i++) {
-		viewmatrix.transformVect(corners[i]);
-		if (corners[i].Z < light_near)
-			light_near = corners[i].Z;
-		if (corners[i].Z > light_far)
-			light_far = corners[i].Z;
-		float dx = abs(v3f(corners[i].X, 0, corners[i].Z).normalize().X);
-		if (dx > max_dx)
-			max_dx = dx;
-		float dy = abs(v3f(0, corners[i].Y, corners[i].Z).normalize().Y);
-		if (dy > max_dy)
-			max_dy = dy;
-	}
+	// Build light camera projection from point p to 
+	// a sphere with center 'center' and radius 'radius'.
+	float light_near = n;
+	float light_far = n + 2 * radius;
+	float max_dx = radius / (n + radius);
+	float max_dy = radius / (n + radius);
 
-	light_near -= MYMIN(10.0, 0.1 * light_near);
-	light_far += MYMIN(10.0, 0.1 * light_far);
-
-	max_dy = MYMAX(max_dy, v3f(0, 2000.f, light_far).normalize().Y);
-
-	float aspect = max_dx/max_dy;
+	float aspect = max_dy/max_dx;
 
 	// Define projection matrix
 	// s swaps Y and Z axes, so that we render from the direction of light
@@ -144,10 +120,9 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 			// << "right: " << cam_right.X << "," << cam_right.Y << "," << cam_right.Z << " | "
 			// << "light_dir: " << light_dir.X << "," << light_dir.Y << "," << light_dir.Z << " | "
 			// << "light_right: " << light_right.X << "," << light_right.Y << "," << light_right.Z << " | "
-			<< "nearest: " << nearest << " | "
 			<< "r: " << r << " | n: " << n << " | "
 			<< "Fov X: " << max_dx << " | Fov Y: " << max_dy << " | Aspect: " << aspect << " | "
-			<< "Near: " << light_near << " | Far: " << light_far << " | "
+			<< "Near: " << light_near << " | Far: " << light_far << " | " << (light_far - light_near) << " | ";
 			;
 	current_debug_message = debug.str();
 }
