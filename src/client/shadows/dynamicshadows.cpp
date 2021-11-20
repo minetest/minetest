@@ -55,6 +55,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	v3f light_up = -direction;
 	v3f light_right = (1 - r) * light_up.crossProduct(cam_dir).normalize() + r * cam_right;
+	if (light_right.dotProduct(cam_right) < 0)
+		light_right = -light_right;
 	v3f light_dir = light_right.crossProduct(light_up).normalize();
 
 	// Define camera position and focus point in the view frustum
