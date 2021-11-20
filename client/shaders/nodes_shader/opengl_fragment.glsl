@@ -435,14 +435,14 @@ void main(void)
 	
 #ifdef COLORED_SHADOWS
 		vec4 visibility;
-		if (cosLight > 0.0)
+		if (cosLight > 0.0 || f_normal_length < 0.01)
 			visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 		else
 			visibility = vec4(1.0, 0.0, 0.0, 0.0);
 		shadow_int = visibility.r;
 		shadow_color = visibility.gba;
 #else
-		if (cosLight > 0.0)
+		if (cosLight > 0.0 || f_normal_length < 0.01)
 			shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 		else
 			shadow_int = 1.0;
