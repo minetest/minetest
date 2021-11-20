@@ -354,13 +354,16 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		Settings conf;
 
 		conf.set("world_name", name);
-		conf.set("world_uuid", generate_uuid4());
 		conf.set("gameid", gamespec.id);
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");
 		conf.set("auth_backend", "sqlite3");
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
+
+		if (g_settings->getBool("server_announce")) {
+			conf.set("world_uuid", generate_uuid4());
+		}
 
 		if (!conf.updateConfigFile(worldmt_path.c_str())) {
 			throw BaseException("Failed to update the config file");

@@ -437,12 +437,12 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 			auth_backend_name = conf.get("auth_backend");
 		}
 
-		if (!uuid_exists) {
+		if (uuid_exists) {
+			m_world_uuid = conf.get("world_uuid");
+		} else if (g_settings->getBool("server_announce")) {
 			m_world_uuid = generate_uuid4();
 			conf.set("world_uuid", m_world_uuid);
 			dirty = true;
-		} else {
-			m_world_uuid = conf.get("world_uuid");
 		}
 
 		if (dirty && !conf.updateConfigFile(conf_path.c_str())) {
