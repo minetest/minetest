@@ -31,6 +31,9 @@ extern std::string current_debug_message;
 
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
+	// Light-space perspective implementation for PSM
+	// taken from https://www.cg.tuwien.ac.at/research/vr/lispsm/shadows_egsr2004_revised.pdf
+
 	// camera properties
 	scene::ICameraSceneNode *cam_node = cam->getCameraNode();
 	v3f cam_pos = cam_node->getAbsolutePosition();
@@ -63,7 +66,9 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	v3f center = cam_pos + cam_dir * (0.9 * cam_near + 0.1 * cam_far);
 	float radius = (center - top_right_corner).getLength();
 
-	float n = (cam_near + sqrt(cam_near * cam_far)) / MYMAX(0.0001, pow(1 - r, 3.0));
+	float n = cam_near + sqrt(cam_near * cam_far);
+	// scale n when light and camera vectors are aligned
+	n /= MYMAX(0.0001, pow(1 - r, 4.0));
 	v3f p = center - (n + radius) * light_dir;
 
 	m4f viewmatrix;
