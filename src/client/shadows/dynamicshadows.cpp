@@ -27,8 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using m4f = core::matrix4;
 
-extern std::string current_debug_message;
-
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
 	// Light-space perspective implementation for PSM
@@ -102,20 +100,6 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	future_frustum.ViewMat = viewmatrix;
 	future_frustum.ProjOrthMat = projmatrix;
 	future_frustum.camera_offset = cam->getOffset();
-
-	std::stringstream debug;
-	debug << std::fixed
-			// << "direction: " << direction.X << "," << direction.Y << "," << direction.Z << " | "
-			// << "look: " << cam_dir.X << "," << cam_dir.Y << "," << cam_dir.Z << " | "
-			// << "cos: " << direction.dotProduct(cam_dir) << " | "
-			// << "right: " << cam_right.X << "," << cam_right.Y << "," << cam_right.Z << " | "
-			// << "light_dir: " << light_dir.X << "," << light_dir.Y << "," << light_dir.Z << " | "
-			// << "light_right: " << light_right.X << "," << light_right.Y << "," << light_right.Z << " | "
-			<< "r: " << r << " | n: " << n << " | "
-			<< "Fov X: " << max_dx << " | Fov Y: " << max_dy << " | Aspect: " << aspect << " | "
-			<< "Near: " << light_near << " | Far: " << light_far << " | " << (light_far - light_near) << " | ";
-			;
-	current_debug_message = debug.str();
 }
 
 DirectionalLight::DirectionalLight(const u32 shadowMapResolution,

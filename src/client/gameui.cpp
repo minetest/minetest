@@ -96,8 +96,6 @@ void GameUI::init()
 	m_guitext_profiler->setVisible(false);
 }
 
-std::string current_debug_message;
-
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
 	const CameraOrientation &cam, const PointedThing &pointed_old,
 	const GUIChatConsole *chat_console, float dtime)
@@ -146,8 +144,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
 			<< yawToDirectionString(cam.camera_yaw)
 			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
-			<< " | seed: " << ((u64)client->getMapSeed())
-			<< " | " << current_debug_message;
+			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {
 			ClientMap &map = client->getEnv().getClientMap();
