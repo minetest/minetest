@@ -297,7 +297,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 				m_screen_quad->getMaterial().setTexture(1, shadowMapTextureColors);
 			m_screen_quad->getMaterial().setTexture(2, shadowMapTextureDynamicObjects);
 
-			m_driver->setRenderTarget(shadowMapTextureFinal, false, false,
+			m_driver->setRenderTarget(shadowMapTextureFinal, true, true,
 					video::SColor(255, 255, 255, 255));
 			m_screen_quad->render(m_driver);
 			m_driver->setRenderTarget(0, false, false);
