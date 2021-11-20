@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // (used as default value of "caller")
 #define HTTPFETCH_DISCARD 0
 #define HTTPFETCH_SYNC 1
+#define HTTPFETCH_PRINT_ERR 2
+#define HTTPFETCH_CID_START 3
 
 //  Methods
 enum HttpMethod : u8

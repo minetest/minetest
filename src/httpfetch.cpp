@@ -65,9 +65,8 @@ u64 httpfetch_caller_alloc()
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
-	// Check each caller ID except HTTPFETCH_DISCARD
-	const u64 discard = HTTPFETCH_DISCARD;
-	for (u64 caller = discard + 1; caller != discard; ++caller) {
+	// Check each caller ID except reserved ones
+	for (u64 caller = HTTPFETCH_CID_START; caller != 0; ++caller) {
 		auto it = g_httpfetch_results.find(caller);
 		if (it == g_httpfetch_results.end()) {
 			verbosestream << "httpfetch_caller_alloc: allocating "
@@ -79,7 +78,6 @@ u64 httpfetch_caller_alloc()
 	}
 
 	FATAL_ERROR("httpfetch_caller_alloc: ran out of caller IDs");
-	return discard;
 }
 
 u64 httpfetch_caller_alloc_secure()
@@ -87,7 +85,7 @@ u64 httpfetch_caller_alloc_secure()
 	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Generate random caller IDs and make sure they're not
-	// already used or equal to HTTPFETCH_DISCARD
+	// already used or reserved.
 	// Give up after 100 tries to prevent infinite loop
 	size_t tries = 100;
 	u64 caller;
@@ -100,7 +98,7 @@ u64 httpfetch_caller_alloc_secure()
 			FATAL_ERROR("httpfetch_caller_alloc_secure: ran out of caller IDs");
 			return HTTPFETCH_DISCARD;
 		}
-	} while (caller != HTTPFETCH_DISCARD &&
+	} while (caller >= HTTPFETCH_CID_START &&
 		g_httpfetch_results.find(caller) != g_httpfetch_results.end());
 
 	verbosestream << "httpfetch_caller_alloc_secure: allocating "
@@ -243,7 +241,6 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 
 	// Set static cURL options
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 3);
 	curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");
@@ -394,10 +391,16 @@ const HTTPFetchResult * HTTPFetchOngoing::complete(CURLcode res)
 	}
 
 	if (res != CURLE_OK) {
-		errorstream << request.url << " not found ("
-			<< curl_easy_strerror(res) << ")"
-			<< " (response code " << result.response_code << ")"
+		errorstream << "HTTPFetch for " << request.url << " failed ("
+			<< curl_easy_strerror(res) << ")" << std::endl;
+	} else if (result.response_code >= 400) {
+		errorstream << "HTTPFetch for " << request.url
+			<< " returned response code " << result.response_code
 			<< std::endl;
+		if (result.caller == HTTPFETCH_PRINT_ERR && !result.data.empty()) {
+			errorstream << "Response body:" << std::endl
+				<< result.data << std::endl;
+		}
 	}
 
 	return &result;
