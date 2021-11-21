@@ -321,6 +321,10 @@ string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
+string:encode_uri()
+^ eg. ("https://example.com/foo bar"):encode_uri() == "https://example.com/foo%20bar"
+string:encode_uri_component()
+^ eg. ("foo/bar baz"):encode_uri_component() == "foo%2Fbar%20baz"
 core.is_yes(arg) (possible in async calls)
 ^ returns whether arg can be interpreted as yes
 minetest.encode_base64(string) (possible in async calls)
