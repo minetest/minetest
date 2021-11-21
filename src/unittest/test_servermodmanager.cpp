@@ -219,32 +219,32 @@ void TestServerModManager::testModDependencies()
 	std::vector<ModSpec> mods;
 	mods.emplace_back(ModSpec("default"));
 	mods.emplace_back(ModSpec("dye"));
-	mods[mods.size() - 1].depends.insert("default");
+	mods.back().depends.insert("default");
 
 	mods.emplace_back(ModSpec("wool"));
-	mods[mods.size() - 1].depends.insert("default");
-	mods[mods.size() - 1].depends.insert("dye");
+	mods.back().depends.insert("default");
+	mods.back().depends.insert("dye");
 
 	mods.emplace_back(ModSpec("mesecons"));
-	mods[mods.size() - 1].depends.insert("default");
-	mods[mods.size() - 1].depends.insert("invalid"); // unknown mod
+	mods.back().depends.insert("default");
+	mods.back().depends.insert("invalid"); // unknown mod
 
 	mods.emplace_back(ModSpec("pipeworks"));
-	mods[mods.size() - 1].depends.insert("default");
-	mods[mods.size() - 1].optdepends.insert("mesecons");
+	mods.back().depends.insert("default");
+	mods.back().optdepends.insert("mesecons");
 
 	mods.emplace_back(ModSpec("technic"));
-	mods[mods.size() - 1].depends.insert("pipeworks");
-	mods[mods.size() - 1].depends.insert("mesecons");
+	mods.back().depends.insert("pipeworks");
+	mods.back().depends.insert("mesecons");
 
 	mods.emplace_back(ModSpec("circ_1"));
-	mods[mods.size() - 1].depends.insert("default");
-	mods[mods.size() - 1].optdepends.insert("circ_2");
+	mods.back().depends.insert("default");
+	mods.back().optdepends.insert("circ_2");
 
 	mods.emplace_back(ModSpec("circ_2"));
-	mods[mods.size() - 1].depends.insert("circ_3");
+	mods.back().depends.insert("circ_3");
 	mods.emplace_back(ModSpec("circ_3"));
-	mods[mods.size() - 1].depends.insert("circ_1");
+	mods.back().depends.insert("circ_1");
 
 	mc.addMods(mods);
 	mc.resolveDependencies();

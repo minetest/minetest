@@ -362,7 +362,7 @@ void ModConfiguration::checkConflictsAndDeps()
 
 struct PrioritySortedMod
 {
-	PrioritySortedMod(ModSpec *mod) : spec(mod) {}
+	PrioritySortedMod(ModSpec *mod = nullptr) : spec(mod) {}
 
 	static bool sorter(const PrioritySortedMod *a, const PrioritySortedMod *b)
 	{
@@ -428,8 +428,7 @@ void ModConfiguration::resolveDependencies()
 	for (ModSpec &mod : m_unsatisfied_mods) {
 		// Reduce memory copy time by passing 'mod' as pointer
 		// 'm_unsatisfied_mods' owns the value!
-		mods_by_name.emplace(std::pair<std::string, PrioritySortedMod>(
-				mod.name, &mod));
+		mods_by_name[mod.name] = PrioritySortedMod(&mod);
 	}
 
 	std::vector<ModSpec> unsatisfied;
@@ -458,7 +457,7 @@ void ModConfiguration::resolveDependencies()
 				// Mod cannot be satisfied: Add to the "error list"
 				// also skip it in the next loop
 				unsatisfied.push_back(mod);
-				mods_by_name.erase(mod_it++);
+				mod_it = mods_by_name.erase(mod_it);
 			}
 		}
 	} while (mods_by_name.size() != old_list_size);
