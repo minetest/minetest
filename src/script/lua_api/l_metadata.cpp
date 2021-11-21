@@ -82,9 +82,10 @@ int MetaDataRef::l_get(lua_State *L)
 	std::string str;
 	if (meta->getStringToRef(name, str)) {
 		lua_pushlstring(L, str.c_str(), str.size());
-		return 1;
+	} else {
+		lua_pushnil(L);
 	}
-	return 0;
+	return 1;
 }
 
 // get_string(self, name)

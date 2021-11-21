@@ -566,7 +566,7 @@ public:
 	}
 };
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 #define SIZE_TAG "size[11,5.5]"
 #else
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
@@ -804,7 +804,7 @@ private:
 		CameraOrientation *cam);
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
 
-	void updateChat(f32 dtime, const v2u32 &screensize);
+	void updateChat(f32 dtime);
 
 	bool nodePlacement(const ItemDefinition &selected_def, const ItemStack &selected_item,
 		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed,
@@ -901,8 +901,10 @@ private:
 	bool m_does_lost_focus_pause_game = false;
 
 	int m_reset_HW_buffer_counter = 0;
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
+#endif
+#ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
 };
@@ -940,7 +942,7 @@ Game::Game() :
 
 	readSettings();
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = false;	// This is initialised properly later
 #endif
 
@@ -1065,7 +1067,7 @@ void Game::run()
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = g_settings->getBool("fast_move")
 			&& client->checkPrivilege("fast");
 #endif
@@ -1280,9 +1282,8 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to listen on " +
-				bind_addr.serializeString() +
-				" because IPv6 is disabled";
+		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
+			bind_addr.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1315,7 +1316,7 @@ bool Game::createClient(const GameStartData &start_data)
 	if (!could_connect) {
 		if (error_message->empty() && !connect_aborted) {
 			// Should not happen if error messages are set properly
-			*error_message = "Connection failed for unknown reason";
+			*error_message = gettext("Connection failed for unknown reason");
 			errorstream << *error_message << std::endl;
 		}
 		return false;
@@ -1324,7 +1325,7 @@ bool Game::createClient(const GameStartData &start_data)
 	if (!getServerContent(&connect_aborted)) {
 		if (error_message->empty() && !connect_aborted) {
 			// Should not happen if error messages are set properly
-			*error_message = "Connection failed for unknown reason";
+			*error_message = gettext("Connection failed for unknown reason");
 			errorstream << *error_message << std::endl;
 		}
 		return false;
@@ -1340,8 +1341,8 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Camera
 	 */
 	camera = new Camera(*draw_control, client, m_rendering_engine);
-	if (!camera->successfullyCreated(*error_message))
-		return false;
+	if (client->modsLoaded())
+		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
 	/* Clouds
@@ -1454,15 +1455,14 @@ bool Game::connectToServer(const GameStartData &start_data,
 			local_server_mode = true;
 		}
 	} catch (ResolveError &e) {
-		*error_message = std::string("Couldn't resolve address: ") + e.what();
+		*error_message = fmtgettext("Couldn't resolve address: %s", e.what());
+
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
 	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to connect to " +
-				connect_address.serializeString() +
-				" because IPv6 is disabled";
+		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", connect_address.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1516,8 +1516,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 
 			if (client->accessDenied()) {
-				*error_message = "Access denied. Reason: "
-						+ client->accessDeniedReason();
+				*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 				*reconnect_requested = client->reconnectRequested();
 				errorstream << *error_message << std::endl;
 				break;
@@ -1543,7 +1542,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				wait_time += dtime;
 				// Only time out if we aren't waiting for the server we started
 				if (!start_data.address.empty() && wait_time > 10) {
-					*error_message = "Connection timed out.";
+					*error_message = gettext("Connection timed out.");
 					errorstream << *error_message << std::endl;
 					break;
 				}
@@ -1591,7 +1590,7 @@ bool Game::getServerContent(bool *aborted)
 			return false;
 
 		if (client->getState() < LC_Init) {
-			*error_message = "Client disconnected";
+			*error_message = gettext("Client disconnected");
 			errorstream << *error_message << std::endl;
 			return false;
 		}
@@ -1618,7 +1617,7 @@ bool Game::getServerContent(bool *aborted)
 				dtime, progress);
 			delete[] text;
 		} else {
-			std::stringstream message;
+			std::ostringstream message;
 			std::fixed(message);
 			message.precision(0);
 			float receive = client->mediaReceiveProgress() * 100;
@@ -1673,8 +1672,7 @@ inline void Game::updateInteractTimers(f32 dtime)
 inline bool Game::checkConnection()
 {
 	if (client->accessDenied()) {
-		*error_message = "Access denied. Reason: "
-				+ client->accessDeniedReason();
+		*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 		*reconnect_requested = client->reconnectRequested();
 		errorstream << *error_message << std::endl;
 		return false;
@@ -1845,6 +1843,7 @@ void Game::processUserInput(f32 dtime)
 	else if (g_touchscreengui) {
 		/* on touchscreengui step may generate own input events which ain't
 		 * what we want in case we just did clear them */
+		g_touchscreengui->show();
 		g_touchscreengui->step(dtime);
 	}
 #endif
@@ -2157,7 +2156,7 @@ void Game::toggleFast()
 		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
 
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = fast_move && has_fast_privs;
 #endif
 }
@@ -2495,10 +2494,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		control.movement_direction = 0.0f;
 	}
 
-#ifdef ANDROID
-	/* For Android, simulate holding down AUX1 (fast move) if the user has
+#ifdef HAVE_TOUCHSCREENGUI
+	/* For touch, simulate holding down AUX1 (fast move) if the user has
 	 * the fast_move setting toggled on. If there is an aux1 key defined for
-	 * Android then its meaning is inverted (i.e. holding aux1 means walk and
+	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
 	if (m_cache_hold_aux1) {
@@ -2922,7 +2921,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 	}
 }
 
-void Game::updateChat(f32 dtime, const v2u32 &screensize)
+void Game::updateChat(f32 dtime)
 {
 	// Get new messages from error log buffer
 	while (!m_chat_log_buf.empty())
@@ -2938,8 +2937,14 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	chat_backend->step(dtime);
 
 	// Display all messages in a static text element
-	m_game_ui->setChatText(chat_backend->getRecentChat(),
-		chat_backend->getRecentBuffer().getLineCount());
+	auto &buf = chat_backend->getRecentBuffer();
+	if (buf.getLinesModified()) {
+		buf.resetLinesModified();
+		m_game_ui->setChatText(chat_backend->getRecentChat(), buf.getLineCount());
+	}
+
+	// Make sure that the size is still correct
+	m_game_ui->updateChatSize();
 }
 
 void Game::updateCamera(u32 busy_time, f32 dtime)
@@ -3322,9 +3327,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	} else {
 		MapNode n = map.getNode(nodepos);
 
-		if (nodedef_manager->get(n).tiledef[0].name == "unknown_node.png") {
-			m_game_ui->setInfoText(L"Unknown node: " +
-				utf8_to_wide(nodedef_manager->get(n).name));
+		if (nodedef_manager->get(n).name == "unknown") {
+			m_game_ui->setInfoText(L"Unknown node");
 		}
 	}
 
@@ -3611,7 +3615,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// cheat detection.
 	// Get digging parameters
 	DigParams params = getDigParams(nodedef_manager->get(n).groups,
-			&selected_item.getToolCapabilities(itemdef_manager));
+			&selected_item.getToolCapabilities(itemdef_manager),
+			selected_item.wear);
 
 	// If can't dig, try hand
 	if (!params.diggable) {
@@ -3861,9 +3866,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Get chat messages from client
 	*/
 
-	v2u32 screensize = driver->getScreenSize();
-
-	updateChat(dtime, screensize);
+	updateChat(dtime);
 
 	/*
 		Inventory
@@ -3890,8 +3893,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
-			|| m_camera_offset_changed) {
-
+			|| m_camera_offset_changed
+			|| client->getEnv().getClientMap().needsUpdateDrawList()) {
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
@@ -3957,6 +3960,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Profiler graph
 	*/
+	v2u32 screensize = driver->getScreenSize();
+
 	if (m_game_ui->m_flags.show_profiler_graph)
 		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
 
@@ -4178,7 +4183,7 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	static const std::string control_text = strgettext("Default Controls:\n"
 		"No menu visible:\n"
 		"- single tap: button activate\n"
@@ -4342,14 +4347,15 @@ void the_game(bool *kill,
 		}
 
 	} catch (SerializationError &e) {
-		error_message = std::string("A serialization error occurred:\n")
-				+ e.what() + "\n\nThe server is probably "
-				" running a different version of " PROJECT_NAME_C ".";
+		const std::string ver_err = fmtgettext("The server is probably running a different version of %s.", PROJECT_NAME_C);
+		error_message = strgettext("A serialization error occurred:") +"\n"
+				+ e.what() + "\n\n" + ver_err;
 		errorstream << error_message << std::endl;
 	} catch (ServerError &e) {
 		error_message = e.what();
 		errorstream << "ServerError: " << error_message << std::endl;
 	} catch (ModError &e) {
+		// DO NOT TRANSLATE the `ModError`, it's used by ui.lua
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;

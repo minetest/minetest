@@ -16,11 +16,11 @@ Tool types:
 
 Tool materials:
 
-* Dirt: dig nodes of rating 3, one use only
 * Wood: dig nodes of rating 3
 * Stone: dig nodes of rating 3 or 2
 * Steel: dig nodes of rating 3, 2 or 1
 * Mese: dig "everything" instantly
+* n-Uses: can be used n times before breaking
 ]]
 
 -- The hand
@@ -91,20 +91,6 @@ minetest.register_tool("basetools:pick_mese", {
 --
 -- Pickaxes: Dig cracky
 --
-
--- This should break after only 1 use
-minetest.register_tool("basetools:pick_dirt", {
-	description = "Dirt Pickaxe".."\n"..
-		"Digs cracky=3".."\n"..
-		"1 use only",
-	inventory_image = "basetools_dirtpick.png",
-	tool_capabilities = {
-		max_drop_level=0,
-		groupcaps={
-			cracky={times={[3]=2.00}, uses=1, maxlevel=0}
-		},
-	},
-})
 
 minetest.register_tool("basetools:pick_wood", {
 	description = "Wooden Pickaxe".."\n"..
@@ -348,3 +334,31 @@ minetest.register_tool("basetools:dagger_steel", {
 		damage_groups = {fleshy=2},
 	}
 })
+
+-- Test tool uses and punch_attack_uses
+local uses = { 1, 2, 3, 5, 10, 50, 100, 1000, 10000, 65535 }
+for i=1, #uses do
+	local u = uses[i]
+	local color = string.format("#FF00%02X", math.floor(((i-1)/#uses) * 255))
+	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", u), {
+		description = u.."-Uses Pickaxe".."\n"..
+			"Digs cracky=3",
+		inventory_image = "basetools_steelpick.png^[colorize:"..color..":127",
+		tool_capabilities = {
+			max_drop_level=0,
+			groupcaps={
+				cracky={times={[3]=0.1, [2]=0.2, [1]=0.3}, uses=u, maxlevel=0}
+			},
+		},
+	})
+
+	minetest.register_tool("basetools:sword_uses_"..string.format("%05d", u), {
+		description = u.."-Uses Sword".."\n"..
+			"Damage: fleshy=1",
+		inventory_image = "basetools_woodsword.png^[colorize:"..color..":127",
+		tool_capabilities = {
+			damage_groups = {fleshy=1},
+			punch_attack_uses = u,
+		},
+	})
+end

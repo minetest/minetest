@@ -460,7 +460,6 @@ void InventoryList::deSerialize(std::istream &is)
 		std::getline(is, line, '\n');
 
 		std::istringstream iss(line);
-		//iss.imbue(std::locale("C"));
 
 		std::string name;
 		std::getline(iss, name, ' ');
@@ -559,11 +558,6 @@ u32 InventoryList::getUsedSlots() const
 			num++;
 	}
 	return num;
-}
-
-u32 InventoryList::getFreeSlots() const
-{
-	return getSize() - getUsedSlots();
 }
 
 const ItemStack& InventoryList::getItem(u32 i) const
@@ -996,7 +990,7 @@ const InventoryList *Inventory::getList(const std::string &name) const
 	return m_lists[i];
 }
 
-const s32 Inventory::getListIndex(const std::string &name) const
+s32 Inventory::getListIndex(const std::string &name) const
 {
 	for(u32 i=0; i<m_lists.size(); i++)
 	{

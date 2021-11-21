@@ -176,13 +176,10 @@ public:
 
 	bool isBlockInQueue(v3s16 pos);
 
-	v3s16 getContainingChunk(v3s16 blockpos);
-
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
 	int getSpawnLevelAtPoint(v2s16 p);
-	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
 
 	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);

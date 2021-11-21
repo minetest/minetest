@@ -729,7 +729,6 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 			msg << gettext("Failed to open webpage");
 		}
 		msg << " '" << weblink << "'";
-		msg.flush();
 		m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
 	}
 }

@@ -136,25 +136,26 @@ Compiling
 | CMake      | 3.5+    |            |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | SQLite3    | 3.0+    |            |
+| Zstd       | 1.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 
 For Debian/Ubuntu users:
 
-    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
 
 For Fedora users:
 
-    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
-    
+    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
+
 For Arch users:
 
-    sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses
+    sudo pacman -S base-devel libcurl-gnutls cmake libxxf86vm libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd
 
 For Alpine users:
 
-    sudo apk add build-base cmake libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev
+    sudo apk add build-base cmake libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev zstd-dev
 
 #### Download
 
@@ -223,10 +224,13 @@ Run it:
   - Debug build is slower, but gives much more useful output in a debugger.
 - If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
   - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
-- IrrlichtMt can also be installed somewhere that is not a standard install path.
-  - In that case use `-DCMAKE_PREFIX_PATH=/path/to/install_prefix`
-  - The path must be set so that `$(CMAKE_PREFIX_PATH)/lib/cmake/IrrlichtMt` exists
-    or that `$(CMAKE_PREFIX_PATH)` is the path of an IrrlichtMt build folder.
+
+- Minetest will use the IrrlichtMt package that is found first, given by the following order:
+  1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
+  2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
+  3. Installation of IrrlichtMt in the system-specific library paths
+  4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
+  - NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
 
 ### CMake options
 
@@ -259,6 +263,7 @@ General options and their default values:
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+    ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)
 
 Library specific options:
 
@@ -267,6 +272,7 @@ Library specific options:
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
     EGL_INCLUDE_DIR                 - Only if building with GLES; directory that contains egl.h
     EGL_LIBRARY                     - Only if building with GLES; path to libEGL.a/libEGL.so
+    EXTRA_DLL                       - Only on Windows; optional paths to additional DLLs that should be packaged
     FREETYPE_INCLUDE_DIR_freetype2  - Only if building with FreeType 2; directory that contains an freetype directory with files such as ftimage.h in it
     FREETYPE_INCLUDE_DIR_ft2build   - Only if building with FreeType 2; directory that contains ft2build.h
     FREETYPE_LIBRARY                - Only if building with FreeType 2; path to libfreetype.a/libfreetype.so/freetype.lib
@@ -306,8 +312,11 @@ Library specific options:
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
     ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib
+    ZSTD_DLL                        - Only on Windows; path to libzstd.dll
+    ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
+    ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
-### Compiling on Windows
+### Compiling on Windows using MSVC
 
 ### Requirements
 
@@ -320,11 +329,9 @@ Library specific options:
 
 It is highly recommended to use vcpkg as package manager.
 
-#### a) Using vcpkg to install dependencies
-
 After you successfully built vcpkg you can easily install the required libraries:
 ```powershell
-vcpkg install zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit gmp jsoncpp --triplet x64-windows
+vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry --triplet x64-windows
 ```
 
 - **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
@@ -337,10 +344,6 @@ vcpkg install zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype lu
 There are other optional libraries, but they are not tested if they can build and link correctly.
 
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
-
-#### b) Compile the dependencies on your own
-
-This is outdated and not recommended. Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Compile Minetest
 
@@ -370,12 +373,6 @@ cmake --build . --config Release
 ```
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
 
-#### c) Using your own compiled libraries
-
-**This is outdated and not recommended**
-
-Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
-
 ### Windows Installer using WiX Toolset
 
 Requirements:
@@ -389,6 +386,61 @@ Build the binaries as described above, but make sure you unselect `RUN_IN_PLACE`
 Open the generated project file with Visual Studio. Right-click **Package** and choose **Generate**.
 It may take some minutes to generate the installer.
 
+### Compiling on MacOS
+
+#### Requirements
+- [Homebrew](https://brew.sh/)
+- [Git](https://git-scm.com/downloads)
+
+Install dependencies with homebrew:
+
+```
+brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
+```
+
+#### Download
+
+Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
+
+```bash
+git clone --depth 1 https://github.com/minetest/minetest.git
+cd minetest
+```
+
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
+
+```
+git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+```
+
+Download Minetest's fork of Irrlicht:
+
+```
+git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+```
+
+#### Build
+
+```bash
+mkdir cmakebuild
+cd cmakebuild
+
+cmake .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+    -DCMAKE_FIND_FRAMEWORK=LAST \
+    -DCMAKE_INSTALL_PREFIX=../build/macos/ \
+    -DRUN_IN_PLACE=FALSE \
+    -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
+
+make -j$(nproc)
+make install
+```
+
+#### Run
+
+```
+open ./build/macos/minetest.app
+```
 
 Docker
 ------

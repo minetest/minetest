@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 android {
 	compileSdkVersion 29
 	buildToolsVersion '30.0.3'
-	ndkVersion '22.0.7026061'
+	ndkVersion "$ndk_version"
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
 		minSdkVersion 16
@@ -68,7 +68,7 @@ task prepareAssets() {
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
 	}
 	copy {
-		from "../native/deps/Android/Irrlicht/shaders" into "${assetsFolder}/client/shaders/Irrlicht"
+		from "../native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 	}
 	copy {
 		from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
@@ -112,5 +112,5 @@ android.applicationVariants.all { variant ->
 
 dependencies {
 	implementation project(':native')
-	implementation 'androidx.appcompat:appcompat:1.2.0'
+	implementation 'androidx.appcompat:appcompat:1.3.1'
 }

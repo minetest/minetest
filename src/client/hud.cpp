@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/hud.h"
+#include <string>
+#include <iostream>
 #include <cmath>
 #include "settings.h"
 #include "util/numeric.h"
@@ -377,15 +379,19 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
 
-				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
-				             (e->align.Y - 1.0) * (textsize.Height / 2));
+				v2s32 offset(0, (e->align.Y - 1.0) * (textsize.Height / 2));
 				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
-				                     text_height * e->scale.Y * m_scale_factor);
+						text_height * e->scale.Y * m_scale_factor);
 				v2s32 offs(e->offset.X * m_scale_factor,
-				           e->offset.Y * m_scale_factor);
-
+						e->offset.Y * m_scale_factor);
+				std::wstringstream wss(text);
+				std::wstring line;
+				while (std::getline(wss, line, L'\n'))
 				{
-					textfont->draw(text.c_str(), size + pos + offset + offs, color);
+					core::dimension2d<u32> linesize = textfont->getDimension(line.c_str());
+					v2s32 line_offset((e->align.X - 1.0) * (linesize.Width / 2), 0);
+					textfont->draw(line.c_str(), size + pos + offset + offs + line_offset, color);
+					offset.Y += linesize.Height;
 				}
 				break; }
 			case HUD_ELEM_STATBAR: {
@@ -1001,11 +1007,15 @@ void drawItemStack(
 
 	bool draw_overlay = false;
 
+	bool has_mesh = false;
+	ItemMesh *imesh;
+
 	// Render as mesh if animated or no inventory image
 	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
-		ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
-		if (!imesh || !imesh->mesh)
-			return;
+		imesh = client->idef()->getWieldMesh(def.name, client);
+		has_mesh = imesh && imesh->mesh;
+	}
+	if (has_mesh) {
 		scene::IMesh *mesh = imesh->mesh;
 		driver->clearBuffers(video::ECBF_DEPTH);
 		s32 delta = 0;
@@ -1097,10 +1107,17 @@ void drawItemStack(
 		draw_overlay = def.type == ITEM_NODE && def.inventory_image.empty();
 	} else { // Otherwise just draw as 2D
 		video::ITexture *texture = client->idef()->getInventoryTexture(def.name, client);
-		if (!texture)
-			return;
-		video::SColor color =
-			client->idef()->getItemstackColor(item, client);
+		video::SColor color;
+		if (texture) {
+			color = client->idef()->getItemstackColor(item, client);
+		} else {
+			color = video::SColor(255, 255, 255, 255);
+			ITextureSource *tsrc = client->getTextureSource();
+			texture = tsrc->getTexture("no_texture.png");
+			if (!texture)
+				return;
+		}
+
 		const video::SColor colors[] = { color, color, color, color };
 
 		draw2DImageFilterScaled(driver, texture, rect,

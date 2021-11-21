@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
+#include "util/base64.h"
 
 /*
 	A cache from texture name to texture path
@@ -81,7 +82,7 @@ static bool replace_ext(std::string &path, const char *ext)
 std::string getImagePath(std::string path)
 {
 	// A NULL-ended list of possible image extensions
-	const char *extensions[] = { "png", "jpg", "bmp", NULL };
+	const char *extensions[] = { "png", "jpg", "bmp", "tga", NULL };
 	// If there is no extension, assume PNG
 	if (removeStringEnd(path, extensions).empty())
 		path = path + ".png";
@@ -762,6 +763,9 @@ void TextureSource::rebuildImagesAndTextures()
 
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
+		if (ti.name.empty())
+			continue; // Skip dummy entry
+
 		video::IImage *img = generateImage(ti.name);
 #if ENABLE_GLES
 		img = Align2Npot2(img, driver);
@@ -1056,6 +1060,45 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 	return out;
 }
 
+void blitBaseImage(video::IImage* &src, video::IImage* &dst)
+{
+	//infostream<<"Blitting "<<part_of_name<<" on base"<<std::endl;
+	// Size of the copied area
+	core::dimension2d<u32> dim = src->getDimension();
+	//core::dimension2d<u32> dim(16,16);
+	// Position to copy the blitted to in the base image
+	core::position2d<s32> pos_to(0,0);
+	// Position to copy the blitted from in the blitted image
+	core::position2d<s32> pos_from(0,0);
+	// Blit
+	/*image->copyToWithAlpha(baseimg, pos_to,
+			core::rect<s32>(pos_from, dim),
+			video::SColor(255,255,255,255),
+			NULL);*/
+
+	core::dimension2d<u32> dim_dst = dst->getDimension();
+	if (dim == dim_dst) {
+		blit_with_alpha(src, dst, pos_from, pos_to, dim);
+	} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
+		// Upscale overlying image
+		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
+			createImage(video::ECF_A8R8G8B8, dim_dst);
+		src->copyToScaling(scaled_image);
+
+		blit_with_alpha(scaled_image, dst, pos_from, pos_to, dim_dst);
+		scaled_image->drop();
+	} else {
+		// Upscale base image
+		video::IImage *scaled_base = RenderingEngine::get_video_driver()->
+			createImage(video::ECF_A8R8G8B8, dim);
+		dst->copyToScaling(scaled_base);
+		dst->drop();
+		dst = scaled_base;
+
+		blit_with_alpha(src, dst, pos_from, pos_to, dim);
+	}
+}
+
 bool TextureSource::generateImagePart(std::string part_of_name,
 		video::IImage *& baseimg)
 {
@@ -1119,41 +1162,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		// Else blit on base.
 		else
 		{
-			//infostream<<"Blitting "<<part_of_name<<" on base"<<std::endl;
-			// Size of the copied area
-			core::dimension2d<u32> dim = image->getDimension();
-			//core::dimension2d<u32> dim(16,16);
-			// Position to copy the blitted to in the base image
-			core::position2d<s32> pos_to(0,0);
-			// Position to copy the blitted from in the blitted image
-			core::position2d<s32> pos_from(0,0);
-			// Blit
-			/*image->copyToWithAlpha(baseimg, pos_to,
-					core::rect<s32>(pos_from, dim),
-					video::SColor(255,255,255,255),
-					NULL);*/
-
-			core::dimension2d<u32> dim_dst = baseimg->getDimension();
-			if (dim == dim_dst) {
-				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
-			} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
-				// Upscale overlying image
-				video::IImage *scaled_image = RenderingEngine::get_video_driver()->
-					createImage(video::ECF_A8R8G8B8, dim_dst);
-				image->copyToScaling(scaled_image);
-
-				blit_with_alpha(scaled_image, baseimg, pos_from, pos_to, dim_dst);
-				scaled_image->drop();
-			} else {
-				// Upscale base image
-				video::IImage *scaled_base = RenderingEngine::get_video_driver()->
-					createImage(video::ECF_A8R8G8B8, dim);
-				baseimg->copyToScaling(scaled_base);
-				baseimg->drop();
-				baseimg = scaled_base;
-
-				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
-			}
+			blitBaseImage(image, baseimg);
 		}
 		//cleanup
 		image->drop();
@@ -1780,6 +1789,43 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			// Replace baseimg
 			baseimg->drop();
 			baseimg = img;
+		}
+		/*
+			[png:base64
+			Decodes a PNG image in base64 form.
+			Use minetest.encode_png and minetest.encode_base64
+			to produce a valid string.
+		*/
+		else if (str_starts_with(part_of_name, "[png:")) {
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string png;
+			{
+				std::string blob = sf.next("");
+				if (!base64_is_valid(blob)) {
+					errorstream << "generateImagePart(): "
+								<< "malformed base64 in '[png'"
+								<< std::endl;
+					return false;
+				}
+				png = base64_decode(blob);
+			}
+
+			auto *device = RenderingEngine::get_raw_device();
+			auto *fs = device->getFileSystem();
+			auto *vd = device->getVideoDriver();
+			auto *memfile = fs->createMemoryReadFile(png.data(), png.size(), "__temp_png");
+			video::IImage* pngimg = vd->createImageFromFile(memfile);
+			memfile->drop();
+
+			if (baseimg) {
+				blitBaseImage(pngimg, baseimg);
+			} else {
+				core::dimension2d<u32> dim = pngimg->getDimension();
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				pngimg->copyTo(baseimg);
+			}
+			pngimg->drop();
 		}
 		else
 		{

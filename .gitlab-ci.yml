@@ -9,7 +9,7 @@ stages:
   - deploy
 
 variables:
-  IRRLICHT_TAG: "1.9.0mt2"
+  IRRLICHT_TAG: "1.9.0mt3"
   MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
   CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
 
@@ -17,7 +17,7 @@ variables:
   stage: build
   before_script:
    - apt-get update
-   - apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+   - DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
   script:
     - git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
     - mkdir cmakebuild
@@ -134,28 +134,6 @@ deploy:debian-11:
 ## Ubuntu
 ##
 
-# Xenial
-
-build:ubuntu-16.04:
-  extends: .build_template
-  image: ubuntu:xenial
-
-package:ubuntu-16.04:
-  extends: .debpkg_template
-  image: ubuntu:xenial
-  needs:
-    - build:ubuntu-16.04
-  variables:
-    JSONCPP_PKG: libjsoncpp1
-    LEVELDB_PKG: libleveldb1v5
-    JPEG_PKG: libjpeg-turbo8
-
-deploy:ubuntu-16.04:
-  extends: .debpkg_install
-  image: ubuntu:xenial
-  needs:
-    - package:ubuntu-16.04
-
 # Bionic
 
 build:ubuntu-18.04:
@@ -178,6 +156,28 @@ deploy:ubuntu-18.04:
   needs:
     - package:ubuntu-18.04
 
+# Focal
+
+build:ubuntu-20.04:
+  extends: .build_template
+  image: ubuntu:focal
+
+package:ubuntu-20.04:
+  extends: .debpkg_template
+  image: ubuntu:focal
+  needs:
+    - build:ubuntu-20.04
+  variables:
+    JSONCPP_PKG: libjsoncpp1
+    LEVELDB_PKG: libleveldb1d
+    JPEG_PKG: libjpeg-turbo8
+
+deploy:ubuntu-20.04:
+  extends: .debpkg_install
+  image: ubuntu:focal
+  needs:
+    - package:ubuntu-20.04
+
 ##
 ## Fedora
 ##
@@ -187,7 +187,7 @@ build:fedora-28:
   extends: .build_template
   image: fedora:28
   before_script:
-    - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel
+    - dnf -y install make git gcc gcc-c++ kernel-devel cmake libjpeg-devel libpng-devel libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
 
 ##
 ## MinGW for Windows
@@ -205,19 +205,6 @@ build:fedora-28:
   extends: .generic_win_template
   stage: build
   artifacts:
-    expire_in: 1h
-    paths:
-      - build/build/*.zip
-
-.package_win_template:
-  extends: .generic_win_template
-  stage: package
-  script:
-    - unzip build/build/*.zip
-    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-*-win*/bin/
-    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-*-win*/bin/
-    - cp -p /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-*-win*/bin/
-  artifacts:
     expire_in: 90 day
     paths:
       - minetest-*-win*/*
@@ -226,28 +213,15 @@ build:win32:
   extends: .build_win_template
   script:
     - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh build
+    - unzip -q build/build/*.zip
   variables:
     WIN_ARCH: "i686"
-
-package:win32:
-  extends: .package_win_template
-  needs:
-    - build:win32
-  variables:
-    WIN_ARCH: "i686"
-
 
 build:win64:
   extends: .build_win_template
   script:
     - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh build
-  variables:
-    WIN_ARCH: "x86_64"
-
-package:win64:
-  extends: .package_win_template
-  needs:
-    - build:win64
+    - unzip -q build/build/*.zip
   variables:
     WIN_ARCH: "x86_64"
 

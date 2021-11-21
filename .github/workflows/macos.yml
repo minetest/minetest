@@ -22,7 +22,7 @@ on:
       - '.github/workflows/macos.yml'
 
 env:
-  IRRLICHT_TAG: 1.9.0mt2
+  IRRLICHT_TAG: 1.9.0mt3
   MINETEST_GAME_REPO: https://github.com/minetest/minetest_game.git
   MINETEST_GAME_BRANCH: master
   MINETEST_GAME_NAME: minetest_game
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install deps
         run: |
-          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit)
+          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd)
           brew update
           brew install ${pkgs[@]}
           brew unlink $(brew ls --formula)

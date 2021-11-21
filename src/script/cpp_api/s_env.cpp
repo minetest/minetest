@@ -53,13 +53,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	lua_getfield(L, -1, "registered_globalsteps");
 	// Call callbacks
 	lua_pushnumber(L, dtime);
-	try {
-		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
-	} catch (LuaError &e) {
-		getServer()->setAsyncFatalError(
-				std::string("environment_Step: ") + e.what() + "\n"
-				+ script_get_backtrace(L));
-	}
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::player_event(ServerActiveObject *player, const std::string &type)
@@ -76,13 +70,7 @@ void ScriptApiEnv::player_event(ServerActiveObject *player, const std::string &t
 	// Call callbacks
 	objectrefGetOrCreate(L, player);   // player
 	lua_pushstring(L,type.c_str()); // event type
-	try {
-		runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
-	} catch (LuaError &e) {
-		getServer()->setAsyncFatalError(
-				std::string("player_event: ") + e.what() + "\n"
-				+ script_get_backtrace(L) );
-	}
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
@@ -257,9 +245,8 @@ void ScriptApiEnv::on_emerge_area_completion(
 	try {
 		PCALL_RES(lua_pcall(L, 4, 0, error_handler));
 	} catch (LuaError &e) {
-		server->setAsyncFatalError(
-				std::string("on_emerge_area_completion: ") + e.what() + "\n"
-				+ script_get_backtrace(L));
+		// Note: don't throw here, we still need to run the cleanup code below
+		server->setAsyncFatalError(e);
 	}
 
 	lua_pop(L, 1); // Pop error handler

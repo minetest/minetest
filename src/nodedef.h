@@ -376,11 +376,15 @@ struct ContentFeatures
 	u32 damage_per_second;
 	// client dig prediction
 	std::string node_dig_prediction;
+	// how slow players move through
+	u8 move_resistance = 0;
 
 	// --- LIQUID PROPERTIES ---
 
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
+	// If true, movement (e.g. of players) inside this node is liquid-like.
+	bool liquid_move_physics;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
 	content_t liquid_alternative_flowing_id;

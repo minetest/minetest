@@ -127,8 +127,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 
 	switch (reply->type) {
 	case REDIS_REPLY_STRING: {
-		*block = std::string(reply->str, reply->len);
-		// std::string copies the memory so this won't cause any problems
+		block->assign(reply->str, reply->len);
 		freeReplyObject(reply);
 		return;
 	}
@@ -141,8 +140,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 			"Redis command 'HGET %s %s' errored: ") + errstr);
 	}
 	case REDIS_REPLY_NIL: {
-		*block = "";
-		// block not found in database
+		block->clear();
 		freeReplyObject(reply);
 		return;
 	}

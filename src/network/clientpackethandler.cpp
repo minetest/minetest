@@ -88,7 +88,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	// This is only neccessary though when we actually want to add casing support
 
 	if (m_chosen_auth_mech != AUTH_MECHANISM_NONE) {
-		// we recieved a TOCLIENT_HELLO while auth was already going on
+		// we received a TOCLIENT_HELLO while auth was already going on
 		errorstream << "Client: TOCLIENT_HELLO while auth was already going on"
 			<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
 		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
@@ -156,7 +156,7 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 
 	m_password = m_new_password;
 
-	verbosestream << "Client: Recieved TOCLIENT_ACCEPT_SUDO_MODE." << std::endl;
+	verbosestream << "Client: Received TOCLIENT_ACCEPT_SUDO_MODE." << std::endl;
 
 	// send packet to actually set the password
 	startAuth(AUTH_MECHANISM_FIRST_SRP);
@@ -261,7 +261,7 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 		return;
 
 	std::istringstream is(pkt->readLongString(), std::ios::binary);
-	std::stringstream sstr;
+	std::stringstream sstr(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(is, sstr);
 
 	NodeMetadataList meta_updates_list(false);
@@ -670,20 +670,18 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 		m_media_downloader->addFile(name, sha1_raw);
 	}
 
-	try {
+	{
 		std::string str;
-
 		*pkt >> str;
 
 		Strfnd sf(str);
-		while(!sf.at_end()) {
+		while (!sf.at_end()) {
 			std::string baseurl = trim(sf.next(","));
-			if (!baseurl.empty())
+			if (!baseurl.empty()) {
+				m_remote_media_servers.emplace_back(baseurl);
 				m_media_downloader->addRemoteServer(baseurl);
+			}
 		}
-	}
-	catch(SerializationError& e) {
-		// not supported by server or turned off
 	}
 
 	m_media_downloader->step(this);
@@ -716,31 +714,38 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	if (num_files == 0)
 		return;
 
-	if (!m_media_downloader || !m_media_downloader->isStarted()) {
-		const char *problem = m_media_downloader ?
-			"media has not been requested" :
-			"all media has been received already";
-		errorstream << "Client: Received media but "
-			<< problem << "! "
-			<< " bunch " << bunch_i << "/" << num_bunches
-			<< " files=" << num_files
-			<< " size=" << pkt->getSize() << std::endl;
-		return;
+	bool init_phase = m_media_downloader && m_media_downloader->isStarted();
+
+	if (init_phase) {
+		// Mesh update thread must be stopped while
+		// updating content definitions
+		sanity_check(!m_mesh_update_thread.isRunning());
 	}
 
-	// Mesh update thread must be stopped while
-	// updating content definitions
-	sanity_check(!m_mesh_update_thread.isRunning());
-
-	for (u32 i=0; i < num_files; i++) {
-		std::string name;
+	for (u32 i = 0; i < num_files; i++) {
+		std::string name, data;
 
 		*pkt >> name;
+		data = pkt->readLongString();
 
-		std::string data = pkt->readLongString();
-
-		m_media_downloader->conventionalTransferDone(
-				name, data, this);
+		bool ok = false;
+		if (init_phase) {
+			ok = m_media_downloader->conventionalTransferDone(name, data, this);
+		} else {
+			// Check pending dynamic transfers, one of them must be it
+			for (const auto &it : m_pending_media_downloads) {
+				if (it.second->conventionalTransferDone(name, data, this)) {
+					ok = true;
+					break;
+				}
+			}
+		}
+		if (!ok) {
+			errorstream << "Client: Received media \"" << name
+				<< "\" but no downloads pending. " << num_bunches << " bunches, "
+				<< num_files << " in this one. (init_phase=" << init_phase
+				<< ")" << std::endl;
+		}
 	}
 }
 
@@ -755,12 +760,11 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 
 	// Decompress node definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
-	std::ostringstream tmp_os;
+	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	std::istringstream tmp_is2(tmp_os.str());
-	m_nodedef->deSerialize(tmp_is2);
+	m_nodedef->deSerialize(tmp_os);
 	m_nodedef_received = true;
 }
 
@@ -775,12 +779,11 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 	// Decompress item definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
-	std::ostringstream tmp_os;
+	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	std::istringstream tmp_is2(tmp_os.str());
-	m_itemdef->deSerialize(tmp_is2);
+	m_itemdef->deSerialize(tmp_os);
 	m_itemdef_received = true;
 }
 
@@ -1497,46 +1500,72 @@ void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
 void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 {
 	std::string raw_hash, filename, filedata;
+	u32 token;
 	bool cached;
 
 	*pkt >> raw_hash >> filename >> cached;
-	filedata = pkt->readLongString();
+	if (m_proto_ver >= 40)
+		*pkt >> token;
+	else
+		filedata = pkt->readLongString();
 
-	if (raw_hash.size() != 20 || filedata.empty() || filename.empty() ||
+	if (raw_hash.size() != 20 || filename.empty() ||
+			(m_proto_ver < 40 && filedata.empty()) ||
 			!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
 		throw PacketError("Illegal filename, data or hash");
 	}
 
-	verbosestream << "Server pushes media file \"" << filename << "\" with "
-		<< filedata.size() << " bytes of data (cached=" << cached
-		<< ")" << std::endl;
+	verbosestream << "Server pushes media file \"" << filename << "\" ";
+	if (filedata.empty())
+		verbosestream << "to be fetched ";
+	else
+		verbosestream << "with " << filedata.size() << " bytes ";
+	verbosestream << "(cached=" << cached << ")" << std::endl;
 
 	if (m_media_pushed_files.count(filename) != 0) {
-		// Silently ignore for synchronization purposes
+		// Ignore (but acknowledge). Previously this was for sync purposes,
+		// but even in new versions media cannot be replaced at runtime.
+		if (m_proto_ver >= 40)
+			sendHaveMedia({ token });
 		return;
 	}
 
-	// Compute and check checksum of data
-	std::string computed_hash;
-	{
-		SHA1 ctx;
-		ctx.addBytes(filedata.c_str(), filedata.size());
-		unsigned char *buf = ctx.getDigest();
-		computed_hash.assign((char*) buf, 20);
-		free(buf);
-	}
-	if (raw_hash != computed_hash) {
-		verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
+	if (!filedata.empty()) {
+		// LEGACY CODEPATH
+		// Compute and check checksum of data
+		std::string computed_hash;
+		{
+			SHA1 ctx;
+			ctx.addBytes(filedata.c_str(), filedata.size());
+			unsigned char *buf = ctx.getDigest();
+			computed_hash.assign((char*) buf, 20);
+			free(buf);
+		}
+		if (raw_hash != computed_hash) {
+			verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
+			return;
+		}
+
+		// Actually load media
+		loadMedia(filedata, filename, true);
+		m_media_pushed_files.insert(filename);
+
+		// Cache file for the next time when this client joins the same server
+		if (cached)
+			clientMediaUpdateCache(raw_hash, filedata);
 		return;
 	}
 
-	// Actually load media
-	loadMedia(filedata, filename, true);
 	m_media_pushed_files.insert(filename);
 
-	// Cache file for the next time when this client joins the same server
-	if (cached)
-		clientMediaUpdateCache(raw_hash, filedata);
+	// create a downloader for this file
+	auto downloader = new SingleMediaDownloader(cached);
+	m_pending_media_downloads.emplace_back(token, downloader);
+	downloader->addFile(filename, raw_hash);
+	for (const auto &baseurl : m_remote_media_servers)
+		downloader->addRemoteServer(baseurl);
+
+	downloader->step(this);
 }
 
 /*

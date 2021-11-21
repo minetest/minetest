@@ -160,28 +160,33 @@ int ModApiUtil::l_write_json(lua_State *L)
 	return 1;
 }
 
-// get_dig_params(groups, tool_capabilities)
+// get_dig_params(groups, tool_capabilities[, wear])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ItemGroupList groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
-	push_dig_params(L, getDigParams(groups, &tp));
+	if (lua_isnoneornil(L, 3)) {
+		push_dig_params(L, getDigParams(groups, &tp));
+	} else {
+		u16 wear = readParam<int>(L, 3);
+		push_dig_params(L, getDigParams(groups, &tp, wear));
+	}
 	return 1;
 }
 
-// get_hit_params(groups, tool_capabilities[, time_from_last_punch])
+// get_hit_params(groups, tool_capabilities[, time_from_last_punch, [, wear]])
 int ModApiUtil::l_get_hit_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::unordered_map<std::string, int> groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
-	if(lua_isnoneornil(L, 3))
-		push_hit_params(L, getHitParams(groups, &tp));
-	else
-		push_hit_params(L, getHitParams(groups, &tp, readParam<float>(L, 3)));
+	float time_from_last_punch = readParam<float>(L, 3, 1000000);
+	int wear = readParam<int>(L, 4, 0);
+	push_hit_params(L, getHitParams(groups, &tp,
+		time_from_last_punch, wear));
 	return 1;
 }
 
@@ -272,11 +277,11 @@ int ModApiUtil::l_compress(lua_State *L)
 	const char *data = luaL_checklstring(L, 1, &size);
 
 	int level = -1;
-	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
-		level = readParam<float>(L, 3);
+	if (!lua_isnoneornil(L, 3))
+		level = readParam<int>(L, 3);
 
-	std::ostringstream os;
-	compressZlib(std::string(data, size), os, level);
+	std::ostringstream os(std::ios_base::binary);
+	compressZlib(reinterpret_cast<const u8 *>(data), size, os, level);
 
 	std::string out = os.str();
 
@@ -292,8 +297,8 @@ int ModApiUtil::l_decompress(lua_State *L)
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 
-	std::istringstream is(std::string(data, size));
-	std::ostringstream os;
+	std::istringstream is(std::string(data, size), std::ios_base::binary);
+	std::ostringstream os(std::ios_base::binary);
 	decompressZlib(is, os);
 
 	std::string out = os.str();
@@ -341,6 +346,49 @@ int ModApiUtil::l_mkdir(lua_State *L)
 	const char *path = luaL_checkstring(L, 1);
 	CHECK_SECURE_PATH(L, path, true);
 	lua_pushboolean(L, fs::CreateAllDirs(path));
+	return 1;
+}
+
+// rmdir(path, recursive)
+int ModApiUtil::l_rmdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	CHECK_SECURE_PATH(L, path, true);
+
+	bool recursive = readParam<bool>(L, 2, false);
+
+	if (recursive)
+		lua_pushboolean(L, fs::RecursiveDelete(path));
+	else
+		lua_pushboolean(L, fs::DeleteSingleFileOrEmptyDirectory(path));
+
+	return 1;
+}
+
+// cpdir(source, destination)
+int ModApiUtil::l_cpdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *source = luaL_checkstring(L, 1);
+	const char *destination = luaL_checkstring(L, 2);
+	CHECK_SECURE_PATH(L, source, false);
+	CHECK_SECURE_PATH(L, destination, true);
+
+	lua_pushboolean(L, fs::CopyDir(source, destination));
+	return 1;
+}
+
+// mpdir(source, destination)
+int ModApiUtil::l_mvdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *source = luaL_checkstring(L, 1);
+	const char *destination = luaL_checkstring(L, 2);
+	CHECK_SECURE_PATH(L, source, true);
+	CHECK_SECURE_PATH(L, destination, true);
+
+	lua_pushboolean(L, fs::MoveDir(source, destination));
 	return 1;
 }
 
@@ -583,6 +631,9 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+	API_FCT(rmdir);
+	API_FCT(cpdir);
+	API_FCT(mvdir);
 	API_FCT(get_dir_list);
 	API_FCT(safe_file_write);
 
@@ -646,6 +697,9 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+	API_FCT(rmdir);
+	API_FCT(cpdir);
+	API_FCT(mvdir);
 	API_FCT(get_dir_list);
 
 	API_FCT(encode_base64);

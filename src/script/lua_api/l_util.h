@@ -50,10 +50,10 @@ private:
 	// write_json(data[, styled])
 	static int l_write_json(lua_State *L);
 
-	// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
+	// get_dig_params(groups, tool_capabilities[, wear])
 	static int l_get_dig_params(lua_State *L);
 
-	// get_hit_params(groups, tool_capabilities[, time_from_last_punch])
+	// get_hit_params(groups, tool_capabilities[, time_from_last_punch[, wear]])
 	static int l_get_hit_params(lua_State *L);
 
 	// check_password_entry(name, entry, password)
@@ -79,6 +79,15 @@ private:
 
 	// mkdir(path)
 	static int l_mkdir(lua_State *L);
+
+	// rmdir(path, recursive)
+	static int l_rmdir(lua_State *L);
+
+	// cpdir(source, destination, remove_source)
+	static int l_cpdir(lua_State *L);
+
+	// mvdir(source, destination)
+	static int l_mvdir(lua_State *L);
 
 	// get_dir_list(path, is_dir)
 	static int l_get_dir_list(lua_State *L);

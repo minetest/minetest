@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include <cmath>
 #include "client/renderingengine.h"
+#include "client/content_cao.h"
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
@@ -36,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "fontengine.h"
 #include "script/scripting_client.h"
+#include "gettext.h"
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -132,28 +134,6 @@ void Camera::notifyFovChange()
 	}
 }
 
-bool Camera::successfullyCreated(std::string &error_message)
-{
-	if (!m_playernode) {
-		error_message = "Failed to create the player scene node";
-	} else if (!m_headnode) {
-		error_message = "Failed to create the head scene node";
-	} else if (!m_cameranode) {
-		error_message = "Failed to create the camera scene node";
-	} else if (!m_wieldmgr) {
-		error_message = "Failed to create the wielded item scene manager";
-	} else if (!m_wieldnode) {
-		error_message = "Failed to create the wielded item scene node";
-	} else {
-		error_message.clear();
-	}
-
-	if (m_client->modsLoaded())
-		m_client->getScript()->on_camera_ready(this);
-
-	return error_message.empty();
-}
-
 // Returns the fractional part of x
 inline f32 my_modf(f32 x)
 {
@@ -186,9 +166,7 @@ void Camera::step(f32 dtime)
 				m_view_bobbing_anim -= offset;
 			} else if (m_view_bobbing_anim > 0.75) {
 				m_view_bobbing_anim += offset;
-			}
-
-			if (m_view_bobbing_anim < 0.5) {
+			} else if (m_view_bobbing_anim < 0.5) {
 				m_view_bobbing_anim += offset;
 				if (m_view_bobbing_anim > 0.5)
 					m_view_bobbing_anim = 0.5;
@@ -343,13 +321,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (player->getParent())
 		player_position = player->getParent()->getPosition();
 
-	// Smooth the camera movement when the player instantly moves upward due to stepheight.
-	// To smooth the 'not touching_ground' stepheight, smoothing is necessary when jumping
-	// or swimming (for when moving from liquid to land).
-	// Disable smoothing if climbing or flying, to avoid upwards offset of player model
-	// when seen in 3rd person view.
-	bool flying = g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly");
-	if (player_position.Y > old_player_position.Y && !player->is_climbing && !flying) {
+	// Smooth the camera movement after the player instantly moves upward due to stepheight.
+	// The smoothing usually continues until the camera position reaches the player position.
+	float player_stepheight = player->getCAO() ? player->getCAO()->getStepHeight() : HUGE_VALF;
+	float upward_movement = player_position.Y - old_player_position.Y;
+	if (upward_movement < 0.01f || upward_movement > player_stepheight) {
+		m_stepheight_smooth_active = false;
+	} else if (player->touching_ground) {
+		m_stepheight_smooth_active = true;
+	}
+	if (m_stepheight_smooth_active) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
@@ -378,7 +359,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		// Smoothen and invert the above
 		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
 		// Amplify according to the intensity of the impact
-		fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
+		if (player->camera_impact > 0.0f)
+			fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
 
 		fall_bobbing *= m_cache_fall_bobbing_amount;
 	}
@@ -409,41 +391,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
-		#if 1
 		f32 bobknob = 1.2;
 		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
-		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(
 			0.3 * bobdir * sin(bobfrac * M_PI),
 			-0.28 * bobtmp * bobtmp,
 			0.);
 
-		//rel_cam_pos += 0.2 * bobvec;
-		//rel_cam_target += 0.03 * bobvec;
-		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * M_PI);
-		float f = 1.0;
-		f *= m_cache_view_bobbing_amount;
-		rel_cam_pos += bobvec * f;
-		//rel_cam_target += 0.995 * bobvec * f;
-		rel_cam_target += bobvec * f;
-		rel_cam_target.Z -= 0.005 * bobvec.Z * f;
-		//rel_cam_target.X -= 0.005 * bobvec.X * f;
-		//rel_cam_target.Y -= 0.005 * bobvec.Y * f;
-		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * M_PI * f);
-		#else
-		f32 angle_deg = 1 * bobdir * sin(bobfrac * M_PI);
-		f32 angle_rad = angle_deg * M_PI / 180;
-		f32 r = 0.05;
-		v3f off = v3f(
-			r * sin(angle_rad),
-			r * (cos(angle_rad) - 1),
-			0);
-		rel_cam_pos += off;
-		//rel_cam_target += off;
-		rel_cam_up.rotateXYBy(angle_deg);
-		#endif
-
+		rel_cam_pos += bobvec * m_cache_view_bobbing_amount;
+		rel_cam_target += bobvec * m_cache_view_bobbing_amount;
+		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * M_PI * m_cache_view_bobbing_amount);
 	}
 
 	// Compute absolute camera position and target
@@ -612,6 +570,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
+	const bool flying = g_settings->getBool("free_move")
+		&& m_client->checkLocalPrivilege("fly");
 	if ((walking || swimming || climbing) && !flying) {
 		// Start animation
 		m_view_bobbing_state = 1;

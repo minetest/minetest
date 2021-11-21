@@ -20,7 +20,7 @@ COPY textures /usr/src/minetest/textures
 
 WORKDIR /usr/src/minetest
 
-RUN apk add --no-cache git build-base cmake sqlite-dev curl-dev zlib-dev \
+RUN apk add --no-cache git build-base cmake sqlite-dev curl-dev zlib-dev zstd-dev \
 		gmp-dev jsoncpp-dev postgresql-dev ninja luajit-dev ca-certificates && \
 	git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/minetest_game.git ./games/minetest_game && \
 	rm -fr ./games/minetest_game/.git
@@ -57,7 +57,7 @@ RUN mkdir build && \
 ARG DOCKER_IMAGE=alpine:3.14
 FROM $DOCKER_IMAGE AS runtime
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp && \
+RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp zstd-libs && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
 

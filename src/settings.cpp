@@ -104,8 +104,7 @@ Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 
 Settings *Settings::getLayer(SettingsLayer sl)
 {
-	sanity_check((int)sl >= 0 && sl < SL_TOTAL_COUNT);
-	return g_hierarchy.layers[(int)sl];
+	return g_hierarchy.getLayer(sl);
 }
 
 
@@ -537,11 +536,8 @@ float Settings::getFloat(const std::string &name) const
 
 u64 Settings::getU64(const std::string &name) const
 {
-	u64 value = 0;
 	std::string s = get(name);
-	std::istringstream ss(s);
-	ss >> value;
-	return value;
+	return from_string<u64>(s);
 }
 
 

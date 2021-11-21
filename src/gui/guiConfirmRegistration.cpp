@@ -28,6 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEditBoxWithScrollbar.h"
 #include "porting.h"
 
+#ifdef HAVE_TOUCHSCREENGUI
+	#include "client/renderingengine.h"
+#endif
+
 #include "gettext.h"
 
 // Continuing from guiPasswordChange.cpp
@@ -45,7 +49,7 @@ GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		m_client(client), m_playername(playername), m_password(password),
 		m_aborted(aborted), m_tsrc(tsrc)
 {
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_touchscreen_visible = false;
 #endif
 }
@@ -73,8 +77,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-#ifdef __ANDROID__
-	const float s = m_gui_scale * porting::getDisplayDensity() / 2;
+#ifdef HAVE_TOUCHSCREENGUI
+	const float s = m_gui_scale * RenderingEngine::getDisplayDensity() / 2;
 #else
 	const float s = m_gui_scale;
 #endif

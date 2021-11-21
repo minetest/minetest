@@ -269,27 +269,8 @@ function core.cancel_shutdown_requests()
 end
 
 
--- Callback handling for dynamic_add_media
-
-local dynamic_add_media_raw = core.dynamic_add_media_raw
-core.dynamic_add_media_raw = nil
-function core.dynamic_add_media(filepath, callback)
-	local ret = dynamic_add_media_raw(filepath)
-	if ret == false then
-		return ret
-	end
-	if callback == nil then
-		core.log("deprecated", "Calling minetest.dynamic_add_media without "..
-			"a callback is deprecated and will stop working in future versions.")
-	else
-		-- At the moment async loading is not actually implemented, so we
-		-- immediately call the callback ourselves
-		for _, name in ipairs(ret) do
-			callback(name)
-		end
-	end
-	return true
-end
+-- Used for callback handling with dynamic_add_media
+core.dynamic_media_callbacks = {}
 
 
 -- PNG encoder safety wrapper
@@ -306,7 +287,7 @@ function core.encode_png(width, height, data, compression)
 	local expected_byte_count = width * height * 4
 
 	if type(data) ~= "table" and type(data) ~= "string" then
-		error("Incorrect type for 'height', expected table or string, got " .. type(height))
+		error("Incorrect type for 'data', expected table or string, got " .. type(data))
 	end
 
 	local data_length = type(data) == "table" and #data * 4 or string.len(data)

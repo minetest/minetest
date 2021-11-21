@@ -84,7 +84,7 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 }
 
 
-const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
+RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 {
 	// Rate limit messages
 	u32 now = time(NULL);

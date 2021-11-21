@@ -1,5 +1,6 @@
 uniform sampler2D baseTexture;
 
+uniform vec3 dayLight;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
@@ -463,13 +464,16 @@ void main(void)
 	vec2 uv = varTexCoord.st;
 
 	vec4 base = texture2D(baseTexture, uv).rgba;
-#ifdef USE_DISCARD
 	// If alpha is zero, we can just discard the pixel. This fixes transparency
 	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa,
 	// and also on GLES 2, where GL_ALPHA_TEST is missing entirely.
-	if (base.a == 0.0) {
+#ifdef USE_DISCARD
+	if (base.a == 0.0)
 		discard;
-	}
+#endif
+#ifdef USE_DISCARD_REF
+	if (base.a < 0.5)
+		discard;
 #endif
 
 	color = base.rgb;
@@ -486,26 +490,43 @@ void main(void)
 	if (distance_rate > 1e-7) {
 	
 #ifdef COLORED_SHADOWS
-		vec4 visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		vec4 visibility;
+		if (cosLight > 0.0)
+			visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		else
+			visibility = vec4(1.0, 0.0, 0.0, 0.0);
 		shadow_int = visibility.r;
 		shadow_color = visibility.gba;
 #else
-		shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		if (cosLight > 0.0)
+			shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		else
+			shadow_int = 1.0;
 #endif
 		shadow_int *= distance_rate;
-		shadow_int *= 1.0 - nightRatio;
-
+		shadow_int = clamp(shadow_int, 0.0, 1.0);
 
 	}
+
+	// turns out that nightRatio falls off much faster than
+	// actual brightness of artificial light in relation to natual light.
+	// Power ratio was measured on torches in MTG (brightness = 14).
+	float adjusted_night_ratio = pow(nightRatio, 0.6);
 
 	if (f_normal_length != 0 && cosLight < 0.035) {
-		shadow_int = max(shadow_int, min(clamp(1.0-nightRatio, 0.0, 1.0), 1 - clamp(cosLight, 0.0, 0.035)/0.035));
+		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, 0.035)/0.035);
 	}
 
-	shadow_int = 1.0 - (shadow_int * f_adj_shadow_strength);
+	shadow_int *= f_adj_shadow_strength;
 	
-	col.rgb = mix(shadow_color,col.rgb,shadow_int)*shadow_int;
+	// calculate fragment color from components:
+	col.rgb =
+			adjusted_night_ratio * col.rgb + // artificial light
+			(1.0 - adjusted_night_ratio) * ( // natural light
+					col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
+					dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	// col.r = 0.5 * clamp(getPenumbraRadius(ShadowMapSampler, posLightSpace.xy, posLightSpace.z, 1.0) / SOFTSHADOWRADIUS, 0.0, 1.0) + 0.5 * col.r;
+	// col.r = adjusted_night_ratio; // debug night ratio adjustment
 #endif
 
 #if ENABLE_TONE_MAPPING

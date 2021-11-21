@@ -193,7 +193,6 @@ Available commands:=Comandi disponibili:
 Command not available: @1=Comando non disponibile: @1
 [all | privs | <cmd>]=[all | privs | <comando>]
 Get help for commands or list privileges=Richiama la finestra d'aiuto dei comandi o dei privilegi
-Available privileges:=Privilegi disponibili:
 Command=Comando
 Parameters=Parametri
 For more information, click on any entry in the list.=Per più informazioni, clicca su una qualsiasi voce dell'elenco.
@@ -203,6 +202,7 @@ Available commands: (see also: /help <cmd>)=Comandi disponibili: (vedi anche /he
 Close=Chiudi
 Privilege=Privilegio
 Description=Descrizione
+Available privileges:=Privilegi disponibili:
 print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset=print [<filtro>] | dump [<filtro>] | save [<formato> [<filtro>]] | reset
 Handle the profiler and profiling data=Gestisce il profiler e i dati da esso elaborati
 Statistics written to action log.=Statistiche scritte nel log delle azioni.
@@ -230,7 +230,8 @@ Can use fly mode=Si può usare la modalità volo
 Can use fast mode=Si può usare la modalità rapida
 Can fly through solid nodes using noclip mode=Si può volare attraverso i nodi solidi con la modalità incorporea
 Can use the rollback functionality=Si può usare la funzione di rollback
-Allows enabling various debug options that may affect gameplay=Permette di abilitare varie opzioni di debug che potrebbero influenzare l'esperienza di gioco
+Can view more debug info that might give a gameplay advantage=
+Can enable wireframe=
 Unknown Item=Oggetto sconosciuto
 Air=Aria
 Ignore=Ignora
@@ -244,6 +245,7 @@ Profile saved to @1=
 
 ##### not used anymore #####
 
+Allows enabling various debug options that may affect gameplay=Permette di abilitare varie opzioni di debug che potrebbero influenzare l'esperienza di gioco
 [<delay_in_seconds> | -1] [reconnect] [<message>]=[<ritardo_in_secondi> | -1] [reconnect] [<messaggio>]
 Shutdown server (-1 cancels a delayed shutdown)=Arresta il server (-1 annulla un arresto programmato)
 <name> (<privilege> | all)=<nome> (<privilegio> | all)

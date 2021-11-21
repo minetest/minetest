@@ -194,32 +194,41 @@ void ClientEnvironment::step(float dtime)
 		lplayer->applyControl(dtime_part, this);
 
 		// Apply physics
-		if (!free_move && !is_climbing) {
+		if (!free_move) {
 			// Gravity
 			v3f speed = lplayer->getSpeed();
-			if (!lplayer->in_liquid)
+			if (!is_climbing && !lplayer->in_liquid)
 				speed.Y -= lplayer->movement_gravity *
 					lplayer->physics_override_gravity * dtime_part * 2.0f;
 
 			// Liquid floating / sinking
-			if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+			if (!is_climbing && lplayer->in_liquid &&
+					!lplayer->swimming_vertical &&
 					!lplayer->swimming_pitch)
 				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
 
-			// Liquid resistance
-			if (lplayer->in_liquid_stable || lplayer->in_liquid) {
-				// How much the node's viscosity blocks movement, ranges
-				// between 0 and 1. Should match the scale at which viscosity
+			// Movement resistance
+			if (lplayer->move_resistance > 0) {
+				// How much the node's move_resistance blocks movement, ranges
+				// between 0 and 1. Should match the scale at which liquid_viscosity
 				// increase affects other liquid attributes.
-				static const f32 viscosity_factor = 0.3f;
+				static const f32 resistance_factor = 0.3f;
 
-				v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+				v3f d_wanted;
+				bool in_liquid_stable = lplayer->in_liquid_stable || lplayer->in_liquid;
+				if (in_liquid_stable) {
+					d_wanted = -speed / lplayer->movement_liquid_fluidity;
+				} else {
+					d_wanted = -speed / BS;
+				}
 				f32 dl = d_wanted.getLength();
-				if (dl > lplayer->movement_liquid_fluidity_smooth)
-					dl = lplayer->movement_liquid_fluidity_smooth;
+				if (in_liquid_stable) {
+					if (dl > lplayer->movement_liquid_fluidity_smooth)
+						dl = lplayer->movement_liquid_fluidity_smooth;
+				}
 
-				dl *= (lplayer->liquid_viscosity * viscosity_factor) +
-					(1 - viscosity_factor);
+				dl *= (lplayer->move_resistance * resistance_factor) +
+					(1 - resistance_factor);
 				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
 				speed += d;
 			}

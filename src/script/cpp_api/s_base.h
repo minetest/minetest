@@ -128,8 +128,11 @@ protected:
 	lua_State* getStack()
 		{ return m_luastack; }
 
+	// Checks that stack size is sane
 	void realityCheck();
+	// Takes an error from lua_pcall and throws it as a LuaError
 	void scriptError(int result, const char *fxn);
+	// Dumps stack contents for debugging
 	void stackDump(std::ostream &o);
 
 	void setGameDef(IGameDef* gamedef) { m_gamedef = gamedef; }

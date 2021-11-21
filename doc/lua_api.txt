@@ -628,6 +628,23 @@ Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
 
+#### `[png:<base64>`
+
+Embed a base64 encoded PNG image in the texture string.
+You can produce a valid string for this by calling
+`minetest.encode_base64(minetest.encode_png(tex))`,
+refer to the documentation of these functions for details.
+You can use this to send disposable images such as captchas
+to individual clients, or render things that would be too
+expensive to compose with `[combine:`.
+
+IMPORTANT: Avoid sending large images this way.
+This is not a replacement for asset files, do not use it to do anything
+that you could instead achieve by just using a file.
+In particular consider `minetest.dynamic_add_media` and test whether
+using other texture modifiers could result in a shorter string than
+embedding a whole image, this may vary by use case.
+
 Hardware coloring
 -----------------
 
@@ -1804,7 +1821,7 @@ to games.
       - (14)                                           -- constant tolerance
   Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
-* `float`: the node will not fall through liquids
+* `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
 * `level`: Can be used to give an additional sense of progression in the game.
      * A larger level will cause e.g. a weapon of a lower level make much less
        damage, and get worn out much faster, or not be able to get drops
@@ -1936,8 +1953,9 @@ to implement this.
 ### Uses (tools only)
 
 Determines how many uses the tool has when it is used for digging a node,
-of this group, of the maximum level. For lower leveled nodes, the use count
-is multiplied by `3^leveldiff`.
+of this group, of the maximum level. The maximum supported number of
+uses is 65535. The special number 0 is used for infinite uses.
+For lower leveled nodes, the use count is multiplied by `3^leveldiff`.
 `leveldiff` is the difference of the tool's `maxlevel` `groupcaps` and the
 node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 
@@ -3271,10 +3289,13 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 vectors are written like this: `(x, y, z)`:
 
 * `vector.new([a[, b, c]])`:
-    * Returns a vector.
-    * A copy of `a` if `a` is a vector.
-    * `(a, b, c)`, if all of `a`, `b`, `c` are defined numbers.
-    * `(0, 0, 0)`, if no arguments are given.
+    * Returns a new vector `(a, b, c)`.
+    * Deprecated: `vector.new()` does the same as `vector.zero()` and
+      `vector.new(v)` does the same as `vector.copy(v)`
+* `vector.zero()`:
+    * Returns a new vector `(0, 0, 0)`.
+* `vector.copy(v)`:
+    * Returns a copy of the vector `v`.
 * `vector.from_string(s[, init])`:
     * Returns `v, np`, where `v` is a vector read from the given string `s` and
       `np` is the next position in the string after the vector.
@@ -3460,8 +3481,8 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
-* `minetest.get_dig_params(groups, tool_capabilities)`: Simulates an item
-    that digs a node.
+* `minetest.get_dig_params(groups, tool_capabilities [, wear])`:
+    Simulates an item that digs a node.
     Returns a table with the following fields:
     * `diggable`: `true` if node can be dug, `false` otherwise.
     * `time`: Time it would take to dig the node.
@@ -3470,7 +3491,8 @@ Helper functions
     Parameters:
     * `groups`: Table of the node groups of the node that would be dug
     * `tool_capabilities`: Tool capabilities table of the item
-* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch])`:
+    * `wear`: Amount of wear the tool starts with (default: 0)
+* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch [, wear]])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
     * `hp`: How much damage the punch would cause.
@@ -3479,6 +3501,7 @@ Helper functions
     * `groups`: Damage groups of the object
     * `tool_capabilities`: Tool capabilities table of the item
     * `time_from_last_punch`: time in seconds since last punch action
+    * `wear`: Amount of wear the item starts with (default: 0)
 
 
 
@@ -4149,7 +4172,7 @@ differences:
 
 ### Other API functions operating on a VoxelManip
 
-If any VoxelManip contents were set to a liquid node,
+If any VoxelManip contents were set to a liquid node (`liquidtype ~= "none"`),
 `VoxelManip:update_liquids()` must be called for these liquid nodes to begin
 flowing. It is recommended to call this function only after having written all
 buffered data back to the VoxelManip object, save for special situations where
@@ -4569,6 +4592,8 @@ Utilities
           degrotate_240_steps = true,
           -- ABM supports min_y and max_y fields in definition (5.5.0)
           abm_min_max_y = true,
+          -- dynamic_add_media supports passing a table with options (5.5.0)
+          dynamic_add_media_table = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4604,6 +4629,19 @@ Utilities
 * `minetest.mkdir(path)`: returns success.
     * Creates a directory specified by `path`, creating parent directories
       if they don't exist.
+* `minetest.rmdir(path, recursive)`: returns success.
+    * Removes a directory specified by `path`.
+    * If `recursive` is set to `true`, the directory is recursively removed.
+      Otherwise, the directory will only be removed if it is empty.
+    * Returns true on success, false on failure.
+* `minetest.cpdir(source, destination)`: returns success.
+    * Copies a directory specified by `path` to `destination`
+    * Any files in `destination` will be overwritten if they already exist.
+    * Returns true on success, false on failure.
+* `minetest.mvdir(source, destination)`: returns success.
+    * Moves a directory specified by `path` to `destination`.
+    * If the `destination` is a non-empty directory, then the move will fail.
+    * Returns true on success, false on failure.
 * `minetest.get_dir_list(path, [is_dir])`: returns list of entry names
     * is_dir is one of:
         * nil: return all entries,
@@ -4958,8 +4996,8 @@ Call these functions only at load time!
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
 * `minetest.register_on_liquid_transformed(function(pos_list, node_list))`
-    * Called after liquid nodes are modified by the engine's liquid transformation
-      process.
+    * Called after liquid nodes (`liquidtype ~= "none"`) are modified by the
+      engine's liquid transformation process.
     * `pos_list` is an array of all modified positions.
     * `node_list` is an array of the old node that was previously at the position
       with the corresponding index in pos_list.
@@ -5301,7 +5339,8 @@ Environment access
     * `pos1`: start of the ray
     * `pos2`: end of the ray
     * `objects`: if false, only nodes will be returned. Default is `true`.
-    * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
+    * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
+                 returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
@@ -5325,7 +5364,7 @@ Environment access
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `minetest.transforming_liquid_add(pos)`
-    * add node to liquid update queue
+    * add node to liquid flow update queue
 * `minetest.get_node_max_level(pos)`
     * get max available level for leveled node
 * `minetest.get_node_level(pos)`
@@ -5403,7 +5442,7 @@ Inventory
 * `minetest.remove_detached_inventory(name)`
     * Returns a `boolean` indicating whether the removal succeeded.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
-  returns left over ItemStack.
+  returns leftover ItemStack or nil to indicate no inventory change
     * See `minetest.item_eat` and `minetest.register_on_item_eat`
 
 Formspec
@@ -5646,6 +5685,8 @@ Server
       a player joined.
     * This function may be overwritten by mods to customize the status message.
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
+* `minetest.get_server_max_lag()`: returns the current maximum lag
+  of the server in seconds or nil if server is not fully loaded yet
 * `minetest.remove_player(name)`: remove player from database (if they are not
   connected).
     * As auth data is not removed, minetest.player_exists will continue to
@@ -5654,22 +5695,33 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
-* `minetest.dynamic_add_media(filepath, callback)`
-    * `filepath`: path to a media file on the filesystem
-    * `callback`: function with arguments `name`, where name is a player name
-      (previously there was no callback argument; omitting it is deprecated)
-    * Adds the file to the media sent to clients by the server on startup
-      and also pushes this file to already connected clients.
-      The file must be a supported image, sound or model format. It must not be
-      modified, deleted, moved or renamed after calling this function.
-      The list of dynamically added media is not persisted.
+* `minetest.dynamic_add_media(options, callback)`
+    * `options`: table containing the following parameters
+        * `filepath`: path to a media file on the filesystem
+        * `to_player`: name of the player the media should be sent to instead of
+                       all players (optional)
+        * `ephemeral`: boolean that marks the media as ephemeral,
+                       it will not be cached on the client (optional, default false)
+    * `callback`: function with arguments `name`, which is a player name
+    * Pushes the specified media file to client(s). (details below)
+      The file must be a supported image, sound or model format.
+      Dynamically added media is not persisted between server restarts.
     * Returns false on error, true if the request was accepted
     * The given callback will be called for every player as soon as the
       media is available on the client.
-      Old clients that lack support for this feature will not see the media
-      unless they reconnect to the server. (callback won't be called)
-    * Since media transferred this way currently does not use client caching
-       or HTTP transfers, dynamic media should not be used with big files.
+    * Details/Notes:
+      * If `ephemeral`=false and `to_player` is unset the file is added to the media
+        sent to clients on startup, this means the media will appear even on
+        old clients if they rejoin the server.
+      * If `ephemeral`=false the file must not be modified, deleted, moved or
+        renamed after calling this function.
+      * Regardless of any use of `ephemeral`, adding media files with the same
+        name twice is not possible/guaranteed to work. An exception to this is the
+        use of `to_player` to send the same, already existent file to multiple
+        chosen players.
+    * Clients will attempt to fetch files added this way via remote media,
+      this can make transfer of bigger files painless (if set up). Nevertheless
+      it is advised not to use dynamic media for big media files.
 
 Bans
 ----
@@ -6967,7 +7019,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 * `pos1`: start of the ray
 * `pos2`: end of the ray
 * `objects`: if false, only nodes will be returned. Default is true.
-* `liquids`: if false, liquid nodes won't be returned. Default is false.
+* `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
+             returned. Default is false.
 
 ### Methods
 
@@ -7451,6 +7504,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         range = 4.0,
 
         liquids_pointable = false,
+        -- If true, item points to all liquid nodes (`liquidtype ~= "none"`),
+        -- even those for which `pointable = false`
 
         light_source = 0,
         -- When used for nodes: Defines amount of light emitted by node.
@@ -7508,12 +7563,15 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         on_place = function(itemstack, placer, pointed_thing),
         -- When the 'place' key was pressed with the item in hand
         -- and a node was pointed at.
-        -- Shall place item and return the leftover itemstack.
+        -- Shall place item and return the leftover itemstack
+        -- or nil to not modify the inventory.
         -- The placer may be any ObjectRef or nil.
         -- default: minetest.item_place
 
         on_secondary_use = function(itemstack, user, pointed_thing),
         -- Same as on_place but called when not pointing at a node.
+        -- Function must return either nil if inventory shall not be modified,
+        -- or an itemstack to replace the original itemstack.
         -- The user may be any ObjectRef or nil.
         -- default: nil
 
@@ -7525,8 +7583,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
         -- When user pressed the 'punch/mine' key with the item in hand.
-        -- Function must return either nil if no item shall be removed from
-        -- inventory, or an itemstack to replace the original itemstack.
+        -- Function must return either nil if inventory shall not be modified,
+        -- or an itemstack to replace the original itemstack.
         -- e.g. itemstack:take_item(); return itemstack
         -- Otherwise, the function is free to do what it wants.
         -- The user may be any ObjectRef or nil.
@@ -7636,14 +7694,21 @@ Used by `minetest.register_node`.
 
         climbable = false,  -- If true, can be climbed on (ladder)
 
+        move_resistance = 0,
+        -- Slows down movement of players through this node (max. 7).
+        -- If this is nil, it will be equal to liquid_viscosity.
+        -- Note: If liquid movement physics apply to the node
+        -- (see `liquid_move_physics`), the movement speed will also be
+        -- affected by the `movement_liquid_*` settings.
+
         buildable_to = false,  -- If true, placed nodes can replace this node
 
         floodable = false,
         -- If true, liquids flow into and replace this node.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
-        liquidtype = "none",  -- specifies liquid physics
-        -- * "none":    no liquid physics
+        liquidtype = "none",  -- specifies liquid flowing physics
+        -- * "none":    no liquid flowing physics
         -- * "source":  spawns flowing liquid nodes at all 4 sides and below;
         --              recommended drawtype: "liquid".
         -- * "flowing": spawned from source, spawns more flowing liquid nodes
@@ -7657,11 +7722,25 @@ Used by `minetest.register_node`.
 
         liquid_alternative_source = "",  -- Source version of flowing liquid
 
-        liquid_viscosity = 0,  -- Higher viscosity = slower flow (max. 7)
+        liquid_viscosity = 0,
+        -- Controls speed at which the liquid spreads/flows (max. 7).
+        -- 0 is fastest, 7 is slowest.
+        -- By default, this also slows down movement of players inside the node
+        -- (can be overridden using `move_resistance`)
 
         liquid_renewable = true,
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
+
+        liquid_move_physics = nil, -- specifies movement physics if inside node
+        -- * false: No liquid movement physics apply.
+        -- * true: Enables liquid movement physics. Enables things like
+        --   ability to "swim" up/down, sinking slowly if not moving,
+        --   smoother speed change when falling into, etc. The `movement_liquid_*`
+        --   settings apply.
+        -- * nil: Will be treated as true if `liquidype ~= "none"`
+        --   and as false otherwise.
+        -- Default: nil
 
         leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.

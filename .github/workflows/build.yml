@@ -180,7 +180,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docker image
         run: |
-          docker build .
+          docker build . -t minetest:latest
+          docker run --rm minetest:latest /usr/local/bin/minetestserver --version
 
   win32:
     name: "MinGW cross-compiler (32-bit)"
@@ -227,7 +228,7 @@ jobs:
     env:
       VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
 #                    2020.11
-      vcpkg_packages: irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      vcpkg_packages: irrlicht zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
     strategy:
       fail-fast: false
       matrix:

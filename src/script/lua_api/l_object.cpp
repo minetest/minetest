@@ -174,7 +174,7 @@ int ObjectRef::l_punch(lua_State *L)
 	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
 	dir.normalize();
 
-	u16 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
+	u32 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
 	lua_pushnumber(L, wear);
 
 	return 1;

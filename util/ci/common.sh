@@ -5,13 +5,13 @@ install_linux_deps() {
 	local pkgs=(cmake libpng-dev \
 		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
-		gettext libpq-dev libleveldb-dev libcurl4-openssl-dev)
+		gettext libpq-dev libleveldb-dev libcurl4-openssl-dev libzstd-dev)
 
 	if [[ "$1" == "--old-irr" ]]; then
 		shift
 		pkgs+=(libirrlicht-dev)
 	else
-		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt2/ubuntu-bionic.tar.gz"
+		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt3/ubuntu-bionic.tar.gz"
 		sudo tar -xaf ubuntu-bionic.tar.gz -C /usr/local
 	fi
 

@@ -211,7 +211,6 @@ public:
 	u32 getWidth() const;
 	// Count used slots
 	u32 getUsedSlots() const;
-	u32 getFreeSlots() const;
 
 	// Get reference to item
 	const ItemStack& getItem(u32 i) const;
@@ -336,7 +335,7 @@ public:
 	}
 private:
 	// -1 if not found
-	const s32 getListIndex(const std::string &name) const;
+	s32 getListIndex(const std::string &name) const;
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;

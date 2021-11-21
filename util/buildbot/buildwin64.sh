@@ -19,18 +19,26 @@ builddir="$( cd "$builddir" && pwd )"
 libdir=$builddir/libs
 
 # Test which win64 compiler is present
-which x86_64-w64-mingw32-gcc &>/dev/null &&
-	toolchain_file=$dir/toolchain_x86_64-w64-mingw32.cmake
-which x86_64-w64-mingw32-gcc-posix &>/dev/null &&
-	toolchain_file=$dir/toolchain_x86_64-w64-mingw32-posix.cmake
+command -v x86_64-w64-mingw32-gcc >/dev/null &&
+	compiler=x86_64-w64-mingw32-gcc
+command -v x86_64-w64-mingw32-gcc-posix >/dev/null &&
+	compiler=x86_64-w64-mingw32-gcc-posix
 
-if [ -z "$toolchain_file" ]; then
-	echo "Unable to determine which mingw32 compiler to use"
+if [ -z "$compiler" ]; then
+	echo "Unable to determine which MinGW compiler to use"
 	exit 1
 fi
+toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
-irrlicht_version=1.9.0mt2
+tmp=$(dirname "$(command -v $compiler)")/../x86_64-w64-mingw32/bin
+runtime_dlls=
+[ -d "$tmp" ] && runtime_dlls=$(echo $tmp/lib{gcc_,stdc++-,winpthread-}*.dll | tr ' ' ';')
+[ -z "$runtime_dlls" ] &&
+	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
+
+# Get stuff
+irrlicht_version=1.9.0mt3
 ogg_version=1.3.4
 vorbis_version=1.3.7
 curl_version=7.76.1
@@ -40,6 +48,7 @@ sqlite3_version=3.35.5
 luajit_version=2.1.0-beta3
 leveldb_version=1.23
 zlib_version=1.2.11
+zstd_version=1.4.9
 
 mkdir -p $libdir
 
@@ -62,10 +71,10 @@ download () {
 	fi
 }
 
-# Get stuff
 cd $libdir
 download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win64.zip"
+download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/curl-$curl_version-win64.zip"
@@ -106,6 +115,7 @@ cmake -S $sourcedir -B . \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
 	-DBUILD_CLIENT=1 -DBUILD_SERVER=0 \
+	-DEXTRA_DLL="$runtime_dlls" \
 	\
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
@@ -117,8 +127,12 @@ cmake -S $sourcedir -B . \
 	-DIRRLICHT_DLL="$irr_dlls" \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
-	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
+	-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a \
 	-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll \
+	\
+	-DZSTD_INCLUDE_DIR=$libdir/zstd/include \
+	-DZSTD_LIBRARY=$libdir/zstd/lib/libzstd.dll.a \
+	-DZSTD_DLL=$libdir/zstd/bin/libzstd.dll \
 	\
 	-DLUA_INCLUDE_DIR=$libdir/luajit/include \
 	-DLUA_LIBRARY=$libdir/luajit/libluajit.a \
@@ -140,7 +154,7 @@ cmake -S $sourcedir -B . \
 	-DCURL_INCLUDE_DIR=$libdir/curl/include \
 	-DCURL_LIBRARY=$libdir/curl/lib/libcurl.dll.a \
 	\
-	-DGETTEXT_MSGFMT=`which msgfmt` \
+	-DGETTEXT_MSGFMT=`command -v msgfmt` \
 	-DGETTEXT_DLL="$gettext_dlls" \
 	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
 	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \
