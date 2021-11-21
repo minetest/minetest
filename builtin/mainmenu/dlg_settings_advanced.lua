@@ -378,7 +378,7 @@ local function parse_config_file(read_all, parse_mods)
 		-- Parse mods
 		local mods_category_initialized = false
 		local mods = {}
-		get_mods(core.get_modpath(), mods)
+		get_mods(core.get_modpath(), "mods", mods)
 		for _, mod in ipairs(mods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
