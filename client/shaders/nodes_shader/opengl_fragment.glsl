@@ -16,7 +16,6 @@ uniform float animationTimer;
 	uniform float f_textureresolution;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
-	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
@@ -56,13 +55,9 @@ float getLinearDepth()
 vec3 getLightSpacePosition()
 {
 	vec4 pLightSpace;
+	float linear_bias = 0.2; // empirical
 	// some drawtypes have zero normals, so we need to handle it :(
-	#if DRAW_TYPE == NDT_PLANTLIKE
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition, 1.0);
-	#else
-	float offsetScale = (0.0057 * getLinearDepth() + normalOffsetScale);
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + offsetScale * normalize(vNormal), 1.0);
-	#endif
+	pLightSpace = m_ShadowViewProj * vec4(worldPosition - linear_bias * v_LightDirection, 1.0);
 	pLightSpace /= pLightSpace.w;
 	return pLightSpace.xyz * 0.5 + 0.5;
 }

@@ -33,7 +33,6 @@ centroid varying vec2 varTexCoord;
 	uniform float f_shadow_strength;
 	uniform float f_timeofday;
 	varying float cosLight;
-	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float f_normal_length;
 #endif
@@ -195,9 +194,7 @@ void main(void)
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	vec3 nNormal = normalize(vNormal);
 	cosLight = dot(nNormal, -v_LightDirection);
-	float texelSize = 0.0 / f_textureresolution;
-	float slopeScale = clamp(1.0 - abs(cosLight), 0.0, 1.0);
-	normalOffsetScale = texelSize * slopeScale;
+	f_normal_length = length(vNormal);
 	
 	if (f_timeofday < 0.2) {
 		adj_shadow_strength = f_shadow_strength * 0.5 *
@@ -210,7 +207,6 @@ void main(void)
 			mtsmoothstep(0.20, 0.25, f_timeofday) *
 			(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
 	}
-	f_normal_length = length(vNormal);
 #endif
 
 }
