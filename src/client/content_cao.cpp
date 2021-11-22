@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/sound.h"
 #include "client/tile.h"
 #include "util/basic_macros.h"
-#include "util/numeric.h" // For IntervalLimiter & setPitchYawRoll
+#include "util/numeric.h"
 #include "util/serialize.h"
 #include "camera.h" // CameraModes
 #include "collision.h"
@@ -169,6 +169,20 @@ static void updatePositionRecursive(scene::ISceneNode *node)
 	if (parent)
 		updatePositionRecursive(parent);
 	node->updateAbsolutePosition();
+}
+
+static bool logOnce(const std::ostringstream &from, std::ostream &log_to)
+{
+	thread_local std::vector<u64> logged;
+
+	std::string message = from.str();
+	u64 hash = murmur_hash_64_ua(message.data(), message.length(), 0xBADBABE);
+
+	if (std::find(logged.begin(), logged.end(), hash) != logged.end())
+		return false;
+	logged.push_back(hash);
+	log_to << message << std::endl;
+	return true;
 }
 
 /*
@@ -822,6 +836,28 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	updateAttachments();
 	setNodeLight(m_last_light);
 	updateMeshCulling();
+
+	if (m_animated_meshnode) {
+		u32 mat_count = m_animated_meshnode->getMaterialCount();
+		if (mat_count == 0 || m_prop.textures.empty()) {
+			// nothing
+		} else if (mat_count > m_prop.textures.size()) {
+			std::ostringstream oss;
+			oss << "GenericCAO::addToScene(): Model "
+				<< m_prop.mesh << " loaded with " << mat_count
+				<< " mesh buffers but only " << m_prop.textures.size()
+				<< " texture(s) specifed, this is deprecated.";
+			logOnce(oss, warningstream);
+
+			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
+			for (s32 i = 1; i < mat_count; i++) {
+				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayer[0];
+				if (!layer.Texture)
+					layer.Texture = last;
+				last = layer.Texture;
+			}
+		}
+	}
 }
 
 void GenericCAO::updateLight(u32 day_night_ratio)
