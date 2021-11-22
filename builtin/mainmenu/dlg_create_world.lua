@@ -393,7 +393,7 @@ local function create_world_buttonhandler(this, fields)
 				core.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
 				if this.data.update_worldlist_filter then
 					menudata.worldlist:set_filtercriteria(pkgmgr.games[gameindex].id)
-					mm_texture.update("singleplayer", pkgmgr.games[gameindex].id)
+					mm_game_theme.update("singleplayer", pkgmgr.games[gameindex].id)
 				end
 				menudata.worldlist:refresh()
 				core.settings:set("mainmenu_last_selected_world",

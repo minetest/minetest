@@ -54,7 +54,7 @@ if enable_gamebar then
 			for key,value in pairs(fields) do
 				for j=1,#pkgmgr.games,1 do
 					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
-						mm_texture.update("singleplayer", pkgmgr.games[j])
+						mm_game_theme.update("singleplayer", pkgmgr.games[j])
 						core.set_topleft_text(pkgmgr.games[j].name)
 						core.settings:set("menu_last_game",pkgmgr.games[j].id)
 						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
@@ -323,7 +323,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		create_world_dlg:set_parent(this)
 		this:hide()
 		create_world_dlg:show()
-		mm_texture.update("singleplayer", current_game())
+		mm_game_theme.update("singleplayer", current_game())
 		return true
 	end
 
@@ -340,7 +340,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				delete_world_dlg:set_parent(this)
 				this:hide()
 				delete_world_dlg:show()
-				mm_texture.update("singleplayer",current_game())
+				mm_game_theme.update("singleplayer",current_game())
 			end
 		end
 
@@ -358,7 +358,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				configdialog:set_parent(this)
 				this:hide()
 				configdialog:show()
-				mm_texture.update("singleplayer",current_game())
+				mm_game_theme.update("singleplayer",current_game())
 			end
 		end
 
@@ -375,7 +375,7 @@ if enable_gamebar then
 			if game then
 				menudata.worldlist:set_filtercriteria(game.id)
 				core.set_topleft_text(game.name)
-				mm_texture.update("singleplayer",game)
+				mm_game_theme.update("singleplayer",game)
 			end
 
 			singleplayer_refresh_gamebar()
@@ -387,7 +387,7 @@ if enable_gamebar then
 				gamebar:hide()
 			end
 			core.set_topleft_text("")
-			mm_texture.update(new_tab,nil)
+			mm_game_theme.update(new_tab,nil)
 		end
 	end
 end

@@ -247,7 +247,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		adv_settings_dlg:set_parent(this)
 		this:hide()
 		adv_settings_dlg:show()
-		--mm_texture.update("singleplayer", current_game())
+		--mm_game_theme.update("singleplayer", current_game())
 		return true
 	end
 	if fields["cb_smooth_lighting"] then
