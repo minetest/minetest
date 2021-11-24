@@ -137,8 +137,8 @@ For load_mod_<mod>, the possible values are:
 
 * `false` - Do not load the mod.
 * `true` - Load the mod from wherever it is found (may cause conflicts if the same mod appears also in some other place).
-* `mods/modpack/modname` - Relative path to the mod. Must begin with `mods/`, other locations and absolute paths
-   are not supported.
+* `mods/modpack/moddir` - Relative path to the mod. Must begin with `mods/`, other locations and absolute paths
+   are not supported. Note that `moddir` is the directory name, not the mod name specified in mod.conf.
 
 
 Player File Format

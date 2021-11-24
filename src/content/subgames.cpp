@@ -107,14 +107,14 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string gamemod_path = game_path + DIR_DELIM + "mods";
 
 	// Find mod directories
-	std::set<std::string> mods_paths;
+	std::unordered_map<std::string, std::string> mods_paths;
 	if (!user_game)
-		mods_paths.insert(share + DIR_DELIM + "mods");
+		mods_paths["share"] = share + DIR_DELIM + "mods";
 	if (user != share || user_game)
-		mods_paths.insert(user + DIR_DELIM + "mods");
+		mods_paths["mods"] = user + DIR_DELIM + "mods";
 
 	for (const std::string &mod_path : getEnvModPaths()) {
-		mods_paths.insert(mod_path);
+		mods_paths["env"] = mod_path;
 	}
 
 	// Get meta

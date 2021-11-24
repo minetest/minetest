@@ -298,7 +298,8 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 }
 
 void ModConfiguration::addModsFromConfig(
-		const std::string &settings_path, const std::set<std::string> &modPaths)
+		const std::string &settings_path,
+		const std::unordered_map<std::string, std::string> &modPaths)
 {
 	Settings conf;
 	std::unordered_map<std::string, std::string> load_mod_names;
@@ -315,8 +316,8 @@ void ModConfiguration::addModsFromConfig(
 	std::vector<ModSpec> addon_mods;
 	std::unordered_map<std::string, std::vector<std::string>> candidates;
 
-	for (const std::string &modPath : modPaths) {
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(modPath, "mods"));
+	for (const auto &modPath : modPaths) {
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(modPath.second, modPath.first));
 		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
 				it != addon_mods_in_path.end(); ++it) {
 			const ModSpec &mod = *it;
@@ -439,10 +440,10 @@ void ModConfiguration::resolveDependencies()
 ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 		ModConfiguration(path)
 {
-	std::set<std::string> paths;
+	std::unordered_map<std::string, std::string> paths;
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
-	paths.insert(path);
-	paths.insert(path_user);
+	paths["share"] = path;
+	paths["mods"] = path_user;
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
 	addModsFromConfig(settings_path, paths);

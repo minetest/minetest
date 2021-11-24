@@ -54,9 +54,13 @@ struct ModSpec
 	 * This intended to be used as an identifier for a modpath that tolerates file movement,
 	 * and cannot be used to read the mod files.
 	 *
+	 * Note that `mymod` is the directory name, not the mod name specified in mod.conf.
+	 *
 	 * Ex:
 	 *
 	 * - mods/mymod
+	 * - mods/mymod (1)
+	 *     (^ this would have name=mymod in mod.conf)
 	 * - mods/modpack1/mymod
 	 * - games/mygame/mods/mymod
 	 * - worldmods/mymod
@@ -131,8 +135,12 @@ protected:
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
+	/**
+	 * @param settings_path Path to world.mt
+	 * @param modPaths Map from virtual name to mod path
+	 */
 	void addModsFromConfig(const std::string &settings_path,
-			const std::set<std::string> &modPaths);
+			const std::unordered_map<std::string, std::string> &modPaths);
 
 	void checkConflictsAndDeps();
 
