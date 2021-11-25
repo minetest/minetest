@@ -261,6 +261,11 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+if(NOT USE_LUAJIT)
+	set(LUA_BIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/bitop)
+	set(LUA_BIT_LIBRARY bitop)
+	add_subdirectory(lib/bitop)
+endif()
 
 # JsonCpp doesn't compile well on GCC 4.8
 if(NOT USE_SYSTEM_JSONCPP)
