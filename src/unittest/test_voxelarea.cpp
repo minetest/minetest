@@ -30,6 +30,7 @@ public:
 
 	void test_addarea();
 	void test_pad();
+	void test_extent();
 	void test_volume();
 	void test_contains_voxelarea();
 	void test_contains_point();
@@ -65,6 +66,7 @@ void TestVoxelArea::runTests(IGameDef *gamedef)
 {
 	TEST(test_addarea);
 	TEST(test_pad);
+	TEST(test_extent);
 	TEST(test_volume);
 	TEST(test_contains_voxelarea);
 	TEST(test_contains_point);
@@ -113,10 +115,22 @@ void TestVoxelArea::test_pad()
 	UASSERT(v1.MaxEdge == v3s16(-47, -9347, 969));
 }
 
+void TestVoxelArea::test_extent()
+{
+	VoxelArea v1(v3s16(-1337, -547, -789), v3s16(-147, 447, 669));
+	UASSERT(v1.getExtent() == v3s16(1191, 995, 1459));
+
+	VoxelArea v2(v3s16(32493, -32507, 32753), v3s16(32508, -32492, 32768));
+	UASSERT(v2.getExtent() == v3s16(16, 16, 16));
+}
+
 void TestVoxelArea::test_volume()
 {
-	VoxelArea v1(v3s16(-1337, 447, -789), v3s16(-147, -9547, 669));
-	UASSERTEQ(s32, v1.getVolume(), -184657133);
+	VoxelArea v1(v3s16(-1337, -547, -789), v3s16(-147, 447, 669));
+	UASSERTEQ(s32, v1.getVolume(), 1728980655);
+
+	VoxelArea v2(v3s16(32493, -32507, 32753), v3s16(32508, -32492, 32768));
+	UASSERTEQ(s32, v2.getVolume(), 4096);
 }
 
 void TestVoxelArea::test_contains_voxelarea()
