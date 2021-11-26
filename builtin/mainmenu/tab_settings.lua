@@ -275,13 +275,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["cb_shaders"] then
-		if (core.settings:get("video_driver") == "direct3d8" or
-				core.settings:get("video_driver") == "direct3d9") then
-			core.settings:set("enable_shaders", "false")
-			gamedata.errormessage = fgettext("To enable shaders the OpenGL driver needs to be used.")
-		else
-			core.settings:set("enable_shaders", fields["cb_shaders"])
-		end
+		core.settings:set("enable_shaders", fields["cb_shaders"])
 		return true
 	end
 	if fields["cb_tonemapping"] then
