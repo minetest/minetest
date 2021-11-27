@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-16 18:27+0200\n"
+"POT-Creation-Date: 2021-11-27 19:42+0100\n"
 "PO-Revision-Date: 2021-06-21 15:38+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -58,10 +58,6 @@ msgstr "Wiederbeleben"
 msgid "You died"
 msgstr "Sie sind gestorben"
 
-#: builtin/client/death_formspec.lua
-msgid "You died."
-msgstr "Sie sind gestorben."
-
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
 msgstr "Verfügbare Befehle:"
@@ -92,6 +88,11 @@ msgstr "[all | <Befehl>]"
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
 msgstr "OK"
+
+#: builtin/fstk/ui.lua
+#, fuzzy
+msgid "<none available>"
+msgstr "Befehl nicht verfügbar: "
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -295,6 +296,12 @@ msgstr "$1 installieren"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Fehlende Abhängigkeiten installieren"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install: Unsupported file type or broken archive"
+msgstr ""
+"Installation: Nicht unterstützter Dateityp „$1“ oder fehlerhaftes Archiv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -628,7 +635,8 @@ msgid "Offset"
 msgstr "Versatz"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistance"
+#, fuzzy
+msgid "Persistence"
 msgstr "Persistenz"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -739,15 +747,6 @@ msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
 "Modinstallation: Geeigneter Verzeichnisname für Modpack $1 konnte nicht "
 "gefunden werden"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr ""
-"Installation: Nicht unterstützter Dateityp „$1“ oder fehlerhaftes Archiv"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: file: \"$1\""
-msgstr "Installation: Datei: „$1“"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -1116,10 +1115,6 @@ msgstr "Weiches Licht"
 msgid "Texturing:"
 msgstr "Texturierung:"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Um Shader zu aktivieren, muss der OpenGL-Treiber genutzt werden."
-
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
 msgstr "Dynamikkompression"
@@ -1152,7 +1147,7 @@ msgstr "Flüssigkeitswellen"
 msgid "Waving Plants"
 msgstr "Wehende Pflanzen"
 
-#: src/client/client.cpp
+#: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
 msgstr "Verbindungsfehler, Zeitüberschreitung."
 
@@ -1181,7 +1176,8 @@ msgid "Connection error (timed out?)"
 msgstr "Verbindungsfehler (Zeitüberschreitung?)"
 
 #: src/client/clientlauncher.cpp
-msgid "Could not find or load game \""
+#, fuzzy
+msgid "Could not find or load game: "
 msgstr "Spiel konnte nicht gefunden oder geladen werden: \""
 
 #: src/client/clientlauncher.cpp
@@ -1254,6 +1250,16 @@ msgid "- Server Name: "
 msgstr "- Servername: "
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "A serialization error occurred:"
+msgstr "Ein Fehler ist aufgetreten:"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Access denied. Reason: %s"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Automatic forward disabled"
 msgstr "Vorwärtsautomatik deaktiviert"
 
@@ -1262,12 +1268,33 @@ msgid "Automatic forward enabled"
 msgstr "Vorwärtsautomatik aktiviert"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Block bounds hidden"
+msgstr "Blockgrenzen"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for current block"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for nearby blocks"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Camera update disabled"
 msgstr "Kameraaktualisierung deaktiviert"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
 msgstr "Kameraaktualisierung aktiviert"
+
+#: src/client/game.cpp
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1282,12 +1309,21 @@ msgid "Cinematic mode enabled"
 msgstr "Filmmodus aktiviert"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Client disconnected"
+msgstr "Client-Modding"
+
+#: src/client/game.cpp
 msgid "Client side scripting is disabled"
 msgstr "Clientseitige Skripte sind deaktiviert"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
 msgstr "Mit Server verbinden …"
+
+#: src/client/game.cpp
+msgid "Connection failed for unknown reason"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1325,6 +1361,11 @@ msgstr ""
 "- Maus: Drehen/Umschauen\n"
 "- Mausrad: Gegenstand wählen\n"
 "- %s: Chat\n"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Couldn't resolve address: %s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1531,6 +1572,21 @@ msgid "Sound unmuted"
 msgstr "Ton nicht mehr stumm"
 
 #: src/client/game.cpp
+#, c-format
+msgid "The server is probably running a different version of %s."
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to connect to %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to listen on %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Sichtweite geändert auf %d"
@@ -1864,6 +1920,15 @@ msgstr "Übersichtskarte im Bodenmodus, Zoom ×%d"
 msgid "Minimap in texture mode"
 msgstr "Übersichtskarte im Texturmodus"
 
+#: src/gui/guiChatConsole.cpp
+#, fuzzy
+msgid "Failed to open webpage"
+msgstr "Fehler beim Download von $1"
+
+#: src/gui/guiChatConsole.cpp
+msgid "Opening webpage"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "Passwörter stimmen nicht überein!"
@@ -1872,7 +1937,7 @@ msgstr "Passwörter stimmen nicht überein!"
 msgid "Register and Join"
 msgstr "Registrieren und beitreten"
 
-#: src/gui/guiConfirmRegistration.cpp
+#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2068,7 +2133,8 @@ msgid "Muted"
 msgstr "Stumm"
 
 #: src/gui/guiVolumeChange.cpp
-msgid "Sound Volume: "
+#, fuzzy, c-format
+msgid "Sound Volume: %d%%"
 msgstr "Tonlautstärke: "
 
 #. ~ Imperative, as in "Enter/type in text".
@@ -2099,8 +2165,8 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Den virtuellen Joystick benutzen, um die „Aux1“-Taste zu betätigen."
-"\n"
+"(Android) Den virtuellen Joystick benutzen, um die „Aux1“-Taste zu "
+"betätigen.\n"
 "Falls aktiviert, wird der virtuelle Joystick außerdem die „Aux1“-Taste "
 "drücken, wenn er sich außerhalb des Hauptkreises befindet."
 
@@ -2336,6 +2402,10 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr "DPI des Bildschirms (nicht für X11/Android) z.B. für 4K-Bildschirme."
+
+#: src/settings_translation_file.cpp
+msgid "Adjust the detected display density, used for scaling UI elements."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2638,6 +2708,11 @@ msgid "Chat command time message threshold"
 msgstr "Chatbefehlzeitnachrichtenschwellwert"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat commands"
+msgstr "Chatbefehle"
+
+#: src/settings_translation_file.cpp
 msgid "Chat font size"
 msgstr "Chat-Schriftgröße"
 
@@ -2670,8 +2745,9 @@ msgid "Chat toggle key"
 msgstr "Taste zum Umschalten des Chatprotokolls"
 
 #: src/settings_translation_file.cpp
-msgid "Chatcommands"
-msgstr "Chatbefehle"
+#, fuzzy
+msgid "Chat weblinks"
+msgstr "Chat angezeigt"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2688,6 +2764,12 @@ msgstr "Filmmodustaste"
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
 msgstr "Transparente Texturen säubern"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
+"output."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2779,6 +2861,36 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr "Befehlstaste"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Compression level to use when saving mapblocks to disk.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+"ZLib-Kompressionsniveau für Kartenblöcke im Festspeicher.\n"
+"-1 - Zlib-Standard-Kompressionsniveau\n"
+"0 - keine Kompression, am schnellsten\n"
+"9 - beste Kompression, am langsamsten\n"
+"(Niveaus 1-3 verwenden Zlibs „schnelles“ Verfahren, 4-9 das normale "
+"Verfahren)"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Compression level to use when sending mapblocks to the client.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+"ZLib-Kompressionsniveau für Kartenblöcke, die zu Clients gesendet werden.\n"
+"-1 - Zlib-Standard-Kompressionsniveau\n"
+"0 - keine Kompression, am schnellsten\n"
+"9 - beste Kompression, am langsamsten\n"
+"(Niveaus 1-3 verwenden Zlibs „schnelles“ Verfahren, 4-9 das normale "
+"Verfahren)"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2879,9 +2991,10 @@ msgid "Crosshair alpha"
 msgstr "Fadenkreuzundurchsichtigkeit"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
-"Also controls the object crosshair color"
+"This also applies to the object crosshair."
 msgstr ""
 "Fadenkreuzundurchsichtigkeit (Wert zwischen 0 und 255).\n"
 "Gilt auch für das Objektfadenkreuz"
@@ -2965,9 +3078,10 @@ msgid "Default stack size"
 msgstr "Standardstapelgröße"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Define shadow filtering quality\n"
-"This simulates the soft shadows effect by applying a PCF or poisson disk\n"
+"Define shadow filtering quality.\n"
+"This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "Definiert die Schattenfilterqualität\n"
@@ -3103,6 +3217,10 @@ msgid "Disallow empty passwords"
 msgstr "Leere Passwörter verbieten"
 
 #: src/settings_translation_file.cpp
+msgid "Display Density Scaling Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Domainname des Servers. Wird in der Serverliste angezeigt."
 
@@ -3151,8 +3269,20 @@ msgstr ""
 "Diese Unterstützung ist experimentell und die API kann sich ändern."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Enable colored shadows. \n"
+"Enable Poisson disk filtering.\n"
+"On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
+"filtering."
+msgstr ""
+"Aktiviert eine Poisson-Scheibenfilterung.\n"
+"Falls aktiv, werden Poisson-Scheiben verwendet, um „weiche Schatten“ zu "
+"erzeugen. Ansonsten wird die PCF-Filterung benutzt."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 "Aktiviert gefärbte Schatten. \n"
@@ -3182,16 +3312,6 @@ msgstr "Modsicherheit aktivieren"
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
 msgstr "Spielerschaden und -tod aktivieren."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable poisson disk filtering.\n"
-"On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
-"filtering."
-msgstr ""
-"Aktiviert eine Poisson-Scheibenfilterung.\n"
-"Falls aktiv, werden Poisson-Scheiben verwendet, um „weiche Schatten“ zu "
-"erzeugen. Ansonsten wird die PCF-Filterung benutzt."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3666,10 +3786,11 @@ msgid "Global callbacks"
 msgstr "Globale Rückruffunktionen"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations."
+"and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Globale Kartengenerierungsattribute.\n"
 "Im Kartengenerator v6 wird das „decorations“-Flag alle Dekorationen außer\n"
@@ -4185,7 +4306,8 @@ msgstr ""
 "Dies wird normalerweise nur von Haupt-/builtin-Entwicklern benötigt"
 
 #: src/settings_translation_file.cpp
-msgid "Instrument chatcommands on registration."
+#, fuzzy
+msgid "Instrument chat commands on registration."
 msgstr "Chatbefehle bei ihrer Registrierung instrumentieren."
 
 #: src/settings_translation_file.cpp
@@ -4281,7 +4403,8 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick-Button-Wiederholungsrate"
 
 #: src/settings_translation_file.cpp
-msgid "Joystick deadzone"
+#, fuzzy
+msgid "Joystick dead zone"
 msgstr "Joystick-Totbereich"
 
 #: src/settings_translation_file.cpp
@@ -5401,7 +5524,8 @@ msgid "Map save interval"
 msgstr "Speicherintervall der Karte"
 
 #: src/settings_translation_file.cpp
-msgid "Map update time"
+#, fuzzy
+msgid "Map shadows update frames"
 msgstr "Kartenupdatezeit"
 
 #: src/settings_translation_file.cpp
@@ -5733,7 +5857,8 @@ msgid "Mod channels"
 msgstr "Mod-Kanäle"
 
 #: src/settings_translation_file.cpp
-msgid "Modifies the size of the hudbar elements."
+#, fuzzy
+msgid "Modifies the size of the HUD elements."
 msgstr "Modifiziert die Größe der HUD-Leistenelemente."
 
 #: src/settings_translation_file.cpp
@@ -5890,9 +6015,10 @@ msgstr ""
 "Für viele Benutzer wird die optimale Einstellung wohl die „1“ sein."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
-"This is a trade-off between sqlite transaction overhead and\n"
+"This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
 "Anzahl der zusätzlichen Kartenblöcke, welche mit /clearobjects gleichzeitig\n"
@@ -5922,6 +6048,10 @@ msgid ""
 msgstr ""
 "Das Pausemenü öffnen, wenn der Fokus des Fensters verloren geht.\n"
 "Wird nicht pausieren, wenn ein Formspec geöffnet ist."
+
+#: src/settings_translation_file.cpp
+msgid "Optional override for chat weblink color."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6099,11 +6229,12 @@ msgid "Prometheus listener address"
 msgstr "Prometheus-Lauschadresse"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
-"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
-"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+"Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Prometheus-Lauschadresse.\n"
 "Falls Minetest mit der ENABLE_PROMETEUS-Option kompiliert wurde,\n"
@@ -6454,23 +6585,11 @@ msgstr ""
 "zu dunkleren Schatten."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set the shadow update time.\n"
-"Lower value means shadows and map updates faster, but it consume more "
-"resources.\n"
-"Minimun value 0.001 seconds max value 0.2 seconds"
-msgstr ""
-"Setzt die Schattenupdatezeit.\n"
-"Ein niedrigerer Wert bedeutet, dass Schatten und die Karte schneller "
-"aktualisiert werden, aber dies verbraucht mehr Ressourcen.\n"
-"Minimalwert: 0.001 Sekunden. Maximalwert: 0.2 Sekunden.\n"
-"(Beachten Sie die englische Notation mit Punkt als Dezimaltrennzeichen.)"
-
-#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
-"Lower values mean sharper shadows bigger values softer.\n"
-"Minimun value 1.0 and max value 10.0"
+"Lower values mean sharper shadows, bigger values mean softer shadows.\n"
+"Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
 "Setzt den Radius von weichen Schatten.\n"
 "Niedrigere Werte führen zu schärferen Schatten, größere Werte führen zu "
@@ -6478,10 +6597,11 @@ msgstr ""
 "Minimalwert: 1.0; Maximalwert: 10.0"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees\n"
+"Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
-"Minimun value 0.0 and max value 60.0"
+"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 "Setzt die Neigung vom Sonnen-/Mondorbit in Grad.\n"
 "0 = keine Neigung / vertikaler Orbit.\n"
@@ -6594,7 +6714,8 @@ msgstr ""
 "Nach Änderung ist ein Neustart erforderlich."
 
 #: src/settings_translation_file.cpp
-msgid "Show nametag backgrounds by default"
+#, fuzzy
+msgid "Show name tag backgrounds by default"
 msgstr "Standardmäßig Hintergründe für Namensschilder anzeigen"
 
 #: src/settings_translation_file.cpp
@@ -6727,6 +6848,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Spread a complete update of shadow map over given amount of frames.\n"
+"Higher values might make shadows laggy, lower values\n"
+"will consume more resources.\n"
+"Minimum value: 1; maximum value: 16"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -6856,10 +6985,11 @@ msgid "Texture path"
 msgstr "Texturenpfad"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
-"Bigger numbers create better shadowsbut it is also more expensive."
+"Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
 "Texturengröße zum Rendern der Schattenkarte.\n"
 "Dies muss eine Zweierpotenz sein.\n"
@@ -6889,7 +7019,8 @@ msgid "The URL for the content repository"
 msgstr "Die URL für den Inhaltespeicher"
 
 #: src/settings_translation_file.cpp
-msgid "The deadzone of the joystick"
+#, fuzzy
+msgid "The dead zone of the joystick"
 msgstr "Der Totbereich des Joysticks"
 
 #: src/settings_translation_file.cpp
@@ -6984,9 +7115,10 @@ msgstr ""
 "unterstützt."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
-"ingame view frustum around."
+"in-game view frustum around."
 msgstr ""
 "Die Empfindlichkeit der Joystick-Achsen, um den\n"
 "Pyramidenstumpf der Spielansicht herumzubewegen."
@@ -7195,8 +7327,9 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr "Bilineare Filterung bei der Skalierung von Texturen benutzen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mip mapping to scale textures. May slightly increase performance,\n"
+"Use mipmapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
@@ -7408,6 +7541,11 @@ msgid "Waving plants"
 msgstr "Wehende Pflanzen"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Weblink color"
+msgstr "Auswahlboxfarbe"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -7433,12 +7571,13 @@ msgstr ""
 "korrekt unterstützen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
 "interpolation to preserve crisp pixels. This sets the minimum texture size\n"
 "for the upscaled textures; higher values look sharper, but require more\n"
-"memory.  Powers of 2 are recommended. This setting is ONLY applies if\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
 "bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
@@ -7466,8 +7605,9 @@ msgstr ""
 "benutzt."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Whether nametag backgrounds should be shown by default.\n"
+"Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
 "Ob Namensschildhintergründe standardmäßig angezeigt werden sollen.\n"
@@ -7631,36 +7771,6 @@ msgstr "Y-Höhe von niedrigerem Gelände und dem Meeresgrund."
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
 msgstr "Y-Höhe vom Meeresgrund."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when saving mapblocks to disk.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-"ZLib-Kompressionsniveau für Kartenblöcke im Festspeicher.\n"
-"-1 - Zlib-Standard-Kompressionsniveau\n"
-"0 - keine Kompression, am schnellsten\n"
-"9 - beste Kompression, am langsamsten\n"
-"(Niveaus 1-3 verwenden Zlibs „schnelles“ Verfahren, 4-9 das normale "
-"Verfahren)"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when sending mapblocks to the client.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-"ZLib-Kompressionsniveau für Kartenblöcke, die zu Clients gesendet werden.\n"
-"-1 - Zlib-Standard-Kompressionsniveau\n"
-"0 - keine Kompression, am schnellsten\n"
-"9 - beste Kompression, am langsamsten\n"
-"(Niveaus 1-3 verwenden Zlibs „schnelles“ Verfahren, 4-9 das normale "
-"Verfahren)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -7877,6 +7987,9 @@ msgstr "cURL-Parallel-Begrenzung"
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6-Unterstützung."
 
+#~ msgid "Install: file: \"$1\""
+#~ msgstr "Installation: Datei: „$1“"
+
 #~ msgid "Lava depth"
 #~ msgstr "Lavatiefe"
 
@@ -7984,6 +8097,18 @@ msgstr "cURL-Parallel-Begrenzung"
 #~ msgid "Select Package File:"
 #~ msgstr "Paket-Datei auswählen:"
 
+#~ msgid ""
+#~ "Set the shadow update time.\n"
+#~ "Lower value means shadows and map updates faster, but it consume more "
+#~ "resources.\n"
+#~ "Minimun value 0.001 seconds max value 0.2 seconds"
+#~ msgstr ""
+#~ "Setzt die Schattenupdatezeit.\n"
+#~ "Ein niedrigerer Wert bedeutet, dass Schatten und die Karte schneller "
+#~ "aktualisiert werden, aber dies verbraucht mehr Ressourcen.\n"
+#~ "Minimalwert: 0.001 Sekunden. Maximalwert: 0.2 Sekunden.\n"
+#~ "(Beachten Sie die englische Notation mit Punkt als Dezimaltrennzeichen.)"
+
 #~ msgid "Shadow limit"
 #~ msgstr "Schattenbegrenzung"
 
@@ -8011,6 +8136,9 @@ msgstr "cURL-Parallel-Begrenzung"
 
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "Diese Schrift wird von bestimmten Sprachen benutzt."
+
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "Um Shader zu aktivieren, muss der OpenGL-Treiber genutzt werden."
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Filmmodus umschalten"
@@ -8051,6 +8179,9 @@ msgstr "cURL-Parallel-Begrenzung"
 
 #~ msgid "Yes"
 #~ msgstr "Ja"
+
+#~ msgid "You died."
+#~ msgstr "Sie sind gestorben."
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"

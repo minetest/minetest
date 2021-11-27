@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-16 18:27+0200\n"
+"POT-Creation-Date: 2021-11-27 19:42+0100\n"
 "PO-Revision-Date: 2021-10-14 07:35+0000\n"
 "Last-Translator: Molly <arthur@garsi.de>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -58,10 +58,6 @@ msgstr "Herboren worden"
 msgid "You died"
 msgstr "Je bent gestorven"
 
-#: builtin/client/death_formspec.lua
-msgid "You died."
-msgstr "Je bent gestorven."
-
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
 msgstr "Beschikbare instructies:"
@@ -92,6 +88,11 @@ msgstr "[all | <cmd>]"
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
 msgstr "Oke"
+
+#: builtin/fstk/ui.lua
+#, fuzzy
+msgid "<none available>"
+msgstr "Instructie niet beschikbaar: "
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -296,6 +297,11 @@ msgstr "Installeer $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Installeer ontbrekende afhankelijkheden"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install: Unsupported file type or broken archive"
+msgstr "Installeren: niet ondersteund bestandstype \"$1\" of defect archief"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -629,7 +635,8 @@ msgid "Offset"
 msgstr "afstand"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistance"
+#, fuzzy
+msgid "Persistence"
 msgstr "Persistentie"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -739,14 +746,6 @@ msgstr "Mod installeren: kan de echte mod-naam niet vinden voor: $1"
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
 "Mod installeren: kan geen geschikte map naam vinden voor mod verzameling $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr "Installeren: niet ondersteund bestandstype \"$1\" of defect archief"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: file: \"$1\""
-msgstr "Installeer: bestand: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -1118,10 +1117,6 @@ msgstr "Vloeiende verlichting"
 msgid "Texturing:"
 msgstr "Textuur:"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Om schaduwen mogelijk te maken moet OpenGL worden gebruikt."
-
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
 msgstr "Tone-mapping"
@@ -1154,7 +1149,7 @@ msgstr "Golvende Vloeistoffen"
 msgid "Waving Plants"
 msgstr "Bewegende planten"
 
-#: src/client/client.cpp
+#: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
 msgstr "Time-out bij opzetten verbinding."
 
@@ -1183,7 +1178,8 @@ msgid "Connection error (timed out?)"
 msgstr "Fout bij verbinden (time out?)"
 
 #: src/client/clientlauncher.cpp
-msgid "Could not find or load game \""
+#, fuzzy
+msgid "Could not find or load game: "
 msgstr "Kan het spel niet laden of niet vinden \""
 
 #: src/client/clientlauncher.cpp
@@ -1256,6 +1252,16 @@ msgid "- Server Name: "
 msgstr "- Server Naam: "
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "A serialization error occurred:"
+msgstr "Er is een fout opgetreden:"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Access denied. Reason: %s"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Automatic forward disabled"
 msgstr "Automatisch vooruit uitgeschakeld"
 
@@ -1264,12 +1270,33 @@ msgid "Automatic forward enabled"
 msgstr "Automatisch vooruit ingeschakeld"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Block bounds hidden"
+msgstr "Blok grenzen"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for current block"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for nearby blocks"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Camera update disabled"
 msgstr "Camera-update uitgeschakeld"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
 msgstr "Camera-update ingeschakeld"
+
+#: src/client/game.cpp
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1284,12 +1311,21 @@ msgid "Cinematic mode enabled"
 msgstr "Filmische modus ingeschakeld"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Client disconnected"
+msgstr "Cliënt personalisatie (modding)"
+
+#: src/client/game.cpp
 msgid "Client side scripting is disabled"
 msgstr "Client-side scripting is uitgeschakeld"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
 msgstr "Verbinding met de server wordt gemaakt..."
+
+#: src/client/game.cpp
+msgid "Connection failed for unknown reason"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1327,6 +1363,11 @@ msgstr ""
 "- Muis: draaien / kijken \n"
 "- Muiswiel: item selecteren \n"
 "-%s: chat\n"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Couldn't resolve address: %s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1533,6 +1574,21 @@ msgid "Sound unmuted"
 msgstr "Geluid niet gedempt"
 
 #: src/client/game.cpp
+#, c-format
+msgid "The server is probably running a different version of %s."
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to connect to %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to listen on %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Kijkbereik gewijzigd naar %d"
@@ -1866,6 +1922,15 @@ msgstr "Minimap in oppervlaktemodus, Zoom x%d"
 msgid "Minimap in texture mode"
 msgstr "Minimap textuur modus"
 
+#: src/gui/guiChatConsole.cpp
+#, fuzzy
+msgid "Failed to open webpage"
+msgstr "Installeren van mod $1 is mislukt"
+
+#: src/gui/guiChatConsole.cpp
+msgid "Opening webpage"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "De wachtwoorden zijn niet gelijk!"
@@ -1874,7 +1939,7 @@ msgstr "De wachtwoorden zijn niet gelijk!"
 msgid "Register and Join"
 msgstr "Registreer en doe mee"
 
-#: src/gui/guiConfirmRegistration.cpp
+#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2070,7 +2135,8 @@ msgid "Muted"
 msgstr "Gedempt"
 
 #: src/gui/guiVolumeChange.cpp
-msgid "Sound Volume: "
+#, fuzzy, c-format
+msgid "Sound Volume: %d%%"
 msgstr "Geluidsvolume: "
 
 #. ~ Imperative, as in "Enter/type in text".
@@ -2331,6 +2397,10 @@ msgid ""
 msgstr ""
 "Pas de dpi-configuratie aan op uw scherm (alleen niet X11 / Android), b.v. "
 "voor 4k-schermen."
+
+#: src/settings_translation_file.cpp
+msgid "Adjust the detected display density, used for scaling UI elements."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2635,6 +2705,11 @@ msgid "Chat command time message threshold"
 msgstr "Drempel voor kick van chatbericht"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat commands"
+msgstr "Chat-commando's"
+
+#: src/settings_translation_file.cpp
 msgid "Chat font size"
 msgstr "Chat lettergrootte"
 
@@ -2667,8 +2742,9 @@ msgid "Chat toggle key"
 msgstr "Toets voor tonen/verbergen chat"
 
 #: src/settings_translation_file.cpp
-msgid "Chatcommands"
-msgstr "Chat-commando's"
+#, fuzzy
+msgid "Chat weblinks"
+msgstr "Chat weergegeven"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2685,6 +2761,12 @@ msgstr "Cinematic modus aan/uit toets"
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
 msgstr "Schone transparante texturen"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
+"output."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2775,6 +2857,36 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr "Commando-toets"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Compression level to use when saving mapblocks to disk.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+"Zlib compressie niveau om mapblokken op de harde schijf te bewaren.\n"
+"-1: Zlib's standaard compressie niveau\n"
+"0: geen compressie, snelst\n"
+"9: maximale compressie, traagst\n"
+"(niveau's 1 tot 3 gebruiken Zlib's snelle methode, 4 tot 9 gebruiken de "
+"normale methode)"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Compression level to use when sending mapblocks to the client.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+"Zlib compressie niveau om mapblokken te versturen naar de client.\n"
+"-1: Zlib's standaard compressie niveau\n"
+"0: geen compressie, snelst\n"
+"9: maximale compressie, traagst\n"
+"(niveau's 1 tot 3 gebruiken Zlib's snelle methode, 4 tot 9 gebruiken de "
+"normale methode)"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2878,9 +2990,10 @@ msgid "Crosshair alpha"
 msgstr "Draadkruis-alphawaarde"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
-"Also controls the object crosshair color"
+"This also applies to the object crosshair."
 msgstr ""
 "Draadkruis-alphawaarde (ondoorzichtigheid; tussen 0 en 255).\n"
 "Controleert ook het object draadkruis kleur"
@@ -2962,9 +3075,10 @@ msgid "Default stack size"
 msgstr "Standaard voorwerpenstapel grootte"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Define shadow filtering quality\n"
-"This simulates the soft shadows effect by applying a PCF or poisson disk\n"
+"Define shadow filtering quality.\n"
+"This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "Defineer schaduw filtering kwaliteit\n"
@@ -3097,6 +3211,10 @@ msgid "Disallow empty passwords"
 msgstr "Lege wachtwoorden niet toestaan"
 
 #: src/settings_translation_file.cpp
+msgid "Display Density Scaling Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Domeinnaam van de server; wordt getoond in de serverlijst."
 
@@ -3146,7 +3264,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enable colored shadows. \n"
+"Enable Poisson disk filtering.\n"
+"On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
+"filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 
@@ -3173,13 +3298,6 @@ msgstr "Veilige modus voor mods aanzetten"
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
 msgstr "Schakel verwondingen en sterven van spelers aan."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable poisson disk filtering.\n"
-"On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
-"filtering."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3642,10 +3760,11 @@ msgid "Global callbacks"
 msgstr "Algemene callbacks"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations."
+"and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Algemene wereldgenerator instellingen.\n"
 "De vlag 'decorations' bepaalt de aanwezigheid van alle decoraties, behalve\n"
@@ -4158,7 +4277,8 @@ msgstr ""
 "het core/builtin-gedeelte van de server"
 
 #: src/settings_translation_file.cpp
-msgid "Instrument chatcommands on registration."
+#, fuzzy
+msgid "Instrument chat commands on registration."
 msgstr "Profileer chat-commando's bij het registreren."
 
 #: src/settings_translation_file.cpp
@@ -4252,7 +4372,8 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick-knop herhalingsinterval"
 
 #: src/settings_translation_file.cpp
-msgid "Joystick deadzone"
+#, fuzzy
+msgid "Joystick dead zone"
 msgstr "Joystick dode zone"
 
 #: src/settings_translation_file.cpp
@@ -5371,7 +5492,7 @@ msgstr "Interval voor opslaan wereld"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Map update time"
+msgid "Map shadows update frames"
 msgstr "Vloeistof verspreidingssnelheid"
 
 #: src/settings_translation_file.cpp
@@ -5701,7 +5822,8 @@ msgid "Mod channels"
 msgstr "Mod-kanalen"
 
 #: src/settings_translation_file.cpp
-msgid "Modifies the size of the hudbar elements."
+#, fuzzy
+msgid "Modifies the size of the HUD elements."
 msgstr "Veranderd de grootte van de HUDbar elementen."
 
 #: src/settings_translation_file.cpp
@@ -5866,9 +5988,10 @@ msgstr ""
 "'on_generated'. Voor veel gebruikers kan de optimale instelling '1' zijn."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
-"This is a trade-off between sqlite transaction overhead and\n"
+"This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
 "Aantal extra blokken (van 16x16x16 nodes) dat door het commando '/"
@@ -5901,6 +6024,10 @@ msgid ""
 msgstr ""
 "Pauzemenu openen als het venster focus verliest. Pauzeert niet als er\n"
 "een formspec geopend is."
+
+#: src/settings_translation_file.cpp
+msgid "Optional override for chat weblink color."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6078,11 +6205,12 @@ msgid "Prometheus listener address"
 msgstr "Adres om te luisteren naar Prometheus"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
-"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
-"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+"Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Adres om te luisteren naar Prometheus.\n"
 "Als Minetest is gecompileerd met de optie ENABLE_PROMETHEUS,\n"
@@ -6428,24 +6556,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the shadow update time.\n"
-"Lower value means shadows and map updates faster, but it consume more "
-"resources.\n"
-"Minimun value 0.001 seconds max value 0.2 seconds"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the soft shadow radius size.\n"
-"Lower values mean sharper shadows bigger values softer.\n"
-"Minimun value 1.0 and max value 10.0"
+"Lower values mean sharper shadows, bigger values mean softer shadows.\n"
+"Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees\n"
+"Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
-"Minimun value 0.0 and max value 60.0"
+"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6555,7 +6675,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Show nametag backgrounds by default"
+msgid "Show name tag backgrounds by default"
 msgstr "Standaard vetgedrukt"
 
 #: src/settings_translation_file.cpp
@@ -6683,6 +6803,14 @@ msgstr ""
 "Bepaalt de standaard stack grootte van nodes, items en tools.\n"
 "Merk op dat mods of spellen expliciet een stack kunnen maken voor sommige "
 "(of alle) items."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Spread a complete update of shadow map over given amount of frames.\n"
+"Higher values might make shadows laggy, lower values\n"
+"will consume more resources.\n"
+"Minimum value: 1; maximum value: 16"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6822,7 +6950,7 @@ msgstr "Textuur pad"
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
-"Bigger numbers create better shadowsbut it is also more expensive."
+"Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6850,7 +6978,8 @@ msgid "The URL for the content repository"
 msgstr "De URL voor de inhoudsrepository"
 
 #: src/settings_translation_file.cpp
-msgid "The deadzone of the joystick"
+#, fuzzy
+msgid "The dead zone of the joystick"
 msgstr "De dode zone van de stuurknuppel die u gebruikt"
 
 #: src/settings_translation_file.cpp
@@ -6945,9 +7074,10 @@ msgstr ""
 "drivers met shader-ondersteuning momenteel"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
-"ingame view frustum around."
+"in-game view frustum around."
 msgstr ""
 "De gevoeligheid van de assen van de joystick voor het bewegen van de "
 "frustrum in het spel."
@@ -7151,8 +7281,9 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr "Gebruik bi-lineaire filtering bij het schalen van texturen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mip mapping to scale textures. May slightly increase performance,\n"
+"Use mipmapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
@@ -7360,6 +7491,11 @@ msgid "Waving plants"
 msgstr "Bewegende planten"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Weblink color"
+msgstr "Kleur van selectie-randen"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -7390,7 +7526,7 @@ msgid ""
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
 "interpolation to preserve crisp pixels. This sets the minimum texture size\n"
 "for the upscaled textures; higher values look sharper, but require more\n"
-"memory.  Powers of 2 are recommended. This setting is ONLY applies if\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
 "bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
@@ -7423,7 +7559,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether nametag backgrounds should be shown by default.\n"
+"Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
 
@@ -7587,36 +7723,6 @@ msgstr "Y-niveau van lager terrein en vijver/zee bodems."
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
 msgstr "Y-niveau van zee bodem."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when saving mapblocks to disk.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-"Zlib compressie niveau om mapblokken op de harde schijf te bewaren.\n"
-"-1: Zlib's standaard compressie niveau\n"
-"0: geen compressie, snelst\n"
-"9: maximale compressie, traagst\n"
-"(niveau's 1 tot 3 gebruiken Zlib's snelle methode, 4 tot 9 gebruiken de "
-"normale methode)"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when sending mapblocks to the client.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-"Zlib compressie niveau om mapblokken te versturen naar de client.\n"
-"-1: Zlib's standaard compressie niveau\n"
-"0: geen compressie, snelst\n"
-"9: maximale compressie, traagst\n"
-"(niveau's 1 tot 3 gebruiken Zlib's snelle methode, 4 tot 9 gebruiken de "
-"normale methode)"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -7817,6 +7923,9 @@ msgstr "Maximaal parallellisme in cURL"
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6 ondersteuning."
 
+#~ msgid "Install: file: \"$1\""
+#~ msgstr "Installeer: bestand: \"$1\""
+
 #, fuzzy
 #~ msgid "Lava depth"
 #~ msgstr "Diepte van grote grotten"
@@ -7944,6 +8053,9 @@ msgstr "Maximaal parallellisme in cURL"
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "Dit font wordt gebruikt voor bepaalde talen."
 
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "Om schaduwen mogelijk te maken moet OpenGL worden gebruikt."
+
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Cinematic modus aan/uit"
 
@@ -7979,6 +8091,9 @@ msgstr "Maximaal parallellisme in cURL"
 
 #~ msgid "Yes"
 #~ msgstr "Ja"
+
+#~ msgid "You died."
+#~ msgstr "Je bent gestorven."
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"

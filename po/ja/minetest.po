@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-16 18:27+0200\n"
+"POT-Creation-Date: 2021-11-27 19:42+0100\n"
 "PO-Revision-Date: 2021-07-17 13:33+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -58,10 +58,6 @@ msgstr "リスポーン"
 msgid "You died"
 msgstr "死んでしまった"
 
-#: builtin/client/death_formspec.lua
-msgid "You died."
-msgstr "あなたは死にました。"
-
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
 msgstr "使用可能なコマンド："
@@ -81,7 +77,9 @@ msgstr "コマンドのヘルプを表示する"
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
-msgstr "'.help <cmd>' を使用して詳細情報を取得するか、または '.help all' を使用してすべてを一覧表示します。"
+msgstr ""
+"'.help <cmd>' を使用して詳細情報を取得するか、または '.help all' を使用してす"
+"べてを一覧表示します。"
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -90,6 +88,11 @@ msgstr "[all | <cmd>]"
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
 msgstr "OK"
+
+#: builtin/fstk/ui.lua
+#, fuzzy
+msgid "<none available>"
+msgstr "コマンドは使用できません： "
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -292,6 +295,11 @@ msgstr "$1 のインストール"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "不足依存Modインストール"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install: Unsupported file type or broken archive"
+msgstr "インストール: \"$1\"は非対応のファイル形式か、壊れたアーカイブです"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -621,7 +629,8 @@ msgid "Offset"
 msgstr "オフセット"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistance"
+#, fuzzy
+msgid "Persistence"
 msgstr "永続性"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -730,14 +739,6 @@ msgstr "Modインストール: 実際のMod名が見つかりません: $1"
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr "Modインストール: Modパック $1 に適したフォルダ名が見つかりません"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr "インストール: \"$1\"は非対応のファイル形式か、壊れたアーカイブです"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: file: \"$1\""
-msgstr "インストール: ファイル: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -1104,10 +1105,6 @@ msgstr "滑らかな光"
 msgid "Texturing:"
 msgstr "テクスチャリング:"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "シェーダーを有効にするにはOpenGLのドライバを使用する必要があります。"
-
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
 msgstr "トーンマッピング"
@@ -1140,7 +1137,7 @@ msgstr "揺れる液体"
 msgid "Waving Plants"
 msgstr "揺れる草花"
 
-#: src/client/client.cpp
+#: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
 msgstr "接続がタイムアウトしました。"
 
@@ -1169,7 +1166,8 @@ msgid "Connection error (timed out?)"
 msgstr "接続エラー (タイムアウト？)"
 
 #: src/client/clientlauncher.cpp
-msgid "Could not find or load game \""
+#, fuzzy
+msgid "Could not find or load game: "
 msgstr "以下のゲームが見つからないか読み込めません \""
 
 #: src/client/clientlauncher.cpp
@@ -1242,6 +1240,16 @@ msgid "- Server Name: "
 msgstr "- サーバー名: "
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "A serialization error occurred:"
+msgstr "エラーが発生しました:"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Access denied. Reason: %s"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Automatic forward disabled"
 msgstr "自動前進 無効"
 
@@ -1250,12 +1258,33 @@ msgid "Automatic forward enabled"
 msgstr "自動前進 有効"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Block bounds hidden"
+msgstr "ブロック境界線表示切替"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for current block"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for nearby blocks"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Camera update disabled"
 msgstr "カメラ更新 無効"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
 msgstr "カメラ更新 有効"
+
+#: src/client/game.cpp
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1270,12 +1299,21 @@ msgid "Cinematic mode enabled"
 msgstr "映画風モード 有効"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Client disconnected"
+msgstr "クライアントの改造"
+
+#: src/client/game.cpp
 msgid "Client side scripting is disabled"
 msgstr "クライアント側のスクリプトは無効"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
 msgstr "サーバーに接続中..."
+
+#: src/client/game.cpp
+msgid "Connection failed for unknown reason"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1313,6 +1351,11 @@ msgstr ""
 "- マウス: 見回す\n"
 "- マウスホイール: アイテム選択\n"
 "- %s: チャット\n"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Couldn't resolve address: %s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1519,6 +1562,21 @@ msgid "Sound unmuted"
 msgstr "消音 取り消し"
 
 #: src/client/game.cpp
+#, c-format
+msgid "The server is probably running a different version of %s."
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to connect to %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to listen on %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "視野を %d に変更"
@@ -1852,6 +1910,15 @@ msgstr "ミニマップ 表面モード、ズーム x%d"
 msgid "Minimap in texture mode"
 msgstr "ミニマップ テクスチャモード"
 
+#: src/gui/guiChatConsole.cpp
+#, fuzzy
+msgid "Failed to open webpage"
+msgstr "$1のダウンロードに失敗"
+
+#: src/gui/guiChatConsole.cpp
+msgid "Opening webpage"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "パスワードが一致しません！"
@@ -1860,7 +1927,7 @@ msgstr "パスワードが一致しません！"
 msgid "Register and Join"
 msgstr "参加登録"
 
-#: src/gui/guiConfirmRegistration.cpp
+#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -1870,8 +1937,10 @@ msgid ""
 "creation, or click 'Cancel' to abort."
 msgstr ""
 "あなたはこのサーバ ーに名前 \"%s\" ではじめて参加しようとしています。\n"
-"続行する場合、あなたの情報が新しいアカウントとしてこのサーバーに作成されます。\n"
-"あなたのパスワードを再入力してから '参加登録' をクリックしてアカウント作成するか、\n"
+"続行する場合、あなたの情報が新しいアカウントとしてこのサーバーに作成されま"
+"す。\n"
+"あなたのパスワードを再入力してから '参加登録' をクリックしてアカウント作成す"
+"るか、\n"
 "キャンセルをクリックして中断してください。"
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -2053,7 +2122,8 @@ msgid "Muted"
 msgstr "消音"
 
 #: src/gui/guiVolumeChange.cpp
-msgid "Sound Volume: "
+#, fuzzy, c-format
+msgid "Sound Volume: %d%%"
 msgstr "音量: "
 
 #. ~ Imperative, as in "Enter/type in text".
@@ -2300,6 +2370,10 @@ msgid ""
 "screens."
 msgstr ""
 "4kスクリーンなどのための、画面の解像度の設定です (非X11/Android環境のみ)。"
+
+#: src/settings_translation_file.cpp
+msgid "Adjust the detected display density, used for scaling UI elements."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2595,6 +2669,11 @@ msgid "Chat command time message threshold"
 msgstr "チャットコマンド時間切れメッセージのしきい値"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat commands"
+msgstr "チャットコマンド"
+
+#: src/settings_translation_file.cpp
 msgid "Chat font size"
 msgstr "チャットのフォントサイズ"
 
@@ -2627,8 +2706,9 @@ msgid "Chat toggle key"
 msgstr "チャット切替キー"
 
 #: src/settings_translation_file.cpp
-msgid "Chatcommands"
-msgstr "チャットコマンド"
+#, fuzzy
+msgid "Chat weblinks"
+msgstr "チャット 表示"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2645,6 +2725,12 @@ msgstr "映画風モード切り替えキー"
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
 msgstr "テクスチャの透過を削除"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
+"output."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2732,6 +2818,34 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr "コマンドキー"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Compression level to use when saving mapblocks to disk.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+"マップブロックをディスクに保存するときに使用する ZLib圧縮レベル。\n"
+"-1 - Zlib の規定の圧縮レベル\n"
+"0 - 圧縮なし、最速\n"
+"9 - 最高の圧縮、最も遅い\n"
+"（レベル 1〜3 はZlibの「高速」方式を使用し、4〜9 は通常方式を使用）"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Compression level to use when sending mapblocks to the client.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+"マップブロックをクライアントに送信するときに使用する ZLib圧縮レベル。\n"
+"-1 - Zlib の規定の圧縮レベル\n"
+"0 - 圧縮なし、最速\n"
+"9 - 最高の圧縮、最も遅い\n"
+"（レベル 1〜3 はZlibの「高速」方式を使用し、4〜9 は通常方式を使用）"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2830,9 +2944,10 @@ msgid "Crosshair alpha"
 msgstr "十字カーソルの透過度"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
-"Also controls the object crosshair color"
+"This also applies to the object crosshair."
 msgstr ""
 "十字カーソルの透過度（不透明、0～255の間）。\n"
 "オブジェクト十字カーソルの色も制御"
@@ -2914,13 +3029,15 @@ msgid "Default stack size"
 msgstr "既定のスタック数"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Define shadow filtering quality\n"
-"This simulates the soft shadows effect by applying a PCF or poisson disk\n"
+"Define shadow filtering quality.\n"
+"This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "影のフィルタリング品質定義\n"
-"これは、PCFまたはポアソンディスクを適用することで、やわらない影効果をシミュレートするものです。\n"
+"これは、PCFまたはポアソンディスクを適用することで、やわらない影効果をシミュ"
+"レートするものです。\n"
 "しかし、より多くのリソースを消費します。"
 
 #: src/settings_translation_file.cpp
@@ -3042,6 +3159,10 @@ msgid "Disallow empty passwords"
 msgstr "空のパスワードを許可しない"
 
 #: src/settings_translation_file.cpp
+msgid "Display Density Scaling Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "サーバー一覧に表示されるサーバーのドメイン名。"
 
@@ -3090,8 +3211,20 @@ msgstr ""
 "このサポートは実験的であり、APIは変わることがあります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Enable colored shadows. \n"
+"Enable Poisson disk filtering.\n"
+"On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
+"filtering."
+msgstr ""
+"ポアソンディスクによるフィルタリングを有効にします。\n"
+"true の場合、ポアソンディスクを使用して「やわらない影」を作ります。それ以外の"
+"場合は、PCFフィルタリングを使用します。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 "色つきの影を有効にします。\n"
@@ -3120,15 +3253,6 @@ msgstr "Modのセキュリティを有効化"
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
 msgstr "プレイヤーがダメージを受けて死亡するのを有効にします。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable poisson disk filtering.\n"
-"On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
-"filtering."
-msgstr ""
-"ポアソンディスクによるフィルタリングを有効にします。\n"
-"true の場合、ポアソンディスクを使用して「やわらない影」を作ります。それ以外の場合は、PCFフィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3577,10 +3701,11 @@ msgid "Global callbacks"
 msgstr "グローバルコールバック"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations."
+"and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "グローバルマップ生成属性。\n"
 "マップジェネレータv6では、'decorations' フラグは木とジャングルの草を\n"
@@ -4073,7 +4198,8 @@ msgstr ""
 "これは通常、コア/ビルトイン貢献者にのみ必要"
 
 #: src/settings_translation_file.cpp
-msgid "Instrument chatcommands on registration."
+#, fuzzy
+msgid "Instrument chat commands on registration."
 msgstr "チャットコマンドが登録されるとすぐに計測します。"
 
 #: src/settings_translation_file.cpp
@@ -4167,7 +4293,8 @@ msgid "Joystick button repetition interval"
 msgstr "ジョイスティックボタンの繰り返し間隔"
 
 #: src/settings_translation_file.cpp
-msgid "Joystick deadzone"
+#, fuzzy
+msgid "Joystick dead zone"
 msgstr "ジョイスティックのデッドゾーン"
 
 #: src/settings_translation_file.cpp
@@ -5029,7 +5156,8 @@ msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over\n"
 "network."
-msgstr "サーバーが時を刻む間隔とオブジェクトが通常ネットワーク上で更新される間隔。"
+msgstr ""
+"サーバーが時を刻む間隔とオブジェクトが通常ネットワーク上で更新される間隔。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5273,7 +5401,8 @@ msgid "Map save interval"
 msgstr "マップ保存間隔"
 
 #: src/settings_translation_file.cpp
-msgid "Map update time"
+#, fuzzy
+msgid "Map shadows update frames"
 msgstr "マップの更新間隔"
 
 #: src/settings_translation_file.cpp
@@ -5518,13 +5647,17 @@ msgstr ""
 msgid ""
 "Maximum time a file download (e.g. a mod download) may take, stated in "
 "milliseconds."
-msgstr "ファイルダウンロード（Modのダウンロードなど）にかかる最大時間をミリ秒単位で指定します。"
+msgstr ""
+"ファイルダウンロード（Modのダウンロードなど）にかかる最大時間をミリ秒単位で指"
+"定します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum time an interactive request (e.g. server list fetch) may take, "
 "stated in milliseconds."
-msgstr "インタラクティブリクエスト（サーバー一覧の取得など）にかかる最大時間をミリ秒単位で指定します。"
+msgstr ""
+"インタラクティブリクエスト（サーバー一覧の取得など）にかかる最大時間をミリ秒"
+"単位で指定します。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
@@ -5587,7 +5720,8 @@ msgid "Mod channels"
 msgstr "Modチャンネル"
 
 #: src/settings_translation_file.cpp
-msgid "Modifies the size of the hudbar elements."
+#, fuzzy
+msgid "Modifies the size of the HUD elements."
 msgstr "HUDバー要素のサイズを変更します。"
 
 #: src/settings_translation_file.cpp
@@ -5740,9 +5874,10 @@ msgstr ""
 "多くのユーザーにとって最適な設定は '1' です。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
-"This is a trade-off between sqlite transaction overhead and\n"
+"This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
 "一度に /clearobjects によってロードできる追加ブロックの数。\n"
@@ -5770,6 +5905,10 @@ msgid ""
 msgstr ""
 "ウィンドウのフォーカスが失われたときにポーズメニューを開きます。\n"
 "フォームスペックが開かれているときはポーズメニューを開きません。"
+
+#: src/settings_translation_file.cpp
+msgid "Optional override for chat weblink color."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5942,11 +6081,12 @@ msgid "Prometheus listener address"
 msgstr "プロメテウスリスナーのアドレス"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
-"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
-"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+"Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "プロメテウスリスナーのアドレス。\n"
 "minetest が ENABLE_PROMETHEUS オプションを有効にしてコンパイルされている場"
@@ -6291,31 +6431,22 @@ msgstr ""
 "値が小さいほど影が薄く、値が大きいほど影が濃くなります。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set the shadow update time.\n"
-"Lower value means shadows and map updates faster, but it consume more "
-"resources.\n"
-"Minimun value 0.001 seconds max value 0.2 seconds"
-msgstr ""
-"影の更新時間を設定します。\n"
-"値が小さいほど影やマップの更新が速くなりますが、リソースを多く消費します。\n"
-"最小値0.001秒、最大値0.2秒"
-
-#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
-"Lower values mean sharper shadows bigger values softer.\n"
-"Minimun value 1.0 and max value 10.0"
+"Lower values mean sharper shadows, bigger values mean softer shadows.\n"
+"Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
 "やわらない影の半径サイズを設定します。\n"
 "値が小さいほどシャープな影、大きいほどやわらない影になります。\n"
 "最小値1.0、最大値10.0"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees\n"
+"Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
-"Minimun value 0.0 and max value 60.0"
+"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 "太陽/月の軌道の傾きを度数で設定する\n"
 "0 は傾きのない垂直な軌道を意味します。\n"
@@ -6427,7 +6558,8 @@ msgstr ""
 "変更後は再起動が必要です。"
 
 #: src/settings_translation_file.cpp
-msgid "Show nametag backgrounds by default"
+#, fuzzy
+msgid "Show name tag backgrounds by default"
 msgstr "既定でネームタグの背景を表示"
 
 #: src/settings_translation_file.cpp
@@ -6550,6 +6682,14 @@ msgstr ""
 "既定のノード、アイテム、ツールのスタック数を指定します。\n"
 "Mod またはゲームは、特定の（またはすべての）アイテムのスタック数を\n"
 "明示的に設定する場合があることに注意してください。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Spread a complete update of shadow map over given amount of frames.\n"
+"Higher values might make shadows laggy, lower values\n"
+"will consume more resources.\n"
+"Minimum value: 1; maximum value: 16"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6680,10 +6820,11 @@ msgid "Texture path"
 msgstr "テクスチャパス"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
-"Bigger numbers create better shadowsbut it is also more expensive."
+"Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
 "影投影を描画するためのテクスチャサイズです。\n"
 "これは2の累乗でなければなりません。\n"
@@ -6711,7 +6852,8 @@ msgid "The URL for the content repository"
 msgstr "コンテンツリポジトリのURL"
 
 #: src/settings_translation_file.cpp
-msgid "The deadzone of the joystick"
+#, fuzzy
+msgid "The dead zone of the joystick"
 msgstr "ジョイスティックのデッドゾーン"
 
 #: src/settings_translation_file.cpp
@@ -6793,14 +6935,17 @@ msgid ""
 msgstr ""
 "レンダリングのバックエンドです。\n"
 "変更後は再起動が必要です。\n"
-"注：Androidでは、不明な場合はOGRES1を使用してください！そうしないとアプリの起動に失敗することがあります。\n"
+"注：Androidでは、不明な場合はOGRES1を使用してください！そうしないとアプリの起"
+"動に失敗することがあります。\n"
 "その他のプラットフォームでは、OpenGLを推奨します。\n"
-"シェーダーは、OpenGL（デスクトップのみ）とOGRES2（実験的）でサポートされています。"
+"シェーダーは、OpenGL（デスクトップのみ）とOGRES2（実験的）でサポートされてい"
+"ます。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
-"ingame view frustum around."
+"in-game view frustum around."
 msgstr "ゲーム内の視錐台を動かすためのジョイスティック軸の感度。"
 
 #: src/settings_translation_file.cpp
@@ -6987,8 +7132,9 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr "テクスチャを拡大縮小する場合はバイリニアフィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mip mapping to scale textures. May slightly increase performance,\n"
+"Use mipmapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
@@ -7195,6 +7341,11 @@ msgid "Waving plants"
 msgstr "揺れる草花"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Weblink color"
+msgstr "選択ボックスの色"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -7218,12 +7369,13 @@ msgstr ""
 "ビデオドライバのときは、古い拡大縮小方法に戻ります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
 "interpolation to preserve crisp pixels. This sets the minimum texture size\n"
 "for the upscaled textures; higher values look sharper, but require more\n"
-"memory.  Powers of 2 are recommended. This setting is ONLY applies if\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
 "bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
@@ -7234,7 +7386,8 @@ msgstr ""
 "これは拡大されたテクスチャのための最小テクスチャサイズを設定します。\n"
 "より高い値はよりシャープに見えますが、より多くのメモリを必要とします。\n"
 "2のべき乗が推奨されます。この設定は、\n"
-"バイリニア/トライリニア/異方性フィルタリングが有効の場合にのみ適用されます。\n"
+"バイリニア/トライリニア/異方性フィルタリングが有効の場合にのみ適用されま"
+"す。\n"
 "これは整列テクスチャの自動スケーリング用の基準ノードテクスチャサイズと\n"
 "しても使用されます。"
 
@@ -7250,8 +7403,9 @@ msgstr ""
 "す。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Whether nametag backgrounds should be shown by default.\n"
+"Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
 "既定でネームタグの背景を表示するかどうかです。\n"
@@ -7410,34 +7564,6 @@ msgstr "低い地形と海底のYレベル。"
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
 msgstr "海底のYレベル。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when saving mapblocks to disk.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-"マップブロックをディスクに保存するときに使用する ZLib圧縮レベル。\n"
-"-1 - Zlib の規定の圧縮レベル\n"
-"0 - 圧縮なし、最速\n"
-"9 - 最高の圧縮、最も遅い\n"
-"（レベル 1〜3 はZlibの「高速」方式を使用し、4〜9 は通常方式を使用）"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when sending mapblocks to the client.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-"マップブロックをクライアントに送信するときに使用する ZLib圧縮レベル。\n"
-"-1 - Zlib の規定の圧縮レベル\n"
-"0 - 圧縮なし、最速\n"
-"9 - 最高の圧縮、最も遅い\n"
-"（レベル 1〜3 はZlibの「高速」方式を使用し、4〜9 は通常方式を使用）"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -7644,6 +7770,9 @@ msgstr "cURL並行処理制限"
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6 サポート。"
 
+#~ msgid "Install: file: \"$1\""
+#~ msgstr "インストール: ファイル: \"$1\""
+
 #~ msgid "Lava depth"
 #~ msgstr "溶岩の深さ"
 
@@ -7746,6 +7875,17 @@ msgstr "cURL並行処理制限"
 #~ msgid "Select Package File:"
 #~ msgstr "パッケージファイルを選択:"
 
+#~ msgid ""
+#~ "Set the shadow update time.\n"
+#~ "Lower value means shadows and map updates faster, but it consume more "
+#~ "resources.\n"
+#~ "Minimun value 0.001 seconds max value 0.2 seconds"
+#~ msgstr ""
+#~ "影の更新時間を設定します。\n"
+#~ "値が小さいほど影やマップの更新が速くなりますが、リソースを多く消費しま"
+#~ "す。\n"
+#~ "最小値0.001秒、最大値0.2秒"
+
 #~ msgid "Shadow limit"
 #~ msgstr "影の制限"
 
@@ -7773,6 +7913,10 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "このフォントは特定の言語で使用されます。"
+
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr ""
+#~ "シェーダーを有効にするにはOpenGLのドライバを使用する必要があります。"
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "映画風モード切替"
@@ -7807,6 +7951,9 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Yes"
 #~ msgstr "はい"
+
+#~ msgid "You died."
+#~ msgstr "あなたは死にました。"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"

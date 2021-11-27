@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-16 18:27+0200\n"
+"POT-Creation-Date: 2021-11-27 19:42+0100\n"
 "PO-Revision-Date: 2021-08-13 21:34+0000\n"
 "Last-Translator: Zhaolin Lau <zhaolinlau@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -58,10 +58,6 @@ msgstr "重生"
 msgid "You died"
 msgstr "您已经死亡"
 
-#: builtin/client/death_formspec.lua
-msgid "You died."
-msgstr "您已经死亡."
-
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
 msgstr "可用命令:"
@@ -81,7 +77,8 @@ msgstr "获取命令帮助"
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
-msgstr "使用 '.help <cmd>' 获取该命令的更多信息，或使用 '.help all' 列出所有内容。"
+msgstr ""
+"使用 '.help <cmd>' 获取该命令的更多信息，或使用 '.help all' 列出所有内容。"
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -90,6 +87,11 @@ msgstr "[all | <命令>]"
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
 msgstr "OK"
+
+#: builtin/fstk/ui.lua
+#, fuzzy
+msgid "<none available>"
+msgstr "命令不可用： "
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -290,6 +292,11 @@ msgstr "安装$1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "安装缺失的依赖项"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install: Unsupported file type or broken archive"
+msgstr "安装：“$1“为不支持的文件类型或已损坏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -617,7 +624,8 @@ msgid "Offset"
 msgstr "补偿"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistance"
+#, fuzzy
+msgid "Persistence"
 msgstr "持续性"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -726,14 +734,6 @@ msgstr "安装mod：无法找到$1的真实mod名称"
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr "安装mod：无法找到mod包$1的合适文件夹名"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr "安装：“$1“为不支持的文件类型或已损坏"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: file: \"$1\""
-msgstr "安装：文件：”$1“"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -1100,10 +1100,6 @@ msgstr "平滑光照"
 msgid "Texturing:"
 msgstr "材质:"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "启用着色器需要使用OpenGL驱动。"
-
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
 msgstr "色调映射"
@@ -1136,7 +1132,7 @@ msgstr "摇动流体"
 msgid "Waving Plants"
 msgstr "摇摆植物"
 
-#: src/client/client.cpp
+#: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
 msgstr "连接超时。"
 
@@ -1165,7 +1161,8 @@ msgid "Connection error (timed out?)"
 msgstr "连接出错（超时？）"
 
 #: src/client/clientlauncher.cpp
-msgid "Could not find or load game \""
+#, fuzzy
+msgid "Could not find or load game: "
 msgstr "无法找到或者载入游戏 \""
 
 #: src/client/clientlauncher.cpp
@@ -1238,6 +1235,16 @@ msgid "- Server Name: "
 msgstr "- 服务器名称: "
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "A serialization error occurred:"
+msgstr "发生了错误："
+
+#: src/client/game.cpp
+#, c-format
+msgid "Access denied. Reason: %s"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Automatic forward disabled"
 msgstr "自动前进已禁用"
 
@@ -1246,12 +1253,33 @@ msgid "Automatic forward enabled"
 msgstr "自动前进已启用"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Block bounds hidden"
+msgstr "地图块边界"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for current block"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for nearby blocks"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Camera update disabled"
 msgstr "已禁用镜头更新"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
 msgstr "已启用镜头更新"
+
+#: src/client/game.cpp
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1266,12 +1294,21 @@ msgid "Cinematic mode enabled"
 msgstr "电影模式已启用"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Client disconnected"
+msgstr "客户端mod"
+
+#: src/client/game.cpp
 msgid "Client side scripting is disabled"
 msgstr "客户端脚本已禁用"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
 msgstr "正在连接服务器..."
+
+#: src/client/game.cpp
+msgid "Connection failed for unknown reason"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1309,6 +1346,11 @@ msgstr ""
 "- 鼠标:转身/环顾\n"
 "- 鼠标滚轮: 选择物品\n"
 "- %s：聊天\n"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Couldn't resolve address: %s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1515,6 +1557,21 @@ msgid "Sound unmuted"
 msgstr "已取消静音"
 
 #: src/client/game.cpp
+#, c-format
+msgid "The server is probably running a different version of %s."
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to connect to %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to listen on %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "视野范围已改变至%d"
@@ -1848,6 +1905,15 @@ msgstr "地表模式小地图, 放大至%d倍"
 msgid "Minimap in texture mode"
 msgstr "材质模式小地图"
 
+#: src/gui/guiChatConsole.cpp
+#, fuzzy
+msgid "Failed to open webpage"
+msgstr "下载 $1 失败"
+
+#: src/gui/guiChatConsole.cpp
+msgid "Opening webpage"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "密码不匹配！"
@@ -1856,7 +1922,7 @@ msgstr "密码不匹配！"
 msgid "Register and Join"
 msgstr "注册并加入"
 
-#: src/gui/guiConfirmRegistration.cpp
+#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2046,7 +2112,8 @@ msgid "Muted"
 msgstr "静音"
 
 #: src/gui/guiVolumeChange.cpp
-msgid "Sound Volume: "
+#, fuzzy, c-format
+msgid "Sound Volume: %d%%"
 msgstr "音量： "
 
 #. ~ Imperative, as in "Enter/type in text".
@@ -2292,6 +2359,10 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr "为支持4K等屏幕，调节像素点密度（非 X11/Android 环境才有效）。"
+
+#: src/settings_translation_file.cpp
+msgid "Adjust the detected display density, used for scaling UI elements."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2586,6 +2657,11 @@ msgid "Chat command time message threshold"
 msgstr "显示聊天消息执行时间的阀值（秒）"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat commands"
+msgstr "聊天命令"
+
+#: src/settings_translation_file.cpp
 msgid "Chat font size"
 msgstr "聊天字体大小"
 
@@ -2618,8 +2694,9 @@ msgid "Chat toggle key"
 msgstr "聊天启用/禁用键"
 
 #: src/settings_translation_file.cpp
-msgid "Chatcommands"
-msgstr "聊天命令"
+#, fuzzy
+msgid "Chat weblinks"
+msgstr "聊天已显示"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2636,6 +2713,12 @@ msgstr "电影模式键"
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
 msgstr "干净透明材质"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
+"output."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2721,6 +2804,22 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr "命令键"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Compression level to use when saving mapblocks to disk.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Compression level to use when sending mapblocks to the client.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2819,9 +2918,10 @@ msgid "Crosshair alpha"
 msgstr "准星透明"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
-"Also controls the object crosshair color"
+"This also applies to the object crosshair."
 msgstr ""
 "准星透明度（0-255）。\n"
 "还控制对象准星的颜色"
@@ -2903,9 +3003,10 @@ msgid "Default stack size"
 msgstr "默认栈大小"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Define shadow filtering quality\n"
-"This simulates the soft shadows effect by applying a PCF or poisson disk\n"
+"Define shadow filtering quality.\n"
+"This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "定阴影滤镜的质量\n"
@@ -3031,6 +3132,10 @@ msgid "Disallow empty passwords"
 msgstr "禁止使用空密码"
 
 #: src/settings_translation_file.cpp
+msgid "Display Density Scaling Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "服务器域名，将显示在服务器列表。"
 
@@ -3079,8 +3184,19 @@ msgstr ""
 "该功能是实验性的，且API会变动。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Enable colored shadows. \n"
+"Enable Poisson disk filtering.\n"
+"On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
+"filtering."
+msgstr ""
+"启用poisson disk滤镜.\n"
+"使用poisson disk来产生\"软阴影\"，否则将使用PCF 滤镜."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 "启用彩色阴影。\n"
@@ -3109,15 +3225,6 @@ msgstr "启用 mod 安全"
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
 msgstr "启用玩家受到伤害和死亡。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable poisson disk filtering.\n"
-"On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
-"filtering."
-msgstr ""
-"启用poisson disk滤镜.\n"
-"使用poisson disk来产生\"软阴影\"，否则将使用PCF 滤镜."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3555,10 +3662,11 @@ msgid "Global callbacks"
 msgstr "全局回调"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations."
+"and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "全局地图生成属性。\n"
 "在地图生成器 v6 中‘decorations’标签控制除树木和丛林草外所有装饰物。\n"
@@ -3985,7 +4093,9 @@ msgstr ""
 msgid ""
 "If the execution of a chat command takes longer than this specified time in\n"
 "seconds, add the time information to the chat command message"
-msgstr "如果聊天命令的执行时间长于此指定以秒为单位时间，请将时间信息添加到聊天命令消息中。"
+msgstr ""
+"如果聊天命令的执行时间长于此指定以秒为单位时间，请将时间信息添加到聊天命令消"
+"息中。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4040,7 +4150,8 @@ msgstr ""
 "通常只有核心／内部构建者需要"
 
 #: src/settings_translation_file.cpp
-msgid "Instrument chatcommands on registration."
+#, fuzzy
+msgid "Instrument chat commands on registration."
 msgstr "登录时的聊天命令。"
 
 #: src/settings_translation_file.cpp
@@ -4130,7 +4241,8 @@ msgid "Joystick button repetition interval"
 msgstr "摇杆按钮重复间隔"
 
 #: src/settings_translation_file.cpp
-msgid "Joystick deadzone"
+#, fuzzy
+msgid "Joystick dead zone"
 msgstr "摇杆无效区"
 
 #: src/settings_translation_file.cpp
@@ -5240,7 +5352,7 @@ msgstr "地图保存间隔"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Map update time"
+msgid "Map shadows update frames"
 msgstr "液体更新时钟间隔"
 
 #: src/settings_translation_file.cpp
@@ -5414,7 +5526,9 @@ msgid ""
 "Maximum number of concurrent downloads. Downloads exceeding this limit will "
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
-msgstr "最大并发下载数。 超过此限制的下载将排队。 这应该低于 curl_parallel_limit（卷曲平行限制）。"
+msgstr ""
+"最大并发下载数。 超过此限制的下载将排队。 这应该低于 curl_parallel_limit（卷"
+"曲平行限制）。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5552,7 +5666,8 @@ msgid "Mod channels"
 msgstr "mod频道"
 
 #: src/settings_translation_file.cpp
-msgid "Modifies the size of the hudbar elements."
+#, fuzzy
+msgid "Modifies the size of the HUD elements."
 msgstr "更改hud栏元素大小。"
 
 #: src/settings_translation_file.cpp
@@ -5703,9 +5818,10 @@ msgstr ""
 "佳值为'1'。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
-"This is a trade-off between sqlite transaction overhead and\n"
+"This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
 "/clearobjects每次能加载的额外方块数。\n"
@@ -5733,6 +5849,10 @@ msgid ""
 msgstr ""
 "当窗口焦点丢失是打开暂停菜单。如果游戏内窗口打开，\n"
 "则不暂停。"
+
+#: src/settings_translation_file.cpp
+msgid "Optional override for chat weblink color."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5896,11 +6016,12 @@ msgid "Prometheus listener address"
 msgstr "Prometheus 监听器地址"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
-"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
-"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+"Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Prometheus 监听器地址。\n"
 "如果minetest是在启用ENABLE_PROMETHEUS选项的情况下编译的，\n"
@@ -6243,31 +6364,22 @@ msgstr ""
 "较低的值表示较亮的阴影，较高的值表示较暗的阴影。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set the shadow update time.\n"
-"Lower value means shadows and map updates faster, but it consume more "
-"resources.\n"
-"Minimun value 0.001 seconds max value 0.2 seconds"
-msgstr ""
-"设置阴影更新时间。\n"
-"较低的值意味着阴影和贴图更新更快，但会消耗更多资源。\n"
-"最小值 0.001 秒 最大值 0.2 秒"
-
-#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
-"Lower values mean sharper shadows bigger values softer.\n"
-"Minimun value 1.0 and max value 10.0"
+"Lower values mean sharper shadows, bigger values mean softer shadows.\n"
+"Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
 "设置软阴影半径大小。\n"
 "较低的值意味着更清晰的阴影更大的值更柔和。\n"
 "最小值 1.0 和最大值 10.0"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees\n"
+"Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
-"Minimun value 0.0 and max value 60.0"
+"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 "以度为单位设置太阳/月亮轨道的倾斜度\n"
 "值 0 表示没有倾斜/垂直轨道。\n"
@@ -6381,7 +6493,8 @@ msgstr ""
 "变更后须重新启动。"
 
 #: src/settings_translation_file.cpp
-msgid "Show nametag backgrounds by default"
+#, fuzzy
+msgid "Show name tag backgrounds by default"
 msgstr "默认显示名称标签背景"
 
 #: src/settings_translation_file.cpp
@@ -6503,6 +6616,14 @@ msgid ""
 msgstr ""
 "指定节点、物品和工具的默认堆叠数量。\n"
 "请注意，mod或游戏可能会为某些（或所有）项目明确设置堆栈。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Spread a complete update of shadow map over given amount of frames.\n"
+"Higher values might make shadows laggy, lower values\n"
+"will consume more resources.\n"
+"Minimum value: 1; maximum value: 16"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6636,7 +6757,7 @@ msgstr "材质路径"
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
-"Bigger numbers create better shadowsbut it is also more expensive."
+"Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6654,7 +6775,8 @@ msgid "The URL for the content repository"
 msgstr "内容存储库的 URL"
 
 #: src/settings_translation_file.cpp
-msgid "The deadzone of the joystick"
+#, fuzzy
+msgid "The dead zone of the joystick"
 msgstr "摇杆的无效区"
 
 #: src/settings_translation_file.cpp
@@ -6725,7 +6847,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
-"ingame view frustum around."
+"in-game view frustum around."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6897,7 +7019,7 @@ msgstr "缩放材质时使用双线过滤。"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mip mapping to scale textures. May slightly increase performance,\n"
+"Use mipmapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
@@ -7087,6 +7209,11 @@ msgid "Waving plants"
 msgstr "摇动植物"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Weblink color"
+msgstr "选择框颜色"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -7107,7 +7234,7 @@ msgid ""
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
 "interpolation to preserve crisp pixels. This sets the minimum texture size\n"
 "for the upscaled textures; higher values look sharper, but require more\n"
-"memory.  Powers of 2 are recommended. This setting is ONLY applies if\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
 "bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
@@ -7122,7 +7249,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether nametag backgrounds should be shown by default.\n"
+"Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
 
@@ -7254,24 +7381,6 @@ msgstr "较低地形与海底的Y坐标。"
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
 msgstr "海底的Y坐标。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when saving mapblocks to disk.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when sending mapblocks to the client.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -7459,6 +7568,9 @@ msgstr "cURL 并发限制"
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6 支持。"
 
+#~ msgid "Install: file: \"$1\""
+#~ msgstr "安装：文件：”$1“"
+
 #, fuzzy
 #~ msgid "Lava depth"
 #~ msgstr "巨大洞穴深度"
@@ -7555,6 +7667,16 @@ msgstr "cURL 并发限制"
 #~ msgid "Select Package File:"
 #~ msgstr "选择包文件："
 
+#~ msgid ""
+#~ "Set the shadow update time.\n"
+#~ "Lower value means shadows and map updates faster, but it consume more "
+#~ "resources.\n"
+#~ "Minimun value 0.001 seconds max value 0.2 seconds"
+#~ msgstr ""
+#~ "设置阴影更新时间。\n"
+#~ "较低的值意味着阴影和贴图更新更快，但会消耗更多资源。\n"
+#~ "最小值 0.001 秒 最大值 0.2 秒"
+
 #, fuzzy
 #~ msgid "Shadow limit"
 #~ msgstr "地图块限制"
@@ -7579,6 +7701,9 @@ msgstr "cURL 并发限制"
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "用于特定语言的字体。"
 
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "启用着色器需要使用OpenGL驱动。"
+
 #~ msgid "Toggle Cinematic"
 #~ msgstr "切换电影模式"
 
@@ -7597,6 +7722,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Yes"
 #~ msgstr "是"
+
+#~ msgid "You died."
+#~ msgstr "您已经死亡."
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
