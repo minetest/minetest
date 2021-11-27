@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-06-16 19:05+0000\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -91,9 +91,8 @@ msgid "OK"
 msgstr "OK"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Perintah tidak tersedia: "
+msgstr "<tiada yang tersedia>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -298,9 +297,8 @@ msgid "Install missing dependencies"
 msgstr "Pasang kebergantungan yang hilang"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "Pasang: Jenis fail \"$1\" tidak disokong atau arkib rosak"
+msgstr "Pasang: Jenis fail tidak disokong atau arkib rosak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -612,7 +610,7 @@ msgstr "Dilumpuhkan"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Sunting"
+msgstr "Edit"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -631,7 +629,6 @@ msgid "Offset"
 msgstr "Ofset"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Penerusan"
 
@@ -786,7 +783,7 @@ msgstr "Penyumbang Aktif"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr "Penterjemah aktif:"
+msgstr "Pengemas gabung aktif:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -894,7 +891,7 @@ msgstr "Tiada dunia dicipta atau dipilih!"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr "Kata Laluan"
+msgstr "Kata laluan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -1170,9 +1167,8 @@ msgid "Connection error (timed out?)"
 msgstr "Ralat dalam penyambungan (tamat tempoh?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Tidak jumpa atau tidak boleh muatkan permainan \""
+msgstr "Tidak jumpa atau tidak boleh muatkan permainan: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1245,14 +1241,13 @@ msgid "- Server Name: "
 msgstr "- Nama Pelayan: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Telah berlakunya ralat:"
+msgstr "Telah berlakunya ralat penyirian:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Capaian dinafikan. Sebab: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1263,21 +1258,20 @@ msgid "Automatic forward enabled"
 msgstr "Pergerakan automatik dibolehkan"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Batas blok"
+msgstr "Batas blok disembunyikan"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Batas blok ditunjukkan untuk semua blok"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Batas blok ditunjukkan untuk blok semasa"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Batas blok ditunjukkan untuk blok berhampiran"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1289,7 +1283,7 @@ msgstr "Kemas kini kamera dibolehkan"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr ""
+msgstr "Tidak boleh tunjuk batas blok (perlukan keistimewaan 'basic_debug')"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1304,9 +1298,8 @@ msgid "Cinematic mode enabled"
 msgstr "Mod sinematik dibolehkan"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Mods klien"
+msgstr "Klien dinyahsambung"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1318,7 +1311,7 @@ msgstr "Sedang menyambung kepada pelayan..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Sambungan gagal untuk sebab yang tidak diketahui"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1360,7 +1353,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Tidak mampu menyelesaikan alamat: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1571,17 +1564,17 @@ msgstr "Bunyi dinyahbisukan"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Kemungkinan pelayan menjalankan versi %s yang berlainan."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Tidak mampu sambung ke %s kerana IPv6 dilumpuhkan"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Tidak mampu dengar di %s kerana IPv6 dilumpuhkan"
 
 #: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
@@ -1918,13 +1911,12 @@ msgid "Minimap in texture mode"
 msgstr "Peta mini dalam mod tekstur"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Gagal memuat turun $1"
+msgstr "Gagal buka laman sesawang"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Membuka laman sesawang"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2036,7 +2028,7 @@ msgstr "Kekunci telah digunakan untuk fungsi lain"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Ikatan kekunci. (Jika menu ini berselerak, padam sesetengah benda dari fail "
+"Ikatan kekunci. (Jika menu ini berselerak, buang sesetengah benda dari fail "
 "minetest.conf)"
 
 #: src/gui/guiKeyChangeMenu.cpp
@@ -2128,9 +2120,9 @@ msgid "Muted"
 msgstr "Dibisukan"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Kekuatan Bunyi: "
+msgstr "Kekuatan Bunyi: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2385,6 +2377,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Laraskan ketumpatan paparan yang dikesan, digunakan untuk menyesuaikan "
+"elemen UI."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2493,10 +2487,11 @@ msgstr ""
 "Pada jarak ini, pelayan akan mengoptimumkan secara agresif blok yang mana\n"
 "akan dihantar kepada klien.\n"
 "Nilai lebih kecil berkemungkinan boleh meningkatkan prestasi dengan banyak,\n"
-"dengan mengorbankan glic penterjemahan tampak (sesetengah blok tidak akan\n"
-"diterjemahkan di bawah air dan dalam gua, kekadang turut berlaku atas "
+"dengan mengorbankan glic kemas gabung tampak (sesetengah blok tidak akan\n"
+"dikemas gabung di bawah air dan dalam gua, kekadang turut berlaku atas "
 "daratan).\n"
-"Menetapkan nilai ini lebih bear daripada nilai max_block_send_distance akan\n"
+"Menetapkan nilai ini lebih besar daripada nilai max_block_send_distance "
+"akan\n"
 "melumpuhkan pengoptimuman ini.\n"
 "Nyatakan dalam unit blokpeta (16 nod)."
 
@@ -2682,7 +2677,6 @@ msgid "Chat command time message threshold"
 msgstr "Nilai ambang mesej masa perintah sembang"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
 msgstr "Perintah sembang"
 
@@ -2719,9 +2713,8 @@ msgid "Chat toggle key"
 msgstr "Kekunci togol sembang"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Sembang ditunjukkan"
+msgstr "Pautan sesawang sembang"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2744,6 +2737,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Pautan sesawang boleh klik (klik-tengah atau Ctrl+klik-kiri) dibolehkan "
+"dalam output konsol sembang."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2818,7 +2813,7 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Senarai mods yang dibenarkan mengakses API HTTP dipisahkan dengan koma,\n"
+"Senarai mods yang dibenarkan mencapai API HTTP dipisahkan dengan koma,\n"
 "ini membolehkan mereka memuat naik kepada atau muat turun daripada internet."
 
 #: src/settings_translation_file.cpp
@@ -2827,8 +2822,8 @@ msgid ""
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "Senarai dipisahkan dengan koma untuk mods boleh dipercayai yang dibenarkan "
-"mengakses\n"
-"fungsi tidak selamat walaupun ketika keselamatan mods diaktifkan (melalui "
+"mencapai fungsi\n"
+"tidak selamat walaupun ketika keselamatan mods diaktifkan (melalui "
 "request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
@@ -2836,33 +2831,28 @@ msgid "Command key"
 msgstr "Kekunci perintah"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Tahap pemampatan ZLib untuk digunakan apabila menyimpan blokpeta ke cakera.\n"
-"-1 - tahap pemampatan lalai Zlib\n"
-"0 - tiada pemampatan, paling laju\n"
-"9 - pemampatan terbaik, paling lambat\n"
-"(tahap 1-3 menggunakan kaedah \"fast\" Zlib, 4-9 menggunakan kaedah biasa)"
+"Tahap pemampatan untuk digunakan apabila menyimpan blokpeta ke cakera.\n"
+"-1 - guna tahap pemampatan lalai\n"
+"0 - pemampatan paling sedikit, paling laju\n"
+"9 - pemampatan paling banyak, paling lambat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Tahap pemampatan ZLib untuk digunakan apabila menghantar blokpeta kepada "
-"klien.\n"
-"-1 - tahap pemampatan lalai Zlib\n"
-"0 - tiada pemampatan, paling laju\n"
-"9 - pemampatan terbaik, paling lambat\n"
-"(tahap 1-3 menggunakan kaedah \"fast\" Zlib, 4-9 menggunakan kaedah biasa)"
+"Tahap pemampatan untuk digunakan apabila menghantar blokpeta kepada klien.\n"
+"-1 - guna tahap pemampatan lalai\n"
+"0 - pemampatan paling sedikit, paling laju\n"
+"9 - pemampatan paling banyak, paling lambat"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2963,13 +2953,12 @@ msgid "Crosshair alpha"
 msgstr "Nilai alfa rerambut silang"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Nilai alfa rerambut silang (kelegapan, antara 0 dan 255).\n"
-"Juga mengawal warna rerambut silang objek"
+"Nilai ini juga memberi kesan kepada rerambut silang objek."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3049,15 +3038,14 @@ msgid "Default stack size"
 msgstr "Saiz tindanan lalai"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define shadow filtering quality.\n"
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
-"Mentakrifkan kualiti penapisan bayang\n"
+"Mentakrifkan kualiti penapisan bayang.\n"
 "Tetapan ini menyelakukan kesan bayang lembut dengan menggunakan\n"
-"PCF atau cakera poisson tetapi turut menggunakan lebih banyak sumber."
+"PCF atau cakera Poisson tetapi turut menggunakan lebih banyak sumber."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3186,7 +3174,7 @@ msgstr "Menolak kata laluan kosong"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
-msgstr ""
+msgstr "Faktor Skala Ketumpatan Paparan"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3238,18 +3226,16 @@ msgstr ""
 "Sokongan ini dalam ujikaji dan API boleh berubah."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
-"Membolehkan penapisan cakera poisson.\n"
-"Jika dibenarkan, gunakan cakera poisson untuk membuat \"bayang lembut\". "
+"Membolehkan penapisan cakera Poisson.\n"
+"Jika dibenarkan, gunakan cakera Poisson untuk membuat \"bayang lembut\". "
 "Jika tidak, gunakan penapisan PCF."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
@@ -3304,7 +3290,7 @@ msgid ""
 "Disable for speed or for different looks."
 msgstr ""
 "Membolehkan pencahayaan lembut dengan oklusi sekitar yang ringkas.\n"
-"Lumpuhkannya untuk kelajuan atau untuk kelihatan berbeza."
+"Lumpuhkannya untuk kelajuan atau untuk kelihatan berlainan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3676,7 +3662,7 @@ msgstr "Jenis fraktal"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr "Bahagian daripada jarak boleh lihat di mana kabut mula dijana"
+msgstr "Bahagian daripada jarak boleh lihat di mana kabut mula dikemas gabung"
 
 #: src/settings_translation_file.cpp
 msgid "FreeType fonts"
@@ -3740,14 +3726,13 @@ msgid "Global callbacks"
 msgstr "Panggil balik sejagat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Atribut penjanaan peta sejagat.\n"
-"Dalam janapeta v6, bendera 'decorations' mengawal semua hiasan kecuali "
+"Dalam Janapeta v6, bendera 'decorations' mengawal semua hiasan kecuali "
 "pokok\n"
 "dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua hiasan."
 
@@ -4042,7 +4027,7 @@ msgid ""
 "If negative, liquid waves will move backwards.\n"
 "Requires waving liquids to be enabled."
 msgstr ""
-"Secepat mana gelora cecair akan bergerak. Nilai tinggi = lebih laju.\n"
+"Secepat mana gelora cecair akan bergerak. Nilai tinggi = lebih cepat.\n"
 "Jika nilai negatif, gelora cecair akan bergerak ke belakang.\n"
 "Memerlukan tetapan cecair bergelora dibolehkan."
 
@@ -4252,7 +4237,6 @@ msgstr ""
 "Ini selalunya hanya diperlukan oleh penyumbang teras/terbina dalam"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Instrument chat commands on registration."
 msgstr "Memasang perintah sembang ketika pendaftaran."
 
@@ -4345,7 +4329,6 @@ msgid "Joystick button repetition interval"
 msgstr "Selang masa pengulangan butang kayu bedik"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
 msgstr "Zon mati kayu bedik"
 
@@ -5343,7 +5326,7 @@ msgid ""
 "Useful for mod developers and server operators."
 msgstr ""
 "Memuatkan pembukah permainan untuk mengutip data pemprofilan permainan.\n"
-"Menyediakan perintah /profiler untuk mengakses profil yang dikompil.\n"
+"Menyediakan perintah /profiler untuk mencapai profil yang dikompil.\n"
 "Berguna untuk pembangun mods dan pengendali pelayan."
 
 #: src/settings_translation_file.cpp
@@ -5460,9 +5443,8 @@ msgid "Map save interval"
 msgstr "Selang masa penyimpanan peta"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Map shadows update frames"
-msgstr "Masa kemas kini peta"
+msgstr "Bingkai kemas kini bayang peta"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -5576,7 +5558,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr "Jarak maksimum untuk menterjemah bayang."
+msgstr "Jarak maksimum untuk mengemas gabung bayang."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5651,7 +5633,7 @@ msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"Jumlah blok peta maksimum yang klien boleh simpan dalam memori.\n"
+"Jumlah blok peta maksimum yang klien boleh simpan dalam ingatan.\n"
 "Tetapkan kepada -1 untuk jumlah tanpa had."
 
 #: src/settings_translation_file.cpp
@@ -5783,9 +5765,8 @@ msgid "Mod channels"
 msgstr "Saluran mods"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Modifies the size of the HUD elements."
-msgstr "Mengubah saiz elemen palang papar pandu (hudbar)."
+msgstr "Mengubah saiz elemen papar pandu (HUD)."
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -5943,7 +5924,6 @@ msgstr ""
 "ialah '1'."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
 "This is a trade-off between SQLite transaction overhead and\n"
@@ -5951,8 +5931,8 @@ msgid ""
 msgstr ""
 "Jumlah blok-blok tambahan yang boleh dimuatkan oleh /clearobjects pada "
 "sesuatu masa.\n"
-"Ini merupakan keseimbangan antara overhed urus niaga sqlite\n"
-"dan penggunaan memori (Kebiasaannya, 4096=100MB)."
+"Ini merupakan keseimbangan antara overhed urus niaga SQLite\n"
+"dan penggunaan ingatan (4096=100MB, mengikut kebiasaan)."
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
@@ -5978,7 +5958,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
-msgstr ""
+msgstr "Pilihan mengatasi warna pautan sesawang di sembang."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6152,7 +6132,6 @@ msgid "Prometheus listener address"
 msgstr "Alamat pendengar Prometheus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
@@ -6160,7 +6139,7 @@ msgid ""
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Alamat pendengar Prometheus.\n"
-"Jika minetest dikompil dengan tetapan ENABLE_PROMETHEUS dibolehkan,\n"
+"Jika Minetest dikompil dengan pilihan ENABLE_PROMETHEUS dibolehkan,\n"
 "membolehkan pendengar metrik untuk Prometheus pada alamat berkenaan.\n"
 "Metrik boleh diambil di http://127.0.0.1:30000/metrics"
 
@@ -6236,7 +6215,7 @@ msgid ""
 "csm_restriction_noderange)\n"
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
-"Hadkan akses sesetengah fungsi pihak klien di pelayan.\n"
+"Hadkan capaian sesetengah fungsi pihak klien di pelayan.\n"
 "Gabungkan bendera bait di bawah ini untuk mengehadkan ciri-ciri pihak klien, "
 "atau\n"
 "tetapkan kepada 0 untuk tiada had:\n"
@@ -6506,27 +6485,25 @@ msgstr ""
 "bayang lebih gelap."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
 "Menetapkan saiz jejari bayang lembut.\n"
-"Nilai lebih rendah untuk bayang lebih tajam dan nilai lebih tinggi untuk "
-"bayang lebih lembut.\n"
-"Nilai minimum 1.0 dan nilai maksimum 10.0"
+"Nilai lebih rendah untuk bayang lebih tajam, nilai lebih tinggi untuk bayang "
+"lebih lembut.\n"
+"Nilai minimum: 1.0; nilai maksimum: 10.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
 "Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
-"Menetapkan kecondongan orbit Matahari/Bulan dalam unit darjah\n"
+"Menetapkan kecondongan orbit Matahari/Bulan dalam unit darjah.\n"
 "Nilai 0 untuk tidak condong / tiada orbit menegak.\n"
-"Nilai minimum 0.0 dan nilai maksimum 60.0"
+"Nilai minimum: 0.0; nilai maksimum: 60.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6591,7 +6568,7 @@ msgstr "Kualiti penapisan bayang"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map max distance in nodes to render shadows"
-msgstr "Jarak maksimum peta bayang untuk menerjemah bayang, dalam unit nod"
+msgstr "Jarak maksimum peta bayang untuk mengemas gabung bayang, dalam unit nod"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture in 32 bits"
@@ -6634,7 +6611,6 @@ msgstr ""
 "Anda perlu mulakan semula selepas mengubah tetapan ini."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show name tag backgrounds by default"
 msgstr "Tunjuk latar belakang tag nama secara lalainya"
 
@@ -6748,7 +6724,7 @@ msgid ""
 "Files that are not present will be fetched the usual way."
 msgstr ""
 "Menetapkan URL dari mana klien mengambil media, menggantikan UDP.\n"
-"$filename mestilah boleh diakses daripada $remote_media$filename melalui\n"
+"$filename mestilah boleh dicapai daripada $remote_media$filename melalui\n"
 "cURL (sudah tentu, remote_media mesti berakhir dengan tanda condong).\n"
 "Fail yang tidak wujud akan diambil dengan cara biasa."
 
@@ -6769,6 +6745,10 @@ msgid ""
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
+"Sebar kemas kini lengkap peta bayang merentasi jumlah bingkai yang diberi.\n"
+"Nilai lebih tinggi mungkin membuatkan bayang lembap bertindak balas,\n"
+"nilai lebih rendah akan memakan lebih banyak sumber.\n"
+"Nilai minimum: 1; nilai maksimum: 16"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6906,16 +6886,14 @@ msgid "Texture path"
 msgstr "Laluan tekstur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
 "Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
-"Saiz tekstur yang akan digunakan untuk menerjemah peta bayang.\n"
+"Saiz tekstur yang akan digunakan untuk mengemas gabung peta bayang.\n"
 "Nilai ini mestilah hasil kuasa dua.\n"
-"Nombor lebih besar mencipta bayang lebih baik tetapi ia juga lebih banyak "
-"guna sumber."
+"Nombor lebih besar mencipta bayang lebih baik tetapi ia juga lebih berat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6941,7 +6919,6 @@ msgid "The URL for the content repository"
 msgstr "URL untuk repositori kandungan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "Zon mati bagi kayu bedik yang digunakan"
 
@@ -7024,7 +7001,7 @@ msgid ""
 "On other platforms, OpenGL is recommended.\n"
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
-"Terjemahan bahagian belakang.\n"
+"Kemas gabung bahagian belakang.\n"
 "Anda perlu memulakan semula selepas mengubah tetapan ini.\n"
 "Nota: Di Android, kekalkan dengan OGLES1 jika tidak pasti! Apl mungkin gagal "
 "dimulakan jika ditukar.\n"
@@ -7032,7 +7009,6 @@ msgstr ""
 "Pembayang disokong oleh OpenGL (komputer sahaja) dan OGLES2 (dalam ujikaji)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
@@ -7131,7 +7107,7 @@ msgstr "Kelajuan masa"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
-msgstr "Had masa untuk klien membuang peta yang tidak digunakan dari memori."
+msgstr "Had masa untuk klien membuang peta yang tidak digunakan dari ingatan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7235,7 +7211,6 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr "Gunakan penapisan bilinear apabila menyesuaikan tekstur."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
@@ -7446,9 +7421,8 @@ msgid "Waving plants"
 msgstr "Tumbuhan bergoyang"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Weblink color"
-msgstr "Warna kotak pemilihan"
+msgstr "Warna pautan sesawang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7460,8 +7434,7 @@ msgstr ""
 "semua\n"
 "imej GUI perlu ditapis dalam perisian, tetapi sesetengah imej dijana secara "
 "terus\n"
-"ke perkakasan (contohnya, penterjemahan-ke-tekstur untuk nod dalam "
-"inventori)."
+"ke perkakasan (contohnya, kemas-gabung-ke-tekstur untuk nod dalam inventori)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7480,7 +7453,6 @@ msgstr ""
 "perkakasan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
@@ -7499,8 +7471,8 @@ msgstr ""
 "tekstur\n"
 "minimum untuk tekstur yang disesuai-naikkan; nilai lebih tinggi tampak "
 "lebih\n"
-"tajam, tetapi memerlukan memori yang lebih banyak.  Nilai kuasa 2 "
-"digalakkan.\n"
+"tajam, tetapi memerlukan ingatan yang lebih banyak. Nilai kuasa 2 digalakkan."
+"\n"
 "Tetapan ini HANYA digunakan jika penapisan bilinear/trilinear/anisotropik "
 "dibolehkan.\n"
 "Tetapan ini juga digunakan sebagai saiz tekstur nod asas untuk\n"
@@ -7517,13 +7489,12 @@ msgstr ""
 "digunakan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
 "Sama ada latar belakang tag nama patut ditunjukkan secara lalainya.\n"
-"Mods masih boleh tetapkan latar belakang."
+"Mods masih boleh menetapkan latar belakang."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
