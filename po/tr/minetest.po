@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-08-04 06:32+0000\n"
+"PO-Revision-Date: 2021-12-02 01:31+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -297,9 +297,8 @@ msgid "Install missing dependencies"
 msgstr "Eksik bağımlılıkları kur"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "Kur: Desteklenmeyen dosya türü \"$1\" veya bozuk arşiv"
+msgstr "Kur: Desteklenmeyen dosya türü veya bozuk arşiv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -630,7 +629,6 @@ msgid "Offset"
 msgstr "Kaydırma"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Süreklilik"
 
@@ -1169,9 +1167,8 @@ msgid "Connection error (timed out?)"
 msgstr "Bağlantı hatası (zaman aşımı?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Oyun bulunamıyor veya yüklenemiyor \""
+msgstr "Oyun bulunamadı veya yüklenemedi: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1250,7 +1247,7 @@ msgstr "Bir hata oluştu:"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Erişim reddedildi. Neden: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1261,21 +1258,20 @@ msgid "Automatic forward enabled"
 msgstr "Kendiliğinden ileri etkin"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Blok sınırları"
+msgstr "Blok sınırları gizli"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Blok sınırları tüm bloklar için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Blok sınırları geçerli blok için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Blok sınırları yakındaki bloklar için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1287,7 +1283,7 @@ msgstr "Kamera güncelleme etkin"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr ""
+msgstr "Blok sınırları gösterilemiyor ('basic_debug' ayrıcalığına ihtiyaç var)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1302,9 +1298,8 @@ msgid "Cinematic mode enabled"
 msgstr "Sinematik kip etkin"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "İstemci modlama"
+msgstr "İstemci bağlantısı kesildi"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1316,7 +1311,7 @@ msgstr "Sunucuya bağlanılıyor..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Bilinmeyen bir nedenle bağlantı başarısız oldu"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1358,7 +1353,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Adres çözümlenemedi: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1567,17 +1562,17 @@ msgstr "Ses açık"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Sunucu muhtemelen farklı bir %s sürümü çalıştırıyor."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "IPv6 devre dışı bırakıldığı için %s bağlantısı kurulamıyor"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "IPv6 devre dışı bırakıldığından %s adresinde dinlenemiyor"
 
 #: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
@@ -1914,13 +1909,12 @@ msgid "Minimap in texture mode"
 msgstr "Doku kipinde mini harita"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "$1 indirilemedi"
+msgstr "Web sayfası açılamadı"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Web sayfası açılıyor"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2122,9 +2116,9 @@ msgid "Muted"
 msgstr "Ses Kısık"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Ses Seviyesi: "
+msgstr "Ses Seviyesi: %%%d"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2676,7 +2670,6 @@ msgid "Chat command time message threshold"
 msgstr "Sohbet komutu zaman iletisi eşiği"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
 msgstr "Sohbet komutları"
 
@@ -2713,9 +2706,8 @@ msgid "Chat toggle key"
 msgstr "Sohbet açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Sohbet gösteriliyor"
+msgstr "Sohbet web bağlantıları"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2738,6 +2730,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Sohbet konsolu çıktısında etkinleştirilen tıklanabilir (orta tıklama veya "
+"Ctrl+sol tıklama) web bağlantıları."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2827,33 +2821,29 @@ msgid "Command key"
 msgstr "Komut tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Harita kütlerini diske kaydederken kullanılacak ZLib sıkıştırma düzeyi.\n"
-"-1 - Zlib'in varsayılan sıkıştırma düzeyi\n"
+"Harita kütlerini diske kaydederken kullanılacak sıkıştırma düzeyi.\n"
+"-1 - öntanımlı sıkıştırma düzeyini kullan\n"
 "0 - hiçbir sıkıştırma yok, en hızlı\n"
-"9 - en iyi sıkıştırma, en yavaş\n"
-"(seviye 1-3, Zlib'in \"hızlı\" , 4-9 sıradan yöntemi kullanır)"
+"9 - en iyi sıkıştırma, en yavaş"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Harita kütlerini istemciye(client) gönderirken kullanılacak ZLib sıkıştırma "
+"Harita kütlerini istemciye(client) gönderirken kullanılacak sıkıştırma "
 "düzeyi.\n"
-"-1 - Zlib'in varsayılan sıkıştırma düzeyi\n"
+"-1 - öntanımlı sıkıştırma düzeyini kullan\n"
 "0 - hiçbir sıkıştırma yok, en hızlı\n"
-"9 - en iyi sıkıştırma, en yavaş\n"
-"(seviye 1-3, Zlib'in \"hızlı\" , 4-9 sıradan yöntemi kullanır)"
+"9 - en iyi sıkıştırma, en yavaş"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2954,13 +2944,12 @@ msgid "Crosshair alpha"
 msgstr "Artı saydamlığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Artı saydamlığı (solukluk, 0 ile 255 arasında).\n"
-"Ayrıca nesne artı rengini de denetler"
+"Ayrıca nesne artı rengi için de geçerlidir"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3039,14 +3028,13 @@ msgid "Default stack size"
 msgstr "Öntanımlı yığın boyutu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define shadow filtering quality.\n"
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "Gölge filtreleme kalitesini tanımla.\n"
-"Bu, bir PCF veya poisson diski uygulayarak yumuşak gölge efektini taklit "
+"Bu, bir PCF veya Poisson diski uygulayarak yumuşak gölge efektini taklit "
 "eder,\n"
 "ancak aynı zamanda daha fazla kaynak kullanır."
 
@@ -3229,23 +3217,21 @@ msgstr ""
 "Bu destek deneyseldir ve API değişebilir."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
 "Poisson disk filtrelemeyi etkinleştir.\n"
-"Doğru ise \"yumuşak gölgeler\" yapmak için poisson diski kullanır. Değilse "
+"Doğru ise \"yumuşak gölgeler\" yapmak için Poisson diski kullanır. Değilse "
 "PCF filtreleme kullanır."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
-"Renkli gölgeleri etkinleştir. \n"
+"Renkli gölgeleri etkinleştir.\n"
 "Doğru ise yarı saydam düğümlerde renkli gölgeler oluşturur. Bu fazla kaynak "
 "kullanır."
 
@@ -4319,7 +4305,6 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick düğmesi tekrarlama aralığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
 msgstr "Joystick ölü bölgesi"
 
@@ -5751,9 +5736,8 @@ msgid "Mod channels"
 msgstr "Mod kanalları"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Modifies the size of the HUD elements."
-msgstr "Hudbar öğelerinin boyutunu değiştirir."
+msgstr "HUD ögelerinin boyutunu değiştirir."
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -6885,9 +6869,8 @@ msgid "The URL for the content repository"
 msgstr "İçerik deposu için URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The dead zone of the joystick"
-msgstr "Joystick ölü bölgesi"
+msgstr "Joystick'in ölü bölgesi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7391,9 +7374,8 @@ msgid "Waving plants"
 msgstr "Dalgalanan bitkiler"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Weblink color"
-msgstr "Seçim kutusunu rengi"
+msgstr "Web bağlantısı rengi"
 
 #: src/settings_translation_file.cpp
 msgid ""
