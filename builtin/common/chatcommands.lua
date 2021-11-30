@@ -7,7 +7,9 @@ local S = core.get_translator("__builtin")
 core.registered_chatcommands = {}
 
 -- Interpret the parameters of a command, separating options and arguments.
--- Input: parameters of a command
+-- Input: command, param
+--   command: name of command
+--   param: parameters of command
 -- Returns: opts, args
 --   opts is a string of option letters, or false on error
 --   args is an array with the non-option arguments in order, or an error message
@@ -19,14 +21,14 @@ core.registered_chatcommands = {}
 --	"cdg", {"a", "b", "e", "f"}
 -- Negative numbers are taken as arguments. Long options (--option) are
 -- currently rejected as reserved.
-local function getopts(param)
+local function getopts(command, param)
 	local opts = ""
 	local args = {}
 	for match in param:gmatch("%S+") do
 		if match:byte(1) == 45 then -- 45 = '-'
 			local second = match:byte(2)
 			if second == 45 then
-				return false, S("Flags beginning with -- are reserved")
+				return false, S("Invalid parameters (see /help @1).", command)
 			elseif second and (second < 48 or second > 57) then -- 48 = '0', 57 = '9'
 				opts = opts .. match:sub(2)
 			else
@@ -80,7 +82,7 @@ local function format_help_line(cmd, def)
 end
 
 local function do_help_cmd(name, param)
-	local opts, args = getopts(param)
+	local opts, args = getopts("help", param)
 	if not opts then
 		return false, args
 	end
