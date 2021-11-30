@@ -11,13 +11,6 @@ set(COMMON_CFLAGS)
 set(COMMON_LDFLAGS)
 set(LIBS)
 
-# Force compilation as C++.
-if(WIN32)
-	set(COMMON_CFLAGS "${COMMON_CFLAGS} -TP")
-else()
-	set(COMMON_CFLAGS "${COMMON_CFLAGS} -xc++")
-endif()
-
 if(APPLE)
 	set(DEFAULT_POSIX TRUE)
 	set(DEFAULT_DLOPEN OFF)
@@ -42,6 +35,9 @@ mark_as_advanced(LUA_USE_DLOPEN)
 option(LUA_ANSI "Disable non-ANSI features." ${DEFAULT_ANSI})
 mark_as_advanced(LUA_ANSI)
 
+option(LUA_COMPILE_AS_C "Compile Lua as C rather than C++." FALSE)
+mark_as_advanced(LUA_COMPILE_AS_C)
+
 if(LUA_USE_DLOPEN)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_DLOPEN")
 	if(NOT APPLE)
@@ -56,6 +52,15 @@ endif(DEFAULT_POSIX)
 if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")
 endif(LUA_ANSI)
+
+if (NOT LUA_COMPILE_AS_C)
+	# Force compilation as C++.
+	if(WIN32)
+		set(COMMON_CFLAGS "${COMMON_CFLAGS} -TP")
+	else()
+		set(COMMON_CFLAGS "${COMMON_CFLAGS} -xc++")
+	endif()
+endif(NOT LUA_COMPILE_AS_C)
 
 # COMMON_CFLAGS has no effect without this line
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
