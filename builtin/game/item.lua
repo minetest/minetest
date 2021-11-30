@@ -499,9 +499,6 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			return result
 		end
 	end
-	if itemstack:take_item():is_empty() then
-		return itemstack
-	end
 
 	local def = itemstack:get_definition()
 	if def and def.sound and def.sound.eat then
@@ -510,6 +507,8 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			max_hear_distance = 16
 		}, true)
 	end
+
+	itemstack:take_item()
 
 	-- Changing hp might kill the player causing mods to do who-knows-what to the
 	-- inventory, so do this before set_hp().
