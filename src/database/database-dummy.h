@@ -37,9 +37,10 @@ public:
 	bool removePlayer(const std::string &name);
 	void listPlayers(std::vector<std::string> &res);
 
-	bool getPairs(const std::string &modname, StringMap *storage);
-	bool setPair(const std::string &modname, const std::string &key, const std::string &value);
-	bool removePair(const std::string &modname, const std::string &key);
+	bool getModEntries(const std::string &modname, StringMap *storage);
+	bool setModEntry(const std::string &modname,
+			const std::string &key, const std::string &value);
+	bool removeModEntry(const std::string &modname, const std::string &key);
 	void listMods(std::vector<std::string> *res);
 
 	void beginSave() {}

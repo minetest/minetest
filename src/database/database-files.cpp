@@ -381,7 +381,7 @@ ModMetadataDatabaseFiles::ModMetadataDatabaseFiles(const std::string &savedir):
 {
 }
 
-bool ModMetadataDatabaseFiles::getPairs(const std::string &modname, StringMap *storage)
+bool ModMetadataDatabaseFiles::getModEntries(const std::string &modname, StringMap *storage)
 {
 	Json::Value *meta = getOrCreateJson(modname);
 	if (!meta)
@@ -396,7 +396,7 @@ bool ModMetadataDatabaseFiles::getPairs(const std::string &modname, StringMap *s
 	return true;
 }
 
-bool ModMetadataDatabaseFiles::setPair(const std::string &modname,
+bool ModMetadataDatabaseFiles::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
 	Json::Value *meta = getOrCreateJson(modname);
@@ -409,7 +409,8 @@ bool ModMetadataDatabaseFiles::setPair(const std::string &modname,
 	return true;
 }
 
-bool ModMetadataDatabaseFiles::removePair(const std::string &modname, const std::string &key)
+bool ModMetadataDatabaseFiles::removeModEntry(const std::string &modname,
+		const std::string &key)
 {
 	Json::Value *meta = getOrCreateJson(modname);
 	if (!meta)

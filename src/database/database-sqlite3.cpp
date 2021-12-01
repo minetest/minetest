@@ -815,7 +815,7 @@ void ModMetadataDatabaseSQLite3::initStatements()
 	PREPARE_STATEMENT(remove, "DELETE FROM `entries` WHERE `modname` = ? AND `key` = ?");
 }
 
-bool ModMetadataDatabaseSQLite3::getPairs(const std::string &modname, StringMap *storage)
+bool ModMetadataDatabaseSQLite3::getModEntries(const std::string &modname, StringMap *storage)
 {
 	verifyDatabase();
 
@@ -834,7 +834,7 @@ bool ModMetadataDatabaseSQLite3::getPairs(const std::string &modname, StringMap 
 	return true;
 }
 
-bool ModMetadataDatabaseSQLite3::setPair(const std::string &modname,
+bool ModMetadataDatabaseSQLite3::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
 	verifyDatabase();
@@ -851,7 +851,8 @@ bool ModMetadataDatabaseSQLite3::setPair(const std::string &modname,
 	return true;
 }
 
-bool ModMetadataDatabaseSQLite3::removePair(const std::string &modname, const std::string &key)
+bool ModMetadataDatabaseSQLite3::removeModEntry(const std::string &modname,
+		const std::string &key)
 {
 	verifyDatabase();
 

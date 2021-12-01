@@ -91,9 +91,9 @@ class ModMetadataDatabase : public Database
 public:
 	virtual ~ModMetadataDatabase() = default;
 
-	virtual bool getPairs(const std::string &modname, StringMap *storage) = 0;
-	virtual bool setPair(const std::string &modname,
+	virtual bool getModEntries(const std::string &modname, StringMap *storage) = 0;
+	virtual bool setModEntry(const std::string &modname,
 		const std::string &key, const std::string &value) = 0;
-	virtual bool removePair(const std::string &modname, const std::string &key) = 0;
+	virtual bool removeModEntry(const std::string &modname, const std::string &key) = 0;
 	virtual void listMods(std::vector<std::string> *res) = 0;
 };

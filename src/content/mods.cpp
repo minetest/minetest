@@ -426,7 +426,7 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 ModMetadata::ModMetadata(const std::string &mod_name, ModMetadataDatabase *database):
 	m_mod_name(mod_name), m_database(database)
 {
-	m_database->getPairs(m_mod_name, &m_stringvars);
+	m_database->getModEntries(m_mod_name, &m_stringvars);
 }
 
 void ModMetadata::clear()
@@ -434,7 +434,7 @@ void ModMetadata::clear()
 	StringMap old_map = m_stringvars;
 	Metadata::clear();
 	for (const auto &pair : old_map) {
-		m_database->removePair(m_mod_name, pair.first);
+		m_database->removeModEntry(m_mod_name, pair.first);
 	}
 }
 
@@ -442,9 +442,9 @@ bool ModMetadata::setString(const std::string &name, const std::string &var)
 {
 	if (Metadata::setString(name, var)) {
 		if (var.empty()) {
-			m_database->removePair(m_mod_name, name);
+			m_database->removeModEntry(m_mod_name, name);
 		} else {
-			m_database->setPair(m_mod_name, name, var);
+			m_database->setModEntry(m_mod_name, name, var);
 		}
 		return true;
 	}

@@ -81,7 +81,7 @@ void Database_Dummy::listPlayers(std::vector<std::string> &res)
 	}
 }
 
-bool Database_Dummy::getPairs(const std::string &modname, StringMap *storage)
+bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storage)
 {
 	const auto mod_pair = m_mod_meta_database.find(modname);
 	if (mod_pair != m_mod_meta_database.cend()) {
@@ -92,7 +92,7 @@ bool Database_Dummy::getPairs(const std::string &modname, StringMap *storage)
 	return true;
 }
 
-bool Database_Dummy::setPair(const std::string &modname,
+bool Database_Dummy::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
 	auto mod_pair = m_mod_meta_database.find(modname);
@@ -104,7 +104,7 @@ bool Database_Dummy::setPair(const std::string &modname,
 	return true;
 }
 
-bool Database_Dummy::removePair(const std::string &modname, const std::string &key)
+bool Database_Dummy::removeModEntry(const std::string &modname, const std::string &key)
 {
 	auto mod_pair = m_mod_meta_database.find(modname);
 	if (mod_pair != m_mod_meta_database.end())

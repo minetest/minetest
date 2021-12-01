@@ -4064,9 +4064,9 @@ bool Server::migrateModStorageDatabase(const GameParams &game_params, const Sett
 		srcdb->listMods(&mod_list);
 		for (const std::string &modname : mod_list) {
 			StringMap meta;
-			srcdb->getPairs(modname, &meta);
+			srcdb->getModEntries(modname, &meta);
 			for (const auto &pair : meta) {
-				dstdb->setPair(modname, pair.first, pair.second);
+				dstdb->setModEntry(modname, pair.first, pair.second);
 			}
 		}
 
