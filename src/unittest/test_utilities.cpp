@@ -392,9 +392,9 @@ void TestUtilities::testIsPowerOfTwo()
 	UASSERT(is_power_of_two(2) == true);
 	UASSERT(is_power_of_two(3) == false);
 	for (int exponent = 2; exponent <= 31; ++exponent) {
-		UASSERT(is_power_of_two((1 << exponent) - 1) == false);
-		UASSERT(is_power_of_two((1 << exponent)) == true);
-		UASSERT(is_power_of_two((1 << exponent) + 1) == false);
+		UASSERT(is_power_of_two((1U << exponent) - 1) == false);
+		UASSERT(is_power_of_two((1U << exponent)) == true);
+		UASSERT(is_power_of_two((1U << exponent) + 1) == false);
 	}
 	UASSERT(is_power_of_two(U32_MAX) == false);
 }

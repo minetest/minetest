@@ -850,7 +850,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			logOnce(oss, warningstream);
 
 			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
-			for (s32 i = 1; i < mat_count; i++) {
+			for (u32 i = 1; i < mat_count; i++) {
 				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayer[0];
 				if (!layer.Texture)
 					layer.Texture = last;

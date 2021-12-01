@@ -48,8 +48,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 
 extern wchar_t *utf8_to_wide_c(const char *str);
 
-// You must free the returned string!
-// The returned string is allocated using new
+// The returned string must be freed using delete[]
 inline const wchar_t *wgettext(const char *str)
 {
 	// We must check here that is not an empty string to avoid trying to translate it
