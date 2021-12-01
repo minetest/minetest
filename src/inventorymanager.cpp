@@ -172,7 +172,7 @@ void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *
 		sa->player_inventory_OnPut(*this, src_item, player);
 	else
 		assert(false);
-	
+
 	if (from_inv.type == InventoryLocation::DETACHED)
 		sa->detached_inventory_OnTake(*this, src_item, player);
 	else if (from_inv.type == InventoryLocation::NODEMETA)

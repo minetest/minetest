@@ -199,13 +199,13 @@ void main(void)
 		vec3 nNormal = normalize(vNormal);
 		cosLight = dot(nNormal, -v_LightDirection);
 		
-		// Calculate normal offset scale based on the texel size adjusted for 
+		// Calculate normal offset scale based on the texel size adjusted for
 		// curvature of the SM texture. This code must be change together with
 		// getPerspectiveFactor or any light-space transformation.
 		vec3 eyeToVertex = worldPosition - eyePosition + cameraOffset;
 		// Distance from the vertex to the player
 		float distanceToPlayer = length(eyeToVertex - v_LightDirection * dot(eyeToVertex, v_LightDirection)) / f_shadowfar;
-		// perspective factor estimation according to the 
+		// perspective factor estimation according to the
 		float perspectiveFactor = distanceToPlayer * xyPerspectiveBias0 + xyPerspectiveBias1;
 		float texelSize = f_shadowfar * perspectiveFactor * perspectiveFactor /
 				(f_textureresolution * xyPerspectiveBias1  - perspectiveFactor * xyPerspectiveBias0);

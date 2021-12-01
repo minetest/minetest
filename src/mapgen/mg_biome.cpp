@@ -273,7 +273,7 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 			pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
 
-	return (biome_closest) ? biome_closest : (Biome *)m_bmgr->getRaw(BIOME_NONE);	
+	return (biome_closest) ? biome_closest : (Biome *)m_bmgr->getRaw(BIOME_NONE);
 }
 
 

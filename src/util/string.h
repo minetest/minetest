@@ -410,7 +410,7 @@ DEFINE_STD_TOSTRING_FLOATINGPOINT(long double)
 template <typename T>
 inline wstring to_wstring(T val)
 {
-      return utf8_to_wide(to_string(val));
+	return utf8_to_wide(to_string(val));
 }
 }
 #endif

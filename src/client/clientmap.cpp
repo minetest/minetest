@@ -847,12 +847,12 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		vertex_count += buf->getIndexCount();
 	}
 
-	// restore the driver material state 
+	// restore the driver material state
 	video::SMaterial clean;
 	clean.BlendOperation = video::EBO_ADD;
 	driver->setMaterial(clean); // reset material to defaults
 	driver->draw3DLine(v3f(), v3f(), video::SColor(0));
-	
+
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
