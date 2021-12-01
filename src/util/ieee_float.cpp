@@ -39,7 +39,7 @@ f32 u32Tof32Slow(u32 i)
 	if (exp == 0xFF) {
 		// Inf/NaN
 		if (imant == 0) {
-			if (std::numeric_limits<f32>::has_infinity)	
+			if (std::numeric_limits<f32>::has_infinity)
 				return sign ? -std::numeric_limits<f32>::infinity() :
 					std::numeric_limits<f32>::infinity();
 			return sign ? std::numeric_limits<f32>::max() :

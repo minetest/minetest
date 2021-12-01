@@ -493,7 +493,7 @@ void main(void)
 		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
-		
+
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
 			if (cosLight > 0.0)
@@ -554,6 +554,6 @@ void main(void)
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
-	
+
 	gl_FragColor = col;
 }

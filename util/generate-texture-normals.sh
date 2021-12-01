@@ -197,7 +197,7 @@ normalMap()
 					(gimp-convert-rgb image) ()
 				)
 
-				(plug-in-normalmap 
+				(plug-in-normalmap
 					RUN-NONINTERACTIVE
 					image
 					drawable
