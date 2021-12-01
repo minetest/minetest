@@ -62,9 +62,19 @@ local REASON_UPDATE = "update"
 local REASON_DEPENDENCY = "dependency"
 
 
+-- encodes for use as URL parameter or path component
+local function urlencode(str)
+	return str:gsub("[^%a%d()._~-]", function(char)
+		return string.format("%%%02X", string.byte(char))
+	end)
+end
+assert(urlencode("sample text?") == "sample%20text%3F")
+
+
 local function get_download_url(package, reason)
 	local base_url = core.settings:get("contentdb_url")
-	local ret = base_url .. ("/packages/%s/%s/releases/%d/download/"):format(package.author, package.name, package.release)
+	local ret = base_url .. ("/packages/%s/releases/%d/download/"):format(
+		package.url_part, package.release)
 	if reason then
 		ret = ret .. "?reason=" .. reason
 	end
@@ -199,7 +209,7 @@ local function get_raw_dependencies(package)
 	local url_fmt = "/api/packages/%s/dependencies/?only_hard=1&protocol_version=%s&engine_version=%s"
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
-	local url = base_url .. url_fmt:format(package.id, core.get_max_supp_proto(), version.string)
+	local url = base_url .. url_fmt:format(package.url_part, core.get_max_supp_proto(), urlencode(version.string))
 
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
@@ -574,17 +584,16 @@ function store.load()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. version.string
+		core.get_max_supp_proto() .. "&engine_version=" .. urlencode(version.string)
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. item
+			url = url .. "&hide=" .. urlencode(item)
 		end
 	end
 
-	local timeout = tonumber(core.settings:get("curl_file_download_timeout"))
-	local response = http.fetch_sync({ url = url, timeout = timeout })
+	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
 		return
 	end
@@ -594,11 +603,15 @@ function store.load()
 
 	for _, package in pairs(store.packages_full) do
 		local name_len = #package.name
+		-- This must match what store.update_paths() does!
+		package.id = package.author:lower() .. "/"
 		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
+			package.id = package.id .. package.name:sub(1, name_len - 5)
 		else
-			package.id = package.author:lower() .. "/" .. package.name
+			package.id = package.id .. package.name
 		end
+
+		package.url_part = urlencode(package.author) .. "/" .. urlencode(package.name)
 
 		if package.aliases then
 			for _, alias in ipairs(package.aliases) do
@@ -1013,9 +1026,9 @@ function store.handle_submit(this, fields)
 		end
 
 		if fields["view_" .. i] then
-			local url = ("%s/packages/%s/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"),
-					package.author, package.name, core.get_max_supp_proto())
+			local url = ("%s/packages/%s?protocol_version=%d"):format(
+					core.settings:get("contentdb_url"), package.url_part,
+					core.get_max_supp_proto())
 			core.open_url(url)
 			return true
 		end
