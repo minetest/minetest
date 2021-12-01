@@ -470,6 +470,9 @@ endif()
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
+	${PROJECT_SOURCE_DIR}/script
+)
+include_directories(SYSTEM
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
@@ -477,7 +480,6 @@ include_directories(
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	${PROJECT_SOURCE_DIR}/script
 )
 
 if(USE_GETTEXT)
@@ -485,7 +487,7 @@ if(USE_GETTEXT)
 endif()
 
 if(BUILD_CLIENT)
-	include_directories(
+	include_directories(SYSTEM
 		${FREETYPE_INCLUDE_DIRS}
 		${SOUND_INCLUDE_DIRS}
 		${X11_INCLUDE_DIR}

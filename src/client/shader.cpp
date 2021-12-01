@@ -241,11 +241,6 @@ public:
 	MainShaderConstantSetter() :
 		  m_world_view_proj("mWorldViewProj")
 		, m_world("mWorld")
-#if ENABLE_GLES
-		, m_world_view("mWorldView")
-		, m_texture("mTexture")
-		, m_normal("mNormal")
-#endif
 		, m_shadow_view_proj("m_ShadowViewProj")
 		, m_light_direction("v_LightDirection")
 		, m_texture_res("f_textureresolution")
@@ -259,6 +254,11 @@ public:
 		, m_perspective_bias1_pixel("xyPerspectiveBias1")
 		, m_perspective_zbias_vertex("zPerspectiveBias")
 		, m_perspective_zbias_pixel("zPerspectiveBias")
+#if ENABLE_GLES
+		, m_world_view("mWorldView")
+		, m_texture("mTexture")
+		, m_normal("mNormal")
+#endif
 	{}
 	~MainShaderConstantSetter() = default;
 
