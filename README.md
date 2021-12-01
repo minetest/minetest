@@ -418,8 +418,8 @@ git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 #### Build
 
 ```bash
-mkdir cmakebuild
-cd cmakebuild
+mkdir build
+cd build
 
 cmake .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
