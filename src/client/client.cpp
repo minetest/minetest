@@ -877,7 +877,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 	*/
 	if(sender_peer_id != PEER_ID_SERVER) {
 		infostream << "Client::ProcessData(): Discarding data not "
-			"coming from server: peer_id=" << sender_peer_id
+			"coming from server: peer_id=" << sender_peer_id << " command=" << pkt->getCommand()
 			<< std::endl;
 		return;
 	}
