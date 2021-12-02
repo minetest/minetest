@@ -187,12 +187,15 @@ You are already dead.=Sie sind schon tot.
 @1 is already dead.=@1 ist bereits tot.
 @1 has been killed.=@1 wurde getötet.
 Kill player or yourself=Einen Spieler oder Sie selbst töten
+Invalid parameters (see /help @1).=
+Too many arguments, try using just /help <command>=
 Available commands: @1=Verfügbare Befehle: @1
 Use '/help <cmd>' to get more information, or '/help all' to list everything.=„/help <Befehl>“ benutzen, um mehr Informationen zu erhalten, oder „/help all“, um alles aufzulisten.
 Available commands:=Verfügbare Befehle:
 Command not available: @1=Befehl nicht verfügbar: @1
-[all | privs | <cmd>]=[all | privs | <Befehl>]
-Get help for commands or list privileges=Hilfe für Befehle erhalten oder Privilegien auflisten
+[all | privs | <cmd>] [-t]=
+Get help for commands or list privileges (-t: output in chat)=
+Available privileges:=Verfügbare Privilegien:
 Command=Befehl
 Parameters=Parameter
 For more information, click on any entry in the list.=Für mehr Informationen klicken Sie auf einen beliebigen Eintrag in der Liste.
@@ -202,7 +205,6 @@ Available commands: (see also: /help <cmd>)=Verfügbare Befehle: (siehe auch: /h
 Close=Schließen
 Privilege=Privileg
 Description=Beschreibung
-Available privileges:=Verfügbare Privilegien:
 print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset=print [<Filter>] | dump [<Filter>] | save [<Format> [<Filter>]]
 Handle the profiler and profiling data=Den Profiler und Profilingdaten verwalten
 Statistics written to action log.=Statistiken zum Aktionsprotokoll geschrieben.
@@ -241,3 +243,9 @@ A total of @1 sample(s) were taken.=Es wurden insgesamt @1 Datenpunkt(e) aufgeze
 The output is limited to '@1'.=Die Ausgabe ist beschränkt auf „@1“.
 Saving of profile failed: @1=Speichern des Profils fehlgeschlagen: @1
 Profile saved to @1=Profil abgespeichert nach @1
+
+
+##### not used anymore #####
+
+[all | privs | <cmd>]=[all | privs | <Befehl>]
+Get help for commands or list privileges=Hilfe für Befehle erhalten oder Privilegien auflisten
