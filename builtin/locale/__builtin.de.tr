@@ -187,14 +187,14 @@ You are already dead.=Sie sind schon tot.
 @1 is already dead.=@1 ist bereits tot.
 @1 has been killed.=@1 wurde getötet.
 Kill player or yourself=Einen Spieler oder Sie selbst töten
-Invalid parameters (see /help @1).=
-Too many arguments, try using just /help <command>=
+Invalid parameters (see /help @1).=Ungültige Parameter (siehe „/help @1“).
+Too many arguments, try using just /help <command>=Zu viele Argumente. Probieren Sie es mit „/help <Befehl>“
 Available commands: @1=Verfügbare Befehle: @1
 Use '/help <cmd>' to get more information, or '/help all' to list everything.=„/help <Befehl>“ benutzen, um mehr Informationen zu erhalten, oder „/help all“, um alles aufzulisten.
 Available commands:=Verfügbare Befehle:
 Command not available: @1=Befehl nicht verfügbar: @1
-[all | privs | <cmd>] [-t]=
-Get help for commands or list privileges (-t: output in chat)=
+[all | privs | <cmd>] [-t]=[all | privs | <Befehl>] [-t]
+Get help for commands or list privileges (-t: output in chat)=Hilfe für Befehle erhalten oder Privilegien auflisten (-t: Ausgabe im Chat)
 Available privileges:=Verfügbare Privilegien:
 Command=Befehl
 Parameters=Parameter
@@ -243,9 +243,3 @@ A total of @1 sample(s) were taken.=Es wurden insgesamt @1 Datenpunkt(e) aufgeze
 The output is limited to '@1'.=Die Ausgabe ist beschränkt auf „@1“.
 Saving of profile failed: @1=Speichern des Profils fehlgeschlagen: @1
 Profile saved to @1=Profil abgespeichert nach @1
-
-
-##### not used anymore #####
-
-[all | privs | <cmd>]=[all | privs | <Befehl>]
-Get help for commands or list privileges=Hilfe für Befehle erhalten oder Privilegien auflisten
