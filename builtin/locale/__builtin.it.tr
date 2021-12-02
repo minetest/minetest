@@ -187,12 +187,15 @@ You are already dead.=Sei già mortǝ.
 @1 is already dead.=@1 è già mortǝ.
 @1 has been killed.=@1 è stato uccisǝ.
 Kill player or yourself=Uccide un giocatore o te stessǝ
+Invalid parameters (see /help @1).=
+Too many arguments, try using just /help <command>=
 Available commands: @1=Comandi disponibili: @1
 Use '/help <cmd>' to get more information, or '/help all' to list everything.=Usa '/help <comando>' per ottenere più informazioni, o '/help all' per elencare tutti i comandi.
 Available commands:=Comandi disponibili:
 Command not available: @1=Comando non disponibile: @1
-[all | privs | <cmd>]=[all | privs | <comando>]
-Get help for commands or list privileges=Richiama la finestra d'aiuto dei comandi o dei privilegi
+[all | privs | <cmd>] [-t]=
+Get help for commands or list privileges (-t: output in chat)=
+Available privileges:=Privilegi disponibili:
 Command=Comando
 Parameters=Parametri
 For more information, click on any entry in the list.=Per più informazioni, clicca su una qualsiasi voce dell'elenco.
@@ -202,7 +205,6 @@ Available commands: (see also: /help <cmd>)=Comandi disponibili: (vedi anche /he
 Close=Chiudi
 Privilege=Privilegio
 Description=Descrizione
-Available privileges:=Privilegi disponibili:
 print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset=print [<filtro>] | dump [<filtro>] | save [<formato> [<filtro>]] | reset
 Handle the profiler and profiling data=Gestisce il profiler e i dati da esso elaborati
 Statistics written to action log.=Statistiche scritte nel log delle azioni.
@@ -245,6 +247,8 @@ Profile saved to @1=
 
 ##### not used anymore #####
 
+[all | privs | <cmd>]=[all | privs | <comando>]
+Get help for commands or list privileges=Richiama la finestra d'aiuto dei comandi o dei privilegi
 Allows enabling various debug options that may affect gameplay=Permette di abilitare varie opzioni di debug che potrebbero influenzare l'esperienza di gioco
 [<delay_in_seconds> | -1] [reconnect] [<message>]=[<ritardo_in_secondi> | -1] [reconnect] [<messaggio>]
 Shutdown server (-1 cancels a delayed shutdown)=Arresta il server (-1 annulla un arresto programmato)
