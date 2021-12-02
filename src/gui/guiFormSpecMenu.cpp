@@ -2532,7 +2532,8 @@ void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element
 {
 	std::vector<std::string> parts = split(element, ',');
 
-	if (parts.size() == 2) {
+	if (parts.size() == 2 &&
+			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
 		data->offset.X = stof(parts[0]);
 		data->offset.Y = stof(parts[1]);
 		return;
@@ -2566,13 +2567,50 @@ void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ',');
 
-	if (parts.size() == 2) {
+	if (parts.size() == 2 &&
+			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
 		data->anchor.X = stof(parts[0]);
 		data->anchor.Y = stof(parts[1]);
 		return;
 	}
 
 	errorstream << "Invalid anchor element (" << parts.size() << "): '" << element
+			<< "'" << std::endl;
+}
+
+bool GUIFormSpecMenu::parsePaddingDirect(parserData *data, const std::string &element)
+{
+	if (element.empty())
+		return false;
+
+	std::vector<std::string> parts = split(element, '[');
+
+	if (parts.size() != 2)
+		return false;
+
+	std::string type = trim(parts[0]);
+	std::string description = trim(parts[1]);
+
+	if (type != "padding")
+		return false;
+
+	parsePadding(data, description);
+
+	return true;
+}
+
+void GUIFormSpecMenu::parsePadding(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ',');
+
+	if (parts.size() == 2 &&
+			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		data->padding.X = stof(parts[0]);
+		data->padding.Y = stof(parts[1]);
+		return;
+	}
+
+	errorstream << "Invalid padding element (" << parts.size() << "): '" << element
 			<< "'" << std::endl;
 }
 
@@ -3092,6 +3130,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	mydata.screensize = screensize;
 	mydata.offset = v2f32(0.5f, 0.5f);
 	mydata.anchor = v2f32(0.5f, 0.5f);
+	mydata.padding = v2f32(0.05f, 0.05f);
 	mydata.simple_field_count = 0;
 
 	// Base position of contents of form
@@ -3194,7 +3233,14 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
-	/* "no_prepend" element is always after "position" (or  "size" element) if it used */
+	/* "padding" element is always after "anchor" and previous if it is used */
+	for (; i < elements.size(); i++) {
+		if (!parsePaddingDirect(&mydata, elements[i])) {
+			break;
+		}
+	}
+
+	/* "no_prepend" element is always after "padding" and previous if it used */
 	bool enable_prepends = true;
 	for (; i < elements.size(); i++) {
 		if (elements[i].empty())
@@ -3259,11 +3305,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			double fitx_imgsize;
 			double fity_imgsize;
 
-			// Pad the screensize with 5% of the screensize on all sides to ensure
-			// that even the largest formspecs don't touch the screen borders.
 			v2f padded_screensize(
-				mydata.screensize.X * 0.9f,
-				mydata.screensize.Y * 0.9f
+				mydata.screensize.X * (1.0f - mydata.padding.X * 2.0f),
+				mydata.screensize.Y * (1.0f - mydata.padding.Y * 2.0f)
 			);
 
 			if (mydata.real_coordinates) {
@@ -3279,13 +3323,15 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 						((15.0 / 13.0) * (0.85 + mydata.invsize.Y));
 			}
 
+			s32 min_screen_dim = std::min(mydata.screensize.X, mydata.screensize.Y);
+
 #ifdef HAVE_TOUCHSCREENGUI
 			// In Android, the preferred imgsize should be larger to accommodate the
 			// smaller screensize.
-			double prefer_imgsize = padded_screensize.Y / 10 * gui_scaling;
+			double prefer_imgsize = min_screen_dim / 10 * gui_scaling;
 #else
 			// Desktop computers have more space, so try to fit 15 coordinates.
-			double prefer_imgsize = padded_screensize.Y / 15 * gui_scaling;
+			double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
 #endif
 			// Try to use the preferred imgsize, but if that's bigger than the maximum
 			// size, use the maximum size.

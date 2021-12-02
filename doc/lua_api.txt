@@ -117,7 +117,7 @@ Menu music
 -----------
 
 Games can provide custom main menu music. They are put inside a `menu`
-directory inside the game directory. 
+directory inside the game directory.
 
 The music files are named `theme.ogg`.
 If you want to specify multiple music files for one game, add additional
@@ -2311,9 +2311,20 @@ Elements
 * `position` and `anchor` elements need suitable values to avoid a formspec
   extending off the game window due to particular game window sizes.
 
-### `no_prepend[]`
+### `padding[<X>,<Y>]`
 
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
+* Defines how much space is padded around the formspec if the formspec tries to
+  increase past the size of the screen and coordinates have to be shrunk.
+* For X and Y, 0.0 represents no padding (the formspec can touch the edge of the
+  screen), and 0.5 represents half the screen (which forces the coordinate size
+  to 0). If negative, the formspec can extend off the edge of the screen.
+* Defaults to [0.05, 0.05].
+
+### `no_prepend[]`
+
+* Must be used after the `size`, `position`, `anchor`, and `padding` elements
+  (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
 ### `real_coordinates[<bool>]`
@@ -7901,7 +7912,7 @@ Used by `minetest.register_node`.
                     items = {"default:sand", "default:desert_sand"},
                 },
                 {
-                    -- Only drop if using an item in the "magicwand" group, or 
+                    -- Only drop if using an item in the "magicwand" group, or
                     -- an item that is in both the "pickaxe" and the "lucky"
                     -- groups.
                     tool_groups = {
