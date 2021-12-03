@@ -6675,6 +6675,7 @@ object you are working with still exists.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
+    * If `formspec` is `""`, the player's inventory is disabled.
 * `get_inventory_formspec()`: returns a formspec string
 * `set_formspec_prepend(formspec)`:
     * the formspec string will be added to every formspec shown to the user,
