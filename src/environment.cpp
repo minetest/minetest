@@ -112,10 +112,49 @@ inline static bool isPointableNode(const MapNode &n,
 	       (liquids_pointable && features.isLiquid());
 }
 
+inline static void updateMaxOverlap(f32 overlap, f32 extent, f32& max_overlap, f32& max_overlap_extent)
+{
+	if (overlap > 0 && (max_overlap_extent == 0 || overlap * max_overlap_extent > extent * max_overlap)) {
+		max_overlap = overlap;
+		max_overlap_extent = extent;
+	}
+}
+
 void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 {
 	const NodeDefManager *nodedef = getMap().getNodeDefManager();
 	if (state->m_initialization_needed) {
+		// Check boundaries
+		const float limit = MAX_MAP_GENERATION_LIMIT * BS;
+		if (!std::isfinite(state->m_shootline.start.X) ||
+			!std::isfinite(state->m_shootline.start.Y) ||
+			!std::isfinite(state->m_shootline.start.Z) ||
+			!std::isfinite(state->m_shootline.end.X) ||
+			!std::isfinite(state->m_shootline.end.Y) ||
+			!std::isfinite(state->m_shootline.end.Z) ||
+			std::abs(state->m_shootline.start.X) > limit ||
+			std::abs(state->m_shootline.start.Y) > limit ||
+			std::abs(state->m_shootline.start.Z) > limit) {
+			// Abort, no collisions
+			result->type = POINTEDTHING_NOTHING;
+			return;
+		}
+
+		v3f extent = state->m_shootline.getVector();
+		f32 max_overlap = 0;
+		f32 max_overlap_extent = 0;
+
+		// Get the biggest linear fraction of the overlap within the extent cuboid
+		updateMaxOverlap(std::abs(state->m_shootline.end.X) - limit, std::abs(extent.X), max_overlap, max_overlap_extent);
+		updateMaxOverlap(std::abs(state->m_shootline.end.Y) - limit, std::abs(extent.Y), max_overlap, max_overlap_extent);
+		updateMaxOverlap(std::abs(state->m_shootline.end.Z) - limit, std::abs(extent.Z), max_overlap, max_overlap_extent);
+
+		if (max_overlap_extent > 0)
+			state->m_shootline.end -= extent * max_overlap / max_overlap_extent; // Move it backwards
+
+		state->m_iterator = voxalgo::VoxelLineIterator(state->m_shootline.start / BS, state->m_shootline.getVector() / BS);
+		state->m_previous_node = state->m_iterator.m_current_node_pos;
+
 		// Add objects
 		if (state->m_objects_pointable) {
 			std::vector<PointedThing> found;

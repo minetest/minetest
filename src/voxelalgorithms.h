@@ -90,9 +90,9 @@ struct VoxelLineIterator
 {
 public:
 	//! Starting position of the line in world coordinates.
-	v3f m_start_position;
+	v3f m_start_position { 0, 0, 0 };
 	//! Direction and length of the line in world coordinates.
-	v3f m_line_vector;
+	v3f m_line_vector { 0, 0, 0 };
 	/*!
 	 * Each component stores the next smallest positive number, by
 	 * which multiplying the line's vector gives a vector that ends
@@ -110,13 +110,15 @@ public:
 	 */
 	v3s16 m_step_directions { 1, 1, 1 };
 	//! Position of the current node.
-	v3s16 m_current_node_pos;
+	v3s16 m_current_node_pos { 0, 0, 0 };
 	//! Index of the current node
 	s16 m_current_index = 0;
 	//! Position of the start node.
-	v3s16 m_start_node_pos;
+	v3s16 m_start_node_pos {0, 0, 0};
 	//! Index of the last node
-	s16 m_last_index;
+	s16 m_last_index = 0;
+
+	VoxelLineIterator() {}
 
 	/*!
 	 * Creates a voxel line iterator with the given line.
@@ -126,7 +128,7 @@ public:
 	 * line in voxel coordinates. start_position+line_vector
 	 * is the end of the line
 	 */
-	VoxelLineIterator(const v3f &start_position,const v3f &line_vector);
+	VoxelLineIterator(const v3f &start_position, const v3f &line_vector);
 
 	/*!
 	 * Steps to the next voxel.
