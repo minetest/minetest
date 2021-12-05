@@ -84,8 +84,11 @@ void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotatio
 
 void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
 {
-	*position = m_bone_position[bone].X;
-	*rotation = m_bone_position[bone].Y;
+	auto it = m_bone_position.find(bone);
+	if (it != m_bone_position.end()) {
+		*position = it->second.X;
+		*rotation = it->second.Y;
+	}
 }
 
 // clang-format off
