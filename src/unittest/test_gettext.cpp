@@ -7,13 +7,12 @@ class TestGettext : public TestBase
 public:
 	TestGettext() {
 		TestManager::registerTestModule(this);
-  }
+	}
 
 	const char *getName() { return "TestGettext"; }
 
 	void runTests(IGameDef *gamedef);
 
-	void testSnfmtgettext();
 	void testFmtgettext();
 };
 
@@ -24,24 +23,21 @@ void TestGettext::runTests(IGameDef *gamedef)
 	TEST(testFmtgettext);
 }
 
+// Make sure updatepo.sh does not pick up the strings
+#define dummyname fmtgettext
+
 void TestGettext::testFmtgettext()
 {
-  std::string buf = fmtgettext("Viewing range changed to %d",  12);
-  UASSERTEQ(std::string, buf, "Viewing range changed to 12");
-  buf = fmtgettext(
-    "You are about to join this server with the name \"%s\" for the "
-    "first time.\n"
-    "If you proceed, a new account using your credentials will be "
-    "created on this server.\n"
-    "Please retype your password and click 'Register and Join' to "
-    "confirm account creation, or click 'Cancel' to abort."
-    ,  "A");
-  UASSERTEQ(std::string, buf,
-    "You are about to join this server with the name \"A\" for the "
-    "first time.\n"
-    "If you proceed, a new account using your credentials will be "
-    "created on this server.\n"
-    "Please retype your password and click 'Register and Join' to "
-    "confirm account creation, or click 'Cancel' to abort."
-  );
+	std::string buf = dummyname("sample text %d", 12);
+	UASSERTEQ(std::string, buf, "sample text 12");
+
+	std::string src, expect;
+	src    = "You are about to join this server with the name \"%s\".\n";
+	expect = "You are about to join this server with the name \"foo\".\n";
+	for (int i = 0; i < 20; i++) {
+		src.append("loooong text");
+		expect.append("loooong text");
+	}
+	buf = dummyname(src.c_str(), "foo");
+	UASSERTEQ(const std::string &, buf, expect);
 }
