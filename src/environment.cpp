@@ -134,7 +134,10 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			!std::isfinite(state->m_shootline.end.Z) ||
 			std::abs(state->m_shootline.start.X) > limit ||
 			std::abs(state->m_shootline.start.Y) > limit ||
-			std::abs(state->m_shootline.start.Z) > limit) {
+			std::abs(state->m_shootline.start.Z) > limit ||
+			std::abs(state->m_shootline.end.X) > 1000000 * limit ||
+			std::abs(state->m_shootline.end.Y) > 1000000 * limit ||
+			std::abs(state->m_shootline.end.Z) > 1000000 * limit) {
 			// Abort, no collisions
 			result->type = POINTEDTHING_NOTHING;
 			return;
