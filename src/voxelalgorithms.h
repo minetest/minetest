@@ -69,7 +69,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
  * the function modified
  */
 void blit_back_with_light(ServerMap *map, MMVManip *vm,
-	std::map<v3pos_t, MapBlock*> *modified_blocks);
+	std::map<v3bpos_t, MapBlock*> *modified_blocks);
 
 /*!
  * Corrects the light in a map block.

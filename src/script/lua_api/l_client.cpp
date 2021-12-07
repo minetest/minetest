@@ -213,7 +213,7 @@ int ModApiClient::l_gettext(lua_State *L)
 int ModApiClient::l_get_node_or_nil(lua_State *L)
 {
 	// pos
-	v3pos_t pos = read_v3pos_t(L, 1);
+	v3pos_t pos = read_v3pos(L, 1);
 
 	// Do it
 	bool pos_ok;
@@ -247,7 +247,7 @@ int ModApiClient::l_get_language(lua_State *L)
 // get_meta(pos)
 int ModApiClient::l_get_meta(lua_State *L)
 {
-	v3pos_t p = read_v3pos_t(L, 1);
+	v3pos_t p = read_v3pos(L, 1);
 
 	// check restrictions first
 	bool pos_ok;

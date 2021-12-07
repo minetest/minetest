@@ -42,7 +42,7 @@ MinimapUpdateThread::~MinimapUpdateThread()
 	}
 }
 
-bool MinimapUpdateThread::pushBlockUpdate(v3pos_t pos, MinimapMapblock *data)
+bool MinimapUpdateThread::pushBlockUpdate(v3bpos_t pos, MinimapMapblock *data)
 {
 	MutexAutoLock lock(m_queue_mutex);
 
@@ -78,7 +78,7 @@ bool MinimapUpdateThread::popBlockUpdate(QueuedMinimapUpdate *update)
 	return true;
 }
 
-void MinimapUpdateThread::enqueueBlock(v3pos_t pos, MinimapMapblock *data)
+void MinimapUpdateThread::enqueueBlock(v3bpos_t pos, MinimapMapblock *data)
 {
 	pushBlockUpdate(pos, data);
 	deferUpdate();
@@ -92,14 +92,14 @@ void MinimapUpdateThread::doUpdate()
 	while (popBlockUpdate(&update)) {
 		if (update.data) {
 			// Swap two values in the map using single lookup
-			std::pair<std::map<v3pos_t, MinimapMapblock*>::iterator, bool>
+			std::pair<std::map<v3bpos_t, MinimapMapblock*>::iterator, bool>
 			    result = m_blocks_cache.insert(std::make_pair(update.pos, update.data));
 			if (!result.second) {
 				delete result.first->second;
 				result.first->second = update.data;
 			}
 		} else {
-			std::map<v3pos_t, MinimapMapblock *>::iterator it;
+			std::map<v3bpos_t, MinimapMapblock *>::iterator it;
 			it = m_blocks_cache.find(update.pos);
 			if (it != m_blocks_cache.end()) {
 				delete it->second;
@@ -144,7 +144,7 @@ void MinimapUpdateThread::getMap(v3pos_t pos, s16 size, pos_t height)
 			continue;
 		const MinimapMapblock &block = *pblock->second;
 
-		v3pos_t block_node_min(blockpos * MAP_BLOCKSIZE);
+		v3pos_t block_node_min = getBlockPosRelative(blockpos);
 		v3pos_t block_node_max(block_node_min + MAP_BLOCKSIZE - 1);
 		// clip
 		v3pos_t range_min = componentwise_max(block_node_min, pos_min);
@@ -260,7 +260,7 @@ Minimap::~Minimap()
 	delete m_minimap_update_thread;
 }
 
-void Minimap::addBlock(v3pos_t pos, MinimapMapblock *data)
+void Minimap::addBlock(v3bpos_t pos, MinimapMapblock *data)
 {
 	m_minimap_update_thread->enqueueBlock(pos, data);
 }

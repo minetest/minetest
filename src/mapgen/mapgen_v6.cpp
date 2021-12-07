@@ -509,12 +509,12 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	v3bpos_t blockpos_max = data->blockpos_max;
 
 	// Area of central chunk
-	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
+	node_min = getBlockPosRelative(blockpos_min);
+	node_max = getBlockPosRelative(blockpos_max + v3bpos_t(1, 1, 1)) - v3pos_t(1, 1, 1);
 
 	// Full allocated area
-	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
+	full_node_min = getBlockPosRelative(blockpos_min - 1);
+	full_node_max = getBlockPosRelative(blockpos_max + 2) - v3pos_t(1, 1, 1);
 
 	central_area_size = node_max - node_min + v3pos_t(1, 1, 1);
 	assert(central_area_size.X == central_area_size.Z);

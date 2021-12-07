@@ -284,10 +284,10 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 void Client::handleCommand_BlockData(NetworkPacket* pkt)
 {
 	// Ignore too small packet
-	if (pkt->getSize() < sizeof(v3pos_t))
+	if (pkt->getSize() < sizeof(v3bpos_t))
 		return;
 
-	v3pos_t p;
+	v3bpos_t p;
 	*pkt >> p;
 
 	std::string datastring(pkt->getString(sizeof(p)), pkt->getSize() - sizeof(p));

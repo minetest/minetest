@@ -69,7 +69,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 	}
 }
 
-void MeshUpdateQueue::addBlock(Map *map, v3pos_t p, bool ack_block_to_server, bool urgent)
+void MeshUpdateQueue::addBlock(Map *map, v3bpos_t p, bool ack_block_to_server, bool urgent)
 {
 	MutexAutoLock lock(m_mutex);
 
@@ -82,13 +82,13 @@ void MeshUpdateQueue::addBlock(Map *map, v3pos_t p, bool ack_block_to_server, bo
 	std::vector<CachedMapBlockData*> cached_blocks;
 	size_t cache_hit_counter = 0;
 	cached_blocks.reserve(3*3*3);
-	v3pos_t dp;
+	v3bpos_t dp;
 	for (dp.X = -1; dp.X <= 1; dp.X++)
 	for (dp.Y = -1; dp.Y <= 1; dp.Y++)
 	for (dp.Z = -1; dp.Z <= 1; dp.Z++) {
-		v3pos_t p1 = p + dp;
+		v3bpos_t p1 = p + dp;
 		CachedMapBlockData *cached_block;
-		if (dp == v3pos_t(0, 0, 0))
+		if (dp == v3bpos_t(0, 0, 0))
 			cached_block = cacheBlock(map, p1, FORCE_UPDATE);
 		else
 			cached_block = cacheBlock(map, p1, SKIP_UPDATE_IF_ALREADY_CACHED,
@@ -156,11 +156,11 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	return NULL;
 }
 
-CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3pos_t p, UpdateMode mode,
+CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3bpos_t p, UpdateMode mode,
 			size_t *cache_hit_counter)
 {
 	CachedMapBlockData *cached_block = nullptr;
-	std::map<v3pos_t, CachedMapBlockData*>::iterator it =
+	std::map<v3bpos_t, CachedMapBlockData*>::iterator it =
 			m_cache.find(p);
 
 	if (it != m_cache.end()) {
@@ -193,9 +193,9 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3pos_t p, UpdateMode 
 	return cached_block;
 }
 
-CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3pos_t &p)
+CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3bpos_t &p)
 {
-	std::map<v3pos_t, CachedMapBlockData*>::iterator it = m_cache.find(p);
+	std::map<v3bpos_t, CachedMapBlockData*>::iterator it = m_cache.find(p);
 	if (it != m_cache.end()) {
 		return it->second;
 	}
@@ -216,7 +216,7 @@ void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 	for (dp.X = -1; dp.X <= 1; dp.X++)
 	for (dp.Y = -1; dp.Y <= 1; dp.Y++)
 	for (dp.Z = -1; dp.Z <= 1; dp.Z++) {
-		v3pos_t p = q->p + dp;
+		v3bpos_t p = q->p + v3bpos_t(dp.X, dp.Y, dp.Z);
 		CachedMapBlockData *cached_block = getCachedBlock(p);
 		if (cached_block) {
 			cached_block->refcount_from_queue--;
@@ -246,7 +246,7 @@ void MeshUpdateQueue::cleanupCache()
 
 	int t_now = time(0);
 
-	for (std::map<v3pos_t, CachedMapBlockData*>::iterator it = m_cache.begin();
+	for (std::map<v3bpos_t, CachedMapBlockData*>::iterator it = m_cache.begin();
 			it != m_cache.end(); ) {
 		CachedMapBlockData *cached_block = it->second;
 		if (cached_block->refcount_from_queue == 0 &&
@@ -271,7 +271,7 @@ MeshUpdateThread::MeshUpdateThread(Client *client):
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
 }
 
-void MeshUpdateThread::updateBlock(Map *map, v3pos_t p, bool ack_block_to_server,
+void MeshUpdateThread::updateBlock(Map *map, v3bpos_t p, bool ack_block_to_server,
 		bool urgent)
 {
 	// Allow the MeshUpdateQueue to do whatever it wants

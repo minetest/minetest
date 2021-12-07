@@ -650,7 +650,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
-		std::map<v3pos_t, MapBlock*> modified_blocks;
+		std::map<v3bpos_t, MapBlock*> modified_blocks;
 		m_env->getMap().transformLiquids(modified_blocks, m_env);
 
 		/*
@@ -906,7 +906,7 @@ void Server::AsyncRunStep(bool initial_step)
 			}
 			case MEET_OTHER:
 				prof.add("MEET_OTHER", 1);
-				for (const v3pos_t &modified_block : event->modified_blocks) {
+				for (const v3bpos_t &modified_block : event->modified_blocks) {
 					m_clients.markBlockposAsNotSent(modified_block);
 				}
 				break;
@@ -921,9 +921,9 @@ void Server::AsyncRunStep(bool initial_step)
 				Set blocks not sent to far players
 			*/
 			if (!far_players.empty()) {
-				// Convert list format to that wanted by SetBlocksNotSent
-				std::map<v3pos_t, MapBlock*> modified_blocks2;
-				for (const v3pos_t &modified_block : event->modified_blocks) {
+				// Convert libst format to that wanted by SetBlocksNotSent
+				std::map<v3bpos_t, MapBlock*> modified_blocks2;
+				for (const v3bpos_t &modified_block : event->modified_blocks) {
 					modified_blocks2[modified_block] =
 							m_env->getMap().getBlockNoCreateNoEx(modified_block);
 				}
@@ -1223,7 +1223,7 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
-void Server::SetBlocksNotSent(std::map<v3pos_t, MapBlock *>& block)
+void Server::SetBlocksNotSent(std::map<v3bpos_t, MapBlock *>& block)
 {
 	std::vector<session_t> clients = m_clients.getClientIDs();
 	m_clients.lock();
@@ -2420,7 +2420,7 @@ void Server::SendBlocks(float dtime)
 	m_clients.unlock();
 }
 
-bool Server::SendBlock(session_t peer_id, const v3pos_t &blockpos)
+bool Server::SendBlock(session_t peer_id, const v3bpos_t &blockpos)
 {
 	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 	if (!block)

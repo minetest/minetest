@@ -37,8 +37,8 @@ void ScriptApiEnv::environment_OnGenerated(v3pos_t minp, v3pos_t maxp,
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_generateds");
 	// Call callbacks
-	push_v3pos_t(L, minp);
-	push_v3pos_t(L, maxp);
+	push_v3pos(L, minp);
+	push_v3pos(L, maxp);
 	lua_pushnumber(L, blockseed);
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
@@ -216,7 +216,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 }
 
 void ScriptApiEnv::on_emerge_area_completion(
-	v3pos_t blockpos, int action, ScriptCallbackState *state)
+	v3bpos_t blockpos, int action, ScriptCallbackState *state)
 {
 	Server *server = getServer();
 
@@ -235,7 +235,7 @@ void ScriptApiEnv::on_emerge_area_completion(
 	lua_rawgeti(L, LUA_REGISTRYINDEX, state->callback_ref);
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 
-	push_v3pos_t(L, blockpos);
+	push_v3pos(L, blockpos);
 	lua_pushinteger(L, action);
 	lua_pushinteger(L, state->refcount);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, state->args_ref);
@@ -279,7 +279,7 @@ void ScriptApiEnv::on_liquid_transformed(
 	lua_createtable(L, list.size(), 0);
 	for(std::pair<v3pos_t, MapNode> p : list) {
 		lua_pushnumber(L, index);
-		push_v3pos_t(L, p.first);
+		push_v3pos(L, p.first);
 		lua_rawset(L, -4);
 		lua_pushnumber(L, index++);
 		pushnode(L, p.second, ndef);

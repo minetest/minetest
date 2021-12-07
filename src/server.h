@@ -372,7 +372,7 @@ public:
 	ModChannel *getModChannel(const std::string &channel);
 
 	// Send block to specific player only
-	bool SendBlock(session_t peer_id, const v3pos_t &blockpos);
+	bool SendBlock(session_t peer_id, const v3bpos_t &blockpos);
 
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);

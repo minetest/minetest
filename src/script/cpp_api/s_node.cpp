@@ -116,7 +116,7 @@ bool ScriptApiNode::node_on_punch(v3pos_t p, MapNode node,
 		return false;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, puncher);
 	pushPointedThing(pointed);
@@ -139,7 +139,7 @@ bool ScriptApiNode::node_on_dig(v3pos_t p, MapNode node,
 		return false;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, digger);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
@@ -165,7 +165,7 @@ void ScriptApiNode::node_on_construct(v3pos_t p, MapNode node)
 		return;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }
@@ -183,7 +183,7 @@ void ScriptApiNode::node_on_destruct(v3pos_t p, MapNode node)
 		return;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }
@@ -201,7 +201,7 @@ bool ScriptApiNode::node_on_flood(v3pos_t p, MapNode node, MapNode newnode)
 		return false;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	pushnode(L, node, ndef);
 	pushnode(L, newnode, ndef);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
@@ -222,7 +222,7 @@ void ScriptApiNode::node_after_destruct(v3pos_t p, MapNode node)
 		return;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	pushnode(L, node, ndef);
 	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
@@ -241,7 +241,7 @@ bool ScriptApiNode::node_on_timer(v3pos_t p, MapNode node, f32 dtime)
 		return false;
 
 	// Call function
-	push_v3pos_t(L, p);
+	push_v3pos(L, p);
 	lua_pushnumber(L,dtime);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 	lua_remove(L, error_handler);
@@ -269,7 +269,7 @@ void ScriptApiNode::node_on_receive_fields(v3pos_t p,
 		return;
 
 	// Call function
-	push_v3pos_t(L, p);                    // pos
+	push_v3pos(L, p);                    // pos
 	lua_pushstring(L, formname.c_str()); // formname
 	lua_newtable(L);                     // fields
 	StringMap::const_iterator it;

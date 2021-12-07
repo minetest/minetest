@@ -330,11 +330,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	MeshBufListList grouped_buffers;
 
 	struct DrawDescriptor {
-		v3pos_t m_pos;
+		v3bpos_t m_pos;
 		scene::IMeshBuffer *m_buffer;
 		bool m_reuse_material;
 
-		DrawDescriptor(const v3pos_t &pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+		DrawDescriptor(const v3bpos_t &pos, scene::IMeshBuffer *buffer, bool reuse_material) :
 			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material)
 		{}
 	};

@@ -74,7 +74,7 @@ class VoxelManipulator;
 class MapBlock
 {
 public:
-	MapBlock(Map *parent, v3pos_t pos, IGameDef *gamedef, bool dummy=false);
+	MapBlock(Map *parent, v3bpos_t pos, IGameDef *gamedef, bool dummy=false);
 	~MapBlock();
 
 	/*virtual u16 nodeContainerId() const
@@ -633,6 +633,11 @@ inline v3bpos_t getNodeBlockPos(const v3pos_t &p)
 inline void getNodeBlockPosWithOffset(const v3pos_t &p, v3bpos_t &block, v3pos_t &offset)
 {
 	getContainerPosWithOffset(p, MAP_BLOCKSIZE, block, offset);
+}
+
+inline v3pos_t getBlockPosRelative(const v3bpos_t &p)
+{
+	return v3pos_t(p.X, p.Y, p.Z) * MAP_BLOCKSIZE;
 }
 
 /*

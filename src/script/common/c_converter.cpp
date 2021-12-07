@@ -324,7 +324,7 @@ v3s16 read_v3s16(lua_State *L, int index)
 	return doubleToInt(pf, 1.0);
 }
 
-v3pos_t read_v3pos_t(lua_State *L, int index)
+v3pos_t read_v3pos(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = read_v3d(L, index);
@@ -338,7 +338,7 @@ v3s16 check_v3s16(lua_State *L, int index)
 	return doubleToInt(pf, 1.0);
 }
 
-v3pos_t check_v3pos_t(lua_State *L, int index)
+v3pos_t check_v3pos(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = check_v3d(L, index);

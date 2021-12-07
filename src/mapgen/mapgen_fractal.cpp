@@ -216,12 +216,12 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
-	v3pos_t blockpos_min = data->blockpos_min;
-	v3pos_t blockpos_max = data->blockpos_max;
-	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
-	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
+	v3bpos_t blockpos_min = data->blockpos_min;
+	v3bpos_t blockpos_max = data->blockpos_max;
+	node_min = getBlockPosRelative(blockpos_min);
+	node_max = getBlockPosRelative(blockpos_max + v3bpos_t(1, 1, 1)) - v3pos_t(1, 1, 1);
+	full_node_min = getBlockPosRelative(blockpos_min - 1);
+	full_node_max = getBlockPosRelative(blockpos_max + 2) - v3pos_t(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 

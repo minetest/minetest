@@ -40,7 +40,7 @@ public:
 	void player_event(ServerActiveObject *player, const std::string &type);
 
 	// Called after emerge of a block queued from core.emerge_area()
-	void on_emerge_area_completion(v3pos_t blockpos, int action,
+	void on_emerge_area_completion(v3bpos_t blockpos, int action,
 		ScriptCallbackState *state);
 
 	// Called after liquid transform changes

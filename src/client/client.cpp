@@ -384,7 +384,7 @@ void Client::step(float dtime)
 	*/
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
-		std::vector<v3pos_t> deleted_blocks;
+		std::vector<v3bpos_t> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("client_unload_unused_data_timeout"),
 			g_settings->getS32("client_mapblock_limit"),
@@ -395,8 +395,8 @@ void Client::step(float dtime)
 			NOTE: This loop is intentionally iterated the way it is.
 		*/
 
-		std::vector<v3pos_t>::iterator i = deleted_blocks.begin();
-		std::vector<v3pos_t> sendlist;
+		std::vector<v3bpos_t>::iterator i = deleted_blocks.begin();
+		std::vector<v3bpos_t> sendlist;
 		for(;;) {
 			if(sendlist.size() == 255 || i == deleted_blocks.end()) {
 				if(sendlist.empty())
@@ -489,7 +489,7 @@ void Client::step(float dtime)
 	*/
 	{
 		int num_processed_meshes = 0;
-		std::vector<v3pos_t> blocks_to_ack;
+		std::vector<v3bpos_t> blocks_to_ack;
 		while (!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
@@ -1097,24 +1097,24 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 	}
 }
 
-void Client::sendDeletedBlocks(std::vector<v3pos_t> &blocks)
+void Client::sendDeletedBlocks(std::vector<v3bpos_t> &blocks)
 {
 	NetworkPacket pkt(TOSERVER_DELETEDBLOCKS, 1 + sizeof(v3pos_t) * blocks.size());
 
 	pkt << (u8) blocks.size();
 
-	for (const v3pos_t &block : blocks) {
+	for (const v3bpos_t &block : blocks) {
 		pkt << block;
 	}
 
 	Send(&pkt);
 }
 
-void Client::sendGotBlocks(const std::vector<v3pos_t> &blocks)
+void Client::sendGotBlocks(const std::vector<v3bpos_t> &blocks)
 {
 	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6 * blocks.size());
 	pkt << (u8) blocks.size();
-	for (const v3pos_t &block : blocks)
+	for (const v3bpos_t &block : blocks)
 		pkt << block;
 
 	Send(&pkt);
@@ -1395,7 +1395,7 @@ void Client::addNode(v3pos_t p, MapNode n, bool remove_metadata)
 {
 	//TimeTaker timer1("Client::addNode()");
 
-	std::map<v3pos_t, MapBlock*> modified_blocks;
+	std::map<v3bpos_t, MapBlock*> modified_blocks;
 
 	try {
 		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
@@ -1637,7 +1637,7 @@ void Client::addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server, bool 
 	}
 
 	v3bpos_t blockpos          = getNodeBlockPos(nodepos);
-	v3pos_t blockpos_relative = blockpos * MAP_BLOCKSIZE;
+	v3pos_t blockpos_relative = getBlockPosRelative(blockpos);
 
 	try{
 		addUpdateMeshTask(blockpos, ack_to_server, urgent);
@@ -1647,7 +1647,7 @@ void Client::addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server, bool 
 	// Leading edge
 	if(nodepos.X == blockpos_relative.X){
 		try{
-			v3bpos_t p = blockpos + v3pos_t(-1,0,0);
+			v3bpos_t p = blockpos + v3bpos_t(-1,0,0);
 			addUpdateMeshTask(p, false, urgent);
 		}
 		catch(InvalidPositionException &e){}
@@ -1655,7 +1655,7 @@ void Client::addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server, bool 
 
 	if(nodepos.Y == blockpos_relative.Y){
 		try{
-			v3bpos_t p = blockpos + v3pos_t(0,-1,0);
+			v3bpos_t p = blockpos + v3bpos_t(0,-1,0);
 			addUpdateMeshTask(p, false, urgent);
 		}
 		catch(InvalidPositionException &e){}
@@ -1663,7 +1663,7 @@ void Client::addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server, bool 
 
 	if(nodepos.Z == blockpos_relative.Z){
 		try{
-			v3bpos_t p = blockpos + v3pos_t(0,0,-1);
+			v3bpos_t p = blockpos + v3bpos_t(0,0,-1);
 			addUpdateMeshTask(p, false, urgent);
 		}
 		catch(InvalidPositionException &e){}

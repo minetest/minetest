@@ -39,7 +39,7 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
-	v3pos_t m_blockpos = v3pos_t(-1337,-1337,-1337);
+	v3bpos_t m_blockpos = v3bpos_t(-1337,-1337,-1337);
 	v3pos_t m_crack_pos_relative = v3pos_t(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
 
@@ -51,7 +51,7 @@ struct MeshMakeData
 	/*
 		Copy block data manually (to allow optimizations by the caller)
 	*/
-	void fillBlockDataBegin(const v3pos_t &blockpos);
+	void fillBlockDataBegin(const v3bpos_t &blockpos);
 	void fillBlockData(const v3pos_t &block_offset, MapNode *data);
 
 	/*

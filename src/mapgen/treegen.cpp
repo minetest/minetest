@@ -122,12 +122,12 @@ void make_tree(MMVManip &vmanip, v3pos_t p0, bool is_apple_tree,
 treegen::error spawn_ltree(ServerMap *map, v3pos_t p0,
 	const NodeDefManager *ndef, const TreeDef &tree_definition)
 {
-	std::map<v3pos_t, MapBlock*> modified_blocks;
+	std::map<v3bpos_t, MapBlock*> modified_blocks;
 	MMVManip vmanip(map);
 	v3bpos_t tree_blockp = getNodeBlockPos(p0);
 	treegen::error e;
 
-	vmanip.initialEmerge(tree_blockp - v3pos_t(1, 1, 1), tree_blockp + v3pos_t(1, 3, 1));
+	vmanip.initialEmerge(tree_blockp - v3bpos_t(1, 1, 1), tree_blockp + v3bpos_t(1, 3, 1));
 	e = make_ltree(vmanip, p0, ndef, tree_definition);
 	if (e != SUCCESS)
 		return e;

@@ -67,9 +67,8 @@ namespace core {
 // Node position
 using pos_t = irr::s32;
 
-// Block position. In future can be renamed to pos_t
+// Block position.
 using bpos_t = irr::s32;
-
 
 #else
 using pos_t = irr::s16;

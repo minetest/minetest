@@ -234,9 +234,9 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3pos_t p, u32 flags,
 void Schematic::placeOnMap(ServerMap *map, v3pos_t p, u32 flags,
 	Rotation rot, bool force_place)
 {
-	std::map<v3pos_t, MapBlock *> lighting_modified_blocks;
-	std::map<v3pos_t, MapBlock *> modified_blocks;
-	std::map<v3pos_t, MapBlock *>::iterator it;
+	std::map<v3bpos_t, MapBlock *> lighting_modified_blocks;
+	std::map<v3bpos_t, MapBlock *> modified_blocks;
+	std::map<v3bpos_t, MapBlock *>::iterator it;
 
 	assert(map != NULL);
 	assert(schemdata != NULL);
@@ -556,7 +556,7 @@ bool Schematic::getSchematicFromMap(Map *map, v3pos_t p1, v3pos_t p2)
 	v3bpos_t bp2 = getNodeBlockPos(p2);
 	vm->initialEmerge(bp1, bp2);
 
-	v3bpos_t size_pos = p2 - p1 + 1;
+	v3pos_t size_pos = p2 - p1 + 1;
 	size = v3s16(size_pos.X, size_pos.Y, size_pos.Z);
 
 	slice_probs = new u8[size.Y];

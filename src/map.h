@@ -103,7 +103,8 @@ struct MapEditEvent
 		{
 			VoxelArea a;
 			for (v3bpos_t p : modified_blocks) {
-				v3pos_t np1 = getContainerPos(p, MAP_BLOCKSIZE);
+				v3bpos_t np1b = getContainerPos(v3pos_t(p.X, p.Y, p.Z), MAP_BLOCKSIZE);
+				v3pos_t np1(np1b.X, np1b.Y, np1b.Z);
 				v3pos_t np2 = np1 + v3pos_t(1,1,1)*MAP_BLOCKSIZE - v3pos_t(1,1,1);
 				a.addPoint(np1);
 				a.addPoint(np2);

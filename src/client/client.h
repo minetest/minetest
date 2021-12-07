@@ -304,9 +304,9 @@ public:
 
 	u64 getMapSeed(){ return m_map_seed; }
 
-	void addUpdateMeshTask(v3pos_t blockpos, bool ack_to_server=false, bool urgent=false);
+	void addUpdateMeshTask(v3bpos_t blockpos, bool ack_to_server=false, bool urgent=false);
 	// Including blocks at appropriate edges
-	void addUpdateMeshTaskWithEdge(v3pos_t blockpos, bool ack_to_server=false, bool urgent=false);
+	void addUpdateMeshTaskWithEdge(v3bpos_t blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server=false, bool urgent=false);
 
 	void updateCameraOffset(v3pos_t camera_offset)
@@ -458,8 +458,8 @@ private:
 	void sendInit(const std::string &playerName);
 	void promptConfirmRegistration(AuthMechanism chosen_auth_mechanism);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
-	void sendDeletedBlocks(std::vector<v3pos_t> &blocks);
-	void sendGotBlocks(const std::vector<v3pos_t> &blocks);
+	void sendDeletedBlocks(std::vector<v3bpos_t> &blocks);
+	void sendGotBlocks(const std::vector<v3bpos_t> &blocks);
 	void sendRemovedSounds(std::vector<s32> &soundList);
 
 	// Helper function

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/directiontables.h"
 #include "mapblock_mesh.h"
+#include "mapblock.h"
 #include "settings.h"
 #include "nodedef.h"
 #include "client/tile.h"
@@ -66,7 +67,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	collector(output),
 	nodedef(data->m_client->ndef()),
 	meshmanip(mm),
-	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE)
+	blockpos_nodes(getBlockPosRelative(data->m_blockpos))
 {
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting

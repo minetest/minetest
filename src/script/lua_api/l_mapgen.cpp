@@ -523,7 +523,7 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	v3pos_t pos = read_v3pos_t(L, 1);
+	v3pos_t pos = read_v3pos(L, 1);
 
 	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 
@@ -544,7 +544,7 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	v3pos_t pos = read_v3pos_t(L, 1);
+	v3pos_t pos = read_v3pos(L, 1);
 
 	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 
@@ -565,7 +565,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	v3pos_t pos = read_v3pos_t(L, 1);
+	v3pos_t pos = read_v3pos(L, 1);
 
 	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 	if (!biomegen)
@@ -627,10 +627,10 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		lua_setmetatable(L, -2);
 
 		// emerged min pos
-		push_v3pos_t(L, vm->m_area.MinEdge);
+		push_v3pos(L, vm->m_area.MinEdge);
 
 		// emerged max pos
-		push_v3pos_t(L, vm->m_area.MaxEdge);
+		push_v3pos(L, vm->m_area.MaxEdge);
 
 		return 3;
 	}
@@ -697,7 +697,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			lua_createtable(L, it->second.size(), 0);
 
 			for (size_t j = 0; j != it->second.size(); j++) {
-				push_v3pos_t(L, it->second[j]);
+				push_v3pos(L, it->second[j]);
 				lua_rawseti(L, -2, j + 1);
 			}
 
@@ -1432,9 +1432,9 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	v3pos_t pmin = lua_istable(L, 2) ? check_v3pos_t(L, 2) :
+	v3pos_t pmin = lua_istable(L, 2) ? check_v3pos(L, 2) :
 			mg.vm->m_area.MinEdge + v3pos_t(1,1,1) * MAP_BLOCKSIZE;
-	v3pos_t pmax = lua_istable(L, 3) ? check_v3pos_t(L, 3) :
+	v3pos_t pmax = lua_istable(L, 3) ? check_v3pos(L, 3) :
 			mg.vm->m_area.MaxEdge - v3pos_t(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
@@ -1461,9 +1461,9 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	v3pos_t pmin = lua_istable(L, 2) ? check_v3pos_t(L, 2) :
+	v3pos_t pmin = lua_istable(L, 2) ? check_v3pos(L, 2) :
 			mg.vm->m_area.MinEdge + v3pos_t(1,1,1) * MAP_BLOCKSIZE;
-	v3pos_t pmax = lua_istable(L, 3) ? check_v3pos_t(L, 3) :
+	v3pos_t pmax = lua_istable(L, 3) ? check_v3pos(L, 3) :
 			mg.vm->m_area.MaxEdge - v3pos_t(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
@@ -1488,8 +1488,8 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	Map *map = &(getEnv(L)->getMap());
 	Schematic schem;
 
-	v3pos_t p1 = check_v3pos_t(L, 1);
-	v3pos_t p2 = check_v3pos_t(L, 2);
+	v3pos_t p1 = check_v3pos(L, 1);
+	v3pos_t p2 = check_v3pos(L, 2);
 	sortBoxVerticies(p1, p2);
 
 	std::vector<std::pair<v3pos_t, u8> > prob_list;
@@ -1498,7 +1498,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 		while (lua_next(L, 3)) {
 			if (lua_istable(L, -1)) {
 				lua_getfield(L, -1, "pos");
-				v3pos_t pos = check_v3pos_t(L, -1);
+				v3pos_t pos = check_v3pos(L, -1);
 				lua_pop(L, 1);
 
 				u8 prob = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
@@ -1552,7 +1552,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position
-	v3pos_t p = check_v3pos_t(L, 1);
+	v3pos_t p = check_v3pos(L, 1);
 
 	//// Read rotation
 	int rot = ROTATE_0;
@@ -1600,7 +1600,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 	MMVManip *vm = LuaVoxelManip::checkobject(L, 1)->vm;
 
 	//// Read position
-	v3pos_t p = check_v3pos_t(L, 2);
+	v3pos_t p = check_v3pos(L, 2);
 
 	//// Read rotation
 	int rot = ROTATE_0;

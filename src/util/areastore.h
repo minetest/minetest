@@ -124,7 +124,7 @@ private:
 	/// Range, in nodes, of the getAreasForPos cache.
 	/// If you modify this, call invalidateCache()
 	u8 m_cacheblock_radius = 64;
-	LRUCache<v3pos_t, std::vector<Area *> > m_res_cache;
+	LRUCache<v3bpos_t, std::vector<Area *> > m_res_cache;
 };
 
 

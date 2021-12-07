@@ -38,7 +38,7 @@ struct MapDrawControl
 struct MeshBufList
 {
 	video::SMaterial m;
-	std::vector<std::pair<v3pos_t,scene::IMeshBuffer*>> bufs;
+	std::vector<std::pair<v3bpos_t,scene::IMeshBuffer*>> bufs;
 };
 
 struct MeshBufListList

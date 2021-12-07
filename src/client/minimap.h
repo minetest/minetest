@@ -95,7 +95,7 @@ public:
 	MinimapUpdateThread() : UpdateThread("Minimap") {}
 	virtual ~MinimapUpdateThread();
 
-	void getMap(v3bpos_t pos, s16 size, pos_t height);
+	void getMap(v3pos_t pos, s16 size, pos_t height);
 	void enqueueBlock(v3bpos_t pos, MinimapMapblock *data);
 	bool pushBlockUpdate(v3bpos_t pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);

@@ -40,11 +40,11 @@ MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
 	m_use_shaders(use_shaders)
 {}
 
-void MeshMakeData::fillBlockDataBegin(const v3pos_t &blockpos)
+void MeshMakeData::fillBlockDataBegin(const v3bpos_t &blockpos)
 {
 	m_blockpos = blockpos;
 
-	v3pos_t blockpos_nodes = m_blockpos*MAP_BLOCKSIZE;
+	v3pos_t blockpos_nodes = getBlockPosRelative(m_blockpos);
 
 	m_vmanip.clear();
 	VoxelArea voxel_area(blockpos_nodes - v3pos_t(1,1,1) * MAP_BLOCKSIZE,
@@ -57,8 +57,8 @@ void MeshMakeData::fillBlockData(const v3pos_t &block_offset, MapNode *data)
 	v3pos_t data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
 	VoxelArea data_area(v3pos_t(0,0,0), data_size - v3pos_t(1,1,1));
 
-	v3pos_t bp = m_blockpos + block_offset;
-	v3pos_t blockpos_nodes = bp * MAP_BLOCKSIZE;
+	v3bpos_t bp = m_blockpos + v3bpos_t(block_offset.X, block_offset.Y, block_offset.Z);
+	v3pos_t blockpos_nodes = getBlockPosRelative(bp);
 	m_vmanip.copyFrom(data, data_area, v3pos_t(0,0,0), blockpos_nodes, data_size);
 }
 
@@ -72,7 +72,7 @@ void MeshMakeData::fill(MapBlock *block)
 	Map *map = block->getParent();
 
 	for (const v3pos_t &dir : g_26dirs) {
-		v3pos_t bp = m_blockpos + dir;
+		v3bpos_t bp = m_blockpos + v3bpos_t(dir.X, dir.Y, dir.Z);
 		MapBlock *b = map->getBlockNoCreateNoEx(bp);
 		if(b)
 			fillBlockData(dir, b->getData());
@@ -82,7 +82,7 @@ void MeshMakeData::fill(MapBlock *block)
 void MeshMakeData::setCrack(int crack_level, v3pos_t crack_pos)
 {
 	if (crack_level >= 0)
-		m_crack_pos_relative = crack_pos - m_blockpos*MAP_BLOCKSIZE;
+		m_crack_pos_relative = crack_pos - getBlockPosRelative(m_blockpos);
 }
 
 void MeshMakeData::setSmoothLighting(bool smooth_lighting)
@@ -779,7 +779,7 @@ static void getTileInfo(
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
 	const NodeDefManager *ndef = data->m_client->ndef();
-	v3pos_t blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
+	v3pos_t blockpos_nodes = getBlockPosRelative(data->m_blockpos);
 
 	const MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);
 
@@ -1023,7 +1023,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3pos_t camera_offset):
 	if (data->m_client->getMinimap()) {
 		m_minimap_mapblock = new MinimapMapblock;
 		m_minimap_mapblock->getMinimapNodes(
-			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);
+			&data->m_vmanip, getBlockPosRelative(data->m_blockpos));
 	}
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)

@@ -168,7 +168,7 @@ void AreaStore::cacheMiss(void *data, const v3pos_t &mpos, std::vector<Area *> *
 void AreaStore::getAreasForPos(std::vector<Area *> *result, v3pos_t pos)
 {
 	if (m_cache_enabled) {
-		v3pos_t mblock = getContainerPos(pos, m_cacheblock_radius);
+		v3bpos_t mblock = getContainerPos(pos, m_cacheblock_radius);
 		const std::vector<Area *> *pre_list = m_res_cache.lookupCache(mblock);
 
 		size_t s_p_l = pre_list->size();

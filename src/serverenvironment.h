@@ -164,10 +164,10 @@ public:
 	void update(std::vector<PlayerSAO*> &active_players,
 		s16 active_block_range,
 		s16 active_object_range,
-		std::set<v3pos_t> &blocks_removed,
-		std::set<v3pos_t> &blocks_added);
+		std::set<v3bpos_t> &blocks_removed,
+		std::set<v3bpos_t> &blocks_added);
 
-	bool contains(v3pos_t p){
+	bool contains(v3bpos_t p){
 		return (m_list.find(p) != m_list.end());
 	}
 
@@ -175,9 +175,9 @@ public:
 		m_list.clear();
 	}
 
-	std::set<v3pos_t> m_list;
-	std::set<v3pos_t> m_abm_list;
-	std::set<v3pos_t> m_forceloaded_list;
+	std::set<v3bpos_t> m_list;
+	std::set<v3bpos_t> m_abm_list;
+	std::set<v3bpos_t> m_forceloaded_list;
 
 private:
 };
@@ -346,7 +346,7 @@ public:
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
 
-	std::set<v3pos_t>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; }
+	std::set<v3bpos_t>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; }
 
 	// Sorted by how ready a mapblock is
 	enum BlockStatus {
@@ -355,12 +355,12 @@ public:
 		BS_LOADED,
 		BS_ACTIVE // always highest value
 	};
-	BlockStatus getBlockStatus(v3pos_t blockpos);
+	BlockStatus getBlockStatus(v3bpos_t blockpos);
 
 	// Sets the static object status all the active objects in the specified block
 	// This is only really needed for deleting blocks from the map
-	void setStaticForActiveObjectsInBlock(v3pos_t blockpos,
-		bool static_exists, v3pos_t static_block=v3pos_t(0,0,0));
+	void setStaticForActiveObjectsInBlock(v3bpos_t blockpos,
+		bool static_exists, v3bpos_t static_block=v3bpos_t(0,0,0));
 
 	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
@@ -427,7 +427,7 @@ private:
 	*/
 	void deleteStaticFromBlock(
 			ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge);
-	bool saveStaticToBlock(v3pos_t blockpos, u16 store_id,
+	bool saveStaticToBlock(v3bpos_t blockpos, u16 store_id,
 			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
 	/*
