@@ -586,7 +586,7 @@ public:
 	 * contains all nodes' selection boxes. The returned box might be larger
 	 * than the minimal size if the largest node is removed from the manager.
 	 */
-	inline core::aabbox3d<POS> getSelectionBoxIntUnion() const {
+	inline core::aabbox3d<pos_t> getSelectionBoxIntUnion() const {
 		return m_selection_box_int_union;
 	}
 
@@ -785,7 +785,7 @@ private:
 	 * contains all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	core::aabbox3d<POS> m_selection_box_int_union;
+	core::aabbox3d<pos_t> m_selection_box_int_union;
 
 	/*!
 	 * NodeResolver instances to notify once node registration has finished.

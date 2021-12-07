@@ -41,58 +41,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // sqrt(3.0) / 2.0 in literal form.
 static constexpr const f32 BLOCK_MAX_RADIUS = 0.866025403784f * MAP_BLOCKSIZE * BS;
 
-inline BPOS getContainerPos(POS p, POS d)
+inline bpos_t getContainerPos(pos_t p, pos_t d)
 {
 	return (p >= 0 ? p : p - d + 1) / d;
 }
 
-inline v2BPOS getContainerPos(v2POS p, POS d)
+inline v2bpos_t getContainerPos(v2pos_t p, pos_t d)
 {
-	return v2BPOS(
+	return v2bpos_t(
 		getContainerPos(p.X, d),
 		getContainerPos(p.Y, d)
 	);
 }
 
-inline v3BPOS getContainerPos(v3POS p, POS d)
+inline v3bpos_t getContainerPos(v3pos_t p, pos_t d)
 {
-	return v3BPOS(
+	return v3bpos_t(
 		getContainerPos(p.X, d),
 		getContainerPos(p.Y, d),
 		getContainerPos(p.Z, d)
 	);
 }
 
-inline v2BPOS getContainerPos(v2POS p, v2POS d)
+inline v2bpos_t getContainerPos(v2pos_t p, v2pos_t d)
 {
-	return v2BPOS(
+	return v2bpos_t(
 		getContainerPos(p.X, d.X),
 		getContainerPos(p.Y, d.Y)
 	);
 }
 
-inline v3BPOS getContainerPos(v3POS p, v3POS d)
+inline v3bpos_t getContainerPos(v3pos_t p, v3pos_t d)
 {
-	return v3BPOS(
+	return v3bpos_t(
 		getContainerPos(p.X, d.X),
 		getContainerPos(p.Y, d.Y),
 		getContainerPos(p.Z, d.Z)
 	);
 }
 
-inline void getContainerPosWithOffset(POS p, POS d, BPOS &container, POS &offset)
+inline void getContainerPosWithOffset(pos_t p, pos_t d, bpos_t &container, pos_t &offset)
 {
 	container = (p >= 0 ? p : p - d + 1) / d;
 	offset = p & (d - 1);
 }
 
-inline void getContainerPosWithOffset(const v2POS &p, POS d, v2BPOS &container, v2POS &offset)
+inline void getContainerPosWithOffset(const v2pos_t &p, pos_t d, v2bpos_t &container, v2pos_t &offset)
 {
 	getContainerPosWithOffset(p.X, d, container.X, offset.X);
 	getContainerPosWithOffset(p.Y, d, container.Y, offset.Y);
 }
 
-inline void getContainerPosWithOffset(const v3POS &p, POS d, v3BPOS &container, v3POS &offset)
+inline void getContainerPosWithOffset(const v3pos_t &p, pos_t d, v3bpos_t &container, v3pos_t &offset)
 {
 	getContainerPosWithOffset(p.X, d, container.X, offset.X);
 	getContainerPosWithOffset(p.Y, d, container.Y, offset.Y);
@@ -100,7 +100,7 @@ inline void getContainerPosWithOffset(const v3POS &p, POS d, v3BPOS &container, 
 }
 
 
-inline bool isInArea(v3POS p, POS d)
+inline bool isInArea(v3pos_t p, pos_t d)
 {
 	return (
 		p.X >= 0 && p.X < d &&
@@ -109,7 +109,7 @@ inline bool isInArea(v3POS p, POS d)
 	);
 }
 
-inline bool isInArea(v2POS p, POS d)
+inline bool isInArea(v2pos_t p, pos_t d)
 {
 	return (
 		p.X >= 0 && p.X < d &&
@@ -117,7 +117,7 @@ inline bool isInArea(v2POS p, POS d)
 	);
 }
 
-inline bool isInArea(v3POS p, v3POS d)
+inline bool isInArea(v3pos_t p, v3pos_t d)
 {
 	return (
 		p.X >= 0 && p.X < d.X &&
@@ -126,23 +126,23 @@ inline bool isInArea(v3POS p, v3POS d)
 	);
 }
 
-inline void sortBoxVerticies(v3POS &p1, v3POS &p2) {
+inline void sortBoxVerticies(v3pos_t &p1, v3pos_t &p2) {
 	if (p1.X > p2.X)
-		SWAP(POS, p1.X, p2.X);
+		SWAP(pos_t, p1.X, p2.X);
 	if (p1.Y > p2.Y)
-		SWAP(POS, p1.Y, p2.Y);
+		SWAP(pos_t, p1.Y, p2.Y);
 	if (p1.Z > p2.Z)
-		SWAP(POS, p1.Z, p2.Z);
+		SWAP(pos_t, p1.Z, p2.Z);
 }
 
-inline v3POS componentwise_min(const v3POS &a, const v3POS &b)
+inline v3pos_t componentwise_min(const v3pos_t &a, const v3pos_t &b)
 {
-	return v3POS(MYMIN(a.X, b.X), MYMIN(a.Y, b.Y), MYMIN(a.Z, b.Z));
+	return v3pos_t(MYMIN(a.X, b.X), MYMIN(a.Y, b.Y), MYMIN(a.Z, b.Z));
 }
 
-inline v3POS componentwise_max(const v3POS &a, const v3POS &b)
+inline v3pos_t componentwise_max(const v3pos_t &a, const v3pos_t &b)
 {
-	return v3POS(MYMAX(a.X, b.X), MYMAX(a.Y, b.Y), MYMAX(a.Z, b.Z));
+	return v3pos_t(MYMAX(a.X, b.X), MYMAX(a.Y, b.Y), MYMAX(a.Z, b.Z));
 }
 
 
@@ -252,7 +252,7 @@ inline u32 calc_parity(u32 v)
 
 u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
 
-bool isBlockInSight(v3BPOS blockpos_b, v3f camera_pos, v3f camera_dir,
+bool isBlockInSight(v3bpos_t blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 
 s16 adjustDist(s16 dist, float zoom_fov);
@@ -274,9 +274,9 @@ inline constexpr f32 sqr(f32 f)
 /*
 	Returns integer position of node in given floating point position
 */
-inline v3POS floatToInt(v3f p, f32 d)
+inline v3pos_t floatToInt(v3f p, f32 d)
 {
-	return v3POS(
+	return v3pos_t(
 		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
 		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
 		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
@@ -293,9 +293,9 @@ inline v3s16 doubleToInt(v3d p, double d)
 		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
 }
 
-inline v3POS doubleToPos(v3d p, double d)
+inline v3pos_t doubleToPos(v3d p, double d)
 {
-	return v3POS(
+	return v3pos_t(
 		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
 		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
 		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
@@ -304,7 +304,7 @@ inline v3POS doubleToPos(v3d p, double d)
 /*
 	Returns floating point position of node in given integer position
 */
-inline v3f intToFloat(v3POS p, f32 d)
+inline v3f intToFloat(v3pos_t p, f32 d)
 {
 	return v3f(
 		(f32)p.X * d,
@@ -314,7 +314,7 @@ inline v3f intToFloat(v3POS p, f32 d)
 }
 
 // Random helper. Usually d=BS
-inline aabb3f getNodeBox(v3POS p, float d)
+inline aabb3f getNodeBox(v3pos_t p, float d)
 {
 	return aabb3f(
 		(float)p.X * d - 0.5f * d,

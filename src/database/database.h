@@ -39,18 +39,18 @@ class MapDatabase : public Database
 public:
 	virtual ~MapDatabase() = default;
 
-	virtual bool saveBlock(const v3BPOS &pos, const std::string &data) = 0;
-	virtual void loadBlock(const v3BPOS &pos, std::string *block) = 0;
-	virtual bool deleteBlock(const v3BPOS &pos) = 0;
+	virtual bool saveBlock(const v3bpos_t &pos, const std::string &data) = 0;
+	virtual void loadBlock(const v3bpos_t &pos, std::string *block) = 0;
+	virtual bool deleteBlock(const v3bpos_t &pos) = 0;
 
-	static s64 getBlockAsInteger(const v3BPOS &pos);
-	static v3BPOS getIntegerAsBlock(s64 i);
+	static s64 getBlockAsInteger(const v3bpos_t &pos);
+	static v3bpos_t getIntegerAsBlock(s64 i);
 
-	std::string getBlockAsString(const v3BPOS &pos) const;
-	std::string getBlockAsStringCompatible(const v3BPOS &pos) const;
-	v3BPOS getStringAsBlock(const std::string &i) const;
+	std::string getBlockAsString(const v3bpos_t &pos) const;
+	std::string getBlockAsStringCompatible(const v3bpos_t &pos) const;
+	v3bpos_t getStringAsBlock(const std::string &i) const;
 
-	virtual void listAllLoadableBlocks(std::vector<v3BPOS> &dst) = 0;
+	virtual void listAllLoadableBlocks(std::vector<v3bpos_t> &dst) = 0;
 };
 
 class PlayerSAO;

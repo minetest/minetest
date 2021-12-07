@@ -52,7 +52,7 @@ static inline s64 pythonmodulo(s64 i, s16 mod)
 }
 
 
-s64 MapDatabase::getBlockAsInteger(const v3BPOS &pos)
+s64 MapDatabase::getBlockAsInteger(const v3bpos_t &pos)
 {
 	return (u64) pos.Z * 0x1000000 +
 		(u64) pos.Y * 0x1000 +
@@ -60,9 +60,9 @@ s64 MapDatabase::getBlockAsInteger(const v3BPOS &pos)
 }
 
 
-v3BPOS MapDatabase::getIntegerAsBlock(s64 i)
+v3bpos_t MapDatabase::getIntegerAsBlock(s64 i)
 {
-	v3BPOS pos;
+	v3bpos_t pos;
 	pos.X = unsigned_to_signed(pythonmodulo(i, 4096), 2048);
 	i = (i - pos.X) / 4096;
 	pos.Y = unsigned_to_signed(pythonmodulo(i, 4096), 2048);
@@ -71,7 +71,7 @@ v3BPOS MapDatabase::getIntegerAsBlock(s64 i)
 	return pos;
 }
 
-std::string MapDatabase::getBlockAsString(const v3BPOS &pos) const
+std::string MapDatabase::getBlockAsString(const v3bpos_t &pos) const
 {
     // 'a' is like version marker. In future other letters or words can be used.
 	std::ostringstream os;
@@ -79,10 +79,10 @@ std::string MapDatabase::getBlockAsString(const v3BPOS &pos) const
 	return os.str().c_str();
 }
 
-std::string MapDatabase::getBlockAsStringCompatible(const v3BPOS &pos) const
+std::string MapDatabase::getBlockAsStringCompatible(const v3bpos_t &pos) const
 {
 #if USE_POS32	
-	const BPOS max_limit_bp = 31000 / MAP_BLOCKSIZE;
+	const bpos_t max_limit_bp = 31000 / MAP_BLOCKSIZE;
 	if (pos.X < -max_limit_bp ||
 		pos.X >  max_limit_bp ||
 		pos.Y < -max_limit_bp ||
@@ -96,11 +96,11 @@ std::string MapDatabase::getBlockAsStringCompatible(const v3BPOS &pos) const
 #endif
 }
 
-v3BPOS MapDatabase::getStringAsBlock(const std::string &i) const
+v3bpos_t MapDatabase::getStringAsBlock(const std::string &i) const
 {
 #if USE_POS32	
 	std::istringstream is(i);
-	v3BPOS pos;
+	v3bpos_t pos;
 	char c;
 	if (i[0] == 'a') {
 		is >> c; // 'a'

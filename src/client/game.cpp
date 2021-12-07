@@ -84,7 +84,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct TextDestNodeMetadata : public TextDest
 {
-	TextDestNodeMetadata(v3POS p, Client *client)
+	TextDestNodeMetadata(v3pos_t p, Client *client)
 	{
 		m_p = p;
 		m_client = client;
@@ -104,7 +104,7 @@ struct TextDestNodeMetadata : public TextDest
 		m_client->sendNodemetaFields(m_p, "", fields);
 	}
 
-	v3POS m_p;
+	v3pos_t m_p;
 	Client *m_client;
 };
 
@@ -193,7 +193,7 @@ struct LocalFormspecHandler : public TextDest
 class NodeMetadataFormSource: public IFormSource
 {
 public:
-	NodeMetadataFormSource(ClientMap *map, v3POS p):
+	NodeMetadataFormSource(ClientMap *map, v3pos_t p):
 		m_map(map),
 		m_p(p)
 	{
@@ -220,7 +220,7 @@ public:
 	}
 
 	ClientMap *m_map;
-	v3POS m_p;
+	v3pos_t m_p;
 };
 
 class PlayerInventoryFormSource: public IFormSource
@@ -243,10 +243,10 @@ public:
 class NodeDugEvent: public MtEvent
 {
 public:
-	v3POS p;
+	v3pos_t p;
 	MapNode n;
 
-	NodeDugEvent(v3POS p, MapNode n):
+	NodeDugEvent(v3pos_t p, MapNode n):
 		p(p),
 		n(n)
 	{}
@@ -730,13 +730,13 @@ protected:
 	 */
 	PointedThing updatePointedThing(
 			const core::line3d<f32> &shootline, bool liquids_pointable,
-			bool look_for_object, const v3POS &camera_offset);
+			bool look_for_object, const v3pos_t &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
-	void handleDigging(const PointedThing &pointed, const v3POS &nodepos,
+	void handleDigging(const PointedThing &pointed, const v3pos_t &nodepos,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
@@ -807,7 +807,7 @@ private:
 	void updateChat(f32 dtime);
 
 	bool nodePlacement(const ItemDefinition &selected_def, const ItemStack &selected_item,
-		const v3POS &nodepos, const v3POS &neighbourpos, const PointedThing &pointed,
+		const v3pos_t &nodepos, const v3pos_t &neighbourpos, const PointedThing &pointed,
 		const NodeMetadata *meta);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
@@ -2336,8 +2336,8 @@ void Game::toggleUpdateCamera()
 
 void Game::increaseViewRange()
 {
-	POS range = g_settings->getPOS("viewing_range");
-	POS range_new = range + 10;
+	pos_t range = g_settings->getPOS("viewing_range");
+	pos_t range_new = range + 10;
 
 	if (range_new > 4000) {
 		range_new = 4000;
@@ -2353,8 +2353,8 @@ void Game::increaseViewRange()
 
 void Game::decreaseViewRange()
 {
-    POS range = g_settings->getPOS("viewing_range");
-	POS range_new = range - 10;
+    pos_t range = g_settings->getPOS("viewing_range");
+	pos_t range_new = range - 10;
 
 	if (range_new < 20) {
 		range_new = 20;
@@ -2966,7 +2966,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 	ToolCapabilities playeritem_toolcap =
 		playeritem.getToolCapabilities(itemdef_manager);
 
-	v3POS old_camera_offset = camera->getOffset();
+	v3pos_t old_camera_offset = camera->getOffset();
 
 	if (wasKeyDown(KeyType::CAMERA_MODE)) {
 		GenericCAO *playercao = player->getCAO();
@@ -2992,7 +2992,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 	v3f camera_position = camera->getPosition();
 	v3f camera_direction = camera->getDirection();
 	f32 camera_fov = camera->getFovMax();
-	v3POS camera_offset = camera->getOffset();
+	v3pos_t camera_offset = camera->getOffset();
 
 	m_camera_offset_changed = (camera_offset != old_camera_offset);
 
@@ -3014,7 +3014,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 void Game::updateSound(f32 dtime)
 {
 	// Update sound listener
-	v3POS camera_offset = camera->getOffset();
+	v3pos_t camera_offset = camera->getOffset();
 	sound->updateListener(camera->getCameraNode()->getPosition() + intToFloat(camera_offset, BS),
 			      v3f(0, 0, 0), // velocity
 			      camera->getDirection(),
@@ -3054,7 +3054,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	const v3f camera_direction = camera->getDirection();
-	const v3POS camera_offset  = camera->getOffset();
+	const v3pos_t camera_offset  = camera->getOffset();
 
 	/*
 		Calculate what block is the crosshair pointing to
@@ -3137,7 +3137,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 		if (!runData.digging) {
 			client->interact(INTERACT_STOP_DIGGING, runData.pointed_old);
-			client->setCrack(-1, v3POS(0, 0, 0));
+			client->setCrack(-1, v3pos_t(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
 	} else if (runData.dig_instantly && wasKeyReleased(KeyType::DIG)) {
@@ -3201,7 +3201,7 @@ PointedThing Game::updatePointedThing(
 	const core::line3d<f32> &shootline,
 	bool liquids_pointable,
 	bool look_for_object,
-	const v3POS &camera_offset)
+	const v3pos_t &camera_offset)
 {
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
@@ -3256,14 +3256,14 @@ PointedThing Game::updatePointedThing(
 	// Update selection mesh light level and vertex colors
 	if (!selectionboxes->empty()) {
 		v3f pf = hud->getSelectionPos();
-		v3POS p = floatToInt(pf, BS);
+		v3pos_t p = floatToInt(pf, BS);
 
 		// Get selection mesh light level
 		MapNode n = map.getNode(p);
 		u16 node_light = getInteriorLight(n, -1, nodedef);
 		u16 light_level = node_light;
 
-		for (const v3POS &dir : g_6dirs) {
+		for (const v3pos_t &dir : g_6dirs) {
 			n = map.getNode(p + dir);
 			node_light = getInteriorLight(n, -1, nodedef);
 			if (node_light > light_level)
@@ -3303,8 +3303,8 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 void Game::handlePointingAtNode(const PointedThing &pointed,
 	const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
 {
-	v3POS nodepos = pointed.node_undersurface;
-	v3POS neighbourpos = pointed.node_abovesurface;
+	v3pos_t nodepos = pointed.node_undersurface;
+	v3pos_t neighbourpos = pointed.node_abovesurface;
 
 	/*
 		Check information text of node
@@ -3357,7 +3357,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 }
 
 bool Game::nodePlacement(const ItemDefinition &selected_def,
-	const ItemStack &selected_item, const v3POS &nodepos, const v3POS &neighbourpos,
+	const ItemStack &selected_item, const v3pos_t &nodepos, const v3pos_t &neighbourpos,
 	const PointedThing &pointed, const NodeMetadata *meta)
 {
 	const auto &prediction = selected_def.node_placement_prediction;
@@ -3407,7 +3407,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 	verbosestream << "Node placement prediction for "
 		<< selected_def.name << " is " << prediction << std::endl;
-	v3POS p = neighbourpos;
+	v3pos_t p = neighbourpos;
 
 	// Place inside node itself if buildable_to
 	MapNode n_under = map.getNode(nodepos, &is_valid_position);
@@ -3451,7 +3451,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		param2 = place_param2;
 	} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		v3POS dir = nodepos - neighbourpos;
+		v3pos_t dir = nodepos - neighbourpos;
 
 		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
 			param2 = dir.Y < 0 ? 1 : 0;
@@ -3462,7 +3462,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		}
 	} else if (predicted_f.param_type_2 == CPT2_FACEDIR ||
 			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
-		v3POS dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
+		v3pos_t dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
 		if (abs(dir.X) > abs(dir.Z)) {
 			param2 = dir.X < 0 ? 3 : 1;
@@ -3473,21 +3473,21 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 	// Check attachment if node is in group attached_node
 	if (itemgroup_get(predicted_f.groups, "attached_node") != 0) {
-		const static v3POS wallmounted_dirs[8] = {
-			v3POS(0, 1, 0),
-			v3POS(0, -1, 0),
-			v3POS(1, 0, 0),
-			v3POS(-1, 0, 0),
-			v3POS(0, 0, 1),
-			v3POS(0, 0, -1),
+		const static v3pos_t wallmounted_dirs[8] = {
+			v3pos_t(0, 1, 0),
+			v3pos_t(0, -1, 0),
+			v3pos_t(1, 0, 0),
+			v3pos_t(-1, 0, 0),
+			v3pos_t(0, 0, 1),
+			v3pos_t(0, 0, -1),
 		};
-		v3POS pp;
+		v3pos_t pp;
 
 		if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
 			pp = p + wallmounted_dirs[param2];
 		else
-			pp = p + v3POS(0, -1, 0);
+			pp = p + v3pos_t(0, -1, 0);
 
 		if (!nodedef->get(map.getNode(pp)).walkable) {
 			soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
@@ -3529,8 +3529,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 				g_settings->getBool("enable_build_where_you_stand") ||
 				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
 				(nodedef->get(n).walkable &&
-					neighbourpos != player->getStandingNodePos() + v3POS(0, 1, 0) &&
-					neighbourpos != player->getStandingNodePos() + v3POS(0, 2, 0))) {
+					neighbourpos != player->getStandingNodePos() + v3pos_t(0, 1, 0) &&
+					neighbourpos != player->getStandingNodePos() + v3pos_t(0, 2, 0))) {
 			// This triggers the required mesh update too
 			client->addNode(p, n);
 			// Report to server
@@ -3603,7 +3603,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed,
 }
 
 
-void Game::handleDigging(const PointedThing &pointed, const v3POS &nodepos,
+void Game::handleDigging(const PointedThing &pointed, const v3pos_t &nodepos,
 		const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
 {
 	// See also: serverpackethandle.cpp, action == 2
@@ -3679,7 +3679,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3POS &nodepos,
 		client->setCrack(runData.dig_index, nodepos);
 	} else {
 		infostream << "Digging completed" << std::endl;
-		client->setCrack(-1, v3POS(0, 0, 0));
+		client->setCrack(-1, v3pos_t(0, 0, 0));
 
 		runData.dig_time = 0;
 		runData.digging = false;
@@ -3809,7 +3809,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			clouds->step(dtime);
 			// camera->getPosition is not enough for 3rd person views
 			v3f camera_node_position = camera->getCameraNode()->getPosition();
-			v3POS camera_offset      = camera->getOffset();
+			v3pos_t camera_offset      = camera->getOffset();
 			camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
 			camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 			camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;

@@ -261,7 +261,7 @@ void MapgenV7Params::setDefaultSettings(Settings *settings)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int MapgenV7::getSpawnLevelAtPoint(v2POS p)
+int MapgenV7::getSpawnLevelAtPoint(v2pos_t p)
 {
 	// If rivers are enabled, first check if in a river
 	if (spflags & MGV7_RIDGES) {
@@ -277,11 +277,11 @@ int MapgenV7::getSpawnLevelAtPoint(v2POS p)
 	// 'offset's.
 	// Raising the maximum spawn level above 'water_level + 16' is necessary
 	// for when terrain 'offset's are set much higher than water_level.
-	POS max_spawn_y = std::fmax(std::fmax(noise_terrain_alt->np.offset,
+	pos_t max_spawn_y = std::fmax(std::fmax(noise_terrain_alt->np.offset,
 			noise_terrain_base->np.offset),
 			water_level + 16);
 	// Base terrain calculation
-	POS y = baseTerrainLevelAtPoint(p.X, p.Y);
+	pos_t y = baseTerrainLevelAtPoint(p.X, p.Y);
 
 	// If mountains are disabled, terrain level is base terrain level.
 	// Avoids mid-air spawn where mountain terrain would have been.
@@ -324,17 +324,17 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
-	v3POS blockpos_min = data->blockpos_min;
-	v3POS blockpos_max = data->blockpos_max;
+	v3pos_t blockpos_min = data->blockpos_min;
+	v3pos_t blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate base and mountain terrain
-	POS stone_surface_max_y = generateTerrain();
+	pos_t stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -391,7 +391,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 		node_max.Y >= floatland_ymin - csize.Y * 2 && node_min.Y <= floatland_ymax);
 
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
+		calcLighting(node_min - v3pos_t(0, 1, 0), node_max + v3pos_t(0, 1, 0),
 			full_node_min, full_node_max, propagate_shadow);
 
 	this->generating = false;
@@ -403,7 +403,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-float MapgenV7::baseTerrainLevelAtPoint(POS x, POS z)
+float MapgenV7::baseTerrainLevelAtPoint(pos_t x, pos_t z)
 {
 	float hselect = NoisePerlin2D(&noise_height_select->np, x, z, seed);
 	hselect = rangelim(hselect, 0.0f, 1.0f);
@@ -436,7 +436,7 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 }
 
 
-bool MapgenV7::getMountainTerrainAtPoint(POS x, POS y, POS z)
+bool MapgenV7::getMountainTerrainAtPoint(pos_t x, pos_t y, pos_t z)
 {
 	float mnt_h_n =
 		std::fmax(NoisePerlin2D(&noise_mount_height->np, x, z, seed), 1.0f);
@@ -447,7 +447,7 @@ bool MapgenV7::getMountainTerrainAtPoint(POS x, POS y, POS z)
 }
 
 
-bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, POS y)
+bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, pos_t y)
 {
 	float mounthn = std::fmax(noise_mount_height->result[idx_xz], 1.0f);
 	float density_gradient = -((float)(y - mount_zero_level) / mounthn);
@@ -457,7 +457,7 @@ bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, POS y)
 }
 
 
-bool MapgenV7::getRiverChannelFromMap(int idx_xyz, int idx_xz, POS y)
+bool MapgenV7::getRiverChannelFromMap(int idx_xyz, int idx_xz, pos_t y)
 {
 	// Maximum width of river channel. Creates the vertical canyon walls
 	float width = 0.2f;
@@ -505,8 +505,8 @@ int MapgenV7::generateTerrain()
 	bool gen_floatlands = false;
 	u8 cache_index = 0;
 	// Y values where floatland tapering starts
-	POS float_taper_ymax = floatland_ymax - floatland_taper;
-	POS float_taper_ymin = floatland_ymin + floatland_taper;
+	pos_t float_taper_ymax = floatland_ymax - floatland_taper;
+	pos_t float_taper_ymin = floatland_ymin + floatland_taper;
 
 	if ((spflags & MGV7_FLOATLANDS) &&
 			node_max.Y >= floatland_ymin && node_min.Y <= floatland_ymax) {
@@ -515,7 +515,7 @@ int MapgenV7::generateTerrain()
 		noise_floatland->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
 		// Cache floatland noise offset values, for floatland tapering
-		for (POS y = node_min.Y - 1; y <= node_max.Y + 1; y++, cache_index++) {
+		for (pos_t y = node_min.Y - 1; y <= node_max.Y + 1; y++, cache_index++) {
 			float float_offset = 0.0f;
 			if (y > float_taper_ymax) {
 				float_offset = std::pow((y - float_taper_ymax) / (float)floatland_taper,
@@ -538,13 +538,13 @@ int MapgenV7::generateTerrain()
 	}
 
 	//// Place nodes
-	const v3POS &em = vm->m_area.getExtent();
-	POS stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	const v3pos_t &em = vm->m_area.getExtent();
+	pos_t stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
-	for (POS z = node_min.Z; z <= node_max.Z; z++)
-	for (POS x = node_min.X; x <= node_max.X; x++, index2d++) {
-		POS surface_y = baseTerrainLevelFromMap(index2d);
+	for (pos_t z = node_min.Z; z <= node_max.Z; z++)
+	for (pos_t x = node_min.X; x <= node_max.X; x++, index2d++) {
+		pos_t surface_y = baseTerrainLevelFromMap(index2d);
 		if (surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
 
@@ -552,7 +552,7 @@ int MapgenV7::generateTerrain()
 		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
 		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 
-		for (POS y = node_min.Y - 1; y <= node_max.Y + 1;
+		for (pos_t y = node_min.Y - 1; y <= node_max.Y + 1;
 				y++,
 				index3d += ystride,
 				VoxelArea::add_y(em, vi, 1),

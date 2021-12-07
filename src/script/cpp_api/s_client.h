@@ -53,8 +53,8 @@ public:
 	void environment_step(float dtime);
 	void on_formspec_input(const std::string &formname, const StringMap &fields);
 
-	bool on_dignode(v3POS p, MapNode node);
-	bool on_punchnode(v3POS p, MapNode node);
+	bool on_dignode(v3pos_t p, MapNode node);
+	bool on_punchnode(v3pos_t p, MapNode node);
 	bool on_placenode(const PointedThing &pointed, const ItemDefinition &item);
 	bool on_item_use(const ItemStack &item, const PointedThing &pointed);
 

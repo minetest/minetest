@@ -177,7 +177,7 @@ void Particle::updateLight()
 	u8 light = 0;
 	bool pos_ok;
 
-	v3POS p = v3POS(
+	v3pos_t p = v3pos_t(
 		floor(m_pos.X+0.5),
 		floor(m_pos.Y+0.5),
 		floor(m_pos.Z+0.5)
@@ -227,7 +227,7 @@ void Particle::updateVertices()
 	m_vertices[3] = video::S3DVertex(-m_size / 2, m_size / 2,
 		0, 0, 0, 0, m_color, tx0, ty0);
 
-	v3POS camera_offset = m_env->getCameraOffset();
+	v3pos_t camera_offset = m_env->getCameraOffset();
 	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
@@ -281,7 +281,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pos *= BS;
 		attached_absolute_pos_rot_matrix->transformVect(pos);
 		pos /= BS;
-		v3POS camera_offset = m_particlemanager->m_env->getCameraOffset();
+		v3pos_t camera_offset = m_particlemanager->m_env->getCameraOffset();
 		pos.X += camera_offset.X;
 		pos.Y += camera_offset.Y;
 		pos.Z += camera_offset.Z;
@@ -559,7 +559,7 @@ bool ParticleManager::getNodeParticleParams(const MapNode &n,
 // spawned during the digging of a node.
 
 void ParticleManager::addDiggingParticles(IGameDef *gamedef,
-	LocalPlayer *player, v3POS pos, const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3pos_t pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
 	if (f.drawtype == NDT_AIRLIKE)
@@ -574,7 +574,7 @@ void ParticleManager::addDiggingParticles(IGameDef *gamedef,
 // function, called from Game::handleDigging() in game.cpp.
 
 void ParticleManager::addNodeParticle(IGameDef *gamedef,
-	LocalPlayer *player, v3POS pos, const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3pos_t pos, const MapNode &n, const ContentFeatures &f)
 {
 	ParticleParameters p;
 	video::ITexture *texture;

@@ -47,9 +47,9 @@ static void push_area(lua_State *L, const Area *a,
 	}
 	lua_newtable(L);
 	if (include_borders) {
-		push_v3POS(L, a->minedge);
+		push_v3pos_t(L, a->minedge);
 		lua_setfield(L, -2, "min");
-		push_v3POS(L, a->maxedge);
+		push_v3pos_t(L, a->maxedge);
 		lua_setfield(L, -2, "max");
 	}
 	if (include_data) {
@@ -127,7 +127,7 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	v3POS pos = check_v3POS(L, 2);
+	v3pos_t pos = check_v3pos_t(L, 2);
 
 	bool include_borders = true;
 	bool include_data = false;
@@ -149,8 +149,8 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	v3POS minedge = check_v3POS(L, 2);
-	v3POS maxedge = check_v3POS(L, 3);
+	v3pos_t minedge = check_v3pos_t(L, 2);
+	v3pos_t maxedge = check_v3pos_t(L, 3);
 
 	bool include_borders = true;
 	bool include_data = false;
@@ -175,7 +175,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	Area a(check_v3POS(L, 2), check_v3POS(L, 3));
+	Area a(check_v3pos_t(L, 2), check_v3pos_t(L, 3));
 
 	size_t d_len;
 	const char *data = luaL_checklstring(L, 4, &d_len);

@@ -301,7 +301,7 @@ void ClientEnvironment::step(float dtime)
 		// (day: LIGHT_SUN, night: 0)
 		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
 
-		v3POS p = lplayer->getLightPosition();
+		v3pos_t p = lplayer->getLightPosition();
 		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
@@ -504,7 +504,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 			selection_box.MaxEdge + pos);
 
 		v3f current_intersection;
-		v3POS current_normal;
+		v3pos_t current_normal;
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
 				&current_intersection, &current_normal)) {
 			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal,

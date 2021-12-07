@@ -324,7 +324,7 @@ v3s16 read_v3s16(lua_State *L, int index)
 	return doubleToInt(pf, 1.0);
 }
 
-v3POS read_v3POS(lua_State *L, int index)
+v3pos_t read_v3pos_t(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = read_v3d(L, index);
@@ -338,7 +338,7 @@ v3s16 check_v3s16(lua_State *L, int index)
 	return doubleToInt(pf, 1.0);
 }
 
-v3POS check_v3POS(lua_State *L, int index)
+v3pos_t check_v3pos_t(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = check_v3d(L, index);
@@ -643,8 +643,8 @@ v3s16 getv3s16field_default(lua_State *L, int table,
 	return default_;
 }
 
-v3POS getv3POSfield_default(lua_State *L, int table,
-		const char *fieldname, v3POS default_)
+v3pos_t getv3pos_tfield_default(lua_State *L, int table,
+		const char *fieldname, v3pos_t default_)
 {
 	getv3intfield(L, table, fieldname, default_);
 	return default_;

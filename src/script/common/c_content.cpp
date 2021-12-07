@@ -1861,9 +1861,9 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 	if (pointed.type == POINTEDTHING_NODE) {
 		lua_pushstring(L, "node");
 		lua_setfield(L, -2, "type");
-		push_v3POS(L, pointed.node_undersurface);
+		push_v3pos_t(L, pointed.node_undersurface);
 		lua_setfield(L, -2, "under");
-		push_v3POS(L, pointed.node_abovesurface);
+		push_v3pos_t(L, pointed.node_abovesurface);
 		lua_setfield(L, -2, "above");
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		lua_pushstring(L, "object");
@@ -1883,7 +1883,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 	if (hitpoint && (pointed.type != POINTEDTHING_NOTHING)) {
 		push_v3f(L, pointed.intersection_point / BS); // convert to node coords
 		lua_setfield(L, -2, "intersection_point");
-		push_v3POS(L, pointed.intersection_normal);
+		push_v3pos_t(L, pointed.intersection_normal);
 		lua_setfield(L, -2, "intersection_normal");
 		lua_pushinteger(L, pointed.box_id + 1); // change to Lua array index
 		lua_setfield(L, -2, "box_id");
@@ -2123,7 +2123,7 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 		lua_setfield(L, -2, "axis");
 
 		if (c.type == COLLISION_NODE) {
-			push_v3POS(L, c.node_p);
+			push_v3pos_t(L, c.node_p);
 			lua_setfield(L, -2, "node_pos");
 		} else if (c.type == COLLISION_OBJECT) {
 			push_objectRef(L, c.object->getId());

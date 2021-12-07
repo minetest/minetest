@@ -33,7 +33,7 @@ class NodeMetadata;
 
 class NodeMetaRef : public MetaDataRef {
 private:
-	v3POS m_p;
+	v3pos_t m_p;
 	ServerEnvironment *m_env = nullptr;
 	Metadata *m_meta = nullptr;
 	bool m_is_local = false;
@@ -77,14 +77,14 @@ private:
 	static int l_mark_as_private(lua_State *L);
 
 public:
-	NodeMetaRef(v3POS p, ServerEnvironment *env);
+	NodeMetaRef(v3pos_t p, ServerEnvironment *env);
 	NodeMetaRef(Metadata *meta);
 
 	~NodeMetaRef() = default;
 
 	// Creates an NodeMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, v3POS p, ServerEnvironment *env);
+	static void create(lua_State *L, v3pos_t p, ServerEnvironment *env);
 
 	// Client-sided version of the above
 	static void createClient(lua_State *L, Metadata *meta);

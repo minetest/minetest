@@ -32,10 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 class FacePositionCache {
 public:
-	static const std::vector<v3POS> &getFacePositions(u16 d);
+	static const std::vector<v3pos_t> &getFacePositions(u16 d);
 
 private:
-	static const std::vector<v3POS> &generateFacePosition(u16 d);
-	static std::unordered_map<u16, std::vector<v3POS>> cache;
+	static const std::vector<v3pos_t> &generateFacePosition(u16 d);
+	static std::unordered_map<u16, std::vector<v3pos_t>> cache;
 	static std::mutex cache_mutex;
 };

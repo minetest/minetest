@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct NearbyCollisionInfo {
 	// node
-	NearbyCollisionInfo(bool is_ul, int bouncy, const v3POS &pos,
+	NearbyCollisionInfo(bool is_ul, int bouncy, const v3pos_t &pos,
 			const aabb3f &box) :
 		is_unloaded(is_ul),
 		obj(nullptr),
@@ -62,7 +62,7 @@ struct NearbyCollisionInfo {
 	bool is_step_up = false;
 	ActiveObject *obj;
 	int bouncy;
-	v3POS position;
+	v3pos_t position;
 	aabb3f box;
 };
 
@@ -214,7 +214,7 @@ bool wouldCollideWithCeiling(
 	return false;
 }
 
-static inline void getNeighborConnectingFace(const v3POS &p,
+static inline void getNeighborConnectingFace(const v3pos_t &p,
 	const NodeDefManager *nodedef, Map *map, MapNode n, int v, int *neighbors)
 {
 	MapNode n2 = map->getNode(p);
@@ -281,12 +281,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		MYMAX(pos_f->Y, newpos_f.Y),
 		MYMAX(pos_f->Z, newpos_f.Z)
 	);
-	v3POS min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3POS(1, 1, 1);
-	v3POS max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3POS(1, 1, 1);
+	v3pos_t min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3pos_t(1, 1, 1);
+	v3pos_t max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3pos_t(1, 1, 1);
 
 	bool any_position_valid = false;
 
-	v3POS p;
+	v3pos_t p;
 	for (p.X = min.X; p.X <= max.X; p.X++)
 	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
 	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
@@ -308,7 +308,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			int neighbors = 0;
 			if (f.drawtype == NDT_NODEBOX &&
 				f.node_box.type == NODEBOX_CONNECTED) {
-				v3POS p2 = p;
+				v3pos_t p2 = p;
 
 				p2.Y++;
 				getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);

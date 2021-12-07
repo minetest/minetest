@@ -435,7 +435,7 @@ MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
-inline POS readPOS(std::istream &is) {
+inline pos_t readPOS(std::istream &is) {
 #if USE_POS32
 	return readS32(is);
 #else
@@ -443,7 +443,7 @@ inline POS readPOS(std::istream &is) {
 #endif
 }
 
-inline void writePOS(std::ostream &os, POS i) {
+inline void writePOS(std::ostream &os, pos_t i) {
 #if USE_POS32
 	return writeS32(os, i);
 #else
@@ -451,7 +451,7 @@ inline void writePOS(std::ostream &os, POS i) {
 #endif
 }
 
-inline v3POS readV3POS(std::istream &is) {
+inline v3pos_t readV3POS(std::istream &is) {
 #if USE_POS32
     return readV3S32(is);
 #else
@@ -459,7 +459,7 @@ inline v3POS readV3POS(std::istream &is) {
 #endif
 }
 
-inline void writeV3POS(std::ostream &os, v3POS p) {
+inline void writeV3POS(std::ostream &os, v3pos_t p) {
 #if USE_POS32
     return writeV3S32(os, p);
 #else

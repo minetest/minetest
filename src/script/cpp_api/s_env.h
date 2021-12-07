@@ -34,17 +34,17 @@ public:
 	void environment_Step(float dtime);
 
 	// Called after generating a piece of map
-	void environment_OnGenerated(v3POS minp, v3POS maxp, u32 blockseed);
+	void environment_OnGenerated(v3pos_t minp, v3pos_t maxp, u32 blockseed);
 
 	// Called on player event
 	void player_event(ServerActiveObject *player, const std::string &type);
 
 	// Called after emerge of a block queued from core.emerge_area()
-	void on_emerge_area_completion(v3POS blockpos, int action,
+	void on_emerge_area_completion(v3pos_t blockpos, int action,
 		ScriptCallbackState *state);
 
 	// Called after liquid transform changes
-	void on_liquid_transformed(const std::vector<std::pair<v3POS, MapNode>> &list);
+	void on_liquid_transformed(const std::vector<std::pair<v3pos_t, MapNode>> &list);
 
 	void initializeEnvironment(ServerEnvironment *env);
 };

@@ -46,14 +46,14 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
 
-	v3BPOS bp1 = getNodeBlockPos(check_v3POS(L, 2));
-	v3BPOS bp2 = getNodeBlockPos(check_v3POS(L, 3));
+	v3bpos_t bp1 = getNodeBlockPos(check_v3pos_t(L, 2));
+	v3bpos_t bp2 = getNodeBlockPos(check_v3pos_t(L, 3));
 	sortBoxVerticies(bp1, bp2);
 
 	vm->initialEmerge(bp1, bp2);
 
-	push_v3POS(L, vm->m_area.MinEdge);
-	push_v3POS(L, vm->m_area.MaxEdge);
+	push_v3pos_t(L, vm->m_area.MinEdge);
+	push_v3pos_t(L, vm->m_area.MaxEdge);
 
 	return 2;
 }
@@ -139,7 +139,7 @@ int LuaVoxelManip::l_get_node_at(lua_State *L)
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	v3POS pos        = check_v3POS(L, 2);
+	v3pos_t pos        = check_v3pos_t(L, 2);
 
 	pushnode(L, o->vm->getNodeNoExNoEmerge(pos), ndef);
 	return 1;
@@ -152,7 +152,7 @@ int LuaVoxelManip::l_set_node_at(lua_State *L)
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	v3POS pos        = check_v3POS(L, 2);
+	v3pos_t pos        = check_v3pos_t(L, 2);
 	MapNode n        = readnode(L, 3, ndef);
 
 	o->vm->setNodeNoEmerge(pos, n);
@@ -195,11 +195,11 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	MMVManip *vm = o->vm;
 
-	v3POS yblock = v3POS(0, 1, 0) * MAP_BLOCKSIZE;
-	v3POS fpmin  = vm->m_area.MinEdge;
-	v3POS fpmax  = vm->m_area.MaxEdge;
-	v3POS pmin   = lua_istable(L, 2) ? check_v3POS(L, 2) : fpmin + yblock;
-	v3POS pmax   = lua_istable(L, 3) ? check_v3POS(L, 3) : fpmax - yblock;
+	v3pos_t yblock = v3pos_t(0, 1, 0) * MAP_BLOCKSIZE;
+	v3pos_t fpmin  = vm->m_area.MinEdge;
+	v3pos_t fpmax  = vm->m_area.MaxEdge;
+	v3pos_t pmin   = lua_istable(L, 2) ? check_v3pos_t(L, 2) : fpmin + yblock;
+	v3pos_t pmax   = lua_istable(L, 3) ? check_v3pos_t(L, 3) : fpmax - yblock;
 	bool propagate_shadow = !lua_isboolean(L, 4) || readParam<bool>(L, 4);
 
 	sortBoxVerticies(pmin, pmax);
@@ -236,9 +236,9 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 
 	MMVManip *vm = o->vm;
 
-	v3POS yblock = v3POS(0, 1, 0) * MAP_BLOCKSIZE;
-	v3POS pmin = lua_istable(L, 3) ? check_v3POS(L, 3) : vm->m_area.MinEdge + yblock;
-	v3POS pmax = lua_istable(L, 4) ? check_v3POS(L, 4) : vm->m_area.MaxEdge - yblock;
+	v3pos_t yblock = v3pos_t(0, 1, 0) * MAP_BLOCKSIZE;
+	v3pos_t pmin = lua_istable(L, 3) ? check_v3pos_t(L, 3) : vm->m_area.MinEdge + yblock;
+	v3pos_t pmax = lua_istable(L, 4) ? check_v3pos_t(L, 4) : vm->m_area.MaxEdge - yblock;
 
 	sortBoxVerticies(pmin, pmax);
 	if (!vm->m_area.contains(VoxelArea(pmin, pmax)))
@@ -367,8 +367,8 @@ int LuaVoxelManip::l_get_emerged_area(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 
-	push_v3POS(L, o->vm->m_area.MinEdge);
-	push_v3POS(L, o->vm->m_area.MaxEdge);
+	push_v3pos_t(L, o->vm->m_area.MinEdge);
+	push_v3pos_t(L, o->vm->m_area.MaxEdge);
 
 	return 2;
 }
@@ -383,12 +383,12 @@ LuaVoxelManip::LuaVoxelManip(Map *map) : vm(new MMVManip(map))
 {
 }
 
-LuaVoxelManip::LuaVoxelManip(Map *map, v3POS p1, v3POS p2)
+LuaVoxelManip::LuaVoxelManip(Map *map, v3pos_t p1, v3pos_t p2)
 {
 	vm = new MMVManip(map);
 
-	v3BPOS bp1 = getNodeBlockPos(p1);
-	v3BPOS bp2 = getNodeBlockPos(p2);
+	v3bpos_t bp1 = getNodeBlockPos(p1);
+	v3bpos_t bp2 = getNodeBlockPos(p2);
 	sortBoxVerticies(bp1, bp2);
 	vm->initialEmerge(bp1, bp2);
 }
@@ -407,7 +407,7 @@ int LuaVoxelManip::create_object(lua_State *L)
 
 	Map *map = &(env->getMap());
 	LuaVoxelManip *o = (lua_istable(L, 1) && lua_istable(L, 2)) ?
-		new LuaVoxelManip(map, check_v3POS(L, 1), check_v3POS(L, 2)) :
+		new LuaVoxelManip(map, check_v3pos_t(L, 1), check_v3pos_t(L, 2)) :
 		new LuaVoxelManip(map);
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

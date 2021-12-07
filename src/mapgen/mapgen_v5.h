@@ -32,17 +32,17 @@ extern FlagDesc flagdesc_mapgen_v5[];
 struct MapgenV5Params : public MapgenParams
 {
 	float cave_width = 0.09f;
-	POS large_cave_depth = -256;
+	pos_t large_cave_depth = -256;
 	u16 small_cave_num_min = 0;
 	u16 small_cave_num_max = 0;
 	u16 large_cave_num_min = 0;
 	u16 large_cave_num_max = 2;
 	float large_cave_flooded = 0.5f;
-	POS cavern_limit = -256;
-	POS cavern_taper = 256;
+	pos_t cavern_limit = -256;
+	pos_t cavern_taper = 256;
 	float cavern_threshold = 0.7f;
-	POS dungeon_ymin = -MAX_MAP_GENERATION_LIMIT;
-	POS dungeon_ymax = MAX_MAP_GENERATION_LIMIT;
+	pos_t dungeon_ymin = -MAX_MAP_GENERATION_LIMIT;
+	pos_t dungeon_ymax = MAX_MAP_GENERATION_LIMIT;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
@@ -70,7 +70,7 @@ public:
 	virtual MapgenType getType() const { return MAPGEN_V5; }
 
 	virtual void makeChunk(BlockMakeData *data);
-	int getSpawnLevelAtPoint(v2POS p);
+	int getSpawnLevelAtPoint(v2pos_t p);
 	int generateBaseTerrain();
 
 private:

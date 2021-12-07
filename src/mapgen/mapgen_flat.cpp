@@ -174,19 +174,19 @@ void MapgenFlatParams::setDefaultSettings(Settings *settings)
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenFlat::getSpawnLevelAtPoint(v2POS p)
+int MapgenFlat::getSpawnLevelAtPoint(v2pos_t p)
 {
-	POS stone_level = ground_level;
+	pos_t stone_level = ground_level;
 	float n_terrain = 
 		((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS)) ?
 		NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed) :
 		0.0f;
 
 	if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
-		POS depress = (lake_threshold - n_terrain) * lake_steepness;
+		pos_t depress = (lake_threshold - n_terrain) * lake_steepness;
 		stone_level = ground_level - depress;
 	} else if ((spflags & MGFLAT_HILLS) && n_terrain > hill_threshold) {
-		POS rise = (n_terrain - hill_threshold) * hill_steepness;
+		pos_t rise = (n_terrain - hill_threshold) * hill_steepness;
 	 	stone_level = ground_level + rise;
 	}
 
@@ -215,17 +215,17 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
 
-	v3POS blockpos_min = data->blockpos_min;
-	v3POS blockpos_max = data->blockpos_max;
+	v3pos_t blockpos_min = data->blockpos_min;
+	v3pos_t blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate base terrain, mountains, and ridges with initial heightmaps
-	POS stone_surface_max_y = generateTerrain();
+	pos_t stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -277,45 +277,45 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
+		calcLighting(node_min - v3pos_t(0, 1, 0), node_max + v3pos_t(0, 1, 0),
 			full_node_min, full_node_max);
 
-	//setLighting(node_min - v3POS(1, 0, 1) * MAP_BLOCKSIZE,
-	//			node_max + v3POS(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
+	//setLighting(node_min - v3pos_t(1, 0, 1) * MAP_BLOCKSIZE,
+	//			node_max + v3pos_t(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
 
 	this->generating = false;
 }
 
 
-POS MapgenFlat::generateTerrain()
+pos_t MapgenFlat::generateTerrain()
 {
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	const v3POS &em = vm->m_area.getExtent();
-	POS stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	const v3pos_t &em = vm->m_area.getExtent();
+	pos_t stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 ni2d = 0;
 
 	bool use_noise = (spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS);
 	if (use_noise)
 		noise_terrain->perlinMap2D(node_min.X, node_min.Z);
 
-	for (POS z = node_min.Z; z <= node_max.Z; z++)
-	for (POS x = node_min.X; x <= node_max.X; x++, ni2d++) {
-		POS stone_level = ground_level;
+	for (pos_t z = node_min.Z; z <= node_max.Z; z++)
+	for (pos_t x = node_min.X; x <= node_max.X; x++, ni2d++) {
+		pos_t stone_level = ground_level;
 		float n_terrain = use_noise ? noise_terrain->result[ni2d] : 0.0f;
 
 		if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
-			POS depress = (lake_threshold - n_terrain) * lake_steepness;
+			pos_t depress = (lake_threshold - n_terrain) * lake_steepness;
 			stone_level = ground_level - depress;
 		} else if ((spflags & MGFLAT_HILLS) && n_terrain > hill_threshold) {
-			POS rise = (n_terrain - hill_threshold) * hill_steepness;
+			pos_t rise = (n_terrain - hill_threshold) * hill_steepness;
 		 	stone_level = ground_level + rise;
 		}
 
 		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
-		for (POS y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		for (pos_t y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			if (vm->m_data[vi].getContent() == CONTENT_IGNORE) {
 				if (y <= stone_level) {
 					vm->m_data[vi] = n_stone;

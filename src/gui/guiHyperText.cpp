@@ -524,22 +524,22 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 			std::string str = attrs["angle"];
 			std::vector<std::string> parts = split(str, ',');
 			if (parts.size() == 3) {
-				m_element->angle = v3POS(
+				m_element->angle = v3pos_t(
 						rangelim(stoi(parts[0]), -180, 180),
 						rangelim(stoi(parts[1]), -180, 180),
 						rangelim(stoi(parts[2]), -180, 180));
-				m_element->rotation = v3POS(0, 0, 0);
+				m_element->rotation = v3pos_t(0, 0, 0);
 			}
 		}
 
 		if (attrs.count("rotate")) {
 			if (attrs["rotate"] == "yes") {
-				m_element->rotation = v3POS(0, 100, 0);
+				m_element->rotation = v3pos_t(0, 100, 0);
 			} else {
 				std::string str = attrs["rotate"];
 				std::vector<std::string> parts = split(str, ',');
 				if (parts.size() == 3) {
-					m_element->rotation = v3POS (
+					m_element->rotation = v3pos_t (
 							rangelim(stoi(parts[0]), -1000, 1000),
 							rangelim(stoi(parts[1]), -1000, 1000),
 							rangelim(stoi(parts[2]), -1000, 1000));

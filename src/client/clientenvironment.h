@@ -138,9 +138,9 @@ public:
 	const std::list<std::string> &getPlayerNames() { return m_player_names; }
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
 	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
-	void updateCameraOffset(const v3POS &camera_offset)
+	void updateCameraOffset(const v3pos_t &camera_offset)
 	{ m_camera_offset = camera_offset; }
-	v3POS getCameraOffset() const { return m_camera_offset; }
+	v3pos_t getCameraOffset() const { return m_camera_offset; }
 private:
 	ClientMap *m_map;
 	LocalPlayer *m_local_player = nullptr;
@@ -152,5 +152,5 @@ private:
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	std::list<std::string> m_player_names;
-	v3POS m_camera_offset;
+	v3pos_t m_camera_offset;
 };

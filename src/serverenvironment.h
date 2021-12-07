@@ -68,12 +68,12 @@ public:
 	// Whether to modify chance to simulate time lost by an unnattended block
 	virtual bool getSimpleCatchUp() = 0;
 	// get min Y for apply abm
-	virtual POS getMinY() = 0;
+	virtual pos_t getMinY() = 0;
 	// get max Y for apply abm
-	virtual POS getMaxY() = 0;
+	virtual pos_t getMaxY() = 0;
 	// This is called usually at interval for 1/chance of the nodes
-	virtual void trigger(ServerEnvironment *env, v3POS p, MapNode n){};
-	virtual void trigger(ServerEnvironment *env, v3POS p, MapNode n,
+	virtual void trigger(ServerEnvironment *env, v3pos_t p, MapNode n){};
+	virtual void trigger(ServerEnvironment *env, v3pos_t p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider){};
 };
 
@@ -94,7 +94,7 @@ struct LoadingBlockModifierDef
 
 	virtual ~LoadingBlockModifierDef() = default;
 
-	virtual void trigger(ServerEnvironment *env, v3POS p, MapNode n){};
+	virtual void trigger(ServerEnvironment *env, v3pos_t p, MapNode n){};
 };
 
 struct LBMContentMapping
@@ -164,10 +164,10 @@ public:
 	void update(std::vector<PlayerSAO*> &active_players,
 		s16 active_block_range,
 		s16 active_object_range,
-		std::set<v3POS> &blocks_removed,
-		std::set<v3POS> &blocks_added);
+		std::set<v3pos_t> &blocks_removed,
+		std::set<v3pos_t> &blocks_added);
 
-	bool contains(v3POS p){
+	bool contains(v3pos_t p){
 		return (m_list.find(p) != m_list.end());
 	}
 
@@ -175,9 +175,9 @@ public:
 		m_list.clear();
 	}
 
-	std::set<v3POS> m_list;
-	std::set<v3POS> m_abm_list;
-	std::set<v3POS> m_forceloaded_list;
+	std::set<v3pos_t> m_list;
+	std::set<v3pos_t> m_abm_list;
+	std::set<v3pos_t> m_forceloaded_list;
 
 private:
 };
@@ -314,12 +314,12 @@ public:
 	*/
 
 	// Script-aware node setters
-	bool setNode(v3POS p, const MapNode &n);
-	bool removeNode(v3POS p);
-	bool swapNode(v3POS p, const MapNode &n);
+	bool setNode(v3pos_t p, const MapNode &n);
+	bool removeNode(v3pos_t p);
+	bool swapNode(v3pos_t p, const MapNode &n);
 
 	// Find the daylight value at pos with a Depth First Search
-	u8 findSunlight(v3POS pos) const;
+	u8 findSunlight(v3pos_t pos) const;
 
 	// Find all active objects inside a radius around a point
 	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
@@ -346,7 +346,7 @@ public:
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
 
-	std::set<v3POS>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; }
+	std::set<v3pos_t>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; }
 
 	// Sorted by how ready a mapblock is
 	enum BlockStatus {
@@ -355,12 +355,12 @@ public:
 		BS_LOADED,
 		BS_ACTIVE // always highest value
 	};
-	BlockStatus getBlockStatus(v3POS blockpos);
+	BlockStatus getBlockStatus(v3pos_t blockpos);
 
 	// Sets the static object status all the active objects in the specified block
 	// This is only really needed for deleting blocks from the map
-	void setStaticForActiveObjectsInBlock(v3POS blockpos,
-		bool static_exists, v3POS static_block=v3POS(0,0,0));
+	void setStaticForActiveObjectsInBlock(v3pos_t blockpos,
+		bool static_exists, v3pos_t static_block=v3pos_t(0,0,0));
 
 	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
@@ -427,7 +427,7 @@ private:
 	*/
 	void deleteStaticFromBlock(
 			ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge);
-	bool saveStaticToBlock(v3POS blockpos, u16 store_id,
+	bool saveStaticToBlock(v3pos_t blockpos, u16 store_id,
 			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
 	/*

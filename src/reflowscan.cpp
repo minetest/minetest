@@ -30,7 +30,7 @@ ReflowScan::ReflowScan(Map *map, const NodeDefManager *ndef) :
 {
 }
 
-void ReflowScan::scan(MapBlock *block, UniqueQueue<v3POS> *liquid_queue)
+void ReflowScan::scan(MapBlock *block, UniqueQueue<v3pos_t> *liquid_queue)
 {
 	m_block_pos = block->getPos();
 	m_rel_block_pos = block->getPosRelative();
@@ -75,7 +75,7 @@ inline MapBlock *ReflowScan::lookupBlock(int x, int y, int z)
 	if (!result && (m_lookup_state_bitset & (1 << idx)) == 0) {
 		// The block wasn't requested yet so fetch it from Map and store it
 		// in the lookup
-		v3POS pos = m_block_pos + v3POS(bx - 1, by - 1, bz - 1);
+		v3pos_t pos = m_block_pos + v3pos_t(bx - 1, by - 1, bz - 1);
 		m_lookup[idx] = result = m_map->getBlockNoCreateNoEx(pos);
 		m_lookup_state_bitset |= (1 << idx);
 	}
@@ -155,7 +155,7 @@ void ReflowScan::scanColumn(int x, int z)
 			bool is_pushed = false;
 			if (f.liquid_type == LIQUID_FLOWING ||
 					isLiquidHorizontallyFlowable(x, y, z)) {
-				m_liquid_queue->push_back(m_rel_block_pos + v3POS(x, y, z));
+				m_liquid_queue->push_back(m_rel_block_pos + v3pos_t(x, y, z));
 				is_pushed = true;
 			}
 			// Remember waschecked and waspushed to avoid repeated
@@ -168,7 +168,7 @@ void ReflowScan::scanColumn(int x, int z)
 					(!was_checked && isLiquidHorizontallyFlowable(x, y + 1, z)))) {
 				// Activate the lowest node in the column which is one
 				// node above this one
-				m_liquid_queue->push_back(m_rel_block_pos + v3POS(x, y + 1, z));
+				m_liquid_queue->push_back(m_rel_block_pos + v3pos_t(x, y + 1, z));
 			}
 		}
 
@@ -190,7 +190,7 @@ void ReflowScan::scanColumn(int x, int z)
 			// This is the topmost node in the column and might want to flow away
 			if (f.liquid_type == LIQUID_FLOWING ||
 					isLiquidHorizontallyFlowable(x, -1, z)) {
-				m_liquid_queue->push_back(m_rel_block_pos + v3POS(x, -1, z));
+				m_liquid_queue->push_back(m_rel_block_pos + v3pos_t(x, -1, z));
 			}
 		} else {
 			// This is the topmost node below a liquid column
@@ -198,7 +198,7 @@ void ReflowScan::scanColumn(int x, int z)
 					(!was_checked && isLiquidHorizontallyFlowable(x, 0, z)))) {
 				// Activate the lowest node in the column which is one
 				// node above this one
-				m_liquid_queue->push_back(m_rel_block_pos + v3POS(x, 0, z));
+				m_liquid_queue->push_back(m_rel_block_pos + v3pos_t(x, 0, z));
 			}
 		}
 	}

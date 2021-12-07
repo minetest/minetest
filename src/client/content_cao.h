@@ -250,7 +250,7 @@ public:
 	/* Get light position(s).
 	 * returns number of positions written into pos[], which must have space
 	 * for at least 3 vectors. */
-	u16 getLightPosition(v3POS *pos);
+	u16 getLightPosition(v3pos_t *pos);
 
 	void updateNametag();
 

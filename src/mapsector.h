@@ -40,19 +40,19 @@ class MapSector
 {
 public:
 
-	MapSector(Map *parent, v2BPOS pos, IGameDef *gamedef);
+	MapSector(Map *parent, v2bpos_t pos, IGameDef *gamedef);
 	virtual ~MapSector();
 
 	void deleteBlocks();
 
-	v2BPOS getPos()
+	v2bpos_t getPos()
 	{
 		return m_pos;
 	}
 
-	MapBlock * getBlockNoCreateNoEx(BPOS y);
-	MapBlock * createBlankBlockNoInsert(BPOS y);
-	MapBlock * createBlankBlock(BPOS y);
+	MapBlock * getBlockNoCreateNoEx(bpos_t y);
+	MapBlock * createBlankBlockNoInsert(bpos_t y);
+	MapBlock * createBlankBlock(bpos_t y);
 
 	void insertBlock(MapBlock *block);
 
@@ -66,22 +66,22 @@ public:
 protected:
 
 	// The pile of MapBlocks
-	std::unordered_map<BPOS, MapBlock*> m_blocks;
+	std::unordered_map<bpos_t, MapBlock*> m_blocks;
 
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)
-	v2BPOS m_pos;
+	v2bpos_t m_pos;
 
 	IGameDef *m_gamedef;
 
 	// Last-used block is cached here for quicker access.
 	// Be sure to set this to nullptr when the cached block is deleted
 	MapBlock *m_block_cache = nullptr;
-	BPOS m_block_cache_y;
+	bpos_t m_block_cache_y;
 
 	/*
 		Private methods
 	*/
-	MapBlock *getBlockBuffered(BPOS y);
+	MapBlock *getBlockBuffered(bpos_t y);
 
 };

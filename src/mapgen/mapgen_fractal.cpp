@@ -174,19 +174,19 @@ void MapgenFractalParams::setDefaultSettings(Settings *settings)
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenFractal::getSpawnLevelAtPoint(v2POS p)
+int MapgenFractal::getSpawnLevelAtPoint(v2pos_t p)
 {
 	bool solid_below = false; // Fractal node is present below to spawn on
 	u8 air_count = 0; // Consecutive air nodes above a fractal node
-	POS search_start = 0; // No terrain search start
+	pos_t search_start = 0; // No terrain search start
 
 	// If terrain present, don't start search below terrain or water level
 	if (noise_seabed) {
-		POS seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
+		pos_t seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
 		search_start = MYMAX(search_start, MYMAX(seabed_level, water_level));
 	}
 
-	for (POS y = search_start; y <= search_start + 4096; y++) {
+	for (pos_t y = search_start; y <= search_start + 4096; y++) {
 		if (getFractalAtPoint(p.X, y, p.Y)) {
 			// Fractal node
 			solid_below = true;
@@ -216,17 +216,17 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
-	v3POS blockpos_min = data->blockpos_min;
-	v3POS blockpos_max = data->blockpos_max;
+	v3pos_t blockpos_min = data->blockpos_min;
+	v3pos_t blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate fractal and optional terrain
-	POS stone_surface_max_y = generateTerrain();
+	pos_t stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -265,7 +265,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
+		calcLighting(node_min - v3pos_t(0, 1, 0), node_max + v3pos_t(0, 1, 0),
 			full_node_min, full_node_max);
 
 	this->generating = false;
@@ -274,7 +274,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 }
 
 
-bool MapgenFractal::getFractalAtPoint(POS x, POS y, POS z)
+bool MapgenFractal::getFractalAtPoint(pos_t x, pos_t y, pos_t z)
 {
 	float cx, cy, cz, cw, ox, oy, oz, ow;
 
@@ -404,26 +404,26 @@ bool MapgenFractal::getFractalAtPoint(POS x, POS y, POS z)
 }
 
 
-POS MapgenFractal::generateTerrain()
+pos_t MapgenFractal::generateTerrain()
 {
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	POS stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	pos_t stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
 	if (noise_seabed)
 		noise_seabed->perlinMap2D(node_min.X, node_min.Z);
 
-	for (POS z = node_min.Z; z <= node_max.Z; z++) {
-		for (POS y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+	for (pos_t z = node_min.Z; z <= node_max.Z; z++) {
+		for (pos_t y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			u32 vi = vm->m_area.index(node_min.X, y, z);
-			for (POS x = node_min.X; x <= node_max.X; x++, vi++, index2d++) {
+			for (pos_t x = node_min.X; x <= node_max.X; x++, vi++, index2d++) {
 				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 					continue;
 
-				POS seabed_height = -MAX_MAP_GENERATION_LIMIT;
+				pos_t seabed_height = -MAX_MAP_GENERATION_LIMIT;
 				if (noise_seabed)
 					seabed_height = noise_seabed->result[index2d];
 

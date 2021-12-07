@@ -93,7 +93,7 @@ int NodeTimerRef::l_get_elapsed(lua_State *L)
 
 // Creates an NodeTimerRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void NodeTimerRef::create(lua_State *L, v3POS p, ServerMap *map)
+void NodeTimerRef::create(lua_State *L, v3pos_t p, ServerMap *map)
 {
 	NodeTimerRef *o = new NodeTimerRef(p, map);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

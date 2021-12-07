@@ -104,18 +104,18 @@ public:
 		const NodeDefManager *ndef, StringMap *replace_names = NULL);
 	bool saveSchematicToFile(const std::string &filename,
 		const NodeDefManager *ndef);
-	bool getSchematicFromMap(Map *map, v3POS p1, v3POS p2);
+	bool getSchematicFromMap(Map *map, v3pos_t p1, v3pos_t p2);
 
 	bool deserializeFromMts(std::istream *is);
 	bool serializeToMts(std::ostream *os) const;
 	bool serializeToLua(std::ostream *os, bool use_comments, u32 indent_spaces) const;
 
-	void blitToVManip(MMVManip *vm, v3POS p, Rotation rot, bool force_place);
-	bool placeOnVManip(MMVManip *vm, v3POS p, u32 flags, Rotation rot, bool force_place);
-	void placeOnMap(ServerMap *map, v3POS p, u32 flags, Rotation rot, bool force_place);
+	void blitToVManip(MMVManip *vm, v3pos_t p, Rotation rot, bool force_place);
+	bool placeOnVManip(MMVManip *vm, v3pos_t p, u32 flags, Rotation rot, bool force_place);
+	void placeOnMap(ServerMap *map, v3pos_t p, u32 flags, Rotation rot, bool force_place);
 
-	void applyProbabilities(v3POS p0,
-		std::vector<std::pair<v3POS, u8> > *plist,
+	void applyProbabilities(v3pos_t p0,
+		std::vector<std::pair<v3pos_t, u8> > *plist,
 		std::vector<std::pair<s16, u8> > *splist);
 
 	std::vector<content_t> c_nodes;

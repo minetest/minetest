@@ -97,7 +97,7 @@ private:
 	bool m_collision_removal;
 	bool m_object_collision;
 	bool m_vertical;
-	v3POS m_camera_offset;
+	v3pos_t m_camera_offset;
 	struct TileAnimationParams m_animation;
 	float m_animation_time = 0.0f;
 	int m_animation_frame = 0;
@@ -150,10 +150,10 @@ public:
 	void handleParticleEvent(ClientEvent *event, Client *client,
 			LocalPlayer *player);
 
-	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3POS pos,
+	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3pos_t pos,
 		const MapNode &n, const ContentFeatures &f);
 
-	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3POS pos,
+	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3pos_t pos,
 		const MapNode &n, const ContentFeatures &f);
 
 	/**

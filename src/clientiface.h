@@ -206,7 +206,7 @@ enum ClientStateEvent
 */
 struct PrioritySortedBlockTransfer
 {
-	PrioritySortedBlockTransfer(float a_priority, const v3BPOS &a_pos, session_t a_peer_id)
+	PrioritySortedBlockTransfer(float a_priority, const v3bpos_t &a_pos, session_t a_peer_id)
 	{
 		priority = a_priority;
 		pos = a_pos;
@@ -217,7 +217,7 @@ struct PrioritySortedBlockTransfer
 		return priority < other.priority;
 	}
 	float priority;
-	v3BPOS pos;
+	v3bpos_t pos;
 	session_t peer_id;
 };
 
@@ -258,12 +258,12 @@ public:
 	void GetNextBlocks(ServerEnvironment *env, EmergeManager* emerge,
 			float dtime, std::vector<PrioritySortedBlockTransfer> &dest);
 
-	void GotBlock(v3POS p);
+	void GotBlock(v3pos_t p);
 
-	void SentBlock(v3POS p);
+	void SentBlock(v3pos_t p);
 
-	void SetBlockNotSent(v3POS p);
-	void SetBlocksNotSent(std::map<v3POS, MapBlock*> &blocks);
+	void SetBlockNotSent(v3pos_t p);
+	void SetBlocksNotSent(std::map<v3pos_t, MapBlock*> &blocks);
 
 	/**
 	 * tell client about this block being modified right now.
@@ -271,11 +271,11 @@ public:
 	 * while modification is processed by server
 	 * @param p position of modified block
 	 */
-	void ResendBlockIfOnWire(v3POS p);
+	void ResendBlockIfOnWire(v3pos_t p);
 
 	u32 getSendingCount() const { return m_blocks_sending.size(); }
 
-	bool isBlockSent(v3POS p) const
+	bool isBlockSent(v3pos_t p) const
 	{
 		return m_blocks_sent.find(p) != m_blocks_sent.end();
 	}
@@ -369,9 +369,9 @@ private:
 		List of block positions.
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
-	std::set<v3POS> m_blocks_sent;
-	POS m_nearest_unsent_d = 0;
-	v3POS m_last_center;
+	std::set<v3pos_t> m_blocks_sent;
+	pos_t m_nearest_unsent_d = 0;
+	v3pos_t m_last_center;
 	v3f m_last_camera_dir;
 
 	const u16 m_max_simul_sends;
@@ -389,7 +389,7 @@ private:
 		Block is removed when GOTBLOCKS is received.
 		Value is time from sending. (not used at the moment)
 	*/
-	std::map<v3BPOS, float> m_blocks_sending;
+	std::map<v3bpos_t, float> m_blocks_sending;
 
 	/*
 		Blocks that have been modified since blocks were
@@ -399,7 +399,7 @@ private:
 
 		List of block positions.
 	*/
-	std::set<v3BPOS> m_blocks_modified;
+	std::set<v3bpos_t> m_blocks_modified;
 
 	/*
 		Count of excess GotBlocks().
@@ -452,7 +452,7 @@ public:
 	std::vector<session_t> getClientIDs(ClientState min_state=CS_Active);
 
 	/* mark block as not sent to active client sessions */
-	void markBlockposAsNotSent(const v3POS &pos);
+	void markBlockposAsNotSent(const v3pos_t &pos);
 
 	/* verify is server user limit was reached */
 	bool isUserLimitReached();

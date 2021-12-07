@@ -66,7 +66,7 @@ static const char *modified_reason_strings[] = {
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3POS pos, IGameDef *gamedef, bool dummy):
+MapBlock::MapBlock(Map *parent, v3pos_t pos, IGameDef *gamedef, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
@@ -88,7 +88,7 @@ MapBlock::~MapBlock()
 	delete[] data;
 }
 
-bool MapBlock::isValidPositionParent(v3POS p)
+bool MapBlock::isValidPositionParent(v3pos_t p)
 {
 	if (isValidPosition(p)) {
 		return true;
@@ -97,7 +97,7 @@ bool MapBlock::isValidPositionParent(v3POS p)
 	return m_parent->isValidPosition(getPosRelative() + p);
 }
 
-MapNode MapBlock::getNodeParent(v3POS p, bool *is_valid_position)
+MapNode MapBlock::getNodeParent(v3pos_t p, bool *is_valid_position)
 {
 	if (!isValidPosition(p))
 		return m_parent->getNode(getPosRelative() + p, is_valid_position);
@@ -136,21 +136,21 @@ std::string MapBlock::getModifiedReasonString()
 
 void MapBlock::copyTo(VoxelManipulator &dst)
 {
-	v3POS data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
-	VoxelArea data_area(v3POS(0,0,0), data_size - v3POS(1,1,1));
+	v3pos_t data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
+	VoxelArea data_area(v3pos_t(0,0,0), data_size - v3pos_t(1,1,1));
 
 	// Copy from data to VoxelManipulator
-	dst.copyFrom(data, data_area, v3POS(0,0,0),
+	dst.copyFrom(data, data_area, v3pos_t(0,0,0),
 			getPosRelative(), data_size);
 }
 
 void MapBlock::copyFrom(VoxelManipulator &dst)
 {
-	v3POS data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
-	VoxelArea data_area(v3POS(0,0,0), data_size - v3POS(1,1,1));
+	v3pos_t data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
+	VoxelArea data_area(v3pos_t(0,0,0), data_size - v3pos_t(1,1,1));
 
 	// Copy from VoxelManipulator to data
-	dst.copyTo(data, data_area, v3POS(0,0,0),
+	dst.copyTo(data, data_area, v3pos_t(0,0,0),
 			getPosRelative(), data_size);
 }
 
@@ -825,7 +825,7 @@ std::string analyze_block(MapBlock *block)
 
 	std::ostringstream desc;
 
-	v3POS p = block->getPos();
+	v3pos_t p = block->getPos();
 	char spos[25];
 	porting::mt_snprintf(spos, sizeof(spos), "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
 	desc<<spos;
@@ -871,7 +871,7 @@ std::string analyze_block(MapBlock *block)
 		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
-			v3POS p(x0,y0,z0);
+			v3pos_t p(x0,y0,z0);
 			MapNode n = block->getNodeNoEx(p);
 			content_t c = n.getContent();
 			if(c == CONTENT_IGNORE)

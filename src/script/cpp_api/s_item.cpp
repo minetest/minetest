@@ -223,7 +223,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 // If core.registered_items[name] doesn't exist, core.nodedef_default
 // is tried instead so unknown items can still be manipulated to some degree
 bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
-		const v3POS *p)
+		const v3pos_t *p)
 {
 	lua_State* L = getStack();
 

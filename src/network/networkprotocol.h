@@ -252,7 +252,7 @@ enum ToClientCommand
 	/*
 		Message from server to accept auth.
 
-		v3POS player's position + v3f(0,BS/2,0) floatToInt'd
+		v3pos_t player's position + v3f(0,BS/2,0) floatToInt'd
 		u64 map seed
 		f1000 recommended send interval
 		u32 : supported auth methods for sudo mode
@@ -278,13 +278,13 @@ enum ToClientCommand
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	/*
-		v3POS position
+		v3pos_t position
 		serialized mapnode
 		u8 keep_metadata // Added in protocol version 22
 	*/
 	TOCLIENT_REMOVENODE = 0x22,
 
-	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
+	TOCLIENT_PLAYERpos_t = 0x23, // Obsolete
 	TOCLIENT_PLAYERINFO = 0x24, // Obsolete
 	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
 	TOCLIENT_SECTORMETA = 0x26, // Obsolete
@@ -829,8 +829,8 @@ enum ToServerCommand
 	/*
 		[0] u16 command
 		[2] u8 count
-		[3] v3POS pos_0
-		[3+6] v3POS pos_1
+		[3] v3pos_t pos_0
+		[3+6] v3pos_t pos_1
 		...
 	*/
 
@@ -838,8 +838,8 @@ enum ToServerCommand
 	/*
 		[0] u16 command
 		[2] u8 count
-		[3] v3POS pos_0
-		[3+6] v3POS pos_1
+		[3] v3pos_t pos_0
+		[3+6] v3pos_t pos_1
 		...
 	*/
 
@@ -906,7 +906,7 @@ enum ToServerCommand
 
 	TOSERVER_NODEMETA_FIELDS = 0x3b,
 	/*
-		v3POS p
+		v3pos_t p
 		u16 len
 		u8[len] form name (reserved for future use)
 		u16 number of fields

@@ -372,7 +372,7 @@ public:
 	ModChannel *getModChannel(const std::string &channel);
 
 	// Send block to specific player only
-	bool SendBlock(session_t peer_id, const v3POS &blockpos);
+	bool SendBlock(session_t peer_id, const v3pos_t &blockpos);
 
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
@@ -425,7 +425,7 @@ private:
 		u16 protocol_version);
 
 	/* mark blocks not sent for all clients */
-	void SetBlocksNotSent(std::map<v3BPOS, MapBlock *>& block);
+	void SetBlocksNotSent(std::map<v3bpos_t, MapBlock *>& block);
 
 
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
@@ -460,13 +460,13 @@ private:
 		far_d_nodes are ignored and their peer_ids are added to far_players
 	*/
 	// Envlock and conlock should be locked when calling these
-	void sendRemoveNode(v3POS p, std::unordered_set<u16> *far_players = nullptr,
+	void sendRemoveNode(v3pos_t p, std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100);
-	void sendAddNode(v3POS p, MapNode n,
+	void sendAddNode(v3pos_t p, MapNode n,
 			std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100, bool remove_metadata = true);
 
-	void sendMetadataChanged(const std::list<v3POS> &meta_updates,
+	void sendMetadataChanged(const std::list<v3pos_t> &meta_updates,
 			float far_d_nodes = 100);
 
 	// Environment and Connection must be locked when called

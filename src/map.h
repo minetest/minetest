@@ -77,9 +77,9 @@ enum MapEditEventType{
 struct MapEditEvent
 {
 	MapEditEventType type = MEET_OTHER;
-	v3POS p;
+	v3pos_t p;
 	MapNode n = CONTENT_AIR;
-	std::set<v3BPOS> modified_blocks;
+	std::set<v3bpos_t> modified_blocks;
 	bool is_private_change = false;
 
 	MapEditEvent() = default;
@@ -95,16 +95,16 @@ struct MapEditEvent
 			return VoxelArea(p);
 		case MEET_BLOCK_NODE_METADATA_CHANGED:
 		{
-			v3POS np1 = p*MAP_BLOCKSIZE;
-			v3POS np2 = np1 + v3POS(1,1,1)*MAP_BLOCKSIZE - v3POS(1,1,1);
+			v3pos_t np1 = p*MAP_BLOCKSIZE;
+			v3pos_t np2 = np1 + v3pos_t(1,1,1)*MAP_BLOCKSIZE - v3pos_t(1,1,1);
 			return VoxelArea(np1, np2);
 		}
 		case MEET_OTHER:
 		{
 			VoxelArea a;
-			for (v3BPOS p : modified_blocks) {
-				v3POS np1 = getContainerPos(p, MAP_BLOCKSIZE);
-				v3POS np2 = np1 + v3POS(1,1,1)*MAP_BLOCKSIZE - v3POS(1,1,1);
+			for (v3bpos_t p : modified_blocks) {
+				v3pos_t np1 = getContainerPos(p, MAP_BLOCKSIZE);
+				v3pos_t np2 = np1 + v3pos_t(1,1,1)*MAP_BLOCKSIZE - v3pos_t(1,1,1);
 				a.addPoint(np1);
 				a.addPoint(np2);
 			}
@@ -149,53 +149,53 @@ public:
 	void dispatchEvent(const MapEditEvent &event);
 
 	// On failure returns NULL
-	MapSector * getSectorNoGenerateNoLock(v2BPOS p2d);
+	MapSector * getSectorNoGenerateNoLock(v2bpos_t p2d);
 	// Same as the above (there exists no lock anymore)
-	MapSector * getSectorNoGenerate(v2BPOS p2d);
+	MapSector * getSectorNoGenerate(v2bpos_t p2d);
 
 	/*
 		This is overloaded by ClientMap and ServerMap to allow
 		their differing fetch methods.
 	*/
-	virtual MapSector * emergeSector(v2BPOS p){ return NULL; }
+	virtual MapSector * emergeSector(v2bpos_t p){ return NULL; }
 
 	// Returns InvalidPositionException if not found
-	MapBlock * getBlockNoCreate(v3BPOS p);
+	MapBlock * getBlockNoCreate(v3bpos_t p);
 	// Returns NULL if not found
-	MapBlock * getBlockNoCreateNoEx(v3BPOS p);
+	MapBlock * getBlockNoCreateNoEx(v3bpos_t p);
 
 	/* Server overrides */
-	virtual MapBlock * emergeBlock(v3BPOS p, bool create_blank=true)
+	virtual MapBlock * emergeBlock(v3bpos_t p, bool create_blank=true)
 	{ return getBlockNoCreateNoEx(p); }
 
 	inline const NodeDefManager * getNodeDefManager() { return m_nodedef; }
 
-	bool isValidPosition(v3POS p);
+	bool isValidPosition(v3pos_t p);
 
 	// throws InvalidPositionException if not found
-	void setNode(v3POS p, MapNode & n);
+	void setNode(v3pos_t p, MapNode & n);
 
 	// Returns a CONTENT_IGNORE node if not found
 	// If is_valid_position is not NULL then this will be set to true if the
 	// position is valid, otherwise false
-	MapNode getNode(v3POS p, bool *is_valid_position = NULL);
+	MapNode getNode(v3pos_t p, bool *is_valid_position = NULL);
 
 	/*
 		These handle lighting but not faces.
 	*/
-	void addNodeAndUpdate(v3POS p, MapNode n,
-			std::map<v3BPOS, MapBlock*> &modified_blocks,
+	void addNodeAndUpdate(v3pos_t p, MapNode n,
+			std::map<v3bpos_t, MapBlock*> &modified_blocks,
 			bool remove_metadata = true);
-	void removeNodeAndUpdate(v3POS p,
-			std::map<v3BPOS, MapBlock*> &modified_blocks);
+	void removeNodeAndUpdate(v3pos_t p,
+			std::map<v3bpos_t, MapBlock*> &modified_blocks);
 
 	/*
 		Wrappers for the latter ones.
 		These emit events.
 		Return true if succeeded, false if not.
 	*/
-	bool addNodeWithEvent(v3POS p, MapNode n, bool remove_metadata = true);
-	bool removeNodeWithEvent(v3POS p);
+	bool addNodeWithEvent(v3pos_t p, MapNode n, bool remove_metadata = true);
+	bool removeNodeWithEvent(v3pos_t p);
 
 	// Call these before and after saving of many blocks
 	virtual void beginSave() {}
@@ -206,30 +206,30 @@ public:
 	// Server implements these.
 	// Client leaves them as no-op.
 	virtual bool saveBlock(MapBlock *block) { return false; }
-	virtual bool deleteBlock(v3BPOS blockpos) { return false; }
+	virtual bool deleteBlock(v3bpos_t blockpos) { return false; }
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
 		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
 	void timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
-			std::vector<v3BPOS> *unloaded_blocks=NULL);
+			std::vector<v3bpos_t> *unloaded_blocks=NULL);
 
 	/*
 		Unloads all blocks with a zero refCount().
 		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
-	void unloadUnreferencedBlocks(std::vector<v3BPOS> *unloaded_blocks=NULL);
+	void unloadUnreferencedBlocks(std::vector<v3bpos_t> *unloaded_blocks=NULL);
 
 	// Deletes sectors and their blocks from memory
 	// Takes cache into account
 	// If deleted sector is in sector cache, clears cache
-	void deleteSectors(std::vector<v2BPOS> &list);
+	void deleteSectors(std::vector<v2bpos_t> &list);
 
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(std::map<v3BPOS, MapBlock*> & modified_blocks,
+	void transformLiquids(std::map<v3bpos_t, MapBlock*> & modified_blocks,
 			ServerEnvironment *env);
 
 	/*
@@ -237,8 +237,8 @@ public:
 		These are basically coordinate wrappers to MapBlock
 	*/
 
-	std::vector<v3POS> findNodesWithMetadata(v3POS p1, v3POS p2);
-	NodeMetadata *getNodeMetadata(v3POS p);
+	std::vector<v3pos_t> findNodesWithMetadata(v3pos_t p1, v3pos_t p2);
+	NodeMetadata *getNodeMetadata(v3pos_t p);
 
 	/**
 	 * Sets metadata for a node.
@@ -254,25 +254,25 @@ public:
 	 * @param meta pointer to @c NodeMetadata object
 	 * @return @c true on success, false on failure
 	 */
-	bool setNodeMetadata(v3POS p, NodeMetadata *meta);
-	void removeNodeMetadata(v3POS p);
+	bool setNodeMetadata(v3pos_t p, NodeMetadata *meta);
+	void removeNodeMetadata(v3pos_t p);
 
 	/*
 		Node Timers
 		These are basically coordinate wrappers to MapBlock
 	*/
 
-	NodeTimer getNodeTimer(v3POS p);
+	NodeTimer getNodeTimer(v3pos_t p);
 	void setNodeTimer(const NodeTimer &t);
-	void removeNodeTimer(v3POS p);
+	void removeNodeTimer(v3pos_t p);
 
 	/*
 		Variables
 	*/
 
-	void transforming_liquid_add(v3POS p);
+	void transforming_liquid_add(v3pos_t p);
 
-	bool isBlockOccluded(MapBlock *block, v3POS cam_pos_nodes);
+	bool isBlockOccluded(MapBlock *block, v3pos_t cam_pos_nodes);
 protected:
 	friend class LuaVoxelManip;
 
@@ -280,21 +280,21 @@ protected:
 
 	std::set<MapEventReceiver*> m_event_receivers;
 
-	std::map<v2BPOS, MapSector*> m_sectors;
+	std::map<v2bpos_t, MapSector*> m_sectors;
 
 	// Be sure to set this to NULL when the cached sector is deleted
 	MapSector *m_sector_cache = nullptr;
-	v2BPOS m_sector_cache_p;
+	v2bpos_t m_sector_cache_p;
 
 	// Queued transforming water nodes
-	UniqueQueue<v3POS> m_transforming_liquid;
+	UniqueQueue<v3pos_t> m_transforming_liquid;
 
 	// This stores the properties of the nodes on the map.
 	const NodeDefManager *m_nodedef;
 
-	bool determineAdditionalOcclusionCheck(const v3POS &pos_camera,
-		const core::aabbox3d<POS> &block_bounds, v3POS &check);
-	bool isOccluded(const v3POS &pos_camera, const v3POS &pos_target,
+	bool determineAdditionalOcclusionCheck(const v3pos_t &pos_camera,
+		const core::aabbox3d<pos_t> &block_bounds, v3pos_t &check);
+	bool isOccluded(const v3pos_t &pos_camera, const v3pos_t &pos_target,
 		float step, float stepfac, float start_offset, float end_offset,
 		u32 needed_count);
 
@@ -331,22 +331,22 @@ public:
 		- Check disk (doesn't load blocks)
 		- Create blank one
 	*/
-	MapSector *createSector(v2BPOS p);
+	MapSector *createSector(v2bpos_t p);
 
 	/*
 		Blocks are generated by using these and makeBlock().
 	*/
-	bool blockpos_over_mapgen_limit(v3BPOS p);
-	bool initBlockMake(v3BPOS blockpos, BlockMakeData *data);
+	bool blockpos_over_mapgen_limit(v3bpos_t p);
+	bool initBlockMake(v3bpos_t blockpos, BlockMakeData *data);
 	void finishBlockMake(BlockMakeData *data,
-		std::map<v3BPOS, MapBlock*> *changed_blocks);
+		std::map<v3bpos_t, MapBlock*> *changed_blocks);
 
 	/*
 		Get a block from somewhere.
 		- Memory
 		- Create blank
 	*/
-	MapBlock *createBlock(v3BPOS p);
+	MapBlock *createBlock(v3bpos_t p);
 
 	/*
 		Forcefully get a block from somewhere.
@@ -355,7 +355,7 @@ public:
 		- Create blank filled with CONTENT_IGNORE
 
 	*/
-	MapBlock *emergeBlock(v3BPOS p, bool create_blank=true);
+	MapBlock *emergeBlock(v3bpos_t p, bool create_blank=true);
 
 	/*
 		Try to get a block.
@@ -363,9 +363,9 @@ public:
 		- Memory
 		- Emerge Queue (deferred disk or generate)
 	*/
-	MapBlock *getBlockOrEmerge(v3BPOS p3d);
+	MapBlock *getBlockOrEmerge(v3bpos_t p3d);
 
-	bool isBlockInQueue(v3BPOS pos);
+	bool isBlockInQueue(v3bpos_t pos);
 
 	/*
 		Database functions
@@ -377,20 +377,20 @@ public:
 	void endSave();
 
 	void save(ModifiedState save_level);
-	void listAllLoadableBlocks(std::vector<v3BPOS> &dst);
-	void listAllLoadedBlocks(std::vector<v3BPOS> &dst);
+	void listAllLoadableBlocks(std::vector<v3bpos_t> &dst);
+	void listAllLoadedBlocks(std::vector<v3bpos_t> &dst);
 
 	MapgenParams *getMapgenParams();
 
 	bool saveBlock(MapBlock *block);
 	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
-	MapBlock* loadBlock(v3BPOS p);
+	MapBlock* loadBlock(v3bpos_t p);
 	// Database version
-	void loadBlock(std::string *blob, v3BPOS p3d, MapSector *sector, bool save_after_load=false);
+	void loadBlock(std::string *blob, v3bpos_t p3d, MapSector *sector, bool save_after_load=false);
 
-	bool deleteBlock(v3BPOS blockpos);
+	bool deleteBlock(v3bpos_t blockpos);
 
-	void updateVManip(v3POS pos);
+	void updateVManip(v3pos_t pos);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
@@ -406,8 +406,8 @@ public:
 	 * Returns false if the block is not generated (so nothing
 	 * changed), true otherwise.
 	 */
-	bool repairBlockLight(v3BPOS blockpos,
-		std::map<v3BPOS, MapBlock *> *modified_blocks);
+	bool repairBlockLight(v3bpos_t blockpos,
+		std::map<v3bpos_t, MapBlock *> *modified_blocks);
 
 	MapSettingsManager settings_mgr;
 
@@ -420,7 +420,7 @@ private:
 
 	int m_map_compression_level;
 
-	std::set<v3BPOS> m_chunks_in_progress;
+	std::set<v3bpos_t> m_chunks_in_progress;
 
 	/*
 		Metadata is re-written on disk only if this is true.
@@ -449,11 +449,11 @@ public:
 		m_loaded_blocks.clear();
 	}
 
-	void initialEmerge(v3BPOS blockpos_min, v3BPOS blockpos_max,
+	void initialEmerge(v3bpos_t blockpos_min, v3bpos_t blockpos_max,
 		bool load_if_inexistent = true);
 
 	// This is much faster with big chunks of generated data
-	void blitBackAll(std::map<v3BPOS, MapBlock*> * modified_blocks,
+	void blitBackAll(std::map<v3bpos_t, MapBlock*> * modified_blocks,
 		bool overwrite_generated = true);
 
 	bool m_is_dirty = false;
@@ -464,5 +464,5 @@ protected:
 		key = blockpos
 		value = flags describing the block
 	*/
-	std::map<v3BPOS, u8> m_loaded_blocks;
+	std::map<v3bpos_t, u8> m_loaded_blocks;
 };

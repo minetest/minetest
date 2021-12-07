@@ -65,12 +65,13 @@ namespace core {
 #if USE_POS32
 
 // Node position
-using POS = irr::s32;
+using pos_t = irr::s32;
 
-// Block position. In future can be renamed to POS
-using BPOS = irr::s32;
+// Block position. In future can be renamed to pos_t
+using bpos_t = irr::s32;
+
 
 #else
-using POS = irr::s16;
-using BPOS = irr::s16;
+using pos_t = irr::s16;
+using bpos_t = irr::s16;
 #endif

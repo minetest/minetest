@@ -47,7 +47,7 @@ struct RollbackNode
 
 	RollbackNode() = default;
 
-	RollbackNode(Map *map, v3POS p, IGameDef *gamedef);
+	RollbackNode(Map *map, v3pos_t p, IGameDef *gamedef);
 };
 
 
@@ -63,7 +63,7 @@ struct RollbackAction
 	std::string actor;
 	bool actor_is_guess = false;
 
-	v3POS p;
+	v3pos_t p;
 	RollbackNode n_old;
 	RollbackNode n_new;
 
@@ -75,7 +75,7 @@ struct RollbackAction
 
 	RollbackAction() = default;
 
-	void setSetNode(v3POS p_, const RollbackNode &n_old_,
+	void setSetNode(v3pos_t p_, const RollbackNode &n_old_,
 			const RollbackNode &n_new_)
 	{
 		type = TYPE_SET_NODE;
@@ -102,7 +102,7 @@ struct RollbackAction
 	// Eg. flowing water level changes are not important
 	bool isImportant(IGameDef *gamedef) const;
 
-	bool getPosition(v3POS *dst) const;
+	bool getPosition(v3pos_t *dst) const;
 
 	bool applyRevert(Map *map, InventoryManager *imgr, IGameDef *gamedef) const;
 };
@@ -115,14 +115,14 @@ public:
 	virtual std::string getActor() = 0;
 	virtual bool isActorGuess() = 0;
 	virtual void setActor(const std::string &actor, bool is_guess) = 0;
-	virtual std::string getSuspect(v3POS p, float nearness_shortcut,
+	virtual std::string getSuspect(v3pos_t p, float nearness_shortcut,
 	                               float min_nearness) = 0;
 
 	virtual ~IRollbackManager() = default;;
 	virtual void flush() = 0;
 	// Get all actors that did something to position p, but not further than
 	// <seconds> in history
-	virtual std::list<RollbackAction> getNodeActors(v3POS pos, int range,
+	virtual std::list<RollbackAction> getNodeActors(v3pos_t pos, int range,
 	                time_t seconds, int limit) = 0;
 	// Get actions to revert <seconds> of history made by <actor>
 	virtual std::list<RollbackAction> getRevertActions(const std::string &actor,

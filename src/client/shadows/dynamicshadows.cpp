@@ -110,7 +110,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	dirty = true;
 
 	// when camera offset changes, adjust the current frustum view matrix to avoid flicker
-	v3POS cam_offset = cam->getOffset();
+	v3pos_t cam_offset = cam->getOffset();
 	if (cam_offset != shadow_frustum.camera_offset) {
 		v3f rotated_offset;
 		shadow_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - shadow_frustum.camera_offset, BS));

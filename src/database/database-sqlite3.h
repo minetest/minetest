@@ -146,10 +146,10 @@ public:
 	MapDatabaseSQLite3(const std::string &savedir);
 	virtual ~MapDatabaseSQLite3();
 
-	bool saveBlock(const v3BPOS &pos, const std::string &data);
-	void loadBlock(const v3BPOS &pos, std::string *block);
-	bool deleteBlock(const v3BPOS &pos);
-	void listAllLoadableBlocks(std::vector<v3BPOS> &dst);
+	bool saveBlock(const v3bpos_t &pos, const std::string &data);
+	void loadBlock(const v3bpos_t &pos, std::string *block);
+	bool deleteBlock(const v3bpos_t &pos);
+	void listAllLoadableBlocks(std::vector<v3bpos_t> &dst);
 
 	void beginSave() { Database_SQLite3::beginSave(); }
 	void endSave() { Database_SQLite3::endSave(); }
@@ -158,7 +158,7 @@ protected:
 	virtual void initStatements();
 
 private:
-	void bindPos(sqlite3_stmt *stmt, const v3BPOS &pos, int index = 1);
+	void bindPos(sqlite3_stmt *stmt, const v3bpos_t &pos, int index = 1);
 
 	// Map
 	sqlite3_stmt *m_stmt_read = nullptr;

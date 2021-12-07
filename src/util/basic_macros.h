@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Macros to facilitate writing position vectors to a stream
 // Usage:
-//	v3POS pos(1,2,3);
+//	v3pos_t pos(1,2,3);
 //	mystream << "message " << PP(pos) << std::endl;
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"

@@ -265,18 +265,18 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
-	v3POS blockpos_min = data->blockpos_min;
-	v3POS blockpos_max = data->blockpos_max;
+	v3pos_t blockpos_min = data->blockpos_min;
+	v3pos_t blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 
 	// Create a block-specific seed
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate terrain
-	POS stone_surface_max_y = generateTerrain();
+	pos_t stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -329,7 +329,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 	// Calculate lighting
 	if (flags & MG_LIGHT) {
-		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
+		calcLighting(node_min - v3pos_t(0, 1, 0), node_max + v3pos_t(0, 1, 0),
 				full_node_min, full_node_max);
 	}
 
@@ -340,7 +340,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int MapgenCarpathian::getSpawnLevelAtPoint(v2POS p)
+int MapgenCarpathian::getSpawnLevelAtPoint(v2pos_t p)
 {
 	// If rivers are enabled, first check if in a river channel
 	if (spflags & MGCARPATHIAN_RIVERS) {
@@ -390,7 +390,7 @@ int MapgenCarpathian::getSpawnLevelAtPoint(v2POS p)
 	bool solid_below = false;
 	u8 cons_non_solid = 0; // consecutive non-solid nodes
 
-	for (POS y = water_level; y <= water_level + 32; y++) {
+	for (pos_t y = water_level; y <= water_level + 32; y++) {
 		float mnt_var = NoisePerlin3D(&noise_mnt_var->np, p.X, y, p.Y, seed);
 		float hill1 = getLerp(height1, height2, mnt_var);
 		float hill2 = getLerp(height3, height4, mnt_var);
@@ -460,12 +460,12 @@ int MapgenCarpathian::generateTerrain()
 		noise_rivers->perlinMap2D(node_min.X, node_min.Z);
 
 	//// Place nodes
-	const v3POS &em = vm->m_area.getExtent();
-	POS stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	const v3pos_t &em = vm->m_area.getExtent();
+	pos_t stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
-	for (POS z = node_min.Z; z <= node_max.Z; z++)
-	for (POS x = node_min.X; x <= node_max.X; x++, index2d++) {
+	for (pos_t z = node_min.Z; z <= node_max.Z; z++)
+	for (pos_t x = node_min.X; x <= node_max.X; x++, index2d++) {
 		// Hill/Mountain height (hilliness)
 		float height1 = noise_height1->result[index2d];
 		float height2 = noise_height2->result[index2d];
@@ -513,7 +513,7 @@ int MapgenCarpathian::generateTerrain()
 		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
 
-		for (POS y = node_min.Y - 1; y <= node_max.Y + 1;
+		for (pos_t y = node_min.Y - 1; y <= node_max.Y + 1;
 				y++,
 				index3d += ystride,
 				VoxelArea::add_y(em, vi, 1)) {

@@ -35,26 +35,26 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 
 struct MapgenV7Params : public MapgenParams {
-	POS mount_zero_level = 0;
-	POS floatland_ymin = 1024;
-    POS floatland_ymax = 4096;
-	POS floatland_taper = 256;
+	pos_t mount_zero_level = 0;
+	pos_t floatland_ymin = 1024;
+    pos_t floatland_ymax = 4096;
+	pos_t floatland_taper = 256;
 	float float_taper_exp = 2.0f;
 	float floatland_density = -0.6f;
-	POS floatland_ywater = -MAX_MAP_GENERATION_LIMIT;
+	pos_t floatland_ywater = -MAX_MAP_GENERATION_LIMIT;
 
 	float cave_width = 0.09f;
-	POS large_cave_depth = -33;
+	pos_t large_cave_depth = -33;
 	u16 small_cave_num_min = 0;
 	u16 small_cave_num_max = 0;
 	u16 large_cave_num_min = 0;
 	u16 large_cave_num_max = 2;
 	float large_cave_flooded = 0.5f;
-	POS cavern_limit = -256;
-	POS cavern_taper = 256;
+	pos_t cavern_limit = -256;
+	pos_t cavern_taper = 256;
 	float cavern_threshold = 0.7f;
-	POS dungeon_ymin = -MAX_MAP_GENERATION_LIMIT;
-	POS dungeon_ymax = MAX_MAP_GENERATION_LIMIT;
+	pos_t dungeon_ymin = -MAX_MAP_GENERATION_LIMIT;
+	pos_t dungeon_ymax = MAX_MAP_GENERATION_LIMIT;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
@@ -88,25 +88,25 @@ public:
 	virtual MapgenType getType() const { return MAPGEN_V7; }
 
 	virtual void makeChunk(BlockMakeData *data);
-	int getSpawnLevelAtPoint(v2POS p);
+	int getSpawnLevelAtPoint(v2pos_t p);
 
-	float baseTerrainLevelAtPoint(POS x, POS z);
+	float baseTerrainLevelAtPoint(pos_t x, pos_t z);
 	float baseTerrainLevelFromMap(int index);
-	bool getMountainTerrainAtPoint(POS x, POS y, POS z);
-	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, POS y);
-	bool getRiverChannelFromMap(int idx_xyz, int idx_xz, POS y);
+	bool getMountainTerrainAtPoint(pos_t x, pos_t y, pos_t z);
+	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, pos_t y);
+	bool getRiverChannelFromMap(int idx_xyz, int idx_xz, pos_t y);
 	bool getFloatlandTerrainFromMap(int idx_xyz, float float_offset);
 
 	int generateTerrain();
 
 private:
-	POS mount_zero_level;
-	POS floatland_ymin;
-	POS floatland_ymax;
-	POS floatland_taper;
+	pos_t mount_zero_level;
+	pos_t floatland_ymin;
+	pos_t floatland_ymax;
+	pos_t floatland_taper;
 	float float_taper_exp;
 	float floatland_density;
-	POS floatland_ywater;
+	pos_t floatland_ywater;
 
 	float *float_offset_cache = nullptr;
 

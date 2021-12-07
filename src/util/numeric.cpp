@@ -103,10 +103,10 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	range: viewing range
 	distance_ptr: return location for distance from the camera
 */
-bool isBlockInSight(v3POS blockpos_b, v3f camera_pos, v3f camera_dir,
+bool isBlockInSight(v3pos_t blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
-	v3POS blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
+	v3pos_t blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 
 	// Block center position
 	v3f blockpos(

@@ -162,7 +162,7 @@ void MapgenV5Params::setDefaultSettings(Settings *settings)
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenV5::getSpawnLevelAtPoint(v2POS p)
+int MapgenV5::getSpawnLevelAtPoint(v2pos_t p)
 {
 
 	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
@@ -176,11 +176,11 @@ int MapgenV5::getSpawnLevelAtPoint(v2POS p)
 	// terrain will be below this.
 	// Raising the maximum spawn level above 'water_level + 16' is necessary
 	// for when noise_height 'offset' is set much higher than water_level.
-	POS max_spawn_y = MYMAX(noise_height->np.offset, water_level + 16);
+	pos_t max_spawn_y = MYMAX(noise_height->np.offset, water_level + 16);
 
 	// Starting spawn search at max_spawn_y + 128 ensures 128 nodes of open
 	// space above spawn position. Avoids spawning in possibly sealed voids.
-	for (POS y = max_spawn_y + 128; y >= water_level; y--) {
+	for (pos_t y = max_spawn_y + 128; y >= water_level; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
 
 		if (n_ground * f > y - h) {  // If solid
@@ -207,18 +207,18 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
 
-	v3POS blockpos_min = data->blockpos_min;
-	v3POS blockpos_max = data->blockpos_max;
+	v3pos_t blockpos_min = data->blockpos_min;
+	v3pos_t blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 
 	// Create a block-specific seed
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate base terrain
-	POS stone_surface_max_y = generateBaseTerrain();
+	pos_t stone_surface_max_y = generateBaseTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -273,7 +273,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Calculate lighting
 	if (flags & MG_LIGHT) {
-		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
+		calcLighting(node_min - v3pos_t(0, 1, 0), node_max + v3pos_t(0, 1, 0),
 			full_node_min, full_node_max);
 	}
 
@@ -291,10 +291,10 @@ int MapgenV5::generateBaseTerrain()
 	noise_height->perlinMap2D(node_min.X, node_min.Z);
 	noise_ground->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-	for (POS z=node_min.Z; z<=node_max.Z; z++) {
-		for (POS y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (pos_t z=node_min.Z; z<=node_max.Z; z++) {
+		for (pos_t y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 vi = vm->m_area.index(node_min.X, y, z);
-			for (POS x=node_min.X; x<=node_max.X; x++, vi++, index++, index2d++) {
+			for (pos_t x=node_min.X; x<=node_max.X; x++, vi++, index++, index2d++) {
 				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 					continue;
 

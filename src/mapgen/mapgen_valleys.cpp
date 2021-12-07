@@ -218,12 +218,12 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
-	v3POS blockpos_min = data->blockpos_min;
-	v3POS blockpos_max = data->blockpos_max;
+	v3pos_t blockpos_min = data->blockpos_min;
+	v3pos_t blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	node_max = (blockpos_max + v3pos_t(1, 1, 1)) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3pos_t(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
@@ -233,7 +233,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	m_bgen->calcBiomeNoise(node_min);
 
 	// Generate terrain
-	POS stone_surface_max_y = generateTerrain();
+	pos_t stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -281,7 +281,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
+		calcLighting(node_min - v3pos_t(0, 1, 0), node_max + v3pos_t(0, 1, 0),
 			full_node_min, full_node_max);
 
 	this->generating = false;
@@ -290,7 +290,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 }
 
 
-int MapgenValleys::getSpawnLevelAtPoint(v2POS p)
+int MapgenValleys::getSpawnLevelAtPoint(v2pos_t p)
 {
 	// Check if in a river channel
 	float n_rivers = NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed);
@@ -314,14 +314,14 @@ int MapgenValleys::getSpawnLevelAtPoint(v2POS p)
 
 	// Raising the maximum spawn level above 'water_level + 16' is necessary for custom
 	// parameters that set average terrain level much higher than water_level.
-	POS max_spawn_y = std::fmax(
+	pos_t max_spawn_y = std::fmax(
 		noise_terrain_height->np.offset +
 		noise_valley_depth->np.offset * noise_valley_depth->np.offset,
 		water_level + 16);
 
 	// Starting spawn search at max_spawn_y + 128 ensures 128 nodes of open
 	// space above spawn position. Avoids spawning in possibly sealed voids.
-	for (POS y = max_spawn_y + 128; y >= water_level; y--) {
+	for (pos_t y = max_spawn_y + 128; y >= water_level; y--) {
 		float n_fill = NoisePerlin3D(&noise_inter_valley_fill->np, p.X, y, p.Y, seed);
 		float surface_delta = (float)y - surface_y;
 		float density = slope * n_fill - surface_delta;
@@ -357,12 +357,12 @@ int MapgenValleys::generateTerrain()
 
 	noise_inter_valley_fill->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-	const v3POS &em = vm->m_area.getExtent();
-	POS surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	const v3pos_t &em = vm->m_area.getExtent();
+	pos_t surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index_2d = 0;
 
-	for (POS z = node_min.Z; z <= node_max.Z; z++)
-	for (POS x = node_min.X; x <= node_max.X; x++, index_2d++) {
+	for (pos_t z = node_min.Z; z <= node_max.Z; z++)
+	for (pos_t x = node_min.X; x <= node_max.X; x++, index_2d++) {
 		float n_slope          = noise_inter_valley_slope->result[index_2d];
 		float n_rivers         = noise_rivers->result[index_2d];
 		float n_terrain_height = noise_terrain_height->result[index_2d];
@@ -415,11 +415,11 @@ int MapgenValleys::generateTerrain()
 		}
 
 		// Highest solid node in column
-		POS column_max_y = surface_y;
+		pos_t column_max_y = surface_y;
 		u32 index_3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 		u32 index_data = vm->m_area.index(x, node_min.Y - 1, z);
 
-		for (POS y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		for (pos_t y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			if (vm->m_data[index_data].getContent() == CONTENT_IGNORE) {
 				float n_fill = noise_inter_valley_fill->result[index_3d];
 				float surface_delta = (float)y - surface_y;
@@ -434,7 +434,7 @@ int MapgenValleys::generateTerrain()
 						column_max_y = y;
 				} else if (y <= water_level) {
 					vm->m_data[index_data] = n_water; // Water
-				} else if (y <= (POS)river_y) {
+				} else if (y <= (pos_t)river_y) {
 					vm->m_data[index_data] = n_river_water; // River water
 				} else {
 					vm->m_data[index_data] = n_air; // Air

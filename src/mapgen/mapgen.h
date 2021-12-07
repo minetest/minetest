@@ -80,7 +80,7 @@ enum GenNotifyType {
 
 struct GenNotifyEvent {
 	GenNotifyType type;
-	v3POS pos;
+	v3pos_t pos;
 	u32 id;
 };
 
@@ -90,8 +90,8 @@ public:
 	GenerateNotifier() = default;
 	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids);
 
-	bool addEvent(GenNotifyType type, v3POS pos, u32 id=0);
-	void getEvents(std::map<std::string, std::vector<v3POS> > &event_map);
+	bool addEvent(GenNotifyType type, v3pos_t pos, u32 id=0);
+	void getEvents(std::map<std::string, std::vector<v3pos_t> > &event_map);
 	void clearEvents();
 
 private:
@@ -120,16 +120,16 @@ struct MapgenParams {
 	MapgenType mgtype = MAPGEN_DEFAULT;
 	s16 chunksize = 5;
 	u64 seed = 0;
-	POS water_level = 1;
-	POS mapgen_limit = MAX_MAP_GENERATION_LIMIT;
+	pos_t water_level = 1;
+	pos_t mapgen_limit = MAX_MAP_GENERATION_LIMIT;
 	// Flags set in readParams
 	u32 flags = 0;
 	u32 spflags = 0;
 
 	BiomeParams *bparams = nullptr;
 
-	POS mapgen_edge_min = -MAX_MAP_GENERATION_LIMIT;
-	POS mapgen_edge_max = MAX_MAP_GENERATION_LIMIT;
+	pos_t mapgen_edge_min = -MAX_MAP_GENERATION_LIMIT;
+	pos_t mapgen_edge_max = MAX_MAP_GENERATION_LIMIT;
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
@@ -166,9 +166,9 @@ public:
 	const NodeDefManager *ndef = nullptr;
 
 	u32 blockseed;
-	POS *heightmap = nullptr;
+	pos_t *heightmap = nullptr;
 	biome_t *biomemap = nullptr;
-	v3POS csize;
+	v3pos_t csize;
 
 	BiomeGen *biomegen = nullptr;
 	GenerateNotifier gennotify;
@@ -180,33 +180,33 @@ public:
 
 	virtual MapgenType getType() const { return MAPGEN_INVALID; }
 
-	static u32 getBlockSeed(v3POS p, s32 seed);
-	static u32 getBlockSeed2(v3POS p, s32 seed);
-	POS findGroundLevel(v2POS p2d, POS ymin, POS ymax);
-	POS findLiquidSurface(v2POS p2d, POS ymin, POS ymax);
-	void updateHeightmap(v3POS nmin, v3POS nmax);
-	void getSurfaces(v2POS p2d, POS ymin, POS ymax,
-		std::vector<POS> &floors, std::vector<POS> &ceilings);
+	static u32 getBlockSeed(v3pos_t p, s32 seed);
+	static u32 getBlockSeed2(v3pos_t p, s32 seed);
+	pos_t findGroundLevel(v2pos_t p2d, pos_t ymin, pos_t ymax);
+	pos_t findLiquidSurface(v2pos_t p2d, pos_t ymin, pos_t ymax);
+	void updateHeightmap(v3pos_t nmin, v3pos_t nmax);
+	void getSurfaces(v2pos_t p2d, pos_t ymin, pos_t ymax,
+		std::vector<pos_t> &floors, std::vector<pos_t> &ceilings);
 
-	void updateLiquid(UniqueQueue<v3POS> *trans_liquid, v3POS nmin, v3POS nmax);
+	void updateLiquid(UniqueQueue<v3pos_t> *trans_liquid, v3pos_t nmin, v3pos_t nmax);
 
-	void setLighting(u8 light, v3POS nmin, v3POS nmax);
-	void lightSpread(VoxelArea &a, std::queue<std::pair<v3POS, u8>> &queue,
-		const v3POS &p, u8 light);
-	void calcLighting(v3POS nmin, v3POS nmax, v3POS full_nmin, v3POS full_nmax,
+	void setLighting(u8 light, v3pos_t nmin, v3pos_t nmax);
+	void lightSpread(VoxelArea &a, std::queue<std::pair<v3pos_t, u8>> &queue,
+		const v3pos_t &p, u8 light);
+	void calcLighting(v3pos_t nmin, v3pos_t nmax, v3pos_t full_nmin, v3pos_t full_nmax,
 		bool propagate_shadow = true);
-	void propagateSunlight(v3POS nmin, v3POS nmax, bool propagate_shadow);
-	void spreadLight(const v3POS &nmin, const v3POS &nmax);
+	void propagateSunlight(v3pos_t nmin, v3pos_t nmax, bool propagate_shadow);
+	void spreadLight(const v3pos_t &nmin, const v3pos_t &nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {}
-	virtual int getGroundLevelAtPoint(v2POS p) { return 0; }
+	virtual int getGroundLevelAtPoint(v2pos_t p) { return 0; }
 
 	// getSpawnLevelAtPoint() is a function within each mapgen that returns a
 	// suitable y co-ordinate for player spawn ('suitable' usually meaning
 	// within 16 nodes of water_level). If a suitable spawn level cannot be
 	// found at the specified (X, Z) 'MAX_MAP_GENERATION_LIMIT' is returned to
 	// signify this and to cause Server::findSpawnPos() to try another (X, Z).
-	virtual int getSpawnLevelAtPoint(v2POS p) { return 0; }
+	virtual int getSpawnLevelAtPoint(v2pos_t p) { return 0; }
 
 	// Mapgen management functions
 	static MapgenType getMapgenType(const std::string &mgname);
@@ -221,7 +221,7 @@ private:
 	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
 	// that checks whether there are floodable nodes without liquid beneath
 	// the node at index vi.
-	inline bool isLiquidHorizontallyFlowable(u32 vi, v3POS em);
+	inline bool isLiquidHorizontallyFlowable(u32 vi, v3pos_t em);
 };
 
 /*
@@ -245,10 +245,10 @@ public:
 
 	virtual void generateBiomes();
 	virtual void dustTopNodes();
-	virtual void generateCavesNoiseIntersection(POS max_stone_y);
-	virtual void generateCavesRandomWalk(POS max_stone_y, POS large_cave_ymax);
-	virtual bool generateCavernsNoise(POS max_stone_y);
-	virtual void generateDungeons(POS max_stone_y);
+	virtual void generateCavesNoiseIntersection(pos_t max_stone_y);
+	virtual void generateCavesRandomWalk(pos_t max_stone_y, pos_t large_cave_ymax);
+	virtual bool generateCavernsNoise(pos_t max_stone_y);
+	virtual void generateDungeons(pos_t max_stone_y);
 
 protected:
 	EmergeParams *m_emerge;
@@ -256,10 +256,10 @@ protected:
 
 	Noise *noise_filler_depth;
 
-	v3POS node_min;
-	v3POS node_max;
-	v3POS full_node_min;
-	v3POS full_node_max;
+	v3pos_t node_min;
+	v3pos_t node_max;
+	v3pos_t full_node_min;
+	v3pos_t full_node_max;
 
 	content_t c_stone;
 	content_t c_water_source;
@@ -287,7 +287,7 @@ protected:
 	int large_cave_num_min;
 	int large_cave_num_max;
 	float large_cave_flooded;
-	POS large_cave_depth;
-	POS dungeon_ymin;
-	POS dungeon_ymax;
+	pos_t large_cave_depth;
+	pos_t dungeon_ymin;
+	pos_t dungeon_ymax;
 };

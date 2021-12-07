@@ -59,13 +59,13 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 
 		dp.diagonal_dirs       = false;
 		dp.only_in_ground      = true;
-		dp.holesize            = v3POS(1, 2, 1);
+		dp.holesize            = v3pos_t(1, 2, 1);
 		dp.corridor_len_min    = 1;
 		dp.corridor_len_max    = 13;
-		dp.room_size_min       = v3POS(4, 4, 4);
-		dp.room_size_max       = v3POS(8, 6, 8);
-		dp.room_size_large_min = v3POS(8, 8, 8);
-		dp.room_size_large_max = v3POS(16, 16, 16);
+		dp.room_size_min       = v3pos_t(4, 4, 4);
+		dp.room_size_max       = v3pos_t(8, 6, 8);
+		dp.room_size_large_min = v3pos_t(8, 8, 8);
+		dp.room_size_large_max = v3pos_t(16, 16, 16);
 		dp.large_room_chance   = 1;
 		dp.num_rooms           = 8;
 		dp.num_dungeons        = 1;
@@ -77,7 +77,7 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 }
 
 
-void DungeonGen::generate(MMVManip *vm, u32 bseed, v3POS nmin, v3POS nmax)
+void DungeonGen::generate(MMVManip *vm, u32 bseed, v3pos_t nmin, v3pos_t nmax)
 {
 	if (dp.num_dungeons == 0)
 		return;
@@ -101,10 +101,10 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3POS nmin, v3POS nmax)
 		// Like randomwalk caves, preserve nodes that have 'is_ground_content = false',
 		// to avoid dungeons that generate out beyond the edge of a mapchunk destroying
 		// nodes added by mods in 'register_on_generated()'.
-		for (POS z = nmin.Z; z <= nmax.Z; z++) {
-			for (POS y = nmin.Y; y <= nmax.Y; y++) {
+		for (pos_t z = nmin.Z; z <= nmax.Z; z++) {
+			for (pos_t y = nmin.Y; y <= nmax.Y; y++) {
 				u32 i = vm->m_area.index(nmin.X, y, z);
-				for (POS x = nmin.X; x <= nmax.X; x++) {
+				for (pos_t x = nmin.X; x <= nmax.X; x++) {
 					content_t c = vm->m_data[i].getContent();
 					NodeDrawType dtype = ndef->get(c).drawtype;
 					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
@@ -118,16 +118,16 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3POS nmin, v3POS nmax)
 
 	// Add them
 	for (u32 i = 0; i < dp.num_dungeons; i++)
-		makeDungeon(v3POS(1, 1, 1) * MAP_BLOCKSIZE);
+		makeDungeon(v3pos_t(1, 1, 1) * MAP_BLOCKSIZE);
 
 	// Optionally convert some structure to alternative structure
 	if (dp.c_alt_wall == CONTENT_IGNORE)
 		return;
 
-	for (POS z = nmin.Z; z <= nmax.Z; z++)
-	for (POS y = nmin.Y; y <= nmax.Y; y++) {
+	for (pos_t z = nmin.Z; z <= nmax.Z; z++)
+	for (pos_t y = nmin.Y; y <= nmax.Y; y++) {
 		u32 i = vm->m_area.index(nmin.X, y, z);
-		for (POS x = nmin.X; x <= nmax.X; x++) {
+		for (pos_t x = nmin.X; x <= nmax.X; x++) {
 			if (vm->m_data[i].getContent() == dp.c_wall) {
 				if (NoisePerlin3D(&dp.np_alt_wall, x, y, z, blockseed) > 0.0f)
 					vm->m_data[i].setContent(dp.c_alt_wall);
@@ -140,11 +140,11 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3POS nmin, v3POS nmax)
 }
 
 
-void DungeonGen::makeDungeon(v3POS start_padding)
+void DungeonGen::makeDungeon(v3pos_t start_padding)
 {
-	const v3POS &areasize = vm->m_area.getExtent();
-	v3POS roomsize;
-	v3POS roomplace;
+	const v3pos_t &areasize = vm->m_area.getExtent();
+	v3pos_t roomsize;
+	v3pos_t roomplace;
 
 	/*
 		Find place for first room.
@@ -176,7 +176,7 @@ void DungeonGen::makeDungeon(v3POS start_padding)
 		for (s16 z = 0; z < roomsize.Z; z++)
 		for (s16 y = 0; y < roomsize.Y; y++)
 		for (s16 x = 0; x < roomsize.X; x++) {
-			v3POS p = roomplace + v3POS(x, y, z);
+			v3pos_t p = roomplace + v3pos_t(x, y, z);
 			u32 vi = vm->m_area.index(p);
 			if ((vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE) ||
 					vm->m_data[vi].getContent() == CONTENT_IGNORE) {
@@ -194,13 +194,13 @@ void DungeonGen::makeDungeon(v3POS start_padding)
 		a new corridor can be started from the last room instead of
 		the new room, if chosen so.
 	*/
-	v3POS last_room_center = roomplace + v3POS(roomsize.X / 2, 1, roomsize.Z / 2);
+	v3pos_t last_room_center = roomplace + v3pos_t(roomsize.X / 2, 1, roomsize.Z / 2);
 
 	for (u32 i = 0; i < dp.num_rooms; i++) {
 		// Make a room to the determined place
 		makeRoom(roomsize, roomplace);
 
-		v3POS room_center = roomplace + v3POS(roomsize.X / 2, 1, roomsize.Z / 2);
+		v3pos_t room_center = roomplace + v3pos_t(roomsize.X / 2, 1, roomsize.Z / 2);
 		if (gennotify)
 			gennotify->addEvent(dp.notifytype, room_center);
 
@@ -217,7 +217,7 @@ void DungeonGen::makeDungeon(v3POS start_padding)
 
 		bool start_in_last_room = (random.range(0, 2) != 0);
 
-		v3POS walker_start_place;
+		v3pos_t walker_start_place;
 
 		if (start_in_last_room) {
 			walker_start_place = last_room_center;
@@ -228,8 +228,8 @@ void DungeonGen::makeDungeon(v3POS start_padding)
 		}
 
 		// Create walker and find a place for a door
-		v3POS doorplace;
-		v3POS doordir;
+		v3pos_t doorplace;
+		v3pos_t doordir;
 
 		m_pos = walker_start_place;
 		if (!findPlaceForDoor(doorplace, doordir))
@@ -243,8 +243,8 @@ void DungeonGen::makeDungeon(v3POS start_padding)
 			doorplace -= doordir;
 
 		// Make a random corridor starting from the door
-		v3POS corridor_end;
-		v3POS corridor_end_dir;
+		v3pos_t corridor_end;
+		v3pos_t corridor_end_dir;
 		makeCorridor(doorplace, doordir, corridor_end, corridor_end_dir);
 
 		// Find a place for a random sized room
@@ -274,7 +274,7 @@ void DungeonGen::makeDungeon(v3POS start_padding)
 }
 
 
-void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
+void DungeonGen::makeRoom(v3pos_t roomsize, v3pos_t roomplace)
 {
 	MapNode n_wall(dp.c_wall);
 	MapNode n_air(CONTENT_AIR);
@@ -283,7 +283,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 	for (s16 z = 0; z < roomsize.Z; z++)
 	for (s16 y = 0; y < roomsize.Y; y++) {
 		{
-			v3POS p = roomplace + v3POS(0, y, z);
+			v3pos_t p = roomplace + v3pos_t(0, y, z);
 			if (!vm->m_area.contains(p))
 				continue;
 			u32 vi = vm->m_area.index(p);
@@ -292,7 +292,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 			vm->m_data[vi] = n_wall;
 		}
 		{
-			v3POS p = roomplace + v3POS(roomsize.X - 1, y, z);
+			v3pos_t p = roomplace + v3pos_t(roomsize.X - 1, y, z);
 			if (!vm->m_area.contains(p))
 				continue;
 			u32 vi = vm->m_area.index(p);
@@ -306,7 +306,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 	for (s16 x = 0; x < roomsize.X; x++)
 	for (s16 y = 0; y < roomsize.Y; y++) {
 		{
-			v3POS p = roomplace + v3POS(x, y, 0);
+			v3pos_t p = roomplace + v3pos_t(x, y, 0);
 			if (!vm->m_area.contains(p))
 				continue;
 			u32 vi = vm->m_area.index(p);
@@ -315,7 +315,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 			vm->m_data[vi] = n_wall;
 		}
 		{
-			v3POS p = roomplace + v3POS(x, y, roomsize.Z - 1);
+			v3pos_t p = roomplace + v3pos_t(x, y, roomsize.Z - 1);
 			if (!vm->m_area.contains(p))
 				continue;
 			u32 vi = vm->m_area.index(p);
@@ -329,7 +329,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 	for (s16 z = 0; z < roomsize.Z; z++)
 	for (s16 x = 0; x < roomsize.X; x++) {
 		{
-			v3POS p = roomplace + v3POS(x, 0, z);
+			v3pos_t p = roomplace + v3pos_t(x, 0, z);
 			if (!vm->m_area.contains(p))
 				continue;
 			u32 vi = vm->m_area.index(p);
@@ -338,7 +338,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 			vm->m_data[vi] = n_wall;
 		}
 		{
-			v3POS p = roomplace + v3POS(x,roomsize. Y - 1, z);
+			v3pos_t p = roomplace + v3pos_t(x,roomsize. Y - 1, z);
 			if (!vm->m_area.contains(p))
 				continue;
 			u32 vi = vm->m_area.index(p);
@@ -352,7 +352,7 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 	for (s16 z = 1; z < roomsize.Z - 1; z++)
 	for (s16 y = 1; y < roomsize.Y - 1; y++)
 	for (s16 x = 1; x < roomsize.X - 1; x++) {
-		v3POS p = roomplace + v3POS(x, y, z);
+		v3pos_t p = roomplace + v3pos_t(x, y, z);
 		if (!vm->m_area.contains(p))
 			continue;
 		u32 vi = vm->m_area.index(p);
@@ -362,13 +362,13 @@ void DungeonGen::makeRoom(v3POS roomsize, v3POS roomplace)
 }
 
 
-void DungeonGen::makeFill(v3POS place, v3POS size,
+void DungeonGen::makeFill(v3pos_t place, v3pos_t size,
 	u8 avoid_flags, MapNode n, u8 or_flags)
 {
-	for (POS z = 0; z < size.Z; z++)
-	for (POS y = 0; y < size.Y; y++)
-	for (POS x = 0; x < size.X; x++) {
-		v3POS p = place + v3POS(x, y, z);
+	for (pos_t z = 0; z < size.Z; z++)
+	for (pos_t y = 0; y < size.Y; y++)
+	for (pos_t x = 0; x < size.X; x++) {
+		v3pos_t p = place + v3pos_t(x, y, z);
 		if (!vm->m_area.contains(p))
 			continue;
 		u32 vi = vm->m_area.index(p);
@@ -380,14 +380,14 @@ void DungeonGen::makeFill(v3POS place, v3POS size,
 }
 
 
-void DungeonGen::makeHole(v3POS place)
+void DungeonGen::makeHole(v3pos_t place)
 {
 	makeFill(place, dp.holesize, 0, MapNode(CONTENT_AIR),
 		VMANIP_FLAG_DUNGEON_INSIDE);
 }
 
 
-void DungeonGen::makeDoor(v3POS doorplace, v3POS doordir)
+void DungeonGen::makeDoor(v3pos_t doorplace, v3pos_t doordir)
 {
 	makeHole(doorplace);
 
@@ -398,12 +398,12 @@ void DungeonGen::makeDoor(v3POS doorplace, v3POS doordir)
 }
 
 
-void DungeonGen::makeCorridor(v3POS doorplace, v3POS doordir,
-	v3POS &result_place, v3POS &result_dir)
+void DungeonGen::makeCorridor(v3pos_t doorplace, v3pos_t doordir,
+	v3pos_t &result_place, v3pos_t &result_dir)
 {
 	makeHole(doorplace);
-	v3POS p0 = doorplace;
-	v3POS dir = doordir;
+	v3pos_t p0 = doorplace;
+	v3pos_t dir = doordir;
 	u32 length = random.range(dp.corridor_len_min, dp.corridor_len_max);
 	u32 partlength = random.range(dp.corridor_len_min, dp.corridor_len_max);
 	u32 partcount = 0;
@@ -413,15 +413,15 @@ void DungeonGen::makeCorridor(v3POS doorplace, v3POS doordir,
 		make_stairs = random.next() % 2 ? 1 : -1;
 
 	for (u32 i = 0; i < length; i++) {
-		v3POS p = p0 + dir;
+		v3pos_t p = p0 + dir;
 		if (partcount != 0)
 			p.Y += make_stairs;
 
 		// Check segment of minimum size corridor is in voxelmanip
-		if (vm->m_area.contains(p) && vm->m_area.contains(p + v3POS(0, 1, 0))) {
+		if (vm->m_area.contains(p) && vm->m_area.contains(p + v3pos_t(0, 1, 0))) {
 			if (make_stairs) {
-				makeFill(p + v3POS(-1, -1, -1),
-					dp.holesize + v3POS(2, 3, 2),
+				makeFill(p + v3pos_t(-1, -1, -1),
+					dp.holesize + v3pos_t(2, 3, 2),
 					VMANIP_FLAG_DUNGEON_UNTOUCHABLE,
 					MapNode(dp.c_wall),
 					0);
@@ -441,22 +441,22 @@ void DungeonGen::makeCorridor(v3POS doorplace, v3POS doordir,
 					// rotate face 180 deg if
 					// making stairs backwards
 					int facedir = dir_to_facedir(dir * make_stairs);
-					v3POS ps = p;
+					v3pos_t ps = p;
 					u16 stair_width = (dir.Z != 0) ? dp.holesize.X : dp.holesize.Z;
 					// Stair width direction vector
-					v3POS swv = (dir.Z != 0) ? v3POS(1, 0, 0) : v3POS(0, 0, 1);
+					v3pos_t swv = (dir.Z != 0) ? v3pos_t(1, 0, 0) : v3pos_t(0, 0, 1);
 
 					for (u16 st = 0; st < stair_width; st++) {
 						if (make_stairs == -1) {
 							u32 vi = vm->m_area.index(ps.X - dir.X, ps.Y - 1, ps.Z - dir.Z);
-							if (vm->m_area.contains(ps + v3POS(-dir.X, -1, -dir.Z)) &&
+							if (vm->m_area.contains(ps + v3pos_t(-dir.X, -1, -dir.Z)) &&
 									vm->m_data[vi].getContent() == dp.c_wall) {
 								vm->m_flags[vi] |= VMANIP_FLAG_DUNGEON_UNTOUCHABLE;
 								vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
 							}
 						} else if (make_stairs == 1) {
 							u32 vi = vm->m_area.index(ps.X, ps.Y - 1, ps.Z);
-							if (vm->m_area.contains(ps + v3POS(0, -1, 0)) &&
+							if (vm->m_area.contains(ps + v3pos_t(0, -1, 0)) &&
 									vm->m_data[vi].getContent() == dp.c_wall) {
 								vm->m_flags[vi] |= VMANIP_FLAG_DUNGEON_UNTOUCHABLE;
 								vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
@@ -466,8 +466,8 @@ void DungeonGen::makeCorridor(v3POS doorplace, v3POS doordir,
 					}
 				}
 			} else {
-				makeFill(p + v3POS(-1, -1, -1),
-					dp.holesize + v3POS(2, 2, 2),
+				makeFill(p + v3pos_t(-1, -1, -1),
+					dp.holesize + v3pos_t(2, 2, 2),
 					VMANIP_FLAG_DUNGEON_UNTOUCHABLE,
 					MapNode(dp.c_wall),
 					0);
@@ -502,11 +502,11 @@ void DungeonGen::makeCorridor(v3POS doorplace, v3POS doordir,
 }
 
 
-bool DungeonGen::findPlaceForDoor(v3POS &result_place, v3POS &result_dir)
+bool DungeonGen::findPlaceForDoor(v3pos_t &result_place, v3pos_t &result_dir)
 {
 	for (u32 i = 0; i < 100; i++) {
-		v3POS p = m_pos + m_dir;
-		v3POS p1 = p + v3POS(0, 1, 0);
+		v3pos_t p = m_pos + m_dir;
+		v3pos_t p1 = p + v3pos_t(0, 1, 0);
 		if (!vm->m_area.contains(p) || !vm->m_area.contains(p1) || i % 4 == 0) {
 			randomizeDir();
 			continue;
@@ -525,24 +525,24 @@ bool DungeonGen::findPlaceForDoor(v3POS &result_place, v3POS &result_dir)
 		*/
 		// Jump one up if the actual space is there
 		if (vm->getNodeNoExNoEmerge(p +
-				v3POS(0, 0, 0)).getContent() == dp.c_wall &&
+				v3pos_t(0, 0, 0)).getContent() == dp.c_wall &&
 				vm->getNodeNoExNoEmerge(p +
-				v3POS(0, 1, 0)).getContent() == CONTENT_AIR &&
+				v3pos_t(0, 1, 0)).getContent() == CONTENT_AIR &&
 				vm->getNodeNoExNoEmerge(p +
-				v3POS(0, 2, 0)).getContent() == CONTENT_AIR)
-			p += v3POS(0,1,0);
+				v3pos_t(0, 2, 0)).getContent() == CONTENT_AIR)
+			p += v3pos_t(0,1,0);
 		// Jump one down if the actual space is there
 		if (vm->getNodeNoExNoEmerge(p +
-				v3POS(0, 1, 0)).getContent() == dp.c_wall &&
+				v3pos_t(0, 1, 0)).getContent() == dp.c_wall &&
 				vm->getNodeNoExNoEmerge(p +
-				v3POS(0, 0, 0)).getContent() == CONTENT_AIR &&
+				v3pos_t(0, 0, 0)).getContent() == CONTENT_AIR &&
 				vm->getNodeNoExNoEmerge(p +
-				v3POS(0, -1, 0)).getContent() == CONTENT_AIR)
-			p += v3POS(0, -1, 0);
+				v3pos_t(0, -1, 0)).getContent() == CONTENT_AIR)
+			p += v3pos_t(0, -1, 0);
 		// Check if walking is now possible
 		if (vm->getNodeNoExNoEmerge(p).getContent() != CONTENT_AIR ||
 				vm->getNodeNoExNoEmerge(p +
-				v3POS(0, 1, 0)).getContent() != CONTENT_AIR) {
+				v3pos_t(0, 1, 0)).getContent() != CONTENT_AIR) {
 			// Cannot continue walking here
 			randomizeDir();
 			continue;
@@ -554,36 +554,36 @@ bool DungeonGen::findPlaceForDoor(v3POS &result_place, v3POS &result_dir)
 }
 
 
-bool DungeonGen::findPlaceForRoomDoor(v3POS roomsize, v3POS &result_doorplace,
-	v3POS &result_doordir, v3POS &result_roomplace)
+bool DungeonGen::findPlaceForRoomDoor(v3pos_t roomsize, v3pos_t &result_doorplace,
+	v3pos_t &result_doordir, v3pos_t &result_roomplace)
 {
 	for (s16 trycount = 0; trycount < 30; trycount++) {
-		v3POS doorplace;
-		v3POS doordir;
+		v3pos_t doorplace;
+		v3pos_t doordir;
 		bool r = findPlaceForDoor(doorplace, doordir);
 		if (!r)
 			continue;
-		v3POS roomplace;
+		v3pos_t roomplace;
 		// X east, Z north, Y up
-		if (doordir == v3POS(1, 0, 0)) // X+
+		if (doordir == v3pos_t(1, 0, 0)) // X+
 			roomplace = doorplace +
-				v3POS(0, -1, random.range(-roomsize.Z + 2, -2));
-		if (doordir == v3POS(-1, 0, 0)) // X-
+				v3pos_t(0, -1, random.range(-roomsize.Z + 2, -2));
+		if (doordir == v3pos_t(-1, 0, 0)) // X-
 			roomplace = doorplace +
-				v3POS(-roomsize.X + 1, -1, random.range(-roomsize.Z + 2, -2));
-		if (doordir == v3POS(0, 0, 1)) // Z+
+				v3pos_t(-roomsize.X + 1, -1, random.range(-roomsize.Z + 2, -2));
+		if (doordir == v3pos_t(0, 0, 1)) // Z+
 			roomplace = doorplace +
-				v3POS(random.range(-roomsize.X + 2, -2), -1, 0);
-		if (doordir == v3POS(0, 0, -1)) // Z-
+				v3pos_t(random.range(-roomsize.X + 2, -2), -1, 0);
+		if (doordir == v3pos_t(0, 0, -1)) // Z-
 			roomplace = doorplace +
-				v3POS(random.range(-roomsize.X + 2, -2), -1, -roomsize.Z + 1);
+				v3pos_t(random.range(-roomsize.X + 2, -2), -1, -roomsize.Z + 1);
 
 		// Check fit
 		bool fits = true;
 		for (s16 z = 1; z < roomsize.Z - 1; z++)
 		for (s16 y = 1; y < roomsize.Y - 1; y++)
 		for (s16 x = 1; x < roomsize.X - 1; x++) {
-			v3POS p = roomplace + v3POS(x, y, z);
+			v3pos_t p = roomplace + v3pos_t(x, y, z);
 			if (!vm->m_area.contains(p)) {
 				fits = false;
 				break;
@@ -606,11 +606,11 @@ bool DungeonGen::findPlaceForRoomDoor(v3POS roomsize, v3POS &result_doorplace,
 }
 
 
-v3POS rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
+v3pos_t rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 {
 	// Make diagonal directions somewhat rare
 	if (diagonal_dirs && (random.next() % 4 == 0)) {
-		v3POS dir;
+		v3pos_t dir;
 		int trycount = 0;
 
 		do {
@@ -625,15 +625,15 @@ v3POS rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 	}
 
 	if (random.next() % 2 == 0)
-		return random.next() % 2 ? v3POS(-1, 0, 0) : v3POS(1, 0, 0);
+		return random.next() % 2 ? v3pos_t(-1, 0, 0) : v3pos_t(1, 0, 0);
 
-	return random.next() % 2 ? v3POS(0, 0, -1) : v3POS(0, 0, 1);
+	return random.next() % 2 ? v3pos_t(0, 0, -1) : v3pos_t(0, 0, 1);
 }
 
 
-v3POS turn_xz(v3POS olddir, int t)
+v3pos_t turn_xz(v3pos_t olddir, int t)
 {
-	v3POS dir;
+	v3pos_t dir;
 	if (t == 0) {
 		// Turn right
 		dir.X = olddir.Z;
@@ -649,7 +649,7 @@ v3POS turn_xz(v3POS olddir, int t)
 }
 
 
-void random_turn(PseudoRandom &random, v3POS &dir)
+void random_turn(PseudoRandom &random, v3pos_t &dir)
 {
 	int turn = random.range(0, 2);
 	if (turn == 0) {
@@ -665,7 +665,7 @@ void random_turn(PseudoRandom &random, v3POS &dir)
 }
 
 
-int dir_to_facedir(v3POS d)
+int dir_to_facedir(v3pos_t d)
 {
 	if (abs(d.X) > abs(d.Z))
 		return d.X < 0 ? 3 : 1;

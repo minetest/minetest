@@ -47,7 +47,7 @@ struct CollisionInfo
 
 	CollisionType type = COLLISION_NODE;
 	CollisionAxis axis = COLLISION_AXIS_NONE;
-	v3POS node_p = v3POS(-32768,-32768,-32768); // COLLISION_NODE
+	v3pos_t node_p = v3pos_t(-32768,-32768,-32768); // COLLISION_NODE
 	ActiveObject *object = nullptr; // COLLISION_OBJECT
 	v3f old_speed;
 	v3f new_speed;

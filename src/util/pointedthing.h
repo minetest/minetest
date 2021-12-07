@@ -43,20 +43,20 @@ struct PointedThing
 	 * This may differ from node_real_undersurface if
 	 * a nodebox exceeds the limits of its node.
 	 */
-	v3POS node_undersurface;
+	v3pos_t node_undersurface;
 	/*!
 	 * Only valid if type is POINTEDTHING_NODE.
 	 * The coordinates of the last node the ray intersects
 	 * before node_undersurface. Same as node_undersurface
 	 * if the ray starts in a nodebox.
 	 */
-	v3POS node_abovesurface;
+	v3pos_t node_abovesurface;
 	/*!
 	 * Only valid if type is POINTEDTHING_NODE.
 	 * The coordinates of the node which contains the
 	 * point of the collision and the nodebox of the node.
 	 */
-	v3POS node_real_undersurface;
+	v3pos_t node_real_undersurface;
 	/*!
 	 * Only valid if type is POINTEDTHING_OBJECT.
 	 * The ID of the object the ray hit.
@@ -74,7 +74,7 @@ struct PointedThing
 	 * This is perpendicular to the face the ray hits,
 	 * points outside of the box and it's length is 1.
 	 */
-	v3POS intersection_normal;
+	v3pos_t intersection_normal;
 	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
 	 * Indicates which selection box is selected, if there are more of them.
@@ -89,11 +89,11 @@ struct PointedThing
 	//! Constructor for POINTEDTHING_NOTHING
 	PointedThing() = default;
 	//! Constructor for POINTEDTHING_NODE
-	PointedThing(const v3POS &under, const v3POS &above,
-		const v3POS &real_under, const v3f &point, const v3POS &normal,
+	PointedThing(const v3pos_t &under, const v3pos_t &above,
+		const v3pos_t &real_under, const v3f &point, const v3pos_t &normal,
 		u16 box_id, f32 distSq);
 	//! Constructor for POINTEDTHING_OBJECT
-	PointedThing(s16 id, const v3f &point, const v3POS &normal, f32 distSq);
+	PointedThing(s16 id, const v3f &point, const v3pos_t &normal, f32 distSq);
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

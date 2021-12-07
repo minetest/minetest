@@ -72,7 +72,7 @@ public:
 
 	void update(const v3f &camera_p, const video::SColorf &color);
 
-	void updateCameraOffset(const v3POS &camera_offset)
+	void updateCameraOffset(const v3pos_t &camera_offset)
 	{
 		m_camera_offset = camera_offset;
 		updateBox();
@@ -135,7 +135,7 @@ private:
 	u32 m_seed;
 	v3f m_camera_pos;
 	v2f m_origin;
-	v3POS m_camera_offset;
+	v3pos_t m_camera_offset;
 	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
 	bool m_camera_inside_cloud = false;

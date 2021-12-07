@@ -63,15 +63,15 @@ struct MinimapPixel {
 };
 
 struct MinimapMapblock {
-	void getMinimapNodes(VoxelManipulator *vmanip, const v3POS &pos);
+	void getMinimapNodes(VoxelManipulator *vmanip, const v3pos_t &pos);
 
 	MinimapPixel data[MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 };
 
 struct MinimapData {
 	MinimapModeDef mode;
-	v3POS pos;
-	v3POS old_pos;
+	v3pos_t pos;
+	v3pos_t old_pos;
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
@@ -86,7 +86,7 @@ struct MinimapData {
 };
 
 struct QueuedMinimapUpdate {
-	v3BPOS pos;
+	v3bpos_t pos;
 	MinimapMapblock *data = nullptr;
 };
 
@@ -95,9 +95,9 @@ public:
 	MinimapUpdateThread() : UpdateThread("Minimap") {}
 	virtual ~MinimapUpdateThread();
 
-	void getMap(v3BPOS pos, s16 size, POS height);
-	void enqueueBlock(v3BPOS pos, MinimapMapblock *data);
-	bool pushBlockUpdate(v3BPOS pos, MinimapMapblock *data);
+	void getMap(v3bpos_t pos, s16 size, pos_t height);
+	void enqueueBlock(v3bpos_t pos, MinimapMapblock *data);
+	bool pushBlockUpdate(v3bpos_t pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
 	MinimapData *data = nullptr;
@@ -108,7 +108,7 @@ protected:
 private:
 	std::mutex m_queue_mutex;
 	std::deque<QueuedMinimapUpdate> m_update_queue;
-	std::map<v3BPOS, MinimapMapblock *> m_blocks_cache;
+	std::map<v3bpos_t, MinimapMapblock *> m_blocks_cache;
 };
 
 class Minimap {
@@ -116,12 +116,12 @@ public:
 	Minimap(Client *client);
 	~Minimap();
 
-	void addBlock(v3BPOS pos, MinimapMapblock *data);
+	void addBlock(v3bpos_t pos, MinimapMapblock *data);
 
 	v3f getYawVec();
 
-	void setPos(v3POS pos);
-	v3POS getPos() const { return data->pos; }
+	void setPos(v3pos_t pos);
+	v3pos_t getPos() const { return data->pos; }
 	void setAngle(f32 angle);
 	f32 getAngle() const { return m_angle; }
 	void toggleMinimapShape();

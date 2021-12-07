@@ -233,7 +233,7 @@ public:
 		The block from which the object was loaded from, and in which
 		a copy of the static data resides.
 	*/
-	v3POS m_static_block = v3POS(1337,1337,1337);
+	v3pos_t m_static_block = v3pos_t(1337,1337,1337);
 
 protected:
 	virtual void onMarkedForDeactivation() {}

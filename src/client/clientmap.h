@@ -38,7 +38,7 @@ struct MapDrawControl
 struct MeshBufList
 {
 	video::SMaterial m;
-	std::vector<std::pair<v3POS,scene::IMeshBuffer*>> bufs;
+	std::vector<std::pair<v3pos_t,scene::IMeshBuffer*>> bufs;
 };
 
 struct MeshBufListList
@@ -51,7 +51,7 @@ struct MeshBufListList
 	std::vector<MeshBufList> lists[MAX_TILE_LAYERS];
 
 	void clear();
-	void add(scene::IMeshBuffer *buf, v3BPOS position, u8 layer);
+	void add(scene::IMeshBuffer *buf, v3bpos_t position, u8 layer);
 };
 
 class Client;
@@ -85,16 +85,16 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3POS &offset)
+	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3pos_t &offset)
 	{
-		v3BPOS previous_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
+		v3bpos_t previous_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
 
 		m_camera_position = pos;
 		m_camera_direction = dir;
 		m_camera_fov = fov;
 		m_camera_offset = offset;
 
-		v3BPOS current_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
+		v3bpos_t current_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
 
 		// reorder the blocks when camera crosses block boundary
 		if (previous_block != current_block)
@@ -104,9 +104,9 @@ public:
 	/*
 		Forcefully get a sector from somewhere
 	*/
-	MapSector * emergeSector(v2BPOS p);
+	MapSector * emergeSector(v2bpos_t p);
 
-	//void deSerializeSector(v2POS p2d, std::istream &is);
+	//void deSerializeSector(v2pos_t p2d, std::istream &is);
 
 	/*
 		ISceneNode methods
@@ -126,8 +126,8 @@ public:
 		return m_box;
 	}
 
-	void getBlocksInViewRange(v3POS cam_pos_nodes,
-		v3POS *p_blocks_min, v3POS *p_blocks_max, float range=-1.0f);
+	void getBlocksInViewRange(v3pos_t cam_pos_nodes,
+		v3pos_t *p_blocks_min, v3pos_t *p_blocks_max, float range=-1.0f);
 	void updateDrawList();
 	void updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range);
 	// Returns true if draw list needs updating before drawing the next frame.
@@ -154,9 +154,9 @@ private:
 	class MapBlockComparer
 	{
 	public:
-		MapBlockComparer(const v3BPOS &camera_block) : m_camera_block(camera_block) {}
+		MapBlockComparer(const v3bpos_t &camera_block) : m_camera_block(camera_block) {}
 
-		bool operator() (const v3BPOS &left, const v3BPOS &right) const
+		bool operator() (const v3bpos_t &left, const v3bpos_t &right) const
 		{
 			auto distance_left = left.getDistanceFromSQ(m_camera_block);
 			auto distance_right = right.getDistanceFromSQ(m_camera_block);
@@ -164,7 +164,7 @@ private:
 		}
 
 	private:
-		v3BPOS m_camera_block;
+		v3bpos_t m_camera_block;
 	};
 
 	Client *m_client;
@@ -178,13 +178,13 @@ private:
 	v3f m_camera_position = v3f(0,0,0);
 	v3f m_camera_direction = v3f(0,0,1);
 	f32 m_camera_fov = M_PI;
-	v3POS m_camera_offset;
+	v3pos_t m_camera_offset;
 
-	std::map<v3BPOS, MapBlock*, MapBlockComparer> m_drawlist;
-	std::map<v3BPOS, MapBlock*> m_drawlist_shadow;
+	std::map<v3bpos_t, MapBlock*, MapBlockComparer> m_drawlist;
+	std::map<v3bpos_t, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
 
-	std::set<v2BPOS> m_last_drawn_sectors;
+	std::set<v2bpos_t> m_last_drawn_sectors;
 
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;

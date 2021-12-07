@@ -90,7 +90,7 @@ void Database_Redis::endSave() {
 	freeReplyObject(reply);
 }
 
-bool Database_Redis::saveBlock(const v3BPOS &pos, const std::string &data)
+bool Database_Redis::saveBlock(const v3bpos_t &pos, const std::string &data)
 {
 	std::string tmp = getBlockAsStringCompatible(pos);
 
@@ -114,7 +114,7 @@ bool Database_Redis::saveBlock(const v3BPOS &pos, const std::string &data)
 	return true;
 }
 
-void Database_Redis::loadBlock(const v3BPOS &pos, std::string *block)
+void Database_Redis::loadBlock(const v3bpos_t &pos, std::string *block)
 {
 	std::string tmp = getBlockAsStringCompatible(pos);
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx,
@@ -154,7 +154,7 @@ void Database_Redis::loadBlock(const v3BPOS &pos, std::string *block)
 		"Redis command 'HGET %s %s' gave invalid reply."));
 }
 
-bool Database_Redis::deleteBlock(const v3BPOS &pos)
+bool Database_Redis::deleteBlock(const v3bpos_t &pos)
 {
 	std::string tmp = getBlockAsStringCompatible(pos);
 
@@ -174,7 +174,7 @@ bool Database_Redis::deleteBlock(const v3BPOS &pos)
 	return true;
 }
 
-void Database_Redis::listAllLoadableBlocks(std::vector<v3BPOS> &dst)
+void Database_Redis::listAllLoadableBlocks(std::vector<v3bpos_t> &dst)
 {
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HKEYS %s", hash.c_str()));
 	if (!reply) {
