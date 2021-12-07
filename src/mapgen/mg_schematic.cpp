@@ -216,7 +216,7 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3POS p, u32 flags,
 		rot = (Rotation)myrand_range(ROTATE_0, ROTATE_270);
 
 	v3POS s = (rot == ROTATE_90 || rot == ROTATE_270) ?
-		v3POS(size.Z, size.Y, size.X) : size;
+		v3POS(size.Z, size.Y, size.X) : v3POS(size.X, size.Y, size.Z);
 
 	//// Adjust placement position if necessary
 	if (flags & DECO_PLACE_CENTER_X)
@@ -247,7 +247,7 @@ void Schematic::placeOnMap(ServerMap *map, v3POS p, u32 flags,
 		rot = (Rotation)myrand_range(ROTATE_0, ROTATE_270);
 
 	v3POS s = (rot == ROTATE_90 || rot == ROTATE_270) ?
-			v3POS(size.Z, size.Y, size.X) : size;
+			v3POS(size.Z, size.Y, size.X) : v3POS(size.X, size.Y, size.Z);
 
 	//// Adjust placement position if necessary
 	if (flags & DECO_PLACE_CENTER_X)
@@ -304,7 +304,7 @@ bool Schematic::deserializeFromMts(std::istream *is)
 	}
 
 	//// Read size
-	size = readV3POS(ss);
+	size = readV3S16(ss);
 
 	//// Read Y-slice probability values
 	delete []slice_probs;
@@ -375,7 +375,7 @@ bool Schematic::serializeToMts(std::ostream *os) const
 
 	writeU32(ss, MTSCHEM_FILE_SIGNATURE);         // signature
 	writeU16(ss, MTSCHEM_FILE_VER_HIGHEST_WRITE); // version
-	writeV3POS(ss, size);                         // schematic size
+	writeV3S16(ss, size);                         // schematic size
 
 	for (int y = 0; y != size.Y; y++)             // Y slice probabilities
 		writeU8(ss, slice_probs[y]);
@@ -556,7 +556,8 @@ bool Schematic::getSchematicFromMap(Map *map, v3POS p1, v3POS p2)
 	v3BPOS bp2 = getNodeBlockPos(p2);
 	vm->initialEmerge(bp1, bp2);
 
-	size = p2 - p1 + 1;
+	v3BPOS size_pos = p2 - p1 + 1;
+	size = v3s16(size_pos.X, size_pos.Y, size_pos.Z);
 
 	slice_probs = new u8[size.Y];
 	for (s16 y = 0; y != size.Y; y++)

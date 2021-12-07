@@ -60,7 +60,7 @@ void TestSchematic::runTests(IGameDef *gamedef)
 
 void TestSchematic::testMtsSerializeDeserialize(const NodeDefManager *ndef)
 {
-	static const v3POS size(7, 6, 4);
+	static const v3s16 size(7, 6, 4);
 	static const u32 volume = size.X * size.Y * size.Z;
 
 	std::stringstream ss(std::ios_base::binary |
@@ -110,7 +110,7 @@ void TestSchematic::testMtsSerializeDeserialize(const NodeDefManager *ndef)
 
 void TestSchematic::testLuaTableSerialize(const NodeDefManager *ndef)
 {
-	static const v3POS size(3, 3, 3);
+	static const v3s16 size(3, 3, 3);
 	static const u32 volume = size.X * size.Y * size.Z;
 
 	Schematic schem;
@@ -138,7 +138,7 @@ void TestSchematic::testLuaTableSerialize(const NodeDefManager *ndef)
 
 void TestSchematic::testFileSerializeDeserialize(const NodeDefManager *ndef)
 {
-	static const v3POS size(3, 3, 3);
+	static const v3s16 size(3, 3, 3);
 	static const u32 volume = size.X * size.Y * size.Z;
 	static const content_t content_map[] = {
 		CONTENT_AIR,

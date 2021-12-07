@@ -228,7 +228,7 @@ bool read_schematic_def(lua_State *L, int index,
 
 	//// Get schematic size
 	lua_getfield(L, index, "size");
-	v3POS size = check_v3POS(L, -1);
+	v3s16 size = check_v3s16(L, -1);
 	lua_pop(L, 1);
 
 	schem->size = size;
@@ -1718,7 +1718,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	lua_createtable(L, 0, (write_yslice == "none") ? 2 : 3);
 
 	// Create the size field
-	push_v3POS(L, schem->size);
+	push_v3s16(L, schem->size);
 	lua_setfield(L, 1, "size");
 
 	// Create the yslice_prob field

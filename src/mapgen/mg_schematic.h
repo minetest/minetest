@@ -120,7 +120,7 @@ public:
 
 	std::vector<content_t> c_nodes;
 	u32 flags = 0;
-	v3POS size;
+	v3s16 size;
 	MapNode *schemdata = nullptr;
 	u8 *slice_probs = nullptr;
 
