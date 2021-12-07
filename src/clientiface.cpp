@@ -64,7 +64,7 @@ RemoteClient::RemoteClient() :
 {
 }
 
-void RemoteClient::ResendBlockIfOnWire(v3pos_t p)
+void RemoteClient::ResendBlockIfOnWire(v3bpos_t p)
 {
 	// if this block is on wire, mark it for sending again as soon as possible
 	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
@@ -184,7 +184,7 @@ void RemoteClient::GetNextBlocks (
 	}
 	if (m_nearest_unsent_d > 0) {
 		// make sure any blocks modified since the last time we sent blocks are resent
-		for (const v3pos_t &p : m_blocks_modified) {
+		for (const v3bpos_t &p : m_blocks_modified) {
 			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
 		}
 	}
@@ -426,12 +426,12 @@ void RemoteClient::SetBlockNotSent(v3bpos_t p)
 		m_blocks_modified.insert(p);
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3pos_t, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(std::map<v3bpos_t, MapBlock*> &blocks)
 {
 	m_nothing_to_send_pause_timer = 0;
 
 	for (auto &block : blocks) {
-		v3pos_t p = block.first;
+		v3bpos_t p = block.first;
 		// remove the block from sending and sent sets,
 		// and mark as modified if found
 		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
@@ -637,7 +637,7 @@ std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
 	return reply;
 }
 
-void ClientInterface::markBlockposAsNotSent(const v3pos_t &pos)
+void ClientInterface::markBlockposAsNotSent(const v3bpos_t &pos)
 {
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);
 	for (const auto &client : m_clients) {

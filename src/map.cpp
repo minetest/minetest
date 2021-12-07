@@ -159,7 +159,7 @@ MapNode Map::getNode(v3pos_t p, bool *is_valid_position)
 		return {CONTENT_IGNORE};
 	}
 
-	v3pos_t relpos = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t relpos = p - getBlockPosRelative(blockpos);
 	bool is_valid_p;
 	MapNode node = block->getNodeNoCheck(relpos, &is_valid_p);
 	if (is_valid_position != NULL)
@@ -172,7 +172,7 @@ void Map::setNode(v3pos_t p, MapNode & n)
 {
 	v3bpos_t blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
-	v3pos_t relpos = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t relpos = p - getBlockPosRelative(blockpos);
 	// Never allow placing CONTENT_IGNORE, it causes problems
 	if(n.getContent() == CONTENT_IGNORE){
 		bool temp_bool;
@@ -902,7 +902,7 @@ std::vector<v3pos_t> Map::findNodesWithMetadata(v3pos_t p1, v3pos_t p2)
 			continue;
 		}
 
-		v3pos_t p_base = blockpos * MAP_BLOCKSIZE;
+		v3pos_t p_base = getBlockPosRelative(blockpos);
 		std::vector<v3pos_t> keys = block->m_node_metadata.getAllKeys();
 		for (size_t i = 0; i != keys.size(); i++) {
 			v3pos_t p(keys[i] + p_base);
@@ -919,7 +919,7 @@ std::vector<v3pos_t> Map::findNodesWithMetadata(v3pos_t p1, v3pos_t p2)
 NodeMetadata *Map::getNodeMetadata(v3pos_t p)
 {
 	v3bpos_t blockpos = getNodeBlockPos(p);
-	v3pos_t p_rel = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t p_rel = p - getBlockPosRelative(blockpos);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeMetadata(): Need to emerge "
@@ -938,7 +938,7 @@ NodeMetadata *Map::getNodeMetadata(v3pos_t p)
 bool Map::setNodeMetadata(v3pos_t p, NodeMetadata *meta)
 {
 	v3bpos_t blockpos = getNodeBlockPos(p);
-	v3pos_t p_rel = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t p_rel = p - getBlockPosRelative(blockpos);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeMetadata(): Need to emerge "
@@ -957,7 +957,7 @@ bool Map::setNodeMetadata(v3pos_t p, NodeMetadata *meta)
 void Map::removeNodeMetadata(v3pos_t p)
 {
 	v3bpos_t blockpos = getNodeBlockPos(p);
-	v3pos_t p_rel = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t p_rel = p - getBlockPosRelative(blockpos);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
@@ -971,7 +971,7 @@ void Map::removeNodeMetadata(v3pos_t p)
 NodeTimer Map::getNodeTimer(v3pos_t p)
 {
 	v3bpos_t blockpos = getNodeBlockPos(p);
-	v3pos_t p_rel = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t p_rel = p - getBlockPosRelative(blockpos);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeTimer(): Need to emerge "
@@ -992,7 +992,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 {
 	v3pos_t p = t.position;
 	v3bpos_t blockpos = getNodeBlockPos(p);
-	v3pos_t p_rel = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t p_rel = p - getBlockPosRelative(blockpos);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeTimer(): Need to emerge "
@@ -1011,7 +1011,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 void Map::removeNodeTimer(v3pos_t p)
 {
 	v3bpos_t blockpos = getNodeBlockPos(p);
-	v3pos_t p_rel = p - blockpos*MAP_BLOCKSIZE;
+	v3pos_t p_rel = p - getBlockPosRelative(blockpos);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
@@ -1885,7 +1885,7 @@ void MMVManip::initialEmerge(v3bpos_t blockpos_min, v3bpos_t blockpos_max,
 	v3bpos_t p_max = blockpos_max;
 
 	VoxelArea block_area_nodes
-			(p_min*MAP_BLOCKSIZE, (p_max+1)*MAP_BLOCKSIZE-v3pos_t(1,1,1));
+			(getBlockPosRelative(p_min), getBlockPosRelative(p_max+1)-v3pos_t(1,1,1));
 
 	u32 size_MB = block_area_nodes.getVolume()*4/1000000;
 	if(size_MB >= 1)
@@ -1936,7 +1936,7 @@ void MMVManip::initialEmerge(v3bpos_t blockpos_min, v3bpos_t blockpos_max,
 				/*
 					Mark area inexistent
 				*/
-				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3pos_t(1,1,1));
+				VoxelArea a(getBlockPosRelative(p), getBlockPosRelative(p+1)-v3pos_t(1,1,1));
 				// Fill with VOXELFLAG_NO_DATA
 				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)

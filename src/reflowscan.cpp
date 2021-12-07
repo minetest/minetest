@@ -75,7 +75,7 @@ inline MapBlock *ReflowScan::lookupBlock(int x, int y, int z)
 	if (!result && (m_lookup_state_bitset & (1 << idx)) == 0) {
 		// The block wasn't requested yet so fetch it from Map and store it
 		// in the lookup
-		v3pos_t pos = m_block_pos + v3pos_t(bx - 1, by - 1, bz - 1);
+		v3bpos_t pos = m_block_pos + v3bpos_t(bx - 1, by - 1, bz - 1);
 		m_lookup[idx] = result = m_map->getBlockNoCreateNoEx(pos);
 		m_lookup_state_bitset |= (1 << idx);
 	}

@@ -1396,7 +1396,7 @@ int ModApiEnvMod::l_forceload_block(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3pos_t blockpos = read_v3pos(L, 1);
+	v3bpos_t blockpos = read_v3pos(L, 1);
 	env->getForceloadedBlocks()->insert(blockpos);
 	return 0;
 }
@@ -1425,7 +1425,7 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3pos_t blockpos = read_v3pos(L, 1);
+	v3bpos_t blockpos = read_v3pos(L, 1);
 	env->getForceloadedBlocks()->erase(blockpos);
 	return 0;
 }

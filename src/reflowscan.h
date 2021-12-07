@@ -40,7 +40,8 @@ private:
 private:
 	Map *m_map = nullptr;
 	const NodeDefManager *m_ndef = nullptr;
-	v3pos_t m_block_pos, m_rel_block_pos;
+	v3bpos_t m_block_pos;
+	v3pos_t m_rel_block_pos;
 	UniqueQueue<v3pos_t> *m_liquid_queue = nullptr;
 	MapBlock *m_lookup[3 * 3 * 3];
 	u32 m_lookup_state_bitset;

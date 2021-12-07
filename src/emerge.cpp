@@ -613,8 +613,8 @@ MapBlock *EmergeThread::finishGen(v3bpos_t pos, BlockMakeData *bmdata,
 		return NULL;
 	}
 
-	v3pos_t minp = bmdata->blockpos_min * MAP_BLOCKSIZE;
-	v3pos_t maxp = bmdata->blockpos_max * MAP_BLOCKSIZE +
+	v3pos_t minp = getBlockPosRelative(bmdata->blockpos_min);
+	v3pos_t maxp = getBlockPosRelative(bmdata->blockpos_max) +
 				 v3pos_t(1,1,1) * (MAP_BLOCKSIZE - 1);
 
 	// Ignore map edit events, they will not need to be sent

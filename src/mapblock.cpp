@@ -66,10 +66,10 @@ static const char *modified_reason_strings[] = {
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3pos_t pos, IGameDef *gamedef, bool dummy):
+MapBlock::MapBlock(Map *parent, v3bpos_t pos, IGameDef *gamedef, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
-		m_pos_relative(pos * MAP_BLOCKSIZE),
+		m_pos_relative(getBlockPosRelative(pos)),
 		m_gamedef(gamedef)
 {
 	if (!dummy)
@@ -825,7 +825,7 @@ std::string analyze_block(MapBlock *block)
 
 	std::ostringstream desc;
 
-	v3pos_t p = block->getPos();
+	v3bpos_t p = block->getPos();
 	char spos[25];
 	porting::mt_snprintf(spos, sizeof(spos), "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
 	desc<<spos;

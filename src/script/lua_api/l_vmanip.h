@@ -33,7 +33,7 @@ class MMVManip;
 class LuaVoxelManip : public ModApiBase
 {
 private:
-	std::map<v3pos_t, MapBlock *> modified_blocks;
+	std::map<v3bpos_t, MapBlock *> modified_blocks;
 	bool is_mapgen_vm = false;
 
 	static const char className[];

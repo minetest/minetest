@@ -370,8 +370,8 @@ private:
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
 	std::set<v3bpos_t> m_blocks_sent;
-	pos_t m_nearest_unsent_d = 0;
-	v3pos_t m_last_center;
+	bpos_t m_nearest_unsent_d = 0;
+	v3bpos_t m_last_center;
 	v3f m_last_camera_dir;
 
 	const u16 m_max_simul_sends;

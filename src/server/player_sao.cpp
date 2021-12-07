@@ -339,7 +339,7 @@ void PlayerSAO::setPos(const v3f &pos)
 		return;
 
 	// Send mapblock of target location
-	v3pos_t blockpos = v3pos_t(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
+	v3bpos_t blockpos = v3bpos_t(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
 	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
 
 	setBasePosition(pos);

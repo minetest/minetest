@@ -118,7 +118,7 @@ protected:
 
 private:
 	/// Called by the cache when a value isn't found in the cache.
-	static void cacheMiss(void *data, const v3pos_t &mpos, std::vector<Area *> *dest);
+	static void cacheMiss(void *data, const v3bpos_t &mpos, std::vector<Area *> *dest);
 
 	bool m_cache_enabled = true;
 	/// Range, in nodes, of the getAreasForPos cache.

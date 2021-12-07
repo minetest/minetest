@@ -248,7 +248,7 @@ bool step_rel_block_pos(direction dir, relative_v3 &rel_pos,
  */
 void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	UnlightQueue &from_nodes, ReLightQueue &light_sources,
-	std::map<v3pos_t, MapBlock*> &modified_blocks)
+	std::map<v3bpos_t, MapBlock*> &modified_blocks)
 {
 	// Stores data popped from from_nodes
 	u8 current_light;
@@ -352,7 +352,7 @@ void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
  */
 void spread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	LightQueue &light_sources,
-	std::map<v3pos_t, MapBlock*> &modified_blocks)
+	std::map<v3bpos_t, MapBlock*> &modified_blocks)
 {
 	// The light the current node can provide to its neighbors.
 	u8 spreading_light;
@@ -418,7 +418,7 @@ struct SunlightPropagationUnit{
 
 struct SunlightPropagationData{
 	std::vector<SunlightPropagationUnit> data;
-	v3pos_t target_block;
+	v3bpos_t target_block;
 };
 
 /*!
@@ -687,7 +687,7 @@ bool is_light_locally_correct(Map *map, const NodeDefManager *ndef,
 }
 
 void update_block_border_lighting(Map *map, MapBlock *block,
-	std::map<v3pos_t, MapBlock*> &modified_blocks)
+	std::map<v3bpos_t, MapBlock*> &modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	bool is_valid_position;
@@ -700,7 +700,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 		for (direction d = 0; d < 6; d++) {
 			// For each direction
 			// Get neighbor block
-			v3pos_t otherpos = block->getPos() + neighbor_dirs[d];
+			v3bpos_t otherpos = block->getPos() + neighbor_dirs[d];
 			MapBlock *other = map->getBlockNoCreateNoEx(otherpos);
 			if (other == NULL) {
 				continue;
@@ -829,7 +829,7 @@ void fill_with_sunlight(MMVManip *vm, const NodeDefManager *ndef, v2pos_t offset
 void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 	const NodeDefManager *ndef, bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
 {
-	mapblock_v3 source_block_pos = pos + v3pos_t(0, 1, 0);
+	mapblock_v3 source_block_pos = pos + v3bpos_t(0, 1, 0);
 	// Get or load source block.
 	// It might take a while to load, but correcting incorrect
 	// sunlight may be even slower.
@@ -976,7 +976,7 @@ const VoxelArea block_pad[] = {
  */
 void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	mapblock_v3 maxblock, UnlightQueue unlight[2], ReLightQueue relight[2],
-	std::map<v3pos_t, MapBlock*> *modified_blocks)
+	std::map<v3bpos_t, MapBlock*> *modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	// dummy boolean
@@ -993,7 +993,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	// --- STEP 2: Get all newly inserted light sources
 
 	// For each block:
-	v3pos_t blockpos;
+	v3bpos_t blockpos;
 	v3pos_t relpos;
 	for (blockpos.X = minblock.X; blockpos.X <= maxblock.X; blockpos.X++)
 	for (blockpos.Y = minblock.Y; blockpos.Y <= maxblock.Y; blockpos.Y++)
@@ -1045,7 +1045,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 }
 
 void blit_back_with_light(ServerMap *map, MMVManip *vm,
-	std::map<v3pos_t, MapBlock*> *modified_blocks)
+	std::map<v3bpos_t, MapBlock*> *modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	mapblock_v3 minblock = getNodeBlockPos(vm->m_area.MinEdge);
@@ -1071,7 +1071,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 		// Reset the voxel manipulator.
 		fill_with_sunlight(vm, ndef, offset, lights);
 		// Copy sunlight data
-		data.target_block = v3pos_t(x, minblock.Y - 1, z);
+		data.target_block = v3bpos_t(x, minblock.Y - 1, z);
 		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
 		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
 			data.data.emplace_back(v2pos_t(x, z), lights[z][x]);
@@ -1087,7 +1087,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	}
 
 	// --- STEP 2: Get nodes from borders to unlight
-	v3pos_t blockpos;
+	v3bpos_t blockpos;
 	v3pos_t relpos;
 
 	// In case there are unloaded holes in the voxel manipulator
@@ -1188,7 +1188,7 @@ void fill_with_sunlight(MapBlock *block, const NodeDefManager *ndef,
 }
 
 void repair_block_light(ServerMap *map, MapBlock *block,
-	std::map<v3pos_t, MapBlock*> *modified_blocks)
+	std::map<v3bpos_t, MapBlock*> *modified_blocks)
 {
 	if (!block || block->isDummy())
 		return;
@@ -1212,7 +1212,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 	// Reset the voxel manipulator.
 	fill_with_sunlight(block, ndef, lights);
 	// Copy sunlight data
-	data.target_block = v3pos_t(blockpos.X, blockpos.Y - 1, blockpos.Z);
+	data.target_block = v3bpos_t(blockpos.X, blockpos.Y - 1, blockpos.Z);
 	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
 	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
 		data.data.emplace_back(v2pos_t(x, z), lights[z][x]);
