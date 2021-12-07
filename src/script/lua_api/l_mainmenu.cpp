@@ -505,14 +505,14 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_modpaths(lua_State *L)
 {
-	int index = 1;
 	lua_newtable(L);
+
 	ModApiMainMenu::l_get_modpath(L);
-	lua_rawseti(L, -2, index);
+	lua_setfield(L, -2, "mods");
+
 	for (const std::string &component : getEnvModPaths()) {
-		index++;
 		lua_pushstring(L, component.c_str());
-		lua_rawseti(L, -2, index);
+		lua_setfield(L, -2, fs::AbsolutePath(component).c_str());
 	}
 	return 1;
 }

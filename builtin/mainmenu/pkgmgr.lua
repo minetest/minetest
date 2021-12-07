@@ -660,8 +660,8 @@ function pkgmgr.preparemodlist(data)
 
 	--read global mods
 	local modpaths = core.get_modpaths()
-	for _, modpath in ipairs(modpaths) do
-		get_mods(modpath, "mods", global_mods)
+	for key, modpath in pairs(modpaths) do
+		get_mods(modpath, key, global_mods)
 	end
 
 	for i=1,#global_mods,1 do

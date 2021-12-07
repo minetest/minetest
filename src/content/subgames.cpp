@@ -114,7 +114,7 @@ SubgameSpec findSubgame(const std::string &id)
 		mods_paths["mods"] = user + DIR_DELIM + "mods";
 
 	for (const std::string &mod_path : getEnvModPaths()) {
-		mods_paths["env"] = mod_path;
+		mods_paths[fs::AbsolutePath(mod_path)] = mod_path;
 	}
 
 	// Get meta
