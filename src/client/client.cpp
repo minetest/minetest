@@ -1620,7 +1620,7 @@ void Client::addUpdateMeshTaskWithEdge(v3bpos_t blockpos, bool ack_to_server, bo
 	for (int i=0;i<6;i++)
 	{
 		try{
-			v3bpos_t p = blockpos + g_6dirs_b[i];
+			v3bpos_t p = blockpos + g_6dirs[i];
 			addUpdateMeshTask(p, false, urgent);
 		}
 		catch(InvalidPositionException &e){}
