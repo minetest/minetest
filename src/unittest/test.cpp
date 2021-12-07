@@ -356,18 +356,18 @@ struct TestMapBlock: public TestBase
 
 		MapNode node;
 		bool position_valid;
-		core::list<v3s16> validity_exceptions;
+		core::list<v3POS> validity_exceptions;
 
 		TC()
 		{
 			position_valid = true;
 		}
 
-		virtual bool isValidPosition(v3s16 p)
+		virtual bool isValidPosition(v3POS p)
 		{
 			//return position_valid ^ (p==position_valid_exception);
 			bool exception = false;
-			for(core::list<v3s16>::Iterator i=validity_exceptions.begin();
+			for(core::list<v3POS>::Iterator i=validity_exceptions.begin();
 					i != validity_exceptions.end(); i++)
 			{
 				if(p == *i)
@@ -379,14 +379,14 @@ struct TestMapBlock: public TestBase
 			return exception ? !position_valid : position_valid;
 		}
 
-		virtual MapNode getNode(v3s16 p)
+		virtual MapNode getNode(v3POS p)
 		{
 			if(isValidPosition(p) == false)
 				throw InvalidPositionException();
 			return node;
 		}
 
-		virtual void setNode(v3s16 p, MapNode & n)
+		virtual void setNode(v3POS p, MapNode & n)
 		{
 			if(isValidPosition(p) == false)
 				throw InvalidPositionException();
@@ -402,8 +402,8 @@ struct TestMapBlock: public TestBase
 	{
 		TC parent;
 
-		MapBlock b(&parent, v3s16(1,1,1));
-		v3s16 relpos(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
+		MapBlock b(&parent, v3POS(1,1,1));
+		v3POS relpos(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
 
 		UASSERT(b.getPosRelative() == relpos);
 
@@ -414,18 +414,18 @@ struct TestMapBlock: public TestBase
 		UASSERT(b.getBox().MinEdge.Z == MAP_BLOCKSIZE);
 		UASSERT(b.getBox().MaxEdge.Z == MAP_BLOCKSIZE*2-1);
 
-		UASSERT(b.isValidPosition(v3s16(0,0,0)) == true);
-		UASSERT(b.isValidPosition(v3s16(-1,0,0)) == false);
-		UASSERT(b.isValidPosition(v3s16(-1,-142,-2341)) == false);
-		UASSERT(b.isValidPosition(v3s16(-124,142,2341)) == false);
-		UASSERT(b.isValidPosition(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
-		UASSERT(b.isValidPosition(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE,MAP_BLOCKSIZE-1)) == false);
+		UASSERT(b.isValidPosition(v3POS(0,0,0)) == true);
+		UASSERT(b.isValidPosition(v3POS(-1,0,0)) == false);
+		UASSERT(b.isValidPosition(v3POS(-1,-142,-2341)) == false);
+		UASSERT(b.isValidPosition(v3POS(-124,142,2341)) == false);
+		UASSERT(b.isValidPosition(v3POS(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
+		UASSERT(b.isValidPosition(v3POS(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE,MAP_BLOCKSIZE-1)) == false);
 
 		/*
 			TODO: this method should probably be removed
 			if the block size isn't going to be set variable
 		*/
-		/*UASSERT(b.getSizeNodes() == v3s16(MAP_BLOCKSIZE,
+		/*UASSERT(b.getSizeNodes() == v3POS(MAP_BLOCKSIZE,
 				MAP_BLOCKSIZE, MAP_BLOCKSIZE));*/
 
 		// Changed flag should be initially set
@@ -439,10 +439,10 @@ struct TestMapBlock: public TestBase
 		for(u16 y=0; y<MAP_BLOCKSIZE; y++)
 		for(u16 x=0; x<MAP_BLOCKSIZE; x++)
 		{
-			//UASSERT(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_AIR);
-			UASSERT(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_IGNORE);
-			UASSERT(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_DAY) == 0);
-			UASSERT(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_NIGHT) == 0);
+			//UASSERT(b.getNode(v3POS(x,y,z)).getContent() == CONTENT_AIR);
+			UASSERT(b.getNode(v3POS(x,y,z)).getContent() == CONTENT_IGNORE);
+			UASSERT(b.getNode(v3POS(x,y,z)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3POS(x,y,z)).getLight(LIGHTBANK_NIGHT) == 0);
 		}
 
 		{
@@ -451,7 +451,7 @@ struct TestMapBlock: public TestBase
 			for(u16 y=0; y<MAP_BLOCKSIZE; y++)
 			for(u16 x=0; x<MAP_BLOCKSIZE; x++)
 			{
-				b.setNode(v3s16(x,y,z), n);
+				b.setNode(v3POS(x,y,z), n);
 			}
 		}
 
@@ -464,21 +464,21 @@ struct TestMapBlock: public TestBase
 		MapNode n;
 
 		// Positions in the block should still be valid
-		UASSERT(b.isValidPositionParent(v3s16(0,0,0)) == true);
-		UASSERT(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
-		n = b.getNodeParent(v3s16(0,MAP_BLOCKSIZE-1,0));
+		UASSERT(b.isValidPositionParent(v3POS(0,0,0)) == true);
+		UASSERT(b.isValidPositionParent(v3POS(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
+		n = b.getNodeParent(v3POS(0,MAP_BLOCKSIZE-1,0));
 		UASSERT(n.getContent() == CONTENT_AIR);
 
 		// ...but outside the block they should be invalid
-		UASSERT(b.isValidPositionParent(v3s16(-121,2341,0)) == false);
-		UASSERT(b.isValidPositionParent(v3s16(-1,0,0)) == false);
-		UASSERT(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == false);
+		UASSERT(b.isValidPositionParent(v3POS(-121,2341,0)) == false);
+		UASSERT(b.isValidPositionParent(v3POS(-1,0,0)) == false);
+		UASSERT(b.isValidPositionParent(v3POS(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == false);
 
 		{
 			bool exception_thrown = false;
 			try{
 				// This should throw an exception
-				MapNode n = b.getNodeParent(v3s16(0,0,-1));
+				MapNode n = b.getNodeParent(v3POS(0,0,-1));
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -489,22 +489,22 @@ struct TestMapBlock: public TestBase
 
 		parent.position_valid = true;
 		// Now the positions outside should be valid
-		UASSERT(b.isValidPositionParent(v3s16(-121,2341,0)) == true);
-		UASSERT(b.isValidPositionParent(v3s16(-1,0,0)) == true);
-		UASSERT(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == true);
-		n = b.getNodeParent(v3s16(0,0,MAP_BLOCKSIZE));
+		UASSERT(b.isValidPositionParent(v3POS(-121,2341,0)) == true);
+		UASSERT(b.isValidPositionParent(v3POS(-1,0,0)) == true);
+		UASSERT(b.isValidPositionParent(v3POS(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == true);
+		n = b.getNodeParent(v3POS(0,0,MAP_BLOCKSIZE));
 		UASSERT(n.getContent() == 5);
 
 		/*
 			Set a node
 		*/
-		v3s16 p(1,2,0);
+		v3POS p(1,2,0);
 		n.setContent(4);
 		b.setNode(p, n);
 		UASSERT(b.getNode(p).getContent() == 4);
 		//TODO: Update to new system
 		/*UASSERT(b.getNodeTile(p) == 4);
-		UASSERT(b.getNodeTile(v3s16(-1,-1,0)) == 5);*/
+		UASSERT(b.getNodeTile(v3POS(-1,-1,0)) == 5);*/
 
 		/*
 			propagateSunlight()
@@ -513,10 +513,10 @@ struct TestMapBlock: public TestBase
 		for(u16 z=0; z<MAP_BLOCKSIZE; z++){
 			for(u16 y=0; y<MAP_BLOCKSIZE; y++){
 				for(u16 x=0; x<MAP_BLOCKSIZE; x++){
-					MapNode n = b.getNode(v3s16(x,y,z));
+					MapNode n = b.getNode(v3POS(x,y,z));
 					n.setLight(LIGHTBANK_DAY, 0);
 					n.setLight(LIGHTBANK_NIGHT, 0);
-					b.setNode(v3s16(x,y,z), n);
+					b.setNode(v3POS(x,y,z), n);
 				}
 			}
 		}
@@ -529,23 +529,23 @@ struct TestMapBlock: public TestBase
 			parent.node.setContent(CONTENT_AIR);
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_SUN);
 			parent.node.setLight(LIGHTBANK_NIGHT, 0);
-			core::map<v3s16, bool> light_sources;
+			core::map<v3POS, bool> light_sources;
 			// The bottom block is invalid, because we have a shadowing node
 			UASSERT(b.propagateSunlight(light_sources) == false);
-			UASSERT(b.getNode(v3s16(1,4,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			UASSERT(b.getNode(v3s16(1,3,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			UASSERT(b.getNode(v3s16(1,2,0)).getLight(LIGHTBANK_DAY) == 0);
-			UASSERT(b.getNode(v3s16(1,1,0)).getLight(LIGHTBANK_DAY) == 0);
-			UASSERT(b.getNode(v3s16(1,0,0)).getLight(LIGHTBANK_DAY) == 0);
-			UASSERT(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			UASSERT(b.getFaceLight2(1000, p, v3s16(0,1,0)) == LIGHT_SUN);
-			UASSERT(b.getFaceLight2(1000, p, v3s16(0,-1,0)) == 0);
-			UASSERT(b.getFaceLight2(0, p, v3s16(0,-1,0)) == 0);
+			UASSERT(b.getNode(v3POS(1,4,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			UASSERT(b.getNode(v3POS(1,3,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			UASSERT(b.getNode(v3POS(1,2,0)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3POS(1,1,0)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3POS(1,0,0)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3POS(1,2,3)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			UASSERT(b.getFaceLight2(1000, p, v3POS(0,1,0)) == LIGHT_SUN);
+			UASSERT(b.getFaceLight2(1000, p, v3POS(0,-1,0)) == 0);
+			UASSERT(b.getFaceLight2(0, p, v3POS(0,-1,0)) == 0);
 			// According to MapBlock::getFaceLight,
 			// The face on the z+ side should have double-diminished light
-			//UASSERT(b.getFaceLight(p, v3s16(0,0,1)) == diminish_light(diminish_light(LIGHT_MAX)));
+			//UASSERT(b.getFaceLight(p, v3POS(0,0,1)) == diminish_light(diminish_light(LIGHT_MAX)));
 			// The face on the z+ side should have diminished light
-			UASSERT(b.getFaceLight2(1000, p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
+			UASSERT(b.getFaceLight2(1000, p, v3POS(0,0,1)) == diminish_light(LIGHT_MAX));
 		}
 		/*
 			Check how the block handles being in between blocks with some non-sunlight
@@ -556,14 +556,14 @@ struct TestMapBlock: public TestBase
 			parent.position_valid = true;
 			b.setIsUnderground(true);
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
-			core::map<v3s16, bool> light_sources;
+			core::map<v3POS, bool> light_sources;
 			// The block below should be valid because there shouldn't be
 			// sunlight in there either
 			UASSERT(b.propagateSunlight(light_sources, true) == true);
 			// Should not touch nodes that are not affected (that is, all of them)
-			//UASSERT(b.getNode(v3s16(1,2,3)).getLight() == LIGHT_SUN);
+			//UASSERT(b.getNode(v3POS(1,2,3)).getLight() == LIGHT_SUN);
 			// Should set light of non-sunlighted blocks to 0.
-			UASSERT(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3POS(1,2,3)).getLight(LIGHTBANK_DAY) == 0);
 		}
 		/*
 			Set up a situation where:
@@ -583,7 +583,7 @@ struct TestMapBlock: public TestBase
 						MapNode n;
 						n.setContent(CONTENT_AIR);
 						n.setLight(LIGHTBANK_DAY, 0);
-						b.setNode(v3s16(x,y,z), n);
+						b.setNode(v3POS(x,y,z), n);
 					}
 				}
 			}
@@ -593,11 +593,11 @@ struct TestMapBlock: public TestBase
 			for(u16 x=0; x<MAP_BLOCKSIZE; x++)
 			for(u16 z=0; z<MAP_BLOCKSIZE; z++)
 			{
-				parent.validity_exceptions.push_back(v3s16(MAP_BLOCKSIZE+x, MAP_BLOCKSIZE-1, MAP_BLOCKSIZE+z));
+				parent.validity_exceptions.push_back(v3POS(MAP_BLOCKSIZE+x, MAP_BLOCKSIZE-1, MAP_BLOCKSIZE+z));
 			}
 			// Lighting value for the valid nodes
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
-			core::map<v3s16, bool> light_sources;
+			core::map<v3POS, bool> light_sources;
 			// Bottom block is not valid
 			UASSERT(b.propagateSunlight(light_sources) == false);
 		}
@@ -618,19 +618,19 @@ struct TestMapSector: public TestBase
 			position_valid = true;
 		}
 
-		virtual bool isValidPosition(v3s16 p)
+		virtual bool isValidPosition(v3POS p)
 		{
 			return position_valid;
 		}
 
-		virtual MapNode getNode(v3s16 p)
+		virtual MapNode getNode(v3POS p)
 		{
 			if(position_valid == false)
 				throw InvalidPositionException();
 			return node;
 		}
 
-		virtual void setNode(v3s16 p, MapNode & n)
+		virtual void setNode(v3POS p, MapNode & n)
 		{
 			if(position_valid == false)
 				throw InvalidPositionException();
@@ -648,7 +648,7 @@ struct TestMapSector: public TestBase
 		parent.position_valid = false;
 
 		// Create one with no heightmaps
-		ServerMapSector sector(&parent, v2s16(1,1));
+		ServerMapSector sector(&parent, v2POS(1,1));
 
 		UASSERT(sector.getBlockNoCreateNoEx(0) == nullptr);
 		UASSERT(sector.getBlockNoCreateNoEx(1) == nullptr);

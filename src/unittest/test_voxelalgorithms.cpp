@@ -67,21 +67,21 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 		voxalgo::VoxelLineIterator iterator(l.start, l.getVector());
 
 		//Test the first voxel
-		v3s16 start_voxel = floatToInt(l.start, 1);
+		v3POS start_voxel = floatToInt(l.start, 1);
 		UASSERT(iterator.m_current_node_pos == start_voxel);
 
 		// Values for testing
-		v3s16 end_voxel = floatToInt(l.end, 1);
-		v3s16 voxel_vector = end_voxel - start_voxel;
+		v3POS end_voxel = floatToInt(l.end, 1);
+		v3POS voxel_vector = end_voxel - start_voxel;
 		int nodecount = abs(voxel_vector.X) + abs(voxel_vector.Y)
 			+ abs(voxel_vector.Z);
 		int actual_nodecount = 0;
-		v3s16 old_voxel = iterator.m_current_node_pos;
+		v3POS old_voxel = iterator.m_current_node_pos;
 
 		while (iterator.hasNext()) {
 			iterator.next();
 			actual_nodecount++;
-			v3s16 new_voxel = iterator.m_current_node_pos;
+			v3POS new_voxel = iterator.m_current_node_pos;
 			// This must be a neighbor of the old voxel
 			UASSERTEQ(f32, (new_voxel - old_voxel).getLengthSQ(), 1);
 			// The line must intersect with the voxel

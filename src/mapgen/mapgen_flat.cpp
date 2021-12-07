@@ -108,8 +108,8 @@ MapgenFlatParams::MapgenFlatParams():
 void MapgenFlatParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgflat_spflags", spflags, flagdesc_mapgen_flat);
-	settings->getS16NoEx("mgflat_ground_level",         ground_level);
-	settings->getS16NoEx("mgflat_large_cave_depth",     large_cave_depth);
+	settings->getPOSNoEx("mgflat_ground_level",         ground_level);
+	settings->getPOSNoEx("mgflat_large_cave_depth",     large_cave_depth);
 	settings->getU16NoEx("mgflat_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgflat_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgflat_large_cave_num_min",   large_cave_num_min);
@@ -120,11 +120,11 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getFloatNoEx("mgflat_lake_steepness",     lake_steepness);
 	settings->getFloatNoEx("mgflat_hill_threshold",     hill_threshold);
 	settings->getFloatNoEx("mgflat_hill_steepness",     hill_steepness);
-	settings->getS16NoEx("mgflat_cavern_limit",         cavern_limit);
-	settings->getS16NoEx("mgflat_cavern_taper",         cavern_taper);
+	settings->getPOSNoEx("mgflat_cavern_limit",         cavern_limit);
+	settings->getPOSNoEx("mgflat_cavern_taper",         cavern_taper);
 	settings->getFloatNoEx("mgflat_cavern_threshold",   cavern_threshold);
-	settings->getS16NoEx("mgflat_dungeon_ymin",         dungeon_ymin);
-	settings->getS16NoEx("mgflat_dungeon_ymax",         dungeon_ymax);
+	settings->getPOSNoEx("mgflat_dungeon_ymin",         dungeon_ymin);
+	settings->getPOSNoEx("mgflat_dungeon_ymax",         dungeon_ymax);
 
 	settings->getNoiseParams("mgflat_np_terrain",      np_terrain);
 	settings->getNoiseParams("mgflat_np_filler_depth", np_filler_depth);
@@ -138,8 +138,8 @@ void MapgenFlatParams::readParams(const Settings *settings)
 void MapgenFlatParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat);
-	settings->setS16("mgflat_ground_level",         ground_level);
-	settings->setS16("mgflat_large_cave_depth",     large_cave_depth);
+	settings->setPOS("mgflat_ground_level",         ground_level);
+	settings->setPOS("mgflat_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgflat_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgflat_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgflat_large_cave_num_min",   large_cave_num_min);
@@ -150,11 +150,11 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setFloat("mgflat_lake_steepness",     lake_steepness);
 	settings->setFloat("mgflat_hill_threshold",     hill_threshold);
 	settings->setFloat("mgflat_hill_steepness",     hill_steepness);
-	settings->setS16("mgflat_cavern_limit",         cavern_limit);
-	settings->setS16("mgflat_cavern_taper",         cavern_taper);
+	settings->setPOS("mgflat_cavern_limit",         cavern_limit);
+	settings->setPOS("mgflat_cavern_taper",         cavern_taper);
 	settings->setFloat("mgflat_cavern_threshold",   cavern_threshold);
-	settings->setS16("mgflat_dungeon_ymin",         dungeon_ymin);
-	settings->setS16("mgflat_dungeon_ymax",         dungeon_ymax);
+	settings->setPOS("mgflat_dungeon_ymin",         dungeon_ymin);
+	settings->setPOS("mgflat_dungeon_ymax",         dungeon_ymax);
 
 	settings->setNoiseParams("mgflat_np_terrain",      np_terrain);
 	settings->setNoiseParams("mgflat_np_filler_depth", np_filler_depth);
@@ -174,19 +174,19 @@ void MapgenFlatParams::setDefaultSettings(Settings *settings)
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
+int MapgenFlat::getSpawnLevelAtPoint(v2POS p)
 {
-	s16 stone_level = ground_level;
+	POS stone_level = ground_level;
 	float n_terrain = 
 		((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS)) ?
 		NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed) :
 		0.0f;
 
 	if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
-		s16 depress = (lake_threshold - n_terrain) * lake_steepness;
+		POS depress = (lake_threshold - n_terrain) * lake_steepness;
 		stone_level = ground_level - depress;
 	} else if ((spflags & MGFLAT_HILLS) && n_terrain > hill_threshold) {
-		s16 rise = (n_terrain - hill_threshold) * hill_steepness;
+		POS rise = (n_terrain - hill_threshold) * hill_steepness;
 	 	stone_level = ground_level + rise;
 	}
 
@@ -215,17 +215,17 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
 
-	v3s16 blockpos_min = data->blockpos_min;
-	v3s16 blockpos_max = data->blockpos_max;
+	v3POS blockpos_min = data->blockpos_min;
+	v3POS blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate base terrain, mountains, and ridges with initial heightmaps
-	s16 stone_surface_max_y = generateTerrain();
+	POS stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -277,45 +277,45 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
+		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
 			full_node_min, full_node_max);
 
-	//setLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-	//			node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
+	//setLighting(node_min - v3POS(1, 0, 1) * MAP_BLOCKSIZE,
+	//			node_max + v3POS(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
 
 	this->generating = false;
 }
 
 
-s16 MapgenFlat::generateTerrain()
+POS MapgenFlat::generateTerrain()
 {
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	const v3s16 &em = vm->m_area.getExtent();
-	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	const v3POS &em = vm->m_area.getExtent();
+	POS stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 ni2d = 0;
 
 	bool use_noise = (spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS);
 	if (use_noise)
 		noise_terrain->perlinMap2D(node_min.X, node_min.Z);
 
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, ni2d++) {
-		s16 stone_level = ground_level;
+	for (POS z = node_min.Z; z <= node_max.Z; z++)
+	for (POS x = node_min.X; x <= node_max.X; x++, ni2d++) {
+		POS stone_level = ground_level;
 		float n_terrain = use_noise ? noise_terrain->result[ni2d] : 0.0f;
 
 		if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
-			s16 depress = (lake_threshold - n_terrain) * lake_steepness;
+			POS depress = (lake_threshold - n_terrain) * lake_steepness;
 			stone_level = ground_level - depress;
 		} else if ((spflags & MGFLAT_HILLS) && n_terrain > hill_threshold) {
-			s16 rise = (n_terrain - hill_threshold) * hill_steepness;
+			POS rise = (n_terrain - hill_threshold) * hill_steepness;
 		 	stone_level = ground_level + rise;
 		}
 
 		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
-		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		for (POS y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			if (vm->m_data[vi].getContent() == CONTENT_IGNORE) {
 				if (y <= stone_level) {
 					vm->m_data[vi] = n_stone;

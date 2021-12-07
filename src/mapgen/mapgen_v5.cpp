@@ -103,17 +103,17 @@ void MapgenV5Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv5_spflags", spflags, flagdesc_mapgen_v5);
 	settings->getFloatNoEx("mgv5_cave_width",         cave_width);
-	settings->getS16NoEx("mgv5_large_cave_depth",     large_cave_depth);
+	settings->getPOSNoEx("mgv5_large_cave_depth",     large_cave_depth);
 	settings->getU16NoEx("mgv5_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgv5_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgv5_large_cave_num_min",   large_cave_num_min);
 	settings->getU16NoEx("mgv5_large_cave_num_max",   large_cave_num_max);
 	settings->getFloatNoEx("mgv5_large_cave_flooded", large_cave_flooded);
-	settings->getS16NoEx("mgv5_cavern_limit",         cavern_limit);
-	settings->getS16NoEx("mgv5_cavern_taper",         cavern_taper);
+	settings->getPOSNoEx("mgv5_cavern_limit",         cavern_limit);
+	settings->getPOSNoEx("mgv5_cavern_taper",         cavern_taper);
 	settings->getFloatNoEx("mgv5_cavern_threshold",   cavern_threshold);
-	settings->getS16NoEx("mgv5_dungeon_ymin",         dungeon_ymin);
-	settings->getS16NoEx("mgv5_dungeon_ymax",         dungeon_ymax);
+	settings->getPOSNoEx("mgv5_dungeon_ymin",         dungeon_ymin);
+	settings->getPOSNoEx("mgv5_dungeon_ymax",         dungeon_ymax);
 
 	settings->getNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgv5_np_factor",       np_factor);
@@ -130,17 +130,17 @@ void MapgenV5Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5);
 	settings->setFloat("mgv5_cave_width",         cave_width);
-	settings->setS16("mgv5_large_cave_depth",     large_cave_depth);
+	settings->setPOS("mgv5_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgv5_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgv5_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgv5_large_cave_num_min",   large_cave_num_min);
 	settings->setU16("mgv5_large_cave_num_max",   large_cave_num_max);
 	settings->setFloat("mgv5_large_cave_flooded", large_cave_flooded);
-	settings->setS16("mgv5_cavern_limit",         cavern_limit);
-	settings->setS16("mgv5_cavern_taper",         cavern_taper);
+	settings->setPOS("mgv5_cavern_limit",         cavern_limit);
+	settings->setPOS("mgv5_cavern_taper",         cavern_taper);
 	settings->setFloat("mgv5_cavern_threshold",   cavern_threshold);
-	settings->setS16("mgv5_dungeon_ymin",         dungeon_ymin);
-	settings->setS16("mgv5_dungeon_ymax",         dungeon_ymax);
+	settings->setPOS("mgv5_dungeon_ymin",         dungeon_ymin);
+	settings->setPOS("mgv5_dungeon_ymax",         dungeon_ymax);
 
 	settings->setNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgv5_np_factor",       np_factor);
@@ -162,7 +162,7 @@ void MapgenV5Params::setDefaultSettings(Settings *settings)
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
+int MapgenV5::getSpawnLevelAtPoint(v2POS p)
 {
 
 	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
@@ -176,11 +176,11 @@ int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 	// terrain will be below this.
 	// Raising the maximum spawn level above 'water_level + 16' is necessary
 	// for when noise_height 'offset' is set much higher than water_level.
-	s16 max_spawn_y = MYMAX(noise_height->np.offset, water_level + 16);
+	POS max_spawn_y = MYMAX(noise_height->np.offset, water_level + 16);
 
 	// Starting spawn search at max_spawn_y + 128 ensures 128 nodes of open
 	// space above spawn position. Avoids spawning in possibly sealed voids.
-	for (s16 y = max_spawn_y + 128; y >= water_level; y--) {
+	for (POS y = max_spawn_y + 128; y >= water_level; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
 
 		if (n_ground * f > y - h) {  // If solid
@@ -207,18 +207,18 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
 
-	v3s16 blockpos_min = data->blockpos_min;
-	v3s16 blockpos_max = data->blockpos_max;
+	v3POS blockpos_min = data->blockpos_min;
+	v3POS blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
 
 	// Create a block-specific seed
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate base terrain
-	s16 stone_surface_max_y = generateBaseTerrain();
+	POS stone_surface_max_y = generateBaseTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -273,7 +273,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Calculate lighting
 	if (flags & MG_LIGHT) {
-		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
+		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
 			full_node_min, full_node_max);
 	}
 
@@ -291,10 +291,10 @@ int MapgenV5::generateBaseTerrain()
 	noise_height->perlinMap2D(node_min.X, node_min.Z);
 	noise_ground->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (POS z=node_min.Z; z<=node_max.Z; z++) {
+		for (POS y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 vi = vm->m_area.index(node_min.X, y, z);
-			for (s16 x=node_min.X; x<=node_max.X; x++, vi++, index++, index2d++) {
+			for (POS x=node_min.X; x<=node_max.X; x++, vi++, index++, index2d++) {
 				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 					continue;
 

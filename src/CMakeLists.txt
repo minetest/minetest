@@ -31,6 +31,7 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 	set(BUILD_SERVER TRUE)
 endif()
 
+option(USE_POS32 "32 bit positions (experimental, not compatible with 16 bit)" FALSE)
 
 option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)

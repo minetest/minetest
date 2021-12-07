@@ -223,13 +223,13 @@ private:
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 	bool m_simple_catch_up;
-	s16 m_min_y;
-	s16 m_max_y;
+	POS m_min_y;
+	POS m_max_y;
 public:
 	LuaABM(lua_State *L, int id,
 			const std::vector<std::string> &trigger_contents,
 			const std::vector<std::string> &required_neighbors,
-			float trigger_interval, u32 trigger_chance, bool simple_catch_up, s16 min_y, s16 max_y):
+			float trigger_interval, u32 trigger_chance, bool simple_catch_up, POS min_y, POS max_y):
 		m_id(id),
 		m_trigger_contents(trigger_contents),
 		m_required_neighbors(required_neighbors),
@@ -260,15 +260,15 @@ public:
 	{
 		return m_simple_catch_up;
 	}
-	virtual s16 getMinY()
+	virtual POS getMinY()
 	{
 		return m_min_y;
 	}
-	virtual s16 getMaxY()
+	virtual POS getMaxY()
 	{
 		return m_max_y;
 	}
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
+	virtual void trigger(ServerEnvironment *env, v3POS p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider);
 };
 
@@ -287,7 +287,7 @@ public:
 		this->trigger_contents = trigger_contents;
 		this->name = name;
 	}
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n);
+	virtual void trigger(ServerEnvironment *env, v3POS p, MapNode n);
 };
 
 //! Lua wrapper for RaycastState objects

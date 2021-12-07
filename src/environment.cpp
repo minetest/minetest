@@ -83,7 +83,7 @@ float Environment::getTimeOfDayF()
 	return m_time_of_day_f;
 }
 
-bool Environment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
+bool Environment::line_of_sight(v3f pos1, v3f pos2, v3POS *p)
 {
 	// Iterate trough nodes on the line
 	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
@@ -125,7 +125,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			}
 		}
 		// Set search range
-		core::aabbox3d<s16> maximal_exceed = nodedef->getSelectionBoxIntUnion();
+		core::aabbox3d<POS> maximal_exceed = nodedef->getSelectionBoxIntUnion();
 		state->m_search_range.MinEdge = -maximal_exceed.MaxEdge;
 		state->m_search_range.MaxEdge = -maximal_exceed.MinEdge;
 		// Setting is done
@@ -145,7 +145,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 	// first nodebox the shootline meets.
 	v3f found_boxcenter(0, 0, 0);
 	// The untested nodes are in this range.
-	core::aabbox3d<s16> new_nodes;
+	core::aabbox3d<POS> new_nodes;
 	while (state->m_iterator.m_current_index <= lastIndex) {
 		// Test the nodes around the current node in search_range.
 		new_nodes = state->m_search_range;
@@ -153,7 +153,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 		new_nodes.MaxEdge += state->m_iterator.m_current_node_pos;
 
 		// Only check new nodes
-		v3s16 delta = state->m_iterator.m_current_node_pos
+		v3POS delta = state->m_iterator.m_current_node_pos
 			- state->m_previous_node;
 		if (delta.X > 0) {
 			new_nodes.MinEdge.X = new_nodes.MaxEdge.X;
@@ -170,11 +170,11 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 		}
 
 		// For each untested node
-		for (s16 x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++)
-		for (s16 y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++)
-		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++) {
+		for (POS x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++)
+		for (POS y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++)
+		for (POS z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++) {
 			MapNode n;
-			v3s16 np(x, y, z);
+			v3POS np(x, y, z);
 			bool is_valid_position;
 
 			n = map.getNode(np, &is_valid_position);
@@ -203,7 +203,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 				box.MaxEdge += npf;
 
 				v3f intersection_point;
-				v3s16 intersection_normal;
+				v3POS intersection_normal;
 				if (!boxLineCollision(box, state->m_shootline.start,
 						state->m_shootline.getVector(), &intersection_point,
 						&intersection_normal)) {

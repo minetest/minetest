@@ -50,9 +50,9 @@ class ModApiMapgen;
 struct BlockMakeData {
 	MMVManip *vmanip = nullptr;
 	u64 seed = 0;
-	v3s16 blockpos_min;
-	v3s16 blockpos_max;
-	UniqueQueue<v3s16> transforming_liquid;
+	v3BPOS blockpos_min;
+	v3BPOS blockpos_max;
+	UniqueQueue<v3POS> transforming_liquid;
 	const NodeDefManager *nodedef = nullptr;
 
 	BlockMakeData() = default;
@@ -71,7 +71,7 @@ enum EmergeAction {
 
 // Callback
 typedef void (*EmergeCompletionCallback)(
-	v3s16 blockpos, EmergeAction action, void *param);
+	v3BPOS blockpos, EmergeAction action, void *param);
 
 typedef std::vector<
 	std::pair<
@@ -163,26 +163,26 @@ public:
 
 	bool enqueueBlockEmerge(
 		session_t peer_id,
-		v3s16 blockpos,
+		v3BPOS blockpos,
 		bool allow_generate,
 		bool ignore_queue_limits=false);
 
 	bool enqueueBlockEmergeEx(
-		v3s16 blockpos,
+		v3BPOS blockpos,
 		session_t peer_id,
 		u16 flags,
 		EmergeCompletionCallback callback,
 		void *callback_param);
 
-	bool isBlockInQueue(v3s16 pos);
+	bool isBlockInQueue(v3BPOS pos);
 
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
-	int getSpawnLevelAtPoint(v2s16 p);
-	bool isBlockUnderground(v3s16 blockpos);
+	int getSpawnLevelAtPoint(v2POS p);
+	bool isBlockUnderground(v3BPOS blockpos);
 
-	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
+	static v3BPOS getContainingChunk(v3BPOS blockpos, s16 chunksize);
 
 private:
 	std::vector<Mapgen *> m_mapgens;
@@ -190,7 +190,7 @@ private:
 	bool m_threads_active = false;
 
 	std::mutex m_queue_mutex;
-	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
+	std::map<v3BPOS, BlockEmergeData> m_blocks_enqueued;
 	std::unordered_map<u16, u32> m_peer_queue_count;
 
 	u32 m_qlimit_total;
@@ -209,14 +209,14 @@ private:
 	EmergeThread *getOptimalThread();
 
 	bool pushBlockEmergeData(
-		v3s16 pos,
+		v3BPOS pos,
 		u16 peer_requested,
 		u16 flags,
 		EmergeCompletionCallback callback,
 		void *callback_param,
 		bool *entry_already_exists);
 
-	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
+	bool popBlockEmergeData(v3BPOS pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
 };

@@ -32,10 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MMVManip;
 class NodeDefManager;
 
-v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs);
-v3s16 turn_xz(v3s16 olddir, int t);
-void random_turn(PseudoRandom &random, v3s16 &dir);
-int dir_to_facedir(v3s16 d);
+v3POS rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs);
+v3POS turn_xz(v3POS olddir, int t);
+void random_turn(PseudoRandom &random, v3POS &dir);
+int dir_to_facedir(v3POS d);
 
 
 struct DungeonParams {
@@ -57,11 +57,11 @@ struct DungeonParams {
 	// Number of rooms
 	u16 num_rooms;
 	// Room size random range. Includes walls / floor / ceilng
-	v3s16 room_size_min;
-	v3s16 room_size_max;
+	v3POS room_size_min;
+	v3POS room_size_max;
 	// Large room size random range. Includes walls / floor / ceilng
-	v3s16 room_size_large_min;
-	v3s16 room_size_large_max;
+	v3POS room_size_large_min;
+	v3POS room_size_large_max;
 	// Value 0 disables large rooms.
 	// Value 1 results in 1 large room, the first generated room.
 	// Value > 1 makes the first generated room large, all other rooms have a
@@ -71,7 +71,7 @@ struct DungeonParams {
 	// Dimensions are of the empty space, not including walls / floor / ceilng.
 	// Diagonal corridors must have hole width >=2 to be passable.
 	// Currently, hole width >= 3 causes stair corridor bugs.
-	v3s16 holesize;
+	v3POS holesize;
 	// Corridor length random range
 	u16 corridor_len_min;
 	u16 corridor_len_max;
@@ -90,31 +90,31 @@ public:
 
 	u32 blockseed;
 	PseudoRandom random;
-	v3s16 csize;
+	v3POS csize;
 
 	content_t c_torch;
 	DungeonParams dp;
 
 	// RoomWalker
-	v3s16 m_pos;
-	v3s16 m_dir;
+	v3POS m_pos;
+	v3POS m_dir;
 
 	DungeonGen(const NodeDefManager *ndef,
 		GenerateNotifier *gennotify, DungeonParams *dparams);
 
-	void generate(MMVManip *vm, u32 bseed, v3s16 full_node_min, v3s16 full_node_max);
+	void generate(MMVManip *vm, u32 bseed, v3POS full_node_min, v3POS full_node_max);
 
-	void makeDungeon(v3s16 start_padding);
-	void makeRoom(v3s16 roomsize, v3s16 roomplace);
-	void makeCorridor(v3s16 doorplace, v3s16 doordir,
-		v3s16 &result_place, v3s16 &result_dir);
-	void makeDoor(v3s16 doorplace, v3s16 doordir);
-	void makeFill(v3s16 place, v3s16 size, u8 avoid_flags, MapNode n, u8 or_flags);
-	void makeHole(v3s16 place);
+	void makeDungeon(v3POS start_padding);
+	void makeRoom(v3POS roomsize, v3POS roomplace);
+	void makeCorridor(v3POS doorplace, v3POS doordir,
+		v3POS &result_place, v3POS &result_dir);
+	void makeDoor(v3POS doorplace, v3POS doordir);
+	void makeFill(v3POS place, v3POS size, u8 avoid_flags, MapNode n, u8 or_flags);
+	void makeHole(v3POS place);
 
-	bool findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir);
-	bool findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
-			v3s16 &result_doordir, v3s16 &result_roomplace);
+	bool findPlaceForDoor(v3POS &result_place, v3POS &result_dir);
+	bool findPlaceForRoomDoor(v3POS roomsize, v3POS &result_doorplace,
+			v3POS &result_doordir, v3POS &result_roomplace);
 
 	inline void randomizeDir()
 	{

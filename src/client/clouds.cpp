@@ -120,7 +120,7 @@ void Clouds::render()
 	// The center point of drawing in the noise
 	v2f center_of_drawing_in_noise_f = -cloud_origin_from_camera_f;
 	// The integer center point of drawing in the noise
-	v2s16 center_of_drawing_in_noise_i(
+	v2POS center_of_drawing_in_noise_i(
 		std::floor(center_of_drawing_in_noise_f.X / cloud_size),
 		std::floor(center_of_drawing_in_noise_f.Y / cloud_size)
 	);

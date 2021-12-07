@@ -226,7 +226,7 @@ void MapDatabasePostgreSQL::initStatements()
 		"SELECT posX, posY, posZ FROM blocks");
 }
 
-bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
+bool MapDatabasePostgreSQL::saveBlock(const v3BPOS &pos, const std::string &data)
 {
 	// Verify if we don't overflow the platform integer with the mapblock size
 	if (data.size() > INT_MAX) {
@@ -258,7 +258,7 @@ bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
+void MapDatabasePostgreSQL::loadBlock(const v3BPOS &pos, std::string *block)
 {
 	verifyDatabase();
 
@@ -282,7 +282,7 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 	PQclear(results);
 }
 
-bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
+bool MapDatabasePostgreSQL::deleteBlock(const v3BPOS &pos)
 {
 	verifyDatabase();
 
@@ -300,7 +300,7 @@ bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
 	return true;
 }
 
-void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
+void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3BPOS> &dst)
 {
 	verifyDatabase();
 
@@ -310,7 +310,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	int numrows = PQntuples(results);
 
 	for (int row = 0; row < numrows; ++row)
-		dst.push_back(pg_to_v3s16(results, row, 0));
+		dst.push_back(pg_to_v3BPOS(results, row, 0));
 
 	PQclear(results);
 }

@@ -57,8 +57,8 @@ enum BiomeV6Type
 struct MapgenV6Params : public MapgenParams {
 	float freq_desert = 0.45f;
 	float freq_beach = 0.15f;
-	s16 dungeon_ymin = -31000;
-	s16 dungeon_ymax = 31000;
+	POS dungeon_ymin = -MAX_MAP_GENERATION_LIMIT;
+	POS dungeon_ymax = MAX_MAP_GENERATION_LIMIT;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_higher;
@@ -88,11 +88,11 @@ public:
 	int ystride;
 	u32 spflags;
 
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
-	v3s16 central_area_size;
+	v3POS node_min;
+	v3POS node_max;
+	v3POS full_node_min;
+	v3POS full_node_max;
+	v3POS central_area_size;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_higher;
@@ -111,8 +111,8 @@ public:
 
 	float freq_desert;
 	float freq_beach;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
+	POS dungeon_ymin;
+	POS dungeon_ymax;
 
 	content_t c_stone;
 	content_t c_dirt;
@@ -139,34 +139,34 @@ public:
 	virtual MapgenType getType() const { return MAPGEN_V6; }
 
 	void makeChunk(BlockMakeData *data);
-	int getGroundLevelAtPoint(v2s16 p);
-	int getSpawnLevelAtPoint(v2s16 p);
+	int getGroundLevelAtPoint(v2POS p);
+	int getSpawnLevelAtPoint(v2POS p);
 
 	float baseTerrainLevel(float terrain_base, float terrain_higher,
 		float steepness, float height_select);
-	virtual float baseTerrainLevelFromNoise(v2s16 p);
-	virtual float baseTerrainLevelFromMap(v2s16 p);
+	virtual float baseTerrainLevelFromNoise(v2POS p);
+	virtual float baseTerrainLevelFromMap(v2POS p);
 	virtual float baseTerrainLevelFromMap(int index);
 
-	s16 find_stone_level(v2s16 p2d);
-	bool block_is_underground(u64 seed, v3s16 blockpos);
+	POS find_stone_level(v2POS p2d);
+	bool block_is_underground(u64 seed, v3POS blockpos);
 
-	float getHumidity(v2s16 p);
-	float getTreeAmount(v2s16 p);
-	bool getHaveAppleTree(v2s16 p);
+	float getHumidity(v2POS p);
+	float getTreeAmount(v2POS p);
+	bool getHaveAppleTree(v2POS p);
 	float getMudAmount(int index);
 	bool getHaveBeach(int index);
-	BiomeV6Type getBiome(v2s16 p);
-	BiomeV6Type getBiome(int index, v2s16 p);
+	BiomeV6Type getBiome(v2POS p);
+	BiomeV6Type getBiome(int index, v2POS p);
 
-	u32 get_blockseed(u64 seed, v3s16 p);
+	u32 get_blockseed(u64 seed, v3POS p);
 
 	virtual void calculateNoise();
 	int generateGround();
 	void addMud();
-	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
+	void flowMud(POS &mudflow_minpos, POS &mudflow_maxpos);
 	void moveMud(u32 remove_index, u32 place_index,
-		u32 above_remove_index, v2s16 pos, v3s16 em);
+		u32 above_remove_index, v2POS pos, v3POS em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);

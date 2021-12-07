@@ -71,8 +71,8 @@ public:
 	bool enable_mesh_cache;
 
 // current node
-	v3s16 blockpos_nodes;
-	v3s16 p;
+	v3POS blockpos_nodes;
+	v3POS p;
 	v3f origin;
 	MapNode n;
 	const ContentFeatures *f;
@@ -91,11 +91,11 @@ public:
 	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
 		u8 reset_flags = 0, bool special = false);
 	void getTile(int index, TileSpec *tile);
-	void getTile(v3s16 direction, TileSpec *tile);
+	void getTile(v3POS direction, TileSpec *tile);
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing
-	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
+	void drawQuad(v3f *vertices, const v3POS &normal = v3POS(0, 0, 0),
 		float vertical_tiling = 1.0);
 
 // cuboid drawing!
@@ -134,7 +134,7 @@ public:
 	// name of the group that enables connecting to raillike nodes of different kind
 	static const std::string raillike_groupname;
 	int raillike_group;
-	bool isSameRail(v3s16 dir);
+	bool isSameRail(v3POS dir);
 
 // plantlike-specific
 	PlantlikeStyle draw_style;

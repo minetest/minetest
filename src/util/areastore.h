@@ -39,14 +39,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct Area {
 	Area(u32 area_id) : id(area_id) {}
 
-	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX) :
+	Area(const v3POS &mine, const v3POS &maxe, u32 area_id = U32_MAX) :
 		id(area_id), minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
 
 	u32 id;
-	v3s16 minedge, maxedge;
+	v3POS minedge, maxedge;
 	std::string data;
 };
 
@@ -75,13 +75,13 @@ public:
 
 	/// Finds areas that the passed position is contained in.
 	/// Stores output in passed vector.
-	void getAreasForPos(std::vector<Area *> *result, v3s16 pos);
+	void getAreasForPos(std::vector<Area *> *result, v3POS pos);
 
 	/// Finds areas that are completely contained inside the area defined
 	/// by the passed edges.  If @p accept_overlap is true this finds any
 	/// areas that intersect with the passed area at any point.
 	virtual void getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap) = 0;
+		v3POS minedge, v3POS maxedge, bool accept_overlap) = 0;
 
 	/// Sets cache parameters.
 	void setCacheParams(bool enabled, u8 block_radius, size_t limit);
@@ -106,7 +106,7 @@ protected:
 
 	/// Implementation of getAreasForPos.
 	/// getAreasForPos calls this if the cache is disabled.
-	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos) = 0;
+	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3POS pos) = 0;
 
 	/// Returns the next area ID and increments it.
 	u32 getNextId() const;
@@ -118,13 +118,13 @@ protected:
 
 private:
 	/// Called by the cache when a value isn't found in the cache.
-	static void cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *dest);
+	static void cacheMiss(void *data, const v3POS &mpos, std::vector<Area *> *dest);
 
 	bool m_cache_enabled = true;
 	/// Range, in nodes, of the getAreasForPos cache.
 	/// If you modify this, call invalidateCache()
 	u8 m_cacheblock_radius = 64;
-	LRUCache<v3s16, std::vector<Area *> > m_res_cache;
+	LRUCache<v3POS, std::vector<Area *> > m_res_cache;
 };
 
 
@@ -134,10 +134,10 @@ public:
 	virtual bool insertArea(Area *a);
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
+		v3POS minedge, v3POS maxedge, bool accept_overlap);
 
 protected:
-	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
+	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3POS pos);
 
 private:
 	std::vector<Area *> m_areas;
@@ -154,10 +154,10 @@ public:
 	virtual bool insertArea(Area *a);
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
+		v3POS minedge, v3POS maxedge, bool accept_overlap);
 
 protected:
-	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
+	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3POS pos);
 
 private:
 	SpatialIndex::ISpatialIndex *m_tree = nullptr;

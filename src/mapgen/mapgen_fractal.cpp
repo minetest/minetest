@@ -108,14 +108,14 @@ void MapgenFractalParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 	settings->getFloatNoEx("mgfractal_cave_width",         cave_width);
-	settings->getS16NoEx("mgfractal_large_cave_depth",     large_cave_depth);
+	settings->getPOSNoEx("mgfractal_large_cave_depth",     large_cave_depth);
 	settings->getU16NoEx("mgfractal_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgfractal_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgfractal_large_cave_num_min",   large_cave_num_min);
 	settings->getU16NoEx("mgfractal_large_cave_num_max",   large_cave_num_max);
 	settings->getFloatNoEx("mgfractal_large_cave_flooded", large_cave_flooded);
-	settings->getS16NoEx("mgfractal_dungeon_ymin",         dungeon_ymin);
-	settings->getS16NoEx("mgfractal_dungeon_ymax",         dungeon_ymax);
+	settings->getPOSNoEx("mgfractal_dungeon_ymin",         dungeon_ymin);
+	settings->getPOSNoEx("mgfractal_dungeon_ymax",         dungeon_ymax);
 	settings->getU16NoEx("mgfractal_fractal",              fractal);
 	settings->getU16NoEx("mgfractal_iterations",           iterations);
 	settings->getV3FNoEx("mgfractal_scale",                scale);
@@ -138,14 +138,14 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 	settings->setFloat("mgfractal_cave_width",         cave_width);
-	settings->setS16("mgfractal_large_cave_depth",     large_cave_depth);
+	settings->setPOS("mgfractal_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgfractal_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgfractal_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgfractal_large_cave_num_min",   large_cave_num_min);
 	settings->setU16("mgfractal_large_cave_num_max",   large_cave_num_max);
 	settings->setFloat("mgfractal_large_cave_flooded", large_cave_flooded);
-	settings->setS16("mgfractal_dungeon_ymin",         dungeon_ymin);
-	settings->setS16("mgfractal_dungeon_ymax",         dungeon_ymax);
+	settings->setPOS("mgfractal_dungeon_ymin",         dungeon_ymin);
+	settings->setPOS("mgfractal_dungeon_ymax",         dungeon_ymax);
 	settings->setU16("mgfractal_fractal",              fractal);
 	settings->setU16("mgfractal_iterations",           iterations);
 	settings->setV3F("mgfractal_scale",                scale);
@@ -174,19 +174,19 @@ void MapgenFractalParams::setDefaultSettings(Settings *settings)
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
+int MapgenFractal::getSpawnLevelAtPoint(v2POS p)
 {
 	bool solid_below = false; // Fractal node is present below to spawn on
 	u8 air_count = 0; // Consecutive air nodes above a fractal node
-	s16 search_start = 0; // No terrain search start
+	POS search_start = 0; // No terrain search start
 
 	// If terrain present, don't start search below terrain or water level
 	if (noise_seabed) {
-		s16 seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
+		POS seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
 		search_start = MYMAX(search_start, MYMAX(seabed_level, water_level));
 	}
 
-	for (s16 y = search_start; y <= search_start + 4096; y++) {
+	for (POS y = search_start; y <= search_start + 4096; y++) {
 		if (getFractalAtPoint(p.X, y, p.Y)) {
 			// Fractal node
 			solid_below = true;
@@ -216,17 +216,17 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
-	v3s16 blockpos_min = data->blockpos_min;
-	v3s16 blockpos_max = data->blockpos_max;
+	v3POS blockpos_min = data->blockpos_min;
+	v3POS blockpos_max = data->blockpos_max;
 	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_max = (blockpos_max + v3POS(1, 1, 1)) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3POS(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Generate fractal and optional terrain
-	s16 stone_surface_max_y = generateTerrain();
+	POS stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -265,7 +265,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
+		calcLighting(node_min - v3POS(0, 1, 0), node_max + v3POS(0, 1, 0),
 			full_node_min, full_node_max);
 
 	this->generating = false;
@@ -274,7 +274,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 }
 
 
-bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
+bool MapgenFractal::getFractalAtPoint(POS x, POS y, POS z)
 {
 	float cx, cy, cz, cw, ox, oy, oz, ow;
 
@@ -404,26 +404,26 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 }
 
 
-s16 MapgenFractal::generateTerrain()
+POS MapgenFractal::generateTerrain()
 {
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	POS stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
 	if (noise_seabed)
 		noise_seabed->perlinMap2D(node_min.X, node_min.Z);
 
-	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
-		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+	for (POS z = node_min.Z; z <= node_max.Z; z++) {
+		for (POS y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			u32 vi = vm->m_area.index(node_min.X, y, z);
-			for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index2d++) {
+			for (POS x = node_min.X; x <= node_max.X; x++, vi++, index2d++) {
 				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 					continue;
 
-				s16 seabed_height = -MAX_MAP_GENERATION_LIMIT;
+				POS seabed_height = -MAX_MAP_GENERATION_LIMIT;
 				if (noise_seabed)
 					seabed_height = noise_seabed->result[index2d];
 

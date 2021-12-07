@@ -141,7 +141,7 @@ luaL_Reg LuaPerlinNoise::methods[] = {
   LuaPerlinNoiseMap
 */
 
-LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, s32 seed, v3s16 size)
+LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, s32 seed, v3POS size)
 {
 	m_is3d = size.Z > 1;
 	np = *params;
@@ -304,8 +304,8 @@ int LuaPerlinNoiseMap::l_get_map_slice(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v3s16 slice_offset   = read_v3s16(L, 2);
-	v3s16 slice_size     = read_v3s16(L, 3);
+	v3POS slice_offset   = read_v3POS(L, 2);
+	v3POS slice_size     = read_v3POS(L, 3);
 	bool use_buffer      = lua_istable(L, 4);
 
 	Noise *n = o->noise;
@@ -329,7 +329,7 @@ int LuaPerlinNoiseMap::create_object(lua_State *L)
 	NoiseParams np;
 	if (!read_noiseparams(L, 1, &np))
 		return 0;
-	v3s16 size = read_v3s16(L, 2);
+	v3POS size = read_v3POS(L, 2);
 
 	LuaPerlinNoiseMap *o = new LuaPerlinNoiseMap(&np, 0, size);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

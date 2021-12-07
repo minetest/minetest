@@ -68,7 +68,7 @@ RaycastState::RaycastState(const core::line3d<f32> &shootline,
 
 
 bool boxLineCollision(const aabb3f &box, const v3f &start,
-	const v3f &dir, v3f *collision_point, v3s16 *collision_normal)
+	const v3f &dir, v3f *collision_point, v3POS *collision_normal)
 {
 	if (box.isPointInside(start)) {
 		*collision_point = start;

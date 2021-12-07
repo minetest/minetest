@@ -228,7 +228,7 @@ bool read_schematic_def(lua_State *L, int index,
 
 	//// Get schematic size
 	lua_getfield(L, index, "size");
-	v3s16 size = check_v3s16(L, -1);
+	v3POS size = check_v3POS(L, -1);
 	lua_pop(L, 1);
 
 	schem->size = size;
@@ -381,7 +381,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 
 	b->name            = getstringfield_default(L, index, "name", "");
 	b->depth_top       = getintfield_default(L,    index, "depth_top",       0);
-	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -31000);
+	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -MAX_MAP_GENERATION_LIMIT);
 	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
 	b->depth_riverbed  = getintfield_default(L,    index, "depth_riverbed",  0);
 	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
@@ -389,11 +389,11 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
 	b->flags           = 0; // reserved
 
-	b->min_pos = getv3s16field_default(
-		L, index, "min_pos", v3s16(-31000, -31000, -31000));
+	b->min_pos = getv3POSfield_default(
+		L, index, "min_pos", v3POS(-MAX_MAP_GENERATION_LIMIT, -MAX_MAP_GENERATION_LIMIT, -MAX_MAP_GENERATION_LIMIT));
 	getintfield(L, index, "y_min", b->min_pos.Y);
-	b->max_pos = getv3s16field_default(
-		L, index, "max_pos", v3s16(31000, 31000, 31000));
+	b->max_pos = getv3POSfield_default(
+		L, index, "max_pos", v3POS(MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT));
 	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
@@ -523,7 +523,7 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	v3s16 pos = read_v3s16(L, 1);
+	v3POS pos = read_v3POS(L, 1);
 
 	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 
@@ -544,7 +544,7 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	v3s16 pos = read_v3s16(L, 1);
+	v3POS pos = read_v3POS(L, 1);
 
 	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 
@@ -565,7 +565,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	v3s16 pos = read_v3s16(L, 1);
+	v3POS pos = read_v3POS(L, 1);
 
 	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
 	if (!biomegen)
@@ -627,10 +627,10 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		lua_setmetatable(L, -2);
 
 		// emerged min pos
-		push_v3s16(L, vm->m_area.MinEdge);
+		push_v3POS(L, vm->m_area.MinEdge);
 
 		// emerged max pos
-		push_v3s16(L, vm->m_area.MaxEdge);
+		push_v3POS(L, vm->m_area.MaxEdge);
 
 		return 3;
 	}
@@ -688,7 +688,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		return 1;
 	}
 	case MGOBJ_GENNOTIFY: {
-		std::map<std::string, std::vector<v3s16> >event_map;
+		std::map<std::string, std::vector<v3POS> >event_map;
 
 		mg->gennotify.getEvents(event_map);
 
@@ -697,7 +697,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			lua_createtable(L, it->second.size(), 0);
 
 			for (size_t j = 0; j != it->second.size(); j++) {
-				push_v3s16(L, it->second[j]);
+				push_v3POS(L, it->second[j]);
 				lua_rawseti(L, -2, j + 1);
 			}
 
@@ -721,7 +721,7 @@ int ModApiMapgen::l_get_spawn_level(lua_State *L)
 	s16 z = luaL_checkinteger(L, 2);
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	int spawn_level = emerge->getSpawnLevelAtPoint(v2s16(x, z));
+	int spawn_level = emerge->getSpawnLevelAtPoint(v2POS(x, z));
 	// Unsuitable spawn point
 	if (spawn_level == MAX_MAP_GENERATION_LIMIT)
 		return 0;
@@ -1058,8 +1058,8 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 
 	deco->name           = getstringfield_default(L, index, "name", "");
 	deco->fill_ratio     = getfloatfield_default(L, index, "fill_ratio", 0.02);
-	deco->y_min          = getintfield_default(L, index, "y_min", -31000);
-	deco->y_max          = getintfield_default(L, index, "y_max", 31000);
+	deco->y_min          = getintfield_default(L, index, "y_min", -MAX_MAP_GENERATION_LIMIT);
+	deco->y_max          = getintfield_default(L, index, "y_max", MAX_MAP_GENERATION_LIMIT);
 	deco->nspawnby       = getintfield_default(L, index, "num_spawn_by", -1);
 	deco->place_offset_y = getintfield_default(L, index, "place_offset_y", 0);
 	deco->sidelen        = getintfield_default(L, index, "sidelen", 8);
@@ -1238,10 +1238,10 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	int ymin, ymax;
 	if (!getintfield(L, index, "y_min", ymin) &&
 		!getintfield(L, index, "height_min", ymin))
-		ymin = -31000;
+		ymin = -MAX_MAP_GENERATION_LIMIT;
 	if (!getintfield(L, index, "y_max", ymax) &&
 		!getintfield(L, index, "height_max", ymax))
-		ymax = 31000;
+		ymax = MAX_MAP_GENERATION_LIMIT;
 	ore->y_min = ymin;
 	ore->y_max = ymax;
 
@@ -1432,10 +1432,10 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
-			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
-	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) :
-			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
+	v3POS pmin = lua_istable(L, 2) ? check_v3POS(L, 2) :
+			mg.vm->m_area.MinEdge + v3POS(1,1,1) * MAP_BLOCKSIZE;
+	v3POS pmax = lua_istable(L, 3) ? check_v3POS(L, 3) :
+			mg.vm->m_area.MaxEdge - v3POS(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
@@ -1461,10 +1461,10 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
-			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
-	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) :
-			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
+	v3POS pmin = lua_istable(L, 2) ? check_v3POS(L, 2) :
+			mg.vm->m_area.MinEdge + v3POS(1,1,1) * MAP_BLOCKSIZE;
+	v3POS pmax = lua_istable(L, 3) ? check_v3POS(L, 3) :
+			mg.vm->m_area.MaxEdge - v3POS(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
@@ -1488,17 +1488,17 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	Map *map = &(getEnv(L)->getMap());
 	Schematic schem;
 
-	v3s16 p1 = check_v3s16(L, 1);
-	v3s16 p2 = check_v3s16(L, 2);
+	v3POS p1 = check_v3POS(L, 1);
+	v3POS p2 = check_v3POS(L, 2);
 	sortBoxVerticies(p1, p2);
 
-	std::vector<std::pair<v3s16, u8> > prob_list;
+	std::vector<std::pair<v3POS, u8> > prob_list;
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
 		while (lua_next(L, 3)) {
 			if (lua_istable(L, -1)) {
 				lua_getfield(L, -1, "pos");
-				v3s16 pos = check_v3s16(L, -1);
+				v3POS pos = check_v3POS(L, -1);
 				lua_pop(L, 1);
 
 				u8 prob = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
@@ -1552,7 +1552,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position
-	v3s16 p = check_v3s16(L, 1);
+	v3POS p = check_v3POS(L, 1);
 
 	//// Read rotation
 	int rot = ROTATE_0;
@@ -1600,7 +1600,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 	MMVManip *vm = LuaVoxelManip::checkobject(L, 1)->vm;
 
 	//// Read position
-	v3s16 p = check_v3s16(L, 2);
+	v3POS p = check_v3POS(L, 2);
 
 	//// Read rotation
 	int rot = ROTATE_0;
@@ -1718,7 +1718,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	lua_createtable(L, 0, (write_yslice == "none") ? 2 : 3);
 
 	// Create the size field
-	push_v3s16(L, schem->size);
+	push_v3POS(L, schem->size);
 	lua_setfield(L, 1, "size");
 
 	// Create the yslice_prob field

@@ -239,13 +239,13 @@ void MapDatabaseSQLite3::initStatements()
 	verbosestream << "ServerMap: SQLite3 database opened." << std::endl;
 }
 
-inline void MapDatabaseSQLite3::bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index)
+inline void MapDatabaseSQLite3::bindPos(sqlite3_stmt *stmt, const v3BPOS &pos, int index)
 {
 	SQLOK(sqlite3_bind_int64(stmt, index, getBlockAsInteger(pos)),
 		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 }
 
-bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
+bool MapDatabaseSQLite3::deleteBlock(const v3BPOS &pos)
 {
 	verifyDatabase();
 
@@ -261,7 +261,7 @@ bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
 	return good;
 }
 
-bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, const std::string &data)
+bool MapDatabaseSQLite3::saveBlock(const v3BPOS &pos, const std::string &data)
 {
 	verifyDatabase();
 
@@ -288,7 +288,7 @@ bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
+void MapDatabaseSQLite3::loadBlock(const v3BPOS &pos, std::string *block)
 {
 	verifyDatabase();
 
@@ -312,7 +312,7 @@ void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
 	sqlite3_reset(m_stmt_read);
 }
 
-void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
+void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3BPOS> &dst)
 {
 	verifyDatabase();
 

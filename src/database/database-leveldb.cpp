@@ -55,10 +55,10 @@ Database_LevelDB::~Database_LevelDB()
 	delete m_database;
 }
 
-bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_LevelDB::saveBlock(const v3BPOS &pos, const std::string &data)
 {
 	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
-			i64tos(getBlockAsInteger(pos)), data);
+			getBlockAsStringCompatible(pos), data);
 	if (!status.ok()) {
 		warningstream << "saveBlock: LevelDB error saving block "
 			<< PP(pos) << ": " << status.ToString() << std::endl;
@@ -68,19 +68,19 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void Database_LevelDB::loadBlock(const v3s16 &pos, std::string *block)
+void Database_LevelDB::loadBlock(const v3BPOS &pos, std::string *block)
 {
 	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
-		i64tos(getBlockAsInteger(pos)), block);
+		getBlockAsStringCompatible(pos), block);
 
 	if (!status.ok())
 		block->clear();	
 }
 
-bool Database_LevelDB::deleteBlock(const v3s16 &pos)
+bool Database_LevelDB::deleteBlock(const v3BPOS &pos)
 {
 	leveldb::Status status = m_database->Delete(leveldb::WriteOptions(),
-			i64tos(getBlockAsInteger(pos)));
+			getBlockAsStringCompatible(pos));
 	if (!status.ok()) {
 		warningstream << "deleteBlock: LevelDB error deleting block "
 			<< PP(pos) << ": " << status.ToString() << std::endl;
@@ -90,11 +90,11 @@ bool Database_LevelDB::deleteBlock(const v3s16 &pos)
 	return true;
 }
 
-void Database_LevelDB::listAllLoadableBlocks(std::vector<v3s16> &dst)
+void Database_LevelDB::listAllLoadableBlocks(std::vector<v3BPOS> &dst)
 {
 	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
-		dst.push_back(getIntegerAsBlock(stoi64(it->key().ToString())));
+		dst.push_back(getStringAsBlock(it->key().ToString()));
 	}
 	ENSURE_STATUS_OK(it->status());  // Check for any errors found during the scan
 	delete it;

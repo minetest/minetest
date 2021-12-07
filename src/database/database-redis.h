@@ -38,10 +38,10 @@ public:
 	void beginSave();
 	void endSave();
 
-	bool saveBlock(const v3s16 &pos, const std::string &data);
-	void loadBlock(const v3s16 &pos, std::string *block);
-	bool deleteBlock(const v3s16 &pos);
-	void listAllLoadableBlocks(std::vector<v3s16> &dst);
+	bool saveBlock(const v3BPOS &pos, const std::string &data);
+	void loadBlock(const v3BPOS &pos, std::string *block);
+	bool deleteBlock(const v3BPOS &pos);
+	void listAllLoadableBlocks(std::vector<v3BPOS> &dst);
 
 private:
 	redisContext *ctx = nullptr;

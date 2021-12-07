@@ -435,6 +435,38 @@ MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
+inline POS readPOS(std::istream &is) {
+#if USE_POS32
+	return readS32(is);
+#else
+	return readS16(is);
+#endif
+}
+
+inline void writePOS(std::ostream &os, POS i) {
+#if USE_POS32
+	return writeS32(os, i);
+#else
+	return writeS16(os, i);
+#endif
+}
+
+inline v3POS readV3POS(std::istream &is) {
+#if USE_POS32
+    return readV3S32(is);
+#else
+    return readV3S16(is);
+#endif
+}
+
+inline void writeV3POS(std::ostream &os, v3POS p) {
+#if USE_POS32
+    return writeV3S32(os, p);
+#else
+    return writeV3S16(os, p);
+#endif
+}
+
 ////
 //// More serialization stuff
 ////

@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include <sstream>
 
-PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
-	const v3s16 &real_under, const v3f &point, const v3s16 &normal,
+PointedThing::PointedThing(const v3POS &under, const v3POS &above,
+	const v3POS &real_under, const v3f &point, const v3POS &normal,
 	u16 box_id, f32 distSq):
 	type(POINTEDTHING_NODE),
 	node_undersurface(under),
@@ -36,7 +36,7 @@ PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	distanceSq(distSq)
 {}
 
-PointedThing::PointedThing(s16 id, const v3f &point, const v3s16 &normal,
+PointedThing::PointedThing(s16 id, const v3f &point, const v3POS &normal,
 	f32 distSq) :
 	type(POINTEDTHING_OBJECT),
 	object_id(id),
@@ -54,8 +54,8 @@ std::string PointedThing::dump() const
 		break;
 	case POINTEDTHING_NODE:
 	{
-		const v3s16 &u = node_undersurface;
-		const v3s16 &a = node_abovesurface;
+		const v3POS &u = node_undersurface;
+		const v3POS &a = node_abovesurface;
 		os << "[node under=" << u.X << "," << u.Y << "," << u.Z << " above="
 			<< a.X << "," << a.Y << "," << a.Z << "]";
 	}
@@ -77,8 +77,8 @@ void PointedThing::serialize(std::ostream &os) const
 	case POINTEDTHING_NOTHING:
 		break;
 	case POINTEDTHING_NODE:
-		writeV3S16(os, node_undersurface);
-		writeV3S16(os, node_abovesurface);
+		writeV3POS(os, node_undersurface);
+		writeV3POS(os, node_abovesurface);
 		break;
 	case POINTEDTHING_OBJECT:
 		writeS16(os, object_id);
@@ -96,8 +96,8 @@ void PointedThing::deSerialize(std::istream &is)
 	case POINTEDTHING_NOTHING:
 		break;
 	case POINTEDTHING_NODE:
-		node_undersurface = readV3S16(is);
-		node_abovesurface = readV3S16(is);
+		node_undersurface = readV3POS(is);
+		node_abovesurface = readV3POS(is);
 		break;
 	case POINTEDTHING_OBJECT:
 		object_id = readS16(is);

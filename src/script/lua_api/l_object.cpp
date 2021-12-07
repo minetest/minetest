@@ -491,7 +491,7 @@ int ObjectRef::l_send_mapblock(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v3s16 pos = read_v3s16(L, 2);
+	v3POS pos = read_v3POS(L, 2);
 
 	session_t peer_id = player->getPeerId();
 	bool r = getServer(L)->SendBlock(peer_id, pos);

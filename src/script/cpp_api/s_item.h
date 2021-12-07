@@ -60,7 +60,7 @@ protected:
 	friend class LuaItemStack;
 	friend class ModApiItemMod;
 
-	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = nullptr);
+	bool getItemCallback(const char *name, const char *callbackname, const v3POS *p = nullptr);
 	/*!
 	 * Pushes a `pointed_thing` tabe to the stack.
 	 * \param hitpoint If true, the exact pointing location is also pushed

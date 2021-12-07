@@ -305,6 +305,18 @@ void push_v3s16(lua_State *L, v3s16 p)
 	set_vector_metatable(L);
 }
 
+void push_v3s32(lua_State *L, v3s32 p)
+{
+	lua_createtable(L, 0, 3);
+	lua_pushinteger(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushinteger(L, p.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushinteger(L, p.Z);
+	lua_setfield(L, -2, "z");
+	set_vector_metatable(L);
+}
+
 v3s16 read_v3s16(lua_State *L, int index)
 {
 	// Correct rounding at <0
@@ -312,11 +324,25 @@ v3s16 read_v3s16(lua_State *L, int index)
 	return doubleToInt(pf, 1.0);
 }
 
+v3POS read_v3POS(lua_State *L, int index)
+{
+	// Correct rounding at <0
+	v3d pf = read_v3d(L, index);
+	return doubleToPos(pf, 1.0);
+}
+
 v3s16 check_v3s16(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = check_v3d(L, index);
 	return doubleToInt(pf, 1.0);
+}
+
+v3POS check_v3POS(lua_State *L, int index)
+{
+	// Correct rounding at <0
+	v3d pf = check_v3d(L, index);
+	return doubleToPos(pf, 1.0);
 }
 
 bool read_color(lua_State *L, int index, video::SColor *color)
@@ -612,6 +638,13 @@ bool getboolfield_default(lua_State *L, int table,
 
 v3s16 getv3s16field_default(lua_State *L, int table,
 		const char *fieldname, v3s16 default_)
+{
+	getv3intfield(L, table, fieldname, default_);
+	return default_;
+}
+
+v3POS getv3POSfield_default(lua_State *L, int table,
+		const char *fieldname, v3POS default_)
 {
 	getv3intfield(L, table, fieldname, default_);
 	return default_;

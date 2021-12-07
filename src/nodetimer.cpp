@@ -64,7 +64,7 @@ void NodeTimerList::serialize(std::ostream &os, u8 map_format_version) const
 		NodeTimer t = timer.second;
 		NodeTimer nt = NodeTimer(t.timeout,
 			t.timeout - (f32)(timer.first - m_time), t.position);
-		v3s16 p = t.position;
+		v3POS p = t.position;
 
 		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
 		writeU16(os, p16);
@@ -95,7 +95,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 	for (u16 i = 0; i < count; i++) {
 		u16 p16 = readU16(is);
 
-		v3s16 p;
+		v3POS p;
 		p.Z = p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
 		p16 &= MAP_BLOCKSIZE * MAP_BLOCKSIZE - 1;
 		p.Y = p16 / MAP_BLOCKSIZE;

@@ -227,27 +227,27 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 
 void Client::handleCommand_RemoveNode(NetworkPacket* pkt)
 {
-	if (pkt->getSize() < 6)
+	if (pkt->getSize() < sizeof(v3POS))
 		return;
 
-	v3s16 p;
+	v3POS p;
 	*pkt >> p;
 	removeNode(p);
 }
 
 void Client::handleCommand_AddNode(NetworkPacket* pkt)
 {
-	if (pkt->getSize() < 6 + MapNode::serializedLength(m_server_ser_ver))
+	if (pkt->getSize() < sizeof(v3POS) + MapNode::serializedLength(m_server_ser_ver))
 		return;
 
-	v3s16 p;
+	v3POS p;
 	*pkt >> p;
 
 	MapNode n;
-	n.deSerialize(pkt->getU8Ptr(6), m_server_ser_ver);
+	n.deSerialize(pkt->getU8Ptr(sizeof(v3POS)), m_server_ser_ver);
 
 	bool remove_metadata = true;
-	u32 index = 6 + MapNode::serializedLength(m_server_ser_ver);
+	u32 index = sizeof(v3POS) + MapNode::serializedLength(m_server_ser_ver);
 	if ((pkt->getSize() >= index + 1) && pkt->getU8(index)) {
 		remove_metadata = false;
 	}
@@ -270,7 +270,7 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	Map &map = m_env.getMap();
 	for (NodeMetadataMap::const_iterator i = meta_updates_list.begin();
 			i != meta_updates_list.end(); ++i) {
-		v3s16 pos = i->first;
+		v3POS pos = i->first;
 
 		if (map.isValidPosition(pos) &&
 				map.setNodeMetadata(pos, i->second))
@@ -284,19 +284,19 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 void Client::handleCommand_BlockData(NetworkPacket* pkt)
 {
 	// Ignore too small packet
-	if (pkt->getSize() < 6)
+	if (pkt->getSize() < sizeof(v3POS))
 		return;
 
-	v3s16 p;
+	v3POS p;
 	*pkt >> p;
 
-	std::string datastring(pkt->getString(6), pkt->getSize() - 6);
+	std::string datastring(pkt->getString(sizeof(p)), pkt->getSize() - sizeof(p));
 	std::istringstream istr(datastring, std::ios_base::binary);
 
 	MapSector *sector;
 	MapBlock *block;
 
-	v2s16 p2d(p.X, p.Z);
+	v2BPOS p2d(p.X, p.Z);
 	sector = m_env.getMap().emergeSector(p2d);
 
 	assert(sector->getPos() == p2d);

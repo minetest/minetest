@@ -75,8 +75,8 @@ void AreaStore::serialize(std::ostream &os) const
 	writeU16(os, areas_map.size());
 	for (const auto &it : areas_map) {
 		const Area &a = it.second;
-		writeV3S16(os, a.minedge);
-		writeV3S16(os, a.maxedge);
+		writeV3POS(os, a.minedge);
+		writeV3POS(os, a.maxedge);
 		writeU16(os, a.data.size());
 		os.write(a.data.data(), a.data.size());
 	}
@@ -99,8 +99,8 @@ void AreaStore::deserialize(std::istream &is)
 	areas.reserve(num_areas);
 	for (u32 i = 0; i < num_areas; ++i) {
 		Area a(U32_MAX);
-		a.minedge = readV3S16(is);
-		a.maxedge = readV3S16(is);
+		a.minedge = readV3POS(is);
+		a.maxedge = readV3POS(is);
 		u16 data_len = readU16(is);
 		a.data = std::string(data_len, '\0');
 		is.read(&a.data[0], data_len);
@@ -144,14 +144,14 @@ void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)
 	invalidateCache();
 }
 
-void AreaStore::cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *dest)
+void AreaStore::cacheMiss(void *data, const v3POS &mpos, std::vector<Area *> *dest)
 {
 	AreaStore *as = (AreaStore *)data;
 	u8 r = as->m_cacheblock_radius;
 
 	// get the points at the edges of the mapblock
-	v3s16 minedge(mpos.X * r, mpos.Y * r, mpos.Z * r);
-	v3s16 maxedge(
+	v3POS minedge(mpos.X * r, mpos.Y * r, mpos.Z * r);
+	v3POS maxedge(
 		minedge.X + r - 1,
 		minedge.Y + r - 1,
 		minedge.Z + r - 1);
@@ -165,10 +165,10 @@ void AreaStore::cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *de
 			<< ")" << std::endl; // */
 }
 
-void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
+void AreaStore::getAreasForPos(std::vector<Area *> *result, v3POS pos)
 {
 	if (m_cache_enabled) {
-		v3s16 mblock = getContainerPos(pos, m_cacheblock_radius);
+		v3POS mblock = getContainerPos(pos, m_cacheblock_radius);
 		const std::vector<Area *> *pre_list = m_res_cache.lookupCache(mblock);
 
 		size_t s_p_l = pre_list->size();
@@ -221,7 +221,7 @@ bool VectorAreaStore::removeArea(u32 id)
 	return true;
 }
 
-void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
+void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3POS pos)
 {
 	for (Area *area : m_areas) {
 		if (AST_CONTAINS_PT(area, pos)) {
@@ -231,7 +231,7 @@ void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 }
 
 void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap)
+		v3POS minedge, v3POS maxedge, bool accept_overlap)
 {
 	for (Area *area : m_areas) {
 		if (accept_overlap ? AST_AREAS_OVERLAP(minedge, maxedge, area) :
@@ -243,8 +243,8 @@ void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 
 #if USE_SPATIAL
 
-static inline SpatialIndex::Region get_spatial_region(const v3s16 minedge,
-		const v3s16 maxedge)
+static inline SpatialIndex::Region get_spatial_region(const v3POS minedge,
+		const v3POS maxedge)
 {
 	const double p_low[] = {(double)minedge.X,
 		(double)minedge.Y, (double)minedge.Z};
@@ -253,7 +253,7 @@ static inline SpatialIndex::Region get_spatial_region(const v3s16 minedge,
 	return SpatialIndex::Region(p_low, p_high, 3);
 }
 
-static inline SpatialIndex::Point get_spatial_point(const v3s16 pos)
+static inline SpatialIndex::Point get_spatial_point(const v3POS pos)
 {
 	const double p[] = {(double)pos.X, (double)pos.Y, (double)pos.Z};
 	return SpatialIndex::Point(p, 3);
@@ -287,14 +287,14 @@ bool SpatialAreaStore::removeArea(u32 id)
 	}
 }
 
-void SpatialAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
+void SpatialAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3POS pos)
 {
 	VectorResultVisitor visitor(result, this);
 	m_tree->pointLocationQuery(get_spatial_point(pos), visitor);
 }
 
 void SpatialAreaStore::getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap)
+		v3POS minedge, v3POS maxedge, bool accept_overlap)
 {
 	VectorResultVisitor visitor(result, this);
 	if (accept_overlap) {

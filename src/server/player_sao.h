@@ -150,14 +150,14 @@ public:
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
-	void noCheatDigStart(const v3s16 &p)
+	void noCheatDigStart(const v3POS &p)
 	{
 		m_nocheat_dig_pos = p;
 		m_nocheat_dig_time = 0;
 	}
-	v3s16 getNoCheatDigPos() { return m_nocheat_dig_pos; }
+	v3POS getNoCheatDigPos() { return m_nocheat_dig_pos; }
 	float getNoCheatDigTime() { return m_nocheat_dig_time; }
-	void noCheatDigEnd() { m_nocheat_dig_pos = v3s16(32767, 32767, 32767); }
+	void noCheatDigEnd() { m_nocheat_dig_pos = v3POS(32767, 32767, 32767); }
 	LagPool &getDigPool() { return m_dig_pool; }
 	void setMaxSpeedOverride(const v3f &vel);
 	// Returns true if cheated
@@ -197,7 +197,7 @@ private:
 	v3f m_last_good_position;
 	float m_time_from_last_teleport = 0.0f;
 	float m_time_from_last_punch = 0.0f;
-	v3s16 m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
+	v3POS m_nocheat_dig_pos = v3POS(32767, 32767, 32767);
 	float m_nocheat_dig_time = 0.0f;
 	float m_max_speed_override_time = 0.0f;
 	v3f m_max_speed_override = v3f(0.0f, 0.0f, 0.0f);

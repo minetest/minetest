@@ -29,7 +29,7 @@ class MapBlock;
 class ReflowScan {
 public:
 	ReflowScan(Map *map, const NodeDefManager *ndef);
-	void scan(MapBlock *block, UniqueQueue<v3s16> *liquid_queue);
+	void scan(MapBlock *block, UniqueQueue<v3POS> *liquid_queue);
 
 private:
 	MapBlock *lookupBlock(int x, int y, int z);
@@ -40,8 +40,8 @@ private:
 private:
 	Map *m_map = nullptr;
 	const NodeDefManager *m_ndef = nullptr;
-	v3s16 m_block_pos, m_rel_block_pos;
-	UniqueQueue<v3s16> *m_liquid_queue = nullptr;
+	v3POS m_block_pos, m_rel_block_pos;
+	UniqueQueue<v3POS> *m_liquid_queue = nullptr;
 	MapBlock *m_lookup[3 * 3 * 3];
 	u32 m_lookup_state_bitset;
 };

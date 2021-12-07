@@ -55,9 +55,9 @@ typedef enum {
 /******************************************************************************/
 
 /** c wrapper function to use from scriptapi */
-std::vector<v3s16> get_path(Map *map, const NodeDefManager *ndef,
-		v3s16 source,
-		v3s16 destination,
+std::vector<v3POS> get_path(Map *map, const NodeDefManager *ndef,
+		v3POS source,
+		v3POS destination,
 		unsigned int searchdistance,
 		unsigned int max_jump,
 		unsigned int max_drop,

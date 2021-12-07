@@ -90,9 +90,9 @@ void Database_Redis::endSave() {
 	freeReplyObject(reply);
 }
 
-bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_Redis::saveBlock(const v3BPOS &pos, const std::string &data)
 {
-	std::string tmp = i64tos(getBlockAsInteger(pos));
+	std::string tmp = getBlockAsStringCompatible(pos);
 
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HSET %s %s %b",
 			hash.c_str(), tmp.c_str(), data.c_str(), data.size()));
@@ -114,9 +114,9 @@ bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
+void Database_Redis::loadBlock(const v3BPOS &pos, std::string *block)
 {
-	std::string tmp = i64tos(getBlockAsInteger(pos));
+	std::string tmp = getBlockAsStringCompatible(pos);
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx,
 			"HGET %s %s", hash.c_str(), tmp.c_str()));
 
@@ -154,9 +154,9 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 		"Redis command 'HGET %s %s' gave invalid reply."));
 }
 
-bool Database_Redis::deleteBlock(const v3s16 &pos)
+bool Database_Redis::deleteBlock(const v3BPOS &pos)
 {
-	std::string tmp = i64tos(getBlockAsInteger(pos));
+	std::string tmp = getBlockAsStringCompatible(pos);
 
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx,
 		"HDEL %s %s", hash.c_str(), tmp.c_str()));
@@ -174,7 +174,7 @@ bool Database_Redis::deleteBlock(const v3s16 &pos)
 	return true;
 }
 
-void Database_Redis::listAllLoadableBlocks(std::vector<v3s16> &dst)
+void Database_Redis::listAllLoadableBlocks(std::vector<v3BPOS> &dst)
 {
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HKEYS %s", hash.c_str()));
 	if (!reply) {
@@ -186,7 +186,7 @@ void Database_Redis::listAllLoadableBlocks(std::vector<v3s16> &dst)
 		dst.reserve(reply->elements);
 		for (size_t i = 0; i < reply->elements; i++) {
 			assert(reply->element[i]->type == REDIS_REPLY_STRING);
-			dst.push_back(getIntegerAsBlock(stoi64(reply->element[i]->str)));
+			dst.push_back(getStringAsBlock(reply->element[i]->str));
 		}
 		break;
 	case REDIS_REPLY_ERROR:

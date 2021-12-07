@@ -527,6 +527,11 @@ s32 Settings::getS32(const std::string &name) const
 	return stoi(get(name));
 }
 
+POS Settings::getPOS(const std::string &name) const
+{
+	return stoi(get(name));
+}
+
 
 float Settings::getFloat(const std::string &name) const
 {
@@ -772,6 +777,15 @@ bool Settings::getS32NoEx(const std::string &name, s32 &val) const
 }
 
 
+bool Settings::getPOSNoEx(const std::string &name, POS &val) const
+{
+#if USE_POS32
+	return getS32NoEx(name, val);
+#else
+	return getS16NoEx(name, val);
+#endif
+}
+
 bool Settings::getU64NoEx(const std::string &name, u64 &val) const
 {
 	try {
@@ -903,6 +917,11 @@ bool Settings::setU16(const std::string &name, u16 value)
 
 
 bool Settings::setS32(const std::string &name, s32 value)
+{
+	return set(name, itos(value));
+}
+
+bool Settings::setPOS(const std::string &name, POS value)
 {
 	return set(name, itos(value));
 }

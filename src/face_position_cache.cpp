@@ -21,24 +21,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 
 
-std::unordered_map<u16, std::vector<v3s16>> FacePositionCache::cache;
+std::unordered_map<u16, std::vector<v3POS>> FacePositionCache::cache;
 std::mutex FacePositionCache::cache_mutex;
 
 // Calculate the borders of a "d-radius" cube
-const std::vector<v3s16> &FacePositionCache::getFacePositions(u16 d)
+const std::vector<v3POS> &FacePositionCache::getFacePositions(u16 d)
 {
 	MutexAutoLock lock(cache_mutex);
-	std::unordered_map<u16, std::vector<v3s16>>::const_iterator it = cache.find(d);
+	std::unordered_map<u16, std::vector<v3POS>>::const_iterator it = cache.find(d);
 	if (it != cache.end())
 		return it->second;
 
 	return generateFacePosition(d);
 }
 
-const std::vector<v3s16> &FacePositionCache::generateFacePosition(u16 d)
+const std::vector<v3POS> &FacePositionCache::generateFacePosition(u16 d)
 {
-	cache[d] = std::vector<v3s16>();
-	std::vector<v3s16> &c = cache[d];
+	cache[d] = std::vector<v3POS>();
+	std::vector<v3POS> &c = cache[d];
 	if (d == 0) {
 		c.emplace_back(0,0,0);
 		return c;

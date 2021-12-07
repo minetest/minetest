@@ -78,6 +78,8 @@ bool getv3intfield(lua_State *L, int index,
 
 v3s16              getv3s16field_default(lua_State *L, int table,
                              const char *fieldname, v3s16 default_);
+v3POS              getv3POSfield_default(lua_State *L, int table,
+                             const char *fieldname, v3POS default_);
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
 size_t             getstringlistfield(lua_State *L, int table,
@@ -102,11 +104,20 @@ void               setboolfield(lua_State *L, int table,
 v3f                 checkFloatPos       (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
 v3s16               check_v3s16         (lua_State *L, int index);
+v3POS               check_v3POS         (lua_State *L, int index);
 
 v3f                 read_v3f            (lua_State *L, int index);
 v2f                 read_v2f            (lua_State *L, int index);
 v2s16               read_v2s16          (lua_State *L, int index);
 v2s32               read_v2s32          (lua_State *L, int index);
+inline v2POS               read_v2POS          (lua_State *L, int index) {
+	#if USE_POS32
+	return read_v2s32(L, index);
+	#else
+	return read_v2s16(L, index);
+	#endif
+}
+
 video::SColor       read_ARGB8          (lua_State *L, int index);
 bool                read_color          (lua_State *L, int index,
                                          video::SColor *color);
@@ -114,6 +125,9 @@ bool                is_color_table      (lua_State *L, int index);
 
 aabb3f              read_aabb3f         (lua_State *L, int index, f32 scale);
 v3s16               read_v3s16          (lua_State *L, int index);
+v3s32               read_v3s32          (lua_State *L, int index);
+v3POS               read_v3POS          (lua_State *L, int index);
+
 std::vector<aabb3f> read_aabb3f_vector  (lua_State *L, int index, f32 scale);
 size_t              read_stringlist     (lua_State *L, int index,
                                          std::vector<std::string> *result);
@@ -123,7 +137,23 @@ void                push_v3_float_string(lua_State *L, v3f p);
 void                push_v2_float_string(lua_State *L, v2f p);
 void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
+inline void         push_v2POS          (lua_State *L, v2POS p) {
+	#if USE_POS32
+	return push_v2s32(L, p);
+	#else
+	return push_v2s16(L, p);
+	#endif
+}
+
 void                push_v3s16          (lua_State *L, v3s16 p);
+void                push_v3s32          (lua_State *L, v3s32 p);
+inline void         push_v3POS          (lua_State *L, v3POS p) {
+	#if USE_POS32
+	return push_v3s32(L, p);
+	#else
+	return push_v3s16(L, p);
+	#endif
+}
 void                push_aabb3f         (lua_State *L, aabb3f box);
 void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);

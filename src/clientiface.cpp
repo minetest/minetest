@@ -64,7 +64,7 @@ RemoteClient::RemoteClient() :
 {
 }
 
-void RemoteClient::ResendBlockIfOnWire(v3s16 p)
+void RemoteClient::ResendBlockIfOnWire(v3POS p)
 {
 	// if this block is on wire, mark it for sending again as soon as possible
 	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
@@ -128,9 +128,9 @@ void RemoteClient::GetNextBlocks (
 	// Predict to next block
 	v3f playerpos_predicted = playerpos + playerspeeddir * (MAP_BLOCKSIZE * BS);
 
-	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
+	v3POS center_nodepos = floatToInt(playerpos_predicted, BS);
 
-	v3s16 center = getNodeBlockPos(center_nodepos);
+	v3BPOS center = getNodeBlockPos(center_nodepos);
 
 	// Camera position and direction
 	v3f camera_pos = sao->getEyePosition();
@@ -184,7 +184,7 @@ void RemoteClient::GetNextBlocks (
 	}
 	if (m_nearest_unsent_d > 0) {
 		// make sure any blocks modified since the last time we sent blocks are resent
-		for (const v3s16 &p : m_blocks_modified) {
+		for (const v3POS &p : m_blocks_modified) {
 			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
 		}
 	}
@@ -229,7 +229,7 @@ void RemoteClient::GetNextBlocks (
 	s32 nearest_sent_d = -1;
 	//bool queue_is_full = false;
 
-	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
+	const v3POS cam_pos_nodes = floatToInt(camera_pos, BS);
 
 	s16 d;
 	for (d = d_start; d <= d_max; d++) {
@@ -237,11 +237,11 @@ void RemoteClient::GetNextBlocks (
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
+		std::vector<v3POS> list = FacePositionCache::getFacePositions(d);
 
-		std::vector<v3s16>::iterator li;
+		std::vector<v3POS>::iterator li;
 		for (li = list.begin(); li != list.end(); ++li) {
-			v3s16 p = *li + center;
+			v3BPOS p = *li + center;
 
 			/*
 				Send throttling
@@ -395,7 +395,7 @@ queue_full_break:
 		m_nearest_unsent_d = new_nearest_unsent_d;
 }
 
-void RemoteClient::GotBlock(v3s16 p)
+void RemoteClient::GotBlock(v3BPOS p)
 {
 	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
 		m_blocks_sending.erase(p);
@@ -407,7 +407,7 @@ void RemoteClient::GotBlock(v3s16 p)
 	}
 }
 
-void RemoteClient::SentBlock(v3s16 p)
+void RemoteClient::SentBlock(v3BPOS p)
 {
 	if (m_blocks_sending.find(p) == m_blocks_sending.end())
 		m_blocks_sending[p] = 0.0f;
@@ -416,7 +416,7 @@ void RemoteClient::SentBlock(v3s16 p)
 				" already in m_blocks_sending"<<std::endl;
 }
 
-void RemoteClient::SetBlockNotSent(v3s16 p)
+void RemoteClient::SetBlockNotSent(v3BPOS p)
 {
 	m_nothing_to_send_pause_timer = 0;
 
@@ -426,12 +426,12 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 		m_blocks_modified.insert(p);
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(std::map<v3POS, MapBlock*> &blocks)
 {
 	m_nothing_to_send_pause_timer = 0;
 
 	for (auto &block : blocks) {
-		v3s16 p = block.first;
+		v3POS p = block.first;
 		// remove the block from sending and sent sets,
 		// and mark as modified if found
 		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
@@ -637,7 +637,7 @@ std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
 	return reply;
 }
 
-void ClientInterface::markBlockposAsNotSent(const v3s16 &pos)
+void ClientInterface::markBlockposAsNotSent(const v3POS &pos)
 {
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);
 	for (const auto &client : m_clients) {

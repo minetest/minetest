@@ -27,10 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Database_Dummy : public MapDatabase, public PlayerDatabase
 {
 public:
-	bool saveBlock(const v3s16 &pos, const std::string &data);
-	void loadBlock(const v3s16 &pos, std::string *block);
-	bool deleteBlock(const v3s16 &pos);
-	void listAllLoadableBlocks(std::vector<v3s16> &dst);
+	bool saveBlock(const v3BPOS &pos, const std::string &data);
+	void loadBlock(const v3BPOS &pos, std::string *block);
+	bool deleteBlock(const v3BPOS &pos);
+	void listAllLoadableBlocks(std::vector<v3BPOS> &dst);
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
@@ -41,6 +41,6 @@ public:
 	void endSave() {}
 
 private:
-	std::map<s64, std::string> m_database;
+	std::map<std::string, std::string> m_database;
 	std::set<std::string> m_player_database;
 };

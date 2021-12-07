@@ -45,7 +45,7 @@ OreManager::OreManager(IGameDef *gamedef) :
 }
 
 
-size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3POS nmin, v3POS nmax)
 {
 	size_t nplaced = 0;
 
@@ -96,7 +96,7 @@ void Ore::resolveNodeNames()
 }
 
 
-size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3POS nmin, v3POS nmax)
 {
 	if (nmin.Y > y_max || nmax.Y < y_min)
 		return 0;
@@ -146,7 +146,7 @@ ObjDef *OreScatter::clone() const
 
 
 void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
+	v3POS nmin, v3POS nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -208,7 +208,7 @@ ObjDef *OreSheet::clone() const
 
 
 void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
+	v3POS nmin, v3POS nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -285,7 +285,7 @@ ObjDef *OrePuff::clone() const
 
 
 void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
+	v3POS nmin, v3POS nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -366,7 +366,7 @@ ObjDef *OreBlob::clone() const
 
 
 void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
+	v3POS nmin, v3POS nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 2404);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -451,7 +451,7 @@ ObjDef *OreVein::clone() const
 
 
 void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
+	v3POS nmin, v3POS nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 520);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -536,7 +536,7 @@ ObjDef *OreStratum::clone() const
 
 
 void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
+	v3POS nmin, v3POS nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);

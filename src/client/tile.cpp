@@ -848,7 +848,7 @@ static video::IImage *createInventoryCubeImage(
 	auto draw_image = [=] (video::IImage *image, float shade_factor,
 			s16 xu, s16 xv, s16 x1,
 			s16 yu, s16 yv, s16 y1,
-			std::initializer_list<v2s16> offsets) -> void {
+			std::initializer_list<v2POS> offsets) -> void {
 		u32 brightness = core::clamp<u32>(256 * shade_factor, 0, 256);
 		const u32 *source = lock_image(image);
 		for (u16 v = 0; v < size; v++) {

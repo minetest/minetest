@@ -106,8 +106,8 @@ public:
 
 		// img & item specific attributes
 		std::string name;
-		v3s16 angle{0, 0, 0};
-		v3s16 rotation{0, 0, 0};
+		v3POS angle{0, 0, 0};
+		v3POS rotation{0, 0, 0};
 
 		s32 margin = 10;
 

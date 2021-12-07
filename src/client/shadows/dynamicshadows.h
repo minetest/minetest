@@ -34,7 +34,7 @@ struct shadowFrustum
 	core::matrix4 ProjOrthMat;
 	core::matrix4 ViewMat;
 	v3f position;
-	v3s16 camera_offset;
+	v3POS camera_offset;
 };
 
 class DirectionalLight

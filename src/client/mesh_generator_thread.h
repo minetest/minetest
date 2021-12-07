@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct CachedMapBlockData
 {
-	v3s16 p = v3s16(-1337, -1337, -1337);
+	v3POS p = v3POS(-1337, -1337, -1337);
 	MapNode *data = nullptr; // A copy of the MapBlock's data member
 	int refcount_from_queue = 0;
 	std::time_t last_used_timestamp = std::time(0);
@@ -38,10 +38,10 @@ struct CachedMapBlockData
 
 struct QueuedMeshUpdate
 {
-	v3s16 p = v3s16(-1337, -1337, -1337);
+	v3POS p = v3POS(-1337, -1337, -1337);
 	bool ack_block_to_server = false;
 	int crack_level = -1;
-	v3s16 crack_pos;
+	v3POS crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
 
 	QueuedMeshUpdate() = default;
@@ -66,7 +66,7 @@ public:
 
 	// Caches the block at p and its neighbors (if needed) and queues a mesh
 	// update for the block at p
-	void addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent);
+	void addBlock(Map *map, v3POS p, bool ack_block_to_server, bool urgent);
 
 	// Returned pointer must be deleted
 	// Returns NULL if queue is empty
@@ -81,8 +81,8 @@ public:
 private:
 	Client *m_client;
 	std::vector<QueuedMeshUpdate *> m_queue;
-	std::set<v3s16> m_urgents;
-	std::map<v3s16, CachedMapBlockData *> m_cache;
+	std::set<v3POS> m_urgents;
+	std::map<v3POS, CachedMapBlockData *> m_cache;
 	std::mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes
@@ -90,16 +90,16 @@ private:
 	bool m_cache_smooth_lighting;
 	int m_meshgen_block_cache_size;
 
-	CachedMapBlockData *cacheBlock(Map *map, v3s16 p, UpdateMode mode,
+	CachedMapBlockData *cacheBlock(Map *map, v3POS p, UpdateMode mode,
 			size_t *cache_hit_counter = NULL);
-	CachedMapBlockData *getCachedBlock(const v3s16 &p);
+	CachedMapBlockData *getCachedBlock(const v3POS &p);
 	void fillDataFromMapBlockCache(QueuedMeshUpdate *q);
 	void cleanupCache();
 };
 
 struct MeshUpdateResult
 {
-	v3s16 p = v3s16(-1338, -1338, -1338);
+	v3POS p = v3POS(-1338, -1338, -1338);
 	MapBlockMesh *mesh = nullptr;
 	bool ack_block_to_server = false;
 
@@ -113,9 +113,9 @@ public:
 
 	// Caches the block at p and its neighbors (if needed) and queues a mesh
 	// update for the block at p
-	void updateBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent);
+	void updateBlock(Map *map, v3POS p, bool ack_block_to_server, bool urgent);
 
-	v3s16 m_camera_offset;
+	v3POS m_camera_offset;
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
 private:

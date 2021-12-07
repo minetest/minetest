@@ -44,5 +44,5 @@ public:
 	virtual MapgenType getType() const { return MAPGEN_SINGLENODE; }
 
 	void makeChunk(BlockMakeData *data);
-	int getSpawnLevelAtPoint(v2s16 p);
+	int getSpawnLevelAtPoint(v2POS p);
 };

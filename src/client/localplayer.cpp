@@ -58,16 +58,16 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	const v3f &sneak_max)
 {
-	static const v3s16 dir9_center[9] = {
-		v3s16( 0, 0,  0),
-		v3s16( 1, 0,  0),
-		v3s16(-1, 0,  0),
-		v3s16( 0, 0,  1),
-		v3s16( 0, 0, -1),
-		v3s16( 1, 0,  1),
-		v3s16(-1, 0,  1),
-		v3s16( 1, 0, -1),
-		v3s16(-1, 0, -1)
+	static const v3POS dir9_center[9] = {
+		v3POS( 0, 0,  0),
+		v3POS( 1, 0,  0),
+		v3POS(-1, 0,  0),
+		v3POS( 0, 0,  1),
+		v3POS( 0, 0, -1),
+		v3POS( 1, 0,  1),
+		v3POS(-1, 0,  1),
+		v3POS( 1, 0, -1),
+		v3POS(-1, 0, -1)
 	};
 
 	const NodeDefManager *nodemgr = m_client->ndef();
@@ -81,7 +81,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 		position_y_mod = m_sneak_node_bb_top.MaxEdge.Y - position_y_mod;
 
 	// Get position of current standing node
-	const v3s16 current_node = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
+	const v3POS current_node = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
 
 	if (current_node != m_sneak_node) {
 		new_sneak_node_exists = false;
@@ -100,7 +100,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	f32 min_distance_f = 100000.0f * BS;
 
 	for (const auto &d : dir9_center) {
-		const v3s16 p = current_node + d;
+		const v3POS p = current_node + d;
 		const v3f pf = intToFloat(p, BS);
 		const v2f diff(position.X - pf.X, position.Z - pf.Z);
 		f32 distance_f = diff.getLength();
@@ -121,7 +121,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 			u16 height =
 				ceilf((m_collisionbox.MaxEdge.Y - m_collisionbox.MinEdge.Y) / BS);
 			for (u16 y = 1; y <= height; y++) {
-				node = map->getNode(p + v3s16(0, y, 0), &is_valid_position);
+				node = map->getNode(p + v3POS(0, y, 0), &is_valid_position);
 				if (!is_valid_position || nodemgr->get(node).walkable) {
 					ok = false;
 					break;
@@ -129,7 +129,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 			}
 		} else {
 			// legacy behaviour: check just one node
-			node = map->getNode(p + v3s16(0, 1, 0), &is_valid_position);
+			node = map->getNode(p + v3POS(0, 1, 0), &is_valid_position);
 			ok = is_valid_position && !nodemgr->get(node).walkable;
 		}
 		if (!ok)
@@ -152,11 +152,11 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	if (physics_override_sneak_glitch) {
 		// Detect sneak ladder:
 		// Node two meters above sneak node must be solid
-		node = map->getNode(m_sneak_node + v3s16(0, 2, 0),
+		node = map->getNode(m_sneak_node + v3POS(0, 2, 0),
 			&is_valid_position);
 		if (is_valid_position && nodemgr->get(node).walkable) {
 			// Node three meters above: must be non-solid
-			node = map->getNode(m_sneak_node + v3s16(0, 3, 0),
+			node = map->getNode(m_sneak_node + v3POS(0, 3, 0),
 				&is_valid_position);
 			m_sneak_ladder_detected = is_valid_position &&
 				!nodemgr->get(node).walkable;
@@ -215,7 +215,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	bool is_valid_position;
 	MapNode node;
-	v3s16 pp;
+	v3POS pp;
 
 	/*
 		Check if player is in liquid (the oscillating value)
@@ -264,7 +264,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 
 	pp = floatToInt(position + v3f(0.0f, 0.5f * BS, 0.0f), BS);
-	v3s16 pp2 = floatToInt(position + v3f(0.0f, -0.2f * BS, 0.0f), BS);
+	v3POS pp2 = floatToInt(position + v3f(0.0f, -0.2f * BS, 0.0f), BS);
 	node = map->getNode(pp, &is_valid_position);
 	bool is_valid_position2;
 	MapNode node2 = map->getNode(pp2, &is_valid_position2);
@@ -428,7 +428,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	{
 		camera_barely_in_ceiling = false;
-		v3s16 camera_np = floatToInt(getEyePosition(), BS);
+		v3POS camera_np = floatToInt(getEyePosition(), BS);
 		MapNode n = map->getNode(camera_np);
 		if (n.getContent() != CONTENT_IGNORE) {
 			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2)
@@ -440,7 +440,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		Check properties of the node on which the player is standing
 	*/
 	const ContentFeatures &f = nodemgr->get(map->getNode(m_standing_node));
-	const ContentFeatures &f1 = nodemgr->get(map->getNode(m_standing_node + v3s16(0, 1, 0)));
+	const ContentFeatures &f1 = nodemgr->get(map->getNode(m_standing_node + v3POS(0, 1, 0)));
 
 	// Determine if jumping is possible
 	m_disable_jump = itemgroup_get(f.groups, "disable_jump") ||
@@ -662,7 +662,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		pitch_move);
 }
 
-v3s16 LocalPlayer::getStandingNodePos()
+v3POS LocalPlayer::getStandingNodePos()
 {
 	if (m_sneak_node_exists)
 		return m_sneak_node;
@@ -670,7 +670,7 @@ v3s16 LocalPlayer::getStandingNodePos()
 	return m_standing_node;
 }
 
-v3s16 LocalPlayer::getFootstepNodePos()
+v3POS LocalPlayer::getFootstepNodePos()
 {
 	// Emit swimming sound if the player is in liquid
 	if (in_liquid_stable)
@@ -687,7 +687,7 @@ v3s16 LocalPlayer::getFootstepNodePos()
 	return floatToInt(getPosition() - v3f(0.0f, BS * 0.5f, 0.0f), BS);
 }
 
-v3s16 LocalPlayer::getLightPosition() const
+v3POS LocalPlayer::getLightPosition() const
 {
 	return floatToInt(m_position + v3f(0.0f, BS * 1.5f, 0.0f), BS);
 }
@@ -792,7 +792,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	bool is_valid_position;
 	MapNode node;
-	v3s16 pp;
+	v3POS pp;
 
 	/*
 		Check if player is in liquid (the oscillating value)
@@ -835,7 +835,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		Check if player is climbing
 	*/
 	pp = floatToInt(position + v3f(0.0f, 0.5f * BS, 0.0f), BS);
-	v3s16 pp2 = floatToInt(position + v3f(0.0f, -0.2f * BS, 0.0f), BS);
+	v3POS pp2 = floatToInt(position + v3f(0.0f, -0.2f * BS, 0.0f), BS);
 	node = map->getNode(pp, &is_valid_position);
 	bool is_valid_position2;
 	MapNode node2 = map->getNode(pp2, &is_valid_position2);
@@ -921,7 +921,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	f32 position_y_mod = 0.05f * BS;
 	if (m_sneak_node_bb_ymax > 0.0f)
 		position_y_mod = m_sneak_node_bb_ymax - position_y_mod;
-	v3s16 current_node = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
+	v3POS current_node = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
 	if (m_sneak_node_exists &&
 			nodemgr->get(map->getNode(m_old_node_below)).name == "air" &&
 			m_old_node_below_type != "air") {
@@ -937,14 +937,14 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	if (m_need_to_get_new_sneak_node && physics_override_sneak) {
 		m_sneak_node_bb_ymax = 0.0f;
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
+		v3POS pos_i_bottom = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
 		v2f player_p2df(position.X, position.Z);
 		f32 min_distance_f = 100000.0f * BS;
 		// If already seeking from some node, compare to it.
-		v3s16 new_sneak_node = m_sneak_node;
+		v3POS new_sneak_node = m_sneak_node;
 		for (s16 x= -1; x <= 1; x++)
 		for (s16 z= -1; z <= 1; z++) {
-			v3s16 p = pos_i_bottom + v3s16(x, 0, z);
+			v3POS p = pos_i_bottom + v3POS(x, 0, z);
 			v3f pf = intToFloat(p, BS);
 			v2f node_p2df(pf.X, pf.Z);
 			f32 distance_f = player_p2df.getDistanceFrom(node_p2df);
@@ -961,12 +961,12 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			if (!is_valid_position || !nodemgr->get(node).walkable)
 				continue;
 			// And the node above it has to be nonwalkable
-			node = map->getNode(p + v3s16(0, 1, 0), &is_valid_position);
+			node = map->getNode(p + v3POS(0, 1, 0), &is_valid_position);
 			if (!is_valid_position || nodemgr->get(node).walkable)
 				continue;
 			// If not 'sneak_glitch' the node 2 nodes above it has to be nonwalkable
 			if (!physics_override_sneak_glitch) {
-				node = map->getNode(p + v3s16(0, 2, 0), &is_valid_position);
+				node = map->getNode(p + v3POS(0, 2, 0), &is_valid_position);
 				if (!is_valid_position || nodemgr->get(node).walkable)
 					continue;
 			}
@@ -1025,7 +1025,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	{
 		camera_barely_in_ceiling = false;
-		v3s16 camera_np = floatToInt(getEyePosition(), BS);
+		v3POS camera_np = floatToInt(getEyePosition(), BS);
 		MapNode n = map->getNode(camera_np);
 		if (n.getContent() != CONTENT_IGNORE) {
 			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2)
@@ -1120,13 +1120,13 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	v3f headpos_min = m_position + m_collisionbox.MinEdge * 0.99f;
 	v3f headpos_max = m_position + m_collisionbox.MaxEdge * 0.99f;
 	headpos_min.Y = headpos_max.Y; // top face of collision box
-	v3s16 ceilpos_min = floatToInt(headpos_min, BS) + v3s16(0, 1, 0);
-	v3s16 ceilpos_max = floatToInt(headpos_max, BS) + v3s16(0, 1, 0);
+	v3POS ceilpos_min = floatToInt(headpos_min, BS) + v3POS(0, 1, 0);
+	v3POS ceilpos_max = floatToInt(headpos_max, BS) + v3POS(0, 1, 0);
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	bool is_position_valid;
-	for (s16 z = ceilpos_min.Z; z <= ceilpos_max.Z; ++z) {
-		for (s16 x = ceilpos_min.X; x <= ceilpos_max.X; ++x) {
-			MapNode n = env->getMap().getNode(v3s16(x, ceilpos_max.Y, z), &is_position_valid);
+	for (POS z = ceilpos_min.Z; z <= ceilpos_max.Z; ++z) {
+		for (POS x = ceilpos_min.X; x <= ceilpos_max.X; ++x) {
+			MapNode n = env->getMap().getNode(v3POS(x, ceilpos_max.Y, z), &is_position_valid);
 
 			if (!is_position_valid)
 				break;  // won't collide with the void outside

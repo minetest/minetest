@@ -619,18 +619,18 @@ void ClientLauncher::speed_tests()
 	{
 		TimeTaker timer("Testing std::map speed");
 
-		std::map<v2s16, f32> map1;
+		std::map<v2POS, f32> map1;
 		tempf = -324;
 		const s16 ii = 300;
 		for (s16 y = 0; y < ii; y++) {
 			for (s16 x = 0; x < ii; x++) {
-				map1[v2s16(x, y)] =  tempf;
+				map1[v2POS(x, y)] =  tempf;
 				tempf += 1;
 			}
 		}
 		for (s16 y = ii - 1; y >= 0; y--) {
 			for (s16 x = 0; x < ii; x++) {
-				tempf = map1[v2s16(x, y)];
+				tempf = map1[v2POS(x, y)];
 			}
 		}
 	}

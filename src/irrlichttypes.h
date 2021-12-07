@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdint>
 
 #include <irrTypes.h>
+#include "config.h"
 
 using namespace irr;
 
@@ -60,3 +61,16 @@ namespace core {
 #define U16_MAX 0xFFFF
 #define U32_MAX 0xFFFFFFFF
 #define U64_MAX 0xFFFFFFFFFFFFFFFF
+
+#if USE_POS32
+
+// Node position
+using POS = irr::s32;
+
+// Block position. In future can be renamed to POS
+using BPOS = irr::s32;
+
+#else
+using POS = irr::s16;
+using BPOS = irr::s16;
+#endif

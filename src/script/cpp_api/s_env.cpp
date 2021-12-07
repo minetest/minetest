@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/common/c_content.h"
 
 
-void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
+void ScriptApiEnv::environment_OnGenerated(v3POS minp, v3POS maxp,
 	u32 blockseed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -37,8 +37,8 @@ void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_generateds");
 	// Call callbacks
-	push_v3s16(L, minp);
-	push_v3s16(L, maxp);
+	push_v3POS(L, minp);
+	push_v3POS(L, maxp);
 	lua_pushnumber(L, blockseed);
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
@@ -141,10 +141,10 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		bool simple_catch_up = true;
 		getboolfield(L, current_abm, "catch_up", simple_catch_up);
 		
-		s16 min_y = INT16_MIN;
+		POS min_y = INT16_MIN;
 		getintfield(L, current_abm, "min_y", min_y);
 		
-		s16 max_y = INT16_MAX;
+		POS max_y = INT16_MAX;
 		getintfield(L, current_abm, "max_y", max_y);
 
 		lua_getfield(L, current_abm, "action");
@@ -216,7 +216,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 }
 
 void ScriptApiEnv::on_emerge_area_completion(
-	v3s16 blockpos, int action, ScriptCallbackState *state)
+	v3POS blockpos, int action, ScriptCallbackState *state)
 {
 	Server *server = getServer();
 
@@ -235,7 +235,7 @@ void ScriptApiEnv::on_emerge_area_completion(
 	lua_rawgeti(L, LUA_REGISTRYINDEX, state->callback_ref);
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 
-	push_v3s16(L, blockpos);
+	push_v3POS(L, blockpos);
 	lua_pushinteger(L, action);
 	lua_pushinteger(L, state->refcount);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, state->args_ref);
@@ -258,7 +258,7 @@ void ScriptApiEnv::on_emerge_area_completion(
 }
 
 void ScriptApiEnv::on_liquid_transformed(
-	const std::vector<std::pair<v3s16, MapNode>> &list)
+	const std::vector<std::pair<v3POS, MapNode>> &list)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -277,9 +277,9 @@ void ScriptApiEnv::on_liquid_transformed(
 	const NodeDefManager *ndef = getEnv()->getGameDef()->ndef();
 	lua_createtable(L, list.size(), 0);
 	lua_createtable(L, list.size(), 0);
-	for(std::pair<v3s16, MapNode> p : list) {
+	for(std::pair<v3POS, MapNode> p : list) {
 		lua_pushnumber(L, index);
-		push_v3s16(L, p.first);
+		push_v3POS(L, p.first);
 		lua_rawset(L, -4);
 		lua_pushnumber(L, index++);
 		pushnode(L, p.second, ndef);

@@ -28,3 +28,6 @@ typedef core::vector2d<s16> v2s16;
 typedef core::vector2d<s32> v2s32;
 typedef core::vector2d<u32> v2u32;
 typedef core::vector2d<f32> v2f32;
+
+using v2POS = core::vector2d<POS>;
+using v2BPOS = core::vector2d<BPOS>;

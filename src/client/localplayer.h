@@ -78,8 +78,8 @@ public:
 
 	void applyControl(float dtime, Environment *env);
 
-	v3s16 getStandingNodePos();
-	v3s16 getFootstepNodePos();
+	v3POS getStandingNodePos();
+	v3POS getFootstepNodePos();
 
 	// Used to check if anything changed and prevent sending packets if not
 	v3f last_position;
@@ -120,7 +120,7 @@ public:
 	u16 getBreath() const { return m_breath; }
 	void setBreath(u16 breath) { m_breath = breath; }
 
-	v3s16 getLightPosition() const;
+	v3POS getLightPosition() const;
 
 	void setYaw(f32 yaw) { m_yaw = yaw; }
 	f32 getYaw() const { return m_yaw; }
@@ -169,9 +169,9 @@ private:
 		f32 pos_max_d);
 
 	v3f m_position;
-	v3s16 m_standing_node;
+	v3POS m_standing_node;
 
-	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
+	v3POS m_sneak_node = v3POS(32767, 32767, 32767);
 	// Stores the top bounding box of m_sneak_node
 	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	// Whether the player is allowed to sneak
@@ -187,7 +187,7 @@ private:
 	bool m_need_to_get_new_sneak_node = true;
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
-	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
+	v3POS m_old_node_below = v3POS(32767, 32767, 32767);
 	std::string m_old_node_below_type = "air";
 	// ***** End of variables for temporary option *****
 

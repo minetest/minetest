@@ -28,6 +28,7 @@ gtags.files
 # Visual Studio Code & plugins
 .vscode/
 build/.cmake/
+.cache
 # Gradle
 .gradle
 
