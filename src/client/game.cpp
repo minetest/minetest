@@ -2060,10 +2060,11 @@ void Game::openInventory()
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
 
-	if (!client->modsLoaded() || !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc)))
-    	return;
+	if (client->modsLoaded() && client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc)))
+		return;
+
 	if (fs_src->getForm().empty())
-   		return;
+		return;
 
 	TextDest *txt_dst = new TextDestPlayerInventory(client);
 	auto *&formspec = m_game_ui->updateFormspec("");
