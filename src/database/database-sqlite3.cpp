@@ -37,6 +37,7 @@ SQLite format specification:
 #include "server/player_sao.h"
 
 #include <cassert>
+#include <string>
 
 // When to print messages when the database is being held locked by another process
 // Note: I've seen occasional delays of over 250ms while running minetestmapper.
@@ -117,6 +118,12 @@ Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string
 	m_savedir(savedir),
 	m_dbname(dbname)
 {
+#if USE_POS32 
+    pos_t mapgen_limit = g_settings->getPOS("mapgen_limit");
+	if (mapgen_limit > 31000) {
+		throw DatabaseException("Database_SQLite3: mapgen_limit is too big (" + std::to_string(mapgen_limit) + "). Please set mapgen_limit = 31000");
+	}	
+#endif
 }
 
 void Database_SQLite3::beginSave()
