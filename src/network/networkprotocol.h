@@ -284,7 +284,7 @@ enum ToClientCommand
 	*/
 	TOCLIENT_REMOVENODE = 0x22,
 
-	TOCLIENT_PLAYERpos_t = 0x23, // Obsolete
+	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
 	TOCLIENT_PLAYERINFO = 0x24, // Obsolete
 	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
 	TOCLIENT_SECTORMETA = 0x26, // Obsolete
