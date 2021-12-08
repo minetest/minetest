@@ -2530,12 +2530,16 @@ bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &e
 
 void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ',');
+	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() == 2 &&
-			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
-		data->offset.X = stof(parts[0]);
-		data->offset.Y = stof(parts[1]);
+	if (parts.size() == 1 ||
+			(parts.size() > 1 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		std::vector<std::string> v_geom = split(parts[0], ',');
+
+		MY_CHECKGEOM("position", 0);
+
+		data->offset.X = stof(v_geom[0]);
+		data->offset.Y = stof(v_geom[1]);
 		return;
 	}
 
@@ -2565,12 +2569,16 @@ bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &ele
 
 void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ',');
+	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() == 2 &&
-			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
-		data->anchor.X = stof(parts[0]);
-		data->anchor.Y = stof(parts[1]);
+	if (parts.size() == 1 ||
+			(parts.size() > 1 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		std::vector<std::string> v_geom = split(parts[0], ',');
+
+		MY_CHECKGEOM("anchor", 0);
+
+		data->anchor.X = stof(v_geom[0]);
+		data->anchor.Y = stof(v_geom[1]);
 		return;
 	}
 
@@ -2601,12 +2609,16 @@ bool GUIFormSpecMenu::parsePaddingDirect(parserData *data, const std::string &el
 
 void GUIFormSpecMenu::parsePadding(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ',');
+	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() == 2 &&
-			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
-		data->padding.X = stof(parts[0]);
-		data->padding.Y = stof(parts[1]);
+	if (parts.size() == 1 ||
+			(parts.size() > 1 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		std::vector<std::string> v_geom = split(parts[0], ',');
+
+		MY_CHECKGEOM("padding", 0);
+
+		data->padding.X = stof(v_geom[0]);
+		data->padding.Y = stof(v_geom[1]);
 		return;
 	}
 
