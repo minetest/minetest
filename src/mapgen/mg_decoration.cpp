@@ -185,8 +185,8 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3pos_t nmin, v3pos_t nm
 			}
 		}
 
-		s16 x = p2d_min.X - 1;
-		s16 z = p2d_min.Y;
+		pos_t x = p2d_min.X - 1;
+		pos_t z = p2d_min.Y;
 
 		for (u32 i = 0; i < deco_count; i++) {
 			if (!cover) {

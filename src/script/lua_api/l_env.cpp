@@ -1193,9 +1193,9 @@ int ModApiEnvMod::l_load_area(lua_State *L)
 	} else {
 		v3bpos_t bp2 = getNodeBlockPos(check_v3pos(L, 2));
 		sortBoxVerticies(bp1, bp2);
-		for (s16 z = bp1.Z; z <= bp2.Z; z++)
-		for (s16 y = bp1.Y; y <= bp2.Y; y++)
-		for (s16 x = bp1.X; x <= bp2.X; x++) {
+		for (bpos_t z = bp1.Z; z <= bp2.Z; z++)
+		for (bpos_t y = bp1.Y; y <= bp2.Y; y++)
+		for (bpos_t x = bp1.X; x <= bp2.X; x++) {
 			map->emergeBlock(v3bpos_t(x, y, z));
 		}
 	}

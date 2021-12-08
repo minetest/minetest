@@ -717,8 +717,8 @@ int ModApiMapgen::l_get_spawn_level(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	s16 x = luaL_checkinteger(L, 1);
-	s16 z = luaL_checkinteger(L, 2);
+	pos_t x = luaL_checkinteger(L, 1);
+	pos_t z = luaL_checkinteger(L, 2);
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	int spawn_level = emerge->getSpawnLevelAtPoint(v2pos_t(x, z));
