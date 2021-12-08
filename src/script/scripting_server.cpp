@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "lua_api/l_craft.h"
 #include "lua_api/l_env.h"
+#include "lua_api/l_http.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_itemstackmeta.h"
@@ -40,11 +41,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_particles.h"
 #include "lua_api/l_rollback.h"
 #include "lua_api/l_server.h"
+#include "lua_api/l_settings.h"
+#include "lua_api/l_storage.h"
+#include "lua_api/l_unistr.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_vmanip.h"
-#include "lua_api/l_settings.h"
-#include "lua_api/l_http.h"
-#include "lua_api/l_storage.h"
 
 extern "C" {
 #include "lualib.h"
@@ -109,6 +110,11 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 	StorageRef::Register(L);
 	ModChannelRef::Register(L);
+
+	lua_newtable(L);
+	LuaUniLocale::Register(L);
+	LuaUniStr::Register(L);
+	lua_setglobal(L, "uni");
 
 	// Initialize mod api modules
 	ModApiAuth::Initialize(L, top);

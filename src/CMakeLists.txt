@@ -109,7 +109,9 @@ endif()
 
 if(BUILD_CLIENT)
 	find_package(Freetype REQUIRED)
+	find_package(HarfBuzz REQUIRED)
 endif()
+find_package(ICU REQUIRED COMPONENTS uc dt in)
 
 option(ENABLE_CURSES "Enable ncurses console" TRUE)
 set(USE_CURSES FALSE)
@@ -480,6 +482,7 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
+	${ICU_INCLUDE_DIRS}
 )
 
 if(USE_GETTEXT)
@@ -491,6 +494,7 @@ if(BUILD_CLIENT)
 		${FREETYPE_INCLUDE_DIRS}
 		${SOUND_INCLUDE_DIRS}
 		${X11_INCLUDE_DIR}
+		${HARFBUZZ_INCLUDE_DIR}
 	)
 endif()
 
@@ -520,8 +524,10 @@ if(BUILD_CLIENT)
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_BIT_LIBRARY}
-		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+		${FREETYPE_LIBRARY}
+		${HARFBUZZ_LIBRARY}
+		${ICU_LIBRARIES}
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -547,7 +553,7 @@ if(BUILD_CLIENT)
 		set_target_properties(${PROJECT_NAME}
 			PROPERTIES
 			COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
-	)
+		)
 	endif()
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
@@ -588,6 +594,7 @@ if(BUILD_SERVER)
 		${LUA_BIT_LIBRARY}
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
+		${ICU_LIBRARIES}
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
 		COMPILE_DEFINITIONS "SERVER")
@@ -794,17 +801,6 @@ if(WIN32)
 				FILES_MATCHING PATTERN "*.dll")
 	else()
 		# Use the old-style way to install dll's
-		if(BUILD_CLIENT AND USE_SOUND)
-			if(OPENAL_DLL)
-				install(FILES ${OPENAL_DLL} DESTINATION ${BINDIR})
-			endif()
-			if(OGG_DLL)
-				install(FILES ${OGG_DLL} DESTINATION ${BINDIR})
-			endif()
-			if(VORBIS_DLL)
-				install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
-			endif()
-		endif()
 		if(CURL_DLL)
 			install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
 		endif()
@@ -813,9 +809,6 @@ if(WIN32)
 		endif()
 		if(ZSTD_DLL)
 			install(FILES ${ZSTD_DLL} DESTINATION ${BINDIR})
-		endif()
-		if(BUILD_CLIENT AND FREETYPE_DLL)
-			install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
 		endif()
 		if(SQLITE3_DLL)
 			install(FILES ${SQLITE3_DLL} DESTINATION ${BINDIR})
@@ -826,11 +819,33 @@ if(WIN32)
 		if(LUA_DLL)
 			install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(BUILD_CLIENT AND IRRLICHT_DLL)
-			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
+		if(ICU_DLL)
+			install(FILES ${ICU_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(BUILD_CLIENT AND USE_GETTEXT AND GETTEXT_DLL)
-			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
+		if(BUILD_CLIENT)
+			if(USE_SOUND)
+				if(OPENAL_DLL)
+					install(FILES ${OPENAL_DLL} DESTINATION ${BINDIR})
+				endif()
+				if(OGG_DLL)
+					install(FILES ${OGG_DLL} DESTINATION ${BINDIR})
+				endif()
+				if(VORBIS_DLL)
+					install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
+				endif()
+			endif()
+			if(IRRLICHT_DLL)
+				install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(USE_GETTEXT AND GETTEXT_DLL)
+				install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(FREETYPE_DLL)
+				install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(HARFBUZZ_DLL)
+				install(FILES ${HARFBUZZ_DLL} DESTINATION ${BINDIR})
+			endif()
 		endif()
 	endif()
 endif()

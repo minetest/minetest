@@ -7,6 +7,7 @@ set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/ieee_float.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/metricsbackend.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/numeric.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/png.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/pointedthing.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/quicktune.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/serialize.cpp
@@ -15,5 +16,5 @@ set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/string.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/srp.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/timetaker.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/png.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/unistr.cpp
 	PARENT_SCOPE)
