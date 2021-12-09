@@ -344,7 +344,7 @@ void set_default_settings()
 
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
-	settings->setDefault("strip_color_codes", "false");
+	settings->setDefault("strip_color_codes", "true");
 #if USE_PROMETHEUS
 	settings->setDefault("prometheus_listener_address", "127.0.0.1:30000");
 #endif

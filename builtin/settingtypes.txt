@@ -1060,7 +1060,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 
 #    Remove color codes from incoming chat messages
 #    Use this to stop players from being able to use color in their messages
-strip_color_codes (Strip color codes) bool false
+strip_color_codes (Strip color codes) bool true
 
 [*Network]
 
