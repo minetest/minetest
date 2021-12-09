@@ -66,11 +66,13 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 		g_settings->registerChangedCallback("font_path_bolditalic", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_shadow", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_size_divisible_by", font_setting_changed, NULL);
 		g_settings->registerChangedCallback("fallback_font_path", font_setting_changed, NULL);
 	}
 
 	g_settings->registerChangedCallback("mono_font_path", font_setting_changed, NULL);
 	g_settings->registerChangedCallback("mono_font_size", font_setting_changed, NULL);
+	g_settings->registerChangedCallback("mono_font_size_divisible_by", font_setting_changed, NULL);
 	g_settings->registerChangedCallback("screen_dpi", font_setting_changed, NULL);
 	g_settings->registerChangedCallback("gui_scaling", font_setting_changed, NULL);
 }
@@ -252,14 +254,18 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	if (spec.italic)
 		setting_suffix.append("_italic");
 
-	u32 size = std::floor(RenderingEngine::getDisplayDensity() *
-			g_settings->getFloat("gui_scaling") * spec.size);
+	u32 size = std::max<u32>(spec.size * RenderingEngine::getDisplayDensity() *
+			g_settings->getFloat("gui_scaling"), 1);
 
-	if (size == 0) {
-		errorstream << "FontEngine: attempt to use font size 0" << std::endl;
-		errorstream << "  display density: " << RenderingEngine::getDisplayDensity() << std::endl;
-		abort();
+	// Constrain the font size to a certain multiple, if necessary
+	u16 divisible_by = 1;
+	g_settings->getU16NoEx(setting_prefix + "font_size_divisible_by", divisible_by);
+	if (divisible_by != 1) {
+		size = std::max<u32>(
+				std::round((double)size / divisible_by) * divisible_by, divisible_by);
 	}
+
+	sanity_check(size != 0);
 
 	u16 font_shadow       = 0;
 	u16 font_shadow_alpha = 0;

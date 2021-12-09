@@ -896,8 +896,14 @@ font_shadow (Font shadow) int 1
 #    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
-#    Font size of the default font in point (pt).
+#    Font size of the default font where 1 unit = 1 pixel at 96 DPI
 font_size (Font size) int 16 1
+
+#    For pixel-style fonts that do not scale well, this ensures that font sizes used
+#    with this font will always be divisible by this value, in pixels. For instance,
+#    a pixel font 16 pixels tall should have this set to 16, so it will only ever be
+#    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
+font_size_divisible_by (Font size divisible by) int 1 1
 
 #    Path to the default font.
 #    If “freetype” setting is enabled: Must be a TrueType font.
@@ -909,8 +915,14 @@ font_path_bold (Bold font path) filepath fonts/Arimo-Bold.ttf
 font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
 font_path_bold_italic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
 
-#    Font size of the monospace font in point (pt).
-mono_font_size (Monospace font size) int 15 1
+#    Font size of the monospace font where 1 unit = 1 pixel at 96 DPI
+mono_font_size (Monospace font size) int 16 1
+
+#    For pixel-style fonts that do not scale well, this ensures that font sizes used
+#    with this font will always be divisible by this value, in pixels. For instance,
+#    a pixel font 16 pixels tall should have this set to 16, so it will only ever be
+#    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
+mono_font_size_divisible_by (Monospace font size divisible by) int 1 1
 
 #    Path to the monospace font.
 #    If “freetype” setting is enabled: Must be a TrueType font.
