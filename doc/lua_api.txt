@@ -2181,6 +2181,21 @@ Example:
     meta:set_string("key", "value")
     print(dump(meta:to_table()))
 
+Example manipulations of "description" and expected output behaviors:
+
+    print(ItemStack("default:pick_steel"):get_description()) --> Steel Pickaxe
+    print(ItemStack("foobar"):get_description()) --> Unknown Item
+
+    local stack = ItemStack("default:stone")
+    stack:get_meta():set_string("description", "Custom description\nAnother line")
+    print(stack:get_description()) --> Custom description\nAnother line
+    print(stack:get_short_description()) --> Custom description
+
+    stack:get_meta():set_string("short_description", "Short")
+    print(stack:get_description()) --> Custom description\nAnother line
+    print(stack:get_short_description()) --> Short
+
+    print(ItemStack("mod:item_with_no_desc"):get_description()) --> mod:item_with_no_desc
 
 
 
