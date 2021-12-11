@@ -290,7 +290,9 @@ endif()
 # use SSE for floating-point operations to avoid issues with improper fp-rounding and loss of precision
 # when moving fp-data to incompatible or less-precise registers/storage locations
 # see https://gcc.gnu.org/wiki/FloatingPointMath and https://gcc.gnu.org/wiki/x87note
+IF(NOT (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" OR  CMAKE_SYSTEM_PROCESSOR MATCHES "^aarch64") )
 add_compile_options(-mfpmath=sse -msse2)
+ENDIF(NOT (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" OR  CMAKE_SYSTEM_PROCESSOR MATCHES "^aarch64") )
 
 add_subdirectory(src)
 
