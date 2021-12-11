@@ -118,12 +118,6 @@ Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string
 	m_savedir(savedir),
 	m_dbname(dbname)
 {
-#if USE_POS32 
-    pos_t mapgen_limit = g_settings->getPOS("mapgen_limit");
-	if (mapgen_limit > 31000) {
-		throw DatabaseException("Database_SQLite3: mapgen_limit is too big (" + std::to_string(mapgen_limit) + "). Please set mapgen_limit = 31000");
-	}	
-#endif
 }
 
 void Database_SQLite3::beginSave()
@@ -208,6 +202,12 @@ MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir):
 	Database_SQLite3(savedir, "map"),
 	MapDatabase()
 {
+#if USE_POS32
+	pos_t mapgen_limit = g_settings->getPOS("mapgen_limit");
+	if (mapgen_limit > 31000) {
+		throw DatabaseException("Database_SQLite3: mapgen_limit is too big (" + std::to_string(mapgen_limit) + "). Please set mapgen_limit = 31000");
+	}
+#endif
 }
 
 MapDatabaseSQLite3::~MapDatabaseSQLite3()
