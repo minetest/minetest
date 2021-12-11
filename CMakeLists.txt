@@ -287,6 +287,11 @@ endif()
 # Subdirectories
 # Be sure to add all relevant definitions above this
 
+# use SSE for floating-point operations to avoid issues with improper fp-rounding and loss of precision
+# when moving fp-data to incompatible or less-precise registers/storage locations
+# see https://gcc.gnu.org/wiki/FloatingPointMath and https://gcc.gnu.org/wiki/x87note
+add_compile_options(-mfpmath=sse -msse2)
+
 add_subdirectory(src)
 
 
