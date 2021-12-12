@@ -235,7 +235,7 @@ void ClientEnvironment::step(float dtime)
 				speed += d;
 			}
 
-			lplayer->setSpeed(lplayer->physics_override_new_gravity
+			lplayer->setSpeed(lplayer->physics_override_new_acceleration
 				? (speed + old_speed) / 2.0f
 				: speed
 			);

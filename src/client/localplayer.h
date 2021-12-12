@@ -68,7 +68,7 @@ public:
 	bool physics_override_sneak_glitch = false;
 	// Temporary option for old move code
 	bool physics_override_new_move = true;
-	bool physics_override_new_gravity = false;
+	bool physics_override_new_acceleration = false;
 
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
