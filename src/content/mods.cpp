@@ -431,11 +431,10 @@ ModMetadata::ModMetadata(const std::string &mod_name, ModMetadataDatabase *datab
 
 void ModMetadata::clear()
 {
-	StringMap old_map = m_stringvars;
-	Metadata::clear();
-	for (const auto &pair : old_map) {
+	for (const auto &pair : m_stringvars) {
 		m_database->removeModEntry(m_mod_name, pair.first);
 	}
+	Metadata::clear();
 }
 
 bool ModMetadata::setString(const std::string &name, const std::string &var)
