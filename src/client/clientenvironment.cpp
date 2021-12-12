@@ -197,6 +197,8 @@ void ClientEnvironment::step(float dtime)
 		if (!free_move) {
 			// Gravity
 			v3f speed = lplayer->getSpeed();
+			v3f old_speed = speed;
+
 			if (!is_climbing && !lplayer->in_liquid)
 				speed.Y -= lplayer->movement_gravity *
 					lplayer->physics_override_gravity * dtime_part * 2.0f;
@@ -233,7 +235,10 @@ void ClientEnvironment::step(float dtime)
 				speed += d;
 			}
 
-			lplayer->setSpeed(speed);
+			lplayer->setSpeed(lplayer->physics_override_new_gravity
+				? (speed + old_speed) / 2.0f
+				: speed
+			);
 		}
 
 		/*

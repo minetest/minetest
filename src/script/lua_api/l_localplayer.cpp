@@ -176,6 +176,9 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushboolean(L, player->physics_override_new_move);
 	lua_setfield(L, -2, "new_move");
 
+	lua_pushboolean(L, player->physics_override_new_gravity);
+	lua_setfield(L, -2, "new_gravity");
+
 	return 1;
 }
 

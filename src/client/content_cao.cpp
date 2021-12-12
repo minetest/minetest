@@ -1771,6 +1771,8 @@ void GenericCAO::processMessage(const std::string &data)
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
 		bool new_move = !readU8(is);
+		// this one is off by default
+		bool new_gravity = readU8(is);
 
 
 		if(m_is_local_player)
@@ -1782,6 +1784,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->physics_override_sneak = sneak;
 			player->physics_override_sneak_glitch = sneak_glitch;
 			player->physics_override_new_move = new_move;
+			player->physics_override_new_gravity = new_gravity;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value

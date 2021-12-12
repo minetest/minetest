@@ -1434,6 +1434,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		modified |= getboolfield(L, 2, "sneak", playersao->m_physics_override_sneak);
 		modified |= getboolfield(L, 2, "sneak_glitch", playersao->m_physics_override_sneak_glitch);
 		modified |= getboolfield(L, 2, "new_move", playersao->m_physics_override_new_move);
+		modified |= getboolfield(L, 2, "new_gravity", playersao->m_physics_override_new_gravity);
 		if (modified)
 			playersao->m_physics_override_sent = false;
 	} else {
@@ -1479,6 +1480,8 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "sneak_glitch");
 	lua_pushboolean(L, playersao->m_physics_override_new_move);
 	lua_setfield(L, -2, "new_move");
+	lua_pushboolean(L, playersao->m_physics_override_new_gravity);
+	lua_setfield(L, -2, "new_gravity");
 	return 1;
 }
 

@@ -227,6 +227,7 @@ public:
 	bool m_physics_override_sneak = true;
 	bool m_physics_override_sneak_glitch = false;
 	bool m_physics_override_new_move = true;
+	bool m_physics_override_new_gravity = false;
 	bool m_physics_override_sent = false;
 };
 
