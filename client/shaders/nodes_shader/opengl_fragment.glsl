@@ -456,6 +456,15 @@ vec4 applyToneMapping(vec4 color)
 }
 #endif
 
+/*
+ *  @function saturation 
+ *  @param color         
+ *  @param factor        
+ */ 
+vec3 saturation(vec3 color, float factor) {
+    float brightness = dot(color, vec3(0.2125, 0.7154, 0.0721));
+    return mix(vec3(brightness), color, factor);
+}
 
 
 void main(void)
@@ -531,6 +540,7 @@ void main(void)
 
 #if ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
+	col.rgb = saturation(col.rgb, 1.5);
 #endif
 
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
