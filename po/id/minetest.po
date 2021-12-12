@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-12-02 01:31+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2021-12-13 00:52+0000\n"
+"Last-Translator: Linerly <linerly@protonmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -29,7 +28,7 @@ msgstr "Kembali ke menu utama"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "Perintah tak sah: "
+msgstr "Perintah tidak sah "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -41,15 +40,15 @@ msgstr "Daftar pemain daring"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Pemain daring "
+msgstr "Pemain daring: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "Antrean obrolan keluar sekarang kosong."
+msgstr "Antran obrolan keluar sudah dibersihkan."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Perintah ini dilarang oleh server."
+msgstr "Perintah ini dinonaktifkan oleh server."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -84,7 +83,7 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr "[all | <cmd>]"
+msgstr "[semua | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -629,9 +628,8 @@ msgid "Offset"
 msgstr "Pergeseran"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
-msgstr "Persistensi"
+msgstr "Kegigihan"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
