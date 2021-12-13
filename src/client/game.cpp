@@ -2057,15 +2057,15 @@ void Game::openInventory()
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
 
-	if (fs_src->getForm().empty()) {
-		delete fs_src;
-		return;
-	}
-
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
 
 	if (client->modsLoaded() && client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
+		delete fs_src;
+		return;
+	}
+
+	if (fs_src->getForm().empty()) {
 		delete fs_src;
 		return;
 	}
