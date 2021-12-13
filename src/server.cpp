@@ -4095,7 +4095,7 @@ bool Server::migrateModStorageDatabase(const GameParams &game_params, const Sett
 		const std::string backup_path = game_params.world_path + DIR_DELIM + "mod_storage.bak";
 		if (!fs::Rename(storage_path, backup_path))
 			warningstream << "After migration, " << storage_path
-				<< "could not be renamed to " << backup_path << std::endl;
+				<< " could not be renamed to " << backup_path << std::endl;
 	}
 
 	return succeeded;
