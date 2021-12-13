@@ -4005,10 +4005,10 @@ ModMetadataDatabase *Server::openModStorageDatabase(const std::string &world_pat
 	if (!world_mt.readConfigFile(world_mt_path.c_str()))
 		throw BaseException("Cannot read world.mt!");
 
-	std::string backend = world_mt.exists("mod_metadata_backend") ?
-		world_mt.get("mod_metadata_backend") : "files";
+	std::string backend = world_mt.exists("mod_storage_backend") ?
+		world_mt.get("mod_storage_backend") : "files";
 	if (backend == "files")
-		warningstream << "/!\\ You are using the old mod metadata files backend. "
+		warningstream << "/!\\ You are using the old mod storage files backend. "
 			<< "This backend is deprecated and may be removed in a future release /!\\"
 			<< std::endl << "Switching to SQLite3 is advised, "
 			<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
@@ -4033,7 +4033,7 @@ ModMetadataDatabase *Server::openModStorageDatabase(const std::string &backend,
 
 bool Server::migrateModStorageDatabase(const GameParams &game_params, const Settings &cmd_args)
 {
-	std::string migrate_to = cmd_args.get("migrate-mod-metadata");
+	std::string migrate_to = cmd_args.get("migrate-mod-storage");
 	Settings world_mt;
 	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
 	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
@@ -4041,8 +4041,8 @@ bool Server::migrateModStorageDatabase(const GameParams &game_params, const Sett
 		return false;
 	}
 
-	std::string backend = world_mt.exists("mod_metadata_backend") ?
-		world_mt.get("mod_metadata_backend") : "files";
+	std::string backend = world_mt.exists("mod_storage_backend") ?
+		world_mt.get("mod_storage_backend") : "files";
 	if (backend == migrate_to) {
 		errorstream << "Cannot migrate: new backend is same"
 			<< " as the old one" << std::endl;
@@ -4076,7 +4076,7 @@ bool Server::migrateModStorageDatabase(const GameParams &game_params, const Sett
 
 		actionstream << "Successfully migrated the metadata of "
 			<< mod_list.size() << " mods" << std::endl;
-		world_mt.set("mod_metadata_backend", migrate_to);
+		world_mt.set("mod_storage_backend", migrate_to);
 		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
 			errorstream << "Failed to update world.mt!" << std::endl;
 		else
