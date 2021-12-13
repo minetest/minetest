@@ -12,8 +12,8 @@ project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
 set(CMAKE_CXX_STANDARD 11)
-set(GCC_MINIMUM_VERSION "4.8")
-set(CLANG_MINIMUM_VERSION "3.4")
+set(GCC_MINIMUM_VERSION "5.1")
+set(CLANG_MINIMUM_VERSION "3.5")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
@@ -265,11 +265,6 @@ if(NOT USE_LUAJIT)
 	set(LUA_BIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/bitop)
 	set(LUA_BIT_LIBRARY bitop)
 	add_subdirectory(lib/bitop)
-endif()
-
-# JsonCpp doesn't compile well on GCC 4.8
-if(NOT USE_SYSTEM_JSONCPP)
-	set(GCC_MINIMUM_VERSION "4.9")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

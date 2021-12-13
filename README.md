@@ -132,7 +132,7 @@ Compiling
 
 | Dependency | Version | Commentary |
 |------------|---------|------------|
-| GCC        | 4.9+    | Can be replaced with Clang 3.4+ |
+| GCC        | 5.1+    | or Clang 3.5+ |
 | CMake      | 3.5+    |            |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | Freetype   | 2.0+    |            |
