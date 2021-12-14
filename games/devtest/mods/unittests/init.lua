@@ -96,6 +96,9 @@ function unittests.run_one(idx, counters, out_callback, player, pos)
 end
 
 local function wait_for_player(callback)
+	if #core.get_connected_players() > 0 then
+		return callback(core.get_connected_players()[1])
+	end
 	local first = true
 	core.register_on_joinplayer(function(player)
 		if first then
@@ -182,4 +185,19 @@ if core.settings:get_bool("devtest_unittests_autostart", false) then
 		local status, _ = coroutine.resume(coroutine.create(unittests.run_all))
 		assert(status)
 	end)
+else
+	minetest.register_chatcommand("unittests", {
+		privs = {basic_privs=true},
+		description = "Runs devtest unittests (may modify player or map state)",
+		func = function(name, param)
+			unittests.on_finished = function(ok)
+				core.chat_send_player(name,
+					(ok and "All tests passed." or "There were test failures.") ..
+					" Check the console for detailed output.")
+			end
+			local status, _ = coroutine.resume(coroutine.create(unittests.run_all))
+			assert(status)
+			return true, ""
+		end,
+	})
 end
