@@ -2,6 +2,21 @@
 -- HP Change Reasons
 --
 local expect = nil
+minetest.register_on_player_hpchange(function(player, hp, reason)
+	if expect == nil then
+		return
+	end
+
+	for key, value in pairs(reason) do
+		assert(expect[key] == value)
+	end
+	for key, value in pairs(expect) do
+		assert(reason[key] == value)
+	end
+
+	expect = nil
+end)
+
 local function run_hpchangereason_tests(player)
 	local old_hp = player:get_hp()
 
@@ -20,7 +35,11 @@ local function run_hpchangereason_tests(player)
 
 	player:set_hp(old_hp)
 end
+unittests.register("test_hpchangereason", run_hpchangereason_tests, {player=true})
 
+--
+-- Player meta
+--
 local function run_player_meta_tests(player)
 	local meta = player:get_meta()
 	meta:set_string("foo", "bar")
@@ -48,29 +67,4 @@ local function run_player_meta_tests(player)
 	assert(meta:get_string("foo") == "")
 	assert(meta:equals(meta2))
 end
-
-function unittests.test_player(player)
-	minetest.register_on_player_hpchange(function(player, hp, reason)
-		if not expect then
-			return
-		end
-
-		for key, value in pairs(reason) do
-			assert(expect[key] == value)
-		end
-
-		for key, value in pairs(expect) do
-			assert(reason[key] == value)
-		end
-
-		expect = nil
-	end)
-
-	run_hpchangereason_tests(player)
-	run_player_meta_tests(player)
-	local msg = "Player tests passed for player '"..player:get_player_name().."'!"
-	minetest.chat_send_all(msg)
-	minetest.log("action", "[unittests] "..msg)
-	return true
-end
-
+unittests.register("test_player_meta", run_player_meta_tests, {player=true})

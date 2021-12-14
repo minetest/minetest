@@ -25,7 +25,7 @@ minetest.register_chatcommand("item_description", {
 	end
 })
 
-function unittests.test_short_desc()
+local function test_short_desc()
 	local function get_short_description(item)
 		return ItemStack(item):get_short_description()
 	end
@@ -49,3 +49,4 @@ function unittests.test_short_desc()
 
 	return true
 end
+unittests.register("test_short_desc", test_short_desc)
