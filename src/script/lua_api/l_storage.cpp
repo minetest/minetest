@@ -32,16 +32,23 @@ int ModApiStorage::l_get_mod_storage(lua_State *L)
 
 	std::string mod_name = readParam<std::string>(L, -1);
 
+	ModMetadata *store = nullptr;
+
 	if (IGameDef *gamedef = getGameDef(L)) {
-		ModMetadata *store = new ModMetadata(mod_name, gamedef->getModStorageDatabase());
-		gamedef->registerModStorage(store);
-		StorageRef::create(L, store);
-		int object = lua_gettop(L);
-		lua_pushvalue(L, object);
+		store = new ModMetadata(mod_name, gamedef->getModStorageDatabase());
+		if (gamedef->registerModStorage(store)) {
+			StorageRef::create(L, store);
+			int object = lua_gettop(L);
+			lua_pushvalue(L, object);
+			return 1;
+		}
 	} else {
 		assert(false); // this should not happen
-		lua_pushnil(L);
 	}
+
+	delete store;
+
+	lua_pushnil(L);
 	return 1;
 }
 
