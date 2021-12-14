@@ -30,49 +30,49 @@ on:
       - '.dockerignore'
 
 jobs:
-  # This is our minor gcc compiler
-  gcc_6:
+  # Older gcc version (should be close to our minimum supported version)
+  gcc_5:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-6
+          install_linux_deps g++-5
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: gcc-6
-          CXX: g++-6
+          CC: gcc-5
+          CXX: g++-5
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
-  # This is the current gcc compiler (available in bionic)
-  gcc_8:
-    runs-on: ubuntu-18.04
+  # Current gcc version
+  gcc_10:
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-8
+          install_linux_deps g++-10
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: gcc-8
-          CXX: g++-8
+          CC: gcc-10
+          CXX: g++-10
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
-  # This is our minor clang compiler
+  # Older clang version (should be close to our minimum supported version)
   clang_3_9:
     runs-on: ubuntu-18.04
     steps:
@@ -97,22 +97,22 @@ jobs:
         run: |
           ./util/test_multiplayer.sh
 
-  # This is the current clang version
-  clang_9:
-    runs-on: ubuntu-18.04
+  # Current clang version
+  clang_10:
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-9 valgrind libluajit-5.1-dev
+          install_linux_deps clang-10 valgrind libluajit-5.1-dev
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: clang-9
-          CXX: clang++-9
+          CC: clang-10
+          CXX: clang++-10
           CMAKE_FLAGS: "-DREQUIRE_LUAJIT=1"
 
       - name: Test
