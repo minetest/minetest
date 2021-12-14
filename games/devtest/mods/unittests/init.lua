@@ -24,18 +24,41 @@ function unittests.on_finished(all_passed)
 	-- free to override
 end
 
+-- Calls invoke with a callback as argument
+-- Suspends coroutine until that callback is called
+-- Return values are passed through
+local function await(invoke)
+	local co = coroutine.running()
+	assert(co)
+	local called_early = true
+	-- FIXME this should be a direct call but that totally breaks MT
+	core.after(0, invoke, function(...)
+		if called_early == true then
+			called_early = {...}
+		else
+			coroutine.resume(co, ...)
+		end
+	end)
+	if called_early ~= true then
+		-- callback was already called before yielding
+		return unpack(called_early)
+	end
+	called_early = nil
+	return coroutine.yield()
+end
+
 function unittests.run_one(idx, counters, out_callback, player, pos)
 	local def = unittests.list[idx]
 	if not def.player then
 		player = nil
 	elseif player == nil then
-		core.after(0, out_callback) -- fuck
+		out_callback(false)
 		return false
 	end
 	if not def.map then
 		pos = nil
 	elseif pos == nil then
-		core.after(0, out_callback) -- fuck
+		out_callback(false)
 		return false
 	end
 
@@ -60,13 +83,13 @@ function unittests.run_one(idx, counters, out_callback, player, pos)
 		core.log("info", "[unittest] running " .. def.name .. " (async)")
 		def.func(function(err)
 			done(err == nil, err)
-			core.after(0, out_callback) -- fuck
+			out_callback(true)
 		end, player, pos)
 	else
 		core.log("info", "[unittest] running " .. def.name)
 		local status, err = pcall(def.func, player, pos)
 		done(status, err)
-		core.after(0, out_callback) -- fuck
+		out_callback(true)
 	end
 	
 	return true
@@ -94,69 +117,54 @@ local function wait_for_map(player, callback)
 end
 
 function unittests.run_all()
-	-- I tried to make this code as good as it can be but async is still a mess in Lua
-	local stage = 1
-	local idx = 1
-	local player, pos
+	-- This runs in a coroutine so it uses await(). Just don't forget that
+	-- await() cannot be used in an iterator loop.
 	local counters = { time = 0, total = 0, passed = 0 }
 
-	local function next()
-		if stage == 1 then -- Stage 1: standalone tests
-			if idx > #unittests.list then
-				stage = 2
-				idx = 1
-				-- Wait for a player to join
-				return wait_for_player(function(player_)
-					player = player_
-					next()
-				end)
-			end
-			local def = unittests.list[idx]
-			def.done = unittests.run_one(idx, counters, next, nil, nil)
-			idx = idx + 1
-		elseif stage == 2 then -- Stage 2: tests that require a player
-			if idx > #unittests.list then
-				stage = 3
-				idx = 1
-				-- Wait for world to generate/load
-				return wait_for_map(player, function()
-					pos = vector.round(player:get_pos())
-					next()
-				end)
-			end
-			local def = unittests.list[idx]
-			if def.done then
-				idx = idx + 1
-				return next()
-			end
-			def.done = unittests.run_one(idx, counters, next, player, nil)
-			idx = idx + 1
-		elseif stage == 3 then -- Stage 3: tests that require map access
-			if idx > #unittests.list then
-				stage = 4
-				return next()
-			end
-			local def = unittests.list[idx]
-			if def.done then
-				idx = idx + 1
-				return next()
-			end
-			def.done = unittests.run_one(idx, counters, next, player, pos)
-			idx = idx + 1
-		elseif stage == 4 then -- Stage 4: print stats and exit, phew
-			assert(#unittests.list == counters.total)
-			print(string.rep("+", 80))
-			print(string.format("Unit Test Results: %s",
-				counters.total == counters.passed and "PASSED" or "FAILED"))
-			print(string.format("    %d / %d failed tests.",
-				counters.total - counters.passed, counters.total))
-			print(string.format("    Testing took %dms total.", counters.time))
-			print(string.rep("+", 80))
-			unittests.on_finished(counters.total == counters.passed)
+	-- Run standalone tests first
+	for idx = 1, #unittests.list do
+		local def = unittests.list[idx]
+		def.done = await(function(cb)
+			unittests.run_one(idx, counters, cb, nil, nil)
+		end)
+	end
+
+	-- Wait for a player to join, run tests that require a player
+	local player = await(wait_for_player)
+	for idx = 1, #unittests.list do
+		local def = unittests.list[idx]
+		if not def.done then
+			def.done = await(function(cb)
+				unittests.run_one(idx, counters, cb, player, nil)
+			end)
 		end
 	end
 
-	next()
+	-- Wait for the world to generate/load, run tests that require map access
+	await(function(cb)
+		wait_for_map(player, cb)
+	end)
+	local pos = vector.round(player:get_pos())
+	for idx = 1, #unittests.list do
+		local def = unittests.list[idx]
+		if not def.done then
+			def.done = await(function(cb)
+				unittests.run_one(idx, counters, cb, player, pos)
+			end)
+		end
+	end
+
+	-- Print stats
+	assert(#unittests.list == counters.total)
+	print(string.rep("+", 80))
+	print(string.format("Unit Test Results: %s",
+	counters.total == counters.passed and "PASSED" or "FAILED"))
+	print(string.format("    %d / %d failed tests.",
+	counters.total - counters.passed, counters.total))
+	print(string.format("    Testing took %dms total.", counters.time))
+	print(string.rep("+", 80))
+	unittests.on_finished(counters.total == counters.passed)
+	return counters.total == counters.passed
 end
 
 --------------
@@ -170,5 +178,8 @@ dofile(modpath .. "/itemdescription.lua")
 --------------
 
 if core.settings:get_bool("devtest_unittests_autostart", false) then
-	core.after(0, unittests.run_all)
+	core.after(0, function()
+		local status, _ = coroutine.resume(coroutine.create(unittests.run_all))
+		assert(status)
+	end)
 end
