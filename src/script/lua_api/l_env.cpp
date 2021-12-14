@@ -888,8 +888,9 @@ static void checkArea(v3s16 &minp, v3s16 &maxp)
 		throw LuaError("Area volume exceeds allowed value of 4096000");
 	}
 
-	// Clamp to map range to avoid problems
-#define CLAMP(arg) core::clamp(arg, (s16)-MAX_MAP_GENERATION_LIMIT, (s16)MAX_MAP_GENERATION_LIMIT)
+	// Clamp to almost s16 range to avoid problems
+	// Clamping to exactly s16 range hangs Minetest
+#define CLAMP(arg) core::clamp(arg, (s16)(INT16_MIN+1), (s16)(INT16_MAX-1))
 	minp = v3s16(CLAMP(minp.X), CLAMP(minp.Y), CLAMP(minp.Z));
 	maxp = v3s16(CLAMP(maxp.X), CLAMP(maxp.Y), CLAMP(maxp.Z));
 #undef CLAMP
