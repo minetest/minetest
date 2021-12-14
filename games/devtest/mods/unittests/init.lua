@@ -170,7 +170,7 @@ end
 --------------
 
 local modpath = minetest.get_modpath("unittests")
-dofile(modpath .. "/random.lua")
+dofile(modpath .. "/misc.lua")
 dofile(modpath .. "/player.lua")
 dofile(modpath .. "/crafting.lua")
 dofile(modpath .. "/itemdescription.lua")
