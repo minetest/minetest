@@ -31,8 +31,7 @@ local function await(invoke)
 	local co = coroutine.running()
 	assert(co)
 	local called_early = true
-	-- FIXME this should be a direct call but that totally breaks MT
-	core.after(0, invoke, function(...)
+	invoke(function(...)
 		if called_early == true then
 			called_early = {...}
 		else
@@ -182,8 +181,7 @@ dofile(modpath .. "/itemdescription.lua")
 
 if core.settings:get_bool("devtest_unittests_autostart", false) then
 	core.after(0, function()
-		local status, _ = coroutine.resume(coroutine.create(unittests.run_all))
-		assert(status)
+		coroutine.wrap(unittests.run_all)()
 	end)
 else
 	minetest.register_chatcommand("unittests", {
@@ -195,8 +193,7 @@ else
 					(ok and "All tests passed." or "There were test failures.") ..
 					" Check the console for detailed output.")
 			end
-			local status, _ = coroutine.resume(coroutine.create(unittests.run_all))
-			assert(status)
+			coroutine.wrap(unittests.run_all)()
 			return true, ""
 		end,
 	})
