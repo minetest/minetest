@@ -122,16 +122,10 @@ if(BUILD_CLIENT)
 	endif()
 endif()
 
-
-option(ENABLE_FREETYPE "Enable FreeType2 (TrueType fonts and basic unicode support)" TRUE)
 set(USE_FREETYPE FALSE)
-
-if(BUILD_CLIENT AND ENABLE_FREETYPE)
-	find_package(Freetype)
-	if(FREETYPE_FOUND)
-		message(STATUS "Freetype enabled.")
-		set(USE_FREETYPE TRUE)
-	endif()
+if(BUILD_CLIENT)
+	find_package(Freetype REQUIRED)
+	set(USE_FREETYPE TRUE)
 endif()
 
 option(ENABLE_CURSES "Enable ncurses console" TRUE)
@@ -896,14 +890,8 @@ if(BUILD_CLIENT)
 		endforeach()
 	endif()
 
-	# Install necessary fonts depending on configuration
-	if(USE_FREETYPE)
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
-				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
-	else()
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
-				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
-	endif()
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
+			FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
