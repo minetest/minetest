@@ -412,9 +412,13 @@ function core.explode_key_event(evt)
 	end
 
 	local ret = {
-		name = parts[1],
+		key = parts[1],
 		pressed = parts[3] == "true"
 	}
+
+	if ret.key == "Semicolon" then
+		ret.key = ";"
+	end
 
 	if parts[2] ~= "" then
 		ret.mapped = parts[2]

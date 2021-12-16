@@ -20,39 +20,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include "Keycodes.h"
+#include <Keycodes.h>
 #include <IEventReceiver.h>
 #include <string>
 
-/* A key press, consisting of either an Irrlicht keycode
-   or an actual char */
-
+/** Represents a scancode on the keyboard. It only contains characters common to
+  * Irrlicht keycodes and SDL scancodes, and NOT characters like ~ or ? that have
+  * no physical key, but only exist when combined with shift.
+  */
 class KeyPress
 {
+private:
+	irr::EKEY_CODE m_key;
+
+	void fromName(const std::string &name);
+
 public:
-	KeyPress() = default;
+	KeyPress() : m_key(irr::KEY_KEY_CODES_COUNT) {}
+	KeyPress(irr::EKEY_CODE key) : m_key(key) {}
+	KeyPress(const irr::SEvent::SKeyInput &input) : m_key(input.Key) {}
 
-	KeyPress(const char *name);
+	KeyPress(const std::string &name) { fromName(name); }
+	KeyPress(const char *name) { fromName(name); }
 
-	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
+	bool operator==(const KeyPress &o) const { return m_key == o.m_key; }
 
-	bool operator==(const KeyPress &o) const
-	{
-		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
-	}
-
-	const char *sym() const;
-	const char *name() const;
-
-protected:
-	static bool valid_kcode(irr::EKEY_CODE k)
-	{
-		return k > 0 && k < irr::KEY_KEY_CODES_COUNT;
-	}
-
-	irr::EKEY_CODE Key = irr::KEY_KEY_CODES_COUNT;
-	wchar_t Char = L'\0';
-	std::string m_name = "";
+	irr::EKEY_CODE getCode() const { return m_key; }
+	std::string getName() const;
 };
 
 extern const KeyPress EscapeKey;
@@ -63,5 +57,3 @@ KeyPress getKeySetting(const char *settingname);
 
 // Clear fast lookup cache
 void clearKeyCache();
-
-irr::EKEY_CODE keyname_to_keycode(const char *name);

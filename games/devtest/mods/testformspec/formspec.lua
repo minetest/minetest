@@ -518,10 +518,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	if fields.key_event then
-		print("key_event: " .. tostring(fields.key_event))
+		print("fields.key_event = " .. dump(minetest.explode_key_event(fields.key_event)))
 	end
 	if fields.mouse_event then
-		print("mouse_event: " .. tostring(fields.mouse_event))
+		print("fields.mouse_event = " .. dump(minetest.explode_mouse_event(fields.mouse_event)))
 	end
 end)
 

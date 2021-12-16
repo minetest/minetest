@@ -139,359 +139,359 @@
 # joystick_frustum_sensitivity = 170
 
 #    Key for moving the player forward.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_forward = KEY_KEY_W
+# keymap_forward = W
 
 #    Key for moving the player backward.
 #    Will also disable autoforward, when active.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_backward = KEY_KEY_S
+# keymap_backward = S
 
 #    Key for moving the player left.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_left = KEY_KEY_A
+# keymap_left = A
 
 #    Key for moving the player right.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_right = KEY_KEY_D
+# keymap_right = D
 
 #    Key for jumping.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_jump = KEY_SPACE
+# keymap_jump = Space
 
 #    Key for sneaking.
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_sneak = KEY_LSHIFT
+# keymap_sneak = Left Shift
 
 #    Key for digging.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_dig = KEY_LBUTTON
+# keymap_dig = Left Mouse
 
 #    Key for placing.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_place = KEY_RBUTTON
+# keymap_place = Right Mouse
 
 #    Key for opening the inventory.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_inventory = KEY_KEY_I
+# keymap_inventory = I
 
 #    Key for moving fast in fast mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_aux1 = KEY_KEY_E
+# keymap_aux1 = E
 
 #    Key for opening the chat window.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_chat = KEY_KEY_T
+# keymap_chat = T
 
 #    Key for opening the chat window to type commands.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_cmd = /
 
 #    Key for opening the chat window to type local commands.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_cmd_local = .
 
 #    Key for toggling unlimited view range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_rangeselect = KEY_KEY_R
+# keymap_rangeselect = R
 
 #    Key for toggling flying.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_freemove = KEY_KEY_K
+# keymap_freemove = K
 
 #    Key for toggling pitch move mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_pitchmove = KEY_KEY_P
+# keymap_pitchmove = P
 
 #    Key for toggling fast mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_fastmove = KEY_KEY_J
+# keymap_fastmove = J
 
 #    Key for toggling noclip mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_noclip = KEY_KEY_H
+# keymap_noclip = H
 
 #    Key for selecting the next item in the hotbar.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_hotbar_next = KEY_KEY_N
+# keymap_hotbar_next = N
 
 #    Key for selecting the previous item in the hotbar.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_hotbar_previous = KEY_KEY_B
+# keymap_hotbar_previous = B
 
 #    Key for muting the game.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_mute = KEY_KEY_M
+# keymap_mute = M
 
 #    Key for increasing the volume.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_increase_volume =
 
 #    Key for decreasing the volume.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_decrease_volume =
 
 #    Key for toggling autoforward.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_autoforward =
 
 #    Key for toggling cinematic mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_cinematic =
 
 #    Key for toggling display of minimap.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_minimap = KEY_KEY_V
+# keymap_minimap = V
 
 #    Key for taking screenshots.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_screenshot = KEY_F12
+# keymap_screenshot = F12
 
 #    Key for dropping the currently selected item.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_drop = KEY_KEY_Q
+# keymap_drop = Q
 
 #    Key to use view zoom when possible.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_zoom = KEY_KEY_Z
+# keymap_zoom = Z
 
 #    Key for selecting the first hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot1 = KEY_KEY_1
+# keymap_slot1 = 1
 
 #    Key for selecting the second hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot2 = KEY_KEY_2
+# keymap_slot2 = 2
 
 #    Key for selecting the third hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot3 = KEY_KEY_3
+# keymap_slot3 = 3
 
 #    Key for selecting the fourth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot4 = KEY_KEY_4
+# keymap_slot4 = 4
 
 #    Key for selecting the fifth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot5 = KEY_KEY_5
+# keymap_slot5 = 5
 
 #    Key for selecting the sixth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot6 = KEY_KEY_6
+# keymap_slot6 = 6
 
 #    Key for selecting the seventh hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot7 = KEY_KEY_7
+# keymap_slot7 = 7
 
 #    Key for selecting the eighth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot8 = KEY_KEY_8
+# keymap_slot8 = 8
 
 #    Key for selecting the ninth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot9 = KEY_KEY_9
+# keymap_slot9 = 9
 
 #    Key for selecting the tenth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_slot10 = KEY_KEY_0
+# keymap_slot10 = 0
 
 #    Key for selecting the 11th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot11 =
 
 #    Key for selecting the 12th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot12 =
 
 #    Key for selecting the 13th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot13 =
 
 #    Key for selecting the 14th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot14 =
 
 #    Key for selecting the 15th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot15 =
 
 #    Key for selecting the 16th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot16 =
 
 #    Key for selecting the 17th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot17 =
 
 #    Key for selecting the 18th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot18 =
 
 #    Key for selecting the 19th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot19 =
 
 #    Key for selecting the 20th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot20 =
 
 #    Key for selecting the 21st hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot21 =
 
 #    Key for selecting the 22nd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot22 =
 
 #    Key for selecting the 23rd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot23 =
 
 #    Key for selecting the 24th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot24 =
 
 #    Key for selecting the 25th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot25 =
 
 #    Key for selecting the 26th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot26 =
 
 #    Key for selecting the 27th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot27 =
 
 #    Key for selecting the 28th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot28 =
 
 #    Key for selecting the 29th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot29 =
 
 #    Key for selecting the 30th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot30 =
 
 #    Key for selecting the 31st hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot31 =
 
 #    Key for selecting the 32nd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_slot32 =
 
 #    Key for toggling the display of the HUD.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_toggle_hud = KEY_F1
+# keymap_toggle_hud = F1
 
 #    Key for toggling the display of chat.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_toggle_chat = KEY_F2
+# keymap_toggle_chat = F2
 
 #    Key for toggling the display of the large chat console.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_console = KEY_F10
+# keymap_console = F10
 
 #    Key for toggling the display of fog.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_toggle_force_fog_off = KEY_F3
+# keymap_toggle_force_fog_off = F3
 
 #    Key for toggling the camera update. Only used for development
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_toggle_update_camera =
 
 #    Key for toggling the display of debug info.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_toggle_debug = KEY_F5
+# keymap_toggle_debug = F5
 
 #    Key for toggling the display of the profiler. Used for development.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_toggle_profiler = KEY_F6
+# keymap_toggle_profiler = F6
 
 #    Key for switching between first- and third-person camera.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_camera_mode = KEY_KEY_C
+# keymap_camera_mode = C
 
 #    Key for increasing the viewing range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
-# keymap_increase_viewing_range_min = +
+# keymap_increase_viewing_range_min = =
 
 #    Key for decreasing the viewing range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See `doc/keycodes.txt`
 #    type: key
 # keymap_decrease_viewing_range_min = -
 

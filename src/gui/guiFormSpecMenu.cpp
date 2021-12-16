@@ -3960,9 +3960,11 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 		if (current_keys_pending.pending_key_event) {
 			KeyPress key_press(current_keys_pending.key_event);
 
-			std::string name = key_press.sym();
-			std::string mapped = "";
+			std::string key = key_press.getName();
+			if (key == ";")
+				key = "Semicolon";
 
+			std::string mapped = "";
 			std::vector<std::string> keymaps = g_settings->getKeymapNames();
 			for (size_t i = 0; i < keymaps.size(); i++) {
 				if (getKeySetting(keymaps[i].c_str()) == key_press) {
@@ -3971,7 +3973,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 				}
 			}
 
-			fields["key_event"] = name + ";" + mapped + ";" +
+			fields["key_event"] = key + ";" + mapped + ";" +
 				(current_keys_pending.key_event.PressedDown ? "true" : "false");
 
 			current_keys_pending.pending_key_event = false;

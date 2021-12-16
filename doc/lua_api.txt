@@ -2916,49 +2916,52 @@ Special Input Events
 Formspecs can return two different special events not originating from any element, `key_event`
 and `mouse_event`, after they have been enabled explicitly in the `options[]` element. Both
 events are a string that can be translated into a table using `minetest.explode_mouse_event`
-and `minetest.explode_key_event`.  If the event is malformed (e.g. a client sending incorrect
-values), both exploders will return nil.
+and `minetest.explode_key_event`. If the event is malformed (e.g. a client sending incorrect
+or malicious data), both exploders will return nil.
 
-The tables returned by each event exploder are as follows:
+The tables returned by each event exploder contain the following fields:
 
-### `key_event`
-```
-{
-    name = "KEY_KEY_W", -- Key name. A list can be found in `keycodes.txt`
-    mapped = "forward", -- If the key is also an ingame key, this value returns the `minetest.conf`
-                        -- name minus `keymap_`, otherwise it's nil.
-    pressed = <bool>,   -- `true` if the key was pressed, `false` if released.
-}
-```
+### `key_event`:
+* `key`: The name of the key that was pressed. A list can be found in `doc/keycodes.txt`.
+    * The keycodes are keyboard layout-dependent. The position of the W key on a QWERTY
+      keyboard differs from that of a AZERTY keyboard; thus, these are not suitable for
+      things dependent on key positions.
+    * Currently, characters like `&` which are only accessed via the Shift key and some
+      other layout-dependent key are not returned in this field.
+    * Do NOT use keycodes for custom textual input fields; they will not work for
+      non-English languages.
+    * Unknown keys will return the value "Unknown Key".
+* `mapped`: If the key is also an in-game key (for instance, the key for walking forward),
+  this field contains the keymap name (in this case, "forward" since "keymap_forward" is
+  the name for the setting for walking forward); otherwise, it is nil.
+* `pressed`: True if the key was pressed down, false if released.
 
-`key_event` will not fire if focus is in an element that handles all keys itself, e.g. `field[]`.
+`key_event` will not fire if focus is in an element that handles those keys itself. For
+instance, `button[]`s consume the spacebar and escape keys, while `field[]`s consume
+nearly all keys.
 
 ### `mouse_event`
-```
-{
-    type = "press",           -- Event type. One of "press", "release", "move", or "wheel".
-    button = "left",          -- If `type` is "press" or "release", this is the mouse button that
-                              -- was pressed or released. One of "left", "middle", or "right".
-                              -- `nil` if a different event.
-    clicks = 1                -- If `type` is "press" or "release", this is how many times the
-                              -- mouse button was pressed in quick succession (i.e. 1 for single
-                              -- click, 2 for double click, 3 for triple click). Wraps back to 1
-                              -- after 3. `nil` if a different event.
-    form_pos = {x = #, y = #} -- Mouse position in fractions of coordinates from the top-left
-                              -- corner of the formspec.
-    elem = <string>           -- Name of the hovered element. `nil` if not hovering over an element
-                              -- or the element has no name.
-    elem_pos = {x = #, y = #} -- Mouse position in fractions of coordinates from the top-left corner
-                              -- of the hovered element. Same as `form_pos` if `elem` is `nil`.
-    wheel = <number>          -- Amount of change in the mouse wheel. It is >1 if the mouse wheel
-                              -- was scrolled up, <1 if down, and 0 for non-wheel events. May be a
-                              -- decimal, e.g. in touchpad scrolling.
-}
-```
+* `type`: The type of the mouse event. One of "press", "release", "move", or "wheel".
+* `button`: If `type` is "press" or "release", this is the mouse button that was
+  pressed or released. One of "left", "middle", or "right". `nil` if a different event.
+* `clicks`: If `type` is "press" or "release", this is how many times the mouse
+  button was pressed in quick succession (i.e. 1 for single click, 2 for double click,
+  and 3 for triple click). Currently, it will not count higher than 3, but it may go
+  higher in the future. `nil` if a different event.
+* `form_pos`: A 2D vector that contains the mouse position in fractions of coordinates
+  from the top left corner of the formspec.
+* `elem`: The name of the currently hovered element. `nil` if not hovering over an
+  element or the element has no name.
+* `elem_pos`: A 2D vector that contains the mouse position in fractions of coordinates
+  from the top left corner of the currently hovered element. If `elem` is `nil`, this
+  contains the same value as `form_pos`.
+* `wheel`: The amount of change in the mouse wheel. It is >0 if the mouse wheel was
+  scrolled up, <0 if down, and 0 for non-wheel events. It can be a decimal value,
+  which is common with laptop touchpads.
 
-The "move" event will not occur if the mouse event is set to `no_move`. In addition, the "move"
-event will only be sent once every 200 milliseconds in `all` to prevent it from bogging down
-network traffic.
+The "move" event will not occur if the mouse event is set to `no_move`. In addition,
+the "move" event may only be sent once every 200 milliseconds in `all` to prevent
+it from bogging down network traffic.
 
 Migrating to Real Coordinates
 -----------------------------

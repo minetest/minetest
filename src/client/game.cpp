@@ -4176,7 +4176,7 @@ void Game::showDeathFormspec()
 	formspec->setFocus("btn_respawn");
 }
 
-#define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
+#define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).getName().c_str())
 void Game::showPauseMenu()
 {
 #ifdef HAVE_TOUCHSCREENGUI

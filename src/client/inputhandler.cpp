@@ -145,35 +145,35 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		KeyPress key;
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN:
-			key = "KEY_LBUTTON";
+			key = irr::KEY_LBUTTON;
 			keyIsDown.set(key);
 			keyWasDown.set(key);
 			keyWasPressed.set(key);
 			break;
 		case EMIE_MMOUSE_PRESSED_DOWN:
-			key = "KEY_MBUTTON";
+			key = irr::KEY_MBUTTON;
 			keyIsDown.set(key);
 			keyWasDown.set(key);
 			keyWasPressed.set(key);
 			break;
 		case EMIE_RMOUSE_PRESSED_DOWN:
-			key = "KEY_RBUTTON";
+			key = irr::KEY_RBUTTON;
 			keyIsDown.set(key);
 			keyWasDown.set(key);
 			keyWasPressed.set(key);
 			break;
 		case EMIE_LMOUSE_LEFT_UP:
-			key = "KEY_LBUTTON";
+			key = irr::KEY_LBUTTON;
 			keyIsDown.unset(key);
 			keyWasReleased.set(key);
 			break;
 		case EMIE_MMOUSE_LEFT_UP:
-			key = "KEY_MBUTTON";
+			key = irr::KEY_MBUTTON;
 			keyIsDown.unset(key);
 			keyWasReleased.set(key);
 			break;
 		case EMIE_RMOUSE_LEFT_UP:
-			key = "KEY_RBUTTON";
+			key = irr::KEY_RBUTTON;
 			keyIsDown.unset(key);
 			keyWasReleased.set(key);
 			break;

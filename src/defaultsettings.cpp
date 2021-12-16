@@ -70,60 +70,60 @@ void set_default_settings()
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");
-	settings->setDefault("keymap_forward", "KEY_KEY_W");
+	settings->setDefault("keymap_forward", "W");
 	settings->setDefault("keymap_autoforward", "");
-	settings->setDefault("keymap_backward", "KEY_KEY_S");
-	settings->setDefault("keymap_left", "KEY_KEY_A");
-	settings->setDefault("keymap_right", "KEY_KEY_D");
-	settings->setDefault("keymap_jump", "KEY_SPACE");
-	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
-	settings->setDefault("keymap_dig", "KEY_LBUTTON");
-	settings->setDefault("keymap_place", "KEY_RBUTTON");
-	settings->setDefault("keymap_drop", "KEY_KEY_Q");
-	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
-	settings->setDefault("keymap_inventory", "KEY_KEY_I");
-	settings->setDefault("keymap_aux1", "KEY_KEY_E");
-	settings->setDefault("keymap_chat", "KEY_KEY_T");
+	settings->setDefault("keymap_backward", "S");
+	settings->setDefault("keymap_left", "A");
+	settings->setDefault("keymap_right", "D");
+	settings->setDefault("keymap_jump", "Space");
+	settings->setDefault("keymap_sneak", "Left Shift");
+	settings->setDefault("keymap_dig", "Left Mouse");
+	settings->setDefault("keymap_place", "Right Mouse");
+	settings->setDefault("keymap_drop", "Q");
+	settings->setDefault("keymap_zoom", "Z");
+	settings->setDefault("keymap_inventory", "I");
+	settings->setDefault("keymap_aux1", "E");
+	settings->setDefault("keymap_chat", "T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
-	settings->setDefault("keymap_minimap", "KEY_KEY_V");
-	settings->setDefault("keymap_console", "KEY_F10");
-	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
-	settings->setDefault("keymap_freemove", "KEY_KEY_K");
-	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
-	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
-	settings->setDefault("keymap_noclip", "KEY_KEY_H");
-	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
-	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
-	settings->setDefault("keymap_mute", "KEY_KEY_M");
+	settings->setDefault("keymap_minimap", "V");
+	settings->setDefault("keymap_console", "F10");
+	settings->setDefault("keymap_rangeselect", "R");
+	settings->setDefault("keymap_freemove", "K");
+	settings->setDefault("keymap_pitchmove", "P");
+	settings->setDefault("keymap_fastmove", "J");
+	settings->setDefault("keymap_noclip", "H");
+	settings->setDefault("keymap_hotbar_next", "N");
+	settings->setDefault("keymap_hotbar_previous", "B");
+	settings->setDefault("keymap_mute", "M");
 	settings->setDefault("keymap_increase_volume", "");
 	settings->setDefault("keymap_decrease_volume", "");
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_block_bounds", "");
-	settings->setDefault("keymap_toggle_hud", "KEY_F1");
-	settings->setDefault("keymap_toggle_chat", "KEY_F2");
-	settings->setDefault("keymap_toggle_fog", "KEY_F3");
+	settings->setDefault("keymap_toggle_hud", "F1");
+	settings->setDefault("keymap_toggle_chat", "F2");
+	settings->setDefault("keymap_toggle_fog", "F3");
 #if DEBUG
-	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
+	settings->setDefault("keymap_toggle_update_camera", "F4");
 #else
 	settings->setDefault("keymap_toggle_update_camera", "");
 #endif
-	settings->setDefault("keymap_toggle_debug", "KEY_F5");
-	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
-	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
-	settings->setDefault("keymap_screenshot", "KEY_F12");
-	settings->setDefault("keymap_increase_viewing_range_min", "+");
+	settings->setDefault("keymap_toggle_debug", "F5");
+	settings->setDefault("keymap_toggle_profiler", "F6");
+	settings->setDefault("keymap_camera_mode", "C");
+	settings->setDefault("keymap_screenshot", "F12");
+	settings->setDefault("keymap_increase_viewing_range_min", "=");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
-	settings->setDefault("keymap_slot1", "KEY_KEY_1");
-	settings->setDefault("keymap_slot2", "KEY_KEY_2");
-	settings->setDefault("keymap_slot3", "KEY_KEY_3");
-	settings->setDefault("keymap_slot4", "KEY_KEY_4");
-	settings->setDefault("keymap_slot5", "KEY_KEY_5");
-	settings->setDefault("keymap_slot6", "KEY_KEY_6");
-	settings->setDefault("keymap_slot7", "KEY_KEY_7");
-	settings->setDefault("keymap_slot8", "KEY_KEY_8");
-	settings->setDefault("keymap_slot9", "KEY_KEY_9");
-	settings->setDefault("keymap_slot10", "KEY_KEY_0");
+	settings->setDefault("keymap_slot1", "1");
+	settings->setDefault("keymap_slot2", "2");
+	settings->setDefault("keymap_slot3", "3");
+	settings->setDefault("keymap_slot4", "4");
+	settings->setDefault("keymap_slot5", "5");
+	settings->setDefault("keymap_slot6", "6");
+	settings->setDefault("keymap_slot7", "7");
+	settings->setDefault("keymap_slot8", "8");
+	settings->setDefault("keymap_slot9", "9");
+	settings->setDefault("keymap_slot10", "0");
 	settings->setDefault("keymap_slot11", "");
 	settings->setDefault("keymap_slot12", "");
 	settings->setDefault("keymap_slot13", "");
@@ -148,10 +148,10 @@ void set_default_settings()
 	settings->setDefault("keymap_slot32", "");
 
 	// Some (temporary) keys for debugging
-	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
-	settings->setDefault("keymap_quicktune_next", "KEY_END");
-	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
-	settings->setDefault("keymap_quicktune_inc", "KEY_PRIOR");
+	settings->setDefault("keymap_quicktune_prev", "Home");
+	settings->setDefault("keymap_quicktune_next", "End");
+	settings->setDefault("keymap_quicktune_dec", "Page Down");
+	settings->setDefault("keymap_quicktune_inc", "Page Up");
 
 	// Visuals
 #ifdef NDEBUG
