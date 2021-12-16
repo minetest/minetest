@@ -1071,7 +1071,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 
 	core::rect<s32> middle;
 	if (parts.size() >= 5)
-		parseRect(parts[4], &middle);
+		parseMiddleRect(parts[4], &middle);
 
 	if (!data->explicit_size && !clip)
 		warningstream << "invalid use of unclipped background without a size[] element" << std::endl;

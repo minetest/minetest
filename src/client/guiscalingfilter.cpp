@@ -186,13 +186,13 @@ void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 	if (middlerect.LowerRightCorner.X < 0)
 		middle.LowerRightCorner.X += srcrect.getWidth();
 	if (middlerect.LowerRightCorner.Y < 0)
-		middle.LowerRightCorner.Y += srcrect.getWidth();
+		middle.LowerRightCorner.Y += srcrect.getHeight();
 
 	core::vector2di lower_right_offset = core::vector2di(srcrect.getWidth(),
 			srcrect.getHeight()) - middle.LowerRightCorner;
 
-	for (size_t y = 0; y < 3; ++y) {
-		for (size_t x = 0; x < 3; ++x) {
+	for (int y = 0; y < 3; ++y) {
+		for (int x = 0; x < 3; ++x) {
 			core::rect<s32> src = srcrect;
 			core::rect<s32> dest = destrect;
 
