@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-12-02 01:31+0000\n"
-"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
+"PO-Revision-Date: 2021-12-17 13:52+0000\n"
+"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1253,7 +1253,7 @@ msgstr "Произошла ошибка:"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Доступ запрещен. Причина: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1270,15 +1270,15 @@ msgstr "Границы блока"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Границы показаны для всех блоков"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Границы показаны для текущего блока"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Границы показаны для блоков рядом"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1290,7 +1290,7 @@ msgstr "Обновление камеры включено"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr ""
+msgstr "Нельзя показать границы блока (нужна привилегия 'basic_debug')"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1319,7 +1319,7 @@ msgstr "Подключение к серверу..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Сбой соединения по неизвестной причине"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1361,7 +1361,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Не удалось разрешить адрес: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1571,17 +1571,17 @@ msgstr "Звук включён"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Вероятно, на сервере используется другая версия %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Не удаётся подключиться к %s, так как IPv6 отключён"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Не удаётся прослушать %s, так как IPv6 отключён"
 
 #: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
@@ -1924,7 +1924,7 @@ msgstr "Не удалось загрузить $1"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Открытие страницы"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2389,6 +2389,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Настройка обнаруженной плотности дисплея, используется для масштабирования "
+"элементов интерфейса."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2750,7 +2752,7 @@ msgstr "Очистить прозрачные текстуры"
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
-msgstr ""
+msgstr "Нажимающиеся ссылки (СКМ или Ctrl+ЛКМ) включены в консоли."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -3192,7 +3194,7 @@ msgstr "Запретить пустой пароль"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
-msgstr ""
+msgstr "Коэффициент масштабирования плотности отображения"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -5958,7 +5960,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
-msgstr ""
+msgstr "Необязательное переопределение цвета ссылки в чате."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6750,6 +6752,11 @@ msgid ""
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
+"Распространяет полное обновление карты теней на заданное количество кадров.\n"
+"Более высокие значения могут сделать тени нестабильными, более низкие "
+"значения\n"
+"будут потреблять больше ресурсов.\n"
+"Минимальное значение: 1; максимальное значение: 16"
 
 #: src/settings_translation_file.cpp
 msgid ""
