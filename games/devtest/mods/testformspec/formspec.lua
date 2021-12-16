@@ -284,7 +284,7 @@ local window = {
 local pages = {
 	-- Real Coordinates
 	[[
-		formspec_version[3]
+		formspec_version[5]
 		size[12,13]
 		options[key_event=true;mouse_event=all]
 		image_button[0,0;1,1;logo.png;rc_image_button_1x1;1x1]
@@ -324,7 +324,7 @@ local pages = {
 	]],
 	-- Style
 
-		"formspec_version[3]size[12,13]options[key_event=true;mouse_event=no_move]" ..
+		"formspec_version[5]size[12,13]options[key_event=true;mouse_event=no_move]" ..
 		("label[0.375,0.375;Styled - %s %s]"):format(
 			color("#F00", "red text"),
 			color("#77FF00CC", "green text")) ..
@@ -496,7 +496,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 
-<<<<<<< HEAD
 	for name, value in pairs(fields) do
 		if window[name] then
 			print(name, window[name])
