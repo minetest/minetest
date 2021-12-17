@@ -21,14 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "lua_api/l_http.h"
+#include "cpp_api/s_security.h"
 #include "httpfetch.h"
 #include "settings.h"
 #include "debug.h"
 #include "log.h"
 
-#include <algorithm>
 #include <iomanip>
-#include <cctype>
 
 #define HTTP_API(name) \
 	lua_pushstring(L, #name); \
@@ -181,40 +180,8 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	// We have to make sure that this function is being called directly by
-	// a mod, otherwise a malicious mod could override this function and
-	// steal its return value.
-	lua_Debug info;
-
-	// Make sure there's only one item below this function on the stack...
-	if (lua_getstack(L, 2, &info)) {
-		return 0;
-	}
-	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
-	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
-
-	// ...and that that item is the main file scope.
-	if (strcmp(info.what, "main") != 0) {
-		return 0;
-	}
-
-	// Mod must be listed in secure.http_mods or secure.trusted_mods
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1)) {
-		return 0;
-	}
-
-	std::string mod_name = readParam<std::string>(L, -1);
-	std::string http_mods = g_settings->get("secure.http_mods");
-	http_mods.erase(std::remove(http_mods.begin(), http_mods.end(), ' '), http_mods.end());
-	std::vector<std::string> mod_list_http = str_split(http_mods, ',');
-
-	std::string trusted_mods = g_settings->get("secure.trusted_mods");
-	trusted_mods.erase(std::remove(trusted_mods.begin(), trusted_mods.end(), ' '), trusted_mods.end());
-	std::vector<std::string> mod_list_trusted = str_split(trusted_mods, ',');
-
-	mod_list_http.insert(mod_list_http.end(), mod_list_trusted.begin(), mod_list_trusted.end());
-	if (std::find(mod_list_http.begin(), mod_list_http.end(), mod_name) == mod_list_http.end()) {
+	if (!ScriptApiSecurity::checkWhitelisted(L, "secure.http_mods") &&
+			!ScriptApiSecurity::checkWhitelisted(L, "secure.trusted_mods")) {
 		lua_pushnil(L);
 		return 1;
 	}
