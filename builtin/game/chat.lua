@@ -524,7 +524,7 @@ end
 
 -- Teleports player <name> to <p> if possible
 local function teleport_to_pos(name, p)
-	local lm = 31000
+	local lm = 31007 -- equals MAX_MAP_GENERATION_LIMIT in C++
 	if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm
 			or p.z < -lm or p.z > lm then
 		return false, S("Cannot teleport out of map bounds!")
