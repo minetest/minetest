@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
 "PO-Revision-Date: 2021-12-18 21:51+0000\n"
-"Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
+"Last-Translator: xerxstirb <xerxstirb@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
 "Language: sv\n"
@@ -2089,7 +2089,7 @@ msgstr "Slå av/på pitchmove"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr "tryck knapp"
+msgstr "tryck på knapp"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
