@@ -1459,7 +1459,7 @@ max_block_generate_distance (Max block generate distance) int 10
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
 #    Value is stored per-world.
-mapgen_limit (Map generation limit) int 31000 0 31000
+mapgen_limit (Map generation limit) int 31007 0 31007
 
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees

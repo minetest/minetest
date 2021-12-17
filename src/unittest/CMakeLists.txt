@@ -11,6 +11,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_filepath.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irrptr.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_map.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map_settings_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_modchannels.cpp
