@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <map>
-#include <vector>
 #include "util/basic_macros.h"
 #include "irrlichttypes.h"
 #include <IGUIFont.h>
 #include <IGUISkin.h>
 #include <IGUIEnvironment.h>
 #include "settings.h"
+#include "threading/mutex_auto_lock.h"
 
 #define FONT_SIZE_UNSPECIFIED 0xFFFFFFFF
 
@@ -151,6 +151,9 @@ private:
 
 	/** pointer to irrlicht gui environment */
 	gui::IGUIEnvironment* m_env = nullptr;
+
+	/** mutex used to protect font init and cache */
+	std::recursive_mutex m_font_mutex;
 
 	/** internal storage for caching fonts of different size */
 	std::map<unsigned int, irr::gui::IGUIFont*> m_font_cache[FM_MaxMode << 2];
