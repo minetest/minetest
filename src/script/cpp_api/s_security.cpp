@@ -129,12 +129,10 @@ void ScriptApiSecurity::initializeSecurity()
 		"traceback",
 		"getinfo",
 		"getmetatable",
-		"setupvalue",
 		"setmetatable",
 		"upvalueid",
 		"sethook",
 		"debug",
-		"setlocal",
 	};
 	static const char *package_whitelist[] = {
 		"config",
