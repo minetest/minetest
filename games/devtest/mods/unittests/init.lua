@@ -119,8 +119,7 @@ local function wait_for_map(player, callback)
 end
 
 function unittests.run_all()
-	-- This runs in a coroutine so it uses await(). Just don't forget that
-	-- await() cannot be used in an iterator loop.
+	-- This runs in a coroutine so it uses await().
 	local counters = { time = 0, total = 0, passed = 0 }
 
 	-- Run standalone tests first
