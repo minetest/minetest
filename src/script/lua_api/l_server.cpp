@@ -496,7 +496,7 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 
 	CHECK_SECURE_PATH(L, filepath.c_str(), false);
 
-	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(2);
+	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(L, 2);
 
 	bool ok = server->dynamicAddMedia(filepath, token, to_player, ephemeral);
 	if (!ok)
