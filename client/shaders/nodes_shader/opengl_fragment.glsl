@@ -540,7 +540,7 @@ void main(void)
 
 #if ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
-	col.rgb = saturation(col.rgb, 1.5);
+	col.rgb = saturation(col.rgb, SATURATION_PARAM);
 #endif
 
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),

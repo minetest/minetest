@@ -256,6 +256,7 @@ void set_default_settings()
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("tone_mapping", "false");
+	settings->setDefault("saturation_param","1.5");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
 	settings->setDefault("water_wave_length", "20.0");

@@ -552,6 +552,16 @@ shader_path (Shader path) path
 #    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
 
+[***Saturation Optimization]
+
+#    "Saturation Optimization" is an additional feature of tone mapping.
+#    It is necessary to enable tone mapping if you would like to enable it.
+#    The higher the value, the brighter the game screen looks
+#    The smaller the value, the darker the game screen looks
+#    1.0 = Disable saturation optimization
+#    Default is 1.5 
+saturation_param (Saturation Optimization) float 1.5 0.0
+
 [***Waving Nodes]
 
 #    Set to true to enable waving liquids (like water).

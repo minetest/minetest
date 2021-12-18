@@ -625,6 +625,15 @@
 #    type: bool
 # tone_mapping = false
 
+#    "Saturation Optimization" is an additional feature of tone mapping.
+#    It is necessary to enable tone mapping if you would like to enable it.
+#    The higher the value, the brighter the game screen looks
+#    The smaller the value, the darker the game screen looks
+#    1.0 = Disable saturation optimization
+#    Default is 1.5 
+#    type: float min:0
+# saturation_param = 1.5
+
 #### Waving Nodes
 
 #    Set to true to enable waving liquids (like water).
