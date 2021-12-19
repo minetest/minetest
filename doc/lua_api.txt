@@ -5665,8 +5665,6 @@ Sounds
       player actions (e.g. door closing).
 * `minetest.sound_stop(handle)`
     * `handle` is a handle returned by `minetest.sound_play`
-* `minetest.sound_stop_all()`
-      Stops all currently playing non-ephermeral sounds.
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
