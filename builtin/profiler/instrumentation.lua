@@ -102,8 +102,9 @@ local function instrument(def)
 		-- also called https://en.wikipedia.org/wiki/Continuation_passing_style
 		-- Compared to table creation and unpacking it won't lose `nil` returns
 		-- and is expected to be faster
-		-- `measure` will be executed after time() and func(...)
-		return measure(modname, instrument_name, time(), func(...))
+		-- `measure` will be executed after func(...)
+		local start = time()
+		return measure(modname, instrument_name, start, func(...))
 	end
 end
 
