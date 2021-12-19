@@ -112,6 +112,8 @@ inline static bool isPointableNode(const MapNode &n,
 	       (liquids_pointable && features.isLiquid());
 }
 
+// Find such i that for any j overlap[i] / extent[i] > overlap[j] / extent[j],
+// or overlap[i] * extent[j] > extent[i] * overlap[j]
 inline static void updateMaxOverlap(f32 overlap, f32 extent, f32& max_overlap, f32& max_overlap_extent)
 {
 	if (overlap > 0 && (max_overlap_extent == 0 || overlap * max_overlap_extent > extent * max_overlap)) {
@@ -125,7 +127,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 	const NodeDefManager *nodedef = getMap().getNodeDefManager();
 	if (state->m_initialization_needed) {
 		// Check boundaries
-		const float limit = MAX_MAP_GENERATION_LIMIT * BS;
+		const float limit = (MAX_MAP_GENERATION_LIMIT + 0.5f) * BS;
 		if (!std::isfinite(state->m_shootline.start.X) ||
 			!std::isfinite(state->m_shootline.start.Y) ||
 			!std::isfinite(state->m_shootline.start.Z) ||
@@ -134,10 +136,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			!std::isfinite(state->m_shootline.end.Z) ||
 			std::abs(state->m_shootline.start.X) > limit ||
 			std::abs(state->m_shootline.start.Y) > limit ||
-			std::abs(state->m_shootline.start.Z) > limit ||
-			std::abs(state->m_shootline.end.X) > 1000000 * limit ||
-			std::abs(state->m_shootline.end.Y) > 1000000 * limit ||
-			std::abs(state->m_shootline.end.Z) > 1000000 * limit) {
+			std::abs(state->m_shootline.start.Z) > limit) {
 			// Abort, no collisions
 			result->type = POINTEDTHING_NOTHING;
 			return;
@@ -153,7 +152,12 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 		updateMaxOverlap(std::abs(state->m_shootline.end.Z) - limit, std::abs(extent.Z), max_overlap, max_overlap_extent);
 
 		if (max_overlap_extent > 0)
-			state->m_shootline.end -= extent * max_overlap / max_overlap_extent; // Move it backwards
+			state->m_shootline.end -= extent * max_overlap / max_overlap_extent; // Move the extent backwards
+
+		// Fix possible overflows due to rounding errors
+		state->m_shootline.end.X = core::clamp(state->m_shootline.end.X, -limit, limit);
+		state->m_shootline.end.Y = core::clamp(state->m_shootline.end.Y, -limit, limit);
+		state->m_shootline.end.Z = core::clamp(state->m_shootline.end.Z, -limit, limit);
 
 		state->m_iterator = voxalgo::VoxelLineIterator(state->m_shootline.start / BS, state->m_shootline.getVector() / BS);
 		state->m_previous_node = state->m_iterator.m_current_node_pos;
