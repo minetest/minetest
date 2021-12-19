@@ -700,11 +700,14 @@ function pkgmgr.preparemodlist(data)
 				DIR_DELIM .. "world.mt"
 
 	local worldfile = Settings(filename)
-
-	for key,value in pairs(worldfile:to_table()) do
+	for key, value in pairs(worldfile:to_table()) do
 		if key:sub(1, 9) == "load_mod_" then
 			key = key:sub(10)
 			local mod_found = false
+
+			local fallback_found = false
+			local fallback_mod = nil
+
 			for i=1, #retval do
 				if retval[i].name == key and
 						not retval[i].is_modpack then
@@ -712,12 +715,22 @@ function pkgmgr.preparemodlist(data)
 						retval[i].enabled = true
 						mod_found = true
 						break
+					elseif fallback_found then
+						-- Only allow fallback if only one mod matches
+						fallback_mod = nil
+					else
+						fallback_found = true
+						fallback_mod = retval[i]
 					end
 				end
 			end
 
 			if not mod_found then
-				core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
+				if fallback_mod then
+					fallback_mod.enabled = true
+				else
+					core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
+				end
 			end
 		end
 	end
