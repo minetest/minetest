@@ -1860,6 +1860,8 @@ void GenericCAO::processMessage(const std::string &data)
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
+				if (m_reset_textures_timer > 1.0)
+					m_reset_textures_timer = 1.0;
 				updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 			}
 		}
@@ -1928,6 +1930,8 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
+			if (m_reset_textures_timer > 1.0)
+				m_reset_textures_timer = 1.0;
 			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}
