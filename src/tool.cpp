@@ -306,7 +306,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch,
 		u16 initial_wear)
 {
-	s16 damage = 0;
+	s32 damage = 0;
 	float result_wear = 0.0f;
 	float punch_interval_multiplier =
 			rangelim(time_from_last_punch / tp->full_punch_interval, 0.0f, 1.0f);
@@ -320,6 +320,8 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		result_wear = calculateResultWear(tp->punch_attack_uses, initial_wear);
 		result_wear *= punch_interval_multiplier;
 	}
+	// Keep damage in sane bounds for simplicity
+	damage = rangelim(damage, -U16_MAX, U16_MAX);
 
 	u32 wear_i = (u32) result_wear;
 	return {damage, wear_i};

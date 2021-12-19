@@ -3513,7 +3513,7 @@ Helper functions
 * `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch [, wear]])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
-    * `hp`: How much damage the punch would cause.
+    * `hp`: How much damage the punch would cause (between -65535 and 65535).
     * `wear`: How much wear would be added to the tool (ignored for non-tools).
     Parameters:
     * `groups`: Damage groups of the object
