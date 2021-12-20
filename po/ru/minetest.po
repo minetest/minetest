@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-12-17 13:52+0000\n"
-"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
+"PO-Revision-Date: 2021-12-20 21:44+0000\n"
+"Last-Translator: Stas Kies <stask85@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -1172,9 +1172,8 @@ msgid "Connection error (timed out?)"
 msgstr "Ошибка соединения (тайм-аут?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Невозможно найти или загрузить игру \""
+msgstr "Не удалось найти или загрузить игру: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1246,9 +1245,8 @@ msgid "- Server Name: "
 msgstr "- Имя сервера: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Произошла ошибка:"
+msgstr "Произошла ошибка сериализации:"
 
 #: src/client/game.cpp
 #, c-format
@@ -1264,9 +1262,8 @@ msgid "Automatic forward enabled"
 msgstr "Автобег включён"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Границы блока"
+msgstr "Границы блока скрыты"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
@@ -1305,9 +1302,8 @@ msgid "Cinematic mode enabled"
 msgstr "Режим кино включён"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Моддинг клиента"
+msgstr "Клиент отключился"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1918,9 +1914,8 @@ msgid "Minimap in texture mode"
 msgstr "Минимальный размер текстуры"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Не удалось загрузить $1"
+msgstr "Не удалось открыть веб-страницу"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
@@ -2129,9 +2124,9 @@ msgid "Muted"
 msgstr "Заглушить"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Громкость звука: "
+msgstr "Громкость звука: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2691,9 +2686,8 @@ msgid "Chat command time message threshold"
 msgstr "Порог cообщения команды чата"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
-msgstr "Команды в чате"
+msgstr "Команды чата"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2728,9 +2722,8 @@ msgid "Chat toggle key"
 msgstr "Кнопка переключения чата"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Отображение чата включено"
+msgstr "Веб-ссылки чата"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2970,13 +2963,12 @@ msgid "Crosshair alpha"
 msgstr "Прозрачность перекрестия"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Прозрачность прицела (от 0 (прозрачно) до 255 (непрозрачно)).\n"
-"Также контролирует цвет перекрестия объекта"
+"Также контролирует перекрестия объекта."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -4237,7 +4229,6 @@ msgstr ""
 "Обычно это нужно тем, кто пишет код для движка"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Instrument chat commands on registration."
 msgstr "Выполнять команды в чате при регистрации."
 
@@ -4328,7 +4319,6 @@ msgid "Joystick button repetition interval"
 msgstr "Интервал повторного клика кнопкой джойстика"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
 msgstr "Мертвая зона джойстика"
 
@@ -5770,7 +5760,6 @@ msgid "Mod channels"
 msgstr "Каналы модификаций"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Modifies the size of the HUD elements."
 msgstr "Изменяет размер элементов игрового интерфейса."
 
