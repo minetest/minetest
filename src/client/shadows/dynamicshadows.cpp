@@ -55,9 +55,9 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float cos_light = abs(cam_dir.dotProduct(direction));
 	float sin_light = sqrt(1 - sqr(cos_light));
 
-	v3f light_up = -direction;
-	v3f light_right = light_up.crossProduct(cam_dir).normalize();
-	v3f light_dir = light_right.crossProduct(light_up).normalize();
+	v3f lcam_up = -direction;
+	v3f lcam_right = lcam_up.crossProduct(cam_dir).normalize();
+	v3f lcam_dir = lcam_right.crossProduct(lcam_up).normalize();
 
 	// Define camera position and focus point in the view frustum
 	float center_distance = cam_near + 0.5 * (cam_far - cam_near);
@@ -69,9 +69,9 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	// scale n when light and camera vectors are aligned
 	n /= MYMIN(0.15, MYMAX(0.001, pow(sin_light, 2.6))); // power of 2.6 aligns perspective compression with rotation
 
-	v3f p = center - (n + radius + BS) * light_dir;
+	v3f p = center - (n + radius + BS) * lcam_dir;
 	m4f viewmatrix;
-	viewmatrix.buildCameraLookAtMatrixLH(p, center, light_up);
+	viewmatrix.buildCameraLookAtMatrixLH(p, center, lcam_up);
 
 	// Build light camera projection from point p to 
 	// a sphere with center 'center' and radius 'radius'.
@@ -95,6 +95,24 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	);
 	s *= projmatrix;
 	projmatrix = s;
+
+	// calculate reference direction of the light
+	v3f light_right = direction.crossProduct(v3f(0,1,0));
+	if (light_right.getLengthSQ() < 1E-5)
+		light_right = v3f(0,0,1);
+	light_right = light_right.normalize();
+
+	v3f v = light_right.crossProduct(lcam_right);
+	float c = lcam_right.dotProduct(light_right);
+
+	float angle = acos(c) + M_PI;
+	if (v.dotProduct(direction) < 0)
+		angle = -angle;
+	
+	m4f f(core::matrix4::EM4CONST_IDENTITY);
+	f.setRotationAxisRadians(angle, v3f(0,0,1));
+	f *= projmatrix;
+	projmatrix = f;
 
 	// update the frustum settings
 	future_frustum.position = cam->getPosition() - 1600.0f * direction;
