@@ -652,26 +652,6 @@ void GUIEditBoxWithScrollBar::setBackgroundColor(const video::SColor &bg_color)
 	m_bg_color_used = true;
 }
 
-//! Writes attributes of the element.
-void GUIEditBoxWithScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options = 0) const
-{
-	out->addBool("Border", m_border);
-	out->addBool("Background", m_background);
-	// out->addFont("OverrideFont", OverrideFont);
-
-	GUIEditBox::serializeAttributes(out, options);
-}
-
-
-//! Reads attributes of the element
-void GUIEditBoxWithScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options = 0)
-{
-	GUIEditBox::deserializeAttributes(in, options);
-
-	setDrawBorder(in->getAttributeAsBool("Border"));
-	setDrawBackground(in->getAttributeAsBool("Background"));
-}
-
 bool GUIEditBoxWithScrollBar::isDrawBackgroundEnabled() const { return false; }
 bool GUIEditBoxWithScrollBar::isDrawBorderEnabled() const { return false; }
 void GUIEditBoxWithScrollBar::setCursorChar(const wchar_t cursorChar) { }

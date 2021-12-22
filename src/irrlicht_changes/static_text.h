@@ -184,12 +184,6 @@ namespace gui
 		//! Checks if the text should be interpreted as right-to-left text
 		virtual bool isRightToLeft() const;
 
-		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
-
-		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
-
 		virtual bool hasType(EGUI_ELEMENT_TYPE t) const {
 			return (t == EGUIET_ENRICHED_STATIC_TEXT) || (t == EGUIET_STATIC_TEXT);
 		};
