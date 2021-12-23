@@ -23,11 +23,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "config.h"
 
-// Can be used in place of "caller" in asynchronous transfers to discard result
-// (used as default value of "caller")
+// These can be used in place of "caller" in to specify special handling.
+// Discard result (used as default value of "caller").
 #define HTTPFETCH_DISCARD 0
+// Indicates that the result should not be discarded when performing a
+// synchronous request (since a real caller ID is not needed for synchronous
+// requests because the result does not have to be retrieved later).
 #define HTTPFETCH_SYNC 1
+// Print response body to console if the server returns an error code.
 #define HTTPFETCH_PRINT_ERR 2
+// Start of regular allocated caller IDs.
 #define HTTPFETCH_CID_START 3
 
 //  Methods
