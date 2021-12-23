@@ -887,3 +887,18 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 
 	return wide_to_utf8(safe_name);
 }
+
+
+void safe_print_string(std::ostream &os, const std::string &str)
+{
+	std::ostream::fmtflags flags = os.flags();
+	os << std::hex;
+	for (const char c : str) {
+		if (IS_ASCII_PRINTABLE_CHAR(c) || c == '\n' || c == '\t') {
+			os << c;
+		} else {
+			os << '<' << std::setw(2) << (int)c << '>';
+		}
+	}
+	os.setf(flags);
+}
