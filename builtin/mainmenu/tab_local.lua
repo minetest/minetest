@@ -187,7 +187,7 @@ local function get_formspec(tabview, name, tabdata)
 			damage ..
 			host ..
 			"textlist[3.9,0.4;7.9,3.45;sp_worlds;" ..
-			menu_render_worldlist() ..
+			menu_render_worldlist(not enable_gamebar) ..
 			";" .. index .. "]"
 
 	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
