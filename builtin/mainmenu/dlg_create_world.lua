@@ -15,6 +15,9 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+-- cf. tab_local, the gamebar already provides game selection so we hide the list from here
+local hide_gamelist = PLATFORM ~= "Android"
+
 local worldname = ""
 
 local function table_to_flags(ftable)
@@ -122,21 +125,18 @@ local function create_world_formspec(dialogdata)
 		flat = core.settings:get_flags("mgflat_spflags"),
 	}
 
-	local gameidx = 0
-	if gameid ~= nil then
-		local _
-		_, gameidx = pkgmgr.find_by_gameid(gameid)
-
-		if gameidx == nil then
-			gameidx = 0
-		end
+	local game, gameidx = pkgmgr.find_by_gameid(gameid)
+	if game == nil and hide_gamelist then
+		-- should never happen but just pick the first game
+		game = pkgmgr.get_game(1)
+		gameidx = 1
+	elseif game == nil then
+		gameidx = 0
 	end
 
-	local game_by_gameidx = core.get_game(gameidx)
 	local disallowed_mapgen_settings = {}
-	if game_by_gameidx ~= nil then
-		local gamepath = game_by_gameidx.path
-		local gameconfig = Settings(gamepath.."/game.conf")
+	if game ~= nil then
+		local gameconfig = Settings(game.path.."/game.conf")
 
 		local allowed_mapgens = (gameconfig:get("allowed_mapgens") or ""):split()
 		for key, value in pairs(allowed_mapgens) do
@@ -156,7 +156,7 @@ local function create_world_formspec(dialogdata)
 			end
 		end
 
-		if disallowed_mapgens then
+		if #disallowed_mapgens > 0 then
 			for i = #mapgens, 1, -1 do
 				if table.indexof(disallowed_mapgens, mapgens[i]) > 0 then
 					table.remove(mapgens, i)
@@ -330,14 +330,19 @@ local function create_world_formspec(dialogdata)
 		";".. current_seed .. "]" ..
 
 		"label[0,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[0,2.5;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[0,2.5;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]"
 
-		"label[0,3.35;" .. fgettext("Game") .. "]"..
-		"textlist[0,3.85;5.8,"..gamelist_height..";games;" ..
-		pkgmgr.gamelist() .. ";" .. gameidx .. ";false]" ..
-		"container[0,4.5]" ..
-		devtest_only ..
-		"container_end[]" ..
+	if not hide_gamelist or devtest_only ~= "" then
+		retval = retval ..
+			"label[0,3.35;" .. fgettext("Game") .. "]"..
+			"textlist[0,3.85;5.8,"..gamelist_height..";games;" ..
+			pkgmgr.gamelist() .. ";" .. gameidx .. ";false]" ..
+			"container[0,4.5]" ..
+			devtest_only ..
+			"container_end[]"
+	end
+
+	retval = retval ..
 		"container_end[]" ..
 
 		-- Right side
@@ -360,9 +365,15 @@ local function create_world_buttonhandler(this, fields)
 		fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
-		local gameindex = core.get_textlist_index("games")
+		local game, gameindex
+		if hide_gamelist then
+			game, gameindex = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+		else
+			gameindex = core.get_textlist_index("games")
+			game = pkgmgr.get_game(gameindex)
+		end
 
-		if gameindex ~= nil then
+		if game ~= nil then
 			-- For unnamed worlds use the generated name 'world<number>',
 			-- where the number increments: it is set to 1 larger than the largest
 			-- generated name number found.
@@ -390,14 +401,13 @@ local function create_world_buttonhandler(this, fields)
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
-				core.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
+				core.settings:set("menu_last_game", game.id)
 				if this.data.update_worldlist_filter then
-					menudata.worldlist:set_filtercriteria(pkgmgr.games[gameindex].id)
-					mm_game_theme.update("singleplayer", pkgmgr.games[gameindex].id)
+					menudata.worldlist:set_filtercriteria(game.id)
 				end
 				menudata.worldlist:refresh()
 				core.settings:set("mainmenu_last_selected_world",
-									menudata.worldlist:raw_index_by_uid(worldname))
+						menudata.worldlist:raw_index_by_uid(worldname))
 			end
 		else
 			gamedata.errormessage = fgettext("No game selected")
