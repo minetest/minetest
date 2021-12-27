@@ -274,7 +274,7 @@ void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 {
 	static thread_local const bool many_neighbors =
 			g_settings->getBool("smooth_lighting")
-			&& !g_settings->getFlag("simplified_smooth_lighting");
+			&& !g_settings->getFlag("performance_tradeoffs");
 	if (!m_queue_in.addBlock(map, p, ack_block_to_server, urgent)) {
 		warningstream << "Update requested for non-existent block at ("
 				<< p.X << ", " << p.Y << ", " << p.Z << ")" << std::endl;
