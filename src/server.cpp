@@ -1372,7 +1372,8 @@ void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReas
 		HandlePlayerDeath(playersao, reason);
 }
 
-void Server::SendPlayerHP(PlayerSAO *playersao) {
+void Server::SendPlayerHP(PlayerSAO *playersao)
+{
 	SendHP(playersao->getPeerID(), playersao->getHP());
 }
 
