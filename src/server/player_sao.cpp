@@ -463,41 +463,32 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
 }
 
-void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason, bool from_client)
+void PlayerSAO::setHP(s32 orig_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	if (hp == (s32)m_hp)
+	if (orig_hp < 0)
+		orig_hp = 0; // Cannot take more damage
+
+	s32 old_hp = m_hp;
+
+	if (orig_hp == old_hp)
 		return; // Nothing to do
 
-	if (m_hp <= 0 && hp < (s32)m_hp)
-		return; // Cannot take more damage
+	s32 hp = old_hp + m_env->getScriptIface()->on_player_hpchange(this, orig_hp - old_hp, reason);
 
-	{
-		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - m_hp, reason);
-		if (hp_change == 0) {
-			if (from_client) // Correct client side prediction
-				m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
-			return;
-		}
+	if (hp > m_prop.hp_max)
+		hp = m_prop.hp_max;
 
-		hp = m_hp + hp_change;
-	}
+	if (hp < old_hp && isImmortal())
+		hp = old_hp; // Do not allow immortal players to be damaged
 
-	s32 oldhp = m_hp;
-	hp = rangelim(hp, 0, m_prop.hp_max);
-
-	if (hp < oldhp && isImmortal()) { // Do not allow immortal players to be damaged
-		if (from_client) // Correct client side prediction
-			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
-		return;
-	}
-
-	m_hp = hp;
+	m_hp = old_hp;
 
 	// Update properties on death
-	if ((hp == 0) != (oldhp == 0))
+	if ((hp == 0) != (old_hp == 0))
 		m_properties_sent = false;
 
-	m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
+	if (from_client ? (hp != orig_hp || hp == 0) : (hp != old_hp))
+		m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)
