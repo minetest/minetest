@@ -163,8 +163,8 @@ void UDPSocket::Bind(Address addr)
 		struct sockaddr_in6 address;
 		memset(&address, 0, sizeof(address));
 
-		address = addr.getAddress6();
 		address.sin6_family = AF_INET6;
+		address.sin6_addr = addr.getAddress6();
 		address.sin6_port = htons(addr.getPort());
 
 		ret = bind(m_handle, (const struct sockaddr *) &address,
@@ -173,8 +173,8 @@ void UDPSocket::Bind(Address addr)
 		struct sockaddr_in address;
 		memset(&address, 0, sizeof(address));
 
-		address = addr.getAddress();
 		address.sin_family = AF_INET;
+		address.sin_addr = addr.getAddress();
 		address.sin_port = htons(addr.getPort());
 
 		ret = bind(m_handle, (const struct sockaddr *) &address,
@@ -231,13 +231,19 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 
 	int sent;
 	if (m_addr_family == AF_INET6) {
-		struct sockaddr_in6 address = destination.getAddress6();
+		struct sockaddr_in6 address = {0};
+		address.sin6_family = AF_INET6;
+		address.sin6_addr = destination.getAddress6();
 		address.sin6_port = htons(destination.getPort());
+
 		sent = sendto(m_handle, (const char *)data, size, 0,
 				(struct sockaddr *)&address, sizeof(struct sockaddr_in6));
 	} else {
-		struct sockaddr_in address = destination.getAddress();
+		struct sockaddr_in address = {0};
+		address.sin_family = AF_INET;
+		address.sin_addr = destination.getAddress();
 		address.sin_port = htons(destination.getPort());
+
 		sent = sendto(m_handle, (const char *)data, size, 0,
 				(struct sockaddr *)&address, sizeof(struct sockaddr_in));
 	}
@@ -265,9 +271,9 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 			return -1;
 
 		u16 address_port = ntohs(address.sin6_port);
-		IPv6AddressBytes bytes;
-		memcpy(bytes.bytes, address.sin6_addr.s6_addr, 16);
-		sender = Address(&bytes, address_port);
+		const auto *bytes = reinterpret_cast<IPv6AddressBytes*>
+			(address.sin6_addr.s6_addr);
+		sender = Address(bytes, address_port);
 	} else {
 		struct sockaddr_in address;
 		memset(&address, 0, sizeof(address));
