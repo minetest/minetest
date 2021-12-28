@@ -465,8 +465,7 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	if (hp < 0)
-		hp = 0; // Cannot take more damage
+	hp = rangelim(hp, 0, U16_MAX);
 
 	if (hp == m_hp)
 		return; // Nothing to do
