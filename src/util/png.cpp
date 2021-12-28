@@ -37,11 +37,11 @@ static void writeChunk(std::ostringstream &target, const std::string &chunk_str)
 
 std::string encodePNG(const u8 *data, u32 width, u32 height, s32 compression)
 {
-	auto file = std::ostringstream(std::ios::binary);
+	std::ostringstream file(std::ios::binary);
 	file << "\x89PNG\r\n\x1a\n";
 
 	{
-		auto IHDR = std::ostringstream(std::ios::binary);
+		std::ostringstream IHDR(std::ios::binary);
 		IHDR << "IHDR";
 		writeU32(IHDR, width);
 		writeU32(IHDR, height);
@@ -51,9 +51,9 @@ std::string encodePNG(const u8 *data, u32 width, u32 height, s32 compression)
 	}
 
 	{
-		auto IDAT = std::ostringstream(std::ios::binary);
+		std::ostringstream IDAT(std::ios::binary);
 		IDAT << "IDAT";
-		auto scanlines = std::ostringstream(std::ios::binary);
+		std::ostringstream scanlines(std::ios::binary);
 		for(u32 i = 0; i < height; i++) {
 			scanlines.write("\x00", 1); // Null predictor
 			scanlines.write((const char*) data + width * 4 * i, width * 4);

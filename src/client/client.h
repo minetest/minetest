@@ -548,7 +548,7 @@ private:
 	// Set of media filenames pushed by server at runtime
 	std::unordered_set<std::string> m_media_pushed_files;
 	// Pending downloads of dynamic media (key: token)
-	std::vector<std::pair<u32, std::unique_ptr<SingleMediaDownloader>>> m_pending_media_downloads;
+	std::vector<std::pair<u32, std::shared_ptr<SingleMediaDownloader>>> m_pending_media_downloads;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set = false;
