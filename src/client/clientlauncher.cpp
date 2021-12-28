@@ -133,9 +133,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	init_input();
 
-	m_rendering_engine->get_scene_manager()->getParameters()->
-		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
-
 	guienv = m_rendering_engine->get_gui_env();
 	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
