@@ -809,7 +809,7 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	const v3f camera_direction = shadow_light_dir;
 	// I "fake" fov just to avoid creating a new function to handle orthographic
 	// projection.
-	const f32 camera_fov = m_camera_fov * 1.9f;
+	const f32 camera_fov = asin(shadow_range / (m_camera_position - shadow_light_pos).getLength());
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 p_blocks_min;
