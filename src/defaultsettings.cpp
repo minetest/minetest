@@ -184,6 +184,7 @@ void set_default_settings()
 	settings->setDefault("leaves_style", "fancy");
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
+	settings->setDefault("performance_tradeoffs", "false");
 	settings->setDefault("lighting_alpha", "0.0");
 	settings->setDefault("lighting_beta", "1.5");
 	settings->setDefault("display_gamma", "1.0");
@@ -477,6 +478,7 @@ void set_default_settings()
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("smooth_lighting", "false");
+	settings->setDefault("performance_tradeoffs", "true");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("emergequeue_limit_diskonly", "16");
 	settings->setDefault("emergequeue_limit_generate", "16");

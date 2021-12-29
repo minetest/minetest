@@ -475,6 +475,10 @@ connected_glass (Connect glass) bool false
 #    Disable for speed or for different looks.
 smooth_lighting (Smooth lighting) bool true
 
+#    Enables tradeoffs that reduce CPU load or increase rendering performance
+#    at the expense of minor visual glitches that do not impact game playability.
+performance_tradeoffs (Tradeoffs for performance) bool false
+
 #    Clouds are a client side effect.
 enable_clouds (Clouds) bool true
 
