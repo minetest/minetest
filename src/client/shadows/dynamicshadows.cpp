@@ -52,42 +52,44 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	// X (right) axis complements the Y and Z
 
 	// When looking towards or away from the light, use player's X axis as light space X
-	float r = abs(cam_dir.dotProduct(direction));
+	float cos_light = abs(cam_dir.dotProduct(direction));
+	float sin_light = sqrt(1 - sqr(cos_light));
 
 	v3f light_up = -direction;
-	v3f light_right = (1 - r) * light_up.crossProduct(cam_dir).normalize() + r * cam_right;
-	if (light_right.dotProduct(cam_right) < 0)
-		light_right = -light_right;
+	v3f light_right = light_up.crossProduct(cam_dir).normalize();
 	v3f light_dir = light_right.crossProduct(light_up).normalize();
 
 	// Define camera position and focus point in the view frustum
-	v3f center = cam_pos + cam_dir * (0.9 * cam_near + 0.1 * cam_far);
+	float center_distance = cam_near + 0.5 * (cam_far - cam_near);
+	v3f center = cam_pos + cam_dir * center_distance;
 	float radius = (center - top_right_corner).getLength();
 
-	float n = cam_near + sqrt(cam_near * cam_far);
+	// Perspective parameter
+	float n = cam_near + sqrt(cam_near * (cam_near + 2 * radius));
 	// scale n when light and camera vectors are aligned
-	n /= MYMAX(0.0001, pow(1 - r, 4.0));
-	v3f p = center - (n + radius) * light_dir;
+	n /= MYMIN(0.15, MYMAX(0.001, pow(sin_light, 2.6))); // power of 2.6 aligns perspective compression with rotation
 
+	v3f p = center - (n + radius + BS) * light_dir;
 	m4f viewmatrix;
 	viewmatrix.buildCameraLookAtMatrixLH(p, center, light_up);
 
 	// Build light camera projection from point p to 
 	// a sphere with center 'center' and radius 'radius'.
-	float light_near = n;
-	float light_far = n + 2 * radius;
-	float max_dx = radius / (n + radius);
-	float max_dy = radius / (n + radius);
-
-	float aspect = max_dy/max_dx;
+	float light_near = n + MYMIN(radius * (1.0 - sin_light), radius * (1.0 - cos_light));
+	float light_far = n + 2 * MYMAX(radius * sin_light, radius * cos_light);
+	// float fov_dy = (0.55 + 0.45 * sin_light) * radius / (n + radius);  // balance between aliasing and size of the shadowed area
+	float fov_dy = MYMAX(radius * sin_light, radius * cos_light) / (n + radius);
+	float fov_dx = fov_dy;
+	float aspect = fov_dy / fov_dx;
 
 	// Define projection matrix
 	// s swaps Y and Z axes, so that we render from the direction of light
 	m4f projmatrix;
-	projmatrix.buildProjectionMatrixPerspectiveFovLH(asin(max_dy) * 2.0f, aspect, light_near, light_far, false);
+	projmatrix.buildProjectionMatrixPerspectiveFovLH(atan(fov_dy) * 2.0f, aspect, light_near, light_far, false);
 	m4f s(
 		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f / mapRes, 0.0f,
+		// 0.0f, 0.0f, -1.0f / (10 * MAP_BLOCKSIZE * BS / 2 * radius), 0.0f,
+		0.0f, 0.0f, -1.0f / (2 * radius), 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
