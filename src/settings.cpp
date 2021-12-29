@@ -659,13 +659,19 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 
 bool Settings::exists(const std::string &name) const
 {
-	MutexAutoLock lock(m_mutex);
-
-	if (m_settings.find(name) != m_settings.end())
+	if (existsLocal(name))
 		return true;
 	if (auto parent = getParent())
 		return parent->exists(name);
 	return false;
+}
+
+
+bool Settings::existsLocal(const std::string &name) const
+{
+	MutexAutoLock lock(m_mutex);
+
+	return m_settings.find(name) != m_settings.end();
 }
 
 
