@@ -56,7 +56,6 @@ vec3 getLightSpacePosition()
 {
 	vec4 pLightSpace;
 	float linear_bias = 0.2; // empirical
-	// some drawtypes have zero normals, so we need to handle it :(
 	pLightSpace = m_ShadowViewProj * vec4(worldPosition - linear_bias * v_LightDirection, 1.0);
 	pLightSpace /= pLightSpace.w;
 	return pLightSpace.xyz * 0.5 + 0.5;
@@ -119,12 +118,15 @@ float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 #if SHADOW_FILTER == 2
 	#define PCFBOUND 1.5	// 16 samples
 	#define PCFSAMPLES 16.0
+	#define PCFRADIUS 0.7
 #elif SHADOW_FILTER == 1
 	#define PCFBOUND 0.5	// 4 samples
 	#define PCFSAMPLES 4.0
+	#define PCFRADIUS 2.0
 #else
 	#define PCFBOUND 0.0
 	#define PCFSAMPLES 1.0
+	#define PCFRADIUS 0.0
 #endif
 #ifdef COLORED_SHADOWS
 float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
@@ -147,7 +149,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	if (PCFBOUND == 0.0) return 0.0;
 	// Return fast if sharp shadows are requested
 	if (SOFTSHADOWRADIUS <= 1.0) {
-		return PCFBOUND;
+		return PCFRADIUS;
 	}
 
 	vec2 clampedpos;
@@ -156,7 +158,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float depth = 0.0;
 	float pointDepth;
 	// 512 below is the lowest texture resolution
-	float maxRadius = PCFBOUND * SOFTSHADOWRADIUS * f_textureresolution / 512.0 * multiplier;
+	float maxRadius = PCFRADIUS * SOFTSHADOWRADIUS * f_textureresolution / 512.0 * multiplier;
 	float bound = PCFBOUND;
 
 	int n = 0;
@@ -173,7 +175,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 
 	depth = depth / n;
 	depth = clamp(f_textureresolution * pow(depth, 1.0), 0.0, 1.0);
-	return max(PCFBOUND, depth * maxRadius);
+	return max(PCFRADIUS, depth * maxRadius);
 }
 
 #ifdef POISSON_FILTER
