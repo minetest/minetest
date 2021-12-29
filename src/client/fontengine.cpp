@@ -258,9 +258,8 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 			g_settings->getFloat("gui_scaling"), 1);
 
 	// Constrain the font size to a certain multiple, if necessary
-	u16 divisible_by = 1;
-	g_settings->getU16NoEx(setting_prefix + "font_size_divisible_by", divisible_by);
-	if (divisible_by != 1) {
+	u16 divisible_by = g_settings->getU16(setting_prefix + "font_size_divisible_by");
+	if (divisible_by > 1) {
 		size = std::max<u32>(
 				std::round((double)size / divisible_by) * divisible_by, divisible_by);
 	}
