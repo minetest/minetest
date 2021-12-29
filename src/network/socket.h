@@ -19,18 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#ifdef _WIN32
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
-
 #include <ostream>
 #include <cstring>
 #include "address.h"
@@ -53,8 +41,6 @@ public:
 
 	bool init(bool ipv6, bool noExceptions = false);
 
-	// void Close();
-	// bool IsOpen();
 	void Send(const Address &destination, const void *data, int size);
 	// Returns -1 if there is no data
 	int Receive(Address &sender, void *data, int size);
