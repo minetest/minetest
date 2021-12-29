@@ -55,7 +55,10 @@ float getLinearDepth()
 vec3 getLightSpacePosition()
 {
 	vec4 pLightSpace;
-	float linear_bias = 0.2; // empirical
+	float linear_bias = f_shadowfar / f_textureresolution; // 1 SM texel in world space
+	if (length(vNormal) > 0.0) {
+		linear_bias /= 4.0; // empirical, 0.25 texel seems enough for most cases
+	}
 	pLightSpace = m_ShadowViewProj * vec4(worldPosition - linear_bias * v_LightDirection, 1.0);
 	pLightSpace /= pLightSpace.w;
 	return pLightSpace.xyz * 0.5 + 0.5;
