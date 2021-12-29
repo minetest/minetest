@@ -414,25 +414,53 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 	const char *name	= luaL_checkstring(L, 1);
 	int gameidx			= luaL_checkinteger(L,2) -1;
 
+	StringMap use_settings;
+	luaL_checktype(L, 3, LUA_TTABLE);
+	lua_pushnil(L);
+	while (lua_next(L, 3) != 0) {
+		// key at index -2 and value at index -1
+		use_settings[luaL_checkstring(L, -2)] = luaL_checkstring(L, -1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
 	std::string path = porting::path_user + DIR_DELIM
 			"worlds" + DIR_DELIM
 			+ sanitizeDirName(name, "world_");
 
 	std::vector<SubgameSpec> games = getAvailableGames();
-
-	if ((gameidx >= 0) &&
-			(gameidx < (int) games.size())) {
-
-		// Create world if it doesn't exist
-		try {
-			loadGameConfAndInitWorld(path, name, games[gameidx], true);
-			lua_pushnil(L);
-		} catch (const BaseException &e) {
-			lua_pushstring(L, (std::string("Failed to initialize world: ") + e.what()).c_str());
-		}
-	} else {
+	if (gameidx < 0 || gameidx >= (int) games.size()) {
 		lua_pushstring(L, "Invalid game index");
+		return 1;
 	}
+
+	// Set the settings for world creation
+	// this is a bad hack but the best we have right now..
+	StringMap backup;
+	for (auto it : use_settings) {
+		if (g_settings->existsLocal(it.first))
+			backup[it.first] = g_settings->get(it.first);
+		g_settings->set(it.first, it.second);
+	}
+
+	// Create world if it doesn't exist
+	try {
+		loadGameConfAndInitWorld(path, name, games[gameidx], true);
+		lua_pushnil(L);
+	} catch (const BaseException &e) {
+		auto err = std::string("Failed to initialize world: ") + e.what();
+		lua_pushstring(L, err.c_str());
+	}
+
+	// Restore previous settings
+	for (auto it : use_settings) {
+		auto it2 = backup.find(it.first);
+		if (it2 == backup.end())
+			g_settings->remove(it.first); // wasn't set before
+		else
+			g_settings->set(it.first, it2->second); // was set before
+	}
+
 	return 1;
 }
 
