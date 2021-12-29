@@ -52,14 +52,7 @@ MapSettingsManager::~MapSettingsManager()
 bool MapSettingsManager::getMapSetting(
 	const std::string &name, std::string *value_out)
 {
-	// Try getting it normally first
-	if (m_map_settings->getNoEx(name, *value_out))
-		return true;
-
-	// If not we may have to resolve some compatibility kludges
-	if (name == "seed")
-		return Settings::getLayer(SL_GLOBAL)->getNoEx("fixed_map_seed", *value_out);
-	return false;
+	return m_map_settings->getNoEx(name, *value_out);
 }
 
 
