@@ -23,14 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include <cerrno>
-#include <sstream>
 #include <iomanip>
 #include "util/string.h"
 #include "util/numeric.h"
 #include "constants.h"
 #include "debug.h"
-#include "settings.h"
 #include "log.h"
 
 #ifdef _WIN32
@@ -42,9 +39,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #define LAST_SOCKET_ERR() WSAGetLastError()
-typedef SOCKET socket_t;
+#define SOCKET_ERR_STR(e) itos(e)
 typedef int socklen_t;
 #else
+#include <cerrno>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -53,7 +51,7 @@ typedef int socklen_t;
 #include <unistd.h>
 #include <arpa/inet.h>
 #define LAST_SOCKET_ERR() (errno)
-typedef int socket_t;
+#define SOCKET_ERR_STR(e) strerror(e)
 #endif
 
 // Set to true to enable verbose debug output
@@ -113,7 +111,7 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 		}
 
 		throw SocketException(std::string("Failed to create socket: error ") +
-				      itos(LAST_SOCKET_ERR()));
+				      SOCKET_ERR_STR(LAST_SOCKET_ERR()));
 	}
 
 	setTimeoutMs(0);
@@ -153,40 +151,40 @@ void UDPSocket::Bind(Address addr)
 	}
 
 	if (addr.getFamily() != m_addr_family) {
-		static const char *errmsg =
+		const char *errmsg =
 				"Socket and bind address families do not match";
 		errorstream << "Bind failed: " << errmsg << std::endl;
 		throw SocketException(errmsg);
 	}
 
+	int ret = 0;
+
 	if (m_addr_family == AF_INET6) {
 		struct sockaddr_in6 address;
 		memset(&address, 0, sizeof(address));
 
-		address = addr.getAddress6();
 		address.sin6_family = AF_INET6;
+		address.sin6_addr = addr.getAddress6();
 		address.sin6_port = htons(addr.getPort());
 
-		if (bind(m_handle, (const struct sockaddr *)&address,
-				    sizeof(struct sockaddr_in6)) < 0) {
-			dstream << (int)m_handle << ": Bind failed: " << strerror(errno)
-				<< std::endl;
-			throw SocketException("Failed to bind socket");
-		}
+		ret = bind(m_handle, (const struct sockaddr *) &address,
+				sizeof(struct sockaddr_in6));
 	} else {
 		struct sockaddr_in address;
 		memset(&address, 0, sizeof(address));
 
-		address = addr.getAddress();
 		address.sin_family = AF_INET;
+		address.sin_addr = addr.getAddress();
 		address.sin_port = htons(addr.getPort());
 
-		if (bind(m_handle, (const struct sockaddr *)&address,
-				    sizeof(struct sockaddr_in)) < 0) {
-			dstream << (int)m_handle << ": Bind failed: " << strerror(errno)
-				<< std::endl;
-			throw SocketException("Failed to bind socket");
-		}
+		ret = bind(m_handle, (const struct sockaddr *) &address,
+			sizeof(struct sockaddr_in));
+	}
+
+	if (ret < 0) {
+		dstream << (int)m_handle << ": Bind failed: "
+			<< SOCKET_ERR_STR(LAST_SOCKET_ERR()) << std::endl;
+		throw SocketException("Failed to bind socket");
 	}
 }
 
@@ -233,13 +231,19 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 
 	int sent;
 	if (m_addr_family == AF_INET6) {
-		struct sockaddr_in6 address = destination.getAddress6();
+		struct sockaddr_in6 address = {0};
+		address.sin6_family = AF_INET6;
+		address.sin6_addr = destination.getAddress6();
 		address.sin6_port = htons(destination.getPort());
+
 		sent = sendto(m_handle, (const char *)data, size, 0,
 				(struct sockaddr *)&address, sizeof(struct sockaddr_in6));
 	} else {
-		struct sockaddr_in address = destination.getAddress();
+		struct sockaddr_in address = {0};
+		address.sin_family = AF_INET;
+		address.sin_addr = destination.getAddress();
 		address.sin_port = htons(destination.getPort());
+
 		sent = sendto(m_handle, (const char *)data, size, 0,
 				(struct sockaddr *)&address, sizeof(struct sockaddr_in));
 	}
@@ -267,9 +271,9 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 			return -1;
 
 		u16 address_port = ntohs(address.sin6_port);
-		IPv6AddressBytes bytes;
-		memcpy(bytes.bytes, address.sin6_addr.s6_addr, 16);
-		sender = Address(&bytes, address_port);
+		const auto *bytes = reinterpret_cast<IPv6AddressBytes*>
+			(address.sin6_addr.s6_addr);
+		sender = Address(bytes, address_port);
 	} else {
 		struct sockaddr_in address;
 		memset(&address, 0, sizeof(address));
@@ -341,7 +345,12 @@ bool UDPSocket::WaitData(int timeout_ms)
 	if (result == 0)
 		return false;
 
-	if (result < 0 && (errno == EINTR || errno == EBADF)) {
+	int e = LAST_SOCKET_ERR();
+#ifdef _WIN32
+	if (result < 0 && (e == WSAEINTR || e == WSAEBADF)) {
+#else
+	if (result < 0 && (e == EINTR || e == EBADF)) {
+#endif
 		// N.B. select() fails when sockets are destroyed on Connection's dtor
 		// with EBADF.  Instead of doing tricky synchronization, allow this
 		// thread to exit but don't throw an exception.
@@ -349,17 +358,8 @@ bool UDPSocket::WaitData(int timeout_ms)
 	}
 
 	if (result < 0) {
-		dstream << m_handle << ": Select failed: " << strerror(errno)
+		dstream << (int)m_handle << ": Select failed: " << SOCKET_ERR_STR(e)
 			<< std::endl;
-
-#ifdef _WIN32
-		int e = WSAGetLastError();
-		dstream << (int)m_handle << ": WSAGetLastError()=" << e << std::endl;
-		if (e == 10004 /* WSAEINTR */ || e == 10009 /* WSAEBADF */) {
-			infostream << "Ignoring WSAEINTR/WSAEBADF." << std::endl;
-			return false;
-		}
-#endif
 
 		throw SocketException("Select failed");
 	} else if (!FD_ISSET(m_handle, &readset)) {
