@@ -279,6 +279,8 @@ protected:
 	v2s32 getElementBasePos(const std::vector<std::string> *v_pos);
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
+	bool precheckElement(const std::string &name, const std::string &element,
+		size_t args_min, size_t args_max, std::vector<std::string> &parts);
 
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_type;
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_name;

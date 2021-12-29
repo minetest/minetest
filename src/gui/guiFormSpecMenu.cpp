@@ -81,6 +81,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			" specified: \"" << parts[b] << "\"" << std::endl;				\
 			return;															\
 	}
+
+#define MY_CHECKCLIENT(a) \
+	if (!m_client) { \
+		errorstream << "Attempted to use element " << a << " with m_client == nullptr." << std::endl; \
+		return; \
+	}
+
 /*
 	GUIFormSpecMenu
 */
@@ -294,8 +301,20 @@ v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> 
 	return v2s32(stof(v_geom[0]) * imgsize.X, stof(v_geom[1]) * imgsize.Y);
 }
 
+bool GUIFormSpecMenu::precheckElement(const std::string &name, const std::string &element,
+	size_t args_min, size_t args_max, std::vector<std::string> &parts)
+{
+	parts = split(element, ';');
+	if (parts.size() >= args_min && (parts.size() <= args_max || m_formspec_version > FORMSPEC_API_VERSION))
+		return true;
+
+	errorstream << "Invalid " << name << " element(" << parts.size() << "): '" << element << "'" << std::endl;
+	return false;
+}
+
 void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 {
+	// Note: do not use precheckElement due to "," separator.
 	std::vector<std::string> parts = split(element,',');
 
 	if (((parts.size() == 2) || parts.size() == 3) ||
@@ -349,14 +368,9 @@ void GUIFormSpecMenu::parseContainerEnd(parserData* data)
 
 void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
-
-	if (parts.size() < 4 ||
-			(parts.size() > 5 && m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid scroll_container start element (" << parts.size()
-				<< "): '" << element << "'" << std::endl;
+	std::vector<std::string> parts;
+	if (!precheckElement("scroll_container start", element, 4, 5, parts))
 		return;
-	}
 
 	std::vector<std::string> v_pos  = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
@@ -445,105 +459,95 @@ void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
 
 void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 {
-	if (m_client == 0) {
-		warningstream<<"invalid use of 'list' with m_client==0"<<std::endl;
+	MY_CHECKCLIENT("list");
+
+	std::vector<std::string> parts;
+	if (!precheckElement("list", element, 4, 5, parts))
+		return;
+
+	std::string location = parts[0];
+	std::string listname = parts[1];
+	std::vector<std::string> v_pos  = split(parts[2],',');
+	std::vector<std::string> v_geom = split(parts[3],',');
+	std::string startindex;
+	if (parts.size() == 5)
+		startindex = parts[4];
+
+	MY_CHECKPOS("list",2);
+	MY_CHECKGEOM("list",3);
+
+	InventoryLocation loc;
+
+	if (location == "context" || location == "current_name")
+		loc = m_current_inventory_location;
+	else
+		loc.deSerialize(location);
+
+	v2s32 geom;
+	geom.X = stoi(v_geom[0]);
+	geom.Y = stoi(v_geom[1]);
+
+	s32 start_i = 0;
+	if (!startindex.empty())
+		start_i = stoi(startindex);
+
+	if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
+		errorstream << "Invalid list element: '" << element << "'"  << std::endl;
 		return;
 	}
 
-	std::vector<std::string> parts = split(element,';');
+	if (!data->explicit_size)
+		warningstream << "invalid use of list without a size[] element" << std::endl;
 
-	if (((parts.size() == 4) || (parts.size() == 5)) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::string location = parts[0];
-		std::string listname = parts[1];
-		std::vector<std::string> v_pos  = split(parts[2],',');
-		std::vector<std::string> v_geom = split(parts[3],',');
-		std::string startindex;
-		if (parts.size() == 5)
-			startindex = parts[4];
+	FieldSpec spec(
+		"",
+		L"",
+		L"",
+		258 + m_fields.size(),
+		3
+	);
 
-		MY_CHECKPOS("list",2);
-		MY_CHECKGEOM("list",3);
+	auto style = getDefaultStyleForElement("list", spec.fname);
 
-		InventoryLocation loc;
+	v2f32 slot_scale = style.getVector2f(StyleSpec::SIZE, v2f32(0, 0));
+	v2f32 slot_size(
+		slot_scale.X <= 0 ? imgsize.X : std::max<f32>(slot_scale.X * imgsize.X, 1),
+		slot_scale.Y <= 0 ? imgsize.Y : std::max<f32>(slot_scale.Y * imgsize.Y, 1)
+	);
 
-		if (location == "context" || location == "current_name")
-			loc = m_current_inventory_location;
-		else
-			loc.deSerialize(location);
+	v2f32 slot_spacing = style.getVector2f(StyleSpec::SPACING, v2f32(-1, -1));
+	v2f32 default_spacing = data->real_coordinates ?
+			v2f32(imgsize.X * 0.25f, imgsize.Y * 0.25f) :
+			v2f32(spacing.X - imgsize.X, spacing.Y - imgsize.Y);
 
-		v2s32 geom;
-		geom.X = stoi(v_geom[0]);
-		geom.Y = stoi(v_geom[1]);
+	slot_spacing.X = slot_spacing.X < 0 ? default_spacing.X :
+			imgsize.X * slot_spacing.X;
+	slot_spacing.Y = slot_spacing.Y < 0 ? default_spacing.Y :
+			imgsize.Y * slot_spacing.Y;
 
-		s32 start_i = 0;
-		if (!startindex.empty())
-			start_i = stoi(startindex);
+	slot_spacing += slot_size;
 
-		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
-			errorstream << "Invalid list element: '" << element << "'"  << std::endl;
-			return;
-		}
+	v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos) :
+			getElementBasePos(&v_pos);
 
-		if (!data->explicit_size)
-			warningstream << "invalid use of list without a size[] element" << std::endl;
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
+			pos.X + (geom.X - 1) * slot_spacing.X + slot_size.X,
+			pos.Y + (geom.Y - 1) * slot_spacing.Y + slot_size.Y);
 
-		FieldSpec spec(
-			"",
-			L"",
-			L"",
-			258 + m_fields.size(),
-			3
-		);
+	GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
+			spec.fid, rect, m_invmgr, loc, listname, geom, start_i,
+			v2s32(slot_size.X, slot_size.Y), slot_spacing, this,
+			data->inventorylist_options, m_font);
 
-		auto style = getDefaultStyleForElement("list", spec.fname);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
-		v2f32 slot_scale = style.getVector2f(StyleSpec::SIZE, v2f32(0, 0));
-		v2f32 slot_size(
-			slot_scale.X <= 0 ? imgsize.X : std::max<f32>(slot_scale.X * imgsize.X, 1),
-			slot_scale.Y <= 0 ? imgsize.Y : std::max<f32>(slot_scale.Y * imgsize.Y, 1)
-		);
-
-		v2f32 slot_spacing = style.getVector2f(StyleSpec::SPACING, v2f32(-1, -1));
-		v2f32 default_spacing = data->real_coordinates ?
-				v2f32(imgsize.X * 0.25f, imgsize.Y * 0.25f) :
-				v2f32(spacing.X - imgsize.X, spacing.Y - imgsize.Y);
-
-		slot_spacing.X = slot_spacing.X < 0 ? default_spacing.X :
-				imgsize.X * slot_spacing.X;
-		slot_spacing.Y = slot_spacing.Y < 0 ? default_spacing.Y :
-				imgsize.Y * slot_spacing.Y;
-
-		slot_spacing += slot_size;
-
-		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos) :
-				getElementBasePos(&v_pos);
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + (geom.X - 1) * slot_spacing.X + slot_size.X,
-				pos.Y + (geom.Y - 1) * slot_spacing.Y + slot_size.Y);
-
-		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
-				spec.fid, rect, m_invmgr, loc, listname, geom, start_i,
-				v2s32(slot_size.X, slot_size.Y), slot_spacing, this,
-				data->inventorylist_options, m_font);
-
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-
-		m_inventorylists.push_back(e);
-		m_fields.push_back(spec);
-		return;
-	}
-	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	m_inventorylists.push_back(e);
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element)
 {
-	if (m_client == 0) {
-		errorstream << "WARNING: invalid use of 'listring' with m_client==0" << std::endl;
-		return;
-	}
+	MY_CHECKCLIENT("listring");
 
 	std::vector<std::string> parts = split(element, ';');
 
@@ -578,157 +582,150 @@ void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element
 
 void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if (((parts.size() >= 3) && (parts.size() <= 4)) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string name = parts[1];
-		std::string label = parts[2];
-		std::string selected;
-
-		if (parts.size() >= 4)
-			selected = parts[3];
-
-		MY_CHECKPOS("checkbox",0);
-
-		bool fselected = false;
-
-		if (selected == "true")
-			fselected = true;
-
-		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
-		const core::dimension2d<u32> label_size = m_font->getDimension(wlabel.c_str());
-		s32 cb_size = Environment->getSkin()->getSize(gui::EGDS_CHECK_BOX_WIDTH);
-		s32 y_center = (std::max(label_size.Height, (u32)cb_size) + 1) / 2;
-
-		v2s32 pos;
-		core::rect<s32> rect;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-
-			rect = core::rect<s32>(
-					pos.X,
-					pos.Y - y_center,
-					pos.X + label_size.Width + cb_size + 7,
-					pos.Y + y_center
-				);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			rect = core::rect<s32>(
-					pos.X,
-					pos.Y + imgsize.Y / 2 - y_center,
-					pos.X + label_size.Width + cb_size + 7,
-					pos.Y + imgsize.Y / 2 + y_center
-				);
-		}
-
-		FieldSpec spec(
-				name,
-				wlabel, //Needed for displaying text on MSVC
-				wlabel,
-				258+m_fields.size()
-			);
-
-		spec.ftype = f_CheckBox;
-
-		gui::IGUICheckBox *e = Environment->addCheckBox(fselected, rect,
-				data->current_parent, spec.fid, spec.flabel.c_str());
-
-		auto style = getDefaultStyleForElement("checkbox", name);
-
-		spec.sound = style.get(StyleSpec::Property::SOUND, "");
-
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		e->grab();
-		m_checkboxes.emplace_back(spec, e);
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("checkbox", element, 3, 4, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::string name = parts[1];
+	std::string label = parts[2];
+	std::string selected;
+
+	if (parts.size() >= 4)
+		selected = parts[3];
+
+	MY_CHECKPOS("checkbox",0);
+
+	bool fselected = false;
+
+	if (selected == "true")
+		fselected = true;
+
+	std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
+	const core::dimension2d<u32> label_size = m_font->getDimension(wlabel.c_str());
+	s32 cb_size = Environment->getSkin()->getSize(gui::EGDS_CHECK_BOX_WIDTH);
+	s32 y_center = (std::max(label_size.Height, (u32)cb_size) + 1) / 2;
+
+	v2s32 pos;
+	core::rect<s32> rect;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+
+		rect = core::rect<s32>(
+				pos.X,
+				pos.Y - y_center,
+				pos.X + label_size.Width + cb_size + 7,
+				pos.Y + y_center
+			);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		rect = core::rect<s32>(
+				pos.X,
+				pos.Y + imgsize.Y / 2 - y_center,
+				pos.X + label_size.Width + cb_size + 7,
+				pos.Y + imgsize.Y / 2 + y_center
+			);
 	}
-	errorstream<< "Invalid checkbox element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	FieldSpec spec(
+			name,
+			wlabel, //Needed for displaying text on MSVC
+			wlabel,
+			258+m_fields.size()
+		);
+
+	spec.ftype = f_CheckBox;
+
+	gui::IGUICheckBox *e = Environment->addCheckBox(fselected, rect,
+			data->current_parent, spec.fid, spec.flabel.c_str());
+
+	auto style = getDefaultStyleForElement("checkbox", name);
+
+	spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	e->grab();
+	m_checkboxes.emplace_back(spec, e);
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if (parts.size() >= 5) {
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[3];
-		std::string value = parts[4];
-
-		MY_CHECKPOS("scrollbar",0);
-		MY_CHECKGEOM("scrollbar",1);
-
-		v2s32 pos;
-		v2s32 dim;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			dim = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			dim.X = stof(v_geom[0]) * spacing.X;
-			dim.Y = stof(v_geom[1]) * spacing.Y;
-		}
-
-		core::rect<s32> rect =
-				core::rect<s32>(pos.X, pos.Y, pos.X + dim.X, pos.Y + dim.Y);
-
-		FieldSpec spec(
-				name,
-				L"",
-				L"",
-				258+m_fields.size()
-			);
-
-		bool is_horizontal = true;
-
-		if (parts[2] == "vertical")
-			is_horizontal = false;
-
-		spec.ftype = f_ScrollBar;
-		spec.send  = true;
-		GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
-				spec.fid, rect, is_horizontal, true);
-
-		auto style = getDefaultStyleForElement("scrollbar", name);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setArrowsVisible(data->scrollbar_options.arrow_visiblity);
-
-		s32 max = data->scrollbar_options.max;
-		s32 min = data->scrollbar_options.min;
-
-		e->setMax(max);
-		e->setMin(min);
-
-		e->setPos(stoi(parts[4]));
-
-		e->setSmallStep(data->scrollbar_options.small_step);
-		e->setLargeStep(data->scrollbar_options.large_step);
-
-		s32 scrollbar_size = is_horizontal ? dim.X : dim.Y;
-
-		e->setPageSize(scrollbar_size * (max - min + 1) / data->scrollbar_options.thumb_size);
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		m_scrollbars.emplace_back(spec,e);
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("scrollbar", element, 5, 5, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[3];
+	std::string value = parts[4];
+
+	MY_CHECKPOS("scrollbar",0);
+	MY_CHECKGEOM("scrollbar",1);
+
+	v2s32 pos;
+	v2s32 dim;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		dim = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		dim.X = stof(v_geom[0]) * spacing.X;
+		dim.Y = stof(v_geom[1]) * spacing.Y;
 	}
-	errorstream << "Invalid scrollbar element(" << parts.size() << "): '" << element
-		<< "'" << std::endl;
+
+	core::rect<s32> rect =
+			core::rect<s32>(pos.X, pos.Y, pos.X + dim.X, pos.Y + dim.Y);
+
+	FieldSpec spec(
+			name,
+			L"",
+			L"",
+			258+m_fields.size()
+		);
+
+	bool is_horizontal = true;
+
+	if (parts[2] == "vertical")
+		is_horizontal = false;
+
+	spec.ftype = f_ScrollBar;
+	spec.send  = true;
+	GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
+			spec.fid, rect, is_horizontal, true);
+
+	auto style = getDefaultStyleForElement("scrollbar", name);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->setArrowsVisible(data->scrollbar_options.arrow_visiblity);
+
+	s32 max = data->scrollbar_options.max;
+	s32 min = data->scrollbar_options.min;
+
+	e->setMax(max);
+	e->setMin(min);
+
+	e->setPos(stoi(parts[4]));
+
+	e->setSmallStep(data->scrollbar_options.small_step);
+	e->setLargeStep(data->scrollbar_options.large_step);
+
+	s32 scrollbar_size = is_horizontal ? dim.X : dim.Y;
+
+	e->setPageSize(scrollbar_size * (max - min + 1) / data->scrollbar_options.thumb_size);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	m_scrollbars.emplace_back(spec,e);
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element)
@@ -786,11 +783,11 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 
 void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts;
+	if (!precheckElement("image", element, 2, 3, parts))
+		return;
 
-	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
+	if (parts.size() >= 3) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = unescape_string(parts[2]);
@@ -842,54 +839,47 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (parts.size() == 2) {
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string name = unescape_string(parts[1]);
+	// Else: 2 arguments in "parts"
 
-		MY_CHECKPOS("image", 0);
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::string name = unescape_string(parts[1]);
 
-		v2s32 pos = getElementBasePos(&v_pos);
+	MY_CHECKPOS("image", 0);
 
-		if (!data->explicit_size)
-			warningstream<<"invalid use of image without a size[] element"<<std::endl;
+	v2s32 pos = getElementBasePos(&v_pos);
 
-		video::ITexture *texture = m_tsrc->getTexture(name);
-		if (!texture) {
-			errorstream << "GUIFormSpecMenu::parseImage() Unable to load texture:"
-					<< std::endl << "\t" << name << std::endl;
-			return;
-		}
+	if (!data->explicit_size)
+		warningstream<<"invalid use of image without a size[] element"<<std::endl;
 
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size()
-		);
-		gui::IGUIImage *e = Environment->addImage(texture, pos, true,
-				data->current_parent, spec.fid, 0);
-		auto style = getDefaultStyleForElement("image", spec.fname);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
-		m_fields.push_back(spec);
-
-		// images should let events through
-		e->grab();
-		m_clickthrough_elements.push_back(e);
+	video::ITexture *texture = m_tsrc->getTexture(name);
+	if (!texture) {
+		errorstream << "GUIFormSpecMenu::parseImage() Unable to load texture:"
+				<< std::endl << "\t" << name << std::endl;
 		return;
 	}
-	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+	gui::IGUIImage *e = Environment->addImage(texture, pos, true,
+			data->current_parent, spec.fid, 0);
+	auto style = getDefaultStyleForElement("image", spec.fname);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
+	m_fields.push_back(spec);
+
+	// images should let events through
+	e->grab();
+	m_clickthrough_elements.push_back(e);
 }
 
 void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
-
-	if (parts.size() != 6 && parts.size() != 7 &&
-			!(parts.size() > 7 && m_formspec_version > FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid animated_image element(" << parts.size()
-			<< "): '" << element << "'" << std::endl;
+	std::vector<std::string> parts;
+	if (!precheckElement("animated_image", element, 6, 7, parts))
 		return;
-	}
 
 	std::vector<std::string> v_pos  = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
@@ -944,218 +934,207 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
-
-		MY_CHECKPOS("itemimage",0);
-		MY_CHECKGEOM("itemimage",1);
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = stof(v_geom[0]) * (float)imgsize.X;
-			geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
-		}
-
-		if(!data->explicit_size)
-			warningstream<<"invalid use of item_image without a size[] element"<<std::endl;
-
-		FieldSpec spec(
-			"",
-			L"",
-			L"",
-			258 + m_fields.size(),
-			2
-		);
-		spec.ftype = f_ItemImage;
-
-		GUIItemImage *e = new GUIItemImage(Environment, data->current_parent, spec.fid,
-				core::rect<s32>(pos, pos + geom), name, m_font, m_client);
-		auto style = getDefaultStyleForElement("item_image", spec.fname);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-
-		// item images should let events through
-		m_clickthrough_elements.push_back(e);
-
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("item_image", element, 3, 3, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[2];
+
+	MY_CHECKPOS("item_image",0);
+	MY_CHECKGEOM("item_image",1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * (float)imgsize.X;
+		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 	}
-	errorstream<< "Invalid ItemImage element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	if(!data->explicit_size)
+		warningstream<<"invalid use of item_image without a size[] element"<<std::endl;
+
+	FieldSpec spec(
+		"",
+		L"",
+		L"",
+		258 + m_fields.size(),
+		2
+	);
+	spec.ftype = f_ItemImage;
+
+	GUIItemImage *e = new GUIItemImage(Environment, data->current_parent, spec.fid,
+			core::rect<s32>(pos, pos + geom), name, m_font, m_client);
+	auto style = getDefaultStyleForElement("item_image", spec.fname);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
+	// item images should let events through
+	m_clickthrough_elements.push_back(e);
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		const std::string &type)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if ((parts.size() == 4) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
-		std::string label = parts[3];
-
-		MY_CHECKPOS("button",0);
-		MY_CHECKGEOM("button",1);
-
-		v2s32 pos;
-		v2s32 geom;
-		core::rect<s32> rect;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
-				pos.Y+geom.Y);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
-			pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
-
-			rect = core::rect<s32>(pos.X, pos.Y - m_btn_height,
-						pos.X + geom.X, pos.Y + m_btn_height);
-		}
-
-		if(!data->explicit_size)
-			warningstream<<"invalid use of button without a size[] element"<<std::endl;
-
-		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
-
-		FieldSpec spec(
-			name,
-			wlabel,
-			L"",
-			258 + m_fields.size()
-		);
-		spec.ftype = f_Button;
-		if(type == "button_exit")
-			spec.is_exit = true;
-
-		GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
-				data->current_parent, spec.fid, spec.flabel.c_str());
-
-		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
-
-		spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
-
-		e->setStyles(style);
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("button", element, 4, 4, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[2];
+	std::string label = parts[3];
+
+	MY_CHECKPOS("button",0);
+	MY_CHECKGEOM("button",1);
+
+	v2s32 pos;
+	v2s32 geom;
+	core::rect<s32> rect;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+		rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
+			pos.Y+geom.Y);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
+
+		rect = core::rect<s32>(pos.X, pos.Y - m_btn_height,
+					pos.X + geom.X, pos.Y + m_btn_height);
 	}
-	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	if(!data->explicit_size)
+		warningstream<<"invalid use of button without a size[] element"<<std::endl;
+
+	std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
+
+	FieldSpec spec(
+		name,
+		wlabel,
+		L"",
+		258 + m_fields.size()
+	);
+	spec.ftype = f_Button;
+	if(type == "button_exit")
+		spec.is_exit = true;
+
+	GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
+			data->current_parent, spec.fid, spec.flabel.c_str());
+
+	auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
+
+	spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
+	e->setStyles(style);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if ((parts.size() >= 3 && parts.size() <= 5) ||
-			(parts.size() > 5 && m_formspec_version > FORMSPEC_API_VERSION)) {
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = unescape_string(parts[2]);
-
-		MY_CHECKPOS("background",0);
-		MY_CHECKGEOM("background",1);
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			pos.X -= (spacing.X - (float)imgsize.X) / 2;
-			pos.Y -= (spacing.Y - (float)imgsize.Y) / 2;
-
-			geom.X = stof(v_geom[0]) * spacing.X;
-			geom.Y = stof(v_geom[1]) * spacing.Y;
-		}
-
-		bool clip = false;
-		if (parts.size() >= 4 && is_yes(parts[3])) {
-			if (data->real_coordinates) {
-				pos = getRealCoordinateBasePos(v_pos) * -1;
-				geom = v2s32(0, 0);
-			} else {
-				pos.X = stoi(v_pos[0]); //acts as offset
-				pos.Y = stoi(v_pos[1]);
-			}
-			clip = true;
-		}
-
-		core::rect<s32> middle;
-		if (parts.size() >= 5) {
-			std::vector<std::string> v_middle = split(parts[4], ',');
-			if (v_middle.size() == 1) {
-				s32 x = stoi(v_middle[0]);
-				middle.UpperLeftCorner = core::vector2di(x, x);
-				middle.LowerRightCorner = core::vector2di(-x, -x);
-			} else if (v_middle.size() == 2) {
-				s32 x = stoi(v_middle[0]);
-				s32 y =	stoi(v_middle[1]);
-				middle.UpperLeftCorner = core::vector2di(x, y);
-				middle.LowerRightCorner = core::vector2di(-x, -y);
-				// `-x` is interpreted as `w - x`
-			} else if (v_middle.size() == 4) {
-				middle.UpperLeftCorner = core::vector2di(stoi(v_middle[0]), stoi(v_middle[1]));
-				middle.LowerRightCorner = core::vector2di(stoi(v_middle[2]), stoi(v_middle[3]));
-			} else {
-				warningstream << "Invalid rectangle given to middle param of background[] element" << std::endl;
-			}
-		}
-
-		if (!data->explicit_size && !clip)
-			warningstream << "invalid use of unclipped background without a size[] element" << std::endl;
-
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size()
-		);
-
-		core::rect<s32> rect;
-		if (!clip) {
-			// no auto_clip => position like normal image
-			rect = core::rect<s32>(pos, pos + geom);
-		} else {
-			// it will be auto-clipped when drawing
-			rect = core::rect<s32>(-pos, pos);
-		}
-
-		GUIBackgroundImage *e = new GUIBackgroundImage(Environment, this, spec.fid,
-				rect, name, middle, m_tsrc, clip);
-
-		FATAL_ERROR_IF(!e, "Failed to create background formspec element");
-
-		e->setNotClipped(true);
-
-		e->setVisible(false); // the element is drawn manually before all others
-
-		m_backgrounds.push_back(e);
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("background", element, 3, 5, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = unescape_string(parts[2]);
+
+	MY_CHECKPOS("background",0);
+	MY_CHECKGEOM("background",1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		pos.X -= (spacing.X - (float)imgsize.X) / 2;
+		pos.Y -= (spacing.Y - (float)imgsize.Y) / 2;
+
+		geom.X = stof(v_geom[0]) * spacing.X;
+		geom.Y = stof(v_geom[1]) * spacing.Y;
 	}
-	errorstream<< "Invalid background element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	bool clip = false;
+	if (parts.size() >= 4 && is_yes(parts[3])) {
+		if (data->real_coordinates) {
+			pos = getRealCoordinateBasePos(v_pos) * -1;
+			geom = v2s32(0, 0);
+		} else {
+			pos.X = stoi(v_pos[0]); //acts as offset
+			pos.Y = stoi(v_pos[1]);
+		}
+		clip = true;
+	}
+
+	core::rect<s32> middle;
+	if (parts.size() >= 5) {
+		std::vector<std::string> v_middle = split(parts[4], ',');
+		if (v_middle.size() == 1) {
+			s32 x = stoi(v_middle[0]);
+			middle.UpperLeftCorner = core::vector2di(x, x);
+			middle.LowerRightCorner = core::vector2di(-x, -x);
+		} else if (v_middle.size() == 2) {
+			s32 x = stoi(v_middle[0]);
+			s32 y =	stoi(v_middle[1]);
+			middle.UpperLeftCorner = core::vector2di(x, y);
+			middle.LowerRightCorner = core::vector2di(-x, -y);
+			// `-x` is interpreted as `w - x`
+		} else if (v_middle.size() == 4) {
+			middle.UpperLeftCorner = core::vector2di(stoi(v_middle[0]), stoi(v_middle[1]));
+			middle.LowerRightCorner = core::vector2di(stoi(v_middle[2]), stoi(v_middle[3]));
+		} else {
+			warningstream << "Invalid rectangle given to middle param of background[] element" << std::endl;
+		}
+	}
+
+	if (!data->explicit_size && !clip)
+		warningstream << "invalid use of unclipped background without a size[] element" << std::endl;
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	core::rect<s32> rect;
+	if (!clip) {
+		// no auto_clip => position like normal image
+		rect = core::rect<s32>(pos, pos + geom);
+	} else {
+		// it will be auto-clipped when drawing
+		rect = core::rect<s32>(-pos, pos);
+	}
+
+	GUIBackgroundImage *e = new GUIBackgroundImage(Environment, this, spec.fid,
+			rect, name, middle, m_tsrc, clip);
+
+	FATAL_ERROR_IF(!e, "Failed to create background formspec element");
+
+	e->setNotClipped(true);
+
+	e->setVisible(false); // the element is drawn manually before all others
+
+	m_backgrounds.push_back(e);
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &element)
@@ -1192,338 +1171,320 @@ void GUIFormSpecMenu::parseTableColumns(parserData* data, const std::string &ele
 
 void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if (((parts.size() == 4) || (parts.size() == 5)) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',');
-		std::string str_initial_selection;
-		std::string str_transparent = "false";
-
-		if (parts.size() >= 5)
-			str_initial_selection = parts[4];
-
-		MY_CHECKPOS("table",0);
-		MY_CHECKGEOM("table",1);
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = stof(v_geom[0]) * spacing.X;
-			geom.Y = stof(v_geom[1]) * spacing.Y;
-		}
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
-
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size()
-		);
-
-		spec.ftype = f_Table;
-
-		for (std::string &item : items) {
-			item = wide_to_utf8(unescape_translate(utf8_to_wide(unescape_string(item))));
-		}
-
-		//now really show table
-		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
-				rect, m_tsrc);
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		e->setTable(data->table_options, data->table_columns, items);
-
-		if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
-			e->setDynamicData(data->table_dyndata[name]);
-		}
-
-		if (!str_initial_selection.empty() && str_initial_selection != "0")
-			e->setSelected(stoi(str_initial_selection));
-
-		auto style = getDefaultStyleForElement("table", name);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setOverrideFont(style.getFont());
-
-		m_tables.emplace_back(spec, e);
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("table", element, 4, 5, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[2];
+	std::vector<std::string> items = split(parts[3],',');
+	std::string str_initial_selection;
+	std::string str_transparent = "false";
+
+	if (parts.size() >= 5)
+		str_initial_selection = parts[4];
+
+	MY_CHECKPOS("table",0);
+	MY_CHECKGEOM("table",1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * spacing.X;
+		geom.Y = stof(v_geom[1]) * spacing.Y;
 	}
-	errorstream<< "Invalid table element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	spec.ftype = f_Table;
+
+	for (std::string &item : items) {
+		item = wide_to_utf8(unescape_translate(utf8_to_wide(unescape_string(item))));
+	}
+
+	//now really show table
+	GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
+			rect, m_tsrc);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	e->setTable(data->table_options, data->table_columns, items);
+
+	if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
+		e->setDynamicData(data->table_dyndata[name]);
+	}
+
+	if (!str_initial_selection.empty() && str_initial_selection != "0")
+		e->setSelected(stoi(str_initial_selection));
+
+	auto style = getDefaultStyleForElement("table", name);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->setOverrideFont(style.getFont());
+
+	m_tables.emplace_back(spec, e);
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if (((parts.size() == 4) || (parts.size() == 5) || (parts.size() == 6)) ||
-		((parts.size() > 6) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',');
-		std::string str_initial_selection;
-		std::string str_transparent = "false";
-
-		if (parts.size() >= 5)
-			str_initial_selection = parts[4];
-
-		if (parts.size() >= 6)
-			str_transparent = parts[5];
-
-		MY_CHECKPOS("textlist",0);
-		MY_CHECKGEOM("textlist",1);
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = stof(v_geom[0]) * spacing.X;
-			geom.Y = stof(v_geom[1]) * spacing.Y;
-		}
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
-
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size()
-		);
-
-		spec.ftype = f_Table;
-
-		for (std::string &item : items) {
-			item = wide_to_utf8(unescape_translate(utf8_to_wide(unescape_string(item))));
-		}
-
-		//now really show list
-		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
-				rect, m_tsrc);
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		e->setTextList(items, is_yes(str_transparent));
-
-		if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
-			e->setDynamicData(data->table_dyndata[name]);
-		}
-
-		if (!str_initial_selection.empty() && str_initial_selection != "0")
-			e->setSelected(stoi(str_initial_selection));
-
-		auto style = getDefaultStyleForElement("textlist", name);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setOverrideFont(style.getFont());
-
-		m_tables.emplace_back(spec, e);
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("textlist", element, 4, 6, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[2];
+	std::vector<std::string> items = split(parts[3],',');
+	std::string str_initial_selection;
+	std::string str_transparent = "false";
+
+	if (parts.size() >= 5)
+		str_initial_selection = parts[4];
+
+	if (parts.size() >= 6)
+		str_transparent = parts[5];
+
+	MY_CHECKPOS("textlist",0);
+	MY_CHECKGEOM("textlist",1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * spacing.X;
+		geom.Y = stof(v_geom[1]) * spacing.Y;
 	}
-	errorstream<< "Invalid textlist element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	spec.ftype = f_Table;
+
+	for (std::string &item : items) {
+		item = wide_to_utf8(unescape_translate(utf8_to_wide(unescape_string(item))));
+	}
+
+	//now really show list
+	GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
+			rect, m_tsrc);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	e->setTextList(items, is_yes(str_transparent));
+
+	if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
+		e->setDynamicData(data->table_dyndata[name]);
+	}
+
+	if (!str_initial_selection.empty() && str_initial_selection != "0")
+		e->setSelected(stoi(str_initial_selection));
+
+	auto style = getDefaultStyleForElement("textlist", name);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->setOverrideFont(style.getFont());
+
+	m_tables.emplace_back(spec, e);
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
-
-	if (parts.size() == 5 || parts.size() == 6 ||
-		(parts.size() > 6 && m_formspec_version > FORMSPEC_API_VERSION))
-	{
-		std::vector<std::string> v_pos = split(parts[0], ',');
-		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3], ',');
-		std::string str_initial_selection = parts[4];
-
-		if (parts.size() >= 6 && is_yes(parts[5]))
-			m_dropdown_index_event[name] = true;
-
-		MY_CHECKPOS("dropdown",0);
-
-		v2s32 pos;
-		v2s32 geom;
-		core::rect<s32> rect;
-
-		if (data->real_coordinates) {
-			std::vector<std::string> v_geom = split(parts[1],',');
-
-			if (v_geom.size() == 1)
-				v_geom.emplace_back("1");
-
-			MY_CHECKGEOM("dropdown",1);
-
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
-		} else {
-			pos = getElementBasePos(&v_pos);
-
-			s32 width = stof(parts[1]) * spacing.Y;
-
-			rect = core::rect<s32>(pos.X, pos.Y,
-					pos.X + width, pos.Y + (m_btn_height * 2));
-		}
-
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size()
-		);
-
-		spec.ftype = f_DropDown;
-		spec.send = true;
-
-		//now really show list
-		gui::IGUIComboBox *e = Environment->addComboBox(rect, data->current_parent,
-				spec.fid);
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		for (const std::string &item : items) {
-			e->addItem(unescape_translate(unescape_string(
-				utf8_to_wide(item))).c_str());
-		}
-
-		if (!str_initial_selection.empty())
-			e->setSelected(stoi(str_initial_selection)-1);
-
-		auto style = getDefaultStyleForElement("dropdown", name);
-
-		spec.sound = style.get(StyleSpec::Property::SOUND, "");
-
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-
-		m_fields.push_back(spec);
-
-		m_dropdowns.emplace_back(spec, std::vector<std::string>());
-		std::vector<std::string> &values = m_dropdowns.back().second;
-		for (const std::string &item : items) {
-			values.push_back(unescape_string(item));
-		}
-
+	std::vector<std::string> parts;
+	if (!precheckElement("dropdown", element, 5, 6, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	std::string name = parts[2];
+	std::vector<std::string> items = split(parts[3], ',');
+	std::string str_initial_selection = parts[4];
+
+	if (parts.size() >= 6 && is_yes(parts[5]))
+		m_dropdown_index_event[name] = true;
+
+	MY_CHECKPOS("dropdown",0);
+
+	v2s32 pos;
+	v2s32 geom;
+	core::rect<s32> rect;
+
+	if (data->real_coordinates) {
+		std::vector<std::string> v_geom = split(parts[1],',');
+
+		if (v_geom.size() == 1)
+			v_geom.emplace_back("1");
+
+		MY_CHECKGEOM("dropdown",1);
+
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+		rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+	} else {
+		pos = getElementBasePos(&v_pos);
+
+		s32 width = stof(parts[1]) * spacing.Y;
+
+		rect = core::rect<s32>(pos.X, pos.Y,
+				pos.X + width, pos.Y + (m_btn_height * 2));
 	}
-	errorstream << "Invalid dropdown element(" << parts.size() << "): '" << element
-		<< "'" << std::endl;
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	spec.ftype = f_DropDown;
+	spec.send = true;
+
+	//now really show list
+	gui::IGUIComboBox *e = Environment->addComboBox(rect, data->current_parent,
+			spec.fid);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	for (const std::string &item : items) {
+		e->addItem(unescape_translate(unescape_string(
+			utf8_to_wide(item))).c_str());
+	}
+
+	if (!str_initial_selection.empty())
+		e->setSelected(stoi(str_initial_selection)-1);
+
+	auto style = getDefaultStyleForElement("dropdown", name);
+
+	spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
+	m_fields.push_back(spec);
+
+	m_dropdowns.emplace_back(spec, std::vector<std::string>());
+	std::vector<std::string> &values = m_dropdowns.back().second;
+	for (const std::string &item : items) {
+		values.push_back(unescape_string(item));
+	}
 }
 
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-	if (parts.size() == 2 ||
-			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
-		field_close_on_enter[parts[0]] = is_yes(parts[1]);
-	}
+	std::vector<std::string> parts;
+	if (!precheckElement("field_close_on_enter", element, 2, 2, parts))
+		return;
+
+	field_close_on_enter[parts[0]] = is_yes(parts[1]);
 }
 
 void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if (parts.size() == 4 ||
-		(parts.size() > 4 && m_formspec_version > FORMSPEC_API_VERSION))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
-		std::string label = parts[3];
-
-		MY_CHECKPOS("pwdfield",0);
-		MY_CHECKGEOM("pwdfield",1);
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			pos -= padding;
-
-			geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
-
-			pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
-			pos.Y -= m_btn_height;
-			geom.Y = m_btn_height*2;
-		}
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
-
-		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
-
-		FieldSpec spec(
-			name,
-			wlabel,
-			L"",
-			258 + m_fields.size(),
-			0,
-			ECI_IBEAM
-			);
-
-		spec.send = true;
-		gui::IGUIEditBox *e = Environment->addEditBox(0, rect, true,
-				data->current_parent, spec.fid);
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		if (label.length() >= 1) {
-			int font_height = g_fontengine->getTextHeight();
-			rect.UpperLeftCorner.Y -= font_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
-				data->current_parent, 0);
-		}
-
-		e->setPasswordBox(true,L'*');
-
-		auto style = getDefaultStyleForElement("pwdfield", name, "field");
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
-		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-		e->setOverrideFont(style.getFont());
-
-		irr::SEvent evt;
-		evt.EventType            = EET_KEY_INPUT_EVENT;
-		evt.KeyInput.Key         = KEY_END;
-		evt.KeyInput.Char        = 0;
-		evt.KeyInput.Control     = false;
-		evt.KeyInput.Shift       = false;
-		evt.KeyInput.PressedDown = true;
-		e->OnEvent(evt);
-
-		// Note: Before 5.2.0 "parts.size() >= 5" resulted in a
-		// warning referring to field_close_on_enter[]!
-
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("pwdfield", element, 4, 4, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[2];
+	std::string label = parts[3];
+
+	MY_CHECKPOS("pwdfield",0);
+	MY_CHECKGEOM("pwdfield",1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		pos -= padding;
+
+		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+
+		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
+		pos.Y -= m_btn_height;
+		geom.Y = m_btn_height*2;
 	}
-	errorstream<< "Invalid pwdfield element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+
+	std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
+
+	FieldSpec spec(
+		name,
+		wlabel,
+		L"",
+		258 + m_fields.size(),
+		0,
+		ECI_IBEAM
+		);
+
+	spec.send = true;
+	gui::IGUIEditBox *e = Environment->addEditBox(0, rect, true,
+			data->current_parent, spec.fid);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	if (label.length() >= 1) {
+		int font_height = g_fontengine->getTextHeight();
+		rect.UpperLeftCorner.Y -= font_height;
+		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
+		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+			data->current_parent, 0);
+	}
+
+	e->setPasswordBox(true,L'*');
+
+	auto style = getDefaultStyleForElement("pwdfield", name, "field");
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
+	e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+	e->setOverrideFont(style.getFont());
+
+	irr::SEvent evt;
+	evt.EventType            = EET_KEY_INPUT_EVENT;
+	evt.KeyInput.Key         = KEY_END;
+	evt.KeyInput.Char        = 0;
+	evt.KeyInput.Control     = false;
+	evt.KeyInput.Shift       = false;
+	evt.KeyInput.PressedDown = true;
+	e->OnEvent(evt);
+
+	// Note: Before 5.2.0 "parts.size() >= 5" resulted in a
+	// warning referring to field_close_on_enter[]!
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
@@ -1710,31 +1671,26 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 		const std::string &type)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts;
+	if (!precheckElement(type, element, 3, 5, parts))
+		return;
 
 	if (parts.size() == 3 || parts.size() == 4) {
-		parseSimpleField(data,parts);
+		parseSimpleField(data, parts);
 		return;
 	}
 
-	if ((parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		parseTextArea(data,parts,type);
-		return;
-	}
-	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	// Else: >= 5 arguments in "parts"
+	parseTextArea(data, parts, type);
 }
 
 void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
+	MY_CHECKCLIENT("list");
 
-	if (parts.size() != 4 &&
-			(parts.size() < 4 || m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid hypertext element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	std::vector<std::string> parts;
+	if (!precheckElement("hypertext", element, 4, 4, parts))
 		return;
-	}
 
 	std::vector<std::string> v_pos = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
@@ -1785,169 +1741,83 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 
 void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-
-	if ((parts.size() == 2) ||
-		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string text = parts[1];
-
-		MY_CHECKPOS("label",0);
-
-		if(!data->explicit_size)
-			warningstream<<"invalid use of label without a size[] element"<<std::endl;
-
-		std::vector<std::string> lines = split(text, '\n');
-
-		auto style = getDefaultStyleForElement("label", "");
-		gui::IGUIFont *font = style.getFont();
-		if (!font)
-			font = m_font;
-
-		for (unsigned int i = 0; i != lines.size(); i++) {
-			std::wstring wlabel_colors = translate_string(
-				utf8_to_wide(unescape_string(lines[i])));
-			// Without color escapes to get the font dimensions
-			std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
-
-			core::rect<s32> rect;
-
-			if (data->real_coordinates) {
-				// Lines are spaced at the distance of 1/2 imgsize.
-				// This alows lines that line up with the new elements
-				// easily without sacrificing good line distance.  If
-				// it was one whole imgsize, it would have too much
-				// spacing.
-				v2s32 pos = getRealCoordinateBasePos(v_pos);
-
-				// Labels are positioned by their center, not their top.
-				pos.Y += (((float) imgsize.Y) / -2) + (((float) imgsize.Y) * i / 2);
-
-				rect = core::rect<s32>(
-					pos.X, pos.Y,
-					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
-					pos.Y + imgsize.Y);
-
-			} else {
-				// Lines are spaced at the nominal distance of
-				// 2/5 inventory slot, even if the font doesn't
-				// quite match that.  This provides consistent
-				// form layout, at the expense of sometimes
-				// having sub-optimal spacing for the font.
-				// We multiply by 2 and then divide by 5, rather
-				// than multiply by 0.4, to get exact results
-				// in the integer cases: 0.4 is not exactly
-				// representable in binary floating point.
-
-				v2s32 pos = getElementBasePos(nullptr);
-				pos.X += stof(v_pos[0]) * spacing.X;
-				pos.Y += (stof(v_pos[1]) + 7.0f / 30.0f) * spacing.Y;
-
-				pos.Y += ((float) i) * spacing.Y * 2.0 / 5.0;
-
-				rect = core::rect<s32>(
-					pos.X, pos.Y - m_btn_height,
-					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
-					pos.Y + m_btn_height);
-			}
-
-			FieldSpec spec(
-				"",
-				wlabel_colors,
-				L"",
-				258 + m_fields.size(),
-				4
-			);
-			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
-					spec.flabel.c_str(), rect, false, false, data->current_parent,
-					spec.fid);
-			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
-
-			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-			e->setOverrideFont(font);
-
-			m_fields.push_back(spec);
-
-			// labels should let events through
-			e->grab();
-			m_clickthrough_elements.push_back(e);
-		}
-
+	std::vector<std::string> parts;
+	if (!precheckElement("label", element, 2, 2, parts))
 		return;
-	}
-	errorstream << "Invalid label element(" << parts.size() << "): '" << element
-		<< "'"  << std::endl;
-}
 
-void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
-{
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::string text = parts[1];
 
-	if ((parts.size() == 2) ||
-		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::wstring text = unescape_translate(
-			unescape_string(utf8_to_wide(parts[1])));
+	MY_CHECKPOS("label",0);
 
-		MY_CHECKPOS("vertlabel",1);
+	if(!data->explicit_size)
+		warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
-		auto style = getDefaultStyleForElement("vertlabel", "", "label");
-		gui::IGUIFont *font = style.getFont();
-		if (!font)
-			font = m_font;
+	std::vector<std::string> lines = split(text, '\n');
 
-		v2s32 pos;
+	auto style = getDefaultStyleForElement("label", "");
+	gui::IGUIFont *font = style.getFont();
+	if (!font)
+		font = m_font;
+
+	for (unsigned int i = 0; i != lines.size(); i++) {
+		std::wstring wlabel_colors = translate_string(
+			utf8_to_wide(unescape_string(lines[i])));
+		// Without color escapes to get the font dimensions
+		std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
+
 		core::rect<s32> rect;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
+			// Lines are spaced at the distance of 1/2 imgsize.
+			// This alows lines that line up with the new elements
+			// easily without sacrificing good line distance.  If
+			// it was one whole imgsize, it would have too much
+			// spacing.
+			v2s32 pos = getRealCoordinateBasePos(v_pos);
 
-			// Vertlabels are positioned by center, not left.
-			pos.X -= imgsize.X / 2;
+			// Labels are positioned by their center, not their top.
+			pos.Y += (((float) imgsize.Y) / -2) + (((float) imgsize.Y) * i / 2);
 
-			// We use text.length + 1 because without it, the rect
-			// isn't quite tall enough and cuts off the text.
-			rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + imgsize.X,
-				pos.Y + font_line_height(font) *
-				(text.length() + 1));
+			rect = core::rect<s32>(
+				pos.X, pos.Y,
+				pos.X + font->getDimension(wlabel_plain.c_str()).Width,
+				pos.Y + imgsize.Y);
 
 		} else {
-			pos = getElementBasePos(&v_pos);
+			// Lines are spaced at the nominal distance of
+			// 2/5 inventory slot, even if the font doesn't
+			// quite match that.  This provides consistent
+			// form layout, at the expense of sometimes
+			// having sub-optimal spacing for the font.
+			// We multiply by 2 and then divide by 5, rather
+			// than multiply by 0.4, to get exact results
+			// in the integer cases: 0.4 is not exactly
+			// representable in binary floating point.
 
-			// As above, the length must be one longer. The width of
-			// the rect (15 pixels) seems rather arbitrary, but
-			// changing it might break something.
+			v2s32 pos = getElementBasePos(nullptr);
+			pos.X += stof(v_pos[0]) * spacing.X;
+			pos.Y += (stof(v_pos[1]) + 7.0f / 30.0f) * spacing.Y;
+
+			pos.Y += ((float) i) * spacing.Y * 2.0 / 5.0;
+
 			rect = core::rect<s32>(
-				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
-				pos.X+15, pos.Y +
-					font_line_height(font) *
-					(text.length() + 1) +
-					((imgsize.Y/2) - m_btn_height));
-		}
-
-		if(!data->explicit_size)
-			warningstream<<"invalid use of label without a size[] element"<<std::endl;
-
-		std::wstring label;
-
-		for (wchar_t i : text) {
-			label += i;
-			label += L"\n";
+				pos.X, pos.Y - m_btn_height,
+				pos.X + font->getDimension(wlabel_plain.c_str()).Width,
+				pos.Y + m_btn_height);
 		}
 
 		FieldSpec spec(
 			"",
-			label,
+			wlabel_colors,
 			L"",
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			4
 		);
-		gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
-				rect, false, false, data->current_parent, spec.fid);
-		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+		gui::IGUIStaticText *e = gui::StaticText::add(Environment,
+				spec.flabel.c_str(), rect, false, false, data->current_parent,
+				spec.fid);
+		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
@@ -1955,369 +1825,437 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 
 		m_fields.push_back(spec);
 
-		// vertlabels should let events through
+		// labels should let events through
 		e->grab();
 		m_clickthrough_elements.push_back(e);
-		return;
 	}
-	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
+{
+	std::vector<std::string> parts;
+	if (!precheckElement("vertlabel", element, 2, 2, parts))
+		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::wstring text = unescape_translate(
+		unescape_string(utf8_to_wide(parts[1])));
+
+	MY_CHECKPOS("vertlabel",1);
+
+	auto style = getDefaultStyleForElement("vertlabel", "", "label");
+	gui::IGUIFont *font = style.getFont();
+	if (!font)
+		font = m_font;
+
+	v2s32 pos;
+	core::rect<s32> rect;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+
+		// Vertlabels are positioned by center, not left.
+		pos.X -= imgsize.X / 2;
+
+		// We use text.length + 1 because without it, the rect
+		// isn't quite tall enough and cuts off the text.
+		rect = core::rect<s32>(pos.X, pos.Y,
+			pos.X + imgsize.X,
+			pos.Y + font_line_height(font) *
+			(text.length() + 1));
+
+	} else {
+		pos = getElementBasePos(&v_pos);
+
+		// As above, the length must be one longer. The width of
+		// the rect (15 pixels) seems rather arbitrary, but
+		// changing it might break something.
+		rect = core::rect<s32>(
+			pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
+			pos.X+15, pos.Y +
+				font_line_height(font) *
+				(text.length() + 1) +
+				((imgsize.Y/2) - m_btn_height));
+	}
+
+	if(!data->explicit_size)
+		warningstream<<"invalid use of label without a size[] element"<<std::endl;
+
+	std::wstring label;
+
+	for (wchar_t i : text) {
+		label += i;
+		label += L"\n";
+	}
+
+	FieldSpec spec(
+		"",
+		label,
+		L"",
+		258 + m_fields.size()
+	);
+	gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
+			rect, false, false, data->current_parent, spec.fid);
+	e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+	e->setOverrideFont(font);
+
+	m_fields.push_back(spec);
+
+	// vertlabels should let events through
+	e->grab();
+	m_clickthrough_elements.push_back(e);
 }
 
 void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element,
 		const std::string &type)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts;
+	if (!precheckElement("image_button", element, 5, 8, parts))
+		return;
 
-	if ((((parts.size() >= 5) && (parts.size() <= 8)) && (parts.size() != 6)) ||
-		((parts.size() > 8) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string image_name = parts[2];
-		std::string name = parts[3];
-		std::string label = parts[4];
-
-		MY_CHECKPOS("imagebutton",0);
-		MY_CHECKGEOM("imagebutton",1);
-
-		std::string pressed_image_name;
-
-		if (parts.size() >= 8) {
-			pressed_image_name = parts[7];
-		}
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
-			geom.Y = (stof(v_geom[1]) * spacing.Y) - (spacing.Y - imgsize.Y);
-		}
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
-			pos.Y+geom.Y);
-
-		if (!data->explicit_size)
-			warningstream<<"invalid use of image_button without a size[] element"<<std::endl;
-
-		image_name = unescape_string(image_name);
-		pressed_image_name = unescape_string(pressed_image_name);
-
-		std::wstring wlabel = utf8_to_wide(unescape_string(label));
-
-		FieldSpec spec(
-			name,
-			wlabel,
-			utf8_to_wide(image_name),
-			258 + m_fields.size()
-		);
-		spec.ftype = f_Button;
-		if (type == "image_button_exit")
-			spec.is_exit = true;
-
-		GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
-				data->current_parent, spec.fid, spec.flabel.c_str());
-
-		if (spec.fname == m_focused_element) {
-			Environment->setFocus(e);
-		}
-
-		auto style = getStyleForElement("image_button", spec.fname);
-
-		spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
-
-		// Override style properties with values specified directly in the element
-		if (!image_name.empty())
-			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::FGIMG, image_name);
-
-		if (!pressed_image_name.empty())
-			style[StyleSpec::STATE_PRESSED].set(StyleSpec::FGIMG, pressed_image_name);
-
-		if (parts.size() >= 7) {
-			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::NOCLIP, parts[5]);
-			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::BORDER, parts[6]);
-		}
-
-		e->setStyles(style);
-		e->setScaleImage(true);
-
-		m_fields.push_back(spec);
+	if (parts.size() == 6) {
+		// Invalid argument count.
+		errorstream << "Invalid image_button element(" << parts.size() << "): '" << element << "'" << std::endl;
 		return;
 	}
 
-	errorstream<< "Invalid imagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string image_name = parts[2];
+	std::string name = parts[3];
+	std::string label = parts[4];
+
+	MY_CHECKPOS("image_button",0);
+	MY_CHECKGEOM("image_button",1);
+
+	std::string pressed_image_name;
+
+	if (parts.size() >= 8) {
+		pressed_image_name = parts[7];
+	}
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+		geom.Y = (stof(v_geom[1]) * spacing.Y) - (spacing.Y - imgsize.Y);
+	}
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
+		pos.Y+geom.Y);
+
+	if (!data->explicit_size)
+		warningstream<<"invalid use of image_button without a size[] element"<<std::endl;
+
+	image_name = unescape_string(image_name);
+	pressed_image_name = unescape_string(pressed_image_name);
+
+	std::wstring wlabel = utf8_to_wide(unescape_string(label));
+
+	FieldSpec spec(
+		name,
+		wlabel,
+		utf8_to_wide(image_name),
+		258 + m_fields.size()
+	);
+	spec.ftype = f_Button;
+	if (type == "image_button_exit")
+		spec.is_exit = true;
+
+	GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
+			data->current_parent, spec.fid, spec.flabel.c_str());
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	auto style = getStyleForElement("image_button", spec.fname);
+
+	spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
+	// Override style properties with values specified directly in the element
+	if (!image_name.empty())
+		style[StyleSpec::STATE_DEFAULT].set(StyleSpec::FGIMG, image_name);
+
+	if (!pressed_image_name.empty())
+		style[StyleSpec::STATE_PRESSED].set(StyleSpec::FGIMG, pressed_image_name);
+
+	if (parts.size() >= 7) {
+		style[StyleSpec::STATE_DEFAULT].set(StyleSpec::NOCLIP, parts[5]);
+		style[StyleSpec::STATE_DEFAULT].set(StyleSpec::BORDER, parts[6]);
+	}
+
+	e->setStyles(style);
+	e->setScaleImage(true);
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
+	std::vector<std::string> parts;
+	if (!precheckElement("tabheader", element, 4, 7, parts))
+		return;
 
-	if (((parts.size() == 4) || (parts.size() == 6)) || (parts.size() == 7 &&
-		data->real_coordinates) || ((parts.size() > 6) &&
-		(m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-
-		// If we're using real coordinates, add an extra field for height.
-		// Width is not here because tabs are the width of the text, and
-		// there's no reason to change that.
-		unsigned int i = 0;
-		std::vector<std::string> v_geom = {"1", "1"}; // Dummy width and height
-		bool auto_width = true;
-		if (parts.size() == 7) {
-			i++;
-
-			v_geom = split(parts[1], ',');
-			if (v_geom.size() == 1)
-				v_geom.insert(v_geom.begin(), "1"); // Dummy value
-			else
-				auto_width = false;
-		}
-
-		std::string name = parts[i+1];
-		std::vector<std::string> buttons = split(parts[i+2], ',');
-		std::string str_index = parts[i+3];
-		bool show_background = true;
-		bool show_border = true;
-		int tab_index = stoi(str_index) - 1;
-
-		MY_CHECKPOS("tabheader", 0);
-
-		if (parts.size() == 6 + i) {
-			if (parts[4+i] == "true")
-				show_background = false;
-			if (parts[5+i] == "false")
-				show_border = false;
-		}
-
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size()
-		);
-
-		spec.ftype = f_TabHeader;
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-
-			geom = getRealCoordinateGeometry(v_geom);
-			// Set default height
-			if (parts.size() <= 6)
-				geom.Y = m_btn_height * 2;
-			pos.Y -= geom.Y; // TabHeader base pos is the bottom, not the top.
-			if (auto_width)
-				geom.X = DesiredRect.getWidth(); // Set automatic width
-
-			MY_CHECKGEOM("tabheader", 1);
-		} else {
-			v2f32 pos_f = pos_offset * spacing;
-			pos_f.X += stof(v_pos[0]) * spacing.X;
-			pos_f.Y += stof(v_pos[1]) * spacing.Y - m_btn_height * 2;
-			pos = v2s32(pos_f.X, pos_f.Y);
-
-			geom.Y = m_btn_height * 2;
-			geom.X = DesiredRect.getWidth();
-		}
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
-				pos.Y+geom.Y);
-
-		gui::IGUITabControl *e = Environment->addTabControl(rect,
-				data->current_parent, show_background, show_border, spec.fid);
-		e->setAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT,
-				irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_LOWERRIGHT);
-		e->setTabHeight(geom.Y);
-
-		auto style = getDefaultStyleForElement("tabheader", name);
-
-		spec.sound = style.get(StyleSpec::Property::SOUND, "");
-
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, true));
-
-		for (const std::string &button : buttons) {
-			auto tab = e->addTab(unescape_translate(unescape_string(
-				utf8_to_wide(button))).c_str(), -1);
-			if (style.isNotDefault(StyleSpec::BGCOLOR))
-				tab->setBackgroundColor(style.getColor(StyleSpec::BGCOLOR));
-
-			tab->setTextColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-		}
-
-		if ((tab_index >= 0) &&
-				(buttons.size() < INT_MAX) &&
-				(tab_index < (int) buttons.size()))
-			e->setActiveTab(tab_index);
-
-		m_fields.push_back(spec);
+	// Length 7: Additional "height" parameter after "pos". Only valid with real_coordinates.
+	// Note: New arguments for the "height" syntax cannot be added without breaking older clients.
+	if (parts.size() == 5 || (parts.size() == 7 && !data->real_coordinates)) {
+		errorstream << "Invalid tabheader element(" << parts.size() << "): '"
+			<< element << "'" << std::endl;
 		return;
 	}
-	errorstream << "Invalid TabHeader element(" << parts.size() << "): '"
-			<< element << "'"  << std::endl;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+
+	// If we're using real coordinates, add an extra field for height.
+	// Width is not here because tabs are the width of the text, and
+	// there's no reason to change that.
+	unsigned int i = 0;
+	std::vector<std::string> v_geom = {"1", "1"}; // Dummy width and height
+	bool auto_width = true;
+	if (parts.size() == 7) {
+		i++;
+
+		v_geom = split(parts[1], ',');
+		if (v_geom.size() == 1)
+			v_geom.insert(v_geom.begin(), "1"); // Dummy value
+		else
+			auto_width = false;
+	}
+
+	std::string name = parts[i+1];
+	std::vector<std::string> buttons = split(parts[i+2], ',');
+	std::string str_index = parts[i+3];
+	bool show_background = true;
+	bool show_border = true;
+	int tab_index = stoi(str_index) - 1;
+
+	MY_CHECKPOS("tabheader", 0);
+
+	if (parts.size() == 6 + i) {
+		if (parts[4+i] == "true")
+			show_background = false;
+		if (parts[5+i] == "false")
+			show_border = false;
+	}
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	spec.ftype = f_TabHeader;
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+
+		geom = getRealCoordinateGeometry(v_geom);
+		// Set default height
+		if (parts.size() <= 6)
+			geom.Y = m_btn_height * 2;
+		pos.Y -= geom.Y; // TabHeader base pos is the bottom, not the top.
+		if (auto_width)
+			geom.X = DesiredRect.getWidth(); // Set automatic width
+
+		MY_CHECKGEOM("tabheader", 1);
+	} else {
+		v2f32 pos_f = pos_offset * spacing;
+		pos_f.X += stof(v_pos[0]) * spacing.X;
+		pos_f.Y += stof(v_pos[1]) * spacing.Y - m_btn_height * 2;
+		pos = v2s32(pos_f.X, pos_f.Y);
+
+		geom.Y = m_btn_height * 2;
+		geom.X = DesiredRect.getWidth();
+	}
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
+			pos.Y+geom.Y);
+
+	gui::IGUITabControl *e = Environment->addTabControl(rect,
+			data->current_parent, show_background, show_border, spec.fid);
+	e->setAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT,
+			irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_LOWERRIGHT);
+	e->setTabHeight(geom.Y);
+
+	auto style = getDefaultStyleForElement("tabheader", name);
+
+	spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, true));
+
+	for (const std::string &button : buttons) {
+		auto tab = e->addTab(unescape_translate(unescape_string(
+			utf8_to_wide(button))).c_str(), -1);
+		if (style.isNotDefault(StyleSpec::BGCOLOR))
+			tab->setBackgroundColor(style.getColor(StyleSpec::BGCOLOR));
+
+		tab->setTextColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+	}
+
+	if ((tab_index >= 0) &&
+			(buttons.size() < INT_MAX) &&
+			(tab_index < (int) buttons.size()))
+		e->setActiveTab(tab_index);
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element)
 {
-	if (m_client == 0) {
-		warningstream << "invalid use of item_image_button with m_client==0"
-			<< std::endl;
+	MY_CHECKCLIENT("item_image_button");
+
+	std::vector<std::string> parts;
+	if (!precheckElement("item_image_button", element, 5, 5, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string item_name = parts[2];
+	std::string name = parts[3];
+	std::string label = parts[4];
+
+	label = unescape_string(label);
+	item_name = unescape_string(item_name);
+
+	MY_CHECKPOS("item_image_button",0);
+	MY_CHECKGEOM("item_image_button",1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+		geom.Y = (stof(v_geom[1]) * spacing.Y) - (spacing.Y - imgsize.Y);
 	}
 
-	std::vector<std::string> parts = split(element,';');
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-	if ((parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string item_name = parts[2];
-		std::string name = parts[3];
-		std::string label = parts[4];
+	if(!data->explicit_size)
+		warningstream<<"invalid use of item_image_button without a size[] element"<<std::endl;
 
-		label = unescape_string(label);
-		item_name = unescape_string(item_name);
+	IItemDefManager *idef = m_client->idef();
+	ItemStack item;
+	item.deSerialize(item_name, idef);
 
-		MY_CHECKPOS("itemimagebutton",0);
-		MY_CHECKGEOM("itemimagebutton",1);
+	m_tooltips[name] =
+		TooltipSpec(utf8_to_wide(item.getDefinition(idef).description),
+					m_default_tooltip_bgcolor,
+					m_default_tooltip_color);
 
-		v2s32 pos;
-		v2s32 geom;
+	// the spec for the button
+	FieldSpec spec_btn(
+		name,
+		utf8_to_wide(label),
+		utf8_to_wide(item_name),
+		258 + m_fields.size(),
+		2
+	);
 
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
-			geom.Y = (stof(v_geom[1]) * spacing.Y) - (spacing.Y - imgsize.Y);
-		}
+	GUIButtonItemImage *e_btn = GUIButtonItemImage::addButton(Environment,
+			rect, m_tsrc, data->current_parent, spec_btn.fid, spec_btn.flabel.c_str(),
+			item_name, m_client);
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+	auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
 
-		if(!data->explicit_size)
-			warningstream<<"invalid use of item_image_button without a size[] element"<<std::endl;
+	spec_btn.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
 
-		IItemDefManager *idef = m_client->idef();
-		ItemStack item;
-		item.deSerialize(item_name, idef);
+	e_btn->setStyles(style);
 
-		m_tooltips[name] =
-			TooltipSpec(utf8_to_wide(item.getDefinition(idef).description),
-						m_default_tooltip_bgcolor,
-						m_default_tooltip_color);
-
-		// the spec for the button
-		FieldSpec spec_btn(
-			name,
-			utf8_to_wide(label),
-			utf8_to_wide(item_name),
-			258 + m_fields.size(),
-			2
-		);
-
-		GUIButtonItemImage *e_btn = GUIButtonItemImage::addButton(Environment,
-				rect, m_tsrc, data->current_parent, spec_btn.fid, spec_btn.flabel.c_str(),
-				item_name, m_client);
-
-		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
-
-		spec_btn.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
-
-		e_btn->setStyles(style);
-
-		if (spec_btn.fname == m_focused_element) {
-			Environment->setFocus(e_btn);
-		}
-
-		spec_btn.ftype = f_Button;
-		rect += data->basepos-padding;
-		spec_btn.rect = rect;
-		m_fields.push_back(spec_btn);
-		return;
+	if (spec_btn.fname == m_focused_element) {
+		Environment->setFocus(e_btn);
 	}
-	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	spec_btn.ftype = f_Button;
+	rect += data->basepos-padding;
+	spec_btn.rect = rect;
+	m_fields.push_back(spec_btn);
 }
 
 void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
-
-	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> v_pos = split(parts[0], ',');
-		std::vector<std::string> v_geom = split(parts[1], ',');
-
-		MY_CHECKPOS("box", 0);
-		MY_CHECKGEOM("box", 1);
-
-		v2s32 pos;
-		v2s32 geom;
-
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
-		} else {
-			pos = getElementBasePos(&v_pos);
-			geom.X = stof(v_geom[0]) * spacing.X;
-			geom.Y = stof(v_geom[1]) * spacing.Y;
-		}
-
-		FieldSpec spec(
-			"",
-			L"",
-			L"",
-			258 + m_fields.size(),
-			-2
-		);
-		spec.ftype = f_Box;
-
-		auto style = getDefaultStyleForElement("box", spec.fname);
-
-		video::SColor tmp_color;
-		std::array<video::SColor, 4> colors;
-		std::array<video::SColor, 4> bordercolors = {0x0, 0x0, 0x0, 0x0};
-		std::array<s32, 4> borderwidths = {0, 0, 0, 0};
-
-		if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
-			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
-		} else {
-			colors = style.getColorArray(StyleSpec::COLORS, {0x0, 0x0, 0x0, 0x0});
-			bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
-				{0x0, 0x0, 0x0, 0x0});
-			borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS, {0, 0, 0, 0});
-		}
-
-		core::rect<s32> rect(pos, pos + geom);
-
-		GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect,
-			colors, bordercolors, borderwidths);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
-		e->drop();
-
-		m_fields.push_back(spec);
+	std::vector<std::string> parts;
+	if (!precheckElement("box", element, 3, 3, parts))
 		return;
+
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	std::vector<std::string> v_geom = split(parts[1], ',');
+
+	MY_CHECKPOS("box", 0);
+	MY_CHECKGEOM("box", 1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * spacing.X;
+		geom.Y = stof(v_geom[1]) * spacing.Y;
 	}
-	errorstream << "Invalid Box element(" << parts.size() << "): '" << element
-		<< "'" << std::endl;
+
+	FieldSpec spec(
+		"",
+		L"",
+		L"",
+		258 + m_fields.size(),
+		-2
+	);
+	spec.ftype = f_Box;
+
+	auto style = getDefaultStyleForElement("box", spec.fname);
+
+	video::SColor tmp_color;
+	std::array<video::SColor, 4> colors;
+	std::array<video::SColor, 4> bordercolors = {0x0, 0x0, 0x0, 0x0};
+	std::array<s32, 4> borderwidths = {0, 0, 0, 0};
+
+	if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
+		colors = {tmp_color, tmp_color, tmp_color, tmp_color};
+	} else {
+		colors = style.getColorArray(StyleSpec::COLORS, {0x0, 0x0, 0x0, 0x0});
+		bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
+			{0x0, 0x0, 0x0, 0x0});
+		borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS, {0, 0, 0, 0});
+	}
+
+	core::rect<s32> rect(pos, pos + geom);
+
+	GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect,
+		colors, bordercolors, borderwidths);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
+	e->drop();
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts;
+	if (!precheckElement("bgcolor", element, 2, 3, parts))
+		return;
+
 	const u32 parameter_count = parts.size();
 
-	if ((parameter_count > 2 && m_formspec_version < 3) ||
-			(parameter_count > 3 && m_formspec_version <= FORMSPEC_API_VERSION)) {
+	if (parameter_count > 2 && m_formspec_version < 3) {
 		errorstream << "Invalid bgcolor element(" << parameter_count << "): '"
 				<< element << "'" << std::endl;
 		return;
@@ -2348,49 +2286,51 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 
 void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts;
+	// Legacy Note: If clients older than 5.5.0-dev are supplied with additional arguments,
+	// the tooltip colors will be ignored.
+	if (!precheckElement("listcolors", element, 2, 5, parts))
+		return;
 
-	if (((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		parseColorString(parts[0], data->inventorylist_options.slotbg_n, false);
-		parseColorString(parts[1], data->inventorylist_options.slotbg_h, false);
-
-		if (parts.size() >= 3) {
-			if (parseColorString(parts[2], data->inventorylist_options.slotbordercolor,
-					false)) {
-				data->inventorylist_options.slotborder = true;
-			}
-		}
-		if (parts.size() == 5) {
-			video::SColor tmp_color;
-
-			if (parseColorString(parts[3], tmp_color, false))
-				m_default_tooltip_bgcolor = tmp_color;
-			if (parseColorString(parts[4], tmp_color, false))
-				m_default_tooltip_color = tmp_color;
-		}
-
-		// update all already parsed inventorylists
-		for (GUIInventoryList *e : m_inventorylists) {
-			e->setSlotBGColors(data->inventorylist_options.slotbg_n,
-					data->inventorylist_options.slotbg_h);
-			e->setSlotBorders(data->inventorylist_options.slotborder,
-					data->inventorylist_options.slotbordercolor);
-		}
+	if (parts.size() == 4) {
+		// Invalid argument combination
+		errorstream << "Invalid listcolors element(" << parts.size() << "): '"
+				<< element << "'" << std::endl;
 		return;
 	}
-	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	parseColorString(parts[0], data->inventorylist_options.slotbg_n, false);
+	parseColorString(parts[1], data->inventorylist_options.slotbg_h, false);
+
+	if (parts.size() >= 3) {
+		if (parseColorString(parts[2], data->inventorylist_options.slotbordercolor,
+				false)) {
+			data->inventorylist_options.slotborder = true;
+		}
+	}
+	if (parts.size() >= 5) {
+		video::SColor tmp_color;
+
+		if (parseColorString(parts[3], tmp_color, false))
+			m_default_tooltip_bgcolor = tmp_color;
+		if (parseColorString(parts[4], tmp_color, false))
+			m_default_tooltip_color = tmp_color;
+	}
+
+	// update all already parsed inventorylists
+	for (GUIInventoryList *e : m_inventorylists) {
+		e->setSlotBGColors(data->inventorylist_options.slotbg_n,
+				data->inventorylist_options.slotbg_h);
+		e->setSlotBorders(data->inventorylist_options.slotborder,
+				data->inventorylist_options.slotbordercolor);
+	}
 }
 
 void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
-	if (parts.size() < 2) {
-		errorstream << "Invalid tooltip element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
+	std::vector<std::string> parts;
+	if (!precheckElement("tooltip", element, 2, 5, parts))
 		return;
-	}
 
 	// Get mode and check size
 	bool rect_mode = parts[0].find(',') != std::string::npos;
@@ -2714,35 +2654,25 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 
 void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
-
-	if (parts.size() <= 2 ||
-		(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION))
-	{
-		if (m_is_form_regenerated)
-			return; // Never focus on resizing
-
-		bool force_focus = parts.size() >= 2 && is_yes(parts[1]);
-		if (force_focus || m_text_dst->m_formname != m_last_formname)
-			setFocus(parts[0]);
-
+	std::vector<std::string> parts;
+	if (!precheckElement("set_focus", element, 2, 2, parts))
 		return;
-	}
 
-	errorstream << "Invalid set_focus element (" << parts.size() << "): '" << element
-		<< "'" << std::endl;
+	if (m_is_form_regenerated)
+		return; // Never focus on resizing
+
+	bool force_focus = parts.size() >= 2 && is_yes(parts[1]);
+	if (force_focus || m_text_dst->m_formname != m_last_formname)
+		setFocus(parts[0]);
 }
 
 void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ';');
+	MY_CHECKCLIENT("model");
 
-	if (parts.size() < 5 || (parts.size() > 10 &&
-			m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid model element (" << parts.size() << "): '" << element
-			<< "'" << std::endl;
+	std::vector<std::string> parts;
+	if (!precheckElement("model", element, 5, 10, parts))
 		return;
-	}
 
 	// Avoid length checks by resizing
 	if (parts.size() < 10)
