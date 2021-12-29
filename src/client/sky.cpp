@@ -675,13 +675,13 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 		}
 	} else {
 		driver->setMaterial(m_materials[4]);
-		float d = (moonsize * 1.9) * m_moon_params.scale;
+		float d = (moonsize * 1.3) * m_moon_params.scale;
 		video::SColor c;
 		if (m_moon_tonemap)
 			c = video::SColor(0, 0, 0, 0);
 		else
 			c = video::SColor(255, 255, 255, 255);
-		draw_sky_body(vertices, -d, d, c);
+		draw_sky_body(vertices, d, -d, c);
 		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
 	}
