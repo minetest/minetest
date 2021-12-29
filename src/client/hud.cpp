@@ -224,6 +224,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 }
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
+// mainlist can be NULL, but draw the frame anyway.
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
 {
@@ -271,7 +272,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 	// Draw items
 	core::rect<s32> imgrect(0, 0, m_hotbar_imagesize, m_hotbar_imagesize);
-	for (s32 i = inv_offset; i < itemcount && (size_t)i < mainlist->getSize(); i++) {
+	const s32 list_size = mainlist ? mainlist->getSize() : 0;
+	for (s32 i = inv_offset; i < itemcount && i < list_size; i++) {
 		s32 fullimglen = m_hotbar_imagesize + m_padding * 2;
 
 		v2s32 steppos;
@@ -401,6 +403,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
+				if (!inv)
+					warningstream << "HUD: Unknown inventory list. name=" << e->text << std::endl;
 				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
 					inv, e->item, e->dir);
 				break; }
