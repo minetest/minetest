@@ -27,9 +27,9 @@ class LuaEntitySAO : public UnitSAO
 public:
 	LuaEntitySAO() = delete;
 	// Used by the environment to load SAO
-	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data);
+	LuaEntitySAO(ServerEnvironment *env, v3opos_t pos, const std::string &data);
 	// Used by the Lua API
-	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &name,
+	LuaEntitySAO(ServerEnvironment *env, v3opos_t pos, const std::string &name,
 			const std::string &state) :
 			UnitSAO(env, pos),
 			m_init_name(name), m_init_state(state)
@@ -49,8 +49,8 @@ public:
 			float time_from_last_punch = 1000000.0f,
 			u16 initial_wear = 0);
 	void rightClick(ServerActiveObject *clicker);
-	void setPos(const v3f &pos);
-	void moveTo(v3f pos, bool continuous);
+	void setPos(const v3opos_t &pos);
+	void moveTo(v3opos_t pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
@@ -68,7 +68,7 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
-	bool getCollisionBox(aabb3f *toset) const;
+	bool getCollisionBox(aabb3o *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
 
@@ -91,7 +91,7 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 
-	v3f m_last_sent_position;
+	v3opos_t m_last_sent_position;
 	v3f m_last_sent_velocity;
 	v3f m_last_sent_rotation;
 	float m_last_sent_position_timer = 0.0f;

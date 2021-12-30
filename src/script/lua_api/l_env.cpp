@@ -176,8 +176,8 @@ int LuaRaycast::create_object(lua_State *L)
 	bool objects = true;
 	bool liquids = false;
 
-	v3f pos1 = checkFloatPos(L, 1);
-	v3f pos2 = checkFloatPos(L, 2);
+	auto pos1 = check_v3o(L, 1);
+	auto pos2 = check_v3o(L, 2);
 	if (lua_isboolean(L, 3)) {
 		objects = readParam<bool>(L, 3);
 	}
@@ -185,7 +185,7 @@ int LuaRaycast::create_object(lua_State *L)
 		liquids = readParam<bool>(L, 4);
 	}
 
-	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
+	LuaRaycast *o = new LuaRaycast(core::line3d<opos_t>(pos1, pos2),
 		objects, liquids);
 
 	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
@@ -638,7 +638,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3f pos = checkFloatPos(L, 1);
+	auto pos = check_v3o(L, 1);
 	const char *name = luaL_checkstring(L, 2);
 	const char *staticdata = luaL_optstring(L, 3, "");
 
@@ -735,7 +735,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	ScriptApiBase *script = getScriptApiBase(L);
 
 	// Do it
-	v3f pos = checkFloatPos(L, 1);
+	v3opos_t pos = checkOposPos(L, 1);
 	float radius = readParam<float>(L, 2) * BS;
 	std::vector<ServerActiveObject *> objs;
 
@@ -758,9 +758,9 @@ int ModApiEnvMod::l_get_objects_in_area(lua_State *L)
 	GET_ENV_PTR;
 	ScriptApiBase *script = getScriptApiBase(L);
 	
-	v3f minp = read_v3f(L, 1) * BS;
-	v3f maxp = read_v3f(L, 2) * BS;
-	aabb3f box(minp, maxp);
+	auto minp = read_v3o(L, 1) * BS;
+	auto maxp = read_v3o(L, 2) * BS;
+	aabb3o box(minp, maxp);
 	box.repair();
 	std::vector<ServerActiveObject *> objs;
 
@@ -1130,7 +1130,7 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	GET_PLAIN_ENV_PTR;
 
 	// read position 1 from lua
-	v3f pos1 = checkFloatPos(L, 1);
+	v3opos_t pos1 = check_v3o(L, 1);
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
 

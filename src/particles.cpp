@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 {
-	writeV3F32(os, pos);
+	writeV3O(os, pos);
 	writeV3F32(os, vel);
 	writeV3F32(os, acc);
 	writeF32(os, expirationtime);
@@ -41,7 +41,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 
 void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 {
-	pos                = readV3F32(is);
+	pos                = readV3O(is);
 	vel                = readV3F32(is);
 	acc                = readV3F32(is);
 	expirationtime     = readF32(is);

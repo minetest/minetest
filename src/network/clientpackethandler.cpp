@@ -131,7 +131,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 	// Set player position
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
-	player->setPosition(playerpos);
+	player->setPosition(v3fToOpos(playerpos));
 
 	infostream << "Client: received map seed: " << m_map_seed << std::endl;
 	infostream << "Client: received recommended send interval "
@@ -594,7 +594,7 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	v3f pos;
+	v3opos_t pos;
 	f32 pitch, yaw;
 
 	*pkt >> pos >> pitch >> yaw;
@@ -837,7 +837,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 		{ // object
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
-				pos = cao->getPosition();
+				pos = oposToV3f(cao->getPosition());
 			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
 			break;
 		}
@@ -1091,7 +1091,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd->dir       = dir;
 	event->hudadd->align     = align;
 	event->hudadd->offset    = offset;
-	event->hudadd->world_pos = world_pos;
+	event->hudadd->world_pos = v3fToOpos(world_pos); //todo v3d
 	event->hudadd->size      = size;
 	event->hudadd->z_index   = z_index;
 	event->hudadd->text2     = text2;

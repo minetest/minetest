@@ -36,7 +36,7 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 
 	lua_getfield(L, 1, "pos");
 	if (lua_istable(L, -1))
-		p.pos = check_v3f(L, -1);
+		p.pos = check_v3o(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "velocity");

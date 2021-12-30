@@ -55,7 +55,7 @@ public:
 		NOTE: m_env can be NULL, but step() isn't called if it is.
 		Prototypes are used that way.
 	*/
-	ServerActiveObject(ServerEnvironment *env, v3f pos);
+	ServerActiveObject(ServerEnvironment *env, v3opos_t pos);
 	virtual ~ServerActiveObject() = default;
 
 	virtual ActiveObjectType getSendType() const
@@ -82,18 +82,18 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition() const { return m_base_position; }
-	void setBasePosition(v3f pos){ m_base_position = pos; }
+	v3opos_t getBasePosition() const { return m_base_position; }
+	void setBasePosition(v3opos_t pos){ m_base_position = pos; }
 	ServerEnvironment* getEnv(){ return m_env; }
 
 	/*
 		Some more dynamic interface
 	*/
 
-	virtual void setPos(const v3f &pos)
+	virtual void setPos(const v3opos_t &pos)
 		{ setBasePosition(pos); }
 	// continuous: if true, object does not stop immediately at pos
-	virtual void moveTo(v3f pos, bool continuous)
+	virtual void moveTo(v3opos_t pos, bool continuous)
 		{ setBasePosition(pos); }
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
@@ -243,7 +243,7 @@ protected:
 	virtual void onDetach(int parent_id) {}
 
 	ServerEnvironment *m_env;
-	v3f m_base_position;
+	v3opos_t m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
 
 	/*

@@ -90,7 +90,7 @@ struct VoxelLineIterator
 {
 public:
 	//! Starting position of the line in world coordinates.
-	v3f m_start_position;
+	v3opos_t m_start_position;
 	//! Direction and length of the line in world coordinates.
 	v3f m_line_vector;
 	/*!
@@ -126,7 +126,7 @@ public:
 	 * line in voxel coordinates. start_position+line_vector
 	 * is the end of the line
 	 */
-	VoxelLineIterator(const v3f &start_position,const v3f &line_vector);
+	VoxelLineIterator(const v3opos_t &start_position,const v3f &line_vector);
 
 	/*!
 	 * Steps to the next voxel.

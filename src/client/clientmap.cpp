@@ -173,7 +173,7 @@ void ClientMap::updateDrawList()
 	}
 	m_drawlist.clear();
 
-	const v3f camera_position = m_camera_position;
+	const auto camera_position = m_camera_position;
 	const v3f camera_direction = m_camera_direction;
 
 	// Use a higher fov to accomodate faster camera movements.
@@ -310,7 +310,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const int crack = m_client->getCrackLevel();
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
-	const v3f camera_position = m_camera_position;
+	const auto camera_position = m_camera_position;
 
 	/*
 		Get all blocks and draw all visible ones
@@ -350,7 +350,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (!block->mesh)
 			continue;
 
-		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
+		auto block_pos_r = posToOpos(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
 		float d = camera_position.getDistanceFrom(block_pos_r);
 		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
 
@@ -437,7 +437,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	TimeTaker draw("Drawing mesh buffers");
 
 	core::matrix4 m; // Model matrix
-	v3f offset = intToFloat(m_camera_offset, BS);
+	auto offset = intToFloat(m_camera_offset, BS);
 	u32 material_swaps = 0;
 
 	// Render all mesh buffers in order
@@ -470,8 +470,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			++material_swaps;
 		}
 
-		v3f block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, BS);
-		m.setTranslation(block_wpos - offset);
+		auto block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, BS);
+		m.setTranslation(oposToV3f(block_wpos - offset));
 
 		driver->setTransform(video::ETS_WORLD, m);
 		driver->drawMeshBuffer(buf);
@@ -494,7 +494,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
 }
 
-static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
+static bool getVisibleBrightness(Map *map, const v3opos_t &p0, v3f dir, float step,
 	float step_multiplier, float start_distance, float end_distance,
 	const NodeDefManager *ndef, u32 daylight_factor, float sunlight_min_d,
 	int *result, bool *sunlight_seen)
@@ -503,8 +503,8 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 	int brightness_count = 0;
 	float distance = start_distance;
 	dir.normalize();
-	v3f pf = p0;
-	pf += dir * distance;
+	auto pf = p0;
+	pf += v3fToOpos(dir * distance);
 	int noncount = 0;
 	bool nonlight_seen = false;
 	bool allow_allowing_non_sunlight_propagates = false;
@@ -523,13 +523,13 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		MapNode n = map->getNode(p);
 		if(n.getContent() == CONTENT_IGNORE){
 			float newd = 2*BS;
-			pf = p0 + dir * 2*newd;
+			pf = p0 + v3fToOpos(dir * 2*newd);
 			distance = newd;
 			sunlight_min_d = 0;
 		}
 	}
 	for (int i=0; distance < end_distance; i++) {
-		pf += dir * step;
+		pf += v3fToOpos(dir * step);
 		distance += step;
 		step *= step_multiplier;
 
@@ -752,7 +752,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	TimeTaker draw("Drawing shadow mesh buffers");
 
 	core::matrix4 m; // Model matrix
-	v3f offset = intToFloat(m_camera_offset, BS);
+	auto offset = intToFloat(m_camera_offset, BS);
 
 	// Render all layers in order
 	for (auto &lists : drawbufs.lists) {
@@ -775,8 +775,8 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.Lighting = false;
 				driver->setMaterial(local_material);
 
-				v3f block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
-				m.setTranslation(block_wpos - offset);
+				auto block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
+				m.setTranslation(oposToV3f(block_wpos - offset));
 
 				driver->setTransform(video::ETS_WORLD, m);
 				driver->drawMeshBuffer(buf);
@@ -805,7 +805,7 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
 
-	const v3f camera_position = shadow_light_pos;
+	const v3opos_t camera_position = v3fToOpos(shadow_light_pos);
 	const v3f camera_direction = shadow_light_dir;
 	// I "fake" fov just to avoid creating a new function to handle orthographic
 	// projection.

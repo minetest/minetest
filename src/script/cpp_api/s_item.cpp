@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	LuaError(std::string(__FUNCTION__) + ": " + (e).what() + ". " detail)
 
 bool ScriptApiItem::item_OnDrop(ItemStack &item,
-		ServerActiveObject *dropper, v3f pos)
+		ServerActiveObject *dropper, v3opos_t pos)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

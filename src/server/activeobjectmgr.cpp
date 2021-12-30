@@ -78,7 +78,7 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 	}
 
 	if (objectpos_over_limit(obj->getBasePosition())) {
-		v3f p = obj->getBasePosition();
+		auto p = obj->getBasePosition();
 		warningstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
 				<< "object position (" << p.X << "," << p.Y << "," << p.Z
 				<< ") outside maximum range" << std::endl;
@@ -111,14 +111,14 @@ void ActiveObjectMgr::removeObject(u16 id)
 }
 
 // clang-format on
-void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
+void ActiveObjectMgr::getObjectsInsideRadius(const v3opos_t &pos, float radius,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
 	float r2 = radius * radius;
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject *obj = activeObject.second;
-		const v3f &objectpos = obj->getBasePosition();
+		const auto &objectpos = obj->getBasePosition();
 		if (objectpos.getDistanceFromSQ(pos) > r2)
 			continue;
 
@@ -127,13 +127,13 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 	}
 }
 
-void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
+void ActiveObjectMgr::getObjectsInArea(const aabb3o &box,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject *obj = activeObject.second;
-		const v3f &objectpos = obj->getBasePosition();
+		const auto &objectpos = obj->getBasePosition();
 		if (!box.isPointInside(objectpos))
 			continue;
 
@@ -142,7 +142,7 @@ void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 	}
 }
 
-void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
+void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3opos_t &player_pos, f32 radius,
 		f32 player_radius, std::set<u16> &current_objects,
 		std::queue<u16> &added_objects)
 {

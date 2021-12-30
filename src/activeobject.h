@@ -103,7 +103,7 @@ public:
 	 * The box's coordinates are world coordinates.
 	 * @returns true if the object has a collision box.
 	 */
-	virtual bool getCollisionBox(aabb3f *toset) const = 0;
+	virtual bool getCollisionBox(aabb3o *toset) const = 0;
 
 
 	/*!

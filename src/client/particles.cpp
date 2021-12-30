@@ -136,7 +136,7 @@ void Particle::step(float dtime)
 	m_time += dtime;
 	if (m_collisiondetection) {
 		aabb3f box = m_collisionbox;
-		v3f p_pos = m_pos * BS;
+		v3opos_t p_pos = m_pos * BS;
 		v3f p_velocity = m_velocity * BS;
 		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
 			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
@@ -150,7 +150,7 @@ void Particle::step(float dtime)
 		}
 	} else {
 		m_velocity += m_acceleration * dtime;
-		m_pos += m_velocity * dtime;
+		m_pos += v3fToOpos(m_velocity * dtime);
 	}
 	if (m_animation.type != TAT_NONE) {
 		m_animation_time += dtime;
@@ -230,7 +230,7 @@ void Particle::updateVertices()
 	v3pos_t camera_offset = m_env->getCameraOffset();
 	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
-			v3f ppos = m_player->getPosition()/BS;
+			v3opos_t ppos = m_player->getPosition()/BS;
 			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
 				core::DEGTORAD + 90);
 		} else {
@@ -238,7 +238,7 @@ void Particle::updateVertices()
 			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
 		m_box.addInternalPoint(vertex.Pos);
-		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
+		vertex.Pos += oposToV3f(m_pos*BS - posToOpos(camera_offset, BS));
 	}
 }
 
@@ -272,7 +272,7 @@ ParticleSpawner::ParticleSpawner(
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
-	v3f ppos = m_player->getPosition() / BS;
+	v3opos_t ppos = m_player->getPosition() / BS;
 	v3f pos = random_v3f(p.minpos, p.maxpos);
 
 	// Need to apply this first or the following check
@@ -287,12 +287,12 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pos.Z += camera_offset.Z;
 	}
 
-	if (pos.getDistanceFrom(ppos) > radius)
+	if (v3fToOpos(pos).getDistanceFrom(ppos) > radius)
 		return;
 
 	// Parameters for the single particle we're about to spawn
 	ParticleParameters pp;
-	pp.pos = pos;
+	pp.pos = v3fToOpos(pos);
 
 	pp.vel = random_v3f(p.minvel, p.maxvel);
 	pp.acc = random_v3f(p.minacc, p.maxacc);
@@ -597,10 +597,10 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		-player->movement_gravity * player->physics_override_gravity / BS,
 		0.0f
 	);
-	p.pos = v3f(
-		(f32)pos.X + (rand() % 100) / 200.0f - 0.25f,
-		(f32)pos.Y + (rand() % 100) / 200.0f - 0.25f,
-		(f32)pos.Z + (rand() % 100) / 200.0f - 0.25f
+	p.pos = v3opos_t(
+		(opos_t)pos.X + (rand() % 100) / 200.0f - 0.25f,
+		(opos_t)pos.Y + (rand() % 100) / 200.0f - 0.25f,
+		(opos_t)pos.Z + (rand() % 100) / 200.0f - 0.25f
 	);
 
 	Particle *toadd = new Particle(

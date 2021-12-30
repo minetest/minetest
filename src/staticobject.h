@@ -31,11 +31,11 @@ class ServerActiveObject;
 struct StaticObject
 {
 	u8 type = 0;
-	v3f pos;
+	v3opos_t pos;
 	std::string data;
 
 	StaticObject() = default;
-	StaticObject(const ServerActiveObject *s_obj, const v3f &pos_);
+	StaticObject(const ServerActiveObject *s_obj, const v3opos_t &pos_);
 
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, u8 version);

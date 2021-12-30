@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 
 extern const v3pos_t g_6dirs[6];
+extern const v3bpos_t g_6dirs_b[6];
 
 extern const v3pos_t g_7dirs[7];
 

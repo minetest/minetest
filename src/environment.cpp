@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "daynightratio.h"
 #include "emerge.h"
+#include "util/numeric.h"
 
 
 Environment::Environment(IGameDef *gamedef):
@@ -83,10 +84,10 @@ float Environment::getTimeOfDayF()
 	return m_time_of_day_f;
 }
 
-bool Environment::line_of_sight(v3f pos1, v3f pos2, v3pos_t *p)
+bool Environment::line_of_sight(v3opos_t pos1, v3f pos2, v3pos_t *p)
 {
 	// Iterate trough nodes on the line
-	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
+	voxalgo::VoxelLineIterator iterator(pos1 / BS, oposToV3f(v3fToOpos(pos2) - pos1) / BS);
 	do {
 		MapNode n = getMap().getNode(iterator.m_current_node_pos);
 
@@ -143,7 +144,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 	Map &map = getMap();
 	// If a node is found, this is the center of the
 	// first nodebox the shootline meets.
-	v3f found_boxcenter(0, 0, 0);
+	v3opos_t found_boxcenter(0, 0, 0);
 	// The untested nodes are in this range.
 	core::aabbox3d<pos_t> new_nodes;
 	while (state->m_iterator.m_current_index <= lastIndex) {
@@ -196,13 +197,14 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			// ID of the current box (loop counter)
 			u16 id = 0;
 
-			v3f npf = intToFloat(np, BS);
+			auto npf = posToOpos(np, BS);
 			// This loop translates the boxes to their in-world place.
-			for (aabb3f &box : boxes) {
+			for (aabb3f &boxf : boxes) {
+				aabb3o box(v3fToOpos(boxf.MinEdge), v3fToOpos(boxf.MaxEdge));
 				box.MinEdge += npf;
 				box.MaxEdge += npf;
 
-				v3f intersection_point;
+				v3opos_t intersection_point;
 				v3pos_t intersection_normal;
 				if (!boxLineCollision(box, state->m_shootline.start,
 						state->m_shootline.getVector(), &intersection_point,
@@ -233,7 +235,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			result.distanceSq = min_distance_sq;
 			// Set undersurface and abovesurface nodes
 			f32 d = 0.002 * BS;
-			v3f fake_intersection = result.intersection_point;
+			auto fake_intersection = result.intersection_point;
 			// Move intersection towards its source block.
 			if (fake_intersection.X < found_boxcenter.X) {
 				fake_intersection.X += d;

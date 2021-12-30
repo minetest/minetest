@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 
 PointedThing::PointedThing(const v3pos_t &under, const v3pos_t &above,
-	const v3pos_t &real_under, const v3f &point, const v3pos_t &normal,
+	const v3pos_t &real_under, const v3opos_t &point, const v3pos_t &normal,
 	u16 box_id, f32 distSq):
 	type(POINTEDTHING_NODE),
 	node_undersurface(under),
@@ -36,7 +36,7 @@ PointedThing::PointedThing(const v3pos_t &under, const v3pos_t &above,
 	distanceSq(distSq)
 {}
 
-PointedThing::PointedThing(s16 id, const v3f &point, const v3pos_t &normal,
+PointedThing::PointedThing(s16 id, const v3opos_t &point, const v3pos_t &normal,
 	f32 distSq) :
 	type(POINTEDTHING_OBJECT),
 	object_id(id),

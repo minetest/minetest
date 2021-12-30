@@ -82,7 +82,7 @@ public:
 	v3pos_t getFootstepNodePos();
 
 	// Used to check if anything changed and prevent sending packets if not
-	v3f last_position;
+	v3opos_t last_position;
 	v3f last_speed;
 	float last_pitch = 0.0f;
 	float last_yaw = 0.0f;
@@ -128,17 +128,17 @@ public:
 	void setPitch(f32 pitch) { m_pitch = pitch; }
 	f32 getPitch() const { return m_pitch; }
 
-	inline void setPosition(const v3f &position)
+	inline void setPosition(const v3opos_t &position)
 	{
 		m_position = position;
 		m_sneak_node_exists = false;
 	}
 
-	v3f getPosition() const { return m_position; }
+	v3opos_t getPosition() const { return m_position; }
 
 	// Non-transformed eye offset getters
 	// For accurate positions, use the Camera functions
-	v3f getEyePosition() const { return m_position + getEyeOffset(); }
+	v3opos_t getEyePosition() const { return m_position + v3fToOpos(getEyeOffset()); }
 	v3f getEyeOffset() const;
 	void setEyeHeight(float eye_height) { m_eye_height = eye_height; }
 
@@ -161,14 +161,14 @@ public:
 private:
 	void accelerate(const v3f &target_speed, const f32 max_increase_H,
 		const f32 max_increase_V, const bool use_pitch);
-	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
+	bool updateSneakNode(Map *map, const v3opos_t &position, const v3f &sneak_max);
 	float getSlipFactor(Environment *env, const v3f &speedH);
 	void handleAutojump(f32 dtime, Environment *env,
 		const collisionMoveResult &result,
-		const v3f &position_before_move, const v3f &speed_before_move,
+		const v3opos_t &position_before_move, const v3f &speed_before_move,
 		f32 pos_max_d);
 
-	v3f m_position;
+	v3opos_t m_position;
 	v3pos_t m_standing_node;
 
 	v3pos_t m_sneak_node = v3pos_t(32767, 32767, 32767);

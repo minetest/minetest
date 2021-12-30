@@ -50,7 +50,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	{
 		log_deprecated(L, "Deprecated add_particle call with "
 			"individual parameters instead of definition");
-		p.pos = check_v3f(L, 1);
+		p.pos = check_v3o(L, 1);
 		p.vel = check_v3f(L, 2);
 		p.acc = check_v3f(L, 3);
 		p.expirationtime = luaL_checknumber(L, 4);
@@ -64,7 +64,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	{
 		lua_getfield(L, 1, "pos");
 		if (lua_istable(L, -1))
-			p.pos = check_v3f(L, -1);
+			p.pos = check_v3o(L, -1);
 		lua_pop(L, 1);
 
 		lua_getfield(L, 1, "vel");

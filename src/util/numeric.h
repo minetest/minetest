@@ -135,6 +135,17 @@ inline void sortBoxVerticies(v3pos_t &p1, v3pos_t &p2) {
 		SWAP(pos_t, p1.Z, p2.Z);
 }
 
+ /*
+inline void sortBoxVerticies(v3bpos_t &p1, v3bpos_t &p2) {
+	if (p1.X > p2.X)
+		SWAP(bpos_t, p1.X, p2.X);
+	if (p1.Y > p2.Y)
+		SWAP(bpos_t, p1.Y, p2.Y);
+	if (p1.Z > p2.Z)
+		SWAP(bpos_t, p1.Z, p2.Z);
+}
+ */
+
 inline v3pos_t componentwise_min(const v3pos_t &a, const v3pos_t &b)
 {
 	return v3pos_t(MYMIN(a.X, b.X), MYMIN(a.Y, b.Y), MYMIN(a.Z, b.Z));
@@ -252,7 +263,7 @@ inline u32 calc_parity(u32 v)
 
 u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
 
-bool isBlockInSight(v3bpos_t blockpos_b, v3f camera_pos, v3f camera_dir,
+bool isBlockInSight(v3bpos_t blockpos_b, v3opos_t camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 
 s16 adjustDist(s16 dist, float zoom_fov);
@@ -301,10 +312,28 @@ inline v3pos_t doubleToPos(v3d p, double d)
 		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
 }
 
+inline v3pos_t floatToInt(v3d p, f32 d)
+{
+	return v3pos_t(
+		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
+		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
+		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
+}
+
+
+inline v3pos_t oposToPos(v3opos_t p, double d)
+{
+	return v3pos_t(
+		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
+		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
+		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
+}
+
 /*
 	Returns floating point position of node in given integer position
 */
-inline v3f intToFloat(v3pos_t p, f32 d)
+
+inline v3f intToFloat(v3s16 p, f32 d)
 {
 	return v3f(
 		(f32)p.X * d,
@@ -312,6 +341,75 @@ inline v3f intToFloat(v3pos_t p, f32 d)
 		(f32)p.Z * d
 	);
 }
+
+#if USE_POS32
+inline v3opos_t intToFloat(const v3pos_t & p, const opos_t d)
+{
+	return v3opos_t(
+		(opos_t)p.X * d,
+		(opos_t)p.Y * d,
+		(opos_t)p.Z * d
+	);
+}
+#endif
+
+inline v3f posToFloat(const v3pos_t & p, f32 d)
+{
+	return v3f(
+		(f32)p.X * d,
+		(f32)p.Y * d,
+		(f32)p.Z * d
+	);
+}
+
+inline v3opos_t posToOpos(const v3pos_t & p, const opos_t d)
+{
+	return v3opos_t(
+		(opos_t)p.X * d,
+		(opos_t)p.Y * d,
+		(opos_t)p.Z * d
+	);
+}
+
+inline v3opos_t v3fToOpos(const v3f & p)
+{
+	return v3opos_t(p.X, p.Y, p.Z);
+}
+
+inline v3f oposToV3f(const v3opos_t & p)
+{
+	return v3f(p.X, p.Y, p.Z);
+}
+
+ /*
+inline v3f intToFloat(v3bpos_t p, f32 d)
+{
+	return v3f(
+		(f32)p.X * d,
+		(f32)p.Y * d,
+		(f32)p.Z * d
+	);
+}
+ */
+
+inline v3s16 posToS16(const v3pos_t & p)
+{
+#if USE_POS32
+	return v3s16(p.X, p.Y, p.Z);
+#else
+	return p;
+#endif
+}
+
+inline v3pos_t s16ToPos(const v3s16 & p)
+{
+#if USE_POS32
+	return v3pos_t(p.X, p.Y, p.Z);
+#else
+	return p;
+#endif
+}
+
 
 // Random helper. Usually d=BS
 inline aabb3f getNodeBox(v3pos_t p, float d)
@@ -326,6 +424,19 @@ inline aabb3f getNodeBox(v3pos_t p, float d)
 	);
 }
 
+#if USE_POS32
+inline aabb3o getNodeBox(v3pos_t p, opos_t d)
+{
+	return aabb3o(
+		(opos_t)p.X * d - 0.5f * d,
+		(opos_t)p.Y * d - 0.5f * d,
+		(opos_t)p.Z * d - 0.5f * d,
+		(opos_t)p.X * d + 0.5f * d,
+		(opos_t)p.Y * d + 0.5f * d,
+		(opos_t)p.Z * d + 0.5f * d
+	);
+}
+#endif
 
 class IntervalLimiter
 {

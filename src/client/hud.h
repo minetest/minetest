@@ -71,9 +71,9 @@ public:
 
 	std::vector<aabb3f> *getSelectionBoxes() { return &m_selection_boxes; }
 
-	void setSelectionPos(const v3f &pos, const v3pos_t &camera_offset);
+	void setSelectionPos(const v3opos_t &pos, const v3pos_t &camera_offset);
 
-	v3f getSelectionPos() const { return m_selection_pos; }
+	v3opos_t getSelectionPos() const { return m_selection_pos; }
 
 	void setSelectionMeshColor(const video::SColor &color)
 	{
@@ -124,7 +124,7 @@ private:
 
 	std::vector<aabb3f> m_selection_boxes;
 	std::vector<aabb3f> m_halo_boxes;
-	v3f m_selection_pos;
+	v3opos_t m_selection_pos;
 	v3f m_selection_pos_with_offset;
 
 	scene::IMesh *m_selection_mesh = nullptr;

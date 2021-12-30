@@ -92,6 +92,18 @@ void push_v3f(lua_State *L, v3f p)
 	set_vector_metatable(L);
 }
 
+void push_v3f(lua_State *L, v3d p)
+{
+	lua_createtable(L, 0, 3);
+	lua_pushnumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, p.Z);
+	lua_setfield(L, -2, "z");
+	set_vector_metatable(L);
+}
+
 void push_v2f(lua_State *L, v2f p)
 {
 	lua_createtable(L, 0, 2);
@@ -247,6 +259,15 @@ v3d read_v3d(lua_State *L, int index)
 	return pos;
 }
 
+v3opos_t read_v3o(lua_State *L, int index)
+{
+#if USE_POS32	
+	return read_v3d(L, index);
+#else
+	return read_v3f(L, index);
+#endif
+}
+
 v3d check_v3d(lua_State *L, int index)
 {
 	v3d pos;
@@ -254,17 +275,23 @@ v3d check_v3d(lua_State *L, int index)
 	lua_getfield(L, index, "x");
 	CHECK_POS_COORD("x");
 	pos.X = lua_tonumber(L, -1);
+#if !USE_POS32
 	CHECK_FLOAT_RANGE(pos.X, "x")
+#endif
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	pos.Y = lua_tonumber(L, -1);
+#if !USE_POS32
 	CHECK_FLOAT_RANGE(pos.Y, "y")
+#endif
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
 	CHECK_POS_COORD("z");
 	pos.Z = lua_tonumber(L, -1);
+#if !USE_POS32
 	CHECK_FLOAT_RANGE(pos.Z, "z")
+#endif
 	lua_pop(L, 1);
 	return pos;
 }
@@ -288,9 +315,29 @@ void pushFloatPos(lua_State *L, v3f p)
 	push_v3f(L, p);
 }
 
+void pushFloatPos(lua_State *L, v3d p)
+{
+	p /= BS;
+	push_v3f(L, p);
+}
+
 v3f checkFloatPos(lua_State *L, int index)
 {
 	return check_v3f(L, index) * BS;
+}
+
+v3opos_t check_v3o(lua_State *L, int index)
+{
+#if USE_POS32	
+	return check_v3d(L, index);
+#else
+	return check_v3f(L, index);
+#endif
+}
+
+v3opos_t checkOposPos(lua_State *L, int index)
+{
+	return check_v3o(L, index) * BS;
 }
 
 void push_v3s16(lua_State *L, v3s16 p)

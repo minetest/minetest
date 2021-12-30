@@ -307,7 +307,7 @@ void Clouds::render()
 			}
 
 			v3f pos(p0.X, m_params.height * BS, p0.Y);
-			pos -= intToFloat(m_camera_offset, BS);
+			pos -= posToFloat(m_camera_offset, BS);
 
 			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;

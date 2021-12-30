@@ -610,7 +610,7 @@ void Client::step(float dtime)
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (!cao)
 				continue;
-			m_sound->updateSoundPosition(client_id, cao->getPosition());
+			m_sound->updateSoundPosition(client_id, oposToV3f(cao->getPosition()));
 		}
 	}
 
@@ -924,7 +924,7 @@ void Client::Send(NetworkPacket* pkt)
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
-	v3f pf           = myplayer->getPosition() * 100;
+	v3opos_t pf      = myplayer->getPosition() * 100;
 	v3f sf           = myplayer->getSpeed() * 100;
 	s32 pitch        = myplayer->getPitch() * 100;
 	s32 yaw          = myplayer->getYaw() * 100;
@@ -1357,7 +1357,7 @@ void Client::removeNode(v3pos_t p)
 MapNode Client::CSMGetNode(v3pos_t p, bool *is_valid_position)
 {
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
-		v3pos_t ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+		v3pos_t ppos = oposToPos(m_env.getLocalPlayer()->getPosition(), BS);
 		if ((u32) ppos.getDistanceFrom(p) > m_csm_restriction_noderange) {
 			*is_valid_position = false;
 			return {};
@@ -1371,7 +1371,7 @@ int Client::CSMClampRadius(v3pos_t pos, int radius)
 	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
 		return radius;
 	// This is approximate and will cause some allowed nodes to be excluded
-	v3pos_t ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	v3pos_t ppos = oposToPos(m_env.getLocalPlayer()->getPosition(), BS);
 	u32 distance = ppos.getDistanceFrom(pos);
 	if (distance >= m_csm_restriction_noderange)
 		return 0;
@@ -1382,7 +1382,7 @@ v3pos_t Client::CSMClampPos(v3pos_t pos)
 {
 	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
 		return pos;
-	v3pos_t ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	v3pos_t ppos = oposToPos(m_env.getLocalPlayer()->getPosition(), BS);
 	const int range = m_csm_restriction_noderange;
 	return v3pos_t(
 		core::clamp<int>(pos.X, (int)ppos.X - range, (int)ppos.X + range),

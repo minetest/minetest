@@ -118,7 +118,7 @@ void RemoteClient::GetNextBlocks (
 		return;
 	}
 
-	v3f playerpos = sao->getBasePosition();
+	auto playerpos = sao->getBasePosition();
 	// if the player is attached, get the velocity from the attached object
 	LuaEntitySAO *lsao = getAttachedObject(sao, env);
 	const v3f &playerspeed = lsao? lsao->getVelocity() : player->getSpeed();
@@ -126,14 +126,14 @@ void RemoteClient::GetNextBlocks (
 	if (playerspeed.getLength() > 1.0f * BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
 	// Predict to next block
-	v3f playerpos_predicted = playerpos + playerspeeddir * (MAP_BLOCKSIZE * BS);
+	v3opos_t playerpos_predicted = playerpos + v3fToOpos(playerspeeddir) * (MAP_BLOCKSIZE * BS);
 
 	v3pos_t center_nodepos = floatToInt(playerpos_predicted, BS);
 
 	v3bpos_t center = getNodeBlockPos(center_nodepos);
 
 	// Camera position and direction
-	v3f camera_pos = sao->getEyePosition();
+	auto camera_pos = sao->getEyePosition();
 	v3f camera_dir = v3f(0,0,1);
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);

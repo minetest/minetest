@@ -134,7 +134,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 	// Basic debug text also shows info that might give a gameplay advantage
 	if (m_flags.show_basic_debug) {
 		LocalPlayer *player = client->getEnv().getLocalPlayer();
-		v3f player_position = player->getPosition();
+		auto player_position = player->getPosition();
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::setprecision(1) << std::fixed

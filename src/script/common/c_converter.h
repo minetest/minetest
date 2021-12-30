@@ -105,8 +105,11 @@ v3f                 checkFloatPos       (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
 v3s16               check_v3s16         (lua_State *L, int index);
 v3pos_t             check_v3pos         (lua_State *L, int index);
+v3opos_t            check_v3o           (lua_State *L, int index);
+v3opos_t            checkOposPos        (lua_State *L, int index);
 
 v3f                 read_v3f            (lua_State *L, int index);
+v3opos_t            read_v3o            (lua_State *L, int index);
 v2f                 read_v2f            (lua_State *L, int index);
 v2s16               read_v2s16          (lua_State *L, int index);
 v2s32               read_v2s32          (lua_State *L, int index);
@@ -157,7 +160,9 @@ inline void         push_v3pos          (lua_State *L, v3pos_t p) {
 void                push_aabb3f         (lua_State *L, aabb3f box);
 void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);
+void                pushFloatPos        (lua_State *L, v3d p);
 void                push_v3f            (lua_State *L, v3f p);
+void                push_v3f            (lua_State *L, v3d p);
 void                push_v2f            (lua_State *L, v2f p);
 
 void                warn_if_field_exists(lua_State *L, int table,

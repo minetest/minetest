@@ -507,7 +507,7 @@ public:
 		m_animation_timer_pixel.set(&animation_timer_f, services);
 
 		float eye_position_array[3];
-		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
+		v3f epos = oposToV3f(m_client->getEnv().getLocalPlayer()->getEyePosition());
 		epos.getAs3Values(eye_position_array);
 		m_eye_position_pixel.set(eye_position_array, services);
 		m_eye_position_vertex.set(eye_position_array, services);
@@ -520,7 +520,7 @@ public:
 		}
 
 		float camera_offset_array[3];
-		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
+		v3f offset = posToFloat(m_client->getCamera()->getOffset(), BS);
 		offset.getAs3Values(camera_offset_array);
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
@@ -729,13 +729,13 @@ protected:
 	 * NULL if not found
 	 */
 	PointedThing updatePointedThing(
-			const core::line3d<f32> &shootline, bool liquids_pointable,
+			const core::line3d<opos_t> &shootline, bool liquids_pointable,
 			bool look_for_object, const v3pos_t &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
-			const v3f &player_position, bool show_debug);
+			const v3opos_t &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3pos_t &nodepos,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
@@ -2732,7 +2732,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->dir    = event->hudadd->dir;
 	e->align  = event->hudadd->align;
 	e->offset = event->hudadd->offset;
-	e->world_pos = event->hudadd->world_pos;
+	e->world_pos = oposToV3f(event->hudadd->world_pos);
 	e->size      = event->hudadd->size;
 	e->z_index   = event->hudadd->z_index;
 	e->text2     = event->hudadd->text2;
@@ -2995,7 +2995,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 	camera->update(player, dtime, busy_time / 1000.0f, tool_reload_ratio);
 	camera->step(dtime);
 
-	v3f camera_position = camera->getPosition();
+	auto camera_position = camera->getPosition();
 	v3f camera_direction = camera->getDirection();
 	f32 camera_fov = camera->getFovMax();
 	v3pos_t camera_offset = camera->getOffset();
@@ -3021,7 +3021,7 @@ void Game::updateSound(f32 dtime)
 {
 	// Update sound listener
 	v3pos_t camera_offset = camera->getOffset();
-	sound->updateListener(camera->getCameraNode()->getPosition() + intToFloat(camera_offset, BS),
+	sound->updateListener(camera->getCameraNode()->getPosition() + posToFloat(camera_offset, BS),
 			      v3f(0, 0, 0), // velocity
 			      camera->getDirection(),
 			      camera->getCameraNode()->getUpVector());
@@ -3072,7 +3072,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
 	f32 d = getToolRange(selected_def, hand_item.getDefinition(itemdef_manager));
 
-	core::line3d<f32> shootline;
+	core::line3d<opos_t> shootline;
 
 	switch (camera->getCameraMode()) {
 	case CAMERA_MODE_FIRST:
@@ -3089,7 +3089,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		d = 0;
 		break;
 	}
-	shootline.end = shootline.start + camera_direction * BS * d;
+	shootline.end = shootline.start + v3fToOpos(camera_direction * BS * d);
 
 #ifdef HAVE_TOUCHSCREENGUI
 
@@ -3172,7 +3172,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
-		v3f player_position  = player->getPosition();
+		auto player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
@@ -3204,7 +3204,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 
 PointedThing Game::updatePointedThing(
-	const core::line3d<f32> &shootline,
+	const core::line3d<opos_t> &shootline,
 	bool liquids_pointable,
 	bool look_for_object,
 	const v3pos_t &camera_offset)
@@ -3232,7 +3232,7 @@ PointedThing Game::updatePointedThing(
 		aabb3f selection_box;
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
 				runData.selected_object->getSelectionBox(&selection_box)) {
-			v3f pos = runData.selected_object->getPosition();
+			auto pos = runData.selected_object->getPosition();
 			selectionboxes->push_back(aabb3f(selection_box));
 			hud->setSelectionPos(pos, camera_offset);
 		}
@@ -3251,7 +3251,7 @@ PointedThing Game::updatePointedThing(
 			box.MaxEdge += v3f(d, d, d);
 			selectionboxes->push_back(box);
 		}
-		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
+		hud->setSelectionPos(posToOpos(result.node_undersurface, BS),
 			camera_offset);
 		hud->setSelectedFaceNormal(v3f(
 			result.intersection_normal.X,
@@ -3261,8 +3261,8 @@ PointedThing Game::updatePointedThing(
 
 	// Update selection mesh light level and vertex colors
 	if (!selectionboxes->empty()) {
-		v3f pf = hud->getSelectionPos();
-		v3pos_t p = floatToInt(pf, BS);
+		v3opos_t pf = hud->getSelectionPos();
+		v3pos_t p = oposToPos(pf, BS);
 
 		// Get selection mesh light level
 		MapNode n = map.getNode(p);
@@ -3468,7 +3468,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		}
 	} else if (predicted_f.param_type_2 == CPT2_FACEDIR ||
 			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
-		v3pos_t dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
+		v3pos_t dir = nodepos - oposToPos(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
 		if (abs(dir.X) > abs(dir.Z)) {
 			param2 = dir.X < 0 ? 3 : 1;
@@ -3558,7 +3558,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 }
 
 void Game::handlePointingAtObject(const PointedThing &pointed,
-		const ItemStack &tool_item, const v3f &player_position, bool show_debug)
+		const ItemStack &tool_item, const v3opos_t &player_position, bool show_debug)
 {
 	std::wstring infotext = unescape_translate(
 		utf8_to_wide(runData.selected_object->infoText()));
@@ -3592,8 +3592,8 @@ void Game::handlePointingAtObject(const PointedThing &pointed,
 
 		if (do_punch_damage) {
 			// Report direct punch
-			v3f objpos = runData.selected_object->getPosition();
-			v3f dir = (objpos - player_position).normalize();
+			v3opos_t objpos = runData.selected_object->getPosition();
+			v3f dir = (oposToV3f(objpos - player_position)).normalize();
 
 			bool disable_send = runData.selected_object->directReportPunch(
 					dir, &tool_item, runData.time_from_last_punch);
@@ -3997,7 +3997,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Update minimap pos and rotation
 	*/
 	if (mapper && m_game_ui->m_flags.show_hud) {
-		mapper->setPos(floatToInt(player->getPosition(), BS));
+		mapper->setPos(oposToPos(player->getPosition(), BS));
 		mapper->setAngle(player->getYaw());
 	}
 

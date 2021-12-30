@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "server/serveractiveobject.h"
 
-StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3f &pos_):
+StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3opos_t &pos_):
 	type(s_obj->getType()),
 	pos(pos_)
 {
@@ -33,7 +33,7 @@ void StaticObject::serialize(std::ostream &os)
 	// type
 	writeU8(os, type);
 	// pos
-	writeV3F1000(os, pos);
+	writeV3F1000(os, oposToV3f(pos)); //TODO
 	// data
 	os<<serializeString16(data);
 }
@@ -43,7 +43,7 @@ void StaticObject::deSerialize(std::istream &is, u8 version)
 	// type
 	type = readU8(is);
 	// pos
-	pos = readV3F1000(is);
+	pos = v3fToOpos(readV3F1000(is));
 	// data
 	data = deSerializeString16(is);
 }

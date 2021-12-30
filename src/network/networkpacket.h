@@ -90,11 +90,17 @@ public:
 	NetworkPacket &operator>>(float &dst);
 	NetworkPacket &operator<<(float src);
 
+	NetworkPacket &operator>>(double &dst);
+	NetworkPacket &operator<<(double src);
+
 	NetworkPacket &operator>>(v2f &dst);
 	NetworkPacket &operator<<(v2f src);
 
 	NetworkPacket &operator>>(v3f &dst);
 	NetworkPacket &operator<<(v3f src);
+
+	NetworkPacket &operator>>(v3d &dst);
+	NetworkPacket &operator<<(v3d src);
 
 	NetworkPacket &operator>>(s16 &dst);
 	NetworkPacket &operator<<(s16 src);

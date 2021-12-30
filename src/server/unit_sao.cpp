@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "serverenvironment.h"
 
-UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos) : ServerActiveObject(env, pos)
+UnitSAO::UnitSAO(ServerEnvironment *env, v3opos_t pos) : ServerActiveObject(env, pos)
 {
 	// Initialize something to armor groups
 	m_armor_groups["fleshy"] = 100;
@@ -321,7 +321,7 @@ std::string UnitSAO::generateUpdateArmorGroupsCommand() const
 	return os.str();
 }
 
-std::string UnitSAO::generateUpdatePositionCommand(const v3f &position,
+std::string UnitSAO::generateUpdatePositionCommand(const v3opos_t &position,
 		const v3f &velocity, const v3f &acceleration, const v3f &rotation,
 		bool do_interpolate, bool is_movement_end, f32 update_interval)
 {
@@ -329,7 +329,7 @@ std::string UnitSAO::generateUpdatePositionCommand(const v3f &position,
 	// command
 	writeU8(os, AO_CMD_UPDATE_POSITION);
 	// pos
-	writeV3F32(os, position);
+	writeV3O(os, position);
 	// velocity
 	writeV3F32(os, velocity);
 	// acceleration

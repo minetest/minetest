@@ -1263,13 +1263,13 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 		modified_blocks);
 }
 
-VoxelLineIterator::VoxelLineIterator(const v3f &start_position, const v3f &line_vector) :
+VoxelLineIterator::VoxelLineIterator(const v3opos_t &start_position, const v3f &line_vector) :
 	m_start_position(start_position),
 	m_line_vector(line_vector)
 {
 	m_current_node_pos = floatToInt(m_start_position, 1);
 	m_start_node_pos = m_current_node_pos;
-	m_last_index = getIndex(floatToInt(start_position + line_vector, 1));
+	m_last_index = getIndex(floatToInt(start_position + v3fToOpos(line_vector), 1));
 
 	if (m_line_vector.X > 0) {
 		m_next_intersection_multi.X = (floorf(m_start_position.X - 0.5) + 1.5

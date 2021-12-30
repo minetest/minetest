@@ -42,17 +42,17 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float sfFar = adjustDist(future_frustum.zFar, cam->getFovY());
 
 	// adjusted camera positions
-	v3f camPos2 = cam->getPosition();
+	auto camPos2 = cam->getPosition();
 	v3f camPos = v3f(camPos2.X - cam->getOffset().X * BS,
 			camPos2.Y - cam->getOffset().Y * BS,
 			camPos2.Z - cam->getOffset().Z * BS);
 	camPos += look * sfNear;
-	camPos2 += look * sfNear;
+	camPos2 += v3fToOpos(look * sfNear);
 
 	// center point of light frustum
 	float end = sfNear + sfFar;
 	newCenter = camPos + look * (sfNear + 0.05f * end);
-	v3f world_center = camPos2 + look * (sfNear + 0.05f * end);
+	v3f world_center = oposToV3f(camPos2) + look * (sfNear + 0.05f * end);
 
 	// Create a vector to the frustum far corner
 	const v3f &viewUp = cam->getCameraNode()->getUpVector();
@@ -113,7 +113,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	v3pos_t cam_offset = cam->getOffset();
 	if (cam_offset != shadow_frustum.camera_offset) {
 		v3f rotated_offset;
-		shadow_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - shadow_frustum.camera_offset, BS));
+		shadow_frustum.ViewMat.rotateVect(rotated_offset, posToFloat(cam_offset - shadow_frustum.camera_offset, BS));
 		shadow_frustum.ViewMat.setTranslation(shadow_frustum.ViewMat.getTranslation() + rotated_offset);
 		shadow_frustum.camera_offset = cam_offset;
 	}

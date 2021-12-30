@@ -49,22 +49,22 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 	// Test some lines
 	// Do not test lines that start or end on the border of
 	// two voxels as rounding errors can make the test fail!
-	std::vector<core::line3d<f32> > lines;
-	for (f32 x = -9.1; x < 9; x += 3.124) {
-	for (f32 y = -9.2; y < 9; y += 3.123) {
-	for (f32 z = -9.3; z < 9; z += 3.122) {
+	std::vector<core::line3d<opos_t> > lines;
+	for (opos_t x = -9.1; x < 9; x += 3.124) {
+	for (opos_t y = -9.2; y < 9; y += 3.123) {
+	for (opos_t z = -9.3; z < 9; z += 3.122) {
 		lines.emplace_back(-x, -y, -z, x, y, z);
 	}
 	}
 	}
 	lines.emplace_back(0, 0, 0, 0, 0, 0);
 	// Test every line
-	std::vector<core::line3d<f32> >::iterator it = lines.begin();
+	std::vector<core::line3d<opos_t> >::iterator it = lines.begin();
 	for (; it < lines.end(); it++) {
-		core::line3d<f32> l = *it;
+		core::line3d<opos_t> l = *it;
 
 		// Initialize test
-		voxalgo::VoxelLineIterator iterator(l.start, l.getVector());
+		voxalgo::VoxelLineIterator iterator(l.start, oposToV3f(l.getVector()));
 
 		//Test the first voxel
 		v3pos_t start_voxel = floatToInt(l.start, 1);
@@ -85,9 +85,9 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 			// This must be a neighbor of the old voxel
 			UASSERTEQ(f32, (new_voxel - old_voxel).getLengthSQ(), 1);
 			// The line must intersect with the voxel
-			v3f voxel_center = intToFloat(iterator.m_current_node_pos, 1);
-			aabb3f box(voxel_center - v3f(0.5, 0.5, 0.5),
-				voxel_center + v3f(0.5, 0.5, 0.5));
+			v3opos_t voxel_center = posToOpos(iterator.m_current_node_pos, (f32)1);
+			aabb3o box(voxel_center - v3opos_t(0.5, 0.5, 0.5),
+				voxel_center + v3opos_t(0.5, 0.5, 0.5));
 			UASSERT(box.intersectsWithLine(l));
 			// Update old voxel
 			old_voxel = new_voxel;

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "threading/mutex_auto_lock.h"
 #include "constants.h"
+#include "util/numeric.h"
 #include "voxel.h"
 #include "config.h"
 #include "version.h"
@@ -148,7 +149,7 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 		if(!sao)
 			return v3f(0,0,0);
 		if(pos_exists) *pos_exists = true;
-		return sao->getBasePosition(); }
+		return oposToV3f(sao->getBasePosition()); }
 	}
 	return v3f(0,0,0);
 }
@@ -1543,7 +1544,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
-		const v3f pos = p.pos * BS;
+		const auto pos = p.pos * BS;
 		const float radius_sq = radius * radius;
 
 		for (const session_t client_id : clients) {
@@ -1601,7 +1602,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 				PlayerSAO *sao = player->getPlayerSAO();
 				if (!sao)
 					continue;
-				if (sao->getBasePosition().getDistanceFromSQ(pos) > radius_sq)
+				if (sao->getBasePosition().getDistanceFromSQ(v3fToOpos(pos)) > radius_sq)
 					continue;
 			}
 
@@ -1839,7 +1840,7 @@ void Server::SendMovePlayer(session_t peer_id)
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
 	{
-		v3f pos = sao->getBasePosition();
+		auto pos = sao->getBasePosition();
 		verbosestream << "Server: Sending TOCLIENT_MOVE_PLAYER"
 				<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
 				<< " pitch=" << sao->getLookPitch()
@@ -2102,7 +2103,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 				continue;
 
 			if (pos_exists) {
-				if(sao->getBasePosition().getDistanceFrom(pos) >
+				if(sao->getBasePosition().getDistanceFrom(v3fToOpos(pos)) >
 						params.max_hear_distance)
 					continue;
 			}
@@ -2214,7 +2215,7 @@ void Server::sendRemoveNode(v3pos_t p, std::unordered_set<u16> *far_players,
 		float far_d_nodes)
 {
 	float maxd = far_d_nodes * BS;
-	v3f p_f = intToFloat(p, BS);
+	v3opos_t p_f = posToOpos(p, BS);
 	v3bpos_t block_pos = getNodeBlockPos(p);
 
 	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
@@ -2252,7 +2253,7 @@ void Server::sendAddNode(v3pos_t p, MapNode n, std::unordered_set<u16> *far_play
 		float far_d_nodes, bool remove_metadata)
 {
 	float maxd = far_d_nodes * BS;
-	v3f p_f = intToFloat(p, BS);
+	v3opos_t p_f = intToFloat(p, BS);
 	v3bpos_t block_pos = getNodeBlockPos(p);
 
 	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
@@ -2301,7 +2302,7 @@ void Server::sendMetadataChanged(const std::list<v3pos_t> &meta_updates, float f
 			continue;
 
 		ServerActiveObject *player = m_env->getActiveObject(i);
-		v3f player_pos = player ? player->getBasePosition() : v3f();
+		auto player_pos = player ? player->getBasePosition() : v3opos_t();
 
 		for (const v3pos_t &pos : meta_updates) {
 			NodeMetadata *meta = m_env->getMap().getNodeMetadata(pos);
@@ -2311,7 +2312,7 @@ void Server::sendMetadataChanged(const std::list<v3pos_t> &meta_updates, float f
 
 			v3bpos_t block_pos = getNodeBlockPos(pos);
 			if (!client->isBlockSent(block_pos) || (player &&
-					player_pos.getDistanceFrom(intToFloat(pos, BS)) > maxd)) {
+					player_pos.getDistanceFrom(posToOpos(pos, BS)) > maxd)) {
 				client->SetBlockNotSent(block_pos);
 				continue;
 			}
@@ -3694,12 +3695,13 @@ std::string Server::getModStoragePath() const
 	return m_path_world + DIR_DELIM + "mod_storage";
 }
 
-v3f Server::findSpawnPos()
+v3opos_t Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
-	v3f nodeposf;
-	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf))
-		return nodeposf * BS;
+	v3opos_t nodeposf;
+	v3f nodeposff;
+	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposff))
+		return v3fToOpos(nodeposff) * BS;
 
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
@@ -3741,7 +3743,7 @@ v3f Server::findSpawnPos()
 				if (air_count >= 2) {
 					// Spawn in lower empty node
 					nodepos.Y--;
-					nodeposf = intToFloat(nodepos, BS);
+					nodeposf = posToOpos(nodepos, BS);
 					// Don't spawn the player outside map boundaries
 					if (objectpos_over_limit(nodeposf))
 						// Exit this loop, positions above are probably over limit
@@ -3762,7 +3764,7 @@ v3f Server::findSpawnPos()
 		return nodeposf;
 
 	// No suitable spawn point found, return fallback 0,0,0
-	return v3f(0.0f, 0.0f, 0.0f);
+	return v3opos_t(0.0f, 0.0f, 0.0f);
 }
 
 void Server::requestShutdown(const std::string &msg, bool reconnect, float delay)

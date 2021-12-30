@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // BS
 #include "log.h"
 
-ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
+ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3opos_t pos):
 	ActiveObject(0),
 	m_env(env),
 	m_base_position(pos)

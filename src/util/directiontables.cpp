@@ -30,6 +30,17 @@ const v3pos_t g_6dirs[6] =
 	v3pos_t(-1, 0, 0) // left
 };
 
+const v3bpos_t g_6dirs_b[6] =
+{
+	// +right, +top, +back
+	v3bpos_t( 0, 0, 1), // back
+	v3bpos_t( 0, 1, 0), // top
+	v3bpos_t( 1, 0, 0), // right
+	v3bpos_t( 0, 0,-1), // front
+	v3bpos_t( 0,-1, 0), // bottom
+	v3bpos_t(-1, 0, 0) // left
+};
+
 const v3pos_t g_7dirs[7] =
 {
 	v3pos_t(0,0,1), // back

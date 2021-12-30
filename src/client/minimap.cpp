@@ -704,13 +704,13 @@ void Minimap::updateActiveMarkers()
 		data->minimap_mask_round : data->minimap_mask_square;
 
 	m_active_markers.clear();
-	v3f cam_offset = intToFloat(client->getCamera()->getOffset(), BS);
+	auto cam_offset = intToFloat(client->getCamera()->getOffset(), BS);
 	v3pos_t pos_offset = data->pos - v3pos_t(data->mode.map_size / 2,
 			data->mode.scan_height / 2,
 			data->mode.map_size / 2);
 
 	for (MinimapMarker *marker : m_markers) {
-		v3pos_t pos = floatToInt(marker->parent_node->getAbsolutePosition() +
+		v3pos_t pos = floatToInt(v3fToOpos(marker->parent_node->getAbsolutePosition()) +
 			cam_offset, BS) - pos_offset;
 		if (pos.X < 0 || pos.X > data->mode.map_size ||
 				pos.Y < 0 || pos.Y > data->mode.scan_height ||

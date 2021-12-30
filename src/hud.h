@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irr_v3d.h"
 #include "irrlichttypes_extrabloated.h"
 #include <string>
 #include "common/c_types.h"
@@ -103,7 +104,7 @@ struct HudElement {
 	u32 dir;
 	v2f align;
 	v2f offset;
-	v3f world_pos;
+	v3f world_pos; // todo v3d
 	v2s32 size;
 	s16 z_index = 0;
 	std::string text2;

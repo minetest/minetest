@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
+#include "irr_v3d.h"
 #include "irrlichttypes_bloated.h"
 #include "tileanimation.h"
 #include "mapnode.h"
@@ -59,7 +60,7 @@ struct CommonParticleParams {
 };
 
 struct ParticleParameters : CommonParticleParams {
-	v3f pos;
+	v3opos_t pos;
 	v3f vel;
 	v3f acc;
 	f32 expirationtime = 1;

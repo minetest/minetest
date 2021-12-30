@@ -119,7 +119,7 @@ public:
 	*/
 
 	// Get all nearby objects
-	void getActiveObjects(const v3f &origin, f32 max_d,
+	void getActiveObjects(const v3opos_t &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 	{
 		return m_ao_manager.getActiveObjects(origin, max_d, dest);
@@ -131,7 +131,7 @@ public:
 	ClientEnvEvent getClientEnvEvent();
 
 	virtual void getSelectedActiveObjects(
-		const core::line3d<f32> &shootline_on_map,
+		const core::line3d<opos_t> &shootline_on_map,
 		std::vector<PointedThing> &objects
 	);
 

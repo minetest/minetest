@@ -485,13 +485,13 @@ ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 }
 
 void ClientEnvironment::getSelectedActiveObjects(
-	const core::line3d<f32> &shootline_on_map,
+	const core::line3d<opos_t> &shootline_on_map,
 	std::vector<PointedThing> &objects)
 {
 	std::vector<DistanceSortedActiveObject> allObjects;
 	getActiveObjects(shootline_on_map.start,
 		shootline_on_map.getLength() + 10.0f, allObjects);
-	const v3f line_vector = shootline_on_map.getVector();
+	const v3opos_t line_vector = shootline_on_map.getVector();
 
 	for (const auto &allObject : allObjects) {
 		ClientActiveObject *obj = allObject.obj;
@@ -499,11 +499,11 @@ void ClientEnvironment::getSelectedActiveObjects(
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 
-		const v3f &pos = obj->getPosition();
-		aabb3f offsetted_box(selection_box.MinEdge + pos,
-			selection_box.MaxEdge + pos);
+		const v3opos_t &pos = obj->getPosition();
+		aabb3o offsetted_box(v3fToOpos(selection_box.MinEdge) + pos,
+			v3fToOpos(selection_box.MaxEdge) + pos);
 
-		v3f current_intersection;
+		v3opos_t current_intersection;
 		v3pos_t current_normal;
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
 				&current_intersection, &current_normal)) {

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
 #include "constants.h"
+#include "util/numeric.h"
 
 bool RaycastSort::operator() (const PointedThing &pt1,
 	const PointedThing &pt2) const
@@ -56,10 +57,10 @@ bool RaycastSort::operator() (const PointedThing &pt1,
 }
 
 
-RaycastState::RaycastState(const core::line3d<f32> &shootline,
+RaycastState::RaycastState(const core::line3d<opos_t> &shootline,
 	bool objects_pointable, bool liquids_pointable) :
 	m_shootline(shootline),
-	m_iterator(shootline.start / BS, shootline.getVector() / BS),
+	m_iterator(shootline.start / BS, oposToV3f(shootline.getVector() / BS)),
 	m_previous_node(m_iterator.m_current_node_pos),
 	m_objects_pointable(objects_pointable),
 	m_liquids_pointable(liquids_pointable)
@@ -67,8 +68,8 @@ RaycastState::RaycastState(const core::line3d<f32> &shootline,
 }
 
 
-bool boxLineCollision(const aabb3f &box, const v3f &start,
-	const v3f &dir, v3f *collision_point, v3pos_t *collision_normal)
+bool boxLineCollision(const aabb3o &box, const v3opos_t &start,
+	const v3opos_t &dir, v3opos_t *collision_point, v3pos_t *collision_normal)
 {
 	if (box.isPointInside(start)) {
 		*collision_point = start;

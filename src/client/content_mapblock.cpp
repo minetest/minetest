@@ -448,7 +448,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 	for (int w = -1; w <= 1; w++)
 	for (int u = -1; u <= 1; u++) {
 		NeighborData &neighbor = liquid_neighbors[w + 1][u + 1];
-		v3pos_t p2 = p + v3pos_t(u, 0, w);
+		auto p2 = p + v3pos_t(u, 0, w);
 		MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		neighbor.content = n2.getContent();
 		neighbor.level = -0.5 * BS;
@@ -1196,7 +1196,7 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	tile = tile_nocrack;
 
 	// Now a section of fence, +X, if there's a post there
-	v3pos_t p2 = p;
+	auto p2 = p;
 	p2.X++;
 	MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 	const ContentFeatures *f2 = &nodedef->get(n2);
@@ -1468,7 +1468,7 @@ void MapblockMeshGenerator::drawNode()
 		default:
 			break;
 	}
-	origin = intToFloat(p, BS);
+	origin = posToFloat(p, BS);
 	if (data->m_smooth_lighting)
 		getSmoothLightFrame();
 	else

@@ -27,10 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TestServerActiveObject : public ServerActiveObject
 {
 public:
-	TestServerActiveObject(const v3f &p = v3f()) : ServerActiveObject(nullptr, p) {}
+	TestServerActiveObject(const v3opos_t &p = v3opos_t()) : ServerActiveObject(nullptr, p) {}
 	~TestServerActiveObject() = default;
 	ActiveObjectType getType() const override { return ACTIVEOBJECT_TYPE_TEST; }
-	bool getCollisionBox(aabb3f *toset) const override { return false; }
+	bool getCollisionBox(aabb3o *toset) const override { return false; }
 	bool getSelectionBox(aabb3f *toset) const override { return false; }
 	bool collideWithObjects() const override { return false; }
 };
@@ -136,12 +136,12 @@ void TestServerActiveObjectMgr::testRemoveObject()
 void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 {
 	server::ActiveObjectMgr saomgr;
-	static const v3f sao_pos[] = {
-			v3f(10, 40, 10),
-			v3f(740, 100, -304),
-			v3f(-200, 100, -304),
-			v3f(740, -740, -304),
-			v3f(1500, -740, -304),
+	static const v3opos_t sao_pos[] = {
+			v3opos_t(10, 40, 10),
+			v3opos_t(740, 100, -304),
+			v3opos_t(-200, 100, -304),
+			v3opos_t(740, -740, -304),
+			v3opos_t(1500, -740, -304),
 	};
 
 	for (const auto &p : sao_pos) {
@@ -149,15 +149,15 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 	}
 
 	std::vector<ServerActiveObject *> result;
-	saomgr.getObjectsInsideRadius(v3f(), 50, result, nullptr);
+	saomgr.getObjectsInsideRadius(v3opos_t(), 50, result, nullptr);
 	UASSERTCMP(int, ==, result.size(), 1);
 
 	result.clear();
-	saomgr.getObjectsInsideRadius(v3f(), 750, result, nullptr);
+	saomgr.getObjectsInsideRadius(v3opos_t(), 750, result, nullptr);
 	UASSERTCMP(int, ==, result.size(), 2);
 
 	result.clear();
-	saomgr.getObjectsInsideRadius(v3f(), 750000, result, nullptr);
+	saomgr.getObjectsInsideRadius(v3opos_t(), 750000, result, nullptr);
 	UASSERTCMP(int, ==, result.size(), 5);
 
 	result.clear();
@@ -165,7 +165,7 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 		return (obj->getBasePosition().X != 10);
 	};
 
-	saomgr.getObjectsInsideRadius(v3f(), 750000, result, include_obj_cb);
+	saomgr.getObjectsInsideRadius(v3opos_t(), 750000, result, include_obj_cb);
 	UASSERTCMP(int, ==, result.size(), 4);
 
 	clearSAOMgr(&saomgr);
@@ -174,12 +174,12 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 {
 	server::ActiveObjectMgr saomgr;
-	static const v3f sao_pos[] = {
-			v3f(10, 40, 10),
-			v3f(740, 100, -304),
-			v3f(-200, 100, -304),
-			v3f(740, -740, -304),
-			v3f(1500, -740, -304),
+	static const v3opos_t sao_pos[] = {
+			v3opos_t(10, 40, 10),
+			v3opos_t(740, 100, -304),
+			v3opos_t(-200, 100, -304),
+			v3opos_t(740, -740, -304),
+			v3opos_t(1500, -740, -304),
 	};
 
 	for (const auto &p : sao_pos) {
@@ -188,12 +188,12 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 
 	std::queue<u16> result;
 	std::set<u16> cur_objects;
-	saomgr.getAddedActiveObjectsAroundPos(v3f(), 100, 50, cur_objects, result);
+	saomgr.getAddedActiveObjectsAroundPos(v3opos_t(), 100, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 1);
 
 	result = std::queue<u16>();
 	cur_objects.clear();
-	saomgr.getAddedActiveObjectsAroundPos(v3f(), 740, 50, cur_objects, result);
+	saomgr.getAddedActiveObjectsAroundPos(v3opos_t(), 740, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 2);
 
 	clearSAOMgr(&saomgr);

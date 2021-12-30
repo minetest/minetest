@@ -136,7 +136,7 @@ int ObjectRef::l_set_pos(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v3f pos = checkFloatPos(L, 2);
+	v3opos_t pos = checkOposPos(L, 2);
 
 	sao->setPos(pos);
 	return 0;
@@ -151,7 +151,7 @@ int ObjectRef::l_move_to(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v3f pos = checkFloatPos(L, 2);
+	v3opos_t pos = checkOposPos(L, 2);
 	bool continuous = readParam<bool>(L, 3);
 
 	sao->moveTo(pos, continuous);
@@ -171,7 +171,7 @@ int ObjectRef::l_punch(lua_State *L)
 
 	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
-	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
+	v3f dir = readParam<v3f>(L, 5, oposToV3f(sao->getBasePosition() - puncher->getBasePosition()));
 	dir.normalize();
 
 	u32 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);

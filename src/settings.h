@@ -194,6 +194,9 @@ public:
 	bool getFloatNoEx(const std::string &name, float &val) const;
 	bool getV2FNoEx(const std::string &name, v2f &val) const;
 	bool getV3FNoEx(const std::string &name, v3f &val) const;
+#if USE_POS32
+	bool getV3FNoEx(const std::string &name, v3opos_t &val) const;
+#endif
 
 	// Like other getters, but handling each flag individualy:
 	// 1) Read default flags (or 0)

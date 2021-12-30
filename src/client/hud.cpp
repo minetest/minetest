@@ -316,10 +316,10 @@ bool Hud::hasElementOfType(HudElementType type)
 // Calculates screen position of waypoint. Returns true if waypoint is visible (in front of the player), else false.
 bool Hud::calculateScreenPos(const v3pos_t &camera_offset, HudElement *e, v2s32 *pos)
 {
-	v3f w_pos = e->world_pos * BS;
+	v3opos_t w_pos_o = v3fToOpos(e->world_pos) * BS;
 	scene::ICameraSceneNode* camera =
 		client->getSceneManager()->getActiveCamera();
-	w_pos -= intToFloat(camera_offset, BS);
+	auto w_pos = oposToV3f(w_pos_o - intToFloat(camera_offset, BS));
 	core::matrix4 trans = camera->getProjectionMatrix();
 	trans *= camera->getViewMatrix();
 	f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
@@ -411,7 +411,7 @@ void Hud::drawLuaElements(const v3pos_t &camera_offset)
 			case HUD_ELEM_WAYPOINT: {
 				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
-				v3f p_pos = player->getPosition() / BS;
+				v3opos_t p_pos = player->getPosition() / BS;
 				pos += v2s32(e->offset.X, e->offset.Y);
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
@@ -429,7 +429,7 @@ void Hud::drawLuaElements(const v3pos_t &camera_offset)
 				font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0) * bounds.getWidth() / 2, 0), color);
 				if (draw_precision) {
 					std::ostringstream os;
-					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
+					float distance = std::floor(precision * p_pos.getDistanceFrom(v3fToOpos(e->world_pos))) / precision;
 					os << distance << unit;
 					text = unescape_translate(utf8_to_wide(os.str()));
 					bounds.LowerRightCorner.X = bounds.UpperLeftCorner.X + font->getDimension(text.c_str()).Width;
@@ -817,11 +817,11 @@ void Hud::drawCrosshair()
 	}
 }
 
-void Hud::setSelectionPos(const v3f &pos, const v3pos_t &camera_offset)
+void Hud::setSelectionPos(const v3opos_t &pos, const v3pos_t &camera_offset)
 {
 	m_camera_offset = camera_offset;
 	m_selection_pos = pos;
-	m_selection_pos_with_offset = pos - intToFloat(camera_offset, BS);
+	m_selection_pos_with_offset = oposToV3f(pos - posToOpos(camera_offset, BS));
 }
 
 void Hud::drawSelectionMesh()
@@ -899,7 +899,7 @@ void Hud::drawBlockBounds()
 		floorf((float) pos.Z / MAP_BLOCKSIZE)
 	);
 
-	v3f offset = intToFloat(client->getCamera()->getOffset(), BS);
+	auto offset = intToFloat(client->getCamera()->getOffset(), BS);
 
 	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ? 2 : 0;
 
@@ -911,8 +911,8 @@ void Hud::drawBlockBounds()
 		v3pos_t blockOffset(x, y, z);
 
 		aabb3f box(
-			intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset - halfNode,
-			intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset + halfNode
+			oposToV3f(intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset) - halfNode,
+			oposToV3f(intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset) + halfNode
 		);
 
 		driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
@@ -958,7 +958,7 @@ void Hud::updateSelectionMesh(const v3pos_t &camera_offset)
 	m_halo_boxes.clear();
 
 	for (const auto &selection_box : m_selection_boxes) {
-		halo_box.addInternalBox(selection_box);
+		halo_box.addInternalBox(aabb3f(selection_box.MinEdge, selection_box.MinEdge));
 	}
 
 	m_halo_boxes.push_back(halo_box);

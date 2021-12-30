@@ -324,6 +324,16 @@ NetworkPacket& NetworkPacket::operator<<(float src)
 	return *this;
 }
 
+NetworkPacket& NetworkPacket::operator<<(double src)
+{
+	checkDataSize(sizeof(src));
+
+	writeF64(&m_data[m_read_offset], src);
+
+	m_read_offset += sizeof(src);
+	return *this;
+}
+
 NetworkPacket& NetworkPacket::operator>>(bool& dst)
 {
 	checkReadOffset(m_read_offset, 1);
@@ -409,6 +419,17 @@ NetworkPacket& NetworkPacket::operator>>(float& dst)
 	return *this;
 }
 
+NetworkPacket& NetworkPacket::operator>>(double& dst)
+{
+	checkReadOffset(m_read_offset, sizeof(dst));
+
+	dst = readF64(&m_data[m_read_offset]);
+
+	m_read_offset += sizeof(dst);
+	return *this;
+}
+
+
 NetworkPacket& NetworkPacket::operator>>(v2f& dst)
 {
 	checkReadOffset(m_read_offset, 8);
@@ -426,6 +447,16 @@ NetworkPacket& NetworkPacket::operator>>(v3f& dst)
 	dst = readV3F32(&m_data[m_read_offset]);
 
 	m_read_offset += 12;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator>>(v3d& dst)
+{
+	checkReadOffset(m_read_offset, sizeof(dst));
+
+	dst = readV3F64(&m_data[m_read_offset]);
+
+	m_read_offset += sizeof(dst);
 	return *this;
 }
 
@@ -503,6 +534,14 @@ NetworkPacket& NetworkPacket::operator<<(v3f src)
 	*this << (float) src.X;
 	*this << (float) src.Y;
 	*this << (float) src.Z;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(v3d src)
+{
+	*this << (double)src.X;
+	*this << (double)src.Y;
+	*this << (double)src.Z;
 	return *this;
 }
 

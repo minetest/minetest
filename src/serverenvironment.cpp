@@ -308,7 +308,7 @@ void fillRadiusBlock(v3bpos_t p0, s16 r, std::set<v3bpos_t> &list)
 
 void fillViewConeBlock(v3bpos_t p0,
 	const s16 r,
-	const v3f camera_pos,
+	const v3opos_t camera_pos,
 	const v3f camera_dir,
 	const float camera_fov,
 	std::set<v3bpos_t> &list)
@@ -1716,13 +1716,13 @@ bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 }
 
 void ServerEnvironment::getSelectedActiveObjects(
-	const core::line3d<f32> &shootline_on_map,
+	const core::line3d<opos_t> &shootline_on_map,
 	std::vector<PointedThing> &objects)
 {
 	std::vector<ServerActiveObject *> objs;
 	getObjectsInsideRadius(objs, shootline_on_map.start,
 		shootline_on_map.getLength() + 10.0f, nullptr);
-	const v3f line_vector = shootline_on_map.getVector();
+	const auto line_vector = shootline_on_map.getVector();
 
 	for (auto obj : objs) {
 		if (obj->isGone())
@@ -1731,12 +1731,12 @@ void ServerEnvironment::getSelectedActiveObjects(
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 
-		v3f pos = obj->getBasePosition();
+		auto pos = obj->getBasePosition();
 
-		aabb3f offsetted_box(selection_box.MinEdge + pos,
-			selection_box.MaxEdge + pos);
+		aabb3o offsetted_box(v3fToOpos(selection_box.MinEdge) + pos,
+			v3fToOpos(selection_box.MaxEdge) + pos);
 
-		v3f current_intersection;
+		v3opos_t current_intersection;
 		v3pos_t current_normal;
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
 				&current_intersection, &current_normal)) {
@@ -1766,7 +1766,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	// Add static data to block
 	if (object->isStaticAllowed()) {
 		// Add static object to active static list of the block
-		v3f objectpos = object->getBasePosition();
+		auto objectpos = object->getBasePosition();
 		StaticObject s_obj(object, objectpos);
 		// Add to the block where the object is located in
 		v3bpos_t blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -1895,7 +1895,7 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 	}
 }
 
-ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
+ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3opos_t pos,
 		const std::string &data)
 {
 	switch (type) {
@@ -2002,7 +2002,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		if (!force_delete && obj->isGone())
 			return false;
 
-		const v3f &objectpos = obj->getBasePosition();
+		const auto &objectpos = obj->getBasePosition();
 
 		// The block in which the object resides in
 		v3bpos_t blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));

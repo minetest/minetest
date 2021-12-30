@@ -461,7 +461,7 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	PlayerSAO* sao = player->getPlayerSAO();
 	sanity_check(sao);
 
-	const v3f &pos = sao->getBasePosition();
+	const v3opos_t &pos = sao->getBasePosition();
 	// Begin save in brace is mandatory
 	if (!playerDataExists(player->getName())) {
 		beginSave();
@@ -557,7 +557,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	}
 	sao->setLookPitch(sqlite_to_float(m_stmt_player_load, 0));
 	sao->setPlayerYaw(sqlite_to_float(m_stmt_player_load, 1));
-	sao->setBasePosition(sqlite_to_v3f(m_stmt_player_load, 2));
+	sao->setBasePosition(v3fToOpos(sqlite_to_v3f(m_stmt_player_load, 2)));
 	sao->setHPRaw((u16) MYMIN(sqlite_to_int(m_stmt_player_load, 5), U16_MAX));
 	sao->setBreath((u16) MYMIN(sqlite_to_int(m_stmt_player_load, 6), U16_MAX), false);
 	sqlite3_reset(m_stmt_player_load);

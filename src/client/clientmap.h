@@ -85,7 +85,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3pos_t &offset)
+	void updateCamera(const v3opos_t &pos, const v3f &dir, f32 fov, const v3pos_t &offset)
 	{
 		v3bpos_t previous_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
 
@@ -175,7 +175,7 @@ private:
 
 	MapDrawControl &m_control;
 
-	v3f m_camera_position = v3f(0,0,0);
+	v3opos_t m_camera_position = v3opos_t(0,0,0);
 	v3f m_camera_direction = v3f(0,0,1);
 	f32 m_camera_fov = M_PI;
 	v3pos_t m_camera_offset;

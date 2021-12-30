@@ -103,23 +103,23 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	range: viewing range
 	distance_ptr: return location for distance from the camera
 */
-bool isBlockInSight(v3pos_t blockpos_b, v3f camera_pos, v3f camera_dir,
+bool isBlockInSight(v3pos_t blockpos_b, v3opos_t camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
 	v3pos_t blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 
 	// Block center position
-	v3f blockpos(
-			((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
-			((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
-			((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
+	v3opos_t blockpos(
+			((opos_t)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
+			((opos_t)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
+			((opos_t)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
 	);
 
 	// Block position relative to camera
-	v3f blockpos_relative = blockpos - camera_pos;
+	auto blockpos_relative = blockpos - camera_pos;
 
 	// Total distance
-	f32 d = MYMAX(0, blockpos_relative.getLength() - BLOCK_MAX_RADIUS);
+	auto d = MYMAX(0, blockpos_relative.getLength() - BLOCK_MAX_RADIUS);
 
 	if (distance_ptr)
 		*distance_ptr = d;
@@ -140,10 +140,10 @@ bool isBlockInSight(v3pos_t blockpos_b, v3f camera_pos, v3f camera_dir,
 	f32 adjdist = BLOCK_MAX_RADIUS / cos((M_PI - camera_fov) / 2);
 
 	// Block position relative to adjusted camera
-	v3f blockpos_adj = blockpos - (camera_pos - camera_dir * adjdist);
+	auto blockpos_adj = blockpos - (camera_pos - v3fToOpos(camera_dir) * adjdist);
 
 	// Distance in camera direction (+=front, -=back)
-	f32 dforward = blockpos_adj.dotProduct(camera_dir);
+	auto dforward = blockpos_adj.dotProduct(v3fToOpos(camera_dir));
 
 	// Cosine of the angle between the camera direction
 	// and the block direction (camera_dir is an unit vector)

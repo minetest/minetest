@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "activeobject.h"
 #include "environment.h"
+#include "irr_v3d.h"
 #include "mapnode.h"
 #include "settings.h"
 #include "server/activeobjectmgr.h"
@@ -290,7 +291,7 @@ public:
 	bool getActiveObjectMessage(ActiveObjectMessage *dest);
 
 	virtual void getSelectedActiveObjects(
-		const core::line3d<f32> &shootline_on_map,
+		const core::line3d<opos_t> &shootline_on_map,
 		std::vector<PointedThing> &objects
 	);
 
@@ -322,14 +323,14 @@ public:
 	u8 findSunlight(v3pos_t pos) const;
 
 	// Find all active objects inside a radius around a point
-	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
+	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3opos_t &pos, float radius,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 	{
 		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
 	}
 
 	// Find all active objects inside a box
-	void getObjectsInArea(std::vector<ServerActiveObject *> &objects, const aabb3f &box,
+	void getObjectsInArea(std::vector<ServerActiveObject *> &objects, const aabb3o &box,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 	{
 		return m_ao_manager.getObjectsInArea(box, objects, include_obj_cb);
@@ -487,5 +488,5 @@ private:
 	std::unordered_map<u32, float> m_particle_spawners;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 
-	ServerActiveObject* createSAO(ActiveObjectType type, v3f pos, const std::string &data);
+	ServerActiveObject* createSAO(ActiveObjectType type, v3opos_t pos, const std::string &data);
 };

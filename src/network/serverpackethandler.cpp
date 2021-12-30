@@ -491,7 +491,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	fov = (f32)f32fov / 80.0f;
 	*pkt >> wanted_range;
 
-	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
+	v3opos_t position((opos_t)ps.X / 100.0f, (opos_t)ps.Y / 100.0f, (opos_t)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 
 	pitch = modulo360f(pitch);
@@ -651,8 +651,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		case InventoryLocation::NODEMETA:
 			{
 				// Check for out-of-range interaction
-				v3f node_pos   = intToFloat(loc.p, BS);
-				v3f player_pos = player->getPlayerSAO()->getEyePosition();
+				v3opos_t node_pos   = posToOpos(loc.p, BS);
+				v3opos_t player_pos = player->getPlayerSAO()->getEyePosition();
 				f32 d = player_pos.getDistanceFrom(node_pos);
 				return checkInteractDistance(player, d, "inventory");
 			}
@@ -988,7 +988,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	process_PlayerPos(player, playersao, pkt);
 
-	v3f player_pos = playersao->getLastGoodPosition();
+	v3opos_t player_pos = playersao->getLastGoodPosition();
 
 	// Update wielded item
 
@@ -1049,9 +1049,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	if ((action == INTERACT_START_DIGGING || action == INTERACT_DIGGING_COMPLETED ||
 			action == INTERACT_PLACE || action == INTERACT_USE) &&
 			enable_anticheat && !isSingleplayer()) {
-		v3f target_pos = player_pos;
+		v3opos_t target_pos = player_pos;
 		if (pointed.type == POINTEDTHING_NODE) {
-			target_pos = intToFloat(pointed.node_undersurface, BS);
+			target_pos = posToOpos(pointed.node_undersurface, BS);
 		} else if (pointed.type == POINTEDTHING_OBJECT) {
 			if (playersao->getId() == pointed_object->getId()) {
 				actionstream << "Server: " << player->getName()
@@ -1113,8 +1113,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		ItemStack tool_item = playersao->getWieldedItem(&selected_item, &hand_item);
 		ToolCapabilities toolcap =
 				tool_item.getToolCapabilities(m_itemdef);
-		v3f dir = (pointed_object->getBasePosition() -
-				(playersao->getBasePosition() + playersao->getEyeOffset())
+		v3f dir = oposToV3f(pointed_object->getBasePosition() -
+				(playersao->getBasePosition() + v3fToOpos(playersao->getEyeOffset()))
 					).normalize();
 		float time_from_last_punch =
 			playersao->resetTimeFromLastPunch();

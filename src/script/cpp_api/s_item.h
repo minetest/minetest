@@ -44,7 +44,7 @@ public:
 	 */
 
 	bool item_OnDrop(ItemStack &item,
-			ServerActiveObject *dropper, v3f pos);
+			ServerActiveObject *dropper, v3opos_t pos);
 	bool item_OnPlace(Optional<ItemStack> &item,
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnUse(Optional<ItemStack> &item,

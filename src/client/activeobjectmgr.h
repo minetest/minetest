@@ -35,7 +35,7 @@ public:
 	bool registerObject(ClientActiveObject *obj) override;
 	void removeObject(u16 id) override;
 
-	void getActiveObjects(const v3f &origin, f32 max_d,
+	void getActiveObjects(const v3opos_t &origin, f32 max_d,
 			std::vector<DistanceSortedActiveObject> &dest);
 };
 } // namespace client

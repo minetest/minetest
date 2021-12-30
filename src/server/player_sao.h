@@ -87,9 +87,9 @@ public:
 	std::string getClientInitializationData(u16 protocol_version);
 	void getStaticData(std::string *result) const;
 	void step(float dtime, bool send_recommended);
-	void setBasePosition(const v3f &position);
-	void setPos(const v3f &pos);
-	void moveTo(v3f pos, bool continuous);
+	void setBasePosition(const v3opos_t &position);
+	void setPos(const v3opos_t &pos);
+	void moveTo(v3opos_t pos, bool continuous);
 	void setPlayerYaw(const float yaw);
 	// Data should not be sent at player initialization
 	void setPlayerYawAndSend(const float yaw);
@@ -143,7 +143,7 @@ public:
 
 	// Cheat prevention
 
-	v3f getLastGoodPosition() const { return m_last_good_position; }
+	v3opos_t getLastGoodPosition() const { return m_last_good_position; }
 	float resetTimeFromLastPunch()
 	{
 		float r = m_time_from_last_punch;
@@ -171,13 +171,13 @@ public:
 		m_is_singleplayer = is_singleplayer;
 	}
 
-	bool getCollisionBox(aabb3f *toset) const;
+	bool getCollisionBox(aabb3o *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const { return true; }
 
 	void finalize(RemotePlayer *player, const std::set<std::string> &privs);
 
-	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
+	v3opos_t getEyePosition() const { return m_base_position + v3fToOpos(getEyeOffset()); }
 	v3f getEyeOffset() const;
 	float getZoomFOV() const;
 
@@ -194,7 +194,7 @@ private:
 	// Cheat prevention
 	LagPool m_dig_pool;
 	LagPool m_move_pool;
-	v3f m_last_good_position;
+	v3opos_t m_last_good_position;
 	float m_time_from_last_teleport = 0.0f;
 	float m_time_from_last_punch = 0.0f;
 	v3pos_t m_nocheat_dig_pos = v3pos_t(32767, 32767, 32767);

@@ -44,10 +44,10 @@ public:
 
 	virtual void updateLight(u32 day_night_ratio) {}
 
-	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
+	virtual bool getCollisionBox(aabb3o *toset) const { return false; }
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
-	virtual const v3f getPosition() const { return v3f(0.0f); }
+	virtual const v3opos_t getPosition() const { return v3opos_t(0.0f); }
 	virtual scene::ISceneNode *getSceneNode() const
 	{ return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const
