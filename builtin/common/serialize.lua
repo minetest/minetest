@@ -37,6 +37,12 @@ local function count_objects(value)
 	return counts
 end
 
+-- Build a "set" of Lua keywords. These can't be used as short key names.
+local keywords = {}
+for _, keyword in pairs({"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while"}) do
+	keywords[keyword] = true
+end
+
 -- Build a table with the succeeding character from A-Z
 -- Used to increment references quickly
 local succ_ref_char = {}
@@ -96,7 +102,7 @@ local function serialize(value, write)
 	end
 	-- Used to decide whether we should do "key=..."
 	local function use_short_key(key)
-		return not references[key] and type(key) == "string" and string_match(key, "^[%a_][%a%d_]*$")
+		return not references[key] and type(key) == "string" and (not keywords[key]) and string_match(key, "^[%a_][%a%d_]*$")
 	end
 	local function dump(value)
 		-- Primitive types

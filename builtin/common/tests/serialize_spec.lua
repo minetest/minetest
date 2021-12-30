@@ -87,4 +87,9 @@ describe("serialize", function()
 		assert.same({x = 1, y = 2, z = 3, a = "bla"},
 				core.deserialize(core.serialize(v)))
 	end)
+
+	it("handles keywords as keys", function()
+		local t = {["and"] = "keyword", ["for"] = "keyword"}
+		assert.same(t, core.deserialize(core.serialize(t)))
+	end)
 end)
