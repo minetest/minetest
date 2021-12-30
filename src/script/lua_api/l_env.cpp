@@ -176,8 +176,8 @@ int LuaRaycast::create_object(lua_State *L)
 	bool objects = true;
 	bool liquids = false;
 
-	auto pos1 = check_v3o(L, 1);
-	auto pos2 = check_v3o(L, 2);
+	auto pos1 = checkOposPos(L, 1);
+	auto pos2 = checkOposPos(L, 2);
 	if (lua_isboolean(L, 3)) {
 		objects = readParam<bool>(L, 3);
 	}
@@ -638,7 +638,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	auto pos = check_v3o(L, 1);
+	auto pos = checkOposPos(L, 1);
 	const char *name = luaL_checkstring(L, 2);
 	const char *staticdata = luaL_optstring(L, 3, "");
 
@@ -1130,7 +1130,7 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	GET_PLAIN_ENV_PTR;
 
 	// read position 1 from lua
-	v3opos_t pos1 = check_v3o(L, 1);
+	v3opos_t pos1 = checkOposPos(L, 1);
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
 

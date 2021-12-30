@@ -113,7 +113,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString16(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
-	writeV3F32(os, oposToV3f(m_base_position)); // todo writeV3F64
+	writeV3O(os, m_base_position);
 	writeV3F32(os, m_rotation);
 	writeU16(os, getHP());
 

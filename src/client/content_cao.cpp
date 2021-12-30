@@ -1714,7 +1714,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
-		m_position = v3fToOpos(readV3F32(is)); //TODO f64
+		m_position = readV3O(is);
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
 		m_rotation = readV3F32(is);
