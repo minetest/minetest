@@ -867,14 +867,6 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 
 			blocks_in_range_with_mesh++;
 
-			/*
-				Occlusion culling
-			*/
-			if (isBlockOccluded(block, cam_pos_nodes)) {
-				blocks_occlusion_culled++;
-				continue;
-			}
-
 			// This block is in range. Reset usage timer.
 			block->resetUsageTimer();
 
