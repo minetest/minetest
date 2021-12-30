@@ -38,8 +38,14 @@ local function count_objects(value)
 end
 
 -- Build a "set" of Lua keywords. These can't be used as short key names.
+-- See https://www.lua.org/manual/5.1/manual.html#2.1
 local keywords = {}
-for _, keyword in pairs({"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while"}) do
+for _, keyword in pairs({
+	"and", "break", "do", "else", "elseif",
+	"end", "false", "for", "function", "if",
+	"in", "local", "nil", "not", "or",
+	"repeat", "return", "then", "true", "until", "while"
+}) do
 	keywords[keyword] = true
 end
 
