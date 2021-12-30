@@ -33,7 +33,11 @@ void StaticObject::serialize(std::ostream &os)
 	// type
 	writeU8(os, type);
 	// pos
-	writeV3F1000(os, oposToV3f(pos)); //TODO
+#if USE_POS32
+	writeV3O(os, pos);
+#else
+	writeV3F1000(os, oposToV3f(pos));
+#endif
 	// data
 	os<<serializeString16(data);
 }
@@ -43,7 +47,10 @@ void StaticObject::deSerialize(std::istream &is, u8 version)
 	// type
 	type = readU8(is);
 	// pos
-	pos = v3fToOpos(readV3F1000(is));
+	if (version == 0)
+		pos = v3fToOpos(readV3F1000(is));
+	else		
+		pos = readV3O(is);
 	// data
 	data = deSerializeString16(is);
 }
@@ -74,7 +81,11 @@ void StaticObjectList::serialize(std::ostream &os)
 	}
 
 	// version
+#if USE_POS32
+	u8 version = 1;
+#else
 	u8 version = 0;
+#endif
 	writeU8(os, version);
 
 	// count
