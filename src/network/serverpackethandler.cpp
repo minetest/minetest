@@ -86,7 +86,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	// Do not allow multiple players in simple singleplayer mode.
 	// This isn't a perfect way to do it, but will suffice for now
-	if (m_simple_singleplayer_mode && m_clients.getClientIDs().size() > 1) {
+	if (m_simple_singleplayer_mode && !m_clients.getClientIDs().empty()) {
 		infostream << "Server: Not allowing another client (" << addr_s <<
 			") to connect in simple singleplayer mode" << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_SINGLEPLAYER);

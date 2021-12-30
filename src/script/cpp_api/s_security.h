@@ -40,11 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ScriptApiSecurity : virtual public ScriptApiBase
 {
 public:
-	int getThread(lua_State *L);
-	// creates an empty Lua environment
-	void createEmptyEnv(lua_State *L);
-	// sets the enviroment to the table thats on top of the stack
-	void setLuaEnv(lua_State *L, int thread);
 	// Sets up security on the ScriptApi's Lua state
 	void initializeSecurity();
 	void initializeSecurityClient();
@@ -57,8 +52,17 @@ public:
 	// Checks if mods are allowed to read (and optionally write) to the path
 	static bool checkPath(lua_State *L, const char *path, bool write_required,
 			bool *write_allowed=NULL);
+	// Check if mod is whitelisted in the given setting
+	// This additionally checks that the mod's main file scope is executing.
+	static bool checkWhitelisted(lua_State *L, const std::string &setting);
 
 private:
+	int getThread(lua_State *L);
+	// sets the enviroment to the table thats on top of the stack
+	void setLuaEnv(lua_State *L, int thread);
+	// creates an empty Lua environment
+	void createEmptyEnv(lua_State *L);
+
 	// Syntax: "sl_" <Library name or 'g' (global)> '_' <Function name>
 	// (sl stands for Secure Lua)
 

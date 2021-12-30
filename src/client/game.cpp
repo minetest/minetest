@@ -1444,7 +1444,6 @@ bool Game::connectToServer(const GameStartData &start_data,
 		connect_address.Resolve(start_data.address.c_str());
 
 		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
-			//connect_address.Resolve("localhost");
 			if (connect_address.isIPv6()) {
 				IPv6AddressBytes addr_bytes;
 				addr_bytes.bytes[15] = 1;
@@ -2060,15 +2059,22 @@ void Game::openInventory()
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
 
-	if (!client->modsLoaded()
-			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
-		TextDest *txt_dst = new TextDestPlayerInventory(client);
-		auto *&formspec = m_game_ui->updateFormspec("");
-		GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
-
-		formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+	if (client->modsLoaded() && client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
+		delete fs_src;
+		return;
 	}
+
+	if (fs_src->getForm().empty()) {
+		delete fs_src;
+		return;
+	}
+
+	TextDest *txt_dst = new TextDestPlayerInventory(client);
+	auto *&formspec = m_game_ui->updateFormspec("");
+	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
+		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+
+	formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 }
 
 
@@ -4283,16 +4289,18 @@ void Game::showPauseMenu()
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
-		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
-		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
+		// Note: Status of enable_damage and creative_mode settings is intentionally
+		// NOT shown here because the game might roll its own damage system and/or do
+		// a per-player Creative Mode, in which case writing it here would mislead.
+		bool damage = g_settings->getBool("enable_damage");
 		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
-		os << strgettext("- Damage: ") << damage << "\n"
-				<< strgettext("- Creative Mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
-			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
-			//~ PvP = Player versus Player
-			os << strgettext("- PvP: ") << pvp << "\n"
-					<< strgettext("- Public: ") << announced << "\n";
+			if (damage) {
+				const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
+				//~ PvP = Player versus Player
+				os << strgettext("- PvP: ") << pvp << "\n";
+			}
+			os << strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");
 			str_formspec_escape(server_name);
 			if (announced == on && !server_name.empty())

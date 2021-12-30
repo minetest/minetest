@@ -507,8 +507,9 @@ void Server::start()
 		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
-			<< "\" listening on " << m_bind_addr.serializeString() << ":"
-			<< m_bind_addr.getPort() << "." << std::endl;
+			<< "\" listening on ";
+	m_bind_addr.print(&actionstream);
+	actionstream << "." << std::endl;
 }
 
 void Server::stop()

@@ -93,7 +93,7 @@ jobs:
         run: |
           ./bin/minetest --run-unittests
 
-      - name: Integration test
+      - name: Integration test + devtest
         run: |
           ./util/test_multiplayer.sh
 

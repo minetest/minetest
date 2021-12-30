@@ -125,6 +125,15 @@ protected:
 	friend class ModApiEnvMod;
 	friend class LuaVoxelManip;
 
+	/*
+		Subtle edge case with coroutines: If for whatever reason you have a
+		method in a subclass that's called from existing lua_CFunction
+		(any of the l_*.cpp files) then make it static and take the lua_State*
+		as an argument. This is REQUIRED because getStack() will not return the
+		correct state if called inside coroutines.
+
+		Also note that src/script/common/ is the better place for such helpers.
+	*/
 	lua_State* getStack()
 		{ return m_luastack; }
 

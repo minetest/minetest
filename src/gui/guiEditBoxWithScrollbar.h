@@ -31,12 +31,6 @@ public:
 	//! Change the background color
 	virtual void setBackgroundColor(const video::SColor &bg_color);
 
-	//! Writes attributes of the element.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
-
-	//! Reads attributes of the element
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
-
 	virtual bool isDrawBackgroundEnabled() const;
 	virtual bool isDrawBorderEnabled() const;
 	virtual void setCursorChar(const wchar_t cursorChar);

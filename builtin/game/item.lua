@@ -499,11 +499,12 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			return result
 		end
 	end
+	-- read definition before potentially emptying the stack
+	local def = itemstack:get_definition()
 	if itemstack:take_item():is_empty() then
 		return itemstack
 	end
 
-	local def = itemstack:get_definition()
 	if def and def.sound and def.sound.eat then
 		core.sound_play(def.sound.eat, {
 			pos = user:get_pos(),

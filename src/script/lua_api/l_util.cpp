@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "util/sha1.h"
 #include "util/png.h"
-#include <algorithm>
 #include <cstdio>
 
 // log([level,] text)
@@ -444,36 +443,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 		return 1;
 	}
 
-	// We have to make sure that this function is being called directly by
-	// a mod, otherwise a malicious mod could override this function and
-	// steal its return value.
-	lua_Debug info;
-	// Make sure there's only one item below this function on the stack...
-	if (lua_getstack(L, 2, &info)) {
-		return 0;
-	}
-	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
-	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
-	// ...and that that item is the main file scope.
-	if (strcmp(info.what, "main") != 0) {
-		return 0;
-	}
-
-	// Get mod name
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1)) {
-		return 0;
-	}
-
-	// Check secure.trusted_mods
-	std::string mod_name = readParam<std::string>(L, -1);
-	std::string trusted_mods = g_settings->get("secure.trusted_mods");
-	trusted_mods.erase(std::remove_if(trusted_mods.begin(),
-			trusted_mods.end(), static_cast<int(*)(int)>(&std::isspace)),
-			trusted_mods.end());
-	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
-	if (std::find(mod_list.begin(), mod_list.end(), mod_name) ==
-			mod_list.end()) {
+	if (!ScriptApiSecurity::checkWhitelisted(L, "secure.trusted_mods")) {
 		return 0;
 	}
 

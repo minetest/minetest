@@ -31,9 +31,16 @@ fi
 toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
-tmp=$(dirname "$(command -v $compiler)")/../x86_64-w64-mingw32/bin
+# Try to find runtime DLLs in various paths (varies by distribution, sigh)
+tmp=$(dirname "$(command -v $compiler)")/..
 runtime_dlls=
-[ -d "$tmp" ] && runtime_dlls=$(echo $tmp/lib{gcc_,stdc++-,winpthread-}*.dll | tr ' ' ';')
+for name in lib{gcc_,stdc++-,winpthread-}'*'.dll; do
+	for dir in $tmp/x86_64-w64-mingw32/{bin,lib} $tmp/lib/gcc/x86_64-w64-mingw32/*; do
+		[ -d "$dir" ] || continue
+		file=$(echo $dir/$name)
+		[ -f "$file" ] && { runtime_dlls+="$file;"; break; }
+	done
+done
 [ -z "$runtime_dlls" ] &&
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
@@ -89,10 +96,12 @@ download "http://minetest.kitsunemimi.pw/openal_stripped64.zip" 'openal_stripped
 if [ -n "$EXISTING_MINETEST_DIR" ]; then
 	sourcedir="$( cd "$EXISTING_MINETEST_DIR" && pwd )"
 else
+	cd $builddir
 	sourcedir=$PWD/$CORE_NAME
 	[ -d $CORE_NAME ] && { pushd $CORE_NAME; git pull; popd; } || \
 		git clone -b $CORE_BRANCH $CORE_GIT $CORE_NAME
 	if [ -z "$NO_MINETEST_GAME" ]; then
+		cd $sourcedir
 		[ -d games/$GAME_NAME ] && { pushd games/$GAME_NAME; git pull; popd; } || \
 			git clone -b $GAME_BRANCH $GAME_GIT games/$GAME_NAME
 	fi

@@ -1024,48 +1024,6 @@ void GUISkin::draw2DRectangle(IGUIElement* element,
 }
 
 
-//! Writes attributes of the object.
-//! Implement this to expose the attributes of your scene node animator for
-//! scripting languages, editors, debuggers or xml serialization purposes.
-void GUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
-{
-	u32 i;
-	for (i=0; i<EGDC_COUNT; ++i)
-		out->addColor(GUISkinColorNames[i], Colors[i]);
-
-	for (i=0; i<EGDS_COUNT; ++i)
-		out->addInt(GUISkinSizeNames[i], Sizes[i]);
-
-	for (i=0; i<EGDT_COUNT; ++i)
-		out->addString(GUISkinTextNames[i], Texts[i].c_str());
-
-	for (i=0; i<EGDI_COUNT; ++i)
-		out->addInt(GUISkinIconNames[i], Icons[i]);
-}
-
-
-//! Reads attributes of the object.
-//! Implement this to set the attributes of your scene node animator for
-//! scripting languages, editors, debuggers or xml deserialization purposes.
-void GUISkin::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
-{
-	// TODO: This is not nice code for downward compatibility, whenever new values are added and users
-	// load an old skin the corresponding values will be set to 0.
-	u32 i;
-	for (i=0; i<EGDC_COUNT; ++i)
-		Colors[i] = in->getAttributeAsColor(GUISkinColorNames[i]);
-
-	for (i=0; i<EGDS_COUNT; ++i)
-		Sizes[i] = in->getAttributeAsInt(GUISkinSizeNames[i]);
-
-	for (i=0; i<EGDT_COUNT; ++i)
-		Texts[i] = in->getAttributeAsStringW(GUISkinTextNames[i]);
-
-	for (i=0; i<EGDI_COUNT; ++i)
-		Icons[i] = in->getAttributeAsInt(GUISkinIconNames[i]);
-}
-
-
 //! gets the colors
 // PATCH
 void GUISkin::getColors(video::SColor* colors)

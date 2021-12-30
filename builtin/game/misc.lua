@@ -250,7 +250,7 @@ end
 
 -- HTTP callback interface
 
-function core.http_add_fetch(httpenv)
+core.set_http_api_lua(function(httpenv)
 	httpenv.fetch = function(req, callback)
 		local handle = httpenv.fetch_async(req)
 
@@ -266,7 +266,8 @@ function core.http_add_fetch(httpenv)
 	end
 
 	return httpenv
-end
+end)
+core.set_http_api_lua = nil
 
 
 function core.close_formspec(player_name, formname)

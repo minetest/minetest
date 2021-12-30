@@ -1611,20 +1611,7 @@ void Client::addUpdateMeshTask(v3bpos_t p, bool ack_to_server, bool urgent)
 
 void Client::addUpdateMeshTaskWithEdge(v3bpos_t blockpos, bool ack_to_server, bool urgent)
 {
-	try{
-		addUpdateMeshTask(blockpos, ack_to_server, urgent);
-	}
-	catch(InvalidPositionException &e){}
-
-	// Leading edge
-	for (int i=0;i<6;i++)
-	{
-		try{
-			v3bpos_t p = blockpos + g_6dirs[i];
-			addUpdateMeshTask(p, false, urgent);
-		}
-		catch(InvalidPositionException &e){}
-	}
+	m_mesh_update_thread.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
 }
 
 void Client::addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server, bool urgent)
@@ -1636,38 +1623,16 @@ void Client::addUpdateMeshTaskForNode(v3pos_t nodepos, bool ack_to_server, bool 
 				<<std::endl;
 	}
 
-	v3bpos_t blockpos          = getNodeBlockPos(nodepos);
-	v3pos_t blockpos_relative = getBlockPosRelative(blockpos);
-
-	try{
-		addUpdateMeshTask(blockpos, ack_to_server, urgent);
-	}
-	catch(InvalidPositionException &e) {}
-
+	v3bpos_t blockpos = getNodeBlockPos(nodepos);
+	v3pos_t blockpos_relative = blockpos * MAP_BLOCKSIZE;
+	m_mesh_update_thread.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
 	// Leading edge
-	if(nodepos.X == blockpos_relative.X){
-		try{
-			v3bpos_t p = blockpos + v3bpos_t(-1,0,0);
-			addUpdateMeshTask(p, false, urgent);
-		}
-		catch(InvalidPositionException &e){}
-	}
-
-	if(nodepos.Y == blockpos_relative.Y){
-		try{
-			v3bpos_t p = blockpos + v3bpos_t(0,-1,0);
-			addUpdateMeshTask(p, false, urgent);
-		}
-		catch(InvalidPositionException &e){}
-	}
-
-	if(nodepos.Z == blockpos_relative.Z){
-		try{
-			v3bpos_t p = blockpos + v3bpos_t(0,0,-1);
-			addUpdateMeshTask(p, false, urgent);
-		}
-		catch(InvalidPositionException &e){}
-	}
+	if (nodepos.X == blockpos_relative.X)
+		addUpdateMeshTask(blockpos + v3bpos_t(-1, 0, 0), false, urgent);
+	if (nodepos.Y == blockpos_relative.Y)
+		addUpdateMeshTask(blockpos + v3bpos_t(0, -1, 0), false, urgent);
+	if (nodepos.Z == blockpos_relative.Z)
+		addUpdateMeshTask(blockpos + v3bpos_t(0, 0, -1), false, urgent);
 }
 
 ClientEvent *Client::getClientEvent()

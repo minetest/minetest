@@ -84,11 +84,13 @@ FontEngine::~FontEngine()
 /******************************************************************************/
 void FontEngine::cleanCache()
 {
+	RecursiveMutexAutoLock l(m_font_mutex);
+
 	for (auto &font_cache_it : m_font_cache) {
 
 		for (auto &font_it : font_cache_it) {
 			font_it.second->drop();
-			font_it.second = NULL;
+			font_it.second = nullptr;
 		}
 		font_cache_it.clear();
 	}
@@ -122,6 +124,8 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec, bool may_fail)
 	if (spec.size == FONT_SIZE_UNSPECIFIED)
 		spec.size = m_default_size[spec.mode];
 
+	RecursiveMutexAutoLock l(m_font_mutex);
+
 	const auto &cache = m_font_cache[spec.getHash()];
 	auto it = cache.find(spec.size);
 	if (it != cache.end())
@@ -149,13 +153,7 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec, bool may_fail)
 /******************************************************************************/
 unsigned int FontEngine::getTextHeight(const FontSpec &spec)
 {
-	irr::gui::IGUIFont *font = getFont(spec);
-
-	// use current skin font as fallback
-	if (font == NULL) {
-		font = m_env->getSkin()->getFont();
-	}
-	FATAL_ERROR_IF(font == NULL, "Could not get skin font");
+	gui::IGUIFont *font = getFont(spec);
 
 	return font->getDimension(L"Some unimportant example String").Height;
 }
@@ -163,28 +161,15 @@ unsigned int FontEngine::getTextHeight(const FontSpec &spec)
 /******************************************************************************/
 unsigned int FontEngine::getTextWidth(const std::wstring &text, const FontSpec &spec)
 {
-	irr::gui::IGUIFont *font = getFont(spec);
-
-	// use current skin font as fallback
-	if (font == NULL) {
-		font = m_env->getSkin()->getFont();
-	}
-	FATAL_ERROR_IF(font == NULL, "Could not get font");
+	gui::IGUIFont *font = getFont(spec);
 
 	return font->getDimension(text.c_str()).Width;
 }
 
-
 /** get line height for a specific font (including empty room between lines) */
 unsigned int FontEngine::getLineHeight(const FontSpec &spec)
 {
-	irr::gui::IGUIFont *font = getFont(spec);
-
-	// use current skin font as fallback
-	if (font == NULL) {
-		font = m_env->getSkin()->getFont();
-	}
-	FATAL_ERROR_IF(font == NULL, "Could not get font");
+	gui::IGUIFont *font = getFont(spec);
 
 	return font->getDimension(L"Some unimportant example String").Height
 			+ font->getKerningHeight();
@@ -238,22 +223,9 @@ void FontEngine::readSettings()
 void FontEngine::updateSkin()
 {
 	gui::IGUIFont *font = getFont();
+	assert(font);
 
-	if (font)
-		m_env->getSkin()->setFont(font);
-	else
-		errorstream << "FontEngine: Default font file: " <<
-				"\n\t\"" << g_settings->get("font_path") << "\"" <<
-				"\n\trequired for current screen configuration was not found" <<
-				" or was invalid file format." <<
-				"\n\tUsing irrlicht default font." << std::endl;
-
-	// If we did fail to create a font our own make irrlicht find a default one
-	font = m_env->getSkin()->getFont();
-	FATAL_ERROR_IF(font == NULL, "Could not create/get font");
-
-	u32 text_height = font->getDimension(L"Hello, world!").Height;
-	infostream << "FontEngine: measured text_height=" << text_height << std::endl;
+	m_env->getSkin()->setFont(font);
 }
 
 /******************************************************************************/

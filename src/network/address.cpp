@@ -87,38 +87,31 @@ Address::Address(const IPv6AddressBytes *ipv6_bytes, u16 port)
 	setPort(port);
 }
 
-// Equality (address family, address and port must be equal)
-bool Address::operator==(const Address &address)
+// Equality (address family, IP and port must be equal)
+bool Address::operator==(const Address &other)
 {
-	if (address.m_addr_family != m_addr_family || address.m_port != m_port)
+	if (other.m_addr_family != m_addr_family || other.m_port != m_port)
 		return false;
 
 	if (m_addr_family == AF_INET) {
-		return m_address.ipv4.sin_addr.s_addr ==
-		       address.m_address.ipv4.sin_addr.s_addr;
+		return m_address.ipv4.s_addr == other.m_address.ipv4.s_addr;
 	}
 
 	if (m_addr_family == AF_INET6) {
-		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
-				       address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
+		return memcmp(m_address.ipv6.s6_addr,
+				other.m_address.ipv6.s6_addr, 16) == 0;
 	}
 
 	return false;
 }
 
-bool Address::operator!=(const Address &address)
-{
-	return !(*this == address);
-}
-
 void Address::Resolve(const char *name)
 {
 	if (!name || name[0] == 0) {
-		if (m_addr_family == AF_INET) {
-			setAddress((u32)0);
-		} else if (m_addr_family == AF_INET6) {
-			setAddress((IPv6AddressBytes *)0);
-		}
+		if (m_addr_family == AF_INET)
+			setAddress(static_cast<u32>(0));
+		else if (m_addr_family == AF_INET6)
+			setAddress(static_cast<IPv6AddressBytes*>(nullptr));
 		return;
 	}
 
@@ -126,9 +119,6 @@ void Address::Resolve(const char *name)
 	memset(&hints, 0, sizeof(hints));
 
 	// Setup hints
-	hints.ai_socktype = 0;
-	hints.ai_protocol = 0;
-	hints.ai_flags = 0;
 	if (g_settings->getBool("enable_ipv6")) {
 		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
 		hints.ai_family = AF_UNSPEC;
@@ -145,14 +135,13 @@ void Address::Resolve(const char *name)
 	if (resolved->ai_family == AF_INET) {
 		struct sockaddr_in *t = (struct sockaddr_in *)resolved->ai_addr;
 		m_addr_family = AF_INET;
-		m_address.ipv4 = *t;
+		m_address.ipv4 = t->sin_addr;
 	} else if (resolved->ai_family == AF_INET6) {
 		struct sockaddr_in6 *t = (struct sockaddr_in6 *)resolved->ai_addr;
 		m_addr_family = AF_INET6;
-		m_address.ipv6 = *t;
+		m_address.ipv6 = t->sin6_addr;
 	} else {
-		freeaddrinfo(resolved);
-		throw ResolveError("");
+		m_addr_family = 0;
 	}
 	freeaddrinfo(resolved);
 }
@@ -163,47 +152,37 @@ std::string Address::serializeString() const
 // windows XP doesnt have inet_ntop, maybe use better func
 #ifdef _WIN32
 	if (m_addr_family == AF_INET) {
-		u8 a, b, c, d;
-		u32 addr;
-		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
-		a = (addr & 0xFF000000) >> 24;
-		b = (addr & 0x00FF0000) >> 16;
-		c = (addr & 0x0000FF00) >> 8;
-		d = (addr & 0x000000FF);
-		return itos(a) + "." + itos(b) + "." + itos(c) + "." + itos(d);
+		return inet_ntoa(m_address.ipv4);
 	} else if (m_addr_family == AF_INET6) {
 		std::ostringstream os;
+		os << std::hex;
 		for (int i = 0; i < 16; i += 2) {
-			u16 section = (m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
-				      (m_address.ipv6.sin6_addr.s6_addr[i + 1]);
-			os << std::hex << section;
+			u16 section = (m_address.ipv6.s6_addr[i] << 8) |
+					(m_address.ipv6.s6_addr[i + 1]);
+			os << section;
 			if (i < 14)
 				os << ":";
 		}
 		return os.str();
-	} else
-		return std::string("");
+	} else {
+		return "";
+	}
 #else
 	char str[INET6_ADDRSTRLEN];
-	if (inet_ntop(m_addr_family,
-			    (m_addr_family == AF_INET)
-					    ? (void *)&(m_address.ipv4.sin_addr)
-					    : (void *)&(m_address.ipv6.sin6_addr),
-			    str, INET6_ADDRSTRLEN) == NULL) {
-		return std::string("");
-	}
-	return std::string(str);
+	if (inet_ntop(m_addr_family, (void*) &m_address, str, sizeof(str)) == nullptr)
+		return "";
+	return str;
 #endif
 }
 
-struct sockaddr_in Address::getAddress() const
+struct in_addr Address::getAddress() const
 {
-	return m_address.ipv4; // NOTE: NO PORT INCLUDED, use getPort()
+	return m_address.ipv4;
 }
 
-struct sockaddr_in6 Address::getAddress6() const
+struct in6_addr Address::getAddress6() const
 {
-	return m_address.ipv6; // NOTE: NO PORT INCLUDED, use getPort()
+	return m_address.ipv6;
 }
 
 u16 Address::getPort() const
@@ -211,52 +190,39 @@ u16 Address::getPort() const
 	return m_port;
 }
 
-int Address::getFamily() const
-{
-	return m_addr_family;
-}
-
-bool Address::isIPv6() const
-{
-	return m_addr_family == AF_INET6;
-}
-
 bool Address::isZero() const
 {
 	if (m_addr_family == AF_INET) {
-		return m_address.ipv4.sin_addr.s_addr == 0;
+		return m_address.ipv4.s_addr == 0;
 	}
 
 	if (m_addr_family == AF_INET6) {
 		static const char zero[16] = {0};
-		return memcmp(m_address.ipv6.sin6_addr.s6_addr, zero, 16) == 0;
+		return memcmp(m_address.ipv6.s6_addr, zero, 16) == 0;
 	}
+
 	return false;
 }
 
 void Address::setAddress(u32 address)
 {
 	m_addr_family = AF_INET;
-	m_address.ipv4.sin_family = AF_INET;
-	m_address.ipv4.sin_addr.s_addr = htonl(address);
+	m_address.ipv4.s_addr = htonl(address);
 }
 
 void Address::setAddress(u8 a, u8 b, u8 c, u8 d)
 {
-	m_addr_family = AF_INET;
-	m_address.ipv4.sin_family = AF_INET;
-	u32 addr = htonl((a << 24) | (b << 16) | (c << 8) | d);
-	m_address.ipv4.sin_addr.s_addr = addr;
+	u32 addr = (a << 24) | (b << 16) | (c << 8) | d;
+	setAddress(addr);
 }
 
 void Address::setAddress(const IPv6AddressBytes *ipv6_bytes)
 {
 	m_addr_family = AF_INET6;
-	m_address.ipv6.sin6_family = AF_INET6;
 	if (ipv6_bytes)
-		memcpy(m_address.ipv6.sin6_addr.s6_addr, ipv6_bytes->bytes, 16);
+		memcpy(m_address.ipv6.s6_addr, ipv6_bytes->bytes, 16);
 	else
-		memset(m_address.ipv6.sin6_addr.s6_addr, 0, 16);
+		memset(m_address.ipv6.s6_addr, 0, 16);
 }
 
 void Address::setPort(u16 port)
@@ -268,23 +234,26 @@ void Address::print(std::ostream *s) const
 {
 	if (m_addr_family == AF_INET6)
 		*s << "[" << serializeString() << "]:" << m_port;
-	else
+	else if (m_addr_family == AF_INET)
 		*s << serializeString() << ":" << m_port;
+	else
+		*s << "(undefined)";
 }
 
 bool Address::isLocalhost() const
 {
 	if (isIPv6()) {
-		static const unsigned char localhost_bytes[] = {
+		static const u8 localhost_bytes[] = {
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-		static const unsigned char mapped_ipv4_localhost[] = {
+		static const u8 mapped_ipv4_localhost[] = {
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 0};
 
-		auto addr = m_address.ipv6.sin6_addr.s6_addr;
+		auto addr = m_address.ipv6.s6_addr;
 
 		return memcmp(addr, localhost_bytes, 16) == 0 ||
 			memcmp(addr, mapped_ipv4_localhost, 13) == 0;
 	}
 
-	return (m_address.ipv4.sin_addr.s_addr & 0xFF) == 0x7f;
+	auto addr = ntohl(m_address.ipv4.s_addr);
+	return (addr >> 24) == 0x7f;
 }
