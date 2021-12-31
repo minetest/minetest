@@ -270,6 +270,16 @@ local scroll_fs =
 --style_type[label;border=;bgcolor=]
 --label[0.75,2;Reset]
 
+local window = {
+	sizex = 12,
+	sizey = 13,
+	positionx = 0.5,
+	positiony = 0.5,
+	anchorx = 0.5,
+	anchory = 0.5,
+	paddingx = 0.05,
+	paddingy = 0.05
+}
 
 local pages = {
 	-- Real Coordinates
@@ -341,8 +351,27 @@ local pages = {
 		"size[12,13]real_coordinates[true]" ..
 		"container[0.5,1.5]" .. tabheaders_fs .. "container_end[]",
 
-		-- Inv
+	-- Inv
 		"size[12,13]real_coordinates[true]" .. inv_style_fs,
+
+	-- Window
+		function()
+			return "formspec_version[3]" ..
+				string.format("size[%s,%s]position[%s,%s]anchor[%s,%s]padding[%s,%s]",
+					window.sizex, window.sizey, window.positionx, window.positiony,
+					window.anchorx, window.anchory, window.paddingx, window.paddingy) ..
+				string.format("field[0.5,0.5;2.5,0.5;sizex;X Size;%s]field[3.5,0.5;2.5,0.5;sizey;Y Size;%s]" ..
+					"field[0.5,1.5;2.5,0.5;positionx;X Position;%s]field[3.5,1.5;2.5,0.5;positiony;Y Position;%s]" ..
+					"field[0.5,2.5;2.5,0.5;anchorx;X Anchor;%s]field[3.5,2.5;2.5,0.5;anchory;Y Anchor;%s]" ..
+					"field[0.5,3.5;2.5,0.5;paddingx;X Padding;%s]field[3.5,3.5;2.5,0.5;paddingy;Y Padding;%s]" ..
+					"button[2,4.5;2.5,0.5;submit_window;Submit]",
+					window.sizex, window.sizey, window.positionx, window.positiony,
+					window.anchorx, window.anchory, window.paddingx, window.paddingy) ..
+				"field_close_on_enter[sizex;false]field_close_on_enter[sizey;false]" ..
+				"field_close_on_enter[positionx;false]field_close_on_enter[positiony;false]" ..
+				"field_close_on_enter[anchorx;false]field_close_on_enter[anchory;false]" ..
+				"field_close_on_enter[paddingx;false]field_close_on_enter[paddingy;false]"
+		end,
 
 	-- Animation
 		[[
@@ -403,10 +432,14 @@ mouse control = true]
 		]],
 }
 
-local function show_test_formspec(pname, page_id)
-	page_id = page_id or 2
+local page_id = 2
+local function show_test_formspec(pname)
+	local page = pages[page_id]
+	if type(page) == "function" then
+		page = page()
+	end
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Anim,Model,ScrollC,Sound;" .. page_id .. ";false;false]"
+	local fs = page .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
@@ -416,9 +449,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return false
 	end
 
-
 	if fields.maintabs then
-		show_test_formspec(player:get_player_name(), tonumber(fields.maintabs))
+		page_id = tonumber(fields.maintabs)
+		show_test_formspec(player:get_player_name())
 		return true
 	end
 
@@ -433,6 +466,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.hypertext then
 		minetest.chat_send_player(player:get_player_name(), "Hypertext action received: " .. tostring(fields.hypertext))
 		return true
+	end
+
+	for name, value in pairs(fields) do
+		if window[name] then
+			print(name, window[name])
+			local num_val = tonumber(value) or 0
+
+			if name == "sizex" and num_val < 4 then
+				num_val = 6.5
+			elseif name == "sizey" and num_val < 5 then
+				num_val = 5.5
+			end
+
+			window[name] = num_val
+			print(name, window[name])
+		end
+	end
+
+	if fields.submit_window then
+		show_test_formspec(player:get_player_name())
 	end
 end)
 
