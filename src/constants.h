@@ -68,7 +68,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This is the maximum value the setting map_generation_limit can be
 #if USE_POS32
 #define MAX_MAP_GENERATION_LIMIT (2147483008)
-//#define MAX_MAP_GENERATION_LIMIT (31000)
 #else
 #define MAX_MAP_GENERATION_LIMIT (31000)
 #endif
