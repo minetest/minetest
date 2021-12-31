@@ -1198,6 +1198,9 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	if (!succeeded || !conf.exists("backend")) {
 		// fall back to sqlite3
 		conf.set("backend", "sqlite3");
+#if USE_POS32 && USE_LEVELDB
+		conf.set("backend", "leveldb");
+#endif
 	}
 	std::string backend = conf.get("backend");
 	dbase = createDatabase(backend, savedir, conf);

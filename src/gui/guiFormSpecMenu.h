@@ -368,6 +368,7 @@ private:
 		v2s32 size;
 		v2f32 offset;
 		v2f32 anchor;
+		v2f32 padding;
 		core::rect<s32> rect;
 		v2s32 basepos;
 		v2u32 screensize;
@@ -449,6 +450,8 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
+	bool parsePaddingDirect(parserData *data, const std::string &element);
+	void parsePadding(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
 	void parseModel(parserData *data, const std::string &element);
