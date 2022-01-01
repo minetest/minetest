@@ -174,12 +174,12 @@ private:
 	s32 m_uncached_received_count = 0;
 
 	// Status of remote transfers
-	unsigned long m_httpfetch_caller;
-	unsigned long m_httpfetch_next_id = 0;
+	u64 m_httpfetch_caller;
+	u64 m_httpfetch_next_id = 0;
 	s32 m_httpfetch_active = 0;
 	s32 m_httpfetch_active_limit = 0;
 	s32 m_outstanding_hash_sets = 0;
-	std::unordered_map<unsigned long, std::string> m_remote_file_transfers;
+	std::unordered_map<u64, std::string> m_remote_file_transfers;
 
 	// All files up to this name have either been received from a
 	// remote server or failed on all remote servers, so those files
