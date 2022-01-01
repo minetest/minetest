@@ -90,7 +90,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float light_near = n + MYMIN(radius * (1.0 - sin_light), radius * (1.0 - cos_light));
 	float light_far = n + 2 * MYMAX(radius * sin_light, radius * cos_light);
 	// float fov_dy = (0.55 + 0.45 * sin_light) * radius / (n + radius);  // balance between aliasing and size of the shadowed area
-	float fov_dy = MYMAX(radius * sin_light, radius * cos_light) / (n + radius);
+	float fov_dy = MYMAX(radius * sin_light, radius * 0.71) / (n + radius);
 	float fov_dx = fov_dy;
 	float aspect = fov_dy / fov_dx;
 
