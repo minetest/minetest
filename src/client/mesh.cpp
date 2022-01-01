@@ -348,7 +348,7 @@ bool checkMeshNormals(scene::IMesh *mesh)
 		if (!std::isfinite(length) || length < 1e-10f)
 			return false;
 
-		const u16 count = MYMIN(MAX_FACES_TO_CHECK * 3, buffer->getIndexCount());
+		const u16 count = MYMIN(MAX_FACES_TO_CHECK * 3, buffer->getIndexCount() - 3);
 		for (u16 i = 0; i < count; i += 3) {
 
 			core::plane3df plane(buffer->getPosition(buffer->getIndices()[i]),
