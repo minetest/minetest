@@ -764,9 +764,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if (mesh) {
-			// It is important to recalculate normals before adding the mesh to the scene,
-			// because the latter starts animation process and changes vertex positions,
-			// which are treated as a source of truth when recalculating normals
 			if (!checkMeshNormals(mesh)) {
 				infostream << "GenericCAO: recalculating normals for mesh "
 					<< m_prop.mesh << std::endl;
