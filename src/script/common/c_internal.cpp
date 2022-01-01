@@ -27,10 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 std::string script_get_backtrace(lua_State *L)
 {
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
+	lua_getglobal(L, "debug");
+	lua_getfield(L, -1, "traceback");
 	lua_call(L, 0, 1);
 	std::string result = luaL_checkstring(L, -1);
-	lua_pop(L, 1);
+	lua_pop(L, 2);
 	return result;
 }
 
