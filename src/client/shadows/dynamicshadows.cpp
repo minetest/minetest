@@ -39,7 +39,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	v3f cam_up = v3f(cam->getCameraNode()->getUpVector()).normalize();
 	v3f cam_right = cam_up.crossProduct(cam_dir).normalize();
 	float cam_near = cam_node->getNearValue();
-	float cam_far = MYMIN(farPlane * BS, cam_node->getFarValue());
+	float cam_far = BS * MYMIN(farPlane, g_settings->getFloat("viewing_range"));
 
 	v3f top_right_corner = cam_pos + 
 				cam_near * cam_dir + 
