@@ -356,7 +356,7 @@ bool checkMeshNormals(scene::IMesh *mesh)
 					buffer->getPosition(buffer->getIndices()[i+2]));
 
 			for (u16 j = 0; j < 3; j++)
-				if (plane.Normal.dotProduct(buffer->getNormal(buffer->getIndices()[j])) < 0)
+				if (plane.Normal.dotProduct(buffer->getNormal(buffer->getIndices()[i+j])) <= 0)
 					return false;
 		}
 
