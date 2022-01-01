@@ -77,8 +77,7 @@ enum {
 #endif
 
 // Pushes the error handler onto the stack and returns its index
-#define PUSH_ERROR_HANDLER(L) \
-	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE), lua_gettop((L)))
+#define PUSH_ERROR_HANDLER(L) (lua_pushcfunction((L), script_error_handler), lua_gettop((L)))
 
 #define PCALL_RESL(L, RES) {                            \
 	int result_ = (RES);                                \
@@ -121,6 +120,8 @@ enum RunCallbacksMode
 std::string script_get_backtrace(lua_State *L);
 // Wrapper for CFunction calls that converts C++ exceptions to Lua errors
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
+// Acts as the error handler for lua_pcall
+int script_error_handler(lua_State *L);
 // Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 

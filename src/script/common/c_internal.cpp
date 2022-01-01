@@ -47,6 +47,19 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f)
 	return lua_error(L);  // Rethrow as a Lua error.
 }
 
+int script_error_handler(lua_State *L)
+{
+	// Executes debug.traceback(tostring(#1), 2)
+	lua_getglobal(L, "debug");
+	lua_getfield(L, -1, "traceback");
+	lua_getglobal(L, "tostring");
+	lua_pushvalue(L, 1);
+	lua_call(L, 1, 1);
+	lua_pushinteger(L, 2);
+	lua_call(L, 2, 1);
+	return 1;
+}
+
 /*
  * Note that we can't get tracebacks for LUA_ERRMEM or LUA_ERRERR (without
  * hacking Lua internals).  For LUA_ERRMEM, this is because memory errors will

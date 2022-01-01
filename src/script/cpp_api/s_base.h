@@ -170,8 +170,6 @@ protected:
 #endif
 
 private:
-	static int luaHandleError(lua_State *L);
-
 	static int luaPanic(lua_State *L);
 
 	lua_State      *m_luastack = nullptr;
