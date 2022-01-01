@@ -55,8 +55,20 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float cos_light = abs(cam_dir.dotProduct(direction));
 	float sin_light = sqrt(1 - sqr(cos_light));
 
+	// calculate reference direction of the light
+	v3f light_right = direction.crossProduct(v3f(0,1,0));
+	if (light_right.getLengthSQ() < 1E-5)
+		light_right = v3f(0,0,1);
+	light_right = light_right.normalize();
+
 	v3f lcam_up = -direction;
 	v3f lcam_right = lcam_up.crossProduct(cam_dir).normalize();
+	float lcam_right_max = MYMAX(MYMAX(abs(lcam_right.X), abs(lcam_right.Y)), abs(lcam_right.Z));
+	v3f lcam_right_rounded = abs(lcam_right.X) == lcam_right_max ? v3f(lcam_right.X >= 0 ? 1.0 : -1.0, 0, 0) : 
+			abs(lcam_right.Y) == lcam_right_max ? v3f(0, lcam_right.Y >= 0 ? 1.0 : -1.0, 0) : 
+			v3f(0, 0, lcam_right.Z >= 0 ? 1.0 : -1.0);
+	float blend = MYMIN(0.05, MYMAX(0, cos_light - 0.90)) / 0.05;
+	lcam_right =  blend * lcam_right_rounded + (1 - blend) * lcam_right;
 	v3f lcam_dir = lcam_right.crossProduct(lcam_up).normalize();
 
 	// Define camera position and focus point in the view frustum
@@ -95,12 +107,6 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	);
 	s *= projmatrix;
 	projmatrix = s;
-
-	// calculate reference direction of the light
-	v3f light_right = direction.crossProduct(v3f(0,1,0));
-	if (light_right.getLengthSQ() < 1E-5)
-		light_right = v3f(0,0,1);
-	light_right = light_right.normalize();
 
 	v3f v = light_right.crossProduct(lcam_right);
 	float c = lcam_right.dotProduct(light_right);
