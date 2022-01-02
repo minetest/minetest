@@ -844,7 +844,7 @@ bool ModMetadataDatabaseSQLite3::setModEntry(const std::string &modname,
 		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 	SQLOK(sqlite3_bind_blob(m_stmt_set, 3, value.data(), value.size(), NULL),
 		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
-	SQLRES(sqlite3_step(m_stmt_set), SQLITE_DONE, "Failed to save block")
+	SQLRES(sqlite3_step(m_stmt_set), SQLITE_DONE, "Failed to set mod entry")
 
 	sqlite3_reset(m_stmt_set);
 
