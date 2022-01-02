@@ -71,13 +71,7 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 
 	SkyboxDefaults sky_defaults;
 
-	m_skybox_params.sky_color = sky_defaults.getSkyColorDefaults();
-	m_skybox_params.type = "regular";
-	m_skybox_params.clouds = true;
-	m_skybox_params.fog_sun_tint = video::SColor(255, 244, 125, 29);
-	m_skybox_params.fog_moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
-	m_skybox_params.fog_tint_type = "default";
-
+	m_skybox_params = sky_defaults.getSkyDefaults();
 	m_sun_params = sky_defaults.getSunDefaults();
 	m_moon_params = sky_defaults.getMoonDefaults();
 	m_star_params = sky_defaults.getStarDefaults();
