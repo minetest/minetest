@@ -6794,6 +6794,7 @@ object you are working with still exists.
 * `set_sky(sky_parameters)`
     * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
       whether `set_sky` accepts this format. Check the legacy format otherwise.
+    * Passing no arguments resets the sky to its default values.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
           (default: `#ffffff`)
@@ -6850,6 +6851,7 @@ object you are working with still exists.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
 * `set_sun(sun_parameters)`:
+    * Passing no arguments resets the sun to its default values.
     * `sun_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the sun is visible.
             (default: `true`)
@@ -6865,6 +6867,7 @@ object you are working with still exists.
 * `get_sun()`: returns a table with the current sun parameters as in
     `set_sun`.
 * `set_moon(moon_parameters)`:
+    * Passing no arguments resets the moon to its default values.
     * `moon_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the moon is visible.
             (default: `true`)
@@ -6876,6 +6879,7 @@ object you are working with still exists.
 * `get_moon()`: returns a table with the current moon parameters as in
     `set_moon`.
 * `set_stars(star_parameters)`:
+    * Passing no arguments resets stars to their default values.
     * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
@@ -6889,6 +6893,7 @@ object you are working with still exists.
 * `get_stars()`: returns a table with the current stars parameters as in
     `set_stars`.
 * `set_clouds(cloud_parameters)`: set cloud parameters
+    * Passing no arguments resets clous to their default values.
     * `cloud_parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
         * `color`: basic cloud color with alpha channel, ColorSpec
