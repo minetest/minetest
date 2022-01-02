@@ -2064,21 +2064,27 @@ int ObjectRef::l_set_stars(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
 	StarParams star_params = player->getStarParams();
 
-	star_params.visible = getboolfield_default(L, 2,
-		"visible", star_params.visible);
-	star_params.count = getintfield_default(L, 2,
-		"count", star_params.count);
+	// reset if empty
+	if (lua_isnoneornil(L, 2)) {
+		SkyboxDefaults sky_defaults;
+		star_params = sky_defaults.getStarDefaults();
+	} else {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		star_params.visible = getboolfield_default(L, 2,
+			"visible", star_params.visible);
+		star_params.count = getintfield_default(L, 2,
+			"count", star_params.count);
 
-	lua_getfield(L, 2, "star_color");
-	if (!lua_isnil(L, -1))
-		read_color(L, -1, &star_params.starcolor);
-	lua_pop(L, 1);
+		lua_getfield(L, 2, "star_color");
+		if (!lua_isnil(L, -1))
+			read_color(L, -1, &star_params.starcolor);
+		lua_pop(L, 1);
 
-	star_params.scale = getfloatfield_default(L, 2,
-		"scale", star_params.scale);
+		star_params.scale = getfloatfield_default(L, 2,
+			"scale", star_params.scale);
+	}
 
 	getServer(L)->setStars(player, star_params);
 	lua_pushboolean(L, true);
