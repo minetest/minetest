@@ -103,6 +103,9 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 #endif
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
+	lua_pushcfunction(m_luastack, script_error_handler);
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
+
 	// Add a C++ wrapper function to catch exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
 	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);

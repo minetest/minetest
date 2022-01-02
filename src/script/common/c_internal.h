@@ -54,7 +54,7 @@ enum {
 	CUSTOM_RIDX_SCRIPTAPI,
 	CUSTOM_RIDX_GLOBALS_BACKUP,
 	CUSTOM_RIDX_CURRENT_MOD_NAME,
-	CUSTOM_RIDX_BACKTRACE,
+	CUSTOM_RIDX_ERROR_HANDLER,
 	CUSTOM_RIDX_HTTP_API_LUA,
 	CUSTOM_RIDX_METATABLE_MAP,
 
@@ -77,7 +77,8 @@ enum {
 #endif
 
 // Pushes the error handler onto the stack and returns its index
-#define PUSH_ERROR_HANDLER(L) (lua_pushcfunction((L), script_error_handler), lua_gettop((L)))
+#define PUSH_ERROR_HANDLER(L) \
+	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER), lua_gettop((L)))
 
 #define PCALL_RESL(L, RES) {                            \
 	int result_ = (RES);                                \
