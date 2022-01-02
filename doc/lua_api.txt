@@ -3347,6 +3347,9 @@ vectors are written like this: `(x, y, z)`:
 * `vector.apply(v, func)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+* `vector.combine(v, w, func)`:
+	* Returns a vector where the function `func` has combined both components of `v` and `w`
+	  for each component
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:

@@ -580,6 +580,7 @@ Spatial Vectors
 * `vector.floor(v)`: returns a vector, each dimension rounded down
 * `vector.round(v)`: returns a vector, each dimension rounded to nearest int
 * `vector.apply(v, func)`: returns a vector
+* `vector.combine(v, w, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
 
 For the following functions `x` can be either a vector or a number:
