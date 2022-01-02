@@ -1941,21 +1941,30 @@ int ObjectRef::l_set_sun(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
 	SunParams sun_params = player->getSunParams();
 
-	sun_params.visible = getboolfield_default(L, 2,
-			"visible", sun_params.visible);
-	sun_params.texture = getstringfield_default(L, 2,
-			"texture", sun_params.texture);
-	sun_params.tonemap = getstringfield_default(L, 2,
-			"tonemap", sun_params.tonemap);
-	sun_params.sunrise = getstringfield_default(L, 2,
-			"sunrise", sun_params.sunrise);
-	sun_params.sunrise_visible = getboolfield_default(L, 2,
-			"sunrise_visible", sun_params.sunrise_visible);
-	sun_params.scale = getfloatfield_default(L, 2,
-			"scale", sun_params.scale);
+	// reset if empty
+	if (lua_isnoneornil(L, 2)) {
+		SkyboxDefaults sky_defaults;
+		sun_params = sky_defaults.getSunDefaults();
+		sun_params.texture = "";
+		sun_params.tonemap = "";
+		sun_params.sunrise = "";
+	} else {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		sun_params.visible = getboolfield_default(L, 2,
+				"visible", sun_params.visible);
+		sun_params.texture = getstringfield_default(L, 2,
+				"texture", sun_params.texture);
+		sun_params.tonemap = getstringfield_default(L, 2,
+				"tonemap", sun_params.tonemap);
+		sun_params.sunrise = getstringfield_default(L, 2,
+				"sunrise", sun_params.sunrise);
+		sun_params.sunrise_visible = getboolfield_default(L, 2,
+				"sunrise_visible", sun_params.sunrise_visible);
+		sun_params.scale = getfloatfield_default(L, 2,
+				"scale", sun_params.scale);
+	}
 
 	getServer(L)->setSun(player, sun_params);
 	lua_pushboolean(L, true);
