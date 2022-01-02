@@ -1724,7 +1724,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 	SkyboxParams sky_params = player->getSkyParams();
 	bool is_colorspec = is_color_table(L, 2);
 
-	if (lua_istable(L, 2) && !is_colorspec) {
+	// reset if empty
+	if (lua_isnoneornil(L, 2) && lua_isnone(L, 3)){
+		SkyboxDefaults sky_defaults;
+		sky_params = sky_defaults.getSkyDefaults();
+	} else if (lua_istable(L, 2) && !is_colorspec) {
 		lua_getfield(L, 2, "base_color");
 		if (!lua_isnil(L, -1))
 			read_color(L, -1, &sky_params.bgcolor);
@@ -1809,9 +1813,6 @@ int ObjectRef::l_set_sky(lua_State *L)
 			// Because we need to leave the "sky_color" table.
 			lua_pop(L, 1);
 		}
-	} else if (lua_isnoneornil(L, 3)){
-		SkyboxDefaults sky_defaults;
-		sky_params = sky_defaults.getSkyDefaults();
 	} else {
 		// Handle old set_sky calls, and log deprecated:
 		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.txt");
@@ -1866,6 +1867,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		getServer(L)->setStars(player, star_params);
 
 	}
+
 	getServer(L)->setSky(player, sky_params);
 	lua_pushboolean(L, true);
 	return 1;
