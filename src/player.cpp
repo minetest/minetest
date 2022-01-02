@@ -179,18 +179,20 @@ u32 PlayerControl::getKeysPressed() const
 	// Otherwise set direction keys based on joystick movement (for mod compatibility)
 	else if (movement_speed > 0.001f)
 	{
-		float abs_d = abs(movement_direction);
+		float abs_d;
 
 		// (absolute value indicates forward / backward)
+		abs_d = abs(movement_direction);
 		if (abs_d < 3.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1; // Forward
 		if (abs_d > 5.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1 << 1; // Backward
 
 		// rotate entire coordinate system by 90 degree
-		abs_d = abs_d + M_PI_2;
+		abs_d = movement_direction + M_PI_2;
 		if (abs_d >= M_PI)
-			abs_d = abs(abs_d - 2 * M_PI);
+			abs_d -= 2 * M_PI;
+		abs_d = abs(abs_d);
 		// (value now indicates left / right)
 		if (abs_d < 3.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1 << 2; // Left
