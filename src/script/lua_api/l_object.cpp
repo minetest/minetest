@@ -2123,31 +2123,37 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
 	CloudParams cloud_params = player->getCloudParams();
 
-	cloud_params.density = getfloatfield_default(L, 2, "density", cloud_params.density);
+	// reset if empty
+	if (lua_isnoneornil(L, 2)) {
+		SkyboxDefaults sky_defaults;
+		cloud_params = sky_defaults.getCloudDefaults();
+	} else {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		cloud_params.density = getfloatfield_default(L, 2, "density", cloud_params.density);
 
-	lua_getfield(L, 2, "color");
-	if (!lua_isnil(L, -1))
-		read_color(L, -1, &cloud_params.color_bright);
-	lua_pop(L, 1);
-	lua_getfield(L, 2, "ambient");
-	if (!lua_isnil(L, -1))
-		read_color(L, -1, &cloud_params.color_ambient);
-	lua_pop(L, 1);
+		lua_getfield(L, 2, "color");
+		if (!lua_isnil(L, -1))
+			read_color(L, -1, &cloud_params.color_bright);
+		lua_pop(L, 1);
+		lua_getfield(L, 2, "ambient");
+		if (!lua_isnil(L, -1))
+			read_color(L, -1, &cloud_params.color_ambient);
+		lua_pop(L, 1);
 
-	cloud_params.height    = getfloatfield_default(L, 2, "height",    cloud_params.height   );
-	cloud_params.thickness = getfloatfield_default(L, 2, "thickness", cloud_params.thickness);
+		cloud_params.height    = getfloatfield_default(L, 2, "height",    cloud_params.height   );
+		cloud_params.thickness = getfloatfield_default(L, 2, "thickness", cloud_params.thickness);
 
-	lua_getfield(L, 2, "speed");
-	if (lua_istable(L, -1)) {
-		v2f new_speed;
-		new_speed.X = getfloatfield_default(L, -1, "x", 0);
-		new_speed.Y = getfloatfield_default(L, -1, "z", 0);
-		cloud_params.speed = new_speed;
+		lua_getfield(L, 2, "speed");
+		if (lua_istable(L, -1)) {
+			v2f new_speed;
+			new_speed.X = getfloatfield_default(L, -1, "x", 0);
+			new_speed.Y = getfloatfield_default(L, -1, "z", 0);
+			cloud_params.speed = new_speed;
+		}
+		lua_pop(L, 1);
 	}
-	lua_pop(L, 1);
 
 	getServer(L)->setClouds(player, cloud_params);
 	lua_pushboolean(L, true);

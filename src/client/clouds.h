@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <iostream>
 #include "constants.h"
-#include "cloudparams.h"
+#include "skyparams.h"
 
 // Menu clouds
 class Clouds;
