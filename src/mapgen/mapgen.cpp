@@ -545,6 +545,13 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 					// spread to all 6 neighbor nodes
 					for (const auto &dir : g_6dirs)
 						lightSpread(a, queue, p + dir, light);
+
+					// allow sunlight to spread down a bit further
+					if (cf.drawtype == NDT_LIQUID && light & 0x0F) {
+						for (int k=2; k<6; k++) {
+							lightSpread(a, queue, p + v3s16(0,-k,0), light & 0x0F);
+						}
+					}
 				}
 			}
 		}
@@ -552,9 +559,19 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 
 	while (!queue.empty()) {
 		const auto &i = queue.front();
+		u32 vi = vm->m_area.index(i.first);
+		const ContentFeatures &cf = ndef->get(vm->m_data[vi]);
+
 		// spread to all 6 neighbor nodes
 		for (const auto &dir : g_6dirs)
 			lightSpread(a, queue, i.first + dir, i.second);
+
+		// allow sunlight to spread down a bit further
+		if (cf.drawtype == NDT_LIQUID && i.second & 0x0F) {
+			for (int k=2; k<6; k++) {
+				lightSpread(a, queue, i.first + v3s16(0,-k,0), i.second & 0x0F);
+			}
+		}
 		queue.pop();
 	}
 
