@@ -1078,7 +1078,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
     Rotation around +X is equivalent to rotation around +Y,
     followed by rotation around +Z, then reverse rotation around +Y.
 
-        ------------------------ 2<-------------------------
+        -----------------------> 2--------------------------
       /                       .^   ·.                       \
      |                    .·           ·.                    |
      |                .·                   ·.                |
@@ -1091,9 +1091,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
      |   :    .· :          .:      :.           :·.     :   |
      |  :    :   :        .· :      : ·.         v  :     :  |
      | :     :/ 18<-.....:...:/ 22<-:...:...../ 14<-:      : |
-     v:      v      \ .·     v      \     ·v v      \       v|
+     |:      v      \ .·     v      \     ·v v      \       vv
      3       9       7      23      21       5      11       1
-     |^      :\     ^ ^.     :\     ^     .·  \     ^       :^
+     ^^      :\     ^ ^.     :\     ^     .·  \     ^       :|
      | :     : >12_/....:....:.>20_/:....:.....>16_/:      : |
      |  :    :   ^        ·. :      : .·         :  :     :  |
      |   :    ·. :          ·:      :·           :.·     :   |
@@ -1106,7 +1106,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
      |                 ·.                 .·                 |
      |                     ·.         .·                     |
       \                        ·. v·                        /
-       ------------------------> 0-------------------------
+       ------------------------- 0<------------------------
     ```
 * `paramtype2 = "leveled"`
     * Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
