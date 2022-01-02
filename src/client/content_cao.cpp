@@ -764,10 +764,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if (mesh) {
-			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
-			m_animated_meshnode->grab();
-			mesh->drop(); // The scene node took hold of it
-
 			if (!checkMeshNormals(mesh)) {
 				infostream << "GenericCAO: recalculating normals for mesh "
 					<< m_prop.mesh << std::endl;
@@ -775,6 +771,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 						recalculateNormals(mesh, true, false);
 			}
 
+			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
+			m_animated_meshnode->grab();
+			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(m_prop.visual_size);
 
