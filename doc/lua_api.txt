@@ -6796,10 +6796,12 @@ object you are working with still exists.
       whether `set_sky` accepts this format. Check the legacy format otherwise.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
+          (default: `#ffffff`)
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.
             * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
+            (default: `"regular"`)
         * `textures`: A table containing up to six textures in the following
             order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
@@ -6828,9 +6830,9 @@ object you are working with still exists.
             * `indoors`: ColorSpec, for when you're either indoors or underground.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
-              at sunrise and sunset.
+              at sunrise and sunset. (default: `#f47d1d`)
             * `fog_moon_tint`: ColorSpec, changes the fog tinting for the moon
-              at sunrise and sunset.
+              at sunrise and sunset. (default: `#7f99cc`)
             * `fog_tint_type`: string, changes which mode the directional fog
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
