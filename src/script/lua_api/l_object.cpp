@@ -2007,17 +2007,25 @@ int ObjectRef::l_set_moon(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
 	MoonParams moon_params = player->getMoonParams();
 
-	moon_params.visible = getboolfield_default(L, 2,
-		"visible", moon_params.visible);
-	moon_params.texture = getstringfield_default(L, 2,
-		"texture", moon_params.texture);
-	moon_params.tonemap = getstringfield_default(L, 2,
-		"tonemap", moon_params.tonemap);
-	moon_params.scale = getfloatfield_default(L, 2,
-		"scale", moon_params.scale);
+	// reset if empty
+	if (lua_isnoneornil(L, 2)) {
+		SkyboxDefaults sky_defaults;
+		moon_params = sky_defaults.getMoonDefaults();
+		moon_params.texture = "";
+		moon_params.tonemap = "";
+	} else {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		moon_params.visible = getboolfield_default(L, 2,
+			"visible", moon_params.visible);
+		moon_params.texture = getstringfield_default(L, 2,
+			"texture", moon_params.texture);
+		moon_params.tonemap = getstringfield_default(L, 2,
+			"tonemap", moon_params.tonemap);
+		moon_params.scale = getfloatfield_default(L, 2,
+			"scale", moon_params.scale);
+	}
 
 	getServer(L)->setMoon(player, moon_params);
 	lua_pushboolean(L, true);
