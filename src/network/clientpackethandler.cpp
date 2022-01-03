@@ -1210,9 +1210,12 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 	if (param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4) {
 		s32 hotbar_itemcount = readS32((u8*) value.c_str());
 		if (hotbar_itemcount > 0 && hotbar_itemcount <= HUD_HOTBAR_ITEMCOUNT_MAX) {
-			player->hud_hotbar_itemcount = hotbar_itemcount;
+			u32 main_size = player->inventory.getList("main")->getSize();
+			if ((u32)hotbar_itemcount > main_size)
+				hotbar_itemcount = main_size;
 			if (player->getWieldIndex() >= hotbar_itemcount)
 				player->setWieldIndex(hotbar_itemcount - 1);
+			player->hud_hotbar_itemcount = hotbar_itemcount;
 		}
 	}
 	else if (param == HUD_PARAM_HOTBAR_IMAGE) {
