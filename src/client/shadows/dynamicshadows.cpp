@@ -62,20 +62,10 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	v3f lcam_up = -direction;
 	v3f lcam_right = lcam_up.crossProduct(cam_dir).normalize();
-
-	// When looking towards or away from the light, align the virtual camera with
-	// world axes to reduce shadow dancing.
-	float lcam_right_max = MYMAX(MYMAX(abs(lcam_right.X), abs(lcam_right.Y)), abs(lcam_right.Z));
-	v3f lcam_right_rounded = abs(lcam_right.X) == lcam_right_max ? v3f(lcam_right.X >= 0 ? 1.0 : -1.0, 0, 0) : 
-			abs(lcam_right.Y) == lcam_right_max ? v3f(0, lcam_right.Y >= 0 ? 1.0 : -1.0, 0) : 
-			v3f(0, 0, lcam_right.Z >= 0 ? 1.0 : -1.0);
-	float blend = MYMIN(0.05, MYMAX(0, cos_light - 0.90)) / 0.05;
-	lcam_right =  blend * lcam_right_rounded + (1 - blend) * lcam_right;
-
 	v3f lcam_dir = lcam_right.crossProduct(lcam_up).normalize();
 
 	// Define camera position and focus point in the view frustum
-	float center_distance = cam_near + 0.5 * (cam_far - cam_near);
+	float center_distance = cam_near + (0.2 + 0.3 * sin_light) * (cam_far - cam_near);
 	v3f center = cam_pos + cam_dir * center_distance;
 	float radius = (center - top_right_corner).getLength();
 
