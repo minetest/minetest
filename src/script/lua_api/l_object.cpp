@@ -1949,9 +1949,6 @@ int ObjectRef::l_set_sun(lua_State *L)
 	if (lua_isnoneornil(L, 2)) {
 		SkyboxDefaults sky_defaults;
 		sun_params = sky_defaults.getSunDefaults();
-		sun_params.texture = "";
-		sun_params.tonemap = "";
-		sun_params.sunrise = "";
 	} else {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		sun_params.visible = getboolfield_default(L, 2,
@@ -2015,8 +2012,6 @@ int ObjectRef::l_set_moon(lua_State *L)
 	if (lua_isnoneornil(L, 2)) {
 		SkyboxDefaults sky_defaults;
 		moon_params = sky_defaults.getMoonDefaults();
-		moon_params.texture = "";
-		moon_params.tonemap = "";
 	} else {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		moon_params.visible = getboolfield_default(L, 2,
