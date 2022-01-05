@@ -147,7 +147,9 @@ function core.rotate_facedir(rotation, vector_name, facedir)
 		if r == 0 then return x end
 		return lookup_function(r - 1, n, rotated_facedir_map[n][x])
 	end
-	return vector_lambda_map[vector_name](lookup_function, rotation, facedir)
+	local translation_function = vector_lambda_map[vector_name]
+		or function (f, r, x) return nil end
+	return translation_function(lookup_function, rotation % 4, facedir)
 end
 
 function core.dir_to_wallmounted(dir)
