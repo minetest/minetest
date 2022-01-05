@@ -6043,6 +6043,12 @@ Item handling
 * `minetest.fourdir_to_dir(fourdir)`
     * Convert a 4dir back into a vector aimed directly out the "back" of a
       node.
+* `minetest.rotate_facedir(rotation, vector_name, facedir)`
+    * Returns the facedir value that results from rotating `facedir` around an axis.
+    * `vector_name` is one of `"x+"`, `"x-"`, `"y+"`, `"y-"`, `"z+"` or `"z-"`,
+      indicating an orthogonal vector around which to perform rotation.
+    * `rotation` is in quarter-turns, always right-handed around the vector
+      (see https://en.wikipedia.org/wiki/Right-hand_rule#Rotations).
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for
       `paramtype2="wallmounted"`.
