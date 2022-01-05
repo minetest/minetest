@@ -28,6 +28,191 @@ function core.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
+function core.dir_to_facedir(dir, is6d)
+	--account for y if requested
+	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
+
+		--from above
+		if dir.y < 0 then
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 19
+				else
+					return 13
+				end
+			else
+				if dir.z < 0 then
+					return 10
+				else
+					return 4
+				end
+			end
+
+		--from below
+		else
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 15
+				else
+					return 17
+				end
+			else
+				if dir.z < 0 then
+					return 6
+				else
+					return 8
+				end
+			end
+		end
+
+	--otherwise, place horizontally
+	elseif math.abs(dir.x) > math.abs(dir.z) then
+		if dir.x < 0 then
+			return 3
+		else
+			return 1
+		end
+	else
+		if dir.z < 0 then
+			return 2
+		else
+			return 0
+		end
+	end
+end
+
+-- Table of possible dirs
+local facedir_to_dir = {
+	vector.new( 0,  0,  1),
+	vector.new( 1,  0,  0),
+	vector.new( 0,  0, -1),
+	vector.new(-1,  0,  0),
+	vector.new( 0, -1,  0),
+	vector.new( 0,  1,  0),
+}
+-- Mapping from facedir value to index in facedir_to_dir.
+local facedir_to_dir_map = {
+	[0]=1, 2, 3, 4,
+	5, 2, 6, 4,
+	6, 2, 5, 4,
+	1, 5, 3, 6,
+	1, 6, 3, 5,
+	1, 4, 3, 2,
+}
+function core.facedir_to_dir(facedir)
+	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
+end
+
+-- Map each facedir to the result of applying
+-- right-hand rotation around y+ or z+ vector
+local rotated_facedir_map = {
+	["y+"] = {
+		[0] = 3, 0, 1, 2,
+		19, 16, 17, 18,
+		15, 12, 13, 14,
+		7, 4, 5, 6,
+		11, 8, 9, 10,
+		21, 22, 23, 20
+	},
+	["z+"] = {
+		[0] = 12, 13, 14, 15,
+		7, 4, 5, 6,
+		9, 10, 11, 8,
+		20, 21, 22, 23,
+		0, 1, 2, 3,
+		16, 17, 18, 19,
+	},
+}
+
+-- Map rotations on all 6 orthogonal vectors to
+-- rotations around just y+ and z+
+local vector_lambda_map = {
+	["x+"] = function (f, r, x)
+		return f(3, "y+", f(r, "z+", f(1, "y+", x))) end,
+	["x-"] = function (f, r, x)
+		return f(1, "y+", f(r, "z+", f(3, "y+", x))) end,
+	["y+"] = function (f, r, x)
+		return f(r, "y+", x) end,
+	["y-"] = function (f, r, x)
+		return f(4 - r, "y+", x) end,
+	["z+"] = function (f, r, x)
+		return f(r, "z+", x) end,
+	["z-"] = function (f, r, x)
+		return f(4 - r, "z+", x) end,
+}
+
+function core.rotate_facedir(rotation, vector_name, facedir)
+	facedir = facedir or 0
+	local function lookup_function(r, n, x)
+		if r == 0 then return x end
+		return lookup_function(r - 1, n, rotated_facedir_map[n][x])
+	end
+	return vector_lambda_map[vector_name](lookup_function, rotation, facedir)
+end
+
+function core.dir_to_wallmounted(dir)
+	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
+		if dir.y < 0 then
+			return 1
+		else
+			return 0
+		end
+	elseif math.abs(dir.x) > math.abs(dir.z) then
+		if dir.x < 0 then
+			return 3
+		else
+			return 2
+		end
+	else
+		if dir.z < 0 then
+			return 5
+		else
+			return 4
+		end
+	end
+end
+
+-- table of dirs in wallmounted order
+local wallmounted_to_dir = {
+	[0] = vector.new( 0,  1,  0),
+	vector.new( 0, -1,  0),
+	vector.new( 1,  0,  0),
+	vector.new(-1,  0,  0),
+	vector.new( 0,  0,  1),
+	vector.new( 0,  0, -1),
+}
+function core.wallmounted_to_dir(wallmounted)
+	return wallmounted_to_dir[wallmounted % 8]
+end
+
+function core.dir_to_yaw(dir)
+	return -math.atan2(dir.x, dir.z)
+end
+
+function core.yaw_to_dir(yaw)
+	return vector.new(-math.sin(yaw), 0, math.cos(yaw))
+end
+
+function core.is_colored_paramtype(ptype)
+	return (ptype == "color") or (ptype == "colorfacedir") or
+		(ptype == "colorwallmounted") or (ptype == "colordegrotate")
+end
+
+function core.strip_param2_color(param2, paramtype2)
+	if not core.is_colored_paramtype(paramtype2) then
+		return nil
+	end
+	if paramtype2 == "colorfacedir" then
+		param2 = math.floor(param2 / 32) * 32
+	elseif paramtype2 == "colorwallmounted" then
+		param2 = math.floor(param2 / 8) * 8
+	elseif paramtype2 == "colordegrotate" then
+		param2 = math.floor(param2 / 32) * 32
+	end
+	-- paramtype2 == "color" requires no modification.
+	return param2
+end
+
 local function has_all_groups(tbl, required_groups)
 	if type(required_groups) == "string" then
 		return (tbl[required_groups] or 0) ~= 0
