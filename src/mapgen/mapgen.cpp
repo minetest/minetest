@@ -536,8 +536,11 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 				// wrapper, but something lighter than MapNode::get/setLight
 
 				u8 light_produced = cf.light_source;
-				if (light_produced)
-					n.param1 = light_produced | (light_produced << 4);
+				if (light_produced) {
+					// see MapNode::getLighXXX methods
+					n.param1 = MYMAX(n.param1 & 0x0F, light_produced) |
+						   MYMAX(n.param1 & 0xF0, light_produced << 4);
+				}
 
 				u8 light = n.param1;
 				if (light) {
