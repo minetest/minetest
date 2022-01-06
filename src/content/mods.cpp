@@ -442,7 +442,9 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 {
 	std::unordered_map<std::string, std::string> paths;
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
-	paths["share"] = path;
+	if (path != path_user) {
+		paths["share"] = path;
+	}
 	paths["mods"] = path_user;
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";

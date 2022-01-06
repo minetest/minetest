@@ -108,10 +108,9 @@ SubgameSpec findSubgame(const std::string &id)
 
 	// Find mod directories
 	std::unordered_map<std::string, std::string> mods_paths;
-	if (!user_game)
+	mods_paths["mods"] = user + DIR_DELIM + "mods";
+	if (!user_game && user != share)
 		mods_paths["share"] = share + DIR_DELIM + "mods";
-	if (user != share || user_game)
-		mods_paths["mods"] = user + DIR_DELIM + "mods";
 
 	for (const std::string &mod_path : getEnvModPaths()) {
 		mods_paths[fs::AbsolutePath(mod_path)] = mod_path;
