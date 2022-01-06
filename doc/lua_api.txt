@@ -1026,7 +1026,7 @@ The function of `param1` is determined by `paramtype` in node definition.
 `param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
-    * The value stores light with and without sun in its upper and lower 4 bits
+    * The value stores light with and without sun in its lower and upper 4 bits
       respectively.
     * Required by a light source node to enable spreading its light.
     * Required by the following drawtypes as they determine their visual
