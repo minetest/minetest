@@ -116,6 +116,7 @@ local function create_world_formspec(dialogdata)
 		-- should never happen but just pick the first game
 		game = pkgmgr.get_game(1)
 		gameidx = 1
+		core.settings:set("menu_last_game", game.id)
 	elseif game == nil then
 		gameidx = 0
 	end

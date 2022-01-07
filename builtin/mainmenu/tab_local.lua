@@ -324,7 +324,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_create"] ~= nil then
-		local create_world_dlg = create_create_world_dlg(true)
+		local create_world_dlg = create_create_world_dlg(enable_gamebar)
 		create_world_dlg:set_parent(this)
 		this:hide()
 		create_world_dlg:show()
