@@ -1097,6 +1097,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The rotation of the node is stored in `param2`.
     * Node is rotated around face and axis; 24 rotations in total.
     * Can be made by using `minetest.dir_to_facedir()`.
+    * Can also be created or transformed via `minetest.rotate_facedir()`.
     * Chests and furnaces can be rotated that way, and also 'flipped'
     * Values range 0 - 23
     * facedir / 4 = axis direction:
