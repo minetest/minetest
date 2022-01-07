@@ -283,6 +283,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
+	virtual ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	NodeDefManager* getWritableNodeDefManager();
@@ -293,7 +294,6 @@ public:
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
-	virtual std::string getModStoragePath() const;
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
@@ -376,6 +376,14 @@ public:
 
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
+
+	static ModMetadataDatabase *openModStorageDatabase(const std::string &world_path);
+
+	static ModMetadataDatabase *openModStorageDatabase(const std::string &backend,
+			const std::string &world_path, const Settings &world_mt);
+
+	static bool migrateModStorageDatabase(const GameParams &game_params,
+			const Settings &cmd_args);
 
 	// Bind address
 	Address m_bind_addr;
@@ -678,6 +686,7 @@ private:
 	s32 nextSoundId();
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
+	ModMetadataDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM restrictions byteflag

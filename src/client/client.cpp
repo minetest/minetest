@@ -128,6 +128,11 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
+	// Make the mod storage database and begin the save for later
+	m_mod_storage_database =
+		new ModMetadataDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
+	m_mod_storage_database->beginSave();
+
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
@@ -305,6 +310,11 @@ Client::~Client()
 	m_minimap = nullptr;
 
 	delete m_media_downloader;
+
+	// Write the changes and delete
+	if (m_mod_storage_database)
+		m_mod_storage_database->endSave();
+	delete m_mod_storage_database;
 }
 
 void Client::connect(Address address, bool is_local_server)
@@ -641,19 +651,12 @@ void Client::step(float dtime)
 		}
 	}
 
+	// Write changes to the mod storage
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-		int n = 0;
-		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-			if (it->second->isModified()) {
-				it->second->save(getModStoragePath());
-				n++;
-			}
-		}
-		if (n > 0)
-			infostream << "Saved " << n << " modified mod storages." << std::endl;
+		m_mod_storage_database->endSave();
+		m_mod_storage_database->beginSave();
 	}
 
 	// Write server map
@@ -1960,16 +1963,8 @@ void Client::unregisterModStorage(const std::string &name)
 {
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
 		m_mod_storages.find(name);
-	if (it != m_mod_storages.end()) {
-		// Save unconditionaly on unregistration
-		it->second->save(getModStoragePath());
+	if (it != m_mod_storages.end())
 		m_mod_storages.erase(name);
-	}
-}
-
-std::string Client::getModStoragePath() const
-{
-	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
 }
 
 /*
