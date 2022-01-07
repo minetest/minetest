@@ -53,11 +53,13 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 	readSettings();
 
 	const char *settings[] = {
-		"font_size", "font_bold", "font_italic", "font_shadow", "font_shadow_alpha",
-		"font_size_divisible_by",
-		"font_path", "font_path_bold", "font_path_italic", "font_path_bolditalic",
+		"font_size", "font_bold", "font_italic", "font_size_divisible_by",
+		"mono_font_size", "mono_font_size_divisible_by",
+		"font_shadow", "font_shadow_alpha",
+		"font_path", "font_path_bold", "font_path_italic", "font_path_bold_italic",
+		"mono_font_path", "mono_font_path_bold", "mono_font_path_italic",
+		"mono_font_path_bold_italic",
 		"fallback_font_path",
-		"mono_font_path", "mono_font_size", "mono_font_size_divisible_by",
 		"screen_dpi", "gui_scaling",
 	};
 

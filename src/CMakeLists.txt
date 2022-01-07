@@ -122,10 +122,8 @@ if(BUILD_CLIENT)
 	endif()
 endif()
 
-set(USE_FREETYPE FALSE)
 if(BUILD_CLIENT)
 	find_package(Freetype REQUIRED)
-	set(USE_FREETYPE TRUE)
 endif()
 
 option(ENABLE_CURSES "Enable ncurses console" TRUE)
@@ -489,13 +487,11 @@ include_directories(
 	${PROJECT_SOURCE_DIR}
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
-	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
 )
 
@@ -503,8 +499,12 @@ if(USE_GETTEXT)
 	include_directories(${GETTEXT_INCLUDE_DIR})
 endif()
 
-if(USE_FREETYPE)
-	include_directories(${FREETYPE_INCLUDE_DIRS})
+if(BUILD_CLIENT)
+	include_directories(
+		${FREETYPE_INCLUDE_DIRS}
+		${SOUND_INCLUDE_DIRS}
+		${X11_INCLUDE_DIR}
+	)
 endif()
 
 if(USE_CURL)
@@ -533,6 +533,7 @@ if(BUILD_CLIENT)
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_BIT_LIBRARY}
+		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
 	)
 	if(NOT USE_LUAJIT)
@@ -567,17 +568,11 @@ if(BUILD_CLIENT)
 			${CURL_LIBRARY}
 		)
 	endif()
-	if(USE_FREETYPE)
-		if(FREETYPE_PKGCONFIG_FOUND)
-			set_target_properties(${PROJECT_NAME}
-				PROPERTIES
-				COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
-			)
-		endif()
-		target_link_libraries(
-			${PROJECT_NAME}
-			${FREETYPE_LIBRARY}
-		)
+	if(FREETYPE_PKGCONFIG_FOUND)
+		set_target_properties(${PROJECT_NAME}
+			PROPERTIES
+			COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
+	)
 	endif()
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
