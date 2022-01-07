@@ -1423,7 +1423,7 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 		( (u32)(c.zoom  & 1) << 9)
 	;
 
-
+	lua_pushinteger(L, keypress_bits);
 	return 1;
 }
 
