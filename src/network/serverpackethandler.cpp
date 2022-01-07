@@ -507,7 +507,6 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
 
-	player->keyPressed = keyPressed;
 	player->control.unpackKeysPressed(keyPressed);
 
 	if (playersao->checkMovementCheat()) {

@@ -1096,10 +1096,8 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (m_autojump)
 		return;
 
-	bool control_forward = keyPressed & (1 << 0);
-
 	bool could_autojump =
-		m_can_jump && !control.jump && !control.sneak && control_forward;
+		m_can_jump && !control.jump && !control.sneak && control.isMoving();
 
 	if (!could_autojump)
 		return;

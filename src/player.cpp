@@ -160,6 +160,8 @@ void Player::clearHud()
 	}
 }
 
+#ifndef SERVER
+
 u32 PlayerControl::getKeysPressed() const
 {
 	u32 keypress_bits =
@@ -177,7 +179,7 @@ u32 PlayerControl::getKeysPressed() const
 		keypress_bits |= direction_keys;
 	}
 	// Otherwise set direction keys based on joystick movement (for mod compatibility)
-	else if (movement_speed > 0.001f)
+	else if (isMoving())
 	{
 		float abs_d;
 
@@ -203,10 +205,11 @@ u32 PlayerControl::getKeysPressed() const
 	return keypress_bits;
 }
 
+#endif
+
 void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 {
-	// It would be possible to unpack the direction keys from the bits
-	// but this is handeled differently.
+	direction_keys = keypress_bits & 0xf;
 	jump  = keypress_bits & (1 << 4);
 	aux1  = keypress_bits & (1 << 5);
 	sneak = keypress_bits & (1 << 6);

@@ -2516,7 +2516,6 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 #endif
 
 	client->setPlayerControl(control);
-	player->keyPressed = control.getKeysPressed();
 
 	//tt.stop();
 }

@@ -73,22 +73,25 @@ struct PlayerControl
 		movement_direction = a_movement_direction;
 	}
 
+#ifndef SERVER
 	// For client use
 	u32 getKeysPressed() const;
+	inline bool isMoving() const { return movement_speed > 0.001f; }
+#endif
 
 	// For server use
 	void unpackKeysPressed(u32 keypress_bits);
 
+	u8 direction_keys = 0;
 	bool jump = false;
 	bool aux1 = false;
 	bool sneak = false;
 	bool zoom = false;
 	bool dig = false;
 	bool place = false;
+	// Note: These four are NOT available on the server
 	float pitch = 0.0f;
 	float yaw = 0.0f;
-	// Note: These three are NOT available on the server
-	u8 direction_keys = 0;
 	float movement_speed = 0.0f;
 	float movement_direction = 0.0f;
 };
@@ -196,8 +199,6 @@ public:
 	{
 		return m_fov_override_spec;
 	}
-
-	u32 keyPressed = 0;
 
 	HudElement* getHud(u32 id);
 	u32         addHud(HudElement* hud);
