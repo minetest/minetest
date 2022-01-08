@@ -886,10 +886,6 @@ tooltip_show_delay (Tooltip delay) int 400
 #    Append item name to tooltip.
 tooltip_append_itemname (Append item name) bool false
 
-#    Whether FreeType fonts are used, requires FreeType support to be compiled in.
-#    If disabled, bitmap and XML vectors fonts are used instead.
-freetype (FreeType fonts) bool true
-
 font_bold (Font bold by default) bool false
 
 font_italic (Font italic by default) bool false
@@ -909,9 +905,7 @@ font_size (Font size) int 16 1
 #    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
 font_size_divisible_by (Font size divisible by) int 1 1
 
-#    Path to the default font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path to the default font. Must be a TrueType font.
 #    The fallback font will be used if the font cannot be loaded.
 font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
 
@@ -928,9 +922,7 @@ mono_font_size (Monospace font size) int 16 1
 #    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
 mono_font_size_divisible_by (Monospace font size divisible by) int 1 1
 
-#    Path to the monospace font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path to the monospace font. Must be a TrueType font.
 #    This font is used for e.g. the console and profiler screen.
 mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
 
@@ -938,9 +930,7 @@ mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Bold.ttf
 mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Italic.ttf
 mono_font_path_bold_italic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
 
-#    Path of the fallback font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path of the fallback font. Must be a TrueType font.
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 

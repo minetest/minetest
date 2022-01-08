@@ -150,29 +150,6 @@ jobs:
         run: |
           ./bin/minetestserver --run-unittests
 
-  # Build without freetype (client-only)
-  clang_9_no_freetype:
-    name: "clang_9 (FREETYPE=0)"
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps clang-9
-
-      - name: Build
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: clang-9
-          CXX: clang++-9
-          CMAKE_FLAGS: "-DENABLE_FREETYPE=0 -DBUILD_SERVER=0"
-
-      - name: Test
-        run: |
-          ./bin/minetest --run-unittests
-
   docker:
     name: "Docker image"
     runs-on: ubuntu-18.04
