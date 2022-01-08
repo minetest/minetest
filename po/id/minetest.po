@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-12-13 00:52+0000\n"
-"Last-Translator: Linerly <linerly@protonmail.com>\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1060,7 +1061,7 @@ msgstr "Garis Bentuk Nodus"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr "Tidak ada"
+msgstr "Tidak Ada"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1286,7 +1287,7 @@ msgstr "Tidak bisa menampilkan batasan blok (butuh hak 'basic_debug')"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Ganti kata sandi"
+msgstr "Ganti Kata Sandi"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1664,7 +1665,7 @@ msgstr "Execute"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "Help"
+msgstr "Bantuan"
 
 #: src/client/keycode.cpp
 msgid "Home"
