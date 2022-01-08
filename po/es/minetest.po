@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-10-06 14:41+0000\n"
-"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
+"PO-Revision-Date: 2022-01-10 02:53+0000\n"
+"Last-Translator: Minetest-j45 <janscheresmonesma@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -656,7 +656,7 @@ msgstr "Escala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "Buscar"
+msgstr "Búsqueda"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -1088,7 +1088,7 @@ msgstr "Pantalla:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr "Configuración"
+msgstr "Ajustes"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
@@ -1678,7 +1678,7 @@ msgstr "Ejecutar"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "Ayuda"
+msgstr "Ayudar"
 
 #: src/client/keycode.cpp
 msgid "Home"
