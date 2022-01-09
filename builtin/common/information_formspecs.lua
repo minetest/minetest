@@ -1,6 +1,7 @@
 local COLOR_BLUE = "#7AF"
 local COLOR_GREEN = "#7F7"
 local COLOR_GRAY = "#BBB"
+local COLOR_DARK_GREEN = "#25C191"
 
 local LIST_FORMSPEC = [[
 		size[13,6.5]
@@ -18,6 +19,14 @@ local LIST_FORMSPEC_DESCRIPTION = [[
 		box[0,5.5;12.8,1.5;#000]
 		textarea[0.3,5.5;13.05,1.9;;;%s]
 		button_exit[5,7;3,1;quit;%s]
+	]]
+
+local LIST_FORMSPEC_MODSLIST = [[
+		size[6,8]
+		label[0,-0.1;%s]
+		tablecolumns[color;tree;text]
+		table[0,0.5;6,7;modslist;%s;0]
+		button_exit[1.5,7.5;3,1;quit;%s]
 	]]
 
 local F = core.formspec_escape
@@ -107,6 +116,98 @@ local function build_privs_formspec(name)
 			table.concat(rows, ","),
 			F(S("Close"))
 		)
+end
+
+
+-- Checks whether the mod with the given name is a separate mod or a part of a modpack
+local function is_mod_sep_or_part_of_mp(modname)
+	local modpath = core.get_modpath(modname)
+	local find_ptn = "[^" .. DIR_DELIM .. "]*.$"
+	local modpart = modpath:match(find_ptn)
+	local mp_part = modpath:sub(1, modpath:len()-modpart:len()-1):match(find_ptn)
+
+	if mp_part ~= "mods" then   -- this is inside of the modpack!
+		return mp_part, modpart
+	else                        -- this is a just separate mod!
+		return modpart
+	end
+end
+
+
+-- Returns a list with the modpack`s mods
+local function get_modpack_mods(mp_name)
+	local modnames = core.get_modnames()
+
+	local modlist = {}
+	for i, mname in ipairs(modnames) do
+		local mpath = core.get_modpath(mname)
+		if mpath:match(DIR_DELIM .. mp_name .. DIR_DELIM) then
+			table.insert(modlist, mname)
+		end
+	end
+
+	return modlist
+end
+
+
+-- MODS FORMSPEC
+
+local mods_formspec_cache = ""
+
+function build_mods_formspec()
+	if mods_formspec_cache:len() > 0 then
+		return mods_formspec_cache
+	end
+
+	local modslist = core.get_modnames()
+	local mps_and_smods = {}
+
+	local rows = {}
+	rows[1] = "#FFF,0," .. F(S("Mod or Modpack Name"))
+
+	local function find_modpack(mp_name)
+		for i, t in ipairs(mps_and_smods) do
+			if t[1] == mp_name and t[2] == "modpack" then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	for i = 1, #modslist do
+		local mp, mod = is_mod_sep_or_part_of_mp(modslist[i])
+
+		if mod then
+			if not find_modpack(mp) then
+				mps_and_smods[#mps_and_smods+1] = {mp, "modpack"}
+			end
+		else
+			mps_and_smods[#mps_and_smods+1] = {mp, "separate_mod"}
+		end
+	end
+
+	table.sort(mps_and_smods, function(e1, e2) return e1[1] < e2[1] end)
+	for j = 1, #mps_and_smods do
+		if mps_and_smods[j][2] == "modpack" then
+			rows[#rows+1] = ("%s, 0, %s"):format(COLOR_DARK_GREEN, mps_and_smods[j][1])
+			for _, mname in ipairs(get_modpack_mods(mps_and_smods[j][1])) do
+				rows[#rows+1] = ("%s, 1, %s"):format(COLOR_GREEN, mname)
+			end
+		else
+			rows[#rows+1] = ("%s, 0, %s"):format(COLOR_GREEN, mps_and_smods[j][1])
+		end
+	end
+
+	local mods_formspec_s = LIST_FORMSPEC_MODSLIST:format(
+		F(S("List of installed mods:")),
+		table.concat(rows, ","),
+		F(S("Close"))
+	)
+
+	mods_formspec_cache = mods_formspec_s
+
+	return mods_formspec_s
 end
 
 
