@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2022-01-09 15:58+0000\n"
-"Last-Translator: AFCMS <afcm.contact@gmail.com>\n"
+"PO-Revision-Date: 2022-01-09 17:50+0000\n"
+"Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -342,9 +342,8 @@ msgid "Uninstall"
 msgstr "Désinstaller"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Update"
-msgstr "Mise à jour"
+msgstr "Mettre à jour"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
@@ -2279,7 +2278,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr "Bruit 3D qui détermine le nombre de donjons par mapchunk."
+msgstr "Bruit 3D qui détermine le nombre de donjons par tranche de carte."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2354,7 +2353,7 @@ msgstr "intervalle de gestion des blocs actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr "Portée des mapblocks actifs"
+msgstr "Portée des blocs actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
@@ -2502,7 +2501,7 @@ msgstr ""
 "terre).\n"
 "Une valeur supérieure à « max_block_send_distance » désactive cette "
 "optimisation.\n"
-"Établie en mapblocks (16 nœuds)."
+"Établie en blocs de carte (16 nœuds)."
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
@@ -2729,7 +2728,7 @@ msgstr "Liens web de tchat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr "Taille des chunks"
+msgstr "Taille des tranches"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -2846,8 +2845,8 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Niveau de compression à utiliser lors de la sauvegarde des mapblocks sur le "
-"disque.\n"
+"Niveau de compression à utiliser lors de la sauvegarde des blocs de carte "
+"sur le disque.\n"
 "-1 - utilise le niveau de compression par défaut\n"
 "0 - compression minimale, le plus rapide\n"
 "9 - meilleure compression, le plus lent"
@@ -2859,7 +2858,8 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Niveau de compression à utiliser lors de l'envoi des mapblocks au client.\n"
+"Niveau de compression à utiliser lors de l'envoi des blocs de carte au "
+"client.\n"
 "-1 - utilise le niveau de compression par défaut\n"
 "0 - compression minimale, le plus rapide\n"
 "9 - meilleure compression, le plus lent"
@@ -3166,7 +3166,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr "Désynchroniser les textures animées par mapblock"
+msgstr "Désynchroniser les animations de blocs"
 
 #: src/settings_translation_file.cpp
 msgid "Dig key"
@@ -3686,14 +3686,14 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Distance maximale de génération des mapblocks (16^3 blocs) depuis la "
-"position du client."
+"Distance maximale de génération des blocs depuis la position du client, "
+"établie en blocs de carte (16^3 blocs)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Distance maximale d'envoi des mapblocks aux clients, établie en mapblocks "
+"Distance maximale d'envoi des blocs aux clients, établie en blocs de carte "
 "(16^3 blocs)."
 
 #: src/settings_translation_file.cpp
@@ -3705,7 +3705,7 @@ msgid ""
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
 "Distance maximale à laquelle les clients ont connaissance des objets, "
-"établie en mapblocks (16 nœuds).\n"
+"établie en blocs de carte (16 nœuds).\n"
 "\n"
 "Définir cela plus grand que « active_block_range », ainsi le serveur va "
 "maintenir les objets actifs jusqu’à cette distance dans la direction où un "
@@ -3755,7 +3755,7 @@ msgid ""
 "Controls the contrast of the highest light levels."
 msgstr ""
 "Gradient de la courbe de lumière au niveau de lumière maximale.\n"
-"Contrôle le contraste de la lumière aux niveaux d'éclairage les plus élevés."
+"Contrôle le contraste aux niveaux d'éclairage les plus élevés."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3763,7 +3763,7 @@ msgid ""
 "Controls the contrast of the lowest light levels."
 msgstr ""
 "Gradient de la courbe de lumière au niveau de lumière minimale.\n"
-"Contrôle le contraste de la lumière aux niveaux d'éclairage les plus bas."
+"Contrôle le contraste aux niveaux d'éclairage les plus bas."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -3817,7 +3817,7 @@ msgid ""
 msgstr ""
 "Auto-instrumentaliser le profileur :\n"
 "* Instrumentalise une fonction vide.\n"
-"La surcharge sera évaluée. (l'auto-instrumentalisation ajoute 1 appel de "
+"La surcharge est évaluée (l'auto-instrumentalisation ajoute 1 appel de "
 "fonction à chaque fois).\n"
 "* Instrumentalise l’échantillonneur utilisé pour mettre à jour les "
 "statistiques."
@@ -4053,10 +4053,9 @@ msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Délai maximal jusqu'où le serveur va attendre avant de purger les mapblocks "
-"inactifs.\n"
-"Une valeur plus grande est plus confortable, mais utilise davantage de "
-"mémoire."
+"Combien de temps le serveur attendra avant de décharger les blocs de carte "
+"inutilisés.\n"
+"Une valeur plus élevée est plus fluide, mais utilise plus de RAM."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4087,9 +4086,9 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Si le nombre d'images par seconde (FPS) veut aller au-delà de cette valeur, "
-"il est limité\n"
-"pour ne pas gaspiller inutilement les ressources du processeur."
+"Si les FPS (nombre d'images par seconde) sont supérieurs à cette valeur, "
+"limitez-les en les mettant en sommeil pour ne pas gaspiller la puissance du "
+"CPU sans aucun bénéfice."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4174,7 +4173,8 @@ msgid ""
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Si activé, vous pourrez placer des blocs à la position où vous êtes.\n"
-"C'est utile pour travailler avec des modèles nodebox dans des zones exiguës."
+"C'est utile pour travailler avec des modèles « nodebox » dans des zones "
+"exiguës."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5266,11 +5266,11 @@ msgstr "Centre d'amplification de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost spread"
-msgstr "Étalement du boost de la courbe de lumière"
+msgstr "Étalement de l'amplification de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve gamma"
-msgstr "Courbe de lumière gamma"
+msgstr "Gamma de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve high gradient"
@@ -5288,7 +5288,8 @@ msgid ""
 msgstr ""
 "Limite du générateur de terrain, en nœuds, dans les 6 directions à partir de "
 "(0,0,0).\n"
-"Seules les tranches totalement comprises dans cette limite sont générées.\n"
+"Seules les tranches de la carte totalement comprises dans cette limite sont "
+"générées.\n"
 "Valeur différente pour chaque monde."
 
 #: src/settings_translation_file.cpp
@@ -5468,19 +5469,19 @@ msgstr "Images de mise à jour des ombres de la carte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr "Limite des mapblocks"
+msgstr "Limite des blocs de carte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
-msgstr "Délai de génération des maillages de mapblocks"
+msgstr "Délai de génération des maillages de blocs de carte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "Taille du cache de mapblocks en Mo du générateur de maillage"
+msgstr "Taille du cache de blocs de carte en Mo du générateur de maillage"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr "Délai d'interruption du déchargement des mapblocks"
+msgstr "Délai d'interruption du déchargement de blocs de carte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
@@ -5548,11 +5549,11 @@ msgstr "Nom du générateur de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr "Distance maximale de génération des mapblocks"
+msgstr "Distance maximale de génération de blocs"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr "Distance maximale d'envoi des mapblocks"
+msgstr "Distance maximale d'envoi de blocs"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
@@ -5560,7 +5561,7 @@ msgstr "Maximum de liquides traités par étape de serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr "Maximum d'extra-mapblocks par « clearobjects »"
+msgstr "Blocs supplémentaires maximum de « clearobjects »"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -5582,7 +5583,7 @@ msgstr "Distance maximale pour le rendu des ombres."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr "Mapblocks maximum chargés de force"
+msgstr "Blocs maximum chargés de force"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
@@ -5591,11 +5592,12 @@ msgstr "Largeur maximale de la barre d'inventaire"
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
 msgstr ""
-"Limite maximale pour le nombre aléatoire de grandes grottes par mapchunk."
+"Limite maximale du nombre aléatoire de grandes grottes par tranche de carte."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
-msgstr "Limite maximale du nombre aléatoire de petites grottes par mapchunk."
+msgstr ""
+"Limite maximale du nombre aléatoire de petites grottes par tranche de carte."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5617,24 +5619,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
-msgstr "Nombre maximal de mapblocks qui peuvent être listés pour chargement."
+msgstr ""
+"Nombre maximal de blocs qui peuvent être mis en file d'attente pour "
+"chargement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "This limit is enforced per player."
 msgstr ""
-"Nombre maximal de mapblocks à lister qui doivent être générés.\n"
-"Laisser ce champ vide pour un montant approprié défini automatiquement."
+"Nombre maximal de blocs à mettre en file d'attente qui doivent être générés."
+"\n"
+"Cette limite est appliquée par joueur."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
 msgstr ""
-"Nombre maximal de mapblocks à lister qui doivent être générés depuis un "
-"fichier.\n"
-"Laisser ce champ vide pour un montant approprié défini automatiquement."
+"Nombre maximal de blocs à mettre en file d'attente qui doivent être chargés "
+"depuis un fichier.\n"
+"Cette limite est appliquée par joueur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5648,14 +5653,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr "Nombre maximal de mapblocks chargés de force."
+msgstr "Nombre maximal de blocs de carte chargés de force."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"Nombre maximal de mapblocks gardés dans la mémoire du client.\n"
+"Nombre maximal de blocs de carte pour le client à garder en mémoire.\n"
 "Définir à -1 pour un montant illimité."
 
 #: src/settings_translation_file.cpp
@@ -5678,7 +5683,7 @@ msgstr "Nombre maximal de message récent à afficher"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr "Nombre maximal d'objets sauvegardés dans un mapblock (16^3 blocs)."
+msgstr "Nombre maximal d'objets sauvegardés dans un bloc de carte (16^3 blocs)."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
@@ -5767,11 +5772,13 @@ msgstr "Hauteur de balayage de la mini-carte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
-msgstr "Minimum pour le nombre de grandes grottes par mapchunk tiré au hasard."
+msgstr ""
+"Limite minimale du nombre aléatoire de grandes grottes par tranche de carte."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of small caves per mapchunk."
-msgstr "Minimum pour le nombre de petites grottes par mapchunk tiré au hasard."
+msgstr ""
+"Limite minimale du nombre aléatoire de petites grottes par tranche de carte."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size"
@@ -6328,7 +6335,7 @@ msgstr "Sauvegarde le monde du serveur sur le disque dur du client."
 #: src/settings_translation_file.cpp
 msgid "Save window size automatically when modified."
 msgstr ""
-"Sauvegarder automatiquement la taille de la fenêtre quand elle est modifiée."
+"Sauvegarde automatiquement la taille de la fenêtre quand elle est modifiée."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -6657,8 +6664,8 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
-"Taille des mapchunks générés à la création de terrain, établie en mapblocks ("
-"16 nœuds).\n"
+"Taille des tranches de carte générés à la création de terrain, établie en "
+"blocs de carte (16 nœuds).\n"
 "ATTENTION ! : Il n’y a aucun avantage, et plusieurs dangers, à augmenter "
 "cette valeur au-dessus de 5.\n"
 "Réduire cette valeur augmente la densité de cavernes et de donjons.\n"
@@ -6671,7 +6678,7 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
-"Taille du cache de mapblocks du générateur de maillage. Augmenter ceci "
+"Taille du cache de blocs de carte du générateur de maillage. Augmenter ceci "
 "augmente le % d'interception du cache et réduit la copie de données dans le "
 "fil principal, réduisant les tremblements."
 
@@ -7021,7 +7028,7 @@ msgid ""
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "Le rayon du volume de blocs autour de chaque joueur soumis au bloc actif, "
-"établi en mapblocks (16 nœuds).\n"
+"établi en blocs de carte (16 nœuds).\n"
 "Dans les blocs actifs, les objets sont chargés et les « ABMs » sont exécutés."
 "\n"
 "C'est également la distance minimale dans laquelle les objets actifs (mobs) "
@@ -7147,8 +7154,8 @@ msgstr "Vitesse du temps"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
-"Délai pendant lequel le client supprime les données de la carte de sa "
-"mémoire."
+"Délai d'interruption pour le client pour supprimer les données de carte "
+"inutilisées de la mémoire."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7227,7 +7234,7 @@ msgstr "Distance de transfert du joueur illimitée"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr "Purger les données de serveur inutiles"
+msgstr "Décharger les données de serveur inutilisées"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7453,11 +7460,11 @@ msgstr "Liquides ondulants"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wave height"
-msgstr "Hauteur des vagues"
+msgstr "Hauteur des vagues des liquides ondulants"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wave speed"
-msgstr "Vitesse de mouvement des liquides"
+msgstr "Vitesse de mouvement des liquides ondulants"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wavelength"
@@ -7537,7 +7544,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr "Détermine la désynchronisation des textures animées par mapblock."
+msgstr ""
+"Détermine la désynchronisation des animations de texture de nœud par bloc de "
+"carte."
 
 #: src/settings_translation_file.cpp
 msgid ""
