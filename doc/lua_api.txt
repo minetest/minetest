@@ -6431,26 +6431,6 @@ Lua back to the engine.
 Doing so is much less error-prone and you will never need to wonder if the
 object you are working with still exists.
 
-
-### Attachment
-
-It is possible to attach objects to other objects ('set_attach' method).
-
-When an object is attached, its position and rotation are set relatively to the parent's position and
-rotation. Note, the resulted child's rotation is a sum of its own, the parent's and relative rotations.
-
-'get_pos' and 'get_rotation' will always return the parent's values and can't be set directly.
-To change position or rotation call 'set_attach' again with the new values.
-
-**Note**: Just like model dimensions, the relative position in 'set_attach' must be multiplied by 10 to set it actually correctly.
-
-Example:
-'child:set_attach(parent, "", vector.multiply(vector.subtract(child:get_pos(), parent:get_pos()), 10))'.
-
-It is also possible to attach to a bone of the parent object (as defined in the model).
-After assignment a bone to an attached object, the child will follow movement and rotation of that bone.
-
-
 ### Methods
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
@@ -6503,13 +6483,22 @@ After assignment a bone to an attached object, the child will follow movement an
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
 * `set_attach(parent[, bone, position, rotation, forced_visible])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
-      Default `{x=0, y=0, z=0}`
-    * `forced_visible`: Boolean to control whether the attached entity
-       should appear in first person. Default `false`.
-    * This command may fail silently (do nothing) when it would result
+	* `bone`: string.
+		* This is a name of the parent's bone that is set with `set_bone_position`.
+		* After setting, the child will follow the movement and rotation of that bone.
+		* Default is "", the root bone.
+	* `position`: {x=num, y=num, z=num}.
+		* Relative to the parent's model space.
+		* Default is {x=0, y=0, z=0}.
+		* Note: Just like model dimensions, it should be multiplied by 10
+		  to set it actually proper.
+	* `rotation`: {x=num, y=num, z=num}.
+		* Rotation around each axis in degrees.
+		* Default is {x=0, y=0, z=0}.
+		* This rotation is added to a sum of rotations of the parent and the child.
+	* `forced_visible`: Boolean to control whether the attached entity
+	   should appear in first person. Default false.
+	* This command may fail silently (do nothing) when it would result
       in circular attachments.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible,
     or nil if it isn't attached.
