@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h" // for set_default_settings
-#include "mapgen/mapgen.h"   // for MapgenParams
+#include "map_settings_manager.h"
 #include "util/string.h"
 
 #ifndef SERVER
@@ -370,19 +370,12 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// Create map_meta.txt if does not already exist
 	std::string map_meta_path = final_path + DIR_DELIM + "map_meta.txt";
 	if (!fs::PathExists(map_meta_path)) {
-		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")"
-			      << std::endl;
-		std::ostringstream oss(std::ios_base::binary);
+		MapSettingsManager mgr(map_meta_path);
 
-		Settings conf;
-		MapgenParams params;
+		mgr.setMapSetting("seed", g_settings->get("fixed_map_seed"));
 
-		params.readParams(g_settings);
-		params.writeParams(&conf);
-		conf.writeLines(oss);
-		oss << "[end_of_params]\n";
-
-		fs::safeWriteToFile(map_meta_path, oss.str());
+		mgr.makeMapgenParams();
+		mgr.saveMapMeta();
 	}
 
 	// The Settings object is no longer needed for created worlds
