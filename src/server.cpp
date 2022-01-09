@@ -3534,8 +3534,22 @@ bool Server::dynamicAddMedia(std::string filepath,
 	std::unordered_set<session_t> delivered, waiting;
 	m_clients.lock();
 	for (auto &pair : m_clients.getClientList()) {
-		if (pair.second->getState() < CS_DefinitionsSent)
+		if (pair.second->getState() == CS_DefinitionsSent && !ephemeral) {
+			/*
+				If a client is in the DefinitionsSent state it is too late to
+				transfer the file via sendMediaAnnouncement() but at the same
+				time the client cannot accept a media push yet.
+				Short of artificially delaying the joining process there is no
+				way for the server to resolve this so we (currently) opt not to.
+			*/
+			warningstream << "The media \"" << filename << "\" (dynamic) could "
+				"not be delivered to " << pair.second->getName()
+				<< " due to a race condition." << std::endl;
 			continue;
+		}
+		if (pair.second->getState() < CS_Active)
+			continue;
+
 		const auto proto_ver = pair.second->net_proto_version;
 		if (proto_ver < 39)
 			continue;
