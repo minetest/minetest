@@ -482,7 +482,6 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	f32 yaw = (f32)f32yaw / 100.0f;
 	u32 keyPressed = 0;
 
-	// default behavior (in case an old client doesn't send these)
 	f32 fov = 0;
 	u8 wanted_range = 0;
 
@@ -508,13 +507,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
 
-	player->keyPressed = keyPressed;
-	player->control.jump  = (keyPressed & (0x1 << 4));
-	player->control.aux1  = (keyPressed & (0x1 << 5));
-	player->control.sneak = (keyPressed & (0x1 << 6));
-	player->control.dig   = (keyPressed & (0x1 << 7));
-	player->control.place = (keyPressed & (0x1 << 8));
-	player->control.zoom  = (keyPressed & (0x1 << 9));
+	player->control.unpackKeysPressed(keyPressed);
 
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks

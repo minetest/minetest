@@ -931,7 +931,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	v3f sf           = myplayer->getSpeed() * 100;
 	s32 pitch        = myplayer->getPitch() * 100;
 	s32 yaw          = myplayer->getYaw() * 100;
-	u32 keyPressed   = myplayer->keyPressed;
+	u32 keyPressed   = myplayer->control.getKeysPressed();
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov           = clientMap->getCameraFov() * 80;
 	u8 wanted_range  = MYMIN(255,
@@ -1287,22 +1287,24 @@ void Client::sendPlayerPos()
 	if (!player)
 		return;
 
-	ClientMap &map = m_env.getClientMap();
-	u8 camera_fov   = map.getCameraFov();
-	u8 wanted_range = map.getControl().wanted_range;
-
 	// Save bandwidth by only updating position when
 	// player is not dead and something changed
 
 	if (m_activeobjects_received && player->isDead())
 		return;
 
+	ClientMap &map = m_env.getClientMap();
+	u8 camera_fov   = map.getCameraFov();
+	u8 wanted_range = map.getControl().wanted_range;
+
+	u32 keyPressed = player->control.getKeysPressed();
+
 	if (
 			player->last_position     == player->getPosition() &&
 			player->last_speed        == player->getSpeed()    &&
 			player->last_pitch        == player->getPitch()    &&
 			player->last_yaw          == player->getYaw()      &&
-			player->last_keyPressed   == player->keyPressed    &&
+			player->last_keyPressed   == keyPressed            &&
 			player->last_camera_fov   == camera_fov            &&
 			player->last_wanted_range == wanted_range)
 		return;
@@ -1311,7 +1313,7 @@ void Client::sendPlayerPos()
 	player->last_speed        = player->getSpeed();
 	player->last_pitch        = player->getPitch();
 	player->last_yaw          = player->getYaw();
-	player->last_keyPressed   = player->keyPressed;
+	player->last_keyPressed   = keyPressed;
 	player->last_camera_fov   = camera_fov;
 	player->last_wanted_range = wanted_range;
 
