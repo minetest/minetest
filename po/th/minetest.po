@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-16 18:27+0200\n"
+"POT-Creation-Date: 2021-11-27 19:42+0100\n"
 "PO-Revision-Date: 2020-07-08 08:41+0000\n"
 "Last-Translator: TZTarzan <khunsatyptiphan@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -63,11 +63,6 @@ msgstr "เกิดใหม่"
 msgid "You died"
 msgstr "คุณตายแล้ว"
 
-#: builtin/client/death_formspec.lua
-#, fuzzy
-msgid "You died."
-msgstr "คุณตายแล้ว"
-
 #: builtin/common/chatcommands.lua
 #, fuzzy
 msgid "Available commands:"
@@ -97,6 +92,10 @@ msgstr ""
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
+msgstr ""
+
+#: builtin/fstk/ui.lua
+msgid "<none available>"
 msgstr ""
 
 #: builtin/fstk/ui.lua
@@ -308,6 +307,11 @@ msgstr "ติดตั้ง"
 #, fuzzy
 msgid "Install missing dependencies"
 msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้:"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Install: Unsupported file type or broken archive"
+msgstr "ติดตั้ง: ชนิดแฟ้มที่ไม่สนับสนุน \"$1\" หรือเกิดการเสียหาย"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -643,7 +647,8 @@ msgid "Offset"
 msgstr "ค่าชดเชย"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistance"
+#, fuzzy
+msgid "Persistence"
 msgstr "ความมีอยู่"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -752,14 +757,6 @@ msgstr "ติดตั้ง Mod: ไม่สามารถค้นหาช
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr "ติดตั้ง Mod: ไม่สามารถค้นหาชื่อของโฟลเดอร์ที่เหมาะสมสำหรับ modpack $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr "ติดตั้ง: ชนิดแฟ้มที่ไม่สนับสนุน \"$1\" หรือเกิดการเสียหาย"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: file: \"$1\""
-msgstr "ติดตั้ง: ไฟล์:  \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
@@ -1137,10 +1134,6 @@ msgstr "โคมไฟเรียบ"
 msgid "Texturing:"
 msgstr "พื้นผิว:"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "การเปิดใช้งานต้องมีโปรแกรมควบคุม OpenGL ของ shaders ใช้."
-
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
 msgstr "การแมปโทน"
@@ -1175,7 +1168,7 @@ msgstr "โบกโหนด"
 msgid "Waving Plants"
 msgstr "โบกไม้"
 
-#: src/client/client.cpp
+#: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
 msgstr "การเชื่อมต่อหมดเวลา"
 
@@ -1204,7 +1197,8 @@ msgid "Connection error (timed out?)"
 msgstr "ข้อผิดพลาดการเชื่อมต่อ (หมดเวลา?)"
 
 #: src/client/clientlauncher.cpp
-msgid "Could not find or load game \""
+#, fuzzy
+msgid "Could not find or load game: "
 msgstr "ไม่สามารถค้นหา หรือโหลดเกม"
 
 #: src/client/clientlauncher.cpp
@@ -1279,6 +1273,16 @@ msgid "- Server Name: "
 msgstr "-ชื่อเซิร์ฟเวอร์: "
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "A serialization error occurred:"
+msgstr "เกิดข้อผิดพลาดขึ้น:"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Access denied. Reason: %s"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Automatic forward disabled"
 msgstr "ปิดใช้งานการส่งต่ออัตโนมัติ"
 
@@ -1287,12 +1291,32 @@ msgid "Automatic forward enabled"
 msgstr "เปิดใช้งานการส่งต่ออัตโนมัติ"
 
 #: src/client/game.cpp
+msgid "Block bounds hidden"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for current block"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for nearby blocks"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Camera update disabled"
 msgstr "ปิดใช้งานการอัปเดตกล้องแล้ว"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
 msgstr "เปิดใช้งานการอัปเดตกล้องแล้ว"
+
+#: src/client/game.cpp
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1307,12 +1331,21 @@ msgid "Cinematic mode enabled"
 msgstr "เปิดใช้งานโหมดภาพยนตร์"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Client disconnected"
+msgstr "ลูกค้า modding"
+
+#: src/client/game.cpp
 msgid "Client side scripting is disabled"
 msgstr "การเขียนสคริปต์ฝั่งไคลเอ็นต์ถูกปิดใช้งาน"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
 msgstr "เชื่อมต่อกับเซิร์ฟเวอร์"
+
+#: src/client/game.cpp
+msgid "Connection failed for unknown reason"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1350,6 +1383,11 @@ msgstr ""
 "- เมาส์ขวา: สถานที่ / การใช้งาน\n"
 "- ล้อเมาส์: เลือกรายการ\n"
 "-%s9: แชท\n"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Couldn't resolve address: %s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1558,6 +1596,21 @@ msgid "Sound unmuted"
 msgstr "เสียงไม่ปิดเสียง"
 
 #: src/client/game.cpp
+#, c-format
+msgid "The server is probably running a different version of %s."
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to connect to %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Unable to listen on %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp src/unittest/test_gettext.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "ช่วงการดูเปลี่ยนเป็น %d1"
@@ -1916,6 +1969,15 @@ msgstr "แผนที่ย่อในโหมด surface, ซูม x1"
 msgid "Minimap in texture mode"
 msgstr "ขนาดพื้นผิวขั้นต่ำ"
 
+#: src/gui/guiChatConsole.cpp
+#, fuzzy
+msgid "Failed to open webpage"
+msgstr "ไม่สามารถดาวน์โหลด $1"
+
+#: src/gui/guiChatConsole.cpp
+msgid "Opening webpage"
+msgstr ""
+
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "รหัสผ่านไม่ตรงกับ!"
@@ -1924,7 +1986,7 @@ msgstr "รหัสผ่านไม่ตรงกับ!"
 msgid "Register and Join"
 msgstr "ลงทะเบียน และเข้าร่วม"
 
-#: src/gui/guiConfirmRegistration.cpp
+#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
 #, fuzzy, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2118,7 +2180,8 @@ msgid "Muted"
 msgstr "เสียง"
 
 #: src/gui/guiVolumeChange.cpp
-msgid "Sound Volume: "
+#, fuzzy, c-format
+msgid "Sound Volume: %d%%"
 msgstr "ระดับเสียง "
 
 #. ~ Imperative, as in "Enter/type in text".
@@ -2347,6 +2410,10 @@ msgid ""
 msgstr ""
 "ปรับการกำหนดค่า dpi ให้กับหน้าจอของคุณ (ไม่ใช่ X11 / Android เท่านั้น) เช่น สำหรับหน้าจอ "
 "4k."
+
+#: src/settings_translation_file.cpp
+msgid "Adjust the detected display density, used for scaling UI elements."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2629,6 +2696,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Chat commands"
+msgstr "คำสั่ง"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Chat font size"
 msgstr "ขนาดตัวอักษร"
 
@@ -2663,8 +2735,9 @@ msgid "Chat toggle key"
 msgstr "ปุ่มสลับการแชท"
 
 #: src/settings_translation_file.cpp
-msgid "Chatcommands"
-msgstr ""
+#, fuzzy
+msgid "Chat weblinks"
+msgstr "สนทนาแสดง"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2681,6 +2754,12 @@ msgstr "ปุ่มโหมดโรงภาพยนตร์"
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
 msgstr "ทำความสะอาดพื้นผิวโปร่งใส"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
+"output."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2757,6 +2836,22 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr "คีย์คำสั่ง"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Compression level to use when saving mapblocks to disk.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Compression level to use when sending mapblocks to the client.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2852,7 +2947,7 @@ msgstr "Crosshair อัลฟา"
 #, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
-"Also controls the object crosshair color"
+"This also applies to the object crosshair."
 msgstr "Crosshair อัลฟา (ความทึบแสงระหว่าง 0 ถึง 255)."
 
 #: src/settings_translation_file.cpp
@@ -2932,8 +3027,8 @@ msgstr "เกมเริ่มต้น"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Define shadow filtering quality\n"
-"This simulates the soft shadows effect by applying a PCF or poisson disk\n"
+"Define shadow filtering quality.\n"
+"This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 
@@ -3055,6 +3150,10 @@ msgid "Disallow empty passwords"
 msgstr "ไม่อนุญาตรหัสผ่านที่ว่างเปล่า"
 
 #: src/settings_translation_file.cpp
+msgid "Display Density Scaling Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "ชื่อโดเมนของเซิร์ฟเวอร์ที่จะแสดงในรายการเซิร์ฟเวอร์."
 
@@ -3102,7 +3201,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enable colored shadows. \n"
+"Enable Poisson disk filtering.\n"
+"On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
+"filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 
@@ -3130,13 +3236,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
 msgstr "ช่วยให้ผู้เล่นได้รับความเสียหายและกำลังจะตาย."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable poisson disk filtering.\n"
-"On true uses poisson disk to make \"soft shadows\". Otherwise uses PCF "
-"filtering."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3560,7 +3659,7 @@ msgstr ""
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations."
+"and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4007,7 +4106,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Instrument chatcommands on registration."
+msgid "Instrument chat commands on registration."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4094,7 +4193,7 @@ msgstr "ช่วงเวลาการทำซ้ำปุ่มจอยส
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Joystick deadzone"
+msgid "Joystick dead zone"
 msgstr "ประเภทของจอยสติ๊ก"
 
 #: src/settings_translation_file.cpp
@@ -5154,7 +5253,7 @@ msgid "Map save interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Map update time"
+msgid "Map shadows update frames"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5461,7 +5560,8 @@ msgid "Mod channels"
 msgstr "ช่องทาง Mod"
 
 #: src/settings_translation_file.cpp
-msgid "Modifies the size of the hudbar elements."
+#, fuzzy
+msgid "Modifies the size of the HUD elements."
 msgstr "ปรับเปลี่ยนขนาดขององค์ประกอบ Hudbar."
 
 #: src/settings_translation_file.cpp
@@ -5599,7 +5699,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
-"This is a trade-off between sqlite transaction overhead and\n"
+"This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
 
@@ -5622,6 +5722,10 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr "เปิดเมนูหยุดชั่วคราวเมื่อโฟกัสของหน้าต่างหายไป ไม่หยุดถ้า formspec คือ เปิด."
+
+#: src/settings_translation_file.cpp
+msgid "Optional override for chat weblink color."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5772,9 +5876,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Prometheus listener address.\n"
-"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
-"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+"Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6082,24 +6186,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the shadow update time.\n"
-"Lower value means shadows and map updates faster, but it consume more "
-"resources.\n"
-"Minimun value 0.001 seconds max value 0.2 seconds"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the soft shadow radius size.\n"
-"Lower values mean sharper shadows bigger values softer.\n"
-"Minimun value 1.0 and max value 10.0"
+"Lower values mean sharper shadows, bigger values mean softer shadows.\n"
+"Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees\n"
+"Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
-"Minimun value 0.0 and max value 60.0"
+"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6208,7 +6304,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Show nametag backgrounds by default"
+msgid "Show name tag backgrounds by default"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6321,6 +6417,14 @@ msgid ""
 "Specifies the default stack size of nodes, items and tools.\n"
 "Note that mods or games may explicitly set a stack for certain (or all) "
 "items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Spread a complete update of shadow map over given amount of frames.\n"
+"Higher values might make shadows laggy, lower values\n"
+"will consume more resources.\n"
+"Minimum value: 1; maximum value: 16"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6437,7 +6541,7 @@ msgstr "เส้นทางพื้นผิว"
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
-"Bigger numbers create better shadowsbut it is also more expensive."
+"Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6462,7 +6566,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "The deadzone of the joystick"
+msgid "The dead zone of the joystick"
 msgstr "ตัวระบุของจอยสติ๊กที่จะใช้"
 
 #: src/settings_translation_file.cpp
@@ -6537,9 +6641,10 @@ msgstr ""
 "รองรับ shader ในขณะนี้"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
-"ingame view frustum around."
+"in-game view frustum around."
 msgstr ""
 "ความไวของแกนจอยสติ๊กสำหรับการเลื่อน\n"
 "มุมมอง ingame frustum รอบ ๆ."
@@ -6723,8 +6828,9 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr "ใช้การกรอง bilinear เมื่อปรับขนาดพื้นผิว"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mip mapping to scale textures. May slightly increase performance,\n"
+"Use mipmapping to scale textures. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
@@ -6921,6 +7027,11 @@ msgid "Waving plants"
 msgstr "โบกต้นไม้"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Weblink color"
+msgstr "สีของกล่องที่เลือก"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -6949,7 +7060,7 @@ msgid ""
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
 "interpolation to preserve crisp pixels. This sets the minimum texture size\n"
 "for the upscaled textures; higher values look sharper, but require more\n"
-"memory.  Powers of 2 are recommended. This setting is ONLY applies if\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
 "bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
@@ -6975,7 +7086,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether nametag backgrounds should be shown by default.\n"
+"Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
 
@@ -7114,24 +7225,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when saving mapblocks to disk.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"ZLib compression level to use when sending mapblocks to the client.\n"
-"-1 - Zlib's default compression level\n"
-"0 - no compresson, fastest\n"
-"9 - best compression, slowest\n"
-"(levels 1-3 use Zlib's \"fast\" method, 4-9 use the normal method)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7275,6 +7368,9 @@ msgstr ""
 #~ msgid "Generate normalmaps"
 #~ msgstr "สร้างแผนที่ปกติ"
 
+#~ msgid "Install: file: \"$1\""
+#~ msgstr "ติดตั้ง: ไฟล์:  \"$1\""
+
 #~ msgid "Lightness sharpness"
 #~ msgstr "ความคมชัดของแสง"
 
@@ -7383,6 +7479,9 @@ msgstr ""
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "แบบอักษรนี้จะใช้สำหรับบางภาษา"
 
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "การเปิดใช้งานต้องมีโปรแกรมควบคุม OpenGL ของ shaders ใช้."
+
 #~ msgid "Toggle Cinematic"
 #~ msgstr "สลับโรงภาพยนตร์"
 
@@ -7394,6 +7493,10 @@ msgstr ""
 
 #~ msgid "Yes"
 #~ msgstr "ใช่"
+
+#, fuzzy
+#~ msgid "You died."
+#~ msgstr "คุณตายแล้ว"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"

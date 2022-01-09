@@ -16,23 +16,25 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-mm_texture = {}
+mm_game_theme = {}
 
 --------------------------------------------------------------------------------
-function mm_texture.init()
-	mm_texture.defaulttexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
+function mm_game_theme.init()
+	mm_game_theme.defaulttexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
-	mm_texture.basetexturedir = mm_texture.defaulttexturedir
+	mm_game_theme.basetexturedir = mm_game_theme.defaulttexturedir
 
-	mm_texture.texturepack = core.settings:get("texture_path")
+	mm_game_theme.texturepack = core.settings:get("texture_path")
 
-	mm_texture.gameid = nil
+	mm_game_theme.gameid = nil
+
+	mm_game_theme.music_handle = nil
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.update(tab,gamedetails)
+function mm_game_theme.update(tab,gamedetails)
 	if tab ~= "singleplayer" then
-		mm_texture.reset()
+		mm_game_theme.reset()
 		return
 	end
 
@@ -40,50 +42,54 @@ function mm_texture.update(tab,gamedetails)
 		return
 	end
 
-	mm_texture.update_game(gamedetails)
+	mm_game_theme.update_game(gamedetails)
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.reset()
-	mm_texture.gameid = nil
+function mm_game_theme.reset()
+	mm_game_theme.gameid = nil
 	local have_bg      = false
-	local have_overlay = mm_texture.set_generic("overlay")
+	local have_overlay = mm_game_theme.set_generic("overlay")
 
 	if not have_overlay then
-		have_bg = mm_texture.set_generic("background")
+		have_bg = mm_game_theme.set_generic("background")
 	end
 
-	mm_texture.clear("header")
-	mm_texture.clear("footer")
+	mm_game_theme.clear("header")
+	mm_game_theme.clear("footer")
 	core.set_clouds(false)
 
-	mm_texture.set_generic("footer")
-	mm_texture.set_generic("header")
+	mm_game_theme.set_generic("footer")
+	mm_game_theme.set_generic("header")
 
 	if not have_bg then
 		if core.settings:get_bool("menu_clouds") then
 			core.set_clouds(true)
 		else
-			mm_texture.set_dirt_bg()
+			mm_game_theme.set_dirt_bg()
 		end
+	end
+
+	if mm_game_theme.music_handle ~= nil then
+		core.sound_stop(mm_game_theme.music_handle)
 	end
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.update_game(gamedetails)
-	if mm_texture.gameid == gamedetails.id then
+function mm_game_theme.update_game(gamedetails)
+	if mm_game_theme.gameid == gamedetails.id then
 		return
 	end
 
 	local have_bg      = false
-	local have_overlay = mm_texture.set_game("overlay",gamedetails)
+	local have_overlay = mm_game_theme.set_game("overlay",gamedetails)
 
 	if not have_overlay then
-		have_bg = mm_texture.set_game("background",gamedetails)
+		have_bg = mm_game_theme.set_game("background",gamedetails)
 	end
 
-	mm_texture.clear("header")
-	mm_texture.clear("footer")
+	mm_game_theme.clear("header")
+	mm_game_theme.clear("footer")
 	core.set_clouds(false)
 
 	if not have_bg then
@@ -91,34 +97,34 @@ function mm_texture.update_game(gamedetails)
 		if core.settings:get_bool("menu_clouds") then
 			core.set_clouds(true)
 		else
-			mm_texture.set_dirt_bg()
+			mm_game_theme.set_dirt_bg()
 		end
 	end
 
-	mm_texture.set_game("footer",gamedetails)
-	mm_texture.set_game("header",gamedetails)
+	mm_game_theme.set_game("footer",gamedetails)
+	mm_game_theme.set_game("header",gamedetails)
 
-	mm_texture.gameid = gamedetails.id
+	mm_game_theme.gameid = gamedetails.id
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.clear(identifier)
+function mm_game_theme.clear(identifier)
 	core.set_background(identifier,"")
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.set_generic(identifier)
+function mm_game_theme.set_generic(identifier)
 	--try texture pack first
-	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."menu_" ..
+	if mm_game_theme.texturepack ~= nil then
+		local path = mm_game_theme.texturepack .. DIR_DELIM .."menu_" ..
 										identifier .. ".png"
 		if core.set_background(identifier,path) then
 			return true
 		end
 	end
 
-	if mm_texture.defaulttexturedir ~= nil then
-		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
+	if mm_game_theme.defaulttexturedir ~= nil then
+		local path = mm_game_theme.defaulttexturedir .. DIR_DELIM .."menu_" ..
 										identifier .. ".png"
 		if core.set_background(identifier,path) then
 			return true
@@ -129,14 +135,16 @@ function mm_texture.set_generic(identifier)
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.set_game(identifier, gamedetails)
+function mm_game_theme.set_game(identifier, gamedetails)
 
 	if gamedetails == nil then
 		return false
 	end
 
-	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM ..
+	mm_game_theme.set_music(gamedetails)
+
+	if mm_game_theme.texturepack ~= nil then
+		local path = mm_game_theme.texturepack .. DIR_DELIM ..
 			gamedetails.id .. "_menu_" .. identifier .. ".png"
 		if core.set_background(identifier, path) then
 			return true
@@ -171,9 +179,10 @@ function mm_texture.set_game(identifier, gamedetails)
 	return false
 end
 
-function mm_texture.set_dirt_bg()
-	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."default_dirt.png"
+--------------------------------------------------------------------------------
+function mm_game_theme.set_dirt_bg()
+	if mm_game_theme.texturepack ~= nil then
+		local path = mm_game_theme.texturepack .. DIR_DELIM .."default_dirt.png"
 		if core.set_background("background", path, true, 128) then
 			return true
 		end
@@ -182,4 +191,13 @@ function mm_texture.set_dirt_bg()
 	-- Use universal fallback texture in textures/base/pack
 	local minimalpath = defaulttexturedir .. "menu_bg.png"
 	core.set_background("background", minimalpath, true, 128)
+end
+
+--------------------------------------------------------------------------------
+function mm_game_theme.set_music(gamedetails)
+	if mm_game_theme.music_handle ~= nil then
+		core.sound_stop(mm_game_theme.music_handle)
+	end
+	local music_path = gamedetails.path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme"
+	mm_game_theme.music_handle = core.sound_play(music_path, true)
 end

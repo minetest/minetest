@@ -41,6 +41,9 @@ private:
 	// http_fetch_async_get(handle)
 	static int l_http_fetch_async_get(lua_State *L);
 
+	// set_http_api_lua() [internal]
+	static int l_set_http_api_lua(lua_State *L);
+
 	// request_http_api()
 	static int l_request_http_api(lua_State *L);
 

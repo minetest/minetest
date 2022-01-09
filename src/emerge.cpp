@@ -633,12 +633,14 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 		m_server->setAsyncFatalError(e);
 	}
 
-	/*
-		Clear generate notifier events
-	*/
-	m_mapgen->gennotify.clearEvents();
-
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
+
+	/*
+		Clear mapgen state
+	*/
+	assert(!m_mapgen->generating);
+	m_mapgen->gennotify.clearEvents();
+	m_mapgen->vm = nullptr;
 
 	/*
 		Activate the block
@@ -654,19 +656,19 @@ void *EmergeThread::run()
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	v3s16 pos;
+	std::map<v3s16, MapBlock *> modified_blocks;
 
-	m_map    = (ServerMap *)&(m_server->m_env->getMap());
+	m_map    = &m_server->m_env->getServerMap();
 	m_emerge = m_server->m_emerge;
 	m_mapgen = m_emerge->m_mapgens[id];
 	enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 
 	try {
 	while (!stopRequested()) {
-		std::map<v3s16, MapBlock *> modified_blocks;
 		BlockEmergeData bedata;
 		BlockMakeData bmdata;
 		EmergeAction action;
-		MapBlock *block;
+		MapBlock *block = nullptr;
 
 		if (!popBlockEmerge(&pos, &bedata)) {
 			m_queue_event.wait();
@@ -689,6 +691,8 @@ void *EmergeThread::run()
 			}
 
 			block = finishGen(pos, &bmdata, &modified_blocks);
+			if (!block)
+				action = EMERGE_ERRORED;
 		}
 
 		runCompletionCallbacks(pos, action, bedata.callbacks);
@@ -698,6 +702,7 @@ void *EmergeThread::run()
 
 		if (!modified_blocks.empty())
 			m_server->SetBlocksNotSent(modified_blocks);
+		modified_blocks.clear();
 	}
 	} catch (VersionMismatchException &e) {
 		std::ostringstream err;

@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <map>
-#include <vector>
 #include "util/basic_macros.h"
 #include "irrlichttypes.h"
 #include <IGUIFont.h>
 #include <IGUISkin.h>
 #include <IGUIEnvironment.h>
 #include "settings.h"
+#include "threading/mutex_auto_lock.h"
 
 #define FONT_SIZE_UNSPECIFIED 0xFFFFFFFF
 
@@ -34,8 +34,6 @@ enum FontMode : u8 {
 	FM_Standard = 0,
 	FM_Mono,
 	_FM_Fallback, // do not use directly
-	FM_Simple,
-	FM_SimpleMono,
 	FM_MaxMode,
 	FM_Unspecified
 };
@@ -140,9 +138,6 @@ private:
 	/** initialize a new TTF font */
 	gui::IGUIFont *initFont(const FontSpec &spec);
 
-	/** initialize a font without freetype */
-	gui::IGUIFont *initSimpleFont(const FontSpec &spec);
-
 	/** update current minetest skin with font changes */
 	void updateSkin();
 
@@ -151,6 +146,9 @@ private:
 
 	/** pointer to irrlicht gui environment */
 	gui::IGUIEnvironment* m_env = nullptr;
+
+	/** mutex used to protect font init and cache */
+	std::recursive_mutex m_font_mutex;
 
 	/** internal storage for caching fonts of different size */
 	std::map<unsigned int, irr::gui::IGUIFont*> m_font_cache[FM_MaxMode << 2];
@@ -162,8 +160,8 @@ private:
 	bool m_default_bold = false;
 	bool m_default_italic = false;
 
-	/** current font engine mode */
-	FontMode m_currentMode = FM_Standard;
+	/** default font engine mode (fixed) */
+	static const FontMode m_currentMode = FM_Standard;
 
 	DISABLE_CLASS_COPY(FontEngine);
 };

@@ -300,6 +300,7 @@ describe("vector", function()
 
 	it("from_string()", function()
 		local v = vector.new(1, 2, 3.14)
+		assert.is_true(vector.check(vector.from_string("(1, 2, 3.14)")))
 		assert.same({v, 13}, {vector.from_string("(1, 2, 3.14)")})
 		assert.same({v, 12}, {vector.from_string("(1,2 ,3.14)")})
 		assert.same({v, 12}, {vector.from_string("(1,2,3.14,)")})

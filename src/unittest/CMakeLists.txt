@@ -14,6 +14,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map_settings_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_modchannels.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_modmetadatadatabase.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noderesolver.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noise.cpp
@@ -33,6 +34,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelarea.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelalgorithms.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelmanipulator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_gettext.cpp
 	PARENT_SCOPE)
 
 set (UNITTEST_CLIENT_SRCS

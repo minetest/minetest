@@ -146,7 +146,7 @@ enable_joysticks (Enable joysticks) bool false
 joystick_id (Joystick ID) int 0
 
 #    The type of joystick
-joystick_type (Joystick type) enum auto auto,generic,xbox
+joystick_type (Joystick type) enum auto auto,generic,xbox,dragonrise_gamecube
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
@@ -474,6 +474,10 @@ connected_glass (Connect glass) bool false
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
 smooth_lighting (Smooth lighting) bool true
+
+#    Enables tradeoffs that reduce CPU load or increase rendering performance
+#    at the expense of minor visual glitches that do not impact game playability.
+performance_tradeoffs (Tradeoffs for performance) bool false
 
 #    Clouds are a client side effect.
 enable_clouds (Clouds) bool true
@@ -882,10 +886,6 @@ tooltip_show_delay (Tooltip delay) int 400
 #    Append item name to tooltip.
 tooltip_append_itemname (Append item name) bool false
 
-#    Whether FreeType fonts are used, requires FreeType support to be compiled in.
-#    If disabled, bitmap and XML vectors fonts are used instead.
-freetype (FreeType fonts) bool true
-
 font_bold (Font bold by default) bool false
 
 font_italic (Font italic by default) bool false
@@ -896,12 +896,16 @@ font_shadow (Font shadow) int 1
 #    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
-#    Font size of the default font in point (pt).
+#    Font size of the default font where 1 unit = 1 pixel at 96 DPI
 font_size (Font size) int 16 1
 
-#    Path to the default font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    For pixel-style fonts that do not scale well, this ensures that font sizes used
+#    with this font will always be divisible by this value, in pixels. For instance,
+#    a pixel font 16 pixels tall should have this set to 16, so it will only ever be
+#    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
+font_size_divisible_by (Font size divisible by) int 1 1
+
+#    Path to the default font. Must be a TrueType font.
 #    The fallback font will be used if the font cannot be loaded.
 font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
 
@@ -909,12 +913,16 @@ font_path_bold (Bold font path) filepath fonts/Arimo-Bold.ttf
 font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
 font_path_bold_italic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
 
-#    Font size of the monospace font in point (pt).
-mono_font_size (Monospace font size) int 15 1
+#    Font size of the monospace font where 1 unit = 1 pixel at 96 DPI
+mono_font_size (Monospace font size) int 16 1
 
-#    Path to the monospace font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    For pixel-style fonts that do not scale well, this ensures that font sizes used
+#    with this font will always be divisible by this value, in pixels. For instance,
+#    a pixel font 16 pixels tall should have this set to 16, so it will only ever be
+#    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
+mono_font_size_divisible_by (Monospace font size divisible by) int 1 1
+
+#    Path to the monospace font. Must be a TrueType font.
 #    This font is used for e.g. the console and profiler screen.
 mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
 
@@ -922,9 +930,7 @@ mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Bold.ttf
 mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Italic.ttf
 mono_font_path_bold_italic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
 
-#    Path of the fallback font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path of the fallback font. Must be a TrueType font.
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 

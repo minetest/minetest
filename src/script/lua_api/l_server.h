@@ -97,8 +97,8 @@ private:
 	// unban_player_or_ip()
 	static int l_unban_player_or_ip(lua_State *L);
 
-	// kick_player(name, [message]) -> success
-	static int l_kick_player(lua_State *L);
+	// disconnect_player(name, [reason]) -> success
+	static int l_disconnect_player(lua_State *L);
 
 	// remove_player(name)
 	static int l_remove_player(lua_State *L);

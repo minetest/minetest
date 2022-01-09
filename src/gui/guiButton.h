@@ -221,14 +221,6 @@ public:
 		return ClickControlState;
 	}
 
-	//! Writes attributes of the element.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const override;
-
-	//! Reads attributes of the element
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) override;
-
-
-
 	void setColor(video::SColor color);
 	// PATCH
 	//! Set element properties from a StyleSpec corresponding to the button state

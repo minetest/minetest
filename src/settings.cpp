@@ -88,7 +88,7 @@ void SettingsHierarchy::onLayerCreated(int layer, Settings *obj)
 
 void SettingsHierarchy::onLayerRemoved(int layer)
 {
-	assert(layer >= 0 && layer < layers.size());
+	assert(layer >= 0 && layer < (int)layers.size());
 	layers[layer] = nullptr;
 	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
 		g_settings = nullptr;

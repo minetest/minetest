@@ -124,7 +124,7 @@ void TestConnection::testHelpers()
 	Address a(127,0,0,1, 10);
 	const u16 seqnum = 34352;
 
-	con::BufferedPacket p1 = con::makePacket(a, data1,
+	con::BufferedPacketPtr p1 = con::makePacket(a, data1,
 			proto_id, peer_id, channel);
 	/*
 		We should now have a packet with this data:
@@ -135,10 +135,10 @@ void TestConnection::testHelpers()
 		Data:
 			[7] u8 data1[0]
 	*/
-	UASSERT(readU32(&p1.data[0]) == proto_id);
-	UASSERT(readU16(&p1.data[4]) == peer_id);
-	UASSERT(readU8(&p1.data[6]) == channel);
-	UASSERT(readU8(&p1.data[7]) == data1[0]);
+	UASSERT(readU32(&p1->data[0]) == proto_id);
+	UASSERT(readU16(&p1->data[4]) == peer_id);
+	UASSERT(readU8(&p1->data[6]) == channel);
+	UASSERT(readU8(&p1->data[7]) == data1[0]);
 
 	//infostream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
 

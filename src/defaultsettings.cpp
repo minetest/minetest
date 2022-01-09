@@ -184,6 +184,7 @@ void set_default_settings()
 	settings->setDefault("leaves_style", "fancy");
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
+	settings->setDefault("performance_tradeoffs", "false");
 	settings->setDefault("lighting_alpha", "0.0");
 	settings->setDefault("lighting_beta", "1.5");
 	settings->setDefault("display_gamma", "1.0");
@@ -302,8 +303,7 @@ void set_default_settings()
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("serverlist_file", "favoriteservers.json");
 
-#if USE_FREETYPE
-	settings->setDefault("freetype", "true");
+	// General font settings
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
 	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Italic.ttf"));
 	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
@@ -312,21 +312,15 @@ void set_default_settings()
 	settings->setDefault("font_italic", "false");
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "127");
+	settings->setDefault("font_size_divisible_by", "1");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
 	settings->setDefault("mono_font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-Italic.ttf"));
 	settings->setDefault("mono_font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Cousine-Bold.ttf"));
 	settings->setDefault("mono_font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-BoldItalic.ttf"));
+	settings->setDefault("mono_font_size_divisible_by", "1");
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
 	std::string font_size_str = std::to_string(TTF_DEFAULT_FONT_SIZE);
-#else
-	settings->setDefault("freetype", "false");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
-
-	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
-#endif
-	// General font settings
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("chat_font_size", "0"); // Default "font_size"
@@ -477,6 +471,7 @@ void set_default_settings()
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("smooth_lighting", "false");
+	settings->setDefault("performance_tradeoffs", "true");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("emergequeue_limit_diskonly", "16");
 	settings->setDefault("emergequeue_limit_generate", "16");

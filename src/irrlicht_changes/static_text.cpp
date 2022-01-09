@@ -12,16 +12,11 @@
 #include <rect.h>
 #include <SColor.h>
 
-#if USE_FREETYPE
-	#include "CGUITTFont.h"
-#endif
-
+#include "CGUITTFont.h"
 #include "util/string.h"
 
 namespace irr
 {
-
-#if USE_FREETYPE
 
 namespace gui
 {
@@ -108,14 +103,12 @@ void StaticText::draw()
 					font->getDimension(str.c_str()).Width;
 			}
 
-#if USE_FREETYPE
 			if (font->getType() == irr::gui::EGFT_CUSTOM) {
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+				CGUITTFont *tmp = static_cast<CGUITTFont*>(font);
 				tmp->draw(str,
 					r, HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
 					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			} else
-#endif
 			{
 				// Draw non-colored text
 				font->draw(str.c_str(),
@@ -588,53 +581,7 @@ s32 StaticText::getTextWidth() const
 }
 
 
-//! Writes attributes of the element.
-//! Implement this to expose the attributes of your element for
-//! scripting languages, editors, debuggers or xml serialization purposes.
-void StaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
-{
-	IGUIStaticText::serializeAttributes(out,options);
-
-	out->addBool	("Border",              Border);
-	out->addBool	("OverrideColorEnabled",true);
-	out->addBool	("OverrideBGColorEnabled",ColoredText.hasBackground());
-	out->addBool	("WordWrap",		WordWrap);
-	out->addBool	("Background",          Background);
-	out->addBool	("RightToLeft",         RightToLeft);
-	out->addBool	("RestrainTextInside",  RestrainTextInside);
-	out->addColor	("OverrideColor",       ColoredText.getDefaultColor());
-	out->addColor	("BGColor",       	ColoredText.getBackground());
-	out->addEnum	("HTextAlign",          HAlign, GUIAlignmentNames);
-	out->addEnum	("VTextAlign",          VAlign, GUIAlignmentNames);
-
-	// out->addFont ("OverrideFont",	OverrideFont);
-}
-
-
-//! Reads attributes of the element
-void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
-{
-	IGUIStaticText::deserializeAttributes(in,options);
-
-	Border = in->getAttributeAsBool("Border");
-	setWordWrap(in->getAttributeAsBool("WordWrap"));
-	Background = in->getAttributeAsBool("Background");
-	RightToLeft = in->getAttributeAsBool("RightToLeft");
-	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside");
-	if (in->getAttributeAsBool("OverrideColorEnabled"))
-		ColoredText.setDefaultColor(in->getAttributeAsColor("OverrideColor"));
-	if (in->getAttributeAsBool("OverrideBGColorEnabled"))
-		ColoredText.setBackground(in->getAttributeAsColor("BGColor"));
-
-	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-                      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
-
-	// OverrideFont = in->getAttributeAsFont("OverrideFont");
-}
-
 } // end namespace gui
-
-#endif // USE_FREETYPE
 
 } // end namespace irr
 

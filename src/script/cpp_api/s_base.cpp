@@ -37,6 +37,8 @@ extern "C" {
 #include "lualib.h"
 #if USE_LUAJIT
 	#include "luajit.h"
+#else
+	#include "bit.h"
 #endif
 }
 
@@ -87,6 +89,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		clientOpenLibs(m_luastack);
 	else
 		luaL_openlibs(m_luastack);
+
+	// Load bit library
+	lua_pushcfunction(m_luastack, luaopen_bit);
+	lua_pushstring(m_luastack, LUA_BITLIBNAME);
+	lua_call(m_luastack, 1, 0);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
 #if INDIRECT_SCRIPTAPI_RIDX

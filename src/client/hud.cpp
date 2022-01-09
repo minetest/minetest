@@ -224,6 +224,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 }
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
+// mainlist can be NULL, but draw the frame anyway.
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
 {
@@ -271,7 +272,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 	// Draw items
 	core::rect<s32> imgrect(0, 0, m_hotbar_imagesize, m_hotbar_imagesize);
-	for (s32 i = inv_offset; i < itemcount && (size_t)i < mainlist->getSize(); i++) {
+	const s32 list_size = mainlist ? mainlist->getSize() : 0;
+	for (s32 i = inv_offset; i < itemcount && i < list_size; i++) {
 		s32 fullimglen = m_hotbar_imagesize + m_padding * 2;
 
 		v2s32 steppos;
@@ -401,6 +403,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
+				if (!inv)
+					warningstream << "HUD: Unknown inventory list. name=" << e->text << std::endl;
 				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
 					inv, e->item, e->dir);
 				break; }
@@ -1007,11 +1011,15 @@ void drawItemStack(
 
 	bool draw_overlay = false;
 
+	bool has_mesh = false;
+	ItemMesh *imesh;
+
 	// Render as mesh if animated or no inventory image
 	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
-		ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
-		if (!imesh || !imesh->mesh)
-			return;
+		imesh = client->idef()->getWieldMesh(def.name, client);
+		has_mesh = imesh && imesh->mesh;
+	}
+	if (has_mesh) {
 		scene::IMesh *mesh = imesh->mesh;
 		driver->clearBuffers(video::ECBF_DEPTH);
 		s32 delta = 0;
@@ -1103,10 +1111,17 @@ void drawItemStack(
 		draw_overlay = def.type == ITEM_NODE && def.inventory_image.empty();
 	} else { // Otherwise just draw as 2D
 		video::ITexture *texture = client->idef()->getInventoryTexture(def.name, client);
-		if (!texture)
-			return;
-		video::SColor color =
-			client->idef()->getItemstackColor(item, client);
+		video::SColor color;
+		if (texture) {
+			color = client->idef()->getItemstackColor(item, client);
+		} else {
+			color = video::SColor(255, 255, 255, 255);
+			ITextureSource *tsrc = client->getTextureSource();
+			texture = tsrc->getTexture("no_texture.png");
+			if (!texture)
+				return;
+		}
+
 		const video::SColor colors[] = { color, color, color, color };
 
 		draw2DImageFilterScaled(driver, texture, rect,

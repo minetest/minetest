@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <json/json.h>
 #include <algorithm>
 #include "content/mods.h"
+#include "database/database.h"
 #include "filesys.h"
 #include "log.h"
 #include "content/subgames.h"
@@ -422,83 +423,29 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 }
 #endif
 
-ModMetadata::ModMetadata(const std::string &mod_name) : m_mod_name(mod_name)
+ModMetadata::ModMetadata(const std::string &mod_name, ModMetadataDatabase *database):
+	m_mod_name(mod_name), m_database(database)
 {
+	m_database->getModEntries(m_mod_name, &m_stringvars);
 }
 
 void ModMetadata::clear()
 {
+	for (const auto &pair : m_stringvars) {
+		m_database->removeModEntry(m_mod_name, pair.first);
+	}
 	Metadata::clear();
-	m_modified = true;
-}
-
-bool ModMetadata::save(const std::string &root_path)
-{
-	Json::Value json;
-	for (StringMap::const_iterator it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
-		json[it->first] = it->second;
-	}
-
-	if (!fs::PathExists(root_path)) {
-		if (!fs::CreateAllDirs(root_path)) {
-			errorstream << "ModMetadata[" << m_mod_name
-				    << "]: Unable to save. '" << root_path
-				    << "' tree cannot be created." << std::endl;
-			return false;
-		}
-	} else if (!fs::IsDir(root_path)) {
-		errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '"
-			    << root_path << "' is not a directory." << std::endl;
-		return false;
-	}
-
-	bool w_ok = fs::safeWriteToFile(
-			root_path + DIR_DELIM + m_mod_name, fastWriteJson(json));
-
-	if (w_ok) {
-		m_modified = false;
-	} else {
-		errorstream << "ModMetadata[" << m_mod_name << "]: failed write file."
-			    << std::endl;
-	}
-	return w_ok;
-}
-
-bool ModMetadata::load(const std::string &root_path)
-{
-	m_stringvars.clear();
-
-	std::ifstream is((root_path + DIR_DELIM + m_mod_name).c_str(),
-			std::ios_base::binary);
-	if (!is.good()) {
-		return false;
-	}
-
-	Json::Value root;
-	Json::CharReaderBuilder builder;
-	builder.settings_["collectComments"] = false;
-	std::string errs;
-
-	if (!Json::parseFromStream(builder, is, &root, &errs)) {
-		errorstream << "ModMetadata[" << m_mod_name
-			    << "]: failed read data "
-			       "(Json decoding failure). Message: "
-			    << errs << std::endl;
-		return false;
-	}
-
-	const Json::Value::Members attr_list = root.getMemberNames();
-	for (const auto &it : attr_list) {
-		Json::Value attr_value = root[it];
-		m_stringvars[it] = attr_value.asString();
-	}
-
-	return true;
 }
 
 bool ModMetadata::setString(const std::string &name, const std::string &var)
 {
-	m_modified = Metadata::setString(name, var);
-	return m_modified;
+	if (Metadata::setString(name, var)) {
+		if (var.empty()) {
+			m_database->removeModEntry(m_mod_name, name);
+		} else {
+			m_database->setModEntry(m_mod_name, name, var);
+		}
+		return true;
+	}
+	return false;
 }

@@ -113,8 +113,16 @@ If you want to specify multiple images for one identifier, add additional
 images named like `$identifier.$n.png`, with an ascending number $n starting
 with 1, and a random image will be chosen from the provided ones.
 
+Menu music
+-----------
 
+Games can provide custom main menu music. They are put inside a `menu`
+directory inside the game directory.
 
+The music files are named `theme.ogg`.
+If you want to specify multiple music files for one game, add additional
+images named like `theme.$n.ogg`, with an ascending number $n starting
+with 1 (max 10), and a random music file will be chosen from the provided ones.
 
 Mods
 ====
@@ -1018,7 +1026,7 @@ The function of `param1` is determined by `paramtype` in node definition.
 `param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
-    * The value stores light with and without sun in its upper and lower 4 bits
+    * The value stores light with and without sun in its lower and upper 4 bits
       respectively.
     * Required by a light source node to enable spreading its light.
     * Required by the following drawtypes as they determine their visual
@@ -1953,8 +1961,9 @@ to implement this.
 ### Uses (tools only)
 
 Determines how many uses the tool has when it is used for digging a node,
-of this group, of the maximum level. For lower leveled nodes, the use count
-is multiplied by `3^leveldiff`.
+of this group, of the maximum level. The maximum supported number of
+uses is 65535. The special number 0 is used for infinite uses.
+For lower leveled nodes, the use count is multiplied by `3^leveldiff`.
 `leveldiff` is the difference of the tool's `maxlevel` `groupcaps` and the
 node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 
@@ -2172,6 +2181,21 @@ Example:
     meta:set_string("key", "value")
     print(dump(meta:to_table()))
 
+Example manipulations of "description" and expected output behaviors:
+
+    print(ItemStack("default:pick_steel"):get_description()) --> Steel Pickaxe
+    print(ItemStack("foobar"):get_description()) --> Unknown Item
+
+    local stack = ItemStack("default:stone")
+    stack:get_meta():set_string("description", "Custom description\nAnother line")
+    print(stack:get_description()) --> Custom description\nAnother line
+    print(stack:get_short_description()) --> Custom description
+
+    stack:get_meta():set_string("short_description", "Short")
+    print(stack:get_description()) --> Custom description\nAnother line
+    print(stack:get_short_description()) --> Short
+
+    print(ItemStack("mod:item_with_no_desc"):get_description()) --> mod:item_with_no_desc
 
 
 
@@ -2302,9 +2326,20 @@ Elements
 * `position` and `anchor` elements need suitable values to avoid a formspec
   extending off the game window due to particular game window sizes.
 
-### `no_prepend[]`
+### `padding[<X>,<Y>]`
 
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
+* Defines how much space is padded around the formspec if the formspec tries to
+  increase past the size of the screen and coordinates have to be shrunk.
+* For X and Y, 0.0 represents no padding (the formspec can touch the edge of the
+  screen), and 0.5 represents half the screen (which forces the coordinate size
+  to 0). If negative, the formspec can extend off the edge of the screen.
+* Defaults to [0.05, 0.05].
+
+### `no_prepend[]`
+
+* Must be used after the `size`, `position`, `anchor`, and `padding` elements
+  (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
 ### `real_coordinates[<bool>]`
@@ -3475,8 +3510,8 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
-* `minetest.get_dig_params(groups, tool_capabilities)`: Simulates an item
-    that digs a node.
+* `minetest.get_dig_params(groups, tool_capabilities [, wear])`:
+    Simulates an item that digs a node.
     Returns a table with the following fields:
     * `diggable`: `true` if node can be dug, `false` otherwise.
     * `time`: Time it would take to dig the node.
@@ -3485,15 +3520,17 @@ Helper functions
     Parameters:
     * `groups`: Table of the node groups of the node that would be dug
     * `tool_capabilities`: Tool capabilities table of the item
-* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch])`:
+    * `wear`: Amount of wear the tool starts with (default: 0)
+* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch [, wear]])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
-    * `hp`: How much damage the punch would cause.
+    * `hp`: How much damage the punch would cause (between -65535 and 65535).
     * `wear`: How much wear would be added to the tool (ignored for non-tools).
     Parameters:
     * `groups`: Damage groups of the object
     * `tool_capabilities`: Tool capabilities table of the item
     * `time_from_last_punch`: time in seconds since last punch action
+    * `wear`: Amount of wear the item starts with (default: 0)
 
 
 
@@ -4626,6 +4663,19 @@ Utilities
 * `minetest.mkdir(path)`: returns success.
     * Creates a directory specified by `path`, creating parent directories
       if they don't exist.
+* `minetest.rmdir(path, recursive)`: returns success.
+    * Removes a directory specified by `path`.
+    * If `recursive` is set to `true`, the directory is recursively removed.
+      Otherwise, the directory will only be removed if it is empty.
+    * Returns true on success, false on failure.
+* `minetest.cpdir(source, destination)`: returns success.
+    * Copies a directory specified by `path` to `destination`
+    * Any files in `destination` will be overwritten if they already exist.
+    * Returns true on success, false on failure.
+* `minetest.mvdir(source, destination)`: returns success.
+    * Moves a directory specified by `path` to `destination`.
+    * If the `destination` is a non-empty directory, then the move will fail.
+    * Returns true on success, false on failure.
 * `minetest.get_dir_list(path, [is_dir])`: returns list of entry names
     * is_dir is one of:
         * nil: return all entries,
@@ -5426,7 +5476,7 @@ Inventory
 * `minetest.remove_detached_inventory(name)`
     * Returns a `boolean` indicating whether the removal succeeded.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
-  returns left over ItemStack.
+  returns leftover ItemStack or nil to indicate no inventory change
     * See `minetest.item_eat` and `minetest.register_on_item_eat`
 
 Formspec
@@ -5719,6 +5769,10 @@ Bans
   IP address or name
 * `minetest.kick_player(name, [reason])`: disconnect a player with an optional
   reason.
+    * Returns boolean indicating success (false if player nonexistant)
+* `minetest.disconnect_player(name, [reason])`: disconnect a player with an
+  optional reason, this will not prefix with 'Kicked: ' like kick_player.
+  If no reason is given, it will default to 'Disconnected.'
     * Returns boolean indicating success (false if player nonexistant)
 
 Particles
@@ -6650,6 +6704,7 @@ object you are working with still exists.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
+    * If `formspec` is `""`, the player's inventory is disabled.
 * `get_inventory_formspec()`: returns a formspec string
 * `set_formspec_prepend(formspec)`:
     * the formspec string will be added to every formspec shown to the user,
@@ -6753,29 +6808,29 @@ object you are working with still exists.
         * `textures`: A table containing up to six textures in the following
             order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
-        * `sky_color`: A table containing the following values, alpha is ignored:
-            * `day_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during the day. (default: `#61b5f5`)
-            * `day_horizon`: ColorSpec, for the bottom half of the
-              `"regular"` sky during the day. (default: `#90d3f6`)
-            * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during dawn/sunset. (default: `#b4bafa`)
+        * `sky_color`: A table used in `"regular"` type only, containing the
+          following values (alpha is ignored):
+            * `day_sky`: ColorSpec, for the top half of the sky during the day.
+              (default: `#61b5f5`)
+            * `day_horizon`: ColorSpec, for the bottom half of the sky during the day.
+              (default: `#90d3f6`)
+            * `dawn_sky`: ColorSpec, for the top half of the sky during dawn/sunset.
+              (default: `#b4bafa`)
               The resulting sky color will be a darkened version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              sky during dawn/sunset. (default: `#bac1f0`)
+            * `dawn_horizon`: ColorSpec, for the bottom half of the sky during dawn/sunset.
+              (default: `#bac1f0`)
               The resulting sky color will be a darkened version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `night_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during the night. (default: `#006bff`)
+            * `night_sky`: ColorSpec, for the top half of the sky during the night.
+              (default: `#006bff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              sky during the night. (default: `#4090ff`)
+            * `night_horizon`: ColorSpec, for the bottom half of the sky during the night.
+              (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `indoors`: ColorSpec, for when you're either indoors or
-              underground. Only applies to the `"regular"` sky.
+            * `indoors`: ColorSpec, for when you're either indoors or underground.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
               at sunrise and sunset.
@@ -7163,6 +7218,7 @@ Player properties need to be saved manually.
         -- "sprite" uses 1 texture.
         -- "upright_sprite" uses 2 textures: {front, back}.
         -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
+        -- "mesh" requires one texture for each mesh buffer/material (in order)
 
         colors = {},
         -- Number of required colors depends on visual
@@ -7547,12 +7603,15 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         on_place = function(itemstack, placer, pointed_thing),
         -- When the 'place' key was pressed with the item in hand
         -- and a node was pointed at.
-        -- Shall place item and return the leftover itemstack.
+        -- Shall place item and return the leftover itemstack
+        -- or nil to not modify the inventory.
         -- The placer may be any ObjectRef or nil.
         -- default: minetest.item_place
 
         on_secondary_use = function(itemstack, user, pointed_thing),
         -- Same as on_place but called when not pointing at a node.
+        -- Function must return either nil if inventory shall not be modified,
+        -- or an itemstack to replace the original itemstack.
         -- The user may be any ObjectRef or nil.
         -- default: nil
 
@@ -7564,8 +7623,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
         -- When user pressed the 'punch/mine' key with the item in hand.
-        -- Function must return either nil if no item shall be removed from
-        -- inventory, or an itemstack to replace the original itemstack.
+        -- Function must return either nil if inventory shall not be modified,
+        -- or an itemstack to replace the original itemstack.
         -- e.g. itemstack:take_item(); return itemstack
         -- Otherwise, the function is free to do what it wants.
         -- The user may be any ObjectRef or nil.
@@ -9049,3 +9108,10 @@ Used by `minetest.register_authentication_handler`.
         -- Returns an iterator (use with `for` loops) for all player names
         -- currently in the auth database
     }
+
+Bit Library
+-----------
+
+Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift, bit.rol, bit.ror, bit.bswap
+
+See http://bitop.luajit.org/ for advanced information.

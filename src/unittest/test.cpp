@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "modchannels.h"
 #include "content/mods.h"
+#include "database/database-dummy.h"
 #include "util/numeric.h"
 #include "porting.h"
 
@@ -55,6 +56,7 @@ public:
 	scene::ISceneManager *getSceneManager() { return m_scenemgr; }
 	IRollbackManager *getRollbackManager() { return m_rollbackmgr; }
 	EmergeManager *getEmergeManager() { return m_emergemgr; }
+	ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	scene::IAnimatedMesh *getMesh(const std::string &filename) { return NULL; }
 	bool checkLocalPrivilege(const std::string &priv) { return false; }
@@ -68,7 +70,6 @@ public:
 		return testmodspec;
 	}
 	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
-	virtual std::string getModStoragePath() const { return "."; }
 	virtual bool registerModStorage(ModMetadata *meta) { return true; }
 	virtual void unregisterModStorage(const std::string &name) {}
 	bool joinModChannel(const std::string &channel);
@@ -89,11 +90,13 @@ private:
 	scene::ISceneManager *m_scenemgr = nullptr;
 	IRollbackManager *m_rollbackmgr = nullptr;
 	EmergeManager *m_emergemgr = nullptr;
+	ModMetadataDatabase *m_mod_storage_database = nullptr;
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
 
 
 TestGameDef::TestGameDef() :
+	m_mod_storage_database(new Database_Dummy()),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	m_itemdef = createItemDefManager();
@@ -107,6 +110,7 @@ TestGameDef::~TestGameDef()
 {
 	delete m_itemdef;
 	delete m_nodedef;
+	delete m_mod_storage_database;
 }
 
 

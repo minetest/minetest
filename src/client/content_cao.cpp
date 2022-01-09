@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/sound.h"
 #include "client/tile.h"
 #include "util/basic_macros.h"
-#include "util/numeric.h" // For IntervalLimiter & setPitchYawRoll
+#include "util/numeric.h"
 #include "util/serialize.h"
 #include "camera.h" // CameraModes
 #include "collision.h"
@@ -169,6 +169,20 @@ static void updatePositionRecursive(scene::ISceneNode *node)
 	if (parent)
 		updatePositionRecursive(parent);
 	node->updateAbsolutePosition();
+}
+
+static bool logOnce(const std::ostringstream &from, std::ostream &log_to)
+{
+	thread_local std::vector<u64> logged;
+
+	std::string message = from.str();
+	u64 hash = murmur_hash_64_ua(message.data(), message.length(), 0xBADBABE);
+
+	if (std::find(logged.begin(), logged.end(), hash) != logged.end())
+		return false;
+	logged.push_back(hash);
+	log_to << message << std::endl;
+	return true;
 }
 
 /*
@@ -647,7 +661,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
-				tsrc->getTextureForMesh("unknown_node.png"));
+				tsrc->getTextureForMesh("no_texture.png"));
 
 		setSceneNodeMaterial(m_spritenode);
 
@@ -750,10 +764,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if (mesh) {
-			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
-			m_animated_meshnode->grab();
-			mesh->drop(); // The scene node took hold of it
-
 			if (!checkMeshNormals(mesh)) {
 				infostream << "GenericCAO: recalculating normals for mesh "
 					<< m_prop.mesh << std::endl;
@@ -761,6 +771,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 						recalculateNormals(mesh, true, false);
 			}
 
+			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
+			m_animated_meshnode->grab();
+			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(m_prop.visual_size);
 
@@ -822,6 +835,28 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	updateAttachments();
 	setNodeLight(m_last_light);
 	updateMeshCulling();
+
+	if (m_animated_meshnode) {
+		u32 mat_count = m_animated_meshnode->getMaterialCount();
+		if (mat_count == 0 || m_prop.textures.empty()) {
+			// nothing
+		} else if (mat_count > m_prop.textures.size()) {
+			std::ostringstream oss;
+			oss << "GenericCAO::addToScene(): Model "
+				<< m_prop.mesh << " loaded with " << mat_count
+				<< " mesh buffers but only " << m_prop.textures.size()
+				<< " texture(s) specifed, this is deprecated.";
+			logOnce(oss, warningstream);
+
+			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
+			for (u32 i = 1; i < mat_count; i++) {
+				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayer[0];
+				if (!layer.Texture)
+					layer.Texture = last;
+				last = layer.Texture;
+			}
+		}
+	}
 }
 
 void GenericCAO::updateLight(u32 day_night_ratio)
@@ -996,12 +1031,14 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
 			const PlayerControl &controls = player->getPlayerControl();
+			f32 new_speed = player->local_animation_speed;
 
 			bool walking = false;
-			if (controls.movement_speed > 0.001f)
+			if (controls.movement_speed > 0.001f) {
+				new_speed *= controls.movement_speed;
 				walking = true;
+			}
 
-			f32 new_speed = player->local_animation_speed;
 			v2s32 new_anim = v2s32(0,0);
 			bool allow_update = false;
 
@@ -1016,7 +1053,6 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			// slowdown speed if sneaking
 			if (controls.sneak && walking)
 				new_speed /= 2;
-			new_speed *= controls.movement_speed;
 
 			if (walking && (controls.dig || controls.place)) {
 				new_anim = player->local_animations[3];
@@ -1288,7 +1324,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
-			std::string texturestring = "unknown_node.png";
+			std::string texturestring = "no_texture.png";
 			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
@@ -1367,7 +1403,7 @@ void GenericCAO::updateTextures(std::string mod)
 		{
 			for (u32 i = 0; i < 6; ++i)
 			{
-				std::string texturestring = "unknown_node.png";
+				std::string texturestring = "no_texture.png";
 				if(m_prop.textures.size() > i)
 					texturestring = m_prop.textures[i];
 				texturestring += mod;
@@ -1400,7 +1436,7 @@ void GenericCAO::updateTextures(std::string mod)
 		} else if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			{
-				std::string tname = "unknown_object.png";
+				std::string tname = "no_texture.png";
 				if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
@@ -1422,7 +1458,7 @@ void GenericCAO::updateTextures(std::string mod)
 				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			{
-				std::string tname = "unknown_object.png";
+				std::string tname = "no_texture.png";
 				if (m_prop.textures.size() >= 2)
 					tname = m_prop.textures[1];
 				else if (!m_prop.textures.empty())
@@ -1823,6 +1859,8 @@ void GenericCAO::processMessage(const std::string &data)
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
+				// Cap damage overlay to 1 second
+				m_reset_textures_timer = std::min(m_reset_textures_timer, 1.0f);
 				updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 			}
 		}
@@ -1870,7 +1908,8 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_armor_groups,
 			toolcap,
 			punchitem,
-			time_from_last_punch);
+			time_from_last_punch,
+			punchitem->wear);
 
 	if(result.did_punch && result.damage != 0)
 	{
@@ -1890,6 +1929,8 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
+			// Cap damage overlay to 1 second
+			m_reset_textures_timer = std::min(m_reset_textures_timer, 1.0f);
 			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}

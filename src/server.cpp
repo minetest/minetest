@@ -66,6 +66,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "translation.h"
+#include "database/database-sqlite3.h"
+#include "database/database-files.h"
+#include "database/database-dummy.h"
+#include "gameparams.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -345,10 +349,15 @@ Server::~Server()
 		delete m_thread;
 	}
 
+	// Write any changes before deletion.
+	if (m_mod_storage_database)
+		m_mod_storage_database->endSave();
+
 	// Delete things in the reverse order of creation
 	delete m_emerge;
 	delete m_env;
 	delete m_rollback;
+	delete m_mod_storage_database;
 	delete m_banmanager;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -393,6 +402,10 @@ void Server::init()
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
+
+	// Create mod storage database and begin a save for later
+	m_mod_storage_database = openModStorageDatabase(m_path_world);
+	m_mod_storage_database->beginSave();
 
 	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(m_path_world));
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
@@ -508,8 +521,9 @@ void Server::start()
 		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
-			<< "\" listening on " << m_bind_addr.serializeString() << ":"
-			<< m_bind_addr.getPort() << "." << std::endl;
+			<< "\" listening on ";
+	m_bind_addr.print(&actionstream);
+	actionstream << "." << std::endl;
 }
 
 void Server::stop()
@@ -518,9 +532,7 @@ void Server::stop()
 
 	// Stop threads (set run=false first so both start stopping)
 	m_thread->stop();
-	//m_emergethread.setRun(false);
 	m_thread->wait();
-	//m_emergethread.stop();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
 }
@@ -735,20 +747,12 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 		m_clients.unlock();
 
-		// Save mod storages if modified
+		// Write changes to the mod storage
 		m_mod_storage_save_timer -= dtime;
 		if (m_mod_storage_save_timer <= 0.0f) {
 			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-			int n = 0;
-			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-				if (it->second->isModified()) {
-					it->second->save(getModStoragePath());
-					n++;
-				}
-			}
-			if (n > 0)
-				infostream << "Saved " << n << " modified mod storages." << std::endl;
+			m_mod_storage_database->endSave();
+			m_mod_storage_database->beginSave();
 		}
 	}
 
@@ -955,14 +959,14 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 
 	/*
-		Trigger emergethread (it somehow gets to a non-triggered but
-		bysy state sometimes)
+		Trigger emerge thread
+		Doing this every 2s is left over from old code, unclear if this is still needed.
 	*/
 	{
 		float &counter = m_emergethread_trigger_timer;
-		counter += dtime;
-		if (counter >= 2.0) {
-			counter = 0.0;
+		counter -= dtime;
+		if (counter <= 0.0f) {
+			counter = 2.0f;
 
 			m_emerge->startThreads();
 		}
@@ -3174,15 +3178,16 @@ std::string Server::getStatusString()
 	std::ostringstream os(std::ios_base::binary);
 	os << "# Server: ";
 	// Version
-	os << "version=" << g_version_string;
+	os << "version: " << g_version_string;
 	// Uptime
-	os << ", uptime=" << m_uptime_counter->get();
+	os << " | uptime: " << duration_to_string((int) m_uptime_counter->get());
 	// Max lag estimate
-	os << ", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
+	os << " | max lag: " << std::setprecision(3);
+	os << (m_env ? m_env->getMaxLagEstimate() : 0) << "s";
 
 	// Information about clients
 	bool first = true;
-	os << ", clients={";
+	os << " | clients: ";
 	if (m_env) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 		for (session_t client_id : clients) {
@@ -3199,7 +3204,6 @@ std::string Server::getStatusString()
 			os << name;
 		}
 	}
-	os << "}";
 
 	if (m_env && !((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
 		os << std::endl << "# Server: " << " WARNING: Map saving is disabled.";
@@ -3745,11 +3749,6 @@ std::string Server::getBuiltinLuaPath()
 	return porting::path_share + DIR_DELIM + "builtin";
 }
 
-std::string Server::getModStoragePath() const
-{
-	return m_path_world + DIR_DELIM + "mod_storage";
-}
-
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
@@ -3913,11 +3912,8 @@ bool Server::registerModStorage(ModMetadata *storage)
 void Server::unregisterModStorage(const std::string &name)
 {
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
-	if (it != m_mod_storages.end()) {
-		// Save unconditionaly on unregistration
-		it->second->save(getModStoragePath());
+	if (it != m_mod_storages.end())
 		m_mod_storages.erase(name);
-	}
 }
 
 void dedicated_server_loop(Server &server, bool &kill)
@@ -4054,4 +4050,107 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	}
 
 	return translations;
+}
+
+ModMetadataDatabase *Server::openModStorageDatabase(const std::string &world_path)
+{
+	std::string world_mt_path = world_path + DIR_DELIM + "world.mt";
+	Settings world_mt;
+	if (!world_mt.readConfigFile(world_mt_path.c_str()))
+		throw BaseException("Cannot read world.mt!");
+
+	std::string backend = world_mt.exists("mod_storage_backend") ?
+		world_mt.get("mod_storage_backend") : "files";
+	if (backend == "files")
+		warningstream << "/!\\ You are using the old mod storage files backend. "
+			<< "This backend is deprecated and may be removed in a future release /!\\"
+			<< std::endl << "Switching to SQLite3 is advised, "
+			<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+
+	return openModStorageDatabase(backend, world_path, world_mt);
+}
+
+ModMetadataDatabase *Server::openModStorageDatabase(const std::string &backend,
+		const std::string &world_path, const Settings &world_mt)
+{
+	if (backend == "sqlite3")
+		return new ModMetadataDatabaseSQLite3(world_path);
+
+	if (backend == "files")
+		return new ModMetadataDatabaseFiles(world_path);
+
+	if (backend == "dummy")
+		return new Database_Dummy();
+
+	throw BaseException("Mod storage database backend " + backend + " not supported");
+}
+
+bool Server::migrateModStorageDatabase(const GameParams &game_params, const Settings &cmd_args)
+{
+	std::string migrate_to = cmd_args.get("migrate-mod-storage");
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+
+	std::string backend = world_mt.exists("mod_storage_backend") ?
+		world_mt.get("mod_storage_backend") : "files";
+	if (backend == migrate_to) {
+		errorstream << "Cannot migrate: new backend is same"
+			<< " as the old one" << std::endl;
+		return false;
+	}
+
+	ModMetadataDatabase *srcdb = nullptr;
+	ModMetadataDatabase *dstdb = nullptr;
+
+	bool succeeded = false;
+
+	try {
+		srcdb = Server::openModStorageDatabase(backend, game_params.world_path, world_mt);
+		dstdb = Server::openModStorageDatabase(migrate_to, game_params.world_path, world_mt);
+
+		dstdb->beginSave();
+
+		std::vector<std::string> mod_list;
+		srcdb->listMods(&mod_list);
+		for (const std::string &modname : mod_list) {
+			StringMap meta;
+			srcdb->getModEntries(modname, &meta);
+			for (const auto &pair : meta) {
+				dstdb->setModEntry(modname, pair.first, pair.second);
+			}
+		}
+
+		dstdb->endSave();
+
+		succeeded = true;
+
+		actionstream << "Successfully migrated the metadata of "
+			<< mod_list.size() << " mods" << std::endl;
+		world_mt.set("mod_storage_backend", migrate_to);
+		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
+			errorstream << "Failed to update world.mt!" << std::endl;
+		else
+			actionstream << "world.mt updated" << std::endl;
+
+	} catch (BaseException &e) {
+		errorstream << "An error occurred during migration: " << e.what() << std::endl;
+	}
+
+	delete srcdb;
+	delete dstdb;
+
+	if (succeeded && backend == "files") {
+		// Back up files
+		const std::string storage_path = game_params.world_path + DIR_DELIM + "mod_storage";
+		const std::string backup_path = game_params.world_path + DIR_DELIM + "mod_storage.bak";
+		if (!fs::Rename(storage_path, backup_path))
+			warningstream << "After migration, " << storage_path
+				<< " could not be renamed to " << backup_path << std::endl;
+	}
+
+	return succeeded;
 }

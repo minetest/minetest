@@ -380,8 +380,8 @@ public:
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 	const std::string* getModFile(std::string filename);
+	ModMetadataDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
 
-	std::string getModStoragePath() const override;
 	bool registerModStorage(ModMetadata *meta) override;
 	void unregisterModStorage(const std::string &name) override;
 
@@ -548,7 +548,7 @@ private:
 	// Set of media filenames pushed by server at runtime
 	std::unordered_set<std::string> m_media_pushed_files;
 	// Pending downloads of dynamic media (key: token)
-	std::vector<std::pair<u32, std::unique_ptr<SingleMediaDownloader>>> m_pending_media_downloads;
+	std::vector<std::pair<u32, std::shared_ptr<SingleMediaDownloader>>> m_pending_media_downloads;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set = false;
@@ -590,6 +590,7 @@ private:
 	// Client modding
 	ClientScripting *m_script = nullptr;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
+	ModMetadataDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
 	StringMap m_mod_vfs;

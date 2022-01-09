@@ -6,6 +6,16 @@ local S = core.get_translator("__builtin")
 -- Misc. API functions
 --
 
+-- @spec core.kick_player(String, String) :: Boolean
+function core.kick_player(player_name, reason)
+	if type(reason) == "string" then
+		reason = "Kicked: " .. reason
+	else
+		reason = "Kicked."
+	end
+	return core.disconnect_player(player_name, reason)
+end
+
 function core.check_player_privs(name, ...)
 	if core.is_player(name) then
 		name = name:get_player_name()
@@ -240,7 +250,7 @@ end
 
 -- HTTP callback interface
 
-function core.http_add_fetch(httpenv)
+core.set_http_api_lua(function(httpenv)
 	httpenv.fetch = function(req, callback)
 		local handle = httpenv.fetch_async(req)
 
@@ -256,7 +266,8 @@ function core.http_add_fetch(httpenv)
 	end
 
 	return httpenv
-end
+end)
+core.set_http_api_lua = nil
 
 
 function core.close_formspec(player_name, formname)
@@ -287,7 +298,7 @@ function core.encode_png(width, height, data, compression)
 	local expected_byte_count = width * height * 4
 
 	if type(data) ~= "table" and type(data) ~= "string" then
-		error("Incorrect type for 'height', expected table or string, got " .. type(height))
+		error("Incorrect type for 'data', expected table or string, got " .. type(data))
 	end
 
 	local data_length = type(data) == "table" and #data * 4 or string.len(data)

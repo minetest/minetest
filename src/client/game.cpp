@@ -1282,9 +1282,8 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to listen on " +
-				bind_addr.serializeString() +
-				" because IPv6 is disabled";
+		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
+			bind_addr.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1317,7 +1316,7 @@ bool Game::createClient(const GameStartData &start_data)
 	if (!could_connect) {
 		if (error_message->empty() && !connect_aborted) {
 			// Should not happen if error messages are set properly
-			*error_message = "Connection failed for unknown reason";
+			*error_message = gettext("Connection failed for unknown reason");
 			errorstream << *error_message << std::endl;
 		}
 		return false;
@@ -1326,7 +1325,7 @@ bool Game::createClient(const GameStartData &start_data)
 	if (!getServerContent(&connect_aborted)) {
 		if (error_message->empty() && !connect_aborted) {
 			// Should not happen if error messages are set properly
-			*error_message = "Connection failed for unknown reason";
+			*error_message = gettext("Connection failed for unknown reason");
 			errorstream << *error_message << std::endl;
 		}
 		return false;
@@ -1342,8 +1341,8 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Camera
 	 */
 	camera = new Camera(*draw_control, client, m_rendering_engine);
-	if (!camera->successfullyCreated(*error_message))
-		return false;
+	if (client->modsLoaded())
+		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
 	/* Clouds
@@ -1384,7 +1383,7 @@ bool Game::createClient(const GameStartData &start_data)
 		str += L" [";
 		str += text;
 		str += L"]";
-		delete text;
+		delete[] text;
 	}
 	str += L" [";
 	str += driver->getName();
@@ -1445,7 +1444,6 @@ bool Game::connectToServer(const GameStartData &start_data,
 		connect_address.Resolve(start_data.address.c_str());
 
 		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
-			//connect_address.Resolve("localhost");
 			if (connect_address.isIPv6()) {
 				IPv6AddressBytes addr_bytes;
 				addr_bytes.bytes[15] = 1;
@@ -1456,15 +1454,14 @@ bool Game::connectToServer(const GameStartData &start_data,
 			local_server_mode = true;
 		}
 	} catch (ResolveError &e) {
-		*error_message = std::string("Couldn't resolve address: ") + e.what();
+		*error_message = fmtgettext("Couldn't resolve address: %s", e.what());
+
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
 	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to connect to " +
-				connect_address.serializeString() +
-				" because IPv6 is disabled";
+		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", connect_address.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1518,8 +1515,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 
 			if (client->accessDenied()) {
-				*error_message = "Access denied. Reason: "
-						+ client->accessDeniedReason();
+				*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 				*reconnect_requested = client->reconnectRequested();
 				errorstream << *error_message << std::endl;
 				break;
@@ -1545,7 +1541,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				wait_time += dtime;
 				// Only time out if we aren't waiting for the server we started
 				if (!start_data.address.empty() && wait_time > 10) {
-					*error_message = "Connection timed out.";
+					*error_message = gettext("Connection timed out.");
 					errorstream << *error_message << std::endl;
 					break;
 				}
@@ -1593,7 +1589,7 @@ bool Game::getServerContent(bool *aborted)
 			return false;
 
 		if (client->getState() < LC_Init) {
-			*error_message = "Client disconnected";
+			*error_message = gettext("Client disconnected");
 			errorstream << *error_message << std::endl;
 			return false;
 		}
@@ -1675,8 +1671,7 @@ inline void Game::updateInteractTimers(f32 dtime)
 inline bool Game::checkConnection()
 {
 	if (client->accessDenied()) {
-		*error_message = "Access denied. Reason: "
-				+ client->accessDeniedReason();
+		*error_message = fmtgettext("Access denied. Reason: %s", client->accessDeniedReason().c_str());
 		*reconnect_requested = client->reconnectRequested();
 		errorstream << *error_message << std::endl;
 		return false;
@@ -2064,15 +2059,22 @@ void Game::openInventory()
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
 
-	if (!client->modsLoaded()
-			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
-		TextDest *txt_dst = new TextDestPlayerInventory(client);
-		auto *&formspec = m_game_ui->updateFormspec("");
-		GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
-
-		formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+	if (client->modsLoaded() && client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
+		delete fs_src;
+		return;
 	}
+
+	if (fs_src->getForm().empty()) {
+		delete fs_src;
+		return;
+	}
+
+	TextDest *txt_dst = new TextDestPlayerInventory(client);
+	auto *&formspec = m_game_ui->updateFormspec("");
+	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
+		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+
+	formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 }
 
 
@@ -3331,9 +3333,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	} else {
 		MapNode n = map.getNode(nodepos);
 
-		if (nodedef_manager->get(n).tiledef[0].name == "unknown_node.png") {
-			m_game_ui->setInfoText(L"Unknown node: " +
-				utf8_to_wide(nodedef_manager->get(n).name));
+		if (nodedef_manager->get(n).name == "unknown") {
+			m_game_ui->setInfoText(L"Unknown node");
 		}
 	}
 
@@ -3620,7 +3621,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// cheat detection.
 	// Get digging parameters
 	DigParams params = getDigParams(nodedef_manager->get(n).groups,
-			&selected_item.getToolCapabilities(itemdef_manager));
+			&selected_item.getToolCapabilities(itemdef_manager),
+			selected_item.wear);
 
 	// If can't dig, try hand
 	if (!params.diggable) {
@@ -4287,16 +4289,18 @@ void Game::showPauseMenu()
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
-		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
-		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
+		// Note: Status of enable_damage and creative_mode settings is intentionally
+		// NOT shown here because the game might roll its own damage system and/or do
+		// a per-player Creative Mode, in which case writing it here would mislead.
+		bool damage = g_settings->getBool("enable_damage");
 		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
-		os << strgettext("- Damage: ") << damage << "\n"
-				<< strgettext("- Creative Mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
-			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
-			//~ PvP = Player versus Player
-			os << strgettext("- PvP: ") << pvp << "\n"
-					<< strgettext("- Public: ") << announced << "\n";
+			if (damage) {
+				const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
+				//~ PvP = Player versus Player
+				os << strgettext("- PvP: ") << pvp << "\n";
+			}
+			os << strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");
 			str_formspec_escape(server_name);
 			if (announced == on && !server_name.empty())
@@ -4351,14 +4355,15 @@ void the_game(bool *kill,
 		}
 
 	} catch (SerializationError &e) {
-		error_message = std::string("A serialization error occurred:\n")
-				+ e.what() + "\n\nThe server is probably "
-				" running a different version of " PROJECT_NAME_C ".";
+		const std::string ver_err = fmtgettext("The server is probably running a different version of %s.", PROJECT_NAME_C);
+		error_message = strgettext("A serialization error occurred:") +"\n"
+				+ e.what() + "\n\n" + ver_err;
 		errorstream << error_message << std::endl;
 	} catch (ServerError &e) {
 		error_message = e.what();
 		errorstream << "ServerError: " << error_message << std::endl;
 	} catch (ModError &e) {
+		// DO NOT TRANSLATE the `ModError`, it's used by ui.lua
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;

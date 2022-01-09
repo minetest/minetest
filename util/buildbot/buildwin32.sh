@@ -19,17 +19,32 @@ builddir="$( cd "$builddir" && pwd )"
 libdir=$builddir/libs
 
 # Test which win32 compiler is present
-which i686-w64-mingw32-gcc &>/dev/null &&
-	toolchain_file=$dir/toolchain_i686-w64-mingw32.cmake
-which i686-w64-mingw32-gcc-posix &>/dev/null &&
-	toolchain_file=$dir/toolchain_i686-w64-mingw32-posix.cmake
+command -v i686-w64-mingw32-gcc >/dev/null &&
+	compiler=i686-w64-mingw32-gcc
+command -v i686-w64-mingw32-gcc-posix >/dev/null &&
+	compiler=i686-w64-mingw32-gcc-posix
 
-if [ -z "$toolchain_file" ]; then
-	echo "Unable to determine which mingw32 compiler to use"
+if [ -z "$compiler" ]; then
+	echo "Unable to determine which MinGW compiler to use"
 	exit 1
 fi
+toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
+# Try to find runtime DLLs in various paths (varies by distribution, sigh)
+tmp=$(dirname "$(command -v $compiler)")/..
+runtime_dlls=
+for name in lib{gcc_,stdc++-,winpthread-}'*'.dll; do
+	for dir in $tmp/i686-w64-mingw32/{bin,lib} $tmp/lib/gcc/i686-w64-mingw32/*; do
+		[ -d "$dir" ] || continue
+		file=$(echo $dir/$name)
+		[ -f "$file" ] && { runtime_dlls+="$file;"; break; }
+	done
+done
+[ -z "$runtime_dlls" ] &&
+	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
+
+# Get stuff
 irrlicht_version=1.9.0mt3
 ogg_version=1.3.4
 vorbis_version=1.3.7
@@ -63,7 +78,6 @@ download () {
 	fi
 }
 
-# Get stuff
 cd $libdir
 download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip"
@@ -82,10 +96,12 @@ download "http://minetest.kitsunemimi.pw/openal_stripped.zip" '' unzip_nofolder
 if [ -n "$EXISTING_MINETEST_DIR" ]; then
 	sourcedir="$( cd "$EXISTING_MINETEST_DIR" && pwd )"
 else
+	cd $builddir
 	sourcedir=$PWD/$CORE_NAME
 	[ -d $CORE_NAME ] && { pushd $CORE_NAME; git pull; popd; } || \
 		git clone -b $CORE_BRANCH $CORE_GIT $CORE_NAME
 	if [ -z "$NO_MINETEST_GAME" ]; then
+		cd $sourcedir
 		[ -d games/$GAME_NAME ] && { pushd games/$GAME_NAME; git pull; popd; } || \
 			git clone -b $GAME_BRANCH $GAME_GIT games/$GAME_NAME
 	fi
@@ -108,11 +124,11 @@ cmake -S $sourcedir -B . \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
 	-DBUILD_CLIENT=1 -DBUILD_SERVER=0 \
+	-DEXTRA_DLL="$runtime_dlls" \
 	\
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
 	-DENABLE_GETTEXT=1 \
-	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
 	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \
@@ -146,7 +162,7 @@ cmake -S $sourcedir -B . \
 	-DCURL_INCLUDE_DIR=$libdir/curl/include \
 	-DCURL_LIBRARY=$libdir/curl/lib/libcurl.dll.a \
 	\
-	-DGETTEXT_MSGFMT=`which msgfmt` \
+	-DGETTEXT_MSGFMT=`command -v msgfmt` \
 	-DGETTEXT_DLL="$gettext_dlls" \
 	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
 	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \

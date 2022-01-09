@@ -1,6 +1,7 @@
+dofile(core.get_modpath(core.get_current_modname()) .. "/crafting_prepare.lua")
+
 -- Test minetest.clear_craft function
 local function test_clear_craft()
-	minetest.log("info", "[unittests] Testing minetest.clear_craft")
 	-- Clearing by output
 	minetest.register_craft({
 		output = "foo",
@@ -22,11 +23,10 @@ local function test_clear_craft()
 	minetest.clear_craft({recipe={{"foo", "bar"}}})
 	assert(minetest.get_all_craft_recipes("foo") == nil)
 end
+unittests.register("test_clear_craft", test_clear_craft)
 
 -- Test minetest.get_craft_result function
 local function test_get_craft_result()
-	minetest.log("info", "[unittests] Testing minetest.get_craft_result")
-
 	-- normal
 	local input = {
 		method = "normal",
@@ -107,14 +107,6 @@ local function test_get_craft_result()
 	assert(output.item)
 	minetest.log("info", "[unittests] unrepairable tool crafting output.item:to_table(): "..dump(output.item:to_table()))
 	-- unrepairable tool must not yield any output
-	assert(output.item:get_name() == "")
-
+	assert(output.item:is_empty())
 end
-
-function unittests.test_crafting()
-	test_clear_craft()
-	test_get_craft_result()
-	minetest.log("action", "[unittests] Crafting tests passed!")
-	return true
-end
-
+unittests.register("test_get_craft_result", test_get_craft_result)

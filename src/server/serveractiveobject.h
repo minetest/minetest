@@ -145,11 +145,12 @@ public:
 	virtual bool shouldUnload() const
 	{ return true; }
 
-	// Returns tool wear
-	virtual u16 punch(v3f dir,
+	// Returns added tool wear
+	virtual u32 punch(v3f dir,
 			const ToolCapabilities *toolcap = nullptr,
 			ServerActiveObject *puncher = nullptr,
-			float time_from_last_punch = 1000000.0f)
+			float time_from_last_punch = 1000000.0f,
+			u16 initial_wear = 0)
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}

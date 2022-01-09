@@ -30,7 +30,8 @@
 			android:configChanges="orientation|keyboardHidden|navigation|screenSize"
 			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
-			android:theme="@style/AppTheme">
+			android:theme="@style/AppTheme"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -44,7 +45,8 @@
 			android:launchMode="singleTask"
 			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
-			android:theme="@style/AppTheme">
+			android:theme="@style/AppTheme"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 			</intent-filter>

@@ -279,6 +279,8 @@ protected:
 	v2s32 getElementBasePos(const std::vector<std::string> *v_pos);
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
+	bool precheckElement(const std::string &name, const std::string &element,
+		size_t args_min, size_t args_max, std::vector<std::string> &parts);
 
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_type;
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_name;
@@ -366,6 +368,7 @@ private:
 		v2s32 size;
 		v2f32 offset;
 		v2f32 anchor;
+		v2f32 padding;
 		core::rect<s32> rect;
 		v2s32 basepos;
 		v2u32 screensize;
@@ -447,6 +450,8 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
+	bool parsePaddingDirect(parserData *data, const std::string &element);
+	void parsePadding(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
 	void parseModel(parserData *data, const std::string &element);

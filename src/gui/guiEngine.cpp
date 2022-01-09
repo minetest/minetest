@@ -104,16 +104,22 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 	if(m_fetched.count(name))
 		return;
 	m_fetched.insert(name);
-	std::string base;
-	base = porting::path_share + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	int i;
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
-	base = porting::path_user + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+	std::vector<fs::DirListNode> list;
+	// Reusable local function
+	auto add_paths = [&dst_paths](const std::string name, const std::string base = "") {
+		dst_paths.insert(base + name + ".ogg");
+		for (int i = 0; i < 10; i++)
+			dst_paths.insert(base + name + "." + itos(i) + ".ogg");
+	};
+	// Allow full paths
+	if (name.find(DIR_DELIM_CHAR) != std::string::npos) {
+		add_paths(name);
+	} else {
+		std::string share_prefix = porting::path_share + DIR_DELIM;
+		add_paths(name, share_prefix + "sounds" + DIR_DELIM);
+		std::string user_prefix = porting::path_user + DIR_DELIM;
+		add_paths(name, user_prefix + "sounds" + DIR_DELIM);
+	}
 }
 
 /******************************************************************************/

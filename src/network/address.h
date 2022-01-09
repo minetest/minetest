@@ -36,9 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "networkexceptions.h"
 
-class IPv6AddressBytes
+struct IPv6AddressBytes
 {
-public:
 	u8 bytes[16];
 	IPv6AddressBytes() { memset(bytes, 0, 16); }
 };
@@ -50,30 +49,34 @@ public:
 	Address(u32 address, u16 port);
 	Address(u8 a, u8 b, u8 c, u8 d, u16 port);
 	Address(const IPv6AddressBytes *ipv6_bytes, u16 port);
+
 	bool operator==(const Address &address);
-	bool operator!=(const Address &address);
-	// Resolve() may throw ResolveError (address is unchanged in this case)
-	void Resolve(const char *name);
-	struct sockaddr_in getAddress() const;
-	unsigned short getPort() const;
-	void setAddress(u32 address);
-	void setAddress(u8 a, u8 b, u8 c, u8 d);
-	void setAddress(const IPv6AddressBytes *ipv6_bytes);
-	struct sockaddr_in6 getAddress6() const;
-	int getFamily() const;
-	bool isIPv6() const;
+	bool operator!=(const Address &address) { return !(*this == address); }
+
+	struct in_addr getAddress() const;
+	struct in6_addr getAddress6() const;
+	u16 getPort() const;
+	int getFamily() const { return m_addr_family; }
+	bool isIPv6() const { return m_addr_family == AF_INET6; }
 	bool isZero() const;
-	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
 	std::string serializeString() const;
 	bool isLocalhost() const;
 
+	// Resolve() may throw ResolveError (address is unchanged in this case)
+	void Resolve(const char *name);
+
+	void setAddress(u32 address);
+	void setAddress(u8 a, u8 b, u8 c, u8 d);
+	void setAddress(const IPv6AddressBytes *ipv6_bytes);
+	void setPort(u16 port);
+
 private:
-	unsigned int m_addr_family = 0;
+	unsigned short m_addr_family = 0;
 	union
 	{
-		struct sockaddr_in ipv4;
-		struct sockaddr_in6 ipv6;
+		struct in_addr ipv4;
+		struct in6_addr ipv6;
 	} m_address;
 	u16 m_port = 0; // Port is separate from sockaddr structures
 };

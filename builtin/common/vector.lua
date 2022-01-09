@@ -61,7 +61,7 @@ function vector.from_string(s, init)
 	if not (x and y and z) then
 		return nil
 	end
-	return {x = x, y = y, z = z}, np
+	return fast_new(x, y, z), np
 end
 
 function vector.to_string(v)
