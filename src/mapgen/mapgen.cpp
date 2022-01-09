@@ -1018,10 +1018,11 @@ MapgenParams::~MapgenParams()
 
 void MapgenParams::readParams(const Settings *settings)
 {
-	std::string seed_str;
-	const char *seed_name = (settings == g_settings) ? "fixed_map_seed" : "seed";
+	// should always be used via MapSettingsManager
+	assert(settings != g_settings);
 
-	if (settings->getNoEx(seed_name, seed_str)) {
+	std::string seed_str;
+	if (settings->getNoEx("seed", seed_str)) {
 		if (!seed_str.empty())
 			seed = read_seed(seed_str.c_str());
 		else
