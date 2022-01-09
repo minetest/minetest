@@ -90,24 +90,6 @@ public:
 		drop();
 	}
 
-<<<<<<< HEAD
-	Buffer& operator=(const Buffer &buffer)
-	{
-		if(this == &buffer)
-			return *this;
-		drop();
-		m_size = buffer.m_size;
-		if(m_size != 0)
-		{
-			data = new T[buffer.m_size];
-			memcpy(data, buffer.data, buffer.m_size);
-		}
-		else
-			data = nullptr;
-		return *this;
-	}
-=======
->>>>>>> 76dbd0d2d04712dcad4f7c6afecb97fa8d662d6d
 	Buffer& operator=(Buffer &&buffer)
 	{
 		if(this == &buffer)
