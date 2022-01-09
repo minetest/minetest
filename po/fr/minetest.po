@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2022-01-09 17:50+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"Last-Translator: AFCMS <afcm.contact@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -1294,7 +1294,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Changer de mot de passe"
+msgstr "Changer le mot de passe"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
