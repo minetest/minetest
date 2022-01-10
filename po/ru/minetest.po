@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-12-20 21:44+0000\n"
-"Last-Translator: Stas Kies <stask85@gmail.com>\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"Last-Translator: Mikitko <rudzik8@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -654,7 +654,7 @@ msgstr "Масштаб"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "Искать"
+msgstr "Поиск"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -1670,7 +1670,7 @@ msgstr "Выполнить"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "Справка"
+msgstr "Помощь"
 
 #: src/client/keycode.cpp
 msgid "Home"
