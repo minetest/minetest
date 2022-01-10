@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2022-01-10 02:53+0000\n"
-"Last-Translator: Minetest-j45 <janscheresmonesma@gmail.com>\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -656,7 +656,7 @@ msgstr "Escala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "Búsqueda"
+msgstr "Buscar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -1678,7 +1678,7 @@ msgstr "Ejecutar"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "Ayudar"
+msgstr "Ayuda"
 
 #: src/client/keycode.cpp
 msgid "Home"
