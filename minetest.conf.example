@@ -1014,6 +1014,9 @@
 #    When gui_scaling_filter is true, all GUI images need to be
 #    filtered in software, but some images are generated directly
 #    to hardware (e.g. render-to-texture for nodes in inventory).
+#    This will smooth over some of the rough edges, and blend
+#    pixels when scaling down, at the cost of blurring some
+#    edge pixels when images are scaled by non-integer sizes.
 #    type: bool
 # gui_scaling_filter = false
 

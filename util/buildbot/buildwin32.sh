@@ -129,7 +129,6 @@ cmake -S $sourcedir -B . \
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
 	-DENABLE_GETTEXT=1 \
-	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
 	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \

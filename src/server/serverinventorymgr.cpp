@@ -39,24 +39,29 @@ ServerInventoryManager::~ServerInventoryManager()
 
 Inventory *ServerInventoryManager::getInventory(const InventoryLocation &loc)
 {
+	// No m_env check here: allow creation and modification of detached inventories
+
 	switch (loc.type) {
 	case InventoryLocation::UNDEFINED:
 	case InventoryLocation::CURRENT_PLAYER:
 		break;
 	case InventoryLocation::PLAYER: {
+		if (!m_env)
+			return nullptr;
+
 		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
 		if (!player)
 			return NULL;
+
 		PlayerSAO *playersao = player->getPlayerSAO();
-		if (!playersao)
-			return NULL;
-		return playersao->getInventory();
+		return playersao ? playersao->getInventory() : nullptr;
 	} break;
 	case InventoryLocation::NODEMETA: {
+		if (!m_env)
+			return nullptr;
+
 		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
-		if (!meta)
-			return NULL;
-		return meta->getInventory();
+		return meta ? meta->getInventory() : nullptr;
 	} break;
 	case InventoryLocation::DETACHED: {
 		auto it = m_detached_inventories.find(loc.name);
@@ -151,12 +156,13 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 	const std::string &owner = inv_it->second.owner;
 
 	if (!owner.empty()) {
-		RemotePlayer *player = m_env->getPlayer(owner.c_str());
+		if (m_env) {
+			RemotePlayer *player = m_env->getPlayer(owner.c_str());
 
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT)
-			m_env->getGameDef()->sendDetachedInventory(
-					nullptr, name, player->getPeerId());
-
+			if (player && player->getPeerId() != PEER_ID_INEXISTENT)
+				m_env->getGameDef()->sendDetachedInventory(
+						nullptr, name, player->getPeerId());
+		}
 	} else if (m_env) {
 		// Notify all players about the change as soon ServerEnv exists
 		m_env->getGameDef()->sendDetachedInventory(

@@ -20,7 +20,6 @@
 #include "config.h"
 #include <IGUIEnvironment.h>
 
-#if USE_FREETYPE
 
 namespace irr
 {
@@ -229,41 +228,6 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 		static_text->setText(text.c_str());
 	}
 }
-
-#else // USE_FREETYPE
-
-namespace irr
-{
-namespace gui
-{
-
-class StaticText
-{
-public:
-	static irr::gui::IGUIStaticText *add(
-		irr::gui::IGUIEnvironment *guienv,
-		const EnrichedString &text,
-		const core::rect< s32 > &rectangle,
-		bool border = false,
-		bool wordWrap = true,
-		irr::gui::IGUIElement *parent = NULL,
-		s32 id = -1,
-		bool fillBackground = false)
-	{
-		return guienv->addStaticText(text.c_str(), rectangle, border, wordWrap, parent, id, fillBackground);
-	}
-};
-
-} // end namespace gui
-
-} // end namespace irr
-
-inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedString &text)
-{
-	static_text->setText(text.c_str());
-}
-
-#endif
 
 inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *text)
 {

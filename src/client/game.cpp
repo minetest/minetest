@@ -2481,6 +2481,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
 
 	PlayerControl control(
+		isKeyDown(KeyType::FORWARD),
+		isKeyDown(KeyType::BACKWARD),
+		isKeyDown(KeyType::LEFT),
+		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
 		isKeyDown(KeyType::AUX1),
 		isKeyDown(KeyType::SNEAK),
@@ -2511,39 +2515,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 #endif
 
-	u32 keypress_bits = (
-			( (u32)(control.jump  & 0x1) << 4) |
-			( (u32)(control.aux1  & 0x1) << 5) |
-			( (u32)(control.sneak & 0x1) << 6) |
-			( (u32)(control.dig   & 0x1) << 7) |
-			( (u32)(control.place & 0x1) << 8) |
-			( (u32)(control.zoom  & 0x1) << 9)
-		);
-
-	// Set direction keys to ensure mod compatibility
-	if (control.movement_speed > 0.001f) {
-		float absolute_direction;
-
-		// Check in original orientation (absolute value indicates forward / backward)
-		absolute_direction = abs(control.movement_direction);
-		if (absolute_direction < (3.0f / 8.0f * M_PI))
-			keypress_bits |= (u32)(0x1 << 0); // Forward
-		if (absolute_direction > (5.0f / 8.0f * M_PI))
-			keypress_bits |= (u32)(0x1 << 1); // Backward
-
-		// Rotate entire coordinate system by 90 degrees (absolute value indicates left / right)
-		absolute_direction = control.movement_direction + M_PI_2;
-		if (absolute_direction >= M_PI)
-			absolute_direction -= 2 * M_PI;
-		absolute_direction = abs(absolute_direction);
-		if (absolute_direction < (3.0f / 8.0f * M_PI))
-			keypress_bits |= (u32)(0x1 << 2); // Left
-		if (absolute_direction > (5.0f / 8.0f * M_PI))
-			keypress_bits |= (u32)(0x1 << 3); // Right
-	}
-
 	client->setPlayerControl(control);
-	player->keyPressed = keypress_bits;
 
 	//tt.stop();
 }
