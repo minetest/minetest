@@ -745,14 +745,6 @@ core.register_chatcommand("mods", {
 		core.show_formspec(name, "__builtin:mods", build_mods_formspec())
 		return true
 	end
-	--[[func = function(name, param)
-		local mods = core.get_modnames()
-		if #mods == 0 then
-			return true, S("No mods installed.")
-		else
-			return true, table.concat(core.get_modnames(), ", ")
-		end
-	end,]]
 })
 
 local function handle_give_command(cmd, giver, receiver, stackstring)
