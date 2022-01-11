@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
-"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"PO-Revision-Date: 2022-01-12 18:52+0000\n"
+"Last-Translator: Sebastian Jasiński <w3c.jas@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -68,21 +68,18 @@ msgid "Available commands: "
 msgstr "Dostępne komendy: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Command not available: "
-msgstr "Komenda nie jest dostępna: "
+msgstr "Polecenie nie jest dostępne: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands"
-msgstr "Uzyskaj pomoc dotyczącą komend"
+msgstr "Uzyskaj pomoc dotyczącą poleceń"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"Użyj '.help <cmd>' aby uzyskać więcej informacji lub '.help all' aby "
+"Użyj '.help <cmd>', aby uzyskać więcej informacji lub '.help all', aby "
 "wyświetlić wszystko."
 
 #: builtin/common/chatcommands.lua
