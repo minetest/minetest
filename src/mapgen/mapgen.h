@@ -292,7 +292,9 @@ private:
 	inheriting MapgenBasic.
 */
 class MapgenBasic : public Mapgen {
+	friend class ModApiMapgen;
 public:
+	MapgenBasic() = default;
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge);
 	virtual ~MapgenBasic();
 
@@ -306,7 +308,7 @@ public:
 protected:
 	BiomeManager *m_bmgr;
 
-	Noise *noise_filler_depth;
+	Noise *noise_filler_depth = nullptr;
 
 	v3s16 node_min;
 	v3s16 node_max;

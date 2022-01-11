@@ -134,6 +134,12 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
 
 	m_emerge  = emerge;
 	ndef      = emerge->ndef;
+
+	//// Initialize biome generator
+	// Unused by non-MapgenBasic mapgens, but may be used from Lua
+	biomegen = emerge->biomegen;
+	biomegen->assertChunkSize(csize);
+	biomemap = biomegen->biomemap;
 }
 
 Mapgen::~Mapgen()
@@ -606,10 +612,7 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 	//// Allocate heightmap
 	this->heightmap = new s16[csize.X * csize.Z];
 
-	//// Initialize biome generator
-	biomegen = emerge->biomegen;
-	biomegen->assertChunkSize(csize);
-	biomemap = biomegen->biomemap;
+	//// Initializing biome generator is done by parent Mapgen class
 
 	//// Look up some commonly used content
 	c_stone              = ndef->getId("mapgen_stone");
@@ -634,7 +637,8 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 
 MapgenBasic::~MapgenBasic()
 {
-	delete []heightmap;
+	if (heightmap)
+		delete []heightmap;
 }
 
 
@@ -647,7 +651,8 @@ void MapgenBasic::generateBiomes()
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
-	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
+	if (noise_filler_depth)
+		noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
 
 	s16 *biome_transitions = biomegen->getBiomeTransitions();
 
@@ -717,8 +722,8 @@ void MapgenBasic::generateBiomes()
 
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top +
-					biome->depth_filler +
-					noise_filler_depth->result[index], 0.0f);
+					biome->depth_filler + (noise_filler_depth ?
+					noise_filler_depth->result[index] : 0.0f), 0.0f);
 				depth_water_top = biome->depth_water_top;
 				depth_riverbed = biome->depth_riverbed;
 			}
