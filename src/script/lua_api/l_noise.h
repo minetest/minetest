@@ -59,6 +59,7 @@ public:
 */
 class LuaPerlinNoiseMap : public ModApiBase
 {
+	friend class ModApiMapgen;
 	NoiseParams np;
 	Noise *noise;
 	bool m_is3d;

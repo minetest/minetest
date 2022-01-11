@@ -240,21 +240,23 @@ private:
 */
 class MapgenBasic : public Mapgen {
 public:
+	MapgenBasic(const NodeDefManager *ndef_p);
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge);
 	virtual ~MapgenBasic();
 
 	virtual void generateBiomes();
+	virtual void generateBiomes(v3s16 pmin, v3s16 pmax);
 	virtual void dustTopNodes();
 	virtual void generateCavesNoiseIntersection(s16 max_stone_y);
 	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_ymax);
 	virtual bool generateCavernsNoise(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y);
 
-protected:
-	EmergeParams *m_emerge;
-	BiomeManager *m_bmgr;
-
 	Noise *noise_filler_depth;
+
+protected:
+	EmergeParams *m_emerge = nullptr;
+	BiomeManager *m_bmgr;
 
 	v3s16 node_min;
 	v3s16 node_max;

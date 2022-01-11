@@ -116,6 +116,12 @@ private:
 	// generate_decorations(vm, p1, p2)
 	static int l_generate_decorations(lua_State *L);
 
+	// calc_biome_noise(p1)
+	static int l_calc_biome_noise(lua_State *L);
+
+	// generate_biomes(vm, p1, p2, [noise_filler_depth])
+	static int l_generate_biomes(lua_State *L);
+
 	// clear_registered_ores
 	static int l_clear_registered_ores(lua_State *L);
 
