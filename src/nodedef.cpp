@@ -207,7 +207,17 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	u8 version = 6;
 	writeU8(os, version);
 
-	os << serializeString16(name);
+	if (protocol_version > 39) {
+		os << serializeString16(name);
+	} else {
+		// Before f018737, TextureSource::getTextureAverageColor did not handle
+		// missing textures. "[png" can be used as base texture, but is not known
+		// on older clients. Hence use "blank.png" to avoid this problem.
+		if (!name.empty() && name[0] == '[')
+			os << serializeString16("blank.png^" + name);
+		else
+			os << serializeString16(name);
+	}
 	animation.serialize(os, version);
 	bool has_scale = scale > 0;
 	u16 flags = 0;
@@ -491,7 +501,16 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU32(os, damage_per_second);
 
 	// liquid
-	writeU8(os, liquid_type);
+	LiquidType liquid_type_bc = liquid_type;
+	if (protocol_version <= 39) {
+		// Since commit 7f25823, liquid drawtypes can be used even with LIQUID_NONE
+		// solution: force liquid type accordingly to accepted values
+		if (drawtype == NDT_LIQUID)
+			liquid_type_bc = LIQUID_SOURCE;
+		else if (drawtype == NDT_FLOWINGLIQUID)
+			liquid_type_bc = LIQUID_FLOWING;
+	}
+	writeU8(os, liquid_type_bc);
 	os << serializeString16(liquid_alternative_flowing);
 	os << serializeString16(liquid_alternative_source);
 	writeU8(os, liquid_viscosity);
