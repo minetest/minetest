@@ -4365,10 +4365,10 @@ Mapgen objects
 ==============
 
 A mapgen object is a construct used in map generation. Mapgen objects can be
-used by an `on_generate` callback to speed up operations by avoiding
+used by an `on_generated()` callback to speed up operations by avoiding
 unnecessary recalculations, these can be retrieved using the
 `minetest.get_mapgen_object()` function. If the requested Mapgen object is
-unavailable, or `get_mapgen_object()` was called outside of an `on_generate()`
+unavailable, or `get_mapgen_object()` was called outside of an `on_generated()`
 callback, `nil` is returned.
 
 The following Mapgen objects are currently available:
@@ -5323,6 +5323,21 @@ Environment access
     * Generate all registered decorations within the VoxelManip `vm` and in the
       area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
+* `minetest.generate_biomes(vm, pos1, pos2[, noise_filler_depth])`
+    * Generate biome nodes according to the registered biomes and
+      temperature/humidity noises within the VoxelManip `vm` and in the area
+      from `pos1` to `pos2`.
+    * `noise_filler_depth` is an optional `PerlinNoiseMap` to add an offset to
+      the `depth_filler` of the biomes (see [Biome definition]). It is
+      recommended as it avoids creating a new `PerlinNoiseMap` internally for
+      every chunk. By default, the default noise for mgv7 is used.
+    * Must be called during mapgen (`on_generated()` callback)
+    * `pos1` and `pos2` should have the same X and Z size than mapgen chunks.
+    * The initial data in `vm` may only contain air, stone, water and
+      river water nodes (see [Essential aliases]). Other nodes are ignored.
+    * Also populates the mapgen objects `heatmap`, `humiditymap` and `biomemap`
+      (see [Mapgen objects]), so that `minetest.generate_decorations` and
+      `minetest.register_ores` will take them into account.
 * `minetest.clear_objects([options])`
     * Clear all objects in the environment
     * Takes an optional table as an argument with the field `mode`.
