@@ -426,10 +426,9 @@ void main(void)
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	float shadow_int = 0.0;
 	vec3 shadow_color = vec3(0.0, 0.0, 0.0);
-	vec3 posLightSpace = clamp(getLightSpacePosition(), 0.0, 1.0);
+	vec3 posLightSpace = getLightSpacePosition();
 
-	float distance_rate = 1.0 - 
-			pow(pow(2.0 * (posLightSpace.x - 0.5), 4) + pow(2.0 * (posLightSpace.y - 0.5), 4), 2.0);
+	float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
 	float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z  ),0.0);
 
 	if (distance_rate > 1e-7) {
@@ -478,7 +477,6 @@ void main(void)
 	// col.rgb = vec3(posLightSpace.x, posLightSpace.y, posLightSpace.z);
 	// col.r = getHardShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 	// col.g = texture2D(ShadowMapSampler, posLightSpace.xy).r;
-	// col.r = distance_rate; // nice to debug the projection of shadowmap
 #endif
 
 #if ENABLE_TONE_MAPPING
