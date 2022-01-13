@@ -1509,18 +1509,47 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 	mg_temp.ndef = getServer(L)->getNodeDefManager();
 	mg_temp.biomegen = mg->biomegen;
 	mg_temp.biomemap = mg->biomegen->biomemap;
-	mg_temp.water_level = 1;
+	mg_temp.water_level = mg->water_level;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
 			mg->vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
 	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) :
 			mg->vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
+	sortBoxVerticies(pmin, pmax);
+	v3s16 psize = pmax - pmin + v3s16(1,1,1);
 
-	LuaPerlinNoiseMap *nmap = LuaPerlinNoiseMap::checkobject(L, 4);
-	mg_temp.noise_filler_depth = nmap->noise;
+	if (psize.X != (s16)mg->csize.X || psize.Z > (s16)mg->csize.Z) {
+		errorstream << "generate_biomes: X/Z extent must match"
+				" mapgen chunk size" << std::endl;
+		return 0;
+	}
 
 	mg_temp.biomegen->calcBiomeNoise(pmin);
-	mg_temp.generateBiomes(pmin, pmax);
+
+	if (lua_isuserdata(L, 4)) {
+		LuaPerlinNoiseMap *nmap = LuaPerlinNoiseMap::checkobject(L, 4);
+		Noise *noise = nmap->noise;
+		if ((s16)noise->sx == psize.X &&
+				(s16)noise->sz >= psize.Z) {
+			mg_temp.noise_filler_depth = noise;
+			mg_temp.generateBiomes(pmin, pmax);
+		} else {
+			warningstream << "generate_biomes: size of noisemap is inconsistent with chunk size,"
+					" a copy will be used" << std::endl;
+			Noise noise_temp(&noise->np, noise->seed,
+					psize.X, psize.Z);
+			mg_temp.noise_filler_depth = &noise_temp;
+			mg_temp.generateBiomes(pmin, pmax);
+		}
+	} else {
+		warningstream << "generate_biomes: passing a PerlinNoiseMap is recommended" << std::endl;
+		const NoiseParams np_filler_depth(0.0, 1.2, v3f(150, 150, 150),
+				261, 3, 0.7, 2.0); // Copy from mgv7 default
+		Noise noise_temp(&np_filler_depth, mg->seed,
+				psize.X, psize.Z);
+		mg_temp.noise_filler_depth = &noise_temp;
+		mg_temp.generateBiomes(pmin, pmax);
+	}
 
 	return 0;
 }
