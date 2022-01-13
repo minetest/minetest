@@ -726,7 +726,7 @@ function pkgmgr.preparemodlist(data)
 			end
 
 			if not mod_found then
-				if fallback_mod then
+				if fallback_mod and value:find("/") then
 					fallback_mod.enabled = true
 				else
 					core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
