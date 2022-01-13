@@ -1435,7 +1435,8 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	mg.ndef = getServer(L)->getNodeDefManager();
 
 	Mapgen *mg_current = emerge->getCurrentMapgen();
-	if (mg_current)
+	if (mg_current && mg_current->biomegen &&
+			mg_current->biomegen->getType() == BIOMEGEN_ORIGINAL)
 		mg.biomemap = mg_current->biomegen->biomemap;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
@@ -1468,7 +1469,8 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	mg.ndef = getServer(L)->getNodeDefManager();
 
 	Mapgen *mg_current = emerge->getCurrentMapgen();
-	if (mg_current)
+	if (mg_current && mg_current->biomegen &&
+			mg_current->biomegen->getType() == BIOMEGEN_ORIGINAL)
 		mg.biomemap = mg_current->biomegen->biomemap;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
@@ -1485,30 +1487,6 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 }
 
 
-// calc_biome_noise(p1)
-int ModApiMapgen::l_calc_biome_noise(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	Mapgen *mg = emerge->getCurrentMapgen();
-	if (!mg)
-		return 0;
-
-	BiomeGen *biomegen = mg->biomegen;
-
-	if (!biomegen || biomegen->getType() != BIOMEGEN_ORIGINAL)
-		return 0;
-
-	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
-			mg->vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
-
-	biomegen->calcBiomeNoise(pmin);
-
-	return 0;
-}
-
-
 // generate_biomes(vm, p1, p2, [noise_filler_depth])
 int ModApiMapgen::l_generate_biomes(lua_State *L)
 {
@@ -1519,6 +1497,9 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 		return 0;
 
 	Mapgen *mg = emerge->getCurrentMapgen();
+	if (!mg || !mg->biomegen ||
+			mg->biomegen->getType() != BIOMEGEN_ORIGINAL)
+		return 0;
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
@@ -1538,6 +1519,7 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 	LuaPerlinNoiseMap *nmap = LuaPerlinNoiseMap::checkobject(L, 4);
 	mg_temp.noise_filler_depth = nmap->noise;
 
+	mg_temp.biomegen->calcBiomeNoise(pmin);
 	mg_temp.generateBiomes(pmin, pmax);
 
 	return 0;
@@ -1869,7 +1851,6 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 
 	API_FCT(generate_ores);
 	API_FCT(generate_decorations);
-	API_FCT(calc_biome_noise);
 	API_FCT(generate_biomes);
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
