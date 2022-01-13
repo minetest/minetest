@@ -141,8 +141,12 @@ SubgameSpec findSubgame(const std::string &id)
 	menuicon_path = getImagePath(
 			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
+	bool supports_dynamic_shadows = false;
+	if (conf.exists("supports_dynamic_shadows"))
+		supports_dynamic_shadows = conf.getBool("supports_dynamic_shadows");
+
 	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
-			menuicon_path, game_author, game_release);
+			menuicon_path, game_author, game_release, supports_dynamic_shadows);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)

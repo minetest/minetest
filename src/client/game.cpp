@@ -1046,6 +1046,9 @@ bool Game::startup(bool *kill,
 
 	m_rendering_engine->initialize(client, hud);
 
+	if (start_data.game_spec.supports_dynamic_shadows)
+		m_rendering_engine->initializeShadows();
+
 	return true;
 }
 

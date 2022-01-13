@@ -113,6 +113,7 @@ public:
 			bool show_minimap, bool draw_wield_tool, bool draw_crosshair);
 
 	void initialize(Client *client, Hud *hud);
+	void initializeShadows();
 	void finalize();
 
 	bool run()

@@ -35,10 +35,6 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	screensize = driver->getScreenSize();
 	virtual_size = screensize;
 
-	if (g_settings->getBool("enable_shaders") &&
-			g_settings->getBool("enable_dynamic_shadows")) {
-		shadow_renderer = new ShadowRenderer(device, client);
-	}
 }
 
 RenderingCore::~RenderingCore()
@@ -51,8 +47,16 @@ void RenderingCore::initialize()
 {
 	// have to be called late as the VMT is not ready in the constructor:
 	initTextures();
-	if (shadow_renderer)
+}
+
+void RenderingCore::initializeShadows()
+{
+	if (shadow_renderer == nullptr &&
+			g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		shadow_renderer = new ShadowRenderer(device, client);
 		shadow_renderer->initialize();
+	}
 }
 
 void RenderingCore::updateScreenSize()

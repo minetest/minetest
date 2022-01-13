@@ -71,6 +71,7 @@ public:
 	RenderingCore &operator=(RenderingCore &&) = delete;
 
 	void initialize();
+	void initializeShadows();
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 			bool _draw_wield_tool, bool _draw_crosshair);
 

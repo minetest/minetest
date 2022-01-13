@@ -543,6 +543,12 @@ void RenderingEngine::initialize(Client *client, Hud *hud)
 	core->initialize();
 }
 
+void RenderingEngine::initializeShadows()
+{
+	if (core)
+		core->initializeShadows();
+}
+
 void RenderingEngine::finalize()
 {
 	core.reset();
