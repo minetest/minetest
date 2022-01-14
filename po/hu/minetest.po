@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2022-01-13 22:35+0000\n"
-"Last-Translator: pampogo kiraly <pampogo.kiraly@gmail.com>\n"
+"PO-Revision-Date: 2022-01-16 02:52+0000\n"
+"Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -1170,9 +1170,8 @@ msgid "Connection error (timed out?)"
 msgstr "Kapcsolódási hiba (időtúllépés?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Nem található vagy nem betölthető a játék"
+msgstr "Nem található vagy nem betölthető a játék: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -2124,9 +2123,9 @@ msgid "Muted"
 msgstr "Némitva"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Hangerő: "
+msgstr "Hangerő: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
