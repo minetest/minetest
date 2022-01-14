@@ -1503,7 +1503,11 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
-	MapgenBasic mg(ndef);
+	MapgenBasic mg;
+
+	mg.c_stone              = ndef->getId("mapgen_stone");
+	mg.c_water_source       = ndef->getId("mapgen_water_source");
+	mg.c_river_water_source = ndef->getId("mapgen_river_water_source");
 
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
@@ -1530,16 +1534,16 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 	if (lua_isuserdata(L, 4)) {
 		LuaPerlinNoiseMap *nmap = LuaPerlinNoiseMap::checkobject(L, 4);
 		Noise *noise = nmap->noise;
-		if ((s16)noise->sx == psize.X &&
-				(s16)noise->sz >= psize.Z) {
+		if ((s16)noise->sx == psize.X && (s16)noise->sz >= psize.Z)
 			mg.noise_filler_depth = noise;
-		} else {
+		else
 			warningstream << "generate_biomes: size of noisemap is inconsistent with chunk size,"
 					" noise will not be used" << std::endl;
-		}
 	}
 
-	mg.generateBiomes(pmin, pmax);
+	mg.node_min = pmin;
+	mg.node_max = pmax;
+	mg.generateBiomes();
 
 	return 0;
 }

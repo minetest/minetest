@@ -623,15 +623,6 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 }
 
 
-MapgenBasic::MapgenBasic(const NodeDefManager *ndef_p) : Mapgen() {
-	ndef = ndef_p;
-
-	c_stone              = ndef_p->getId("mapgen_stone");
-	c_water_source       = ndef_p->getId("mapgen_water_source");
-	c_river_water_source = ndef_p->getId("mapgen_river_water_source");
-}
-
-
 MapgenBasic::~MapgenBasic()
 {
 	if (heightmap)
@@ -777,15 +768,6 @@ void MapgenBasic::generateBiomes()
  		if (biomemap[index] == BIOME_NONE && water_biome_index != 0)
 			biomemap[index] = water_biome_index;
 	}
-}
-
-
-void MapgenBasic::generateBiomes(v3s16 pmin, v3s16 pmax)
-{
-	node_min = pmin;
-	node_max = pmax;
-
-	generateBiomes();
 }
 
 
