@@ -651,7 +651,8 @@ void MapgenBasic::generateBiomes()
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
-	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
+	if (noise_filler_depth)
+		noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
@@ -706,8 +707,8 @@ void MapgenBasic::generateBiomes()
 
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top +
-					biome->depth_filler +
-					noise_filler_depth->result[index], 0.0f);
+					biome->depth_filler + (noise_filler_depth ?
+					noise_filler_depth->result[index] : 0.0f), 0.0f);
 				depth_water_top = biome->depth_water_top;
 				depth_riverbed = biome->depth_riverbed;
 				biome_y_min = biome->min_pos.Y;

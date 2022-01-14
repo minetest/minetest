@@ -5328,16 +5328,14 @@ Environment access
       temperature/humidity noises within the VoxelManip `vm` and in the area
       from `pos1` to `pos2`.
     * `noise_filler_depth` is an optional `PerlinNoiseMap` to add an offset to
-      the `depth_filler` of the biomes (see [Biome definition]). It is
-      recommended as it avoids creating a new `PerlinNoiseMap` internally for
-      every chunk. By default, the default noise for mgv7 is used.
+      the `depth_filler` of the biomes (see [Biome definition]).
     * Must be called during mapgen (`on_generated()` callback)
     * `pos1` and `pos2` should have the same X and Z size than mapgen chunks.
     * The initial data in `vm` may only contain air, stone, water and
       river water nodes (see [Essential aliases]). Other nodes are ignored.
     * Also populates the mapgen objects `heatmap`, `humiditymap` and `biomemap`
       (see [Mapgen objects]), so that `minetest.generate_decorations` and
-      `minetest.register_ores` will take them into account.
+      `minetest.generate_ores` will take them into account.
 * `minetest.clear_objects([options])`
     * Clear all objects in the environment
     * Takes an optional table as an argument with the field `mode`.

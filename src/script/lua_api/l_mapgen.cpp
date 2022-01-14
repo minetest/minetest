@@ -1532,24 +1532,13 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 		if ((s16)noise->sx == psize.X &&
 				(s16)noise->sz >= psize.Z) {
 			mg_temp.noise_filler_depth = noise;
-			mg_temp.generateBiomes(pmin, pmax);
 		} else {
 			warningstream << "generate_biomes: size of noisemap is inconsistent with chunk size,"
-					" a copy will be used" << std::endl;
-			Noise noise_temp(&noise->np, noise->seed,
-					psize.X, psize.Z);
-			mg_temp.noise_filler_depth = &noise_temp;
-			mg_temp.generateBiomes(pmin, pmax);
+					" noise will not be used" << std::endl;
 		}
-	} else {
-		warningstream << "generate_biomes: passing a PerlinNoiseMap is recommended" << std::endl;
-		const NoiseParams np_filler_depth(0.0, 1.2, v3f(150, 150, 150),
-				261, 3, 0.7, 2.0); // Copy from mgv7 default
-		Noise noise_temp(&np_filler_depth, mg->seed,
-				psize.X, psize.Z);
-		mg_temp.noise_filler_depth = &noise_temp;
-		mg_temp.generateBiomes(pmin, pmax);
 	}
+
+	mg_temp.generateBiomes(pmin, pmax);
 
 	return 0;
 }

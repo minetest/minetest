@@ -252,7 +252,7 @@ public:
 	virtual bool generateCavernsNoise(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y);
 
-	Noise *noise_filler_depth;
+	Noise *noise_filler_depth = nullptr;
 
 protected:
 	EmergeParams *m_emerge = nullptr;
