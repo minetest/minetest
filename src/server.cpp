@@ -512,7 +512,7 @@ void Server::start()
 
 	// ASCII art for the win!
 	std::cerr
-		<< "        .__                __.                 __.  " << std::endl
+		<< "         __.               __.                 __.  " << std::endl
 		<< "  _____ |__| ____   _____ /  |_  _____  _____ /  |_ " << std::endl
 		<< " /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\" << std::endl
 		<< "|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  " << std::endl
