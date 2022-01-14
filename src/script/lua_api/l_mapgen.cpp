@@ -1496,49 +1496,50 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 	if (!emerge)
 		return 0;
 
-	Mapgen *mg = emerge->getCurrentMapgen();
-	if (!mg || !mg->biomegen ||
-			mg->biomegen->getType() != BIOMEGEN_ORIGINAL)
+	Mapgen *mg_current = emerge->getCurrentMapgen();
+	if (!mg_current || !mg_current->biomegen ||
+			mg_current->biomegen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
-	MapgenBasic mg_temp(ndef);
+	MapgenBasic mg(ndef);
 
-	mg_temp.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
-	mg_temp.ndef = getServer(L)->getNodeDefManager();
-	mg_temp.biomegen = mg->biomegen;
-	mg_temp.biomemap = mg->biomegen->biomemap;
-	mg_temp.water_level = mg->water_level;
+	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
+	mg.ndef = getServer(L)->getNodeDefManager();
+	mg.biomegen = mg_current->biomegen;
+	mg.biomemap = mg_current->biomegen->biomemap;
+	mg.water_level = mg_current->water_level;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
-			mg->vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
+			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
 	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) :
-			mg->vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
+			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 	v3s16 psize = pmax - pmin + v3s16(1,1,1);
 
-	if (psize.X != (s16)mg->csize.X || psize.Z > (s16)mg->csize.Z) {
+	if (psize.X != (s16)mg_current->csize.X ||
+			psize.Z > (s16)mg_current->csize.Z) {
 		errorstream << "generate_biomes: X/Z extent must match"
 				" mapgen chunk size" << std::endl;
 		return 0;
 	}
 
-	mg_temp.biomegen->calcBiomeNoise(pmin);
+	mg.biomegen->calcBiomeNoise(pmin);
 
 	if (lua_isuserdata(L, 4)) {
 		LuaPerlinNoiseMap *nmap = LuaPerlinNoiseMap::checkobject(L, 4);
 		Noise *noise = nmap->noise;
 		if ((s16)noise->sx == psize.X &&
 				(s16)noise->sz >= psize.Z) {
-			mg_temp.noise_filler_depth = noise;
+			mg.noise_filler_depth = noise;
 		} else {
 			warningstream << "generate_biomes: size of noisemap is inconsistent with chunk size,"
 					" noise will not be used" << std::endl;
 		}
 	}
 
-	mg_temp.generateBiomes(pmin, pmax);
+	mg.generateBiomes(pmin, pmax);
 
 	return 0;
 }
