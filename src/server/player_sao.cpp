@@ -463,14 +463,14 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
 }
 
-void PlayerSAO::setHP(s32 orig_hp, const PlayerHPChangeReason &reason, bool from_client)
+void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	orig_hp = rangelim(orig_hp, 0, U16_MAX);
+	target_hp = rangelim(target_hp, 0, U16_MAX);
 
-	if (orig_hp == m_hp)
+	if (target_hp == m_hp)
 		return; // Nothing to do
 
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, orig_hp - (s32)m_hp, reason);
+	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
 
 	s32 hp = (s32)m_hp + std::min(hp_change, U16_MAX); // Protection against s32 overflow
 	hp = rangelim(hp, 0, U16_MAX);
