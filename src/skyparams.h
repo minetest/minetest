@@ -82,7 +82,7 @@ struct CloudParams
 class SkyboxDefaults
 {
 public:
-	const SkyboxParams getSkyDefaults()
+	static const SkyboxParams getSkyDefaults()
 	{
 		SkyboxParams sky;
 		sky.bgcolor = video::SColor(255, 255, 255, 255);
@@ -95,7 +95,7 @@ public:
 		return sky;
 	}
 
-	const SkyColor getSkyColorDefaults()
+	static const SkyColor getSkyColorDefaults()
 	{
 		SkyColor sky;
 		// Horizon colors
@@ -110,7 +110,7 @@ public:
 		return sky;
 	}
 
-	const SunParams getSunDefaults()
+	static const SunParams getSunDefaults()
 	{
 		SunParams sun;
 		sun.visible = true;
@@ -122,7 +122,7 @@ public:
 		return sun;
 	}
 
-	const MoonParams getMoonDefaults()
+	static const MoonParams getMoonDefaults()
 	{
 		MoonParams moon;
 		moon.visible = true;
@@ -132,7 +132,7 @@ public:
 		return moon;
 	}
 
-	const StarParams getStarDefaults()
+	static const StarParams getStarDefaults()
 	{
 		StarParams stars;
 		stars.visible = true;
@@ -142,7 +142,7 @@ public:
 		return stars;
 	}
 
-	const CloudParams getCloudDefaults()
+	static const CloudParams getCloudDefaults()
 	{
 		CloudParams clouds;
 		clouds.density = 0.4f;
