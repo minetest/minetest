@@ -819,8 +819,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 				<< std::endl;
 
 		PlayerHPChangeReason reason(PlayerHPChangeReason::FALL);
-		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason, false);
-		SendPlayerHPOrDie(playersao, reason); // correct client side prediction
+		playersao->setHP((s32)playersao->getHP() - (s32)damage, reason, true);
 	}
 }
 

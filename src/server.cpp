@@ -1095,11 +1095,12 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send inventory
 	SendInventory(playersao, false);
 
-	// Send HP or death screen
+	// Send HP
+	SendPlayerHP(playersao);
+
+	// Send death screen
 	if (playersao->isDead())
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
-	else
-		SendPlayerHP(peer_id);
 
 	// Send Breath
 	SendPlayerBreath(playersao);
@@ -1365,18 +1366,21 @@ void Server::SendMovement(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
+void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
-	if (playersao->isImmortal())
-		return;
+	m_script->player_event(playersao, "health_changed");
+	SendPlayerHP(playersao);
 
-	session_t peer_id = playersao->getPeerID();
-	bool is_alive = !playersao->isDead();
+	// Send to other clients
+	playersao->sendPunchCommand();
 
-	if (is_alive)
-		SendPlayerHP(peer_id);
-	else
-		DiePlayer(peer_id, reason);
+	if (playersao->isDead())
+		HandlePlayerDeath(playersao, reason);
+}
+
+void Server::SendPlayerHP(PlayerSAO *playersao)
+{
+	SendHP(playersao->getPeerID(), playersao->getHP());
 }
 
 void Server::SendHP(session_t peer_id, u16 hp)
@@ -1808,18 +1812,6 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 	else {
 		Send(&pkt);
 	}
-}
-
-void Server::SendPlayerHP(session_t peer_id)
-{
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	SendHP(peer_id, playersao->getHP());
-	m_script->player_event(playersao,"health_changed");
-
-	// Send to other clients
-	playersao->sendPunchCommand();
 }
 
 void Server::SendPlayerBreath(PlayerSAO *sao)
@@ -2750,23 +2742,18 @@ void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 	Something random
 */
 
-void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
+void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
 	infostream << "Server::DiePlayer(): Player "
 			<< playersao->getPlayer()->getName()
 			<< " dies" << std::endl;
 
-	playersao->setHP(0, reason);
 	playersao->clearParentAttachment();
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);
 
-	SendPlayerHP(peer_id);
-	SendDeathscreen(peer_id, false, v3f(0,0,0));
+	SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 }
 
 void Server::RespawnPlayer(session_t peer_id)
@@ -2787,8 +2774,6 @@ void Server::RespawnPlayer(session_t peer_id)
 		// setPos will send the new position to client
 		playersao->setPos(findSpawnPos());
 	}
-
-	SendPlayerHP(peer_id);
 }
 
 
