@@ -430,35 +430,28 @@ void ModMetadataDatabaseFiles::beginSave()
 
 void ModMetadataDatabaseFiles::endSave()
 {
+	if (m_modified.empty())
+		return;
+
 	if (!fs::CreateAllDirs(m_storage_dir)) {
-		errorstream << "ModMetadataDatabaseFiles: Unable to save. '" << m_storage_dir
-				<< "' tree cannot be created." << std::endl;
+		errorstream << "ModMetadataDatabaseFiles: Unable to save. '"
+				<< m_storage_dir << "' cannot be created." << std::endl;
+		return;
+	}
+	if (!fs::IsDir(m_storage_dir)) {
+		errorstream << "ModMetadataDatabaseFiles: Unable to save. '"
+				<< m_storage_dir << "' is not a directory." << std::endl;
 		return;
 	}
 
 	for (auto it = m_modified.begin(); it != m_modified.end();) {
 		const std::string &modname = *it;
 
-		if (!fs::PathExists(m_storage_dir)) {
-			if (!fs::CreateAllDirs(m_storage_dir)) {
-				errorstream << "ModMetadataDatabaseFiles[" << modname
-						<< "]: Unable to save. '" << m_storage_dir
-						<< "' tree cannot be created." << std::endl;
-				++it;
-				continue;
-			}
-		} else if (!fs::IsDir(m_storage_dir)) {
-			errorstream << "ModMetadataDatabaseFiles[" << modname << "]: Unable to save. '"
-					<< m_storage_dir << "' is not a directory." << std::endl;
-			++it;
-			continue;
-		}
-
 		const Json::Value &json = m_mod_meta[modname];
 
 		if (!fs::safeWriteToFile(m_storage_dir + DIR_DELIM + modname, fastWriteJson(json))) {
 			errorstream << "ModMetadataDatabaseFiles[" << modname
-					<< "]: failed write file." << std::endl;
+					<< "]: failed to write file." << std::endl;
 			++it;
 			continue;
 		}
@@ -484,29 +477,25 @@ void ModMetadataDatabaseFiles::listMods(std::vector<std::string> *res)
 Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modname)
 {
 	auto found = m_mod_meta.find(modname);
-	if (found == m_mod_meta.end()) {
-		fs::CreateAllDirs(m_storage_dir);
-
-		Json::Value meta(Json::objectValue);
-
-		std::string path = m_storage_dir + DIR_DELIM + modname;
-		if (fs::PathExists(path)) {
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-
-			Json::CharReaderBuilder builder;
-			builder.settings_["collectComments"] = false;
-			std::string errs;
-
-			if (!Json::parseFromStream(builder, is, &meta, &errs)) {
-				errorstream << "ModMetadataDatabaseFiles[" << modname
-						<< "]: failed read data (Json decoding failure). Message: "
-						<< errs << std::endl;
-				return nullptr;
-			}
-		}
-
-		return &(m_mod_meta[modname] = meta);
-	} else {
+	if (found != m_mod_meta.end())
 		return &found->second;
+
+	Json::Value meta(Json::objectValue);
+
+	std::string path = m_storage_dir + DIR_DELIM + modname;
+	if (fs::PathExists(path)) {
+		std::ifstream is(path.c_str(), std::ios_base::binary);
+
+		Json::CharReaderBuilder builder;
+		builder.settings_["collectComments"] = false;
+		std::string errs;
+
+		if (!Json::parseFromStream(builder, is, &meta, &errs)) {
+			errorstream << "ModMetadataDatabaseFiles[" << modname
+					<< "]: failed to decode data: " << errs << std::endl;
+			return nullptr;
+		}
 	}
+
+	return &(m_mod_meta[modname] = meta);
 }
