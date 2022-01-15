@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-12-24 07:50+0000\n"
-"Last-Translator: pesder <j_h_liau@yahoo.com.tw>\n"
+"PO-Revision-Date: 2022-01-16 02:52+0000\n"
+"Last-Translator: Yiu Man Ho <yiufamily.hh@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -874,7 +874,7 @@ msgstr "從 ContentDB 安裝遊戲"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr "名稱"
+msgstr "名字"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
