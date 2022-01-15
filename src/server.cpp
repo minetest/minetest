@@ -512,12 +512,12 @@ void Server::start()
 
 	// ASCII art for the win!
 	std::cerr
-		<< "        .__               __                   __   " << std::endl
-		<< "  _____ |__| ____   _____/  |_  ____   _______/  |_ " << std::endl
-		<< " /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\" << std::endl
-		<< "|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  " << std::endl
-		<< "|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  " << std::endl
-		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
+		<< "         __.               __.                 __.  " << std::endl
+		<< "  _____ |__| ____   _____ /  |_  _____  _____ /  |_ " << std::endl
+		<< " /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\" << std::endl
+		<< "|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  " << std::endl
+		<< "|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  " << std::endl
+		<< "      \\/ \\/     \\/         \\/                  \\/   " << std::endl;
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
