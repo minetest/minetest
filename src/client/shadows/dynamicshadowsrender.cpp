@@ -33,6 +33,7 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_device(device), m_smgr(device->getSceneManager()),
 		m_driver(device->getVideoDriver()), m_client(client), m_current_frame(0)
 {
+	m_shadows_supported = true; // assume shadows supported. We will check actual support in initialize
 	m_shadows_enabled = true;
 
 	m_shadow_strength = g_settings->getFloat("shadow_strength");
@@ -49,6 +50,9 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 
 ShadowRenderer::~ShadowRenderer()
 {
+	// call to disable releases dynamically allocated resources
+	disable();
+
 	if (m_shadow_depth_cb)
 		delete m_shadow_depth_cb;
 	if (m_shadow_mix_cb)
@@ -72,15 +76,25 @@ ShadowRenderer::~ShadowRenderer()
 		m_driver->removeTexture(shadowMapClientMapFuture);
 }
 
+void ShadowRenderer::disable()
+{
+	m_shadows_enabled = false;
+	if (shadowMapTextureFinal) {
+		m_driver->setRenderTarget(shadowMapTextureFinal, true, true,
+			video::SColor(255, 255, 255, 255));
+		m_driver->setRenderTarget(0, true, true);
+	}
+}
+
 void ShadowRenderer::initialize()
 {
 	auto *gpu = m_driver->getGPUProgrammingServices();
 
 	// we need glsl
-	if (m_shadows_enabled && gpu && m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
+	if (m_shadows_supported && gpu && m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
 		createShaders();
 	} else {
-		m_shadows_enabled = false;
+		m_shadows_supported = false;
 
 		warningstream << "Shadows: GLSL Shader not supported on this system."
 			<< std::endl;
@@ -94,6 +108,8 @@ void ShadowRenderer::initialize()
 	m_texture_format_color = m_shadow_map_texture_32bit
 						 ? video::ECOLOR_FORMAT::ECF_G32R32F
 						 : video::ECOLOR_FORMAT::ECF_G16R16F;
+	
+	m_shadows_enabled &= m_shadows_supported;
 }
 
 
@@ -124,6 +140,16 @@ f32 ShadowRenderer::getMaxShadowFar() const
 	return 0.0f;
 }
 
+void ShadowRenderer::setShadowIntensity(float shadow_intensity)
+{
+	m_shadow_strength = shadow_intensity * g_settings->getFloat("shadow_strength");
+	if (m_shadow_strength > 1E-2)
+		enable();
+	else
+		disable();
+}
+
+
 void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
 {
@@ -153,6 +179,7 @@ void ShadowRenderer::updateSMTextures()
 		shadowMapTextureDynamicObjects = getSMTexture(
 			std::string("shadow_dynamic_") + itos(m_shadow_map_texture_size),
 			m_texture_format, true);
+		assert(shadowMapTextureDynamicObjects != nullptr);
 	}
 
 	if (!shadowMapClientMap) {
@@ -161,6 +188,7 @@ void ShadowRenderer::updateSMTextures()
 			std::string("shadow_clientmap_") + itos(m_shadow_map_texture_size),
 			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
 			true);
+		assert(shadowMapClientMap != nullptr);
 	}
 
 	if (!shadowMapClientMapFuture && m_map_shadow_update_frames > 1) {
@@ -168,6 +196,7 @@ void ShadowRenderer::updateSMTextures()
 			std::string("shadow_clientmap_bb_") + itos(m_shadow_map_texture_size),
 			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
 			true);
+		assert(shadowMapClientMapFuture != nullptr);
 	}
 
 	if (m_shadow_map_colored && !shadowMapTextureColors) {
@@ -175,6 +204,7 @@ void ShadowRenderer::updateSMTextures()
 			std::string("shadow_colored_") + itos(m_shadow_map_texture_size),
 			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
 			true);
+		assert(shadowMapTextureColors != nullptr);
 	}
 
 	// The merge all shadowmaps texture
@@ -194,6 +224,7 @@ void ShadowRenderer::updateSMTextures()
 		shadowMapTextureFinal = getSMTexture(
 			std::string("shadowmap_final_") + itos(m_shadow_map_texture_size),
 			frt, true);
+		assert(shadowMapTextureFinal != nullptr);
 	}
 
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
@@ -270,6 +301,10 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 
 	updateSMTextures();
 
+	if (shadowMapTextureFinal == nullptr) {
+		return;
+	}
+
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
@@ -307,19 +342,23 @@ void ShadowRenderer::drawDebug()
 	/* this code just shows shadows textures in screen and in ONLY for debugging*/
 	#if 0
 	// this is debug, ignore for now.
-	m_driver->draw2DImage(shadowMapTextureFinal,
-			core::rect<s32>(0, 50, 128, 128 + 50),
-			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
+	if (shadowMapTextureFinal)
+		m_driver->draw2DImage(shadowMapTextureFinal,
+				core::rect<s32>(0, 50, 128, 128 + 50),
+				core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
 
-	m_driver->draw2DImage(shadowMapClientMap,
-			core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
-			core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
-	m_driver->draw2DImage(shadowMapTextureDynamicObjects,
-			core::rect<s32>(0, 128 + 50 + 128, 128,
-					128 + 50 + 128 + 128),
-			core::rect<s32>({0, 0}, shadowMapTextureDynamicObjects->getSize()));
+	if (shadowMapClientMap)
+		m_driver->draw2DImage(shadowMapClientMap,
+				core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
+				core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
+	
+	if (shadowMapTextureDynamicObjects)
+		m_driver->draw2DImage(shadowMapTextureDynamicObjects,
+				core::rect<s32>(0, 128 + 50 + 128, 128,
+						128 + 50 + 128 + 128),
+				core::rect<s32>({0, 0}, shadowMapTextureDynamicObjects->getSize()));
 
-	if (m_shadow_map_colored) {
+	if (m_shadow_map_colored && shadowMapTextureColors) {
 
 		m_driver->draw2DImage(shadowMapTextureColors,
 				core::rect<s32>(128,128 + 50 + 128 + 128,
@@ -469,13 +508,13 @@ void ShadowRenderer::createShaders()
 	if (depth_shader == -1) {
 		std::string depth_shader_vs = getShaderPath("shadow_shaders", "pass1_vertex.glsl");
 		if (depth_shader_vs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error shadow mapping vs shader not found." << std::endl;
 			return;
 		}
 		std::string depth_shader_fs = getShaderPath("shadow_shaders", "pass1_fragment.glsl");
 		if (depth_shader_fs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error shadow mapping fs shader not found." << std::endl;
 			return;
 		}
@@ -490,7 +529,7 @@ void ShadowRenderer::createShaders()
 		if (depth_shader == -1) {
 			// upsi, something went wrong loading shader.
 			delete m_shadow_depth_cb;
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error compiling shadow mapping shader." << std::endl;
 			return;
 		}
@@ -506,13 +545,13 @@ void ShadowRenderer::createShaders()
 	if (depth_shader_entities == -1) {
 		std::string depth_shader_vs = getShaderPath("shadow_shaders", "pass1_vertex.glsl");
 		if (depth_shader_vs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error shadow mapping vs shader not found." << std::endl;
 			return;
 		}
 		std::string depth_shader_fs = getShaderPath("shadow_shaders", "pass1_fragment.glsl");
 		if (depth_shader_fs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error shadow mapping fs shader not found." << std::endl;
 			return;
 		}
@@ -525,7 +564,7 @@ void ShadowRenderer::createShaders()
 
 		if (depth_shader_entities == -1) {
 			// upsi, something went wrong loading shader.
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error compiling shadow mapping shader (dynamic)." << std::endl;
 			return;
 		}
@@ -539,14 +578,14 @@ void ShadowRenderer::createShaders()
 	if (mixcsm_shader == -1) {
 		std::string depth_shader_vs = getShaderPath("shadow_shaders", "pass2_vertex.glsl");
 		if (depth_shader_vs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error cascade shadow mapping fs shader not found." << std::endl;
 			return;
 		}
 
 		std::string depth_shader_fs = getShaderPath("shadow_shaders", "pass2_fragment.glsl");
 		if (depth_shader_fs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error cascade shadow mapping fs shader not found." << std::endl;
 			return;
 		}
@@ -565,7 +604,7 @@ void ShadowRenderer::createShaders()
 			// upsi, something went wrong loading shader.
 			delete m_shadow_mix_cb;
 			delete m_screen_quad;
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error compiling cascade shadow mapping shader." << std::endl;
 			return;
 		}
@@ -579,13 +618,13 @@ void ShadowRenderer::createShaders()
 	if (m_shadow_map_colored && depth_shader_trans == -1) {
 		std::string depth_shader_vs = getShaderPath("shadow_shaders", "pass1_trans_vertex.glsl");
 		if (depth_shader_vs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error shadow mapping vs shader not found." << std::endl;
 			return;
 		}
 		std::string depth_shader_fs = getShaderPath("shadow_shaders", "pass1_trans_fragment.glsl");
 		if (depth_shader_fs.empty()) {
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error shadow mapping fs shader not found." << std::endl;
 			return;
 		}
@@ -601,7 +640,7 @@ void ShadowRenderer::createShaders()
 			// upsi, something went wrong loading shader.
 			delete m_shadow_depth_trans_cb;
 			m_shadow_map_colored = false;
-			m_shadows_enabled = false;
+			m_shadows_supported = false;
 			errorstream << "Error compiling colored shadow mapping shader." << std::endl;
 			return;
 		}
