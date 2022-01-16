@@ -1888,7 +1888,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	SkyboxParams skybox_params = player->getSkyParams();
 
-	if (!lua_isboolean(L, 1)) {
+	if (lua_isboolean(L, 2) && readParam<bool>(L, 2) == true) {
 		lua_newtable(L);
 		push_ARGB8(L, skybox_params.bgcolor);
 		lua_setfield(L, -2, "base_color");
