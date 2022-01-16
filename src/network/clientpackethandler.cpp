@@ -1687,3 +1687,7 @@ void Client::handleCommand_MinimapModes(NetworkPacket *pkt)
 	if (m_minimap)
 		m_minimap->setModeIndex(mode);
 }
+
+void Client::handleCommand_SetLighting(NetworkPacket *pkt)
+{
+}
