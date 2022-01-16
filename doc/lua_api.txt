@@ -6922,7 +6922,9 @@ object you are working with still exists.
     * Resource intensive - use sparsely
     * To get blockpos, integer divide pos by 16
 * `set_lighting(light_definition)`: sets lighting for the player
-    * `light_definition` is a table.
+    * `light_definition` is a table with the following optional fields:
+        * `brightness` - amount of added ambient light from 0 (no added light) to 1 (full brightness).
+        * `color_tint` - color that is applied to the rendered image.
     * Returns true on success.
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
