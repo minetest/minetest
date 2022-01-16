@@ -389,10 +389,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		{
 			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 			if (s_env != NULL) {
-				// Calculate distance by speed, add own extent and 1.5m of tolerance
-				f32 distance = speed_f->getLength() * dtime +
-					box_0.getExtent().getLength() + 1.5f * BS;
-
 				// search for objects which are not us, or we are not its parent
 				// we directly use the callback to populate the result to prevent
 				// a useless result loop here
@@ -405,7 +401,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				};
 
 				std::vector<ServerActiveObject *> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance, include_obj_cb);
+				s_env->getObjectsCollisionboxInArea(s_objects,
+					aabb3f(
+						*pos_f + box_0.MinEdge - 1.5f * BS,
+						*speed_f * dtime + *pos_f + box_0.MaxEdge + 1.5f * BS
+					),
+					include_obj_cb);
 			}
 		}
 
