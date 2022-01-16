@@ -6961,6 +6961,11 @@ object you are working with still exists.
     * Returns `false` if failed.
     * Resource intensive - use sparsely
     * To get blockpos, integer divide pos by 16
+* `set_lighting(light_definition)`: sets lighting for the player
+    * `light_definition` is a table.
+    * Returns true on success.
+* `get_lighting()`: returns the current state of lighting for the player.
+    * Result is a table with the same fields as `light_definition` in `set_lighting`.
 
 `PcgRandom`
 -----------
