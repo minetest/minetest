@@ -120,6 +120,7 @@ private:
 	std::vector<NodeToApply> m_shadow_node_array;
 
 	float m_shadow_strength;
+	float m_shadow_strength_gamma;
 	float m_shadow_map_max_distance;
 	float m_shadow_map_texture_size;
 	float m_time_day{0.0f};

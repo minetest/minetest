@@ -36,7 +36,10 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 	m_shadows_supported = true; // assume shadows supported. We will check actual support in initialize
 	m_shadows_enabled = true;
 
-	m_shadow_strength = g_settings->getFloat("shadow_strength");
+	m_shadow_strength_gamma = g_settings->getFloat("shadow_strength_gamma");
+	if (std::isnan(m_shadow_strength_gamma))
+		m_shadow_strength_gamma = 1.0f;
+	m_shadow_strength_gamma = core::clamp(m_shadow_strength_gamma, 0.1f, 10.0f);
 
 	m_shadow_map_max_distance = g_settings->getFloat("shadow_map_max_distance");
 
@@ -142,7 +145,7 @@ f32 ShadowRenderer::getMaxShadowFar() const
 
 void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 {
-	m_shadow_strength = shadow_intensity * g_settings->getFloat("shadow_strength");
+	m_shadow_strength = pow(shadow_intensity, 1.0f / m_shadow_strength_gamma);
 	if (m_shadow_strength > 1E-2)
 		enable();
 	else
