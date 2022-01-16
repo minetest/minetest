@@ -23,4 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 struct Lighting
 {
+	float brightness;
+	video::SColor color_tint;
+
+	/* Default ambient light adds zero brightness and no tint */
+	Lighting() : brightness(0.0f), color_tint(0xFFFFFFFF) {}
+
 };

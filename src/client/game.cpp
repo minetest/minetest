@@ -422,6 +422,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
+	CachedPixelShaderSetting<float> m_ambient_brightness;
+	CachedPixelShaderSetting<float, 4> m_ambient_color_tint;
 	Client *m_client;
 
 public:
@@ -456,6 +458,8 @@ public:
 		m_camera_offset_vertex("cameraOffset"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
+		m_ambient_brightness("ambientBrightness"),
+		m_ambient_color_tint("ambientColorTint"),
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
@@ -528,6 +532,18 @@ public:
 		SamplerLayer_t base_tex = 0, normal_tex = 1;
 		m_base_texture.set(&base_tex, services);
 		m_normal_texture.set(&normal_tex, services);
+
+		const float ambient_brightness(m_client->getEnv().getLocalPlayer()->getLighting().brightness);
+		m_ambient_brightness.set(&ambient_brightness, services);
+
+		const video::SColorf ambient_color(m_client->getEnv().getLocalPlayer()->getLighting().color_tint);
+		float ambient_color_array[4] {
+			ambient_color.r,
+			ambient_color.g,
+			ambient_color.b,
+			ambient_color.a,
+		};
+		m_ambient_color_tint.set(ambient_color_array, services);
 	}
 };
 
