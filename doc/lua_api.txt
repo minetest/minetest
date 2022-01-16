@@ -6844,7 +6844,13 @@ object you are working with still exists.
         * `"plain"`: Uses 0 textures, `bgcolor` used
     * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
       `"plain"` custom skyboxes (default: `true`)
-* `get_sky()`: returns base_color, type, table of textures, clouds.
+* `get_sky(as_table):
+    * returns a table containing sky parameters as defined in
+    `set_sky(sky_parameters)`
+    * `as_table`: boolean to avoid calling the deprecated version
+* `get_sky()`:
+    * Deprecated. Use `get_sky(as_table)`
+    * returns base_color, type, table of textures, clouds.
 * `get_sky_color()`:
     * Deprecated: Use `get_sky(as_table)` instead
     * returns a table with the `sky_color` parameters as in `set_sky`.

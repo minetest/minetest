@@ -1877,7 +1877,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 	return 1;
 }
 
-// get_sky(self)
+// get_sky(self, as_table)
 int ObjectRef::l_get_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1931,7 +1931,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 		lua_setfield(L, -2, "sky_color");
 		return 1;
 
-	// deprecated
+	// deprecated version
 	} else {
 		log_deprecated(L, "Deprecated call to get_sky, please check lua_api.txt");
 
