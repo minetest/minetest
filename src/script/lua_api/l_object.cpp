@@ -1888,17 +1888,65 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	SkyboxParams skybox_params = player->getSkyParams();
 
-	push_ARGB8(L, skybox_params.bgcolor);
-	lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());
+	if (!lua_isboolean(L, 1)) {
+		lua_newtable(L);
+		push_ARGB8(L, skybox_params.bgcolor);
+		lua_setfield(L, -2, "base_color");
+		lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());
+		lua_setfield(L, -2, "type");
 
-	lua_newtable(L);
-	s16 i = 1;
-	for (const std::string &texture : skybox_params.textures) {
-		lua_pushlstring(L, texture.c_str(), texture.size());
-		lua_rawseti(L, -2, i++);
+		lua_newtable(L);
+		s16 i = 1;
+		for (const std::string &texture : skybox_params.textures) {
+			lua_pushlstring(L, texture.c_str(), texture.size());
+			lua_rawseti(L, -2, i++);
+		}
+		lua_setfield(L, -2, "textures");
+		lua_pushboolean(L, skybox_params.clouds);
+		lua_setfield(L, -2, "clouds");
+
+		lua_newtable(L);
+		if (skybox_params.type == "regular") {
+			push_ARGB8(L, skybox_params.sky_color.day_sky);
+			lua_setfield(L, -2, "day_sky");
+			push_ARGB8(L, skybox_params.sky_color.day_horizon);
+			lua_setfield(L, -2, "day_horizon");
+			push_ARGB8(L, skybox_params.sky_color.dawn_sky);
+			lua_setfield(L, -2, "dawn_sky");
+			push_ARGB8(L, skybox_params.sky_color.dawn_horizon);
+			lua_setfield(L, -2, "dawn_horizon");
+			push_ARGB8(L, skybox_params.sky_color.night_sky);
+			lua_setfield(L, -2, "night_sky");
+			push_ARGB8(L, skybox_params.sky_color.night_horizon);
+			lua_setfield(L, -2, "night_horizon");
+			push_ARGB8(L, skybox_params.sky_color.indoors);
+			lua_setfield(L, -2, "indoors");
+		}
+		push_ARGB8(L, skybox_params.fog_sun_tint);
+		lua_setfield(L, -2, "fog_sun_tint");
+		push_ARGB8(L, skybox_params.fog_moon_tint);
+		lua_setfield(L, -2, "fog_moon_tint");
+		lua_pushstring(L, skybox_params.fog_tint_type.c_str());
+		lua_setfield(L, -2, "fog_tint_type");
+		lua_setfield(L, -2, "sky_color");
+		return 1;
+
+	// deprecated
+	} else {
+		log_deprecated(L, "Deprecated call to get_sky, please check lua_api.txt");
+
+		push_ARGB8(L, skybox_params.bgcolor);
+		lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());
+
+		lua_newtable(L);
+		s16 i = 1;
+		for (const std::string &texture : skybox_params.textures) {
+			lua_pushlstring(L, texture.c_str(), texture.size());
+			lua_rawseti(L, -2, i++);
+		}
+		lua_pushboolean(L, skybox_params.clouds);
+		return 4;
 	}
-	lua_pushboolean(L, skybox_params.clouds);
-	return 4;
 }
 
 // get_sky_color(self)
