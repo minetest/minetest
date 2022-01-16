@@ -54,7 +54,6 @@ void TestObjectBoxStore::genericStoreTest(ObjectBoxStore *store)
 	std::vector<u16> res;
 
 	UASSERTEQ(size_t, store->size(), 0);
-	store->reserve(2); // sic
 	store->insert(1, a);
 	store->insert(2, b);
 	store->insert(3, c);
