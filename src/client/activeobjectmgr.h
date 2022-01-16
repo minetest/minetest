@@ -37,5 +37,8 @@ public:
 
 	void getActiveObjects(const v3f &origin, f32 max_d,
 			std::vector<DistanceSortedActiveObject> &dest);
+	
+	void getActiveObjectsRay(const v3f from, const v3f to,
+			std::vector<DistanceSortedActiveObject> &dest);
 };
 } // namespace client

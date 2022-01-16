@@ -491,6 +491,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 	std::vector<DistanceSortedActiveObject> allObjects;
 	getActiveObjects(shootline_on_map.start,
 		shootline_on_map.getLength() + 10.0f, allObjects);
+	// m_ao_manager.getActiveObjectsRay(shootline_on_map.start, shootline_on_map.end, allObjects);
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (const auto &allObject : allObjects) {

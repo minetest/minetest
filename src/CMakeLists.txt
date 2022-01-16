@@ -222,21 +222,7 @@ else(USE_PROMETHEUS)
 	message(STATUS "Prometheus client disabled.")
 endif(USE_PROMETHEUS)
 
-OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
-set(USE_SPATIAL FALSE)
-
-if(ENABLE_SPATIAL)
-	find_library(SPATIAL_LIBRARY spatialindex)
-	find_path(SPATIAL_INCLUDE_DIR spatialindex/SpatialIndex.h)
-	if(SPATIAL_LIBRARY AND SPATIAL_INCLUDE_DIR)
-		set(USE_SPATIAL TRUE)
-		message(STATUS "SpatialIndex AreaStore backend enabled.")
-		include_directories(${SPATIAL_INCLUDE_DIR})
-	else(SPATIAL_LIBRARY AND SPATIAL_INCLUDE_DIR)
-		message(STATUS "SpatialIndex not found!")
-	endif(SPATIAL_LIBRARY AND SPATIAL_INCLUDE_DIR)
-endif(ENABLE_SPATIAL)
-
+find_package(libspatialindex REQUIRED)
 
 find_package(ZLIB REQUIRED)
 find_package(Zstd REQUIRED)
@@ -535,6 +521,7 @@ if(BUILD_CLIENT)
 		${LUA_BIT_LIBRARY}
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+		libspatialindex::libspatial
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -589,9 +576,6 @@ if(BUILD_CLIENT)
 	if (USE_PROMETHEUS)
 		target_link_libraries(${PROJECT_NAME} ${PROMETHEUS_LIBRARIES})
 	endif()
-	if (USE_SPATIAL)
-		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
-	endif()
 endif(BUILD_CLIENT)
 
 
@@ -612,6 +596,7 @@ if(BUILD_SERVER)
 		${LUA_LIBRARY}
 		${LUA_BIT_LIBRARY}
 		${GMP_LIBRARY}
+		libspatialindex::libspatial
 		${PLATFORM_LIBS}
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
@@ -641,9 +626,6 @@ if(BUILD_SERVER)
 	endif()
 	if (USE_PROMETHEUS)
 		target_link_libraries(${PROJECT_NAME}server ${PROMETHEUS_LIBRARIES})
-	endif()
-	if (USE_SPATIAL)
-		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
 	endif()
 	if(USE_CURL)
 		target_link_libraries(

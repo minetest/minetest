@@ -50,7 +50,6 @@ struct Area {
 	std::string data;
 };
 
-
 class AreaStore {
 public:
 	AreaStore() :

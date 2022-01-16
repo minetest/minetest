@@ -1720,8 +1720,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 	std::vector<PointedThing> &objects)
 {
 	std::vector<ServerActiveObject *> objs;
-	getObjectsInsideRadius(objs, shootline_on_map.start,
-		shootline_on_map.getLength() + 10.0f, nullptr);
+	m_ao_manager.getObjectsSelectionboxIntersectsLine(shootline_on_map.start, shootline_on_map.end, objs, nullptr);
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (auto obj : objs) {

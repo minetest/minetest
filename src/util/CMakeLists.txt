@@ -1,5 +1,6 @@
 set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/areastore.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/objectboxstore.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/auth.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/base64.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/directiontables.cpp

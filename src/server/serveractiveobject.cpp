@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serveractiveobject.h"
+#include "serverenvironment.h"
 #include <fstream>
 #include "inventory.h"
 #include "constants.h" // BS
@@ -28,6 +29,41 @@ ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	m_env(env),
 	m_base_position(pos)
 {
+}
+
+void ServerActiveObject::addedToEnvironment(u32 dtime_s) {
+	aabb3f object_collisionbox;
+	if (getCollisionBox(&object_collisionbox)) 
+		getEnv()->m_ao_manager.m_active_objects_by_collisionbox.insert(m_id, object_collisionbox);
+	aabb3f object_selectionbox;
+	if (getSelectionBox(&object_selectionbox)) 
+		getEnv()->m_ao_manager.m_active_objects_by_selectionbox.insert(m_id, object_selectionbox);
+}
+
+void ServerActiveObject::setBasePosition(v3f pos) {
+	// TODO also update on property change
+	m_base_position = pos;
+	getEnv()->m_ao_manager.m_active_objects_by_collisionbox.remove(m_id);
+	getEnv()->m_ao_manager.m_active_objects_by_selectionbox.remove(m_id);
+	aabb3f object_collisionbox;
+	if (getCollisionBox(&object_collisionbox)) 
+		getEnv()->m_ao_manager.m_active_objects_by_collisionbox.insert(m_id, object_collisionbox);
+	aabb3f object_selectionbox;
+	if (getSelectionBox(&object_selectionbox)) 
+		getEnv()->m_ao_manager.m_active_objects_by_selectionbox.insert(m_id, object_selectionbox);
+}
+
+// TODO only reinsert boxes when the boxes change
+void ServerActiveObject::notifyObjectPropertiesModified()
+{
+	getEnv()->m_ao_manager.m_active_objects_by_collisionbox.remove(m_id);
+	getEnv()->m_ao_manager.m_active_objects_by_selectionbox.remove(m_id);
+	aabb3f object_collisionbox;
+	if (getCollisionBox(&object_collisionbox)) 
+		getEnv()->m_ao_manager.m_active_objects_by_collisionbox.insert(m_id, object_collisionbox);
+	aabb3f object_selectionbox;
+	if (getSelectionBox(&object_selectionbox)) 
+		getEnv()->m_ao_manager.m_active_objects_by_selectionbox.insert(m_id, object_selectionbox);
 }
 
 float ServerActiveObject::getMinimumSavedMovement()

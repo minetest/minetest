@@ -62,7 +62,7 @@ public:
 	{ return getType(); }
 
 	// Called after id has been set and has been inserted in environment
-	virtual void addedToEnvironment(u32 dtime_s){};
+	virtual void addedToEnvironment(u32 dtime_s);
 	// Called before removing from environment
 	virtual void removingFromEnvironment(){};
 	// Returns true if object's deletion is the job of the
@@ -83,7 +83,7 @@ public:
 		Some simple getters/setters
 	*/
 	v3f getBasePosition() const { return m_base_position; }
-	void setBasePosition(v3f pos){ m_base_position = pos; }
+	virtual void setBasePosition(v3f pos);
 	ServerEnvironment* getEnv(){ return m_env; }
 
 	/*
@@ -106,7 +106,7 @@ public:
 		Messages added to messages are sent to client over network.
 
 		send_recommended:
-			True at around 5-10 times a second, same for all objects.
+			True at around 5-10 times a second, same for all objects. WHAT THE? I believed objects were sent every step
 			This is used to let objects send most of the data at the
 			same time so that the data can be combined in a single
 			packet.
@@ -178,8 +178,7 @@ public:
 	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
-	virtual void notifyObjectPropertiesModified()
-	{}
+	virtual void notifyObjectPropertiesModified();
 
 	// Inventory and wielded item
 	virtual Inventory *getInventory() const

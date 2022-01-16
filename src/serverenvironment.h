@@ -328,6 +328,13 @@ public:
 		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
 	}
 
+	// Find all active objects inside a radius around a point
+	void getObjectsCollisionboxInArea(std::vector<ServerActiveObject *> &objects, const aabb3f box,
+			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
+	{
+		return m_ao_manager.getObjectsCollisionboxInArea(box, objects, include_obj_cb);
+	}
+
 	// Find all active objects inside a box
 	void getObjectsInArea(std::vector<ServerActiveObject *> &objects, const aabb3f &box,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
@@ -373,6 +380,9 @@ public:
 	AuthDatabase *getAuthDatabase() { return m_auth_database; }
 	static bool migrateAuthDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
+
+	// Active Object Manager
+	server::ActiveObjectMgr m_ao_manager;
 private:
 
 	/**
@@ -440,8 +450,6 @@ private:
 	ServerScripting* m_script;
 	// Server definition
 	Server *m_server;
-	// Active Object Manager
-	server::ActiveObjectMgr m_ao_manager;
 	// World path
 	const std::string m_path_world;
 	// Outgoing network message buffer for active objects

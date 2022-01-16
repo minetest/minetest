@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_map>
+#include "util/objectboxstore.h"
 #include "irrlichttypes.h"
 
 class TestClientActiveObjectMgr;
@@ -42,7 +43,8 @@ public:
 				m_active_objects.find(id);
 		return (n != m_active_objects.end() ? n->second : nullptr);
 	}
-
+	ObjectBoxStore m_active_objects_by_collisionbox;
+	ObjectBoxStore m_active_objects_by_selectionbox;
 protected:
 	u16 getFreeId() const
 	{
