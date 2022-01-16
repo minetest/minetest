@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <cstring>
+#include <cmath>
 #include "client/shadows/dynamicshadowsrender.h"
 #include "client/shadows/shadowsScreenQuad.h"
 #include "client/shadows/shadowsshadercallbacks.h"
