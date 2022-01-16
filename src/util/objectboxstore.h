@@ -70,8 +70,8 @@ protected:
 	BoxMap box_map;
 
 private:
-	SpatialIndex::ISpatialIndex *m_tree = nullptr;
-	SpatialIndex::IStorageManager *m_storagemanager = nullptr;
+	SpatialIndex::ISpatialIndex *m_tree;
+	SpatialIndex::IStorageManager *m_storagemanager;
 
 	u16 getNextID() const;
 

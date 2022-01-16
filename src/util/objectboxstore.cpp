@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <spatialindex/SpatialIndex.h>
 #include <spatialindex/RTree.h>
 
+#include <cstddef>
 #include <map>
 #include <utility>
 #include <vector>
@@ -47,32 +48,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Y) &&  \
 	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Z))
 
-static inline SpatialIndex::Region get_spatial_region(const v3f minedge,
-		const v3f maxedge)
-{
-	const double p_low[] = {(double)minedge.X,
-		(double)minedge.Y, (double)minedge.Z};
-	const double p_high[] = {(double)maxedge.X, (double)maxedge.Y,
-		(double)maxedge.Z};
-	return SpatialIndex::Region(p_low, p_high, 3);
+namespace {
+	constexpr std::size_t point_size_3d { 3 };
+
 }
 
-static SpatialIndex::LineSegment get_spatial_line_segment(const v3f from, const v3f to)
-{
-	const double p_low[] = {(double)from.X,
-		(double)from.Y, (double)from.Z};
-	const double p_high[] = {(double)to.X, (double)to.Y,
-		(double)to.Z};
-	return SpatialIndex::LineSegment(p_low, p_high, 3);
+static inline void get_doubles_from_v3f(const v3f from, double *to) {
+	to[0] = static_cast<double>(from.X);
+	to[1] = static_cast<double>(from.Y);
+	to[2] = static_cast<double>(from.Z);
 }
 
-/*const aabb3f *ObjectBoxStore::getBox(u16 id) const
+static inline SpatialIndex::Region get_spatial_region(const v3f from, const v3f to)
 {
-	BoxMap::const_iterator it = box_map.find(id);
-	if (it == box_map.end())
-		return nullptr;
-	return &it->second;
-}*/
+	double p_low[point_size_3d];
+	get_doubles_from_v3f(from, p_low);
+
+	double p_high[point_size_3d];
+	get_doubles_from_v3f(from, p_high);
+
+	return SpatialIndex::Region { p_low, p_high, point_size_3d };
+}
+
+static inline SpatialIndex::LineSegment get_spatial_line_segment(const v3f from, const v3f to)
+{
+	double p_low[point_size_3d];
+	get_doubles_from_v3f(from, p_low);
+
+	double p_high[point_size_3d];
+	get_doubles_from_v3f(from, p_high);
+
+	return SpatialIndex::LineSegment { p_low, p_high, point_size_3d };
+}
 
 bool ObjectBoxStore::insert(u16 id, aabb3f box)
 {
@@ -114,6 +121,7 @@ ObjectBoxStore::~ObjectBoxStore()
 }
 
 ObjectBoxStore::ObjectBoxStore()
+		: m_tree { nullptr }, m_storagemanager { nullptr }
 {
 	m_storagemanager =
 		SpatialIndex::StorageManager::createNewMemoryStorageManager(); // TODO must this be deleted?
