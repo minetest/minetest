@@ -319,6 +319,7 @@ private:
 	// get_sky(self)
 	static int l_get_sky(lua_State *L);
 
+	// DEPRECATED
 	// get_sky_color(self)
 	static int l_get_sky_color(lua_State* L);
 

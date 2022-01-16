@@ -6845,8 +6845,9 @@ object you are working with still exists.
     * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
       `"plain"` custom skyboxes (default: `true`)
 * `get_sky()`: returns base_color, type, table of textures, clouds.
-* `get_sky_color()`: returns a table with the `sky_color` parameters as in
-    `set_sky`.
+* `get_sky_color()`:
+    * Deprecated: Use `get_sky(as_table)` instead
+    * returns a table with the `sky_color` parameters as in `set_sky`.
 * `set_sun(sun_parameters)`:
     * `sun_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the sun is visible.

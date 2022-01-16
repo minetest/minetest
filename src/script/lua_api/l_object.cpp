@@ -1949,12 +1949,14 @@ int ObjectRef::l_get_sky(lua_State *L)
 	}
 }
 
+// DEPRECATED
 // get_sky_color(self)
 int ObjectRef::l_get_sky_color(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
+	log_deprecated(L, "Deprecated call to get_sky_color, use get_sky instead");
 	if (player == nullptr)
 		return 0;
 
