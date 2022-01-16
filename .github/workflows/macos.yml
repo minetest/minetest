@@ -22,7 +22,7 @@ on:
       - '.github/workflows/macos.yml'
 
 env:
-  IRRLICHT_TAG: 1.9.0mt3
+  IRRLICHT_TAG: 1.9.0mt4
   MINETEST_GAME_REPO: https://github.com/minetest/minetest_game.git
   MINETEST_GAME_BRANCH: master
   MINETEST_GAME_NAME: minetest_game
