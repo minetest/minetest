@@ -2278,6 +2278,13 @@ int ObjectRef::l_set_lighting(lua_State *L)
 	luaL_checktype(L, 2, LUA_TTABLE);
 	Lighting lighting = player->getLighting();
 
+	lighting.brightness = rangelim(getfloatfield_default(L, 2, "brightness", lighting.brightness), 0.0f, 1.0f);
+
+	lua_getfield(L, 2, "color_tint");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &lighting.color_tint);
+	lua_pop(L, 1);
+
 	getServer(L)->setLighting(player, lighting);
 	lua_pushboolean(L, true);
 	return 1;
@@ -2295,6 +2302,12 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	const Lighting &lighting = player->getLighting();
 
 	lua_newtable(L);
+
+	lua_pushnumber(L, lighting.brightness);
+	lua_setfield(L, -2, "brightness");
+	push_ARGB8(L, lighting.color_tint);
+	lua_setfield(L, -2, "color_tint");
+
 	return 1;
 }
 
