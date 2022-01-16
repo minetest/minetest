@@ -4035,6 +4035,8 @@ void Game::updateShadows()
 	if (!shadow)
 		return;
 
+	shadow->setShadowIntensity(client->getEnv().getLocalPlayer()->getLighting().shadow_intensity);
+
 	float in_timeofday = fmod(runData.time_of_day_smooth, 1.0f);
 
 	float timeoftheday = fmod(getWickedTimeOfDay(in_timeofday) + 0.75f, 0.5f) + 0.25f;

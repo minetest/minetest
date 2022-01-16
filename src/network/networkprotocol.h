@@ -764,6 +764,7 @@ enum ToClientCommand
 
 	TOCLIENT_SET_LIGHTING = 0x63,
 	/*
+		f32 shadow_intensity
 	*/
 
 	TOCLIENT_NUM_MSG_TYPES = 0x64,
