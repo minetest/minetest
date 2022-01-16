@@ -1725,10 +1725,10 @@ int ObjectRef::l_set_sky(lua_State *L)
 	bool is_colorspec = is_color_table(L, 2);
 
 	// reset if empty
-	if (lua_isnoneornil(L, 2) && lua_isnone(L, 3))
+	if (lua_isnoneornil(L, 2) && lua_isnone(L, 3)) {
 		sky_params = SkyboxDefaults::getSkyDefaults();
 
-	else if (lua_istable(L, 2) && !is_colorspec) {
+	} else if (lua_istable(L, 2) && !is_colorspec) {
 		lua_getfield(L, 2, "base_color");
 		if (!lua_isnil(L, -1))
 			read_color(L, -1, &sky_params.bgcolor);
@@ -1946,9 +1946,9 @@ int ObjectRef::l_set_sun(lua_State *L)
 	SunParams sun_params = player->getSunParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, 2))
+	if (lua_isnoneornil(L, 2)) {
 		sun_params = SkyboxDefaults::getSunDefaults();
-	else {
+	} else {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		sun_params.visible = getboolfield_default(L, 2,
 				"visible", sun_params.visible);
@@ -2008,9 +2008,9 @@ int ObjectRef::l_set_moon(lua_State *L)
 	MoonParams moon_params = player->getMoonParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, 2))
+	if (lua_isnoneornil(L, 2)) {
 		moon_params = SkyboxDefaults::getMoonDefaults();
-	else {
+	} else {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		moon_params.visible = getboolfield_default(L, 2,
 			"visible", moon_params.visible);
@@ -2062,9 +2062,9 @@ int ObjectRef::l_set_stars(lua_State *L)
 	StarParams star_params = player->getStarParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, 2))
+	if (lua_isnoneornil(L, 2)) {
 		star_params = SkyboxDefaults::getStarDefaults();
-	else {
+	} else {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		star_params.visible = getboolfield_default(L, 2,
 			"visible", star_params.visible);
@@ -2120,9 +2120,9 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	CloudParams cloud_params = player->getCloudParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, 2))
+	if (lua_isnoneornil(L, 2)) {
 		cloud_params = SkyboxDefaults::getCloudDefaults();
-	else {
+	} else {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		cloud_params.density = getfloatfield_default(L, 2, "density", cloud_params.density);
 
