@@ -18,7 +18,10 @@ find_library(SPATIAL_LIBRARY spatialindex)
 find_path(SPATIAL_INCLUDE_DIR spatialindex/SpatialIndex.h)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SPATIAL_LIBRARY SPATIAL_INCLUDE_DIR)
+find_package_handle_standard_args(libspatialindex
+    REQUIRED_VARS
+        SPATIAL_LIBRARY SPATIAL_INCLUDE_DIR
+)
 
 if(NOT TARGET libspatialindex::libspatial)
     add_library(libspatialindex::libspatial INTERFACE IMPORTED)
