@@ -68,13 +68,10 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_cloud_params.speed = v2f(0.0f, -2.0f);
 
 	// Skybox defaults:
-
-	SkyboxDefaults sky_defaults;
-
-	m_skybox_params = sky_defaults.getSkyDefaults();
-	m_sun_params = sky_defaults.getSunDefaults();
-	m_moon_params = sky_defaults.getMoonDefaults();
-	m_star_params = sky_defaults.getStarDefaults();
+	m_skybox_params = SkyboxDefaults::getSkyDefaults();
+	m_sun_params = SkyboxDefaults::getSunDefaults();
+	m_moon_params = SkyboxDefaults::getMoonDefaults();
+	m_star_params = SkyboxDefaults::getStarDefaults();
 }
 
 
