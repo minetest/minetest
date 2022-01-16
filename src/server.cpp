@@ -1800,7 +1800,9 @@ void Server::SendOverrideDayNightRatio(session_t peer_id, bool do_override,
 void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 {
 	NetworkPacket pkt(TOCLIENT_SET_LIGHTING,
-			0, peer_id);
+			4 + 4, peer_id);
+
+	pkt << lighting.brightness << lighting.color_tint;
 
 	Send(&pkt);
 }

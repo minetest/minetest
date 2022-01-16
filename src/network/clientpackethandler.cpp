@@ -1690,4 +1690,12 @@ void Client::handleCommand_MinimapModes(NetworkPacket *pkt)
 
 void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 {
+	f32 brightness;
+	video::SColor color_tint;
+
+	*pkt >> brightness >> color_tint;
+
+	Lighting& lighting = m_env.getLocalPlayer()->getLighting();
+	lighting.brightness = brightness;
+	lighting.color_tint = color_tint;
 }
