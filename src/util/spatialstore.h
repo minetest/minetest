@@ -19,87 +19,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-//#include "irr_v3d.h"
-#include "irr_aabb3d.h"
-#include "util/areastore.h"
-//#include "noise.h" // for PcgRandom
-//#include "util/container.h"
-//#include "util/numeric.h"
-//#include "util/serialize.h"
+#include "util/numeric.h"
+#include "util/spatial_tools.h"
 
 #include <spatialindex/SpatialIndex.h>
-//#include <spatialindex/Point.h>
-//#include <spatialindex/RTree.h>
 
+#include <cstddef>
 #include <memory>
-//#include <cstddef>
 #include <map>
+#include <utility>
 #include <vector>
-//#include <utility>
 
-#define AST_SMALLER_EQ_AS(p, q) (((p).X <= (q).X) && ((p).Y <= (q).Y) && ((p).Z <= (q).Z))
+using SpatialIndex::StorageManager::createNewMemoryStorageManager;
 
-#define AST_OVERLAPS_IN_DIMENSION(amine, amaxe, b, d) \
-	(!(((amine).d > (b)->maxedge.d) || ((amaxe).d < (b)->minedge.d)))
-
-#define AST_CONTAINS_PT(a, p) (AST_SMALLER_EQ_AS((a)->minedge, (p)) && \
-	AST_SMALLER_EQ_AS((p), (a)->maxedge))
-
-#define AST_CONTAINS_Box(amine, amaxe, b)         \
-	(AST_SMALLER_EQ_AS((amine), (b)->minedge) \
-	&& AST_SMALLER_EQ_AS((b)->maxedge, (amaxe)))
-
-#define AST_BoxS_OVERLAP(amine, amaxe, b)                \
-	(AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), X) && \
-	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Y) &&  \
-	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Z))
-
-namespace {
-
-	template <class T>
-	void get_doubles_from_point(const T &from, double (& to)[3]) {
-		to[0] = from.X;
-		to[1] = from.Y;
-		to[2] = from.Z;
-	}
-
-	SpatialIndex::Region get_spatial_region(const aabb3f &space)
-	{
-		double coordsMin[3];
-		double coordsMax[3];
-		get_doubles_from_point(space.MinEdge, coordsMin);
-		get_doubles_from_point(space.MaxEdge, coordsMax);
-		return SpatialIndex::Region(coordsMin, coordsMax, 3);
-	}
-	SpatialIndex::Region get_spatial_region(const Area &space)
-	{
-		double coordsMin[3];
-		double coordsMax[3];
-		get_doubles_from_point(space.minedge, coordsMin);
-		get_doubles_from_point(space.maxedge, coordsMax);
-		return SpatialIndex::Region(coordsMin, coordsMax, 3);
-	}
-
-	SpatialIndex::LineSegment get_spatial_line_segment(const v3f &from, const v3f &to)
-	{
-		double coordsMin[3];
-		double coordsMax[3];
-		get_doubles_from_point(from, coordsMin);
-		get_doubles_from_point(to, coordsMax);
-		return SpatialIndex::LineSegment(coordsMin, coordsMax, 3);
-	}
-}
-
-template <class Space, class ID = u32> class SpatialStore : public SpatialIndex::IVisitor {
+template <typename T, typename U = u32>
+class SpatialStore : public SpatialIndex::IVisitor {
 public:
+
 	SpatialStore()
-			:
-		m_storageManager(SpatialIndex::StorageManager::createNewMemoryStorageManager()),
-		m_tree(),
-		m_spacesMap(),
-		m_result(nullptr)
+		: m_storageManager(createNewMemoryStorageManager())
+		, m_tree()
+		, m_spacesMap()
+		, m_result(nullptr)
 	{
-		SpatialIndex::id_type unused_id;
+		SpatialIndex::id_type unused_id {};
 		m_tree = std::unique_ptr<SpatialIndex::ISpatialIndex>(
 			SpatialIndex::RTree::createNewRTree(
 				*m_storageManager,
@@ -113,32 +56,38 @@ public:
 		);
 	}
 
+	SpatialStore(const SpatialStore&) = delete;
+	SpatialStore<T, U>& operator =(const SpatialStore&) = delete;
+
 	virtual ~SpatialStore() {}
 
 	std::size_t size() const {
 		return m_spacesMap.size();
 	}
 
-	bool insert(ID id, const Space &space) {
-		if (! m_spacesMap.insert({id, space}).second)
-			return false; // id already in map
+	bool insert(U id, const T &space) {
+		if (contains(id))
+			return false;
+
+		m_spacesMap.insert({ id, space });
 		m_tree->insertData(
 			0,
 			nullptr,
-			get_spatial_region(space),
-			(u32) id
+			sp_convert::get_spatial_region(space),
+			static_cast<u32>(id)
 		);
+
 		return true;
 	}
 
-	bool remove(ID id) {
+	bool remove(U id) {
 		const auto iter = m_spacesMap.find(id);
 		if (iter == m_spacesMap.end())
 			return false;
-		Space space = iter->second;
+		T space = iter->second;
 		m_spacesMap.erase(iter);
 		return m_tree->deleteData(
-			get_spatial_region(space),
+			sp_convert::get_spatial_region(space),
 			(u32) id
 		);
 	}
@@ -153,31 +102,36 @@ public:
 	virtual void visitData(std::vector<const SpatialIndex::IData *> &v)
 	{
 		for (const auto &item : v)
-			m_result->push_back((ID) item->getIdentifier());
+			m_result->push_back((U) item->getIdentifier());
 	}
 
-	void getInArea(std::vector<ID> *result, Space space)
+	void getInArea(std::vector<U> *result, T space)
 	{
 		m_result = result;
-		m_tree->intersectsWithQuery(get_spatial_region(space), *this);
+		m_tree->intersectsWithQuery(sp_convert::get_spatial_region(space), *this);
 		m_result = nullptr;
 	}
 
-	void getIntersectingLine(std::vector<ID> *result, v3f from, v3f to)
+	void getIntersectingLine(std::vector<U> *result, v3f from, v3f to)
 	{
 		m_result = result;
-		m_tree->intersectsWithQuery(get_spatial_line_segment(from, to), *this);
+		m_tree->intersectsWithQuery(sp_convert::get_spatial_line_segment(from, to), *this);
 		m_result = nullptr;
 	}
 
 private:
+	// important: destructed in reverse order of declaration
 	std::unique_ptr<SpatialIndex::IStorageManager> m_storageManager;
 	std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
-	std::map<ID, Space> m_spacesMap;
-	std::vector<ID> *m_result; // null except during visitation
+	std::map<U, T> m_spacesMap;
+	std::vector<U> *m_result; // null except during visitation
 
-	ID getNextId() const {
-		ID free_id = 0;
+	bool contains(U id) const {
+		return (m_spacesMap.find(id) != m_spacesMap.end());
+	}
+
+	U getNextId() const {
+		U free_id = 0;
 		for (const auto &item : m_spacesMap) {
 			if (item.first > free_id)
 				return free_id; // Found gap
