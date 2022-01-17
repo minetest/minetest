@@ -743,7 +743,6 @@ core.register_chatcommand("mods", {
 	privs = {},
 	func = function(name, param)
 		if param == "" then
-			minetest.debug("INIT:" .. INIT)
 			if INIT ~= "game" then
 				return false, param
 			else
