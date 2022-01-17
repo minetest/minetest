@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 #include "util/objectboxstore.h"
 
+#include <cstddef>
+
 class TestObjectBoxStore : public TestBase {
 public:
 	TestObjectBoxStore() { TestManager::registerTestModule(this); }
@@ -27,23 +29,48 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
+	void testConstructor();
+	void testInsertion();
 	void genericStoreTest(ObjectBoxStore *store);
-	void testSpatialStore();
 };
 
 static TestObjectBoxStore g_test_instance;
 
 void TestObjectBoxStore::runTests(IGameDef *gamedef)
 {
-	TEST(testSpatialStore);
+	TEST(testConstructor);
+	TEST(testInsertion);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestObjectBoxStore::testSpatialStore()
-{
-	ObjectBoxStore store;
-	genericStoreTest(&store);
+void TestObjectBoxStore::testConstructor() {
+	ObjectBoxStore store {};
+	UASSERTEQ(std::size_t, store.size(), 0);
+}
+
+void TestObjectBoxStore::testInsertion() {
+	ObjectBoxStore store {};
+	UASSERT(store.insert(0,
+		{ { -10.0f, -3.0f, 5.0f }, { 0.0f, 29.0f, 7.0f } }
+	));
+	UASSERTEQ(std::size_t, store.size(), 1);
+
+	UASSERT(store.insert(2,
+		{ { -12.0f, -5.5f, -16.0f }, { -8.0f, 2.0f, 6.5f } }
+	));
+	UASSERTEQ(std::size_t, store.size(), 2);
+
+	UASSERT(!store.insert(2,
+		{ { -11.0f, 8.0f, -3.0f }, { 5.0f, 32.0f, 8.0f } }
+	));
+	UASSERTEQ(std::size_t, store.size(), 2);
+
+	std::vector<u16> res {};
+	store.getInArea(&res,
+		{ { -9.0f, -1.5f, -17.0f}, { -9.0f, 1.5f, 8.0f} }
+	);
+	UASSERTEQ(std::size_t, res.size(), 2);
 }
 
 void TestObjectBoxStore::genericStoreTest(ObjectBoxStore *store)
