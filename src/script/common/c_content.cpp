@@ -198,7 +198,7 @@ void read_object_properties(lua_State *L, int index,
 		prop->hp_max = (u16)rangelim(hp_max, 0, U16_MAX);
 
 		if (prop->hp_max < sao->getHP()) {
-			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP_MAX);
 			sao->setHP(prop->hp_max, reason);
 		}
 	}

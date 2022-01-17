@@ -1107,7 +1107,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendInventory(playersao, false);
 
 	// Send HP
-	SendPlayerHP(playersao);
+	SendPlayerHP(playersao, false);
 
 	// Send death screen
 	if (playersao->isDead())
@@ -1374,7 +1374,7 @@ void Server::SendMovement(session_t peer_id)
 void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
 	m_script->player_event(playersao, "health_changed");
-	SendPlayerHP(playersao);
+	SendPlayerHP(playersao, reason.type != PlayerHPChangeReason::SET_HP_MAX);
 
 	// Send to other clients
 	playersao->sendPunchCommand();
@@ -1383,15 +1383,15 @@ void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReas
 		HandlePlayerDeath(playersao, reason);
 }
 
-void Server::SendPlayerHP(PlayerSAO *playersao)
+void Server::SendPlayerHP(PlayerSAO *playersao, bool effect)
 {
-	SendHP(playersao->getPeerID(), playersao->getHP());
+	SendHP(playersao->getPeerID(), playersao->getHP(), effect);
 }
 
-void Server::SendHP(session_t peer_id, u16 hp)
+void Server::SendHP(session_t peer_id, u16 hp, bool effect)
 {
-	NetworkPacket pkt(TOCLIENT_HP, 1, peer_id);
-	pkt << hp;
+	NetworkPacket pkt(TOCLIENT_HP, 3, peer_id);
+	pkt << hp << effect;
 	Send(&pkt);
 }
 

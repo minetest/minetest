@@ -235,6 +235,7 @@ struct PlayerHPChangeReason
 	enum Type : u8
 	{
 		SET_HP,
+		SET_HP_MAX, // internal type to allow distinguishing hp reset and damage (for effects)
 		PLAYER_PUNCH,
 		FALL,
 		NODE_DAMAGE,
@@ -277,6 +278,7 @@ struct PlayerHPChangeReason
 	{
 		switch (type) {
 		case PlayerHPChangeReason::SET_HP:
+		case PlayerHPChangeReason::SET_HP_MAX:
 			return "set_hp";
 		case PlayerHPChangeReason::PLAYER_PUNCH:
 			return "punch";
