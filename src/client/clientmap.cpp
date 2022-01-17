@@ -364,7 +364,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
 				bool animated = mapBlockMesh->animate(faraway, animation_time,
-					crack, daynight_ratio);
+					crack, daynight_ratio, &(m_client->getEnv().getLocalPlayer()->getLighting()));
 				if (animated)
 					mesh_animate_count++;
 			} else {

@@ -96,7 +96,7 @@ public:
 	//   daynight_ratio: 0 .. 1000
 	//   crack: -1 .. CRACK_ANIMATION_LENGTH-1 (-1 for off)
 	// Returns true if anything has been changed.
-	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
+	bool animate(bool faraway, float time, int crack, u32 daynight_ratio, const Lighting *lighting = nullptr);
 
 	scene::IMesh *getMesh()
 	{

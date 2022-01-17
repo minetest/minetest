@@ -333,14 +333,14 @@ void final_color_blend(video::SColor *result,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
 
-	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
-		0, 255) / 8] / 255.0f;
-
 	if (lighting != nullptr) {
 		r = (1 - (1 - r) * (1 - lighting->brightness)) * lighting->color_tint.getRed() * ONE_BY_255;
 		g = (1 - (1 - g) * (1 - lighting->brightness)) * lighting->color_tint.getGreen() * ONE_BY_255;
 		b = (1 - (1 - b) * (1 - lighting->brightness)) * lighting->color_tint.getBlue() * ONE_BY_255;
 	}
+
+	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
+		0, 255) / 8] / 255.0f;
 
 	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
 	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
@@ -1218,7 +1218,7 @@ MapBlockMesh::~MapBlockMesh()
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
-	u32 daynight_ratio)
+	u32 daynight_ratio, const Lighting *lighting)
 {
 	if (!m_has_animation) {
 		m_animation_force_timer = 100000;
@@ -1298,7 +1298,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 			for (const auto &j : daynight_diff.second)
 				final_color_blend(&(vertices[j.first].Color), j.second,
-						day_color);
+						day_color, lighting);
 		}
 		m_last_daynight_ratio = daynight_ratio;
 	}
