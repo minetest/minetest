@@ -24,10 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include <array>
 #include <map>
+#include "lighting.h"
 
 class Client;
 class IShaderSource;
-class Lighting;
 
 /*
 	Mesh making stuff
@@ -45,6 +45,7 @@ struct MeshMakeData
 	bool m_smooth_lighting = false;
 
 	Client *m_client;
+	Lighting m_lighting;
 	bool m_use_shaders;
 
 	MeshMakeData(Client *client, bool use_shaders);

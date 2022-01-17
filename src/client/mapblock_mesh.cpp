@@ -1148,7 +1148,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					video::SColor *vc = &p.vertices[j].Color;
 					video::SColor copy = *vc;
 					if (vc->getAlpha() == 0) // No sunlight - no need to animate
-						final_color_blend(vc, copy, sunlight, &(data->m_client->getEnv().getLocalPlayer()->getLighting())); // Finalize color
+						final_color_blend(vc, copy, sunlight, &(data->m_lighting)); // Finalize color
 					else // Record color to animate
 						m_daynight_diffs[std::pair<u8, u32>(layer, i)][j] = copy;
 
