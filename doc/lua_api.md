@@ -5288,6 +5288,9 @@ Utilities
       -- PseudoRandom has get_state method
       -- PcgRandom has get_state and set_state methods (5.9.0)
       random_state_restore = true,
+      -- minetest.after guarantees that coexisting jobs are executed primarily
+      -- in order of expiry and secondarily in order of registration (5.9.0)
+      after_order_expiry_registration = true,
   }
   ```
 
@@ -6458,6 +6461,8 @@ Timing
 * `minetest.after(time, func, ...)`: returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+    * Jobs set for earlier times are executed earlier. If multiple jobs expire
+      at exactly the same time, then they are executed in registration order.
 
 * `job:cancel()`
     * Cancels the job function from being called
