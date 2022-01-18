@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2022 JosiahWI <mtest31@outlook.com>
+Copyright (C) 2022 JosiahWI <josiah_vanderzee@medacombb.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
