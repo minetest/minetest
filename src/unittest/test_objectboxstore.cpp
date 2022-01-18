@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/objectboxstore.h"
 
 #include <cstddef>
+#include <vector>
 
 class TestObjectBoxStore : public TestBase {
 public:
@@ -126,11 +127,10 @@ void TestObjectBoxStore::testGetInArea()
 	store.insert(0, { { -5.7f, 6.0f, -13.3f }, { 12.6f, 10.2f, 2.0f} });
 	store.insert(1, { { -8.3f, -1.1f, -14.5f }, {-5.7f, 6.0f, -13.3f } });
 
-	std::vector<u16> res {};
-
 	// no intersection.
-	store.getInArea(&res,
-		{ { -5.6f, 3.0f, -14.0f}, { -2.0f, 5.9f, 0.5f } });
+	std::vector<u16> res { store.getInArea(
+		{ { -5.6f, 3.0f, -14.0f}, { -2.0f, 5.9f, 0.5f } })
+	};
 	UASSERTEQ(std::size_t, res.size(), 0);
 
 	// touches at 1 point.
@@ -144,6 +144,11 @@ void TestObjectBoxStore::testGetInArea()
 		{ { 9.8f, 3.4f, -15.5f }, { 16.0f, 7.5f, -11.0f } });
 	UASSERTEQ(std::size_t, res.size(), 1);
 	res.clear();
+
+	std::vector<u16> directReturn {
+		store.getInArea({ { 9.9f, 2.0f, -15.5f }, { 15.5f, 6.1f, -11.0f } })
+	};
+	UASSERTEQ(std::size_t, directReturn.size(), 1);
 
 	// entirely contained inside area
 	store.getInArea(&res,

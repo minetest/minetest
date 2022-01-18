@@ -104,6 +104,13 @@ public:
 		m_result = nullptr;
 	}
 
+	std::vector<U> getInArea(T space)
+	{
+		std::vector<U> object_ids {};
+		getInArea(&object_ids, space);
+		return object_ids;
+	}
+
 	void getIntersectingLine(std::vector<U> *result, v3f from, v3f to)
 	{
 		m_result = result;
