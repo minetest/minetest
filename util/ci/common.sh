@@ -5,7 +5,8 @@ install_linux_deps() {
 	local pkgs=(cmake libpng-dev \
 		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
-		gettext libpq-dev libleveldb-dev libcurl4-openssl-dev libzstd-dev)
+		gettext libpq-dev libleveldb-dev libcurl4-openssl-dev \
+		libspatialindex-dev libzstd-dev)
 
 	if [[ "$1" == "--old-irr" ]]; then
 		shift
@@ -25,7 +26,7 @@ install_linux_deps() {
 # Mac OSX build only
 install_macosx_deps() {
 	brew update
-	brew install freetype gettext hiredis irrlicht leveldb libogg libvorbis luajit
+	brew install freetype gettext hiredis irrlicht leveldb libogg libvorbis luajit spatialindex
 	if brew ls | grep -q jpeg; then
 		brew upgrade jpeg
 	else
