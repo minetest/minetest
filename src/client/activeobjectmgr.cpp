@@ -33,6 +33,8 @@ void ActiveObjectMgr::clear()
 		active_object.second = nullptr;
 	}
 	m_active_objects.clear();
+	m_active_objects_by_collisionbox.clear();
+	m_active_objects_by_selectionbox.clear();
 }
 
 void ActiveObjectMgr::step(
