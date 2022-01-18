@@ -39,9 +39,9 @@ void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)>
 	for (u16 i : objects_to_remove) {
 		// removeObject(i);
 		m_active_objects.erase(i);
+		m_active_objects_by_collisionbox.remove(i);
+		m_active_objects_by_selectionbox.remove(i);
 	}
-	m_active_objects_by_collisionbox.clear();
-	m_active_objects_by_selectionbox.clear();
 }
 
 void ActiveObjectMgr::step(
