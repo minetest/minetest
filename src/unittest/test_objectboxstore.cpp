@@ -33,6 +33,7 @@ public:
 	void testInsertion();
 	void testRemoval();
 	void testClear();
+	void testGetInArea();
 };
 
 static TestObjectBoxStore g_test_instance;
@@ -43,6 +44,7 @@ void TestObjectBoxStore::runTests(IGameDef *gamedef)
 	TEST(testInsertion);
 	TEST(testRemoval);
 	TEST(testClear);
+	TEST(testGetInArea);
 }
 
 void TestObjectBoxStore::testConstructor() {
@@ -116,4 +118,42 @@ void TestObjectBoxStore::testClear() {
 		{ { -9.0f, -1.5f, -17.0f}, { -9.0f, 1.5f, 8.0f} }
 	);
 	UASSERTEQ(std::size_t, res.size(), 0);
+}
+
+void TestObjectBoxStore::testGetInArea()
+{
+	ObjectBoxStore store {};
+	store.insert(0, { { -5.7f, 6.0f, -13.3f }, { 12.6f, 10.2f, 2.0f} });
+	store.insert(1, { { -8.3f, -1.1f, -14.5f }, {-5.7f, 6.0f, -13.3f } });
+
+	std::vector<u16> res {};
+
+	// no intersection.
+	store.getInArea(&res,
+		{ { -5.6f, 3.0f, -14.0f}, { -2.0f, 5.9f, 0.5f } });
+	UASSERTEQ(std::size_t, res.size(), 0);
+
+	// touches at 1 point.
+	store.getInArea(&res,
+		{ { 12.6f, 3.4f, -15.5f }, { 16.0f, 6.0f, -13.3f } });
+	UASSERTEQ(std::size_t, res.size(), 1);
+	res.clear();
+
+	// intersection with one area
+	store.getInArea(&res,
+		{ { 9.8f, 3.4f, -15.5f }, { 16.0f, 7.5f, -11.0f } });
+	UASSERTEQ(std::size_t, res.size(), 1);
+	res.clear();
+
+	// entirely contained inside area
+	store.getInArea(&res,
+		{ { 9.8f, 7.0f, -10.4f }, { 11.1f, 9.5f, 0.0f } });
+	UASSERTEQ(std::size_t, res.size(), 1);
+	res.clear();
+
+	// entirely contains area and intersects second area
+	store.getInArea(&res,
+		{ { -8.0f, 5.6f, -14.0f }, { 13.4f, 10.9f, 3.0f } });
+	UASSERTEQ(std::size_t, res.size(), 2);
+	res.clear();
 }
