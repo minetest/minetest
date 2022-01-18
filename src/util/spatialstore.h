@@ -34,10 +34,13 @@ class SpatialStore : public SpatialIndex::IVisitor {
 public:
 
 	SpatialStore()
-		: m_tree { createTree() }
+		: m_storageManager {}
+		, m_tree {}
 		, m_spacesMap {}
 		, m_result {}
-	{}
+	{
+		createTree();
+	}
 
 	SpatialStore(const SpatialStore&) = delete;
 	SpatialStore<T, U>& operator =(const SpatialStore&) = delete;
@@ -77,9 +80,8 @@ public:
 	}
 
 	void clear() {
-		using SpatialIndex::ISpatialIndex;
 		m_spacesMap.clear();
-		m_tree = std::unique_ptr<ISpatialIndex> { createTree() };
+		createTree();
 	}
 
 	virtual void visitNode(const SpatialIndex::INode &in) {}
@@ -110,24 +112,33 @@ public:
 	}
 
 private:
+	// tree must be destructed first because it accesses the storage manager
+	std::unique_ptr<SpatialIndex::IStorageManager> m_storageManager;
 	std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
 	std::map<U, T> m_spacesMap;
 	std::vector<U> *m_result; // null except during visitation
 
-	static SpatialIndex::ISpatialIndex* createTree() {
+	void createTree() {
 		using SpatialIndex::StorageManager
 			::createNewMemoryStorageManager;
 
+		// do not delete old storage manager yet; old tree destructor uses it
+		SpatialIndex::IStorageManager *storage { createNewMemoryStorageManager() };
 		SpatialIndex::id_type unused_id {};
-		return SpatialIndex::RTree::createNewRTree(
-			*createNewMemoryStorageManager(),
-			0.7,
-			100,
-			100,
-			3,
-			SpatialIndex::RTree::RV_RSTAR,
-			unused_id
-		);
+
+		m_tree = std::unique_ptr<SpatialIndex::ISpatialIndex> {
+			SpatialIndex::RTree::createNewRTree(
+				*storage,
+				0.7,
+				100,
+				100,
+				3,
+				SpatialIndex::RTree::RV_RSTAR,
+				unused_id
+			)
+		};
+
+		m_storageManager = std::unique_ptr<SpatialIndex::IStorageManager> { storage };
 	}
 
 	bool contains(U id) const {
