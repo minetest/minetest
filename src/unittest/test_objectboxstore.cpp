@@ -31,6 +31,7 @@ public:
 
 	void testConstructor();
 	void testInsertion();
+	void testRemoval();
 	void testClear();
 	void genericStoreTest(ObjectBoxStore *store);
 };
@@ -41,6 +42,7 @@ void TestObjectBoxStore::runTests(IGameDef *gamedef)
 {
 	TEST(testConstructor);
 	TEST(testInsertion);
+	TEST(testRemoval);
 	TEST(testClear);
 }
 
@@ -73,6 +75,31 @@ void TestObjectBoxStore::testInsertion() {
 		{ { -9.0f, -1.5f, -17.0f}, { -9.0f, 1.5f, 8.0f} }
 	);
 	UASSERTEQ(std::size_t, res.size(), 2);
+}
+
+void TestObjectBoxStore::testRemoval() {
+	ObjectBoxStore store {};
+	store.insert(8, { { -10.0f, -3.0f, 5.0f }, { 0.0f, 29.0f, 7.0f } });
+	store.insert(4, { { -12.0f, -5.5f, -16.0f }, { -8.0f, 2.0f, 6.5f } });
+
+	UASSERT(store.remove(8));
+	UASSERTEQ(std::size_t, store.size(), 1);
+
+	std::vector<u16> res {};
+	store.getInArea(&res,
+		{ { -9.0f, -1.5f, -17.0f}, { -9.0f, 1.5f, 8.0f} }
+	);
+	UASSERTEQ(std::size_t, res.size(), 1);
+
+	UASSERT(!store.remove(8));
+
+	UASSERT(!store.insert(4,
+		{ { -12.0f, -5.5f, -16.0f }, { -8.0f, 2.0f, 6.5f } }
+	));
+
+	UASSERT(store.insert(8,
+		{ { -10.0f, -3.0f, 5.0f }, { 0.0f, 29.0f, 7.0f } }
+	));
 }
 
 void TestObjectBoxStore::testClear() {

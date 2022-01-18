@@ -64,14 +64,15 @@ public:
 	}
 
 	bool remove(U id) {
-		const auto iter = m_spacesMap.find(id);
+		const auto iter { m_spacesMap.find(id) };
 		if (iter == m_spacesMap.end())
 			return false;
-		T space = iter->second;
+
+		T space { iter->second };
 		m_spacesMap.erase(iter);
 		return m_tree->deleteData(
 			sp_convert::get_spatial_region(space),
-			(u32) id
+			static_cast<u32>(id)
 		);
 	}
 
