@@ -27,34 +27,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstddef>
 #include <memory>
 #include <map>
-#include <utility>
 #include <vector>
-
-using SpatialIndex::StorageManager::createNewMemoryStorageManager;
 
 template <typename T, typename U = u32>
 class SpatialStore : public SpatialIndex::IVisitor {
 public:
 
 	SpatialStore()
-		: m_storageManager(createNewMemoryStorageManager())
-		, m_tree()
-		, m_spacesMap()
-		, m_result(nullptr)
-	{
-		SpatialIndex::id_type unused_id {};
-		m_tree = std::unique_ptr<SpatialIndex::ISpatialIndex>(
-			SpatialIndex::RTree::createNewRTree(
-				*m_storageManager,
-				.7, // Fill factor
-				100, // Index capacity
-				100, // Leaf capacity
-				3, // dimension
-				SpatialIndex::RTree::RV_RSTAR,
-				unused_id
-			)
-		);
-	}
+		: m_tree { createTree() }
+		, m_spacesMap {}
+		, m_result {}
+	{}
 
 	SpatialStore(const SpatialStore&) = delete;
 	SpatialStore<T, U>& operator =(const SpatialStore&) = delete;
@@ -92,6 +75,12 @@ public:
 		);
 	}
 
+	void clear() {
+		using SpatialIndex::ISpatialIndex;
+		m_spacesMap.clear();
+		m_tree = std::unique_ptr<ISpatialIndex> { createTree() };
+	}
+
 	virtual void visitNode(const SpatialIndex::INode &in) {}
 
 	virtual void visitData(const SpatialIndex::IData &in)
@@ -120,11 +109,25 @@ public:
 	}
 
 private:
-	// important: destructed in reverse order of declaration
-	std::unique_ptr<SpatialIndex::IStorageManager> m_storageManager;
 	std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
 	std::map<U, T> m_spacesMap;
 	std::vector<U> *m_result; // null except during visitation
+
+	static SpatialIndex::ISpatialIndex* createTree() {
+		using SpatialIndex::StorageManager
+			::createNewMemoryStorageManager;
+
+		SpatialIndex::id_type unused_id {};
+		return SpatialIndex::RTree::createNewRTree(
+			*createNewMemoryStorageManager(),
+			0.7,
+			100,
+			100,
+			3,
+			SpatialIndex::RTree::RV_RSTAR,
+			unused_id
+		);
+	}
 
 	bool contains(U id) const {
 		return (m_spacesMap.find(id) != m_spacesMap.end());
