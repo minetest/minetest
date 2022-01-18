@@ -33,7 +33,6 @@ public:
 	void testInsertion();
 	void testRemoval();
 	void testClear();
-	void genericStoreTest(ObjectBoxStore *store);
 };
 
 static TestObjectBoxStore g_test_instance;
@@ -45,8 +44,6 @@ void TestObjectBoxStore::runTests(IGameDef *gamedef)
 	TEST(testRemoval);
 	TEST(testClear);
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 void TestObjectBoxStore::testConstructor() {
 	ObjectBoxStore store {};
@@ -119,38 +116,4 @@ void TestObjectBoxStore::testClear() {
 		{ { -9.0f, -1.5f, -17.0f}, { -9.0f, 1.5f, 8.0f} }
 	);
 	UASSERTEQ(std::size_t, res.size(), 0);
-}
-
-void TestObjectBoxStore::genericStoreTest(ObjectBoxStore *store)
-{
-	aabb3f a(v3f(-10, -3, 5), v3f(0, 29, 7));
-	aabb3f b(v3f(-5, -2, 5), v3f(0, 28, 6));
-	aabb3f c(v3f(-7, -3, 6), v3f(-1, 27, 7));
-	std::vector<u16> res;
-
-	UASSERTEQ(size_t, store->size(), 0);
-	store->insert(1, a);
-	store->insert(2, b);
-	store->insert(3, c);
-	UASSERTEQ(size_t, store->size(), 3);
-
-	store->remove(1);
-
-	store->insert(1, a);
-
-	store->getInArea(&res, { v3f(-10, -3, 5), v3f(0, 29, 7) });
-	UASSERTEQ(size_t, res.size(), 3);
-	res.clear();
-
-	store->getInArea(&res, { v3f(-100, 0, 6), v3f(200, 0, 6) });
-	UASSERTEQ(size_t, res.size(), 0);
-	res.clear();
-
-	store->getInArea(&res, { v3f(-100, 0, 6), v3f(200, 0, 6) });
-	UASSERTEQ(size_t, res.size(), 3);
-	res.clear();
-
-	store->remove(1);
-	store->remove(2);
-	store->remove(3);
 }
