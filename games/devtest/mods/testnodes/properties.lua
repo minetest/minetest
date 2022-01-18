@@ -252,9 +252,9 @@ for i=-100, 100, 25 do
 end
 
 -- Bouncy nodes (various bounce levels)
-for i=20, 180, 20 do
+for i=-140, 180, 20 do
 	local val = math.floor(((i-20)/200)*255)
-	minetest.register_node("testnodes:bouncy"..i, {
+	minetest.register_node(("testnodes:bouncy"..i):gsub("-","NEG"), {
 		description = S("Bouncy Node (@1%)", i),
 		groups = {bouncy=i, dig_immediate=3},
 
