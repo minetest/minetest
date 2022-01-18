@@ -303,7 +303,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (!f.walkable)
 				continue;
 
-			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
+			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
 
 			int neighbors = 0;
 			if (f.drawtype == NDT_NODEBOX &&
@@ -504,7 +504,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 							d));
 
 			// Get bounce multiplier
-			float bounce = -(float)nearest_info.bouncy / 100.0f;
+			float bounce = -(float)abs(nearest_info.bouncy) / 100.0f;
 
 			// Move to the point of collision and reduce dtime by nearest_dtime
 			if (nearest_dtime < 0) {
