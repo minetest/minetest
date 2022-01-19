@@ -435,6 +435,7 @@ function pkgmgr.enable_mod(this, toset)
 	local toggled_mods = {}
 	local enabled_mods = {}
 	toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
+	toset = mod.enabled -- Update if toggled
 
 	if not toset then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
