@@ -228,11 +228,7 @@ void MapDatabaseSQLite3::createDatabase()
 void MapDatabaseSQLite3::initStatements()
 {
 	PREPARE_STATEMENT(read, "SELECT `data` FROM `blocks` WHERE `pos` = ? LIMIT 1");
-#ifdef __ANDROID__
-	PREPARE_STATEMENT(write,  "INSERT INTO `blocks` (`pos`, `data`) VALUES (?, ?)");
-#else
 	PREPARE_STATEMENT(write, "REPLACE INTO `blocks` (`pos`, `data`) VALUES (?, ?)");
-#endif
 	PREPARE_STATEMENT(delete, "DELETE FROM `blocks` WHERE `pos` = ?");
 	PREPARE_STATEMENT(list, "SELECT `pos` FROM `blocks`");
 
@@ -264,19 +260,6 @@ bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
 bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 {
 	verifyDatabase();
-
-#ifdef __ANDROID__
-	/**
-	 * Note: For some unknown reason SQLite3 fails to REPLACE blocks on Android,
-	 * deleting them and then inserting works.
-	 */
-	bindPos(m_stmt_read, pos);
-
-	if (sqlite3_step(m_stmt_read) == SQLITE_ROW) {
-		deleteBlock(pos);
-	}
-	sqlite3_reset(m_stmt_read);
-#endif
 
 	bindPos(m_stmt_write, pos);
 	SQLOK(sqlite3_bind_blob(m_stmt_write, 2, data.data(), data.size(), NULL),
