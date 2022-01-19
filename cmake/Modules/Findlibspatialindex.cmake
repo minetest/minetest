@@ -1,34 +1,43 @@
-
-# Find script for libspatialindex
+# Script to find libspatialindex if installed
 # libspatialindex has a target export in master branch since July 2020
 # so this will eventually be obsolete
 #
-# Defines the following variables:
+# Sets the following variables:
 #
-#       SPATIAL_LIBRARY
-#       SPATIAL_INCLUDE_DIR
+#     libspatialindex_FOUND
+#     libspatialindex_LIBRARY
+#     libspatialindex_INCLUDE_DIR
 #
 # And the following imported targets:
 #
-#       libspatialindex::spatialindex
+#     libspatialindex::spatialindex
 #
-# Author Josiah VanderZee
+# Authors: Josiah VanderZee - josiah_vanderzee@mediacombb.net
 
-find_library(SPATIAL_LIBRARY spatialindex)
-find_path(SPATIAL_INCLUDE_DIR spatialindex/SpatialIndex.h)
+find_library(libspatialindex_LIBRARY
+	NAMES spatialindex
+)
+message(STATUS "Lib: ${libspatialindex_LIBRARY}")
+find_path(libspatialindex_INCLUDE_DIR
+	NAMES SpatialIndex.h
+	PATH_SUFFIXES spatialindex
+)
+
+mark_as_advanced(
+	libspatialindex_FOUND
+	libspatialindex_LIBRARY
+	libspatialindex_INCLUDE_DIR
+)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libspatialindex
-    REQUIRED_VARS
-        SPATIAL_LIBRARY SPATIAL_INCLUDE_DIR
+	REQUIRED_VARS libspatialindex_LIBRARY libspatialindex_INCLUDE_DIR
 )
 
-if(NOT TARGET libspatialindex::libspatial)
-    add_library(libspatialindex::libspatial INTERFACE IMPORTED)
-    set_target_properties(libspatialindex::libspatial PROPERTIES
-        INTERFACE_INCLUDE_DIRS
-            ${SPATIAL_INCLUDE_DIR}
-        INTERFACE_LINK_LIBRARIES
-            ${SPATIAL_LIBRARY}
+if(libspatialindex_FOUND AND NOT TARGET libspatialindex::libspatial)
+	add_library(libspatialindex::libspatial INTERFACE IMPORTED)
+	set_target_properties(libspatialindex::libspatial PROPERTIES
+		INTERFACE_LINK_LIBRARIES "${libspatialindex_LIBRARY}"
+		INTERFACE_INCLUDE_DIRS "${libspatialindex_INCLUDE_DIR}"
     )
 endif()
