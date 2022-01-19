@@ -43,6 +43,9 @@ public:
 				m_active_objects.find(id);
 		return (n != m_active_objects.end() ? n->second : nullptr);
 	}
+	
+	ObjectBoxStore m_active_objects_by_collisionbox;
+	ObjectBoxStore m_active_objects_by_selectionbox;
 protected:
 	u16 getFreeId() const
 	{
@@ -63,6 +66,4 @@ protected:
 	}
 
 	std::unordered_map<u16, T *> m_active_objects;
-	ObjectBoxStore m_active_objects_by_collisionbox;
-	ObjectBoxStore m_active_objects_by_selectionbox;
 };
