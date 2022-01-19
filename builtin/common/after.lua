@@ -87,21 +87,20 @@ core.register_globalstep(function(dtime)
 	-- Run the callbacks afterward to prevent infinite loops with core.after(0, ...).
 	for i = 1, #expired do
 		local job = expired[i]
-		local func = job.func
-		if func then
-			core.set_last_run_mod(job.mod_origin)
-			func(unpack(job, 1, job.n_args))
-		end
+		core.set_last_run_mod(job.mod_origin)
+		job.func(unpack(job, 1, job.n_args))
 	end
 end)
 
 local job_metatable = {__index = {}}
 
+local function dummy_func() end
 function job_metatable.__index:cancel()
-	self.func = nil
+	self.func = dummy_func
 	for i = 1, self.n_args do
 		self[i] = nil
 	end
+	self.n_args = 0
 end
 
 function core.after(after, func, ...)
