@@ -1311,6 +1311,9 @@ max_objects_per_block (Maximum objects per block) int 64
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
+#    See https://www.postgresql.org/docs/current/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT
+postgres_synchronous_commit (Synchronous Commit PostgreSQL) bool true
+
 #    Compression level to use when saving mapblocks to disk.
 #    -1 - use default compression level
 #     0 - least compression, fastest

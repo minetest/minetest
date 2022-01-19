@@ -90,6 +90,10 @@ void Database_PostgreSQL::connectToDatabase()
 	infostream << "PostgreSQL Database: Version " << m_pgversion
 			<< " Connection made." << std::endl;
 
+	std::string query_str = "SET synchronous_commit = ";
+	query_str += g_settings->getBool("postgres_synchronous_commit") ? "on" : "off";
+	checkResults(PQexec(m_conn, query_str.c_str()));
+
 	createDatabase();
 	initStatements();
 }
