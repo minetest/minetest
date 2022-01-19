@@ -223,7 +223,6 @@ else(USE_PROMETHEUS)
 endif(USE_PROMETHEUS)
 
 find_package(libspatialindex REQUIRED)
-
 find_package(ZLIB REQUIRED)
 find_package(Zstd REQUIRED)
 

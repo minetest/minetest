@@ -17,7 +17,6 @@
 find_library(libspatialindex_LIBRARY
 	NAMES spatialindex
 )
-message(STATUS "Lib: ${libspatialindex_LIBRARY}")
 find_path(libspatialindex_INCLUDE_DIR
 	NAMES SpatialIndex.h
 	PATH_SUFFIXES spatialindex
