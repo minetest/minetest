@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irrlichttypes.h"
 #include "util/numeric.h"
 #include "util/spatial_tools.h"
 
@@ -163,3 +164,6 @@ private:
 		return free_id;
 	}
 };
+
+using ObjectBoxStore = SpatialStore<aabb3f, u16>;
+

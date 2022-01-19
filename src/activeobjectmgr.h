@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_map>
-#include "util/objectboxstore.h"
+#include "util/spatialstore.h"
 #include "irrlichttypes.h"
 
 class TestClientActiveObjectMgr;

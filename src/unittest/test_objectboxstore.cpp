@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "test.h"
-#include "util/objectboxstore.h"
+#include "util/spatialstore.h"
 
 #include <cstddef>
 #include <vector>
