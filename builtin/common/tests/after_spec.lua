@@ -54,6 +54,20 @@ describe("after", function()
 		assert.same(result, "abbeccf")
 	end)
 
+	it("defers jobs with delay 0", function()
+		local result = ""
+		core.after(0, function()
+			core.after(0, function()
+				result = result .. "b"
+			end)
+			result = result .. "a"
+		end)
+		do_step(1)
+		assert.same(result, "a")
+		do_step(1)
+		assert.same(result, "ab")
+	end)
+
 	it("passes arguments", function()
 		core.after(0, function(...)
 			assert.same(select("#", ...), 0)
