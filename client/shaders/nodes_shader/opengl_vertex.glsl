@@ -195,11 +195,12 @@ void main(void)
 
 	varColor = clamp(color, 0.0, 1.0);
 
-	varColor.rgb = (1 - (1 - varColor.rgb) * (1 - ambientBrightness)) * ambientColorTint.rgb;
-	// adjust nightRatio for the ambient brightness, assuming that
-	// it only contributes to the 'night' part of the lighting.
-	nightRatio = 1 - brightness * (1 - nightRatio) * (1 - ambientBrightness) /
-			(1 - (1 - brightness) * (1 - ambientBrightness));
+	const float light_factor = 0.9; // this portion of the color is light
+	const float shade_factor = 1.0 - light_factor; // this portion of the color is shading
+
+	vec3 shades = ambientBrightness * (1.0 - clamp(shade_factor - varColor.rgb, 0.0, shade_factor) / shade_factor);
+	vec3 lights = 1.0 -  (1.0 - ambientBrightness) * clamp(1 - varColor.rgb, 0.0, light_factor) / light_factor;
+	varColor.rgb = (shades + lights) * ambientColorTint.rgb;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	vec3 nNormal = normalize(vNormal);

@@ -32,6 +32,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lighting.h"
 #include <array>
 
+// When converting light levels to color value, compress the 
+// value by 10% to give place to ambient occlusion and face shading 
+// at the lowest brightness values.
+static const float COLOR_LIGHT_FACTOR = 0.9f;
+static const float COLOR_SHADE_FACTOR = 1.0f - COLOR_LIGHT_FACTOR;
+
 /*
 	MeshMakeData
 */
@@ -227,16 +233,23 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 
 	// Boost brightness around light sources
 	bool skip_ambient_occlusion_day = false;
-	if (decode_light(light_source_max) >= light_day) {
-		light_day = decode_light(light_source_max);
-		skip_ambient_occlusion_day = true;
+	bool skip_ambient_occlusion_night = false;
+
+	if (light_source_max > 0) {
+		if (light_source_max > 0 && decode_light(light_source_max) >= light_day) {
+			light_day = decode_light(light_source_max);
+			skip_ambient_occlusion_day = true;
+		}
+
+		if(light_source_max > 0 && decode_light(light_source_max) >= light_night) {
+			light_night = decode_light(light_source_max);
+			skip_ambient_occlusion_night = true;
+		}
 	}
 
-	bool skip_ambient_occlusion_night = false;
-	if(decode_light(light_source_max) >= light_night) {
-		light_night = decode_light(light_source_max);
-		skip_ambient_occlusion_night = true;
-	}
+	// compress brightness to give place to ambient occlusion
+	light_day = (255 - (255 - light_day) * COLOR_LIGHT_FACTOR);
+	light_night = (255 - (255 - light_night) * COLOR_LIGHT_FACTOR);
 
 	if (ambient_occlusion > 4) {
 		static thread_local const float ao_gamma = rangelim(
@@ -326,18 +339,21 @@ void final_color_blend(video::SColor *result,
 	f32 g = c.g * (c.a * dayLight.g + n * artificialColor.g) * 2.0f;
 	f32 b = c.b * (c.a * dayLight.b + n * artificialColor.b) * 2.0f;
 
+	if (lighting != nullptr) {
+		r = (lighting->brightness * (1.0f - rangelim(COLOR_SHADE_FACTOR - r, 0.0f, COLOR_SHADE_FACTOR) / COLOR_SHADE_FACTOR) + 
+				1.0f -  (1.0f - lighting->brightness) * rangelim(1.0f - r, 0.0f, COLOR_LIGHT_FACTOR) / COLOR_LIGHT_FACTOR) * lighting->color_tint.getRed() * ONE_BY_255;
+		g = (lighting->brightness * (1.0f - rangelim(COLOR_SHADE_FACTOR - g, 0.0f, COLOR_SHADE_FACTOR) / COLOR_SHADE_FACTOR) + 
+				1.0f -  (1.0f - lighting->brightness) * rangelim(1.0f - g, 0.0f, COLOR_LIGHT_FACTOR) / COLOR_LIGHT_FACTOR) * lighting->color_tint.getGreen() * ONE_BY_255;
+		b = (lighting->brightness * (1.0f - rangelim(COLOR_SHADE_FACTOR - b, 0.0f, COLOR_SHADE_FACTOR) / COLOR_SHADE_FACTOR) + 
+				1.0f -  (1.0f - lighting->brightness) * rangelim(1.0f - b, 0.0f, COLOR_LIGHT_FACTOR) / COLOR_LIGHT_FACTOR) * lighting->color_tint.getBlue() * ONE_BY_255;
+	}
+
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
 	static const u8 emphase_blue_when_dark[32] = {
 		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
-
-	if (lighting != nullptr) {
-		r = (1 - (1 - r) * (1 - lighting->brightness)) * lighting->color_tint.getRed() * ONE_BY_255;
-		g = (1 - (1 - g) * (1 - lighting->brightness)) * lighting->color_tint.getGreen() * ONE_BY_255;
-		b = (1 - (1 - b) * (1 - lighting->brightness)) * lighting->color_tint.getBlue() * ONE_BY_255;
-	}
 
 	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
 		0, 255) / 8] / 255.0f;
