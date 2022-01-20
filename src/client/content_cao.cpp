@@ -1815,6 +1815,7 @@ void GenericCAO::processMessage(const std::string &data)
 			{
 					updateAnimation();
 			}
+			// FIXME: ^ This code is trash. It's also broken.
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION_SPEED) {
 		m_animation_speed = readF32(is);

@@ -1404,6 +1404,8 @@ void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 	*pkt >> player->local_animations[2];
 	*pkt >> player->local_animations[3];
 	*pkt >> player->local_animation_speed;
+
+	player->last_animation = -1;
 }
 
 void Client::handleCommand_EyeOffset(NetworkPacket* pkt)

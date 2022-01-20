@@ -9,7 +9,7 @@ stages:
   - deploy
 
 variables:
-  IRRLICHT_TAG: "1.9.0mt3"
+  IRRLICHT_TAG: "1.9.0mt4"
   MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
   CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
 

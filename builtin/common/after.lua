@@ -114,7 +114,9 @@ function core.after(after, func, ...)
 		n_args = select("#", ...),
 		...
 	}
+
 	add_job(new_job)
 	time_next = math.min(time_next, expire)
+
 	return setmetatable(new_job, job_metatable)
 end
