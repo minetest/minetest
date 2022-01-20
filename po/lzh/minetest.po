@@ -8,21 +8,24 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-01-20 14:35+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
+"Language-Team: Chinese (Literary) <https://hosted.weblate.org/projects/"
+"minetest/minetest/lzh/>\n"
 "Language: lzh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "令之传者： "
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "空令。"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -54,11 +57,11 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "尔死矣"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "复生"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
@@ -362,7 +365,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "川"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -430,15 +433,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "平地"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "泥流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "地表之蚀"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
@@ -1267,7 +1270,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "消音"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
