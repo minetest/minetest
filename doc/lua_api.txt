@@ -2395,7 +2395,7 @@ Elements
 * Item slots are drawn in a grid from left to right, then up to down, ordered
   according to the slot index.
 * `W` and `H` are in inventory slots, not in coordinates.
-* `starting item index` (Optinal): The index of the first (upper-left) item to draw.
+* `starting item index` (Optional): The index of the first (upper-left) item to draw.
   Indices start at `0`. Default is `0`.
 * The number of shown slots is the minimum of `W*H` and the inventory list's size minus
   `starting item index`.
