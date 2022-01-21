@@ -115,7 +115,7 @@ public:
 		SunParams sun;
 		sun.visible = true;
 		sun.sunrise_visible = true;
-		sun.texture = "sun.png";
+		sun.texture = "";
 		sun.tonemap = "sun_tonemap.png";
 		sun.sunrise = "sunrisebg.png";
 		sun.scale = 1;
@@ -126,7 +126,7 @@ public:
 	{
 		MoonParams moon;
 		moon.visible = true;
-		moon.texture = "moon.png";
+		moon.texture = "";
 		moon.tonemap = "moon_tonemap.png";
 		moon.scale = 1;
 		return moon;
