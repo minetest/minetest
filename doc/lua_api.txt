@@ -2390,8 +2390,8 @@ Elements
 
 * Show an inventory list if it has been sent to the client.
 * If the inventory list changes (eg. it didn't exist before, it's resized, or its items
-  are moved) while the formspec is open, the formspec element might adapt to the new
-  inventory list.
+  are moved) while the formspec is open, the formspec element may (but is not guaranteed
+  to) adapt to the new inventory list.
 * Item slots are drawn in a grid from left to right, then up to down, ordered
   according to the slot index.
 * `W` and `H` are in inventory slots, not in coordinates.
