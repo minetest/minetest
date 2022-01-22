@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "util/areastore.h"
 
+#include <../lib/THST/RTree.h>
 #include <spatialindex/SpatialIndex.h>
 
 
@@ -35,17 +36,17 @@ void get_doubles_from_point(const T &from, double (& to)[3]) {
 }
 
 template <typename T>
-SpatialIndex::Region get_spatial_region(const T &space)
+spatial::BoundingBox<double, 3> get_spatial_region(const T &space)
 {
 	double coordsMin[3];
 	double coordsMax[3];
 	get_doubles_from_point(space.minedge, coordsMin);
 	get_doubles_from_point(space.maxedge, coordsMax);
-	return SpatialIndex::Region(coordsMin, coordsMax, 3);
+	return spatial::BoundingBox<double, 3> {coordsMin, coordsMax };
 }
 
 template<>
-SpatialIndex::Region get_spatial_region(const aabb3f &space);
+spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space);
 
 template <typename T>
 SpatialIndex::LineSegment get_spatial_line_segment(const T &from, const T &to)

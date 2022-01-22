@@ -20,16 +20,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "util/spatial_tools.h"
 
+#include <../lib/THST/RTree.h>
+
 namespace sp_convert {
 
 template<>
-SpatialIndex::Region get_spatial_region(const aabb3f &space)
+spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space)
 {
 	double coordsMin[3];
 	double coordsMax[3];
 	get_doubles_from_point(space.MinEdge, coordsMin);
 	get_doubles_from_point(space.MaxEdge, coordsMax);
-	return SpatialIndex::Region(coordsMin, coordsMax, 3);
+	return spatial::BoundingBox<double, 3> { coordsMin, coordsMax };
 }
 
 }

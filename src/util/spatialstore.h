@@ -23,25 +23,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/spatial_tools.h"
 
-#include <spatialindex/SpatialIndex.h>
+#include <../lib/THST/RTree.h>
 
 #include <cstddef>
-#include <memory>
+#include <iterator>
 #include <map>
 #include <vector>
 
+struct Object {
+	u32 id;
+	spatial::BoundingBox<double, 3> bbox;
+};
+
+static bool operator==(const Object &a, const Object &b)
+{
+	return a.id == b.id;
+}
+
+// helps to get the bounding of the items inserted
+struct Indexable {
+	const double *min(const Object &value) const { return value.bbox.min; }
+	const double *max(const Object &value) const { return value.bbox.max; }
+};
+
+
 template <typename T, typename U = u32>
-class SpatialStore : public SpatialIndex::IVisitor {
+class SpatialStore
+{
 public:
 
 	SpatialStore()
-		: m_storageManager {}
-		, m_tree {}
+		: m_tree {}
 		, m_spacesMap {}
-		, m_result {}
-	{
-		createTree();
-	}
+	{}
 
 	SpatialStore(const SpatialStore&) = delete;
 	SpatialStore<T, U>& operator =(const SpatialStore&) = delete;
@@ -57,12 +71,8 @@ public:
 			return false;
 
 		m_spacesMap.insert({ id, space });
-		m_tree->insertData(
-			0,
-			nullptr,
-			sp_convert::get_spatial_region(space),
-			static_cast<u32>(id)
-		);
+		Object obj { static_cast<u32>(id), sp_convert::get_spatial_region(space) };
+		m_tree.insert(obj);
 
 		return true;
 	}
@@ -74,80 +84,50 @@ public:
 
 		T space { iter->second };
 		m_spacesMap.erase(iter);
-		return m_tree->deleteData(
-			sp_convert::get_spatial_region(space),
-			static_cast<u32>(id)
-		);
+		Object obj { static_cast<u32>(id), sp_convert::get_spatial_region(space) };
+		return m_tree.remove(obj);
 	}
 
 	void clear() {
 		m_spacesMap.clear();
-		createTree();
-	}
-
-	virtual void visitNode(const SpatialIndex::INode &in) {}
-
-	virtual void visitData(const SpatialIndex::IData &in)
-	{
-		m_result->push_back(in.getIdentifier());
-	}
-
-	virtual void visitData(std::vector<const SpatialIndex::IData *> &v)
-	{
-		for (const auto &item : v)
-			m_result->push_back((U) item->getIdentifier());
-	}
-
-	void getInArea(std::vector<U> *result, T space)
-	{
-		m_result = result;
-		m_tree->intersectsWithQuery(sp_convert::get_spatial_region(space), *this);
-		m_result = nullptr;
+		m_tree.clear();
 	}
 
 	std::vector<U> getInArea(T space)
 	{
+		std::vector<Object> results {};
 		std::vector<U> object_ids {};
-		getInArea(&object_ids, space);
+		m_tree.query(
+			spatial::intersects<3>(sp_convert::get_spatial_region(space)),
+			std::back_inserter(results)
+		);
+		object_ids.reserve(results.size());
+		for (const Object &obj : results) {
+			object_ids.push_back(obj.id);
+		}
+
 		return object_ids;
+	}
+
+	void getInArea(std::vector<U> *result, T space)
+	{
+		*result = getInArea(space);
 	}
 
 	void getIntersectingLine(std::vector<U> *result, v3f from, v3f to)
 	{
+		
+		/*
 		m_result = result;
 		m_tree->intersectsWithQuery(sp_convert::get_spatial_line_segment(from, to), *this);
 		m_result = nullptr;
+		*/
 	}
 
 private:
 	// tree must be destructed first because it accesses the storage manager
-	std::unique_ptr<SpatialIndex::IStorageManager> m_storageManager;
-	std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
+	spatial::RTree<double, Object, 3, 4, 3, Indexable> m_tree;
 	std::map<U, T> m_spacesMap;
-	std::vector<U> *m_result; // null except during visitation
-
-	void createTree() {
-		using SpatialIndex::StorageManager
-			::createNewMemoryStorageManager;
-
-		// do not delete old storage manager yet; old tree destructor uses it
-		SpatialIndex::IStorageManager *storage { createNewMemoryStorageManager() };
-		SpatialIndex::id_type unused_id {};
-
-		m_tree = std::unique_ptr<SpatialIndex::ISpatialIndex> {
-			SpatialIndex::RTree::createNewRTree(
-				*storage,
-				0.7,
-				100,
-				100,
-				3,
-				SpatialIndex::RTree::RV_RSTAR,
-				unused_id
-			)
-		};
-
-		m_storageManager = std::unique_ptr<SpatialIndex::IStorageManager> { storage };
-	}
 
 	bool contains(U id) const {
 		return (m_spacesMap.find(id) != m_spacesMap.end());
@@ -166,4 +146,3 @@ private:
 };
 
 using ObjectBoxStore = SpatialStore<aabb3f, u16>;
-
