@@ -82,6 +82,8 @@ struct CloudParams
 class SkyboxDefaults
 {
 public:
+	SkyboxDefaults() = delete;
+
 	static const SkyboxParams getSkyDefaults()
 	{
 		SkyboxParams sky;

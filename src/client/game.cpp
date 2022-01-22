@@ -2862,7 +2862,7 @@ void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
 void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam)
 {
 	sky->setStarsVisible(event->star_params->visible);
-	sky->setStarCount(event->star_params->count, false);
+	sky->setStarCount(event->star_params->count);
 	sky->setStarColor(event->star_params->starcolor);
 	sky->setStarScale(event->star_params->scale);
 	delete event->star_params;
