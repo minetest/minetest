@@ -122,7 +122,19 @@ end
 -- Checks whether the mod with the given name is a separate mod or a part of a modpack
 local function is_mod_sep_or_part_of_mp(modname)
 	local modpath = core.get_modpath(modname)
-	local find_ptn = "[^" .. DIR_DELIM .. "]*.$"
+
+	local ptn = DIR_DELIM .. "[^" .. DIR_DELIM .. "]+"
+	local sep_mod_ptn = ptn .. "$"
+	local mp_ptn = ptn:rep(2) .. "$"
+	local mods_ptn = DIR_DELIM .. "mods"
+	local worldmods_ptn = DIR_DELIM .. "worldmods"
+
+	if modpath:match(mods_ptn .. mp_ptn) or modpath:match(worldmods_ptn .. mp_ptn) then
+		return "modpack", modpath:match(DIR_DELIM .. "([^" .. DIR_DELIM .. "]+)" .. DIR_DELIM .. "[^" .. DIR_DELIM .. "]+$")
+	elseif modpath:match(mods_ptn .. sep_mod_ptn) or modpath:match(worldmods_ptn .. sep_mod_ptn) then
+		return "sep_mod"
+	end
+	--[[local find_ptn = "[^" .. DIR_DELIM .. "]*.$"
 	local modpart = modpath:match(find_ptn)
 	local mp_part = modpath:sub(1, modpath:len()-modpart:len()-1):match(find_ptn)
 
@@ -130,7 +142,7 @@ local function is_mod_sep_or_part_of_mp(modname)
 		return mp_part, modpart
 	else                        -- this is a just separate mod!
 		return modpart
-	end
+	end]]
 end
 
 
@@ -141,7 +153,19 @@ local function get_modpack_mods(mp_name)
 	local modlist = {}
 	for i, mname in ipairs(modnames) do
 		local mpath = core.get_modpath(mname)
-		if mpath:match(DIR_DELIM .. mp_name .. DIR_DELIM) then
+
+		-- If the mod is saving in '/games/<game_name>/mods/<modpack_name>/' or in '/mods/<modpack_name>/'
+		local match1 = mpath:match(DIR_DELIM .. "mods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
+		-- else if the mod is saving in '/worlds/<world_name>/worldmods/<modpack_name>'
+		local match2 = mpath:match(DIR_DELIM .. "worldmods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
+
+		if mp_name == "advtrains" then
+			minetest.debug("path: " .. mpath)
+			minetest.debug("match1:" .. DIR_DELIM .. "mods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
+			minetest.debug("match2:" .. DIR_DELIM .. "worldmods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
+		end
+
+		if match1 or match2 then
 			table.insert(modlist, mname)
 		end
 	end
@@ -176,7 +200,16 @@ function build_mods_formspec()
 	end
 
 	for i = 1, #modslist do
-		local mp, mod = is_mod_sep_or_part_of_mp(modslist[i])
+		local mod_t, mp_name = is_mod_sep_or_part_of_mp(modslist[i])
+
+		if mod_t == "modpack" and mp_name then
+			if not find_modpack(mp_name) then
+				mps_and_smods[#mps_and_smods+1] = {mp_name, "modpack"}
+			end
+		elseif mod_t == "sep_mod" then
+			mps_and_smods[#mps_and_smods+1] = {modslist[i], "separate_mod"}
+		end
+		--[[local mp, mod = is_mod_sep_or_part_of_mp(modslist[i])
 
 		if mod then
 			if not find_modpack(mp) then
@@ -184,7 +217,7 @@ function build_mods_formspec()
 			end
 		else
 			mps_and_smods[#mps_and_smods+1] = {mp, "separate_mod"}
-		end
+		end]]
 	end
 
 	table.sort(mps_and_smods, function(e1, e2) return e1[1] < e2[1] end)
