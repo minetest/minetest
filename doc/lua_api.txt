@@ -6856,7 +6856,7 @@ object you are working with still exists.
         * `visible`: Boolean for whether the sun is visible.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
-            will re-enable the mesh sun. (default: `""`)
+            will re-enable the mesh sun. (default: `"sun.png"`)
         * `tonemap`: A 512x1 texture containing the tonemap for the sun
             (default: `"sun_tonemap.png"`)
         * `sunrise`: A regular texture for the sunrise texture.
@@ -6872,7 +6872,7 @@ object you are working with still exists.
         * `visible`: Boolean for whether the moon is visible.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
-            will re-enable the mesh moon. (default: `""`)
+            will re-enable the mesh moon. (default: `"moon.png"`)
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
             (default: `"moon_tonemap.png"`)
         * `scale`: Float controlling the overall size of the moon (default: `1`)
