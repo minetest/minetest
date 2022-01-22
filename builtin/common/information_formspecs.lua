@@ -159,12 +159,6 @@ local function get_modpack_mods(mp_name)
 		-- else if the mod is saving in '/worlds/<world_name>/worldmods/<modpack_name>'
 		local match2 = mpath:match(DIR_DELIM .. "worldmods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
 
-		if mp_name == "advtrains" then
-			minetest.debug("path: " .. mpath)
-			minetest.debug("match1:" .. DIR_DELIM .. "mods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
-			minetest.debug("match2:" .. DIR_DELIM .. "worldmods" .. DIR_DELIM .. mp_name .. DIR_DELIM .. mname .. "$")
-		end
-
 		if match1 or match2 then
 			table.insert(modlist, mname)
 		end
@@ -209,15 +203,6 @@ function build_mods_formspec()
 		elseif mod_t == "sep_mod" then
 			mps_and_smods[#mps_and_smods+1] = {modslist[i], "separate_mod"}
 		end
-		--[[local mp, mod = is_mod_sep_or_part_of_mp(modslist[i])
-
-		if mod then
-			if not find_modpack(mp) then
-				mps_and_smods[#mps_and_smods+1] = {mp, "modpack"}
-			end
-		else
-			mps_and_smods[#mps_and_smods+1] = {mp, "separate_mod"}
-		end]]
 	end
 
 	table.sort(mps_and_smods, function(e1, e2) return e1[1] < e2[1] end)
