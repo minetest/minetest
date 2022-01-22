@@ -724,6 +724,8 @@ void *EmergeThread::run()
 		m_server->setAsyncFatalError(err.str());
 	}
 
+	cancelPendingItems();
+
 	END_DEBUG_EXCEPTION_HANDLER
 	return NULL;
 }
