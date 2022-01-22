@@ -230,7 +230,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                                // base64-encoded SHA-1 (27+\0).
 
 // See also: Formspec Version History in doc/lua_api.txt
-#define FORMSPEC_API_VERSION 4
+#define FORMSPEC_API_VERSION 5
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
