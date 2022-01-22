@@ -30,13 +30,11 @@ namespace spatial {
 	 by Greg Douglas at Auran and original algorithm was by Toni Gutman.
 			R-Trees provide Log(n) speed rectangular indexing into multi-dimensional
 	 data. Only support the quadratric split heuristic.
-
 			It has the following properties:
 			- hierarchical, you can add values to the internal branch nodes
 			- custom indexable getter similar to boost's
 			- configurable volume calculation
 			- custom allocation for internal nodes
-
 	 @tparam T                type of the space(eg. int, float, etc.)
 	 @tparam ValueType        type of value stored in the tree's nodes
 	 @tparam Dimension        number of dimensions for the spatial space of the
@@ -51,7 +49,6 @@ namespace spatial {
 	 @tparam RealType type of element that allows fractional and large
 	 values such as float or double, for use in volume calculations.
 	 @tparam custom_allocator the allocator class
-
 	 @note It's recommended that ValueType should be a fast to copy object, eg: int,
 	 id, obj*, etc.
 	 */
@@ -1380,8 +1377,7 @@ namespace spatial {
 			for (count_type index = 0; index < node->count; ++index) {
 				const bbox_type &nodeBBox = node->bboxes[index];
 
-				// HACK I'm a monster
-				if (predicate(nodeBBox)) {
+				if (predicate.bbox.overlaps(nodeBBox)) {
 					queryRec(node->children[index], predicate, foundCount, it);
 				}
 			}
