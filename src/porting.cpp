@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <algorithm>
 	#include <shlwapi.h>
 	#include <shellapi.h>
+	#include <mmsystem.h>
 #endif
 #if !defined(_WIN32)
 	#include <unistd.h>
@@ -766,6 +767,9 @@ bool open_directory(const std::string &path)
 
 inline double get_perf_freq()
 {
+	// Also use this opportunity to enable high-res timers
+	timeBeginPeriod(1);
+
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
 	return freq.QuadPart;

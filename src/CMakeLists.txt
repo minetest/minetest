@@ -268,7 +268,7 @@ if(WIN32)
 	else() # Probably MinGW = GCC
 		set(PLATFORM_LIBS "")
 	endif()
-	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
+	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
 
 	set(EXTRA_DLL "" CACHE FILEPATH "Optional paths to additional DLLs that should be packaged")
 
