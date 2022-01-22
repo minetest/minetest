@@ -94,20 +94,29 @@ void ProfilerGraph::draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 				show_min = 0;
 		}
 
-		s32 texth = 15;
+		const s32 texth = 15;
 		char buf[10];
-		porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_max);
+		if (floorf(show_max) == show_max)
+			porting::mt_snprintf(buf, sizeof(buf), "%.5g", show_max);
+		else
+			porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_max);
 		font->draw(utf8_to_wide(buf).c_str(),
 				core::rect<s32>(textx, y - graphh, textx2,
 						y - graphh + texth),
 				meta.color);
-		porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_min);
+
+		if (floorf(show_min) == show_min)
+			porting::mt_snprintf(buf, sizeof(buf), "%.5g", show_min);
+		else
+			porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_min);
 		font->draw(utf8_to_wide(buf).c_str(),
 				core::rect<s32>(textx, y - texth, textx2, y), meta.color);
+
 		font->draw(utf8_to_wide(id).c_str(),
 				core::rect<s32>(textx, y - graphh / 2 - texth / 2, textx2,
 						y - graphh / 2 + texth / 2),
 				meta.color);
+
 		s32 graph1y = y;
 		s32 graph1h = graphh;
 		bool relativegraph = (show_min != 0 && show_min != show_max);
