@@ -19,14 +19,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes.h"
-#include "util/areastore.h"
+#include "irr_aabb3d.h"
 
-#include <../lib/THST/RTree.h>
-#include <spatialindex/SpatialIndex.h>
+#include <RTree.h>
 
 
-namespace sp_convert {
+namespace sp_util {
+
+template <typename T>
+struct TaggedBBox {
+	spatial::BoundingBox<double, 3> bbox;
+	T idTag;
+
+	TaggedBBox() : bbox {}, idTag {} {}
+	TaggedBBox(spatial::BoundingBox<double, 3> bbox, T idTag)
+			: bbox { bbox }
+			, idTag { idTag }
+	{}
+
+	friend bool operator==(const TaggedBBox<T> &a, const TaggedBBox &b)
+	{
+		return a.idTag == b.idTag;
+	}
+};
+
+template <typename T>
+struct TaggedBBoxIndexable
+{
+	static const double *min(const TaggedBBox<T> &value) { return value.bbox.min; }
+	static const double *max(const TaggedBBox<T> &value) { return value.bbox.max; }
+};
 
 template <typename T>
 void get_doubles_from_point(const T &from, double (& to)[3]) {
@@ -48,14 +70,4 @@ spatial::BoundingBox<double, 3> get_spatial_region(const T &space)
 template<>
 spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space);
 
-template <typename T>
-SpatialIndex::LineSegment get_spatial_line_segment(const T &from, const T &to)
-{
-	double coordsMin[3];
-	double coordsMax[3];
-	get_doubles_from_point(from, coordsMin);
-	get_doubles_from_point(to, coordsMax);
-	return SpatialIndex::LineSegment(coordsMin, coordsMax, 3);
-}
-
-}
+} // namespace sp_util

@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "irrlichttypes.h"
+#include "irr_aabb3d.h"
 #include "util/spatial_tools.h"
 
-#include <../lib/THST/RTree.h>
+#include <RTree.h>
 
-namespace sp_convert {
+namespace sp_util {
 
 template<>
 spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space)
@@ -34,4 +34,4 @@ spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space)
 	return spatial::BoundingBox<double, 3> { coordsMin, coordsMax };
 }
 
-}
+} // namespace sp_util

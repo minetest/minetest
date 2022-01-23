@@ -19,37 +19,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes.h"
+#include "irr_aabb3d.h"
 #include "util/numeric.h"
 #include "util/spatial_tools.h"
 
-#include <../lib/THST/RTree.h>
+#include <RTree.h>
 
 #include <cstddef>
 #include <iterator>
 #include <map>
 #include <vector>
 
-struct Object {
-	u32 id;
-	spatial::BoundingBox<double, 3> bbox;
-};
-
-static bool operator==(const Object &a, const Object &b)
-{
-	return a.id == b.id;
-}
-
-// helps to get the bounding of the items inserted
-struct Indexable {
-	const double *min(const Object &value) const { return value.bbox.min; }
-	const double *max(const Object &value) const { return value.bbox.max; }
-};
-
 
 template <typename T, typename U = u32>
 class SpatialStore
 {
+private:
+	spatial::RTree<double, sp_util::TaggedBBox<U>, 3, 4, 3, sp_util::TaggedBBoxIndexable<U>> m_tree;
+	std::map<U, T> m_spacesMap;
+
+	bool contains(U id) const {
+		return (m_spacesMap.find(id) != m_spacesMap.end());
+	}
+
+	U getNextId() const {
+		U free_id = 0;
+		for (const auto &item : m_spacesMap) {
+			if (item.first > free_id)
+				return free_id; // Found gap
+
+			free_id = item.first + 1;
+		}
+		return free_id;
+	}
 public:
 
 	SpatialStore()
@@ -71,7 +73,7 @@ public:
 			return false;
 
 		m_spacesMap.insert({ id, space });
-		Object obj { static_cast<u32>(id), sp_convert::get_spatial_region(space) };
+		sp_util::TaggedBBox<U> obj { sp_util::get_spatial_region(space), id };
 		m_tree.insert(obj);
 
 		return true;
@@ -84,7 +86,7 @@ public:
 
 		T space { iter->second };
 		m_spacesMap.erase(iter);
-		Object obj { static_cast<u32>(id), sp_convert::get_spatial_region(space) };
+		sp_util::TaggedBBox<U> obj { sp_util::get_spatial_region(space), id };
 		return m_tree.remove(obj);
 	}
 
@@ -95,15 +97,15 @@ public:
 
 	std::vector<U> getInArea(T space)
 	{
-		std::vector<Object> results {};
+		std::vector<sp_util::TaggedBBox<U>> results {};
 		std::vector<U> object_ids {};
 		m_tree.query(
-			spatial::intersects<3>(sp_convert::get_spatial_region(space)),
+			spatial::intersects<3>(sp_util::get_spatial_region(space)),
 			std::back_inserter(results)
 		);
 		object_ids.reserve(results.size());
-		for (const Object &obj : results) {
-			object_ids.push_back(obj.id);
+		for (const sp_util::TaggedBBox<U> &obj : results) {
+			object_ids.push_back(obj.idTag);
 		}
 
 		return object_ids;
@@ -116,32 +118,7 @@ public:
 
 	void getIntersectingLine(std::vector<U> *result, v3f from, v3f to)
 	{
-		
-		/*
-		m_result = result;
-		m_tree->intersectsWithQuery(sp_convert::get_spatial_line_segment(from, to), *this);
-		m_result = nullptr;
-		*/
-	}
-
-private:
-	// tree must be destructed first because it accesses the storage manager
-	spatial::RTree<double, Object, 3, 4, 3, Indexable> m_tree;
-	std::map<U, T> m_spacesMap;
-
-	bool contains(U id) const {
-		return (m_spacesMap.find(id) != m_spacesMap.end());
-	}
-
-	U getNextId() const {
-		U free_id = 0;
-		for (const auto &item : m_spacesMap) {
-			if (item.first > free_id)
-				return free_id; // Found gap
-
-			free_id = item.first + 1;
-		}
-		return free_id;
+		throw "Not Implemented";
 	}
 };
 
