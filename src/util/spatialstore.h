@@ -30,19 +30,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 
-
 template <typename T, typename U = u32>
 class SpatialStore
 {
 private:
-	spatial::RTree<double, sp_util::TaggedBBox<U>, 3, 4, 3, sp_util::TaggedBBoxIndexable<U>> m_tree;
+	spatial::RTree<double, sp_util::TaggedBBox<U>, 3, 4, 3,
+			sp_util::TaggedBBoxIndexable<U>>
+			m_tree;
 	std::map<U, T> m_spacesMap;
 
-	bool contains(U id) const {
-		return (m_spacesMap.find(id) != m_spacesMap.end());
-	}
+	bool contains(U id) const { return (m_spacesMap.find(id) != m_spacesMap.end()); }
 
-	U getNextId() const {
+	U getNextId() const
+	{
 		U free_id = 0;
 		for (const auto &item : m_spacesMap) {
 			if (item.first > free_id)
@@ -52,57 +52,53 @@ private:
 		}
 		return free_id;
 	}
+
 public:
+	SpatialStore() : m_tree{}, m_spacesMap{} {}
 
-	SpatialStore()
-		: m_tree {}
-		, m_spacesMap {}
-	{}
-
-	SpatialStore(const SpatialStore&) = delete;
-	SpatialStore<T, U>& operator =(const SpatialStore&) = delete;
+	SpatialStore(const SpatialStore &) = delete;
+	SpatialStore<T, U> &operator=(const SpatialStore &) = delete;
 
 	virtual ~SpatialStore() {}
 
-	std::size_t size() const {
-		return m_spacesMap.size();
-	}
+	std::size_t size() const { return m_spacesMap.size(); }
 
-	bool insert(U id, const T &space) {
+	bool insert(U id, const T &space)
+	{
 		if (contains(id))
 			return false;
 
-		m_spacesMap.insert({ id, space });
-		sp_util::TaggedBBox<U> obj { sp_util::get_spatial_region(space), id };
+		m_spacesMap.insert({id, space});
+		sp_util::TaggedBBox<U> obj{sp_util::get_spatial_region(space), id};
 		m_tree.insert(obj);
 
 		return true;
 	}
 
-	bool remove(U id) {
-		const auto iter { m_spacesMap.find(id) };
+	bool remove(U id)
+	{
+		const auto iter{m_spacesMap.find(id)};
 		if (iter == m_spacesMap.end())
 			return false;
 
-		T space { iter->second };
+		T space{iter->second};
 		m_spacesMap.erase(iter);
-		sp_util::TaggedBBox<U> obj { sp_util::get_spatial_region(space), id };
+		sp_util::TaggedBBox<U> obj{sp_util::get_spatial_region(space), id};
 		return m_tree.remove(obj);
 	}
 
-	void clear() {
+	void clear()
+	{
 		m_spacesMap.clear();
 		m_tree.clear();
 	}
 
 	std::vector<U> getInArea(T space)
 	{
-		std::vector<sp_util::TaggedBBox<U>> results {};
-		std::vector<U> object_ids {};
-		m_tree.query(
-			spatial::intersects<3>(sp_util::get_spatial_region(space)),
-			std::back_inserter(results)
-		);
+		std::vector<sp_util::TaggedBBox<U>> results{};
+		std::vector<U> object_ids{};
+		m_tree.query(spatial::intersects<3>(sp_util::get_spatial_region(space)),
+				std::back_inserter(results));
 		object_ids.reserve(results.size());
 		for (const sp_util::TaggedBBox<U> &obj : results) {
 			object_ids.push_back(obj.idTag);
@@ -111,10 +107,7 @@ public:
 		return object_ids;
 	}
 
-	void getInArea(std::vector<U> *result, T space)
-	{
-		*result = getInArea(space);
-	}
+	void getInArea(std::vector<U> *result, T space) { *result = getInArea(space); }
 
 	void getIntersectingLine(std::vector<U> *result, v3f from, v3f to)
 	{

@@ -450,6 +450,7 @@ src/unittest/test_keycode.cpp
 src/unittest/test_map_settings_manager.cpp
 src/unittest/test_noderesolver.cpp
 src/unittest/test_noise.cpp
+src/unittest/test_objectboxstore.cpp
 src/unittest/test_random.cpp
 src/unittest/test_schematic.cpp
 src/unittest/test_serialization.cpp
@@ -483,6 +484,9 @@ src/util/quicktune.cpp
 src/util/serialize.cpp
 src/util/serialize.h
 src/util/sha1.cpp
+src/util/spatialstore.h
+src/util/spatial_tools.cpp
+src/util/spatial_tools.h
 src/util/srp.cpp
 src/util/srp.h
 src/util/strfnd.h

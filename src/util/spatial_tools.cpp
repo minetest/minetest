@@ -22,16 +22,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <RTree.h>
 
-namespace sp_util {
+namespace sp_util
+{
 
-template<>
+template <>
 spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space)
 {
 	double coordsMin[3];
 	double coordsMax[3];
 	get_doubles_from_point(space.MinEdge, coordsMin);
 	get_doubles_from_point(space.MaxEdge, coordsMax);
-	return spatial::BoundingBox<double, 3> { coordsMin, coordsMax };
+	return spatial::BoundingBox<double, 3>{coordsMin, coordsMax};
 }
 
 } // namespace sp_util

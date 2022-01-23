@@ -23,19 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <RTree.h>
 
-
-namespace sp_util {
+namespace sp_util
+{
 
 template <typename T>
-struct TaggedBBox {
+struct TaggedBBox
+{
 	spatial::BoundingBox<double, 3> bbox;
 	T idTag;
 
-	TaggedBBox() : bbox {}, idTag {} {}
-	TaggedBBox(spatial::BoundingBox<double, 3> bbox, T idTag)
-			: bbox { bbox }
-			, idTag { idTag }
-	{}
+	TaggedBBox() : bbox{}, idTag{} {}
+	TaggedBBox(spatial::BoundingBox<double, 3> bbox, T idTag) : bbox{bbox}, idTag{idTag}
+	{
+	}
 
 	friend bool operator==(const TaggedBBox<T> &a, const TaggedBBox &b)
 	{
@@ -51,7 +51,8 @@ struct TaggedBBoxIndexable
 };
 
 template <typename T>
-void get_doubles_from_point(const T &from, double (& to)[3]) {
+void get_doubles_from_point(const T &from, double (&to)[3])
+{
 	to[0] = from.X;
 	to[1] = from.Y;
 	to[2] = from.Z;
@@ -64,10 +65,10 @@ spatial::BoundingBox<double, 3> get_spatial_region(const T &space)
 	double coordsMax[3];
 	get_doubles_from_point(space.minedge, coordsMin);
 	get_doubles_from_point(space.maxedge, coordsMax);
-	return spatial::BoundingBox<double, 3> {coordsMin, coordsMax };
+	return spatial::BoundingBox<double, 3>{coordsMin, coordsMax};
 }
 
-template<>
+template <>
 spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space);
 
 } // namespace sp_util
