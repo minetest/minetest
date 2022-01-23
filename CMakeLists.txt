@@ -281,6 +281,7 @@ endif()
 
 # Subdirectories
 # Be sure to add all relevant definitions above this
+add_subdirectory(lib/THST)
 add_subdirectory(src)
 
 
