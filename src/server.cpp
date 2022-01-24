@@ -3109,6 +3109,8 @@ std::string Server::getStatusString()
 	os << "# Server: ";
 	// Version
 	os << "version: " << g_version_string;
+	// Game
+	os << " | game: " << (m_gamespec.name.empty() ? m_gamespec.id : m_gamespec.name);
 	// Uptime
 	os << " | uptime: " << duration_to_string((int) m_uptime_counter->get());
 	// Max lag estimate
