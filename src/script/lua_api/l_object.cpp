@@ -1367,8 +1367,10 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
+	if (player == nullptr) {
+		lua_pushlstring(L, "", 0);
+		return 1;
+	}
 
 	const PlayerControl &control = player->getPlayerControl();
 	lua_newtable(L);
