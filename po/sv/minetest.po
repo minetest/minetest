@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2021-12-18 21:51+0000\n"
 "Last-Translator: xerxstirb <xerxstirb@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
@@ -1209,14 +1209,6 @@ msgid "- Address: "
 msgstr "- Bindningsadress: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Kreativt läge: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Aktivera skada: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Läge: "
 
@@ -1571,7 +1563,7 @@ msgstr "Kan inte ansluta till %s eftersom IPv6 är inaktiverad"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Kan inte lyssna på %s eftersom IPv6 är inaktiverad"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Visningsområde ändrad till %d"
@@ -1921,7 +1913,7 @@ msgstr "Lösenorden matchar inte!"
 msgid "Register and Join"
 msgstr "Registrera och Anslut"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2405,8 +2397,8 @@ msgid ""
 "light, it has very little effect on natural night light."
 msgstr ""
 "Ändrar ljuskurvan genom att tillämpa 'gammakorrigering' på den.\n"
-"Högre värden leder till att de mellersta och lägre ljusnivåerna blir ljusare."
-"\n"
+"Högre värden leder till att de mellersta och lägre ljusnivåerna blir "
+"ljusare.\n"
 "Värdet '1.0' lämnar ljuskurvan oförändrad. Detta har endast betydande\n"
 "effekt på dagsljus och konstgjort ljus, det har väldigt liten effekt på\n"
 "naturligt nattljus."
@@ -2896,8 +2888,8 @@ msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
-"Kontinuerlig framåtgående rörelse, växlas med hjälp av autoforward-tagenten."
-"\n"
+"Kontinuerlig framåtgående rörelse, växlas med hjälp av autoforward-"
+"tagenten.\n"
 "Tryck på autoforward-knappen igen eller på bakåtknappen för att inaktivera."
 
 #: src/settings_translation_file.cpp
@@ -3306,8 +3298,8 @@ msgid ""
 "when connecting to the server."
 msgstr ""
 "Aktivera användning av fjärrmedieserver (om tillhandahålld av servern).\n"
-"Fjärrservrar är ett betydligt snabbare sätt att hämta media (t.ex. texturer)"
-"\n"
+"Fjärrservrar är ett betydligt snabbare sätt att hämta media (t.ex. "
+"texturer)\n"
 "när du ansluter till servern."
 
 #: src/settings_translation_file.cpp
@@ -3369,6 +3361,12 @@ msgstr ""
 "När inaktiverat inaktiveras alla ljud överallt och spelets\n"
 "ljudkontroller kommer inte fungera.\n"
 "Omstart krävs för att ändra den här inställningen."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3559,17 +3557,34 @@ msgid "Font size"
 msgstr "Typsnittsstorlek"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Storleken för standardtypsnittet i punkter (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Storleken för monospacetypsnittet i punkter (pt)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3621,7 +3636,8 @@ msgstr "Framåtknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
-msgstr "Fyra av 4 2D-brus som tillsammans definerar höjden för kullar och berg."
+msgstr ""
+"Fyra av 4 2D-brus som tillsammans definerar höjden för kullar och berg."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3630,10 +3646,6 @@ msgstr "Fraktaltyp"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Bråkdel av den synliga distansen som dimma börjar"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "FreeType-typsnitt"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5337,6 +5349,10 @@ msgid "Monospace font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Monospace font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5487,9 +5503,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5512,17 +5526,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6445,6 +6455,10 @@ msgid "Touch screen threshold"
 msgstr "Tröskelvärde för pekskärm"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -6730,13 +6744,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6875,6 +6882,12 @@ msgstr "cURL-interaktivtimeout"
 msgid "cURL parallel limit"
 msgstr "cURL parallellgräns"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Kreativt läge: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Aktivera skada: "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -6958,6 +6971,9 @@ msgstr "cURL parallellgräns"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Laddar ner och installerar $1, vänligen vänta..."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "FreeType-typsnitt"
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Installera: fil: \"$1\""

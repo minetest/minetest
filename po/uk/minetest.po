@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2021-06-07 14:33+0000\n"
 "Last-Translator: Andrij Mizyk <andmizyk@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
@@ -1225,14 +1225,6 @@ msgid "- Address: "
 msgstr "- Адреса: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Творчість: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Ушкодження: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Режим: "
 
@@ -1590,7 +1582,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Видимість змінено до %d"
@@ -1942,7 +1934,7 @@ msgstr "Паролі не збігаються!"
 msgid "Register and Join"
 msgstr "Зареєструватися і увійти"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3298,6 +3290,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr ""
 
@@ -3483,17 +3481,32 @@ msgid "Font size"
 msgstr "Розмір шрифту"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3553,10 +3566,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5265,6 +5274,10 @@ msgid "Monospace font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Monospace font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5415,9 +5428,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5440,17 +5451,13 @@ msgstr "Шлях до теки з текстурами. Всі текстури 
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6366,6 +6373,10 @@ msgid "Touch screen threshold"
 msgstr "Межа чутливості дотику"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -6655,13 +6666,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6799,6 +6803,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr ""
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Творчість: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Ушкодження: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-10 23:53+0000\n"
 "Last-Translator: Mikitko <rudzik8@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -1216,14 +1216,6 @@ msgid "- Address: "
 msgstr "- Адрес: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Режим творчества: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Урон: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Режим: "
 
@@ -1579,7 +1571,7 @@ msgstr "Не удаётся подключиться к %s, так как IPv6 �
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Не удаётся прослушать %s, так как IPv6 отключён"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Установлена видимость %dм"
@@ -1929,7 +1921,7 @@ msgstr "Пароли не совпадают!"
 msgid "Register and Join"
 msgstr "Регистрация и подключение"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3394,6 +3386,12 @@ msgstr ""
 "Изменение этого параметра требует перезапуска."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Интервал печати данных профилирования движка"
 
@@ -3594,11 +3592,17 @@ msgid "Font size"
 msgstr "Размер шрифта"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Размер стандартного шрифта в пунктах (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Размер моноширинного шрифта в пунктах (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3608,6 +3612,17 @@ msgid ""
 msgstr ""
 "Размер шрифта последнего чата и подсказки чата в точке (pt).\n"
 "Значение 0 будет использовать размер шрифта по умолчанию."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3671,10 +3686,6 @@ msgstr "Тип фрактала"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Часть видимого расстояния, на которой начинает появляться туман"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Шрифты FreeType"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5772,6 +5783,11 @@ msgid "Monospace font size"
 msgstr "Размер моноширинного шрифта"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Размер моноширинного шрифта"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "Шум высоты гор"
 
@@ -5952,10 +5968,9 @@ msgid "Optional override for chat weblink color."
 msgstr "Необязательное переопределение цвета ссылки в чате."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5988,10 +6003,9 @@ msgstr ""
 "Путь к директории с текстурами. Все текстуры в первую очередь берутся отсюда."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Путь к шрифту по умолчанию.\n"
@@ -6001,10 +6015,9 @@ msgstr ""
 "Резервный шрифт будет использоваться, если шрифт не может быть загружен."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Путь к моноширинному шрифту.\n"
@@ -7137,6 +7150,10 @@ msgid "Touch screen threshold"
 msgstr "Порог сенсорного экрана"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "Шум деревьев"
 
@@ -7483,16 +7500,6 @@ msgstr ""
 "автомасштабирования текстуры."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Использовать ли шрифты FreeType. Поддержка FreeType должна быть включена при "
-"сборке.\n"
-"Если отключено, используются растровые и XML-векторные изображения."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
@@ -7666,6 +7673,12 @@ msgstr "Интерактивный таймаут cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "Лимит одновременных соединений cURL"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Режим творчества: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Урон: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7847,6 +7860,9 @@ msgstr "Лимит одновременных соединений cURL"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Размер резервного шрифта в пунктах (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Шрифты FreeType"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Глубина цвета в полноэкранном режиме"
@@ -8036,6 +8052,15 @@ msgstr "Лимит одновременных соединений cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Волны на воде"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Использовать ли шрифты FreeType. Поддержка FreeType должна быть включена "
+#~ "при сборке.\n"
+#~ "Если отключено, используются растровые и XML-векторные изображения."
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."

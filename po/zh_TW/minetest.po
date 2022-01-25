@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-16 02:52+0000\n"
 "Last-Translator: Yiu Man Ho <yiufamily.hh@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -1206,14 +1206,6 @@ msgid "- Address: "
 msgstr "- 地址： "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- 創造模式： "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- 傷害： "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- 模式： "
 
@@ -1568,7 +1560,7 @@ msgstr "無法連線至 %s 因為 IPv6 已停用"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "無法聽取 %s 因為 IPv6 已停用"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "已調整視野至 %d"
@@ -1918,7 +1910,7 @@ msgstr "密碼不符合！"
 msgid "Register and Join"
 msgstr "註冊並加入"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3279,6 +3271,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "引擎性能資料印出間隔"
 
@@ -3482,17 +3480,32 @@ msgid "Font size"
 msgstr "字型大小"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3559,11 +3572,6 @@ msgstr "碎形類型"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "開始呈現霧氣的可見距離分數"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "FreeType fonts"
-msgstr "Freetype 字型"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5629,6 +5637,11 @@ msgid "Monospace font size"
 msgstr "等寬字型大小"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "等寬字型大小"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "山高度 雜訊"
 
@@ -5791,9 +5804,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5816,17 +5827,13 @@ msgstr "材質目錄的路徑。所有材質都會先從這裡搜尋。"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6851,6 +6858,10 @@ msgid "Touch screen threshold"
 msgstr "海灘雜訊閾值"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "樹林雜訊"
 
@@ -7181,14 +7192,6 @@ msgstr ""
 "已啟用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr "是否使用 freetype 字型，需要將 freetype 支援編譯進來。"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
@@ -7343,6 +7346,12 @@ msgstr "cURL 逾時"
 msgid "cURL parallel limit"
 msgstr "cURL 並行限制"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- 創造模式： "
+
+#~ msgid "- Damage: "
+#~ msgstr "- 傷害： "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7484,6 +7493,10 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "字型陰影 alpha（不透明度，介於 0 到 255）。"
+
+#, fuzzy
+#~ msgid "FreeType fonts"
+#~ msgstr "Freetype 字型"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "全螢幕 BPP"
@@ -7647,6 +7660,13 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Waving water"
 #~ msgstr "波動的水"
+
+#, fuzzy
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr "是否使用 freetype 字型，需要將 freetype 支援編譯進來。"
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."

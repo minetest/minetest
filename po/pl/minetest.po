@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-12 18:52+0000\n"
 "Last-Translator: Sebastian Jasiński <w3c.jas@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1255,14 +1255,6 @@ msgid "- Address: "
 msgstr "Adres "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "Tryb kreatywny "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Obrażenia: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Tryb: "
 
@@ -1400,7 +1392,7 @@ msgstr ""
 "- %s: czatuj↵\n"
 
 #: src/client/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Couldn't resolve address: %s"
 msgstr "Nie można rozwiązać adresu: %s."
 
@@ -1612,21 +1604,21 @@ msgid "Sound unmuted"
 msgstr "Głośność włączona ponownie"
 
 #: src/client/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "The server is probably running a different version of %s."
 msgstr "Serwer prawdopodobnie pracuje na innej wersji %s."
 
 #: src/client/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
 msgstr "Nie można połączyć się z %s, ponieważ IPv6 jest wyłączony"
 
 #: src/client/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Nie można nasłuchiwać na %s, ponieważ IPv6 jest wyłączony"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Zmieniono zasięg widoczności na %d%%"
@@ -1979,7 +1971,7 @@ msgstr "Hasła nie są jednakowe!"
 msgid "Register and Join"
 msgstr "Zarejestruj się i dołącz"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3492,6 +3484,12 @@ msgstr ""
 "Zmiana tego ustawienia wymaga ponownego uruchomienia."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Interwał wyświetlania danych profilowych"
 
@@ -3708,13 +3706,17 @@ msgid "Font size"
 msgstr "Rozmiar czcionki"
 
 #: src/settings_translation_file.cpp
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Font size of the default font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Rozmiar domyślnej czcionki w punktach (pt)."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Rozmiar czcionki monospace w punktach (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3725,6 +3727,17 @@ msgid ""
 msgstr ""
 "Rozmiar czcionki tekstu ostatniej rozmowy i monitu rozmowy w punktach (pt).\n"
 "Wartość 0 spowoduje użycie domyślnego rozmiaru czcionki."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3794,10 +3807,6 @@ msgstr "Typ fraktalny"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Część widocznej odległości w której mgła zaczyna się renderować"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Czcionki Freetype"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6065,6 +6074,11 @@ msgid "Monospace font size"
 msgstr "Rozmiar czcionki Monospace"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Rozmiar czcionki Monospace"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "Szum wysokości góry"
 
@@ -6257,9 +6271,7 @@ msgstr "Opcjonalna zmiana koloru łącza internetowego czatu."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -6297,9 +6309,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Ścieżka do domyślnej czcionki.\n"
@@ -6311,9 +6321,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Ścieżka do czcionki monospace.\n"
@@ -7401,6 +7409,10 @@ msgid "Touch screen threshold"
 msgstr "Próg ekranu dotykowego"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "Szum drzew"
 
@@ -7744,16 +7756,6 @@ msgstr ""
 "przypisanych dla świata przy autoskalowaniu tekstur."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Kiedy tylko czcionki wolnego typu są używane wymagana jest ich kompilacja "
-"wspierająca takie czcionki."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
@@ -7908,6 +7910,12 @@ msgstr "Limit czasu cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "Limit równoległy cURL"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "Tryb kreatywny "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Obrażenia: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -8076,6 +8084,9 @@ msgstr "Limit równoległy cURL"
 
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Kanał alfa cienia czcionki (nieprzeźroczystość, od 0 do 255)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Czcionki Freetype"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Głębia koloru w trybie pełnoekranowym"
@@ -8249,6 +8260,15 @@ msgstr "Limit równoległy cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Falująca woda"
+
+#, fuzzy
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Kiedy tylko czcionki wolnego typu są używane wymagana jest ich kompilacja "
+#~ "wspierająca takie czcionki."
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "Określa czy lochy mają być czasem przez generowane teren."

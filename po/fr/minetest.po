@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-10 23:53+0000\n"
 "Last-Translator: AFCMS <afcm.contact@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1217,14 +1217,6 @@ msgid "- Address: "
 msgstr "– Adresse : "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "– Mode créatif : "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "– Dégâts : "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "– Mode : "
 
@@ -1289,8 +1281,8 @@ msgstr "Mise à jour de la caméra activée"
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
 msgstr ""
-"Impossible d'afficher les limites des blocs (nécessite le privilège « "
-"basic_debug »)"
+"Impossible d'afficher les limites des blocs (nécessite le privilège "
+"« basic_debug »)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1578,7 +1570,7 @@ msgstr "Impossible de se connecter à %s car IPv6 est désactivé"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Impossible d’écouter sur %s car IPv6 est désactivé"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Distance de vue réglée sur %d"
@@ -1928,7 +1920,7 @@ msgstr "Les mots de passe ne correspondent pas !"
 msgid "Register and Join"
 msgstr "S'enregistrer et rejoindre"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -1942,8 +1934,8 @@ msgstr ""
 "Si vous continuez, un nouveau compte utilisant vos identifiants sera créé "
 "sur ce serveur.\n"
 "Veuillez retaper votre mot de passe et cliquer sur « S'enregistrer et "
-"rejoindre » pour confirmer la création de votre compte, ou cliquer sur « "
-"Annuler »."
+"rejoindre » pour confirmer la création de votre compte, ou cliquer sur "
+"« Annuler »."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -3393,6 +3385,12 @@ msgstr ""
 "La modification de ce paramètre nécessite un redémarrage."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Intervalle d'impression des données du moteur de profilage"
 
@@ -3596,11 +3594,17 @@ msgid "Font size"
 msgstr "Taille de police"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "La taille de police par défaut en point (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Taille de police monospace en point (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3611,6 +3615,17 @@ msgstr ""
 "Taille de police des messages récents de tchat et de l'invité de tchat en "
 "point (pt).\n"
 "La valeur 0 utilise la taille de police par défaut."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3676,10 +3691,6 @@ msgstr "Type fractal"
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr ""
 "Fraction de la distance de vue à partir de laquelle le brouillard est affiché"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Polices Freetype"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5628,8 +5639,8 @@ msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "This limit is enforced per player."
 msgstr ""
-"Nombre maximal de blocs à mettre en file d'attente qui doivent être générés."
-"\n"
+"Nombre maximal de blocs à mettre en file d'attente qui doivent être "
+"générés.\n"
 "Cette limite est appliquée par joueur."
 
 #: src/settings_translation_file.cpp
@@ -5683,7 +5694,8 @@ msgstr "Nombre maximal de message récent à afficher"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr "Nombre maximal d'objets sauvegardés dans un bloc de carte (16^3 blocs)."
+msgstr ""
+"Nombre maximal d'objets sauvegardés dans un bloc de carte (16^3 blocs)."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
@@ -5802,6 +5814,11 @@ msgstr "Chemin de la police Monospace"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
+msgstr "Taille de police monospace"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
 msgstr "Taille de police monospace"
 
 #: src/settings_translation_file.cpp
@@ -5956,8 +5973,8 @@ msgid ""
 "This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
-"Nombre de blocs supplémentaires qui peuvent être chargés par « /clearobjects "
-"» à la fois.\n"
+"Nombre de blocs supplémentaires qui peuvent être chargés par « /"
+"clearobjects » à la fois.\n"
 "C'est un compromis entre la surcharge de transaction SQLite et la "
 "consommation mémoire\n"
 "(4096 = 100 Mo, comme règle générale)."
@@ -5990,10 +6007,9 @@ msgid "Optional override for chat weblink color."
 msgstr "Remplacement optionnel pour la couleur du lien web du tchat."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -6027,10 +6043,9 @@ msgstr ""
 "cherchées dans ce dossier."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Chemin vers la police par défaut.\n"
@@ -6040,10 +6055,9 @@ msgstr ""
 "La police de rentrée sera utilisée si la police ne peut pas être chargée."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Chemin vers la police monospace.\n"
@@ -6860,13 +6874,13 @@ msgstr ""
 "L'eau est désactivée par défaut et ne sera placée que si cette valeur est "
 "définie à plus de « mgv7_floatland_ymax » - « mgv7_floatland_taper » (début "
 "de l’effilage du haut).\n"
-"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES SERVEURS*** "
-":\n"
+"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES "
+"SERVEURS*** :\n"
 "Lorsque le placement de l'eau est activé, les terrains flottants doivent "
-"être configurés et vérifiés pour être une couche solide en mettant « "
-"mgv7_floatland_density » à 2,0 (ou autre valeur dépendante de « "
-"mgv7_np_floatland »), pour éviter les chutes d'eaux énormes qui surchargent "
-"les serveurs et pourraient inonder les terres en dessous."
+"être configurés et vérifiés pour être une couche solide en mettant "
+"« mgv7_floatland_density » à 2,0 (ou autre valeur dépendante de "
+"« mgv7_np_floatland »), pour éviter les chutes d'eaux énormes qui "
+"surchargent les serveurs et pourraient inonder les terres en dessous."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -7029,8 +7043,8 @@ msgid ""
 msgstr ""
 "Le rayon du volume de blocs autour de chaque joueur soumis au bloc actif, "
 "établi en blocs de carte (16 nœuds).\n"
-"Dans les blocs actifs, les objets sont chargés et les « ABMs » sont exécutés."
-"\n"
+"Dans les blocs actifs, les objets sont chargés et les « ABMs » sont "
+"exécutés.\n"
 "C'est également la distance minimale dans laquelle les objets actifs (mobs) "
 "sont conservés.\n"
 "Ceci devrait être configuré avec « active_object_send_range_blocks »."
@@ -7180,6 +7194,10 @@ msgstr "Délai d'apparition des infobulles"
 #: src/settings_translation_file.cpp
 msgid "Touch screen threshold"
 msgstr "Sensibilité de l'écran tactile"
+
+#: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -7525,17 +7543,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Détermine l'utilisation des polices Freetype. Nécessite une compilation avec "
-"le support Freetype.\n"
-"Si désactivée, des polices bitmap et en vecteurs XML seront utilisé en "
-"remplacement."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7712,6 +7719,12 @@ msgstr "Délai d'interruption interactive de cURL"
 msgid "cURL parallel limit"
 msgstr "Limite parallèle de cURL"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "– Mode créatif : "
+
+#~ msgid "- Damage: "
+#~ msgstr "– Dégâts : "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7884,6 +7897,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Taille de police secondaire au point (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Polices Freetype"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Bits par pixel en mode plein écran"
@@ -8074,6 +8090,16 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Vagues"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Détermine l'utilisation des polices Freetype. Nécessite une compilation "
+#~ "avec le support Freetype.\n"
+#~ "Si désactivée, des polices bitmap et en vecteurs XML seront utilisé en "
+#~ "remplacement."
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "Si les donjons font parfois saillie du terrain."

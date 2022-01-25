@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Vietnamese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-04 06:53+0000\n"
 "Last-Translator: IAmOlive <nhathungtran2011@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/minetest/"
@@ -78,8 +78,8 @@ msgstr "Trợ giúp về lệnh"
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"Dùng '.help <câu lệnh>' để có thêm thông tin về một câu lệnh hoặc dùng "
-"'.help all' để xem danh sách về những câu lệnh có sẵn."
+"Dùng '.help <câu lệnh>' để có thêm thông tin về một câu lệnh hoặc dùng '."
+"help all' để xem danh sách về những câu lệnh có sẵn."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -1222,14 +1222,6 @@ msgid "- Address: "
 msgstr "- Địa chỉ: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Chế độ sáng tạo: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Tổn hại: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Chế độ: "
 
@@ -1584,7 +1576,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr ""
@@ -1934,7 +1926,7 @@ msgstr ""
 msgid "Register and Join"
 msgstr ""
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3209,6 +3201,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr ""
 
@@ -3392,17 +3390,32 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3462,10 +3475,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5169,6 +5178,10 @@ msgid "Monospace font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Monospace font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5319,9 +5332,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5344,17 +5355,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6262,6 +6269,10 @@ msgid "Touch screen threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -6547,13 +6558,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6691,6 +6695,12 @@ msgstr "Hết thời gian tương tác với cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Chế độ sáng tạo: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Tổn hại: "
 
 #~ msgid "Ok"
 #~ msgstr "Được"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-10 23:53+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
@@ -1212,14 +1212,6 @@ msgid "- Address: "
 msgstr "- Alamat: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Mod Kreatif: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Boleh cedera: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mod: "
 
@@ -1576,7 +1568,7 @@ msgstr "Tidak mampu sambung ke %s kerana IPv6 dilumpuhkan"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Tidak mampu dengar di %s kerana IPv6 dilumpuhkan"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Jarak pandang ditukar ke %d"
@@ -1926,7 +1918,7 @@ msgstr "Kata laluan tidak padan!"
 msgid "Register and Join"
 msgstr "Daftar dan Sertai"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3382,6 +3374,12 @@ msgstr ""
 "Pengubahan tetapan ini memerlukan permulaan semula."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Selang masa cetak data pemprofilan enjin"
 
@@ -3584,11 +3582,17 @@ msgid "Font size"
 msgstr "Saiz fon"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Saiz fon bagi fon lalai dalan unit titik (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Saiz fon bagi fon monospace dalam unit titik (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3598,6 +3602,17 @@ msgid ""
 msgstr ""
 "Saiz fon tulisan sembang baru-baru ini dan prom dalam unit titik (pt).\n"
 "Nilai 0 akan menggunakan saiz fon lalai."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3663,10 +3678,6 @@ msgstr "Jenis fraktal"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Bahagian daripada jarak boleh lihat di mana kabut mula dikemas gabung"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Fon FreeType"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5777,6 +5788,11 @@ msgid "Monospace font size"
 msgstr "Saiz fon monospace"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Saiz fon monospace"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "Hingar ketinggian gunung"
 
@@ -5961,10 +5977,9 @@ msgid "Optional override for chat weblink color."
 msgstr "Pilihan mengatasi warna pautan sesawang di sembang."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5996,10 +6011,9 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Laluan ke direktori tekstur. Semua tekstur dicari dari sini dahulu."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Laluan fon lalai.\n"
@@ -6009,10 +6023,9 @@ msgstr ""
 "Fon berbalik akan digunakan sekiranya fon ini tidak dapat dimuatkan."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Laluan fon monospace.\n"
@@ -6568,7 +6581,8 @@ msgstr "Kualiti penapisan bayang"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map max distance in nodes to render shadows"
-msgstr "Jarak maksimum peta bayang untuk mengemas gabung bayang, dalam unit nod"
+msgstr ""
+"Jarak maksimum peta bayang untuk mengemas gabung bayang, dalam unit nod"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture in 32 bits"
@@ -7134,6 +7148,10 @@ msgid "Touch screen threshold"
 msgstr "Nilai ambang skrin sentuh"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "Hingar pokok"
 
@@ -7471,22 +7489,12 @@ msgstr ""
 "tekstur\n"
 "minimum untuk tekstur yang disesuai-naikkan; nilai lebih tinggi tampak "
 "lebih\n"
-"tajam, tetapi memerlukan ingatan yang lebih banyak. Nilai kuasa 2 digalakkan."
-"\n"
+"tajam, tetapi memerlukan ingatan yang lebih banyak. Nilai kuasa 2 "
+"digalakkan.\n"
 "Tetapan ini HANYA digunakan jika penapisan bilinear/trilinear/anisotropik "
 "dibolehkan.\n"
 "Tetapan ini juga digunakan sebagai saiz tekstur nod asas untuk\n"
 "penyesuaian automatik bagi tekstur jajaran dunia."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Menetapkan sama ada fon FreeType digunakan, memerlukan sokongan Freetype\n"
-"dikompil bersama. Jika dilumpuhkan, fon peta bit dan vektor XML akan "
-"digunakan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7663,6 +7671,12 @@ msgstr "Had masa saling tindak cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "Had cURL selari"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Mod Kreatif: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Boleh cedera: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7844,6 +7858,9 @@ msgstr "Had cURL selari"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Saiz fon bagi fon berbalik dalam unit titik (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Fon FreeType"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "BPP skrin penuh"
@@ -8035,6 +8052,15 @@ msgstr "Had cURL selari"
 
 #~ msgid "Waving water"
 #~ msgstr "Air bergelora"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Menetapkan sama ada fon FreeType digunakan, memerlukan sokongan Freetype\n"
+#~ "dikompil bersama. Jika dilumpuhkan, fon peta bit dan vektor XML akan "
+#~ "digunakan."
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr ""

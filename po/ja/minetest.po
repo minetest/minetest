@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2021-12-05 13:51+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -1207,14 +1207,6 @@ msgid "- Address: "
 msgstr "- アドレス: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- クリエイティブモード: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- ダメージ: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- モード: "
 
@@ -1569,7 +1561,7 @@ msgstr "IPv6が無効なため、%sに接続できません"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "IPv6が無効なため、%sでリッスンできません"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "視野を %d に変更"
@@ -1919,7 +1911,7 @@ msgstr "パスワードが一致しません！"
 msgid "Register and Join"
 msgstr "参加登録"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2365,7 +2357,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr "検出されたディスプレイの密度を調整し、UI要素のスケーリングに使用します。"
+msgstr ""
+"検出されたディスプレイの密度を調整し、UI要素のスケーリングに使用します。"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2720,7 +2713,9 @@ msgstr "テクスチャの透過を削除"
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
-msgstr "チャットコンソールの出力で、クリック可能なウェブリンク（中クリックまたはCtrl+左クリック）を有効になります。"
+msgstr ""
+"チャットコンソールの出力で、クリック可能なウェブリンク（中クリックまたはCtrl"
+"+左クリック）を有効になります。"
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -3020,7 +3015,8 @@ msgid ""
 "but also uses more resources."
 msgstr ""
 "影フィルタの品質を定義します。\n"
-"これは、PCFまたはポアソンディスクを適用することで、やわらない影効果をシミュレートするものです。\n"
+"これは、PCFまたはポアソンディスクを適用することで、やわらない影効果をシミュ"
+"レートするものです。\n"
 "しかし、より多くのリソースを消費します。"
 
 #: src/settings_translation_file.cpp
@@ -3200,7 +3196,8 @@ msgid ""
 "filtering."
 msgstr ""
 "ポアソンディスクによるフィルタリングを有効にします。\n"
-"true の場合、ポアソンディスクを使用して「やわらない影」を作ります。それ以外の場合は、PCFフィルタリングを使用します。"
+"true の場合、ポアソンディスクを使用して「やわらない影」を作ります。それ以外の"
+"場合は、PCFフィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3344,6 +3341,12 @@ msgstr ""
 "無効にすると、すべてのサウンドが完全に無効になり、\n"
 "ゲーム内の音の制御は機能しなくなります。\n"
 "この設定を変更するには再起動が必要です。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3544,11 +3547,17 @@ msgid "Font size"
 msgstr "フォントの大きさ"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "既定のフォントのフォント サイズ (pt)。"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "固定幅フォントのフォントサイズ (pt)。"
 
 #: src/settings_translation_file.cpp
@@ -3558,6 +3567,17 @@ msgid ""
 msgstr ""
 "最近のチャットテキストとチャットプロンプトのフォントサイズ（ポイント）。\n"
 "値 0 は規定のフォントサイズを使用します。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3620,10 +3640,6 @@ msgstr "フラクタルの種類"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "霧が描画され始める可視距離の割合"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "フリータイプフォント"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5708,6 +5724,11 @@ msgid "Monospace font size"
 msgstr "固定幅フォントのサイズ"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "固定幅フォントのサイズ"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "山の高さノイズ"
 
@@ -5885,10 +5906,9 @@ msgid "Optional override for chat weblink color."
 msgstr "チャットのウェブリンクの色を上書きするオプションです。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5923,10 +5943,9 @@ msgstr ""
 "検索されます。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "既定のフォントのパス。\n"
@@ -5937,10 +5956,9 @@ msgstr ""
 "このフォールバックフォントはフォントが読み込めないときに使用されます。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "固定幅フォントのパス。\n"
@@ -6062,7 +6080,8 @@ msgid ""
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "プロメテウスリスナーのアドレス。\n"
-"Minetest が ENABLE_PROMETHEUS オプションを有効にしてコンパイルされている場合、\n"
+"Minetest が ENABLE_PROMETHEUS オプションを有効にしてコンパイルされている場"
+"合、\n"
 "そのアドレスのプロメテウスのメトリックスリスナーを有効にします。\n"
 "メトリックスは http://127.0.0.1:30000/metrics で取得可能"
 
@@ -7027,6 +7046,10 @@ msgid "Touch screen threshold"
 msgstr "タッチスクリーンのしきい値"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "木のノイズ"
 
@@ -7348,23 +7371,15 @@ msgid ""
 msgstr ""
 "バイリニア/トライリニア/異方性フィルタを使用すると、低解像度の\n"
 "テクスチャがぼやける可能性があるため、鮮明なピクセルを保持するために\n"
-"最近傍補間を使用して自動的にそれらを拡大します。これは拡大されたテクスチャの\n"
-"ための最小テクスチャサイズを設定します。より高い値はよりシャープに見えますが、\n"
+"最近傍補間を使用して自動的にそれらを拡大します。これは拡大されたテクスチャ"
+"の\n"
+"ための最小テクスチャサイズを設定します。より高い値はよりシャープに見えます"
+"が、\n"
 "より多くのメモリを必要とします。2の累乗が推奨されます。この設定は、\n"
-"バイリニア/トライリニア/異方性フィルタリングが有効の場合にのみ適用されます。\n"
+"バイリニア/トライリニア/異方性フィルタリングが有効の場合にのみ適用されま"
+"す。\n"
 "これは整列テクスチャの自動スケーリング用の基準ノードテクスチャサイズと\n"
 "しても使用されます。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"フリータイプフォントを使用するかどうかは、フリータイプをサポートして\n"
-"コンパイルされている必要があります。 \n"
-"無効にした場合、代わりにビットマップおよび XML ベクターフォントが使用されま"
-"す。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7540,6 +7555,12 @@ msgstr "cURL インタラクティブタイムアウト"
 msgid "cURL parallel limit"
 msgstr "cURL並行処理制限"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- クリエイティブモード: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- ダメージ: "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7714,6 +7735,9 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "フォールバックフォントのフォント サイズ (pt)。"
+
+#~ msgid "FreeType fonts"
+#~ msgstr "フリータイプフォント"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "フルスクリーンのBPP"
@@ -7899,6 +7923,16 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Waving water"
 #~ msgstr "揺れる水"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "フリータイプフォントを使用するかどうかは、フリータイプをサポートして\n"
+#~ "コンパイルされている必要があります。 \n"
+#~ "無効にした場合、代わりにビットマップおよび XML ベクターフォントが使用され"
+#~ "ます。"
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "ダンジョンが時折地形から突出するかどうか。"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-01-25 22:04+0000\n"
 "Last-Translator: Balázs Kovács <kovacs.balazs.ktk@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -1216,14 +1216,6 @@ msgid "- Address: "
 msgstr "- Cím: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Kreatív mód: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Sérülés: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mód: "
 
@@ -1580,7 +1572,7 @@ msgstr "Nem lehet csatlakozni a %s-hoz mivel az IPv6 nincs engedélyezve"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Nem lehet figyelni a %s-t mert az IPv6 nincs engedélyezve"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "látótáv %d1"
@@ -1930,7 +1922,7 @@ msgstr "A jelszavak nem egyeznek!"
 msgid "Register and Join"
 msgstr "Regisztráció és belépés"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2390,7 +2382,7 @@ msgstr ""
 "méretezéséhez."
 
 #: src/settings_translation_file.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
 "Increase value to increase density. Can be positive or negative.\n"
@@ -2399,8 +2391,8 @@ msgid ""
 "to be sure) creates a solid floatland layer."
 msgstr ""
 "A lebegő föld réteg sűrűségét szabályozza.\n"
-"Nagyobb sűrűséghez használjon nagyobb értéket. Lehet pozitív vagy negatív is."
-"\n"
+"Nagyobb sűrűséghez használjon nagyobb értéket. Lehet pozitív vagy negatív "
+"is.\n"
 "Érték = 0,0: a térfogat 50%-a lebegő föld.\n"
 "Érték = 2,0 (magasabb is lehet az 'mgv7_np_floatland'-től függően, a "
 "biztonság\n"
@@ -2614,8 +2606,8 @@ msgid ""
 msgstr ""
 "A kamera \"közelségi vágósíkjának\" blokktávolságban mért távolsága 0 és "
 "0,25 között.\n"
-"Csak GLES platformon működik. A legtöbb felhasználó változatlanul hagyhatja."
-"\n"
+"Csak GLES platformon működik. A legtöbb felhasználó változatlanul "
+"hagyhatja.\n"
 "Növelése csökkentheti a grafikai hibákat a gyengébb GPU-kon.\n"
 "0,1 = alapértelmezett, 0,25 = jóválasztás gyengébb tabletekhez."
 
@@ -3394,6 +3386,12 @@ msgstr ""
 "Ennek a beállításnak a megváltoztatása a játék újraindítását igényli."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Játékmotor profiler adatok kiírási időköze"
 
@@ -3589,17 +3587,33 @@ msgid "Font size"
 msgstr "Betűtípus mérete"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Az alapértelmezett betűtípus mérete képpontban (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3644,7 +3658,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Játékon belüli teljes képrenyős kezelőpanelek hátterének színe (R,G,B)."
+msgstr ""
+"Játékon belüli teljes képrenyős kezelőpanelek hátterének színe (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
@@ -3666,10 +3681,6 @@ msgstr "Fraktál típusa"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "FreeType betűtípusok"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4088,8 +4099,8 @@ msgid ""
 "and\n"
 "descending."
 msgstr ""
-"Ha engedélyezve van, az \"Aux1\"gomb lesz használatban a \"lopakodás\" "
-"(sneak) helyett lefelé mászáskor,\n"
+"Ha engedélyezve van, az \"Aux1\"gomb lesz használatban a \"lopakodás"
+"\" (sneak) helyett lefelé mászáskor,\n"
 "vagy ereszkedéskor."
 
 #: src/settings_translation_file.cpp
@@ -5710,6 +5721,11 @@ msgid "Monospace font size"
 msgstr "Monospace betűméret"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Monospace betűméret"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "Hegy magasság zaj"
 
@@ -5865,9 +5881,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5890,17 +5904,13 @@ msgstr "Textúra mappa útvonala. Először minden textúrát itt keres a játé
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6879,6 +6889,10 @@ msgid "Touch screen threshold"
 msgstr "Érintőképernyő küszöbe"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "Fa zaj"
 
@@ -7168,17 +7182,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Használhatók-e FreeType betűtípusok. Szükséges a beépített FreeType "
-"támogatás.\n"
-"Ha ki van kapcsolva, bittérképes és XML vektoros betűtípusok lesznek "
-"használva helyette."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7324,6 +7327,12 @@ msgstr "cURL interaktív időtúllépés"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "cURL párhuzamossági korlát"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Kreatív mód: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Sérülés: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7473,6 +7482,9 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Betűtípus árnyék alfa (átlátszatlanság, 0 és 255 között)."
 
+#~ msgid "FreeType fonts"
+#~ msgstr "FreeType betűtípusok"
+
 #~ msgid "Full screen BPP"
 #~ msgstr "Teljes képernyő BPP"
 
@@ -7604,6 +7616,16 @@ msgstr "cURL párhuzamossági korlát"
 
 #~ msgid "Waving water"
 #~ msgstr "Hullámzó víz"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Használhatók-e FreeType betűtípusok. Szükséges a beépített FreeType "
+#~ "támogatás.\n"
+#~ "Ha ki van kapcsolva, bittérképes és XML vektoros betűtípusok lesznek "
+#~ "használva helyette."
 
 #~ msgid "Yes"
 #~ msgstr "Igen"

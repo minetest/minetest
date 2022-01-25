@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2021-12-02 01:31+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1220,14 +1220,6 @@ msgid "- Address: "
 msgstr "- Adresa: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Kreatívny mód: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Poškodenie: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mode: "
 
@@ -1584,7 +1576,7 @@ msgstr "Nemôžem sa pripojiť na %s, lebo IPv6 je zakázané"
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Nemôžem sa spojiť s %s, lebo IPv6 je zakázané"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Dohľadnosť je zmenená na %d"
@@ -1934,7 +1926,7 @@ msgstr "Hesla sa nezhodujú!"
 msgid "Register and Join"
 msgstr "Registrovať a pripojiť sa"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3374,6 +3366,12 @@ msgstr ""
 "Zmena tohto nastavenia si vyžaduje reštart hry."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Interval tlače profilových dát enginu"
 
@@ -3576,11 +3574,17 @@ msgid "Font size"
 msgstr "Veľkosť písma"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Veľkosť písma štandardného písma v bodoch (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Veľkosť písma s pevnou šírkou v bodoch (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3591,6 +3595,17 @@ msgstr ""
 "Veľkosť písma aktuálneho komunikačného textu a príkazového riadku v bodoch "
 "(pt).\n"
 "Pri hodnote 0 bude použitá štandardná veľkosť písma."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3659,10 +3674,6 @@ msgstr "Typ fraktálu"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Zlomok viditeľnej vzdialenosti od ktorej začne byť vykresľovaná hmla"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "FreeType písma"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5760,6 +5771,11 @@ msgid "Monospace font size"
 msgstr "Veľkosť písmo s pevnou šírkou"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Veľkosť písmo s pevnou šírkou"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "Šum pre výšku hôr"
 
@@ -5936,10 +5952,9 @@ msgid "Optional override for chat weblink color."
 msgstr "Voliteľná zmena farby webového odkazu v komunikačnej konzole."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5972,10 +5987,9 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Cesta do adresára s textúrami. Všetky textúry sú najprv hľadané tu."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Cesta k štandardnému písmu.\n"
@@ -5985,10 +5999,9 @@ msgstr ""
 "Bude použité záložné písmo, ak nebude možné písmo nahrať."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Cesta k písmu s pevnou šírkou.\n"
@@ -7089,6 +7102,10 @@ msgid "Touch screen threshold"
 msgstr "Prah citlivosti dotykovej obrazovky"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "Šum stromov"
 
@@ -7421,16 +7438,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Aby boli FreeType písma použité, je nutné aby bola podpora FreeType "
-"zakompilovaná.\n"
-"Ak je zakázané, budú použité bitmapové a XML vektorové písma."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7597,6 +7604,12 @@ msgstr "Časový rámec interakcie cURL"
 msgid "cURL parallel limit"
 msgstr "Paralelný limit cURL"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Kreatívny mód: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Poškodenie: "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7708,6 +7721,9 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Veľkosť písma záložného písma v bodoch (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "FreeType písma"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "BPP v režime celej obrazovky"
@@ -7833,6 +7849,15 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "View"
 #~ msgstr "Zobraziť"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Aby boli FreeType písma použité, je nutné aby bola podpora FreeType "
+#~ "zakompilovaná.\n"
+#~ "Ak je zakázané, budú použité bitmapové a XML vektorové písma."
 
 #~ msgid "Yes"
 #~ msgstr "Áno"
