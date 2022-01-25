@@ -533,6 +533,11 @@
 #    type: bool
 # smooth_lighting = true
 
+#    Enables tradeoffs that reduce CPU load or increase rendering performance
+#    at the expense of minor visual glitches that do not impact game playability.
+#    type: bool
+# performance_tradeoffs = false
+
 #    Clouds are a client side effect.
 #    type: bool
 # enable_clouds = true
@@ -1014,9 +1019,6 @@
 #    When gui_scaling_filter is true, all GUI images need to be
 #    filtered in software, but some images are generated directly
 #    to hardware (e.g. render-to-texture for nodes in inventory).
-#    This will smooth over some of the rough edges, and blend
-#    pixels when scaling down, at the cost of blurring some
-#    edge pixels when images are scaled by non-integer sizes.
 #    type: bool
 # gui_scaling_filter = false
 
@@ -1035,11 +1037,6 @@
 #    type: bool
 # tooltip_append_itemname = false
 
-#    Whether FreeType fonts are used, requires FreeType support to be compiled in.
-#    If disabled, bitmap and XML vectors fonts are used instead.
-#    type: bool
-# freetype = true
-
 #    type: bool
 # font_bold = false
 
@@ -1054,7 +1051,7 @@
 #    type: int min: 0 max: 255
 # font_shadow_alpha = 127
 
-#    Font size of the default font in point (pt).
+#    Font size of the default font where 1 unit = 1 pixel at 96 DPI
 #    type: int min: 1
 # font_size = 16
 
@@ -1062,11 +1059,10 @@
 #    with this font will always be divisible by this value, in pixels. For instance,
 #    a pixel font 16 pixels tall should have this set to 16, so it will only ever be
 #    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
+#    type: int min: 1
 # font_size_divisible_by = 1
 
-#    Path to the default font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path to the default font. Must be a TrueType font.
 #    The fallback font will be used if the font cannot be loaded.
 #    type: filepath
 # font_path = fonts/Arimo-Regular.ttf
@@ -1080,7 +1076,7 @@
 #    type: filepath
 # font_path_bold_italic = fonts/Arimo-BoldItalic.ttf
 
-#    Font size of the monospace font in point (pt).
+#    Font size of the monospace font where 1 unit = 1 pixel at 96 DPI
 #    type: int min: 1
 # mono_font_size = 16
 
@@ -1088,11 +1084,10 @@
 #    with this font will always be divisible by this value, in pixels. For instance,
 #    a pixel font 16 pixels tall should have this set to 16, so it will only ever be
 #    sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32.
+#    type: int min: 1
 # mono_font_size_divisible_by = 1
 
-#    Path to the monospace font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path to the monospace font. Must be a TrueType font.
 #    This font is used for e.g. the console and profiler screen.
 #    type: filepath
 # mono_font_path = fonts/Cousine-Regular.ttf
@@ -1106,9 +1101,7 @@
 #    type: filepath
 # mono_font_path_bold_italic = fonts/Cousine-BoldItalic.ttf
 
-#    Path of the fallback font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    Path of the fallback font. Must be a TrueType font.
 #    This font will be used for certain languages or if the default font is unavailable.
 #    type: filepath
 # fallback_font_path = fonts/DroidSansFallbackFull.ttf
