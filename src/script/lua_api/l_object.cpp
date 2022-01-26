@@ -1367,11 +1367,12 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
 
-	const PlayerControl &control = player->getPlayerControl();
 	lua_newtable(L);
+	if (player == nullptr)
+		return 1;
+	
+	const PlayerControl &control = player->getPlayerControl();
 	lua_pushboolean(L, control.direction_keys & (1 << 0));
 	lua_setfield(L, -2, "up");
 	lua_pushboolean(L, control.direction_keys & (1 << 1));
@@ -1406,8 +1407,10 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
+	if (player == nullptr) {
+		lua_pushinteger(L, 0);
+		return 1;
+	}
 
 	const auto &c = player->getPlayerControl();
 

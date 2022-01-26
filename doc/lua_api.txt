@@ -6716,18 +6716,21 @@ object you are working with still exists.
       `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
     * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
       and exist only to preserve backwards compatibility.
+    * Returns an empty table `{}` if the object is not a player.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
-  keys. Bits:
-    * 0 - up
-    * 1 - down
-    * 2 - left
-    * 3 - right
-    * 4 - jump
-    * 5 - aux1
-    * 6 - sneak
-    * 7 - dig
-    * 8 - place
-    * 9 - zoom
+  keys.
+    * Bits:
+        * 0 - up
+        * 1 - down
+        * 2 - left
+        * 3 - right
+        * 4 - jump
+        * 5 - aux1
+        * 6 - sneak
+        * 7 - dig
+        * 8 - place
+        * 9 - zoom
+    * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
