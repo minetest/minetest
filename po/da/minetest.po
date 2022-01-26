@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2020-03-31 10:14+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2022-01-26 12:17+0000\n"
+"Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -29,9 +29,8 @@ msgid "Exit to main menu"
 msgstr "Afslut til menu"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Lokal kommando"
+msgstr "Ugyldig kommando: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -43,9 +42,8 @@ msgid "List online players"
 msgstr "Enlig spiller"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Enlig spiller"
+msgstr "Online-spillere: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -64,14 +62,12 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Lokal kommando"
+msgstr "Tilgængelige kommandoer:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Lokal kommando"
+msgstr "Tilgængelige kommandoer: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -188,9 +184,8 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Valgfrie afhængigheder:"
+msgstr "Ingen (valgfrie) afhængigheder"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -958,7 +953,7 @@ msgstr "Vær vært for spil"
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
 msgid "Address"
-msgstr "- Adresse: "
+msgstr "Adresse"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -1218,9 +1213,8 @@ msgid "Connection error (timed out?)"
 msgstr "Forbindelses fejl (udløbelse af tidsfrist?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Kunne ikke finde eller indlæse spil \""
+msgstr "Kunne ikke finde eller indlæse spillet: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -2194,7 +2188,7 @@ msgstr "Lydløs"
 #: src/gui/guiVolumeChange.cpp
 #, fuzzy, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Lydstyrke: "
+msgstr "Lydstyrke: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
