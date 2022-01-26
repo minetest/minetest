@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2021-12-02 01:31+0000\n"
+"PO-Revision-Date: 2022-01-26 22:42+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3370,6 +3370,8 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Povolí kompromis, ktorý zníži zaťaženie CPU, alebo zvýši výkon renderovania\n"
+"za cenu drobných vizuálnych chýb, ktoré neovplyvnia hrateľnosť."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3575,17 +3577,15 @@ msgstr "Veľkosť písma"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Veľkosť písma deliteľná"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Veľkosť písma štandardného písma v bodoch (pt)."
+msgstr "Veľkosť písma štandardného fontu, kde 1jednotka = 1 pixel pri 96 DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Veľkosť písma s pevnou šírkou v bodoch (pt)."
+msgstr "Veľkosť písma s pevnou šírkou, kde 1jednotka = 1 pixel pri 96 DPI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3606,6 +3606,13 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"Pre pixelové písma, ktoré sa zle škálujú, toto zabezpečí, že použité "
+"veľkosti písma\n"
+"s týmto fontom budú vždy deliteľné touto hodnotou v pixeloch. Napríklad,\n"
+"pixelové písmo vysoké 16 pixelov, by malo mať toto nastavené na 16, aby sa "
+"veľkosť\n"
+"menila len na hodnoty 16, 32, 48, atď., takže rozšírenie požadujúce veľkosť "
+"25 dostane 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5771,9 +5778,8 @@ msgid "Monospace font size"
 msgstr "Veľkosť písmo s pevnou šírkou"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
-msgstr "Veľkosť písmo s pevnou šírkou"
+msgstr "Veľkosť písma s pevnou šírkou deliteľná"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -5952,16 +5958,12 @@ msgid "Optional override for chat weblink color."
 msgstr "Voliteľná zmena farby webového odkazu v komunikačnej konzole."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
-"Cesta k záložnému písmu.\n"
-"Ak je aktívne nastavenie “freetype”: Musí to byť TrueType písmo.\n"
-"Ak je zakázané nastavenie “freetype”: Musí to byť bitmapové, alebo XML "
-"vektorové písmo.\n"
+"Cesta k záložnému písmu. Musí to byť TrueType font.\n"
 "Toto písmo bude použité pre určité jazyky, alebo ak nie je štandardné písmo "
 "k dispozícií."
 
@@ -5987,27 +5989,19 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Cesta do adresára s textúrami. Všetky textúry sú najprv hľadané tu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"Cesta k štandardnému písmu.\n"
-"Ak je aktivné nastavenie “freetype”: Musí to byť TrueType písmo.\n"
-"Ak je zakázané nastavenie “freetype”: Musí to byť bitmapové, alebo XML "
-"vektorové písmo.\n"
+"Cesta k štandardnému písmu. Musí to byť TrueType font.\n"
 "Bude použité záložné písmo, ak nebude možné písmo nahrať."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"Cesta k písmu s pevnou šírkou.\n"
-"Ak je aktívne nastavenie “freetype”: Musí to byť TrueType písmo.\n"
-"Ak je zakázané nastavenie “freetype”: Musí to byť bitmapové, alebo XML "
-"vektorové písmo.\n"
+"Cesta k písmu s pevnou šírkou. Musí to byť TrueType font.\n"
 "Toto písmo je použité pre napr. konzolu a okno profilera."
 
 #: src/settings_translation_file.cpp
@@ -7103,7 +7097,7 @@ msgstr "Prah citlivosti dotykovej obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Kompromisy za výkon"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
