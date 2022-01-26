@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-25 22:04+0000\n"
+"PO-Revision-Date: 2022-01-29 21:28+0000\n"
 "Last-Translator: Balázs Kovács <kovacs.balazs.ktk@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
@@ -90,7 +90,6 @@ msgid "OK"
 msgstr "OKÉ"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
 msgstr "<egy sem elérhető>"
 
@@ -631,7 +630,6 @@ msgid "Offset"
 msgstr "Eltolás"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Folytonosság"
 
@@ -1237,9 +1235,8 @@ msgid "- Server Name: "
 msgstr "- Kiszolgáló neve: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Hiba történt:"
+msgstr "Szerializációs hiba történt:"
 
 #: src/client/game.cpp
 #, c-format
@@ -1343,7 +1340,7 @@ msgstr ""
 "- %s: letevés/használat\n"
 "- %s: lopakodás/lefelé mászás\n"
 "- %s: tárgy eldobása\n"
-"- %s: eszköztár\n"
+"- %s: felszerelés\n"
 "- Egér: forgás/nézelődés\n"
 "- Egérgörgő: tárgy kiválasztása\n"
 "- %s: csevegés\n"
@@ -1389,17 +1386,17 @@ msgid ""
 " --> place single item to slot\n"
 msgstr ""
 "Alapértelmezett irányítás:\n"
-"Nem látható menü:\n"
+"Ha nem látható menü:\n"
 "- egy érintés: gomb aktiválás\n"
 "- dupla érintés: lehelyezés/használat\n"
 "- ujj csúsztatás: körbenézés\n"
-"Menü/Eszköztár látható:\n"
+"Ha a Menü/Felszerelés látható:\n"
 "- dupla érintés (kívül):\n"
 " -->bezárás\n"
-"- stack, vagy slot érintése:\n"
-" --> stack mozgatás\n"
+"- köteg, vagy hely érintése:\n"
+" --> köteg mozgatás\n"
 "- \"érint&húz\", érintés 2. ujjal\n"
-" --> egy elem slotba helyezése\n"
+" --> letesz egyetlen tárgyat a helyre\n"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
@@ -2382,7 +2379,7 @@ msgstr ""
 "méretezéséhez."
 
 #: src/settings_translation_file.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
 "Increase value to increase density. Can be positive or negative.\n"
@@ -2391,8 +2388,8 @@ msgid ""
 "to be sure) creates a solid floatland layer."
 msgstr ""
 "A lebegő föld réteg sűrűségét szabályozza.\n"
-"Nagyobb sűrűséghez használjon nagyobb értéket. Lehet pozitív vagy negatív "
-"is.\n"
+"Nagyobb sűrűséghez használjon nagyobb értéket. Lehet pozitív vagy negatív is."
+"\n"
 "Érték = 0,0: a térfogat 50%-a lebegő föld.\n"
 "Érték = 2,0 (magasabb is lehet az 'mgv7_np_floatland'-től függően, a "
 "biztonság\n"
@@ -2422,7 +2419,7 @@ msgstr "Repülés és gyors mód mindig"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr "Ambiens okklúzió gamma"
+msgstr "Környezeti árnyékolás gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
@@ -2676,9 +2673,8 @@ msgstr ""
 "Ahol 0,0 a minimális fényszint, 1,0 a maximális fényszint."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat command time message threshold"
-msgstr "Csevegésparancs üzeneteinek küszöbe"
+msgstr "Csevegésparancs üzeneteinek időkorlátja"
 
 #: src/settings_translation_file.cpp
 msgid "Chat commands"
@@ -3293,7 +3289,7 @@ msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
-"A simított megvilágítás engedélyezése egyszerű ambient occlusion-nel.\n"
+"A simított megvilágítás engedélyezése egyszerű környezeti árnyékolással.\n"
 "A sebesség érdekében vagy másféle kinézetért kikapcsolhatod."
 
 #: src/settings_translation_file.cpp
@@ -3334,7 +3330,7 @@ msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
-"Bekapcsolja a fejmozgást és beállítja a mértékét.\n"
+"Bekapcsolja a fejbillegést és beállítja a mértékét.\n"
 "Pl: 0 nincs fejmozgás; 1.0 alapértelmezett fejmozgás van; 2.0 dupla "
 "fejmozgás van."
 
@@ -3362,7 +3358,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr "Az eszköztárelemek animációjának engedélyezése."
+msgstr "Az felszerelésben lévő tárgyak animációjának engedélyezése."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -3390,6 +3386,10 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Engedélyez olyan kompromisszimus megoldásokat, amelyek csökkentik a CPU "
+"terhelését vagy\n"
+"növelik a renderelési teljesítményt kisebb vizuális hibák árán, amelyek nem "
+"befolyásolják a játszhatóságot."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3397,7 +3397,7 @@ msgstr "Játékmotor profiler adatok kiírási időköze"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr "Egység metódusok"
+msgstr "Entitás metódusok"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3430,7 +3430,7 @@ msgstr "Tényezőzaj"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
-msgstr "Leesési bólintási tényező"
+msgstr "Leesés utáni fejrázkódási tényező"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
@@ -3497,6 +3497,14 @@ msgid ""
 "light edges to transparent textures. Apply a filter to clean that up\n"
 "at texture load time. This is automatically enabled if mipmapping is enabled."
 msgstr ""
+"A szűrt textúrák vegyíthetik a teljesen átlátszó szomszédokkal rendelkező "
+"RGB értékeket,\n"
+"amit a PNG optimalizálók általában figyelmen kívül hagynak, és ez gyakran "
+"sötét vagy\n"
+"világos élekhez vezet az átlátszó textúráknál. Használjon szűrőt ezeknek a "
+"textúra betöltésekor\n"
+"történő eltüntetésére. Ez automatikusan bekapcsol, ha a mipmapping be van "
+"kapcsolva."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
@@ -3505,10 +3513,13 @@ msgstr "Szűrés"
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
 msgstr ""
+"Az első a négy 2D zajból, amelyek együttesen meghatározzák a dombságok/"
+"hegységek magasságát."
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
 msgstr ""
+"Az első a két 3D zajból, amelyek együttesen meghatározzák az alagutakat."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -3588,22 +3599,25 @@ msgstr "Betűtípus mérete"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Betűméret osztója"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Az alapértelmezett betűtípus mérete képpontban (pt)."
+msgstr ""
+"Az alapértelmezett betűtípus betűmérete, ahol 1 egység = 1 pixel 96 DPI "
+"esetén"
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr ""
+msgstr "A monospace betűtípus betűmérete, ahol 1 egység = 1 pixel 96 DPI esetén"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
+"A legutóbbi csevegésszövegek és üzenetek betűmérete pontban (pt).\n"
+"0 érték esetén az alapértelmezett betűméretet fogja használni."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3615,6 +3629,13 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"A pixeles stílusú betűtípusokhoz, amelyek nem méretezhetők olyan jól, ez "
+"biztosítja, hogy a használt\n"
+"betűméretek az ilyen betűtípus esetén mindig oszthatók legyenek ezzel az "
+"értékkel, pixelben. Például\n"
+"egy 16 pixel magas pixeles stílusú betűtípus esetén ezt 16-ra kell állítani, "
+"ezáltal csak 16, 32, 48 stb.\n"
+"lesz használható, ezért ha egy mod 25-ös méretet igényel, 32-est fog kapni."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3632,23 +3653,23 @@ msgstr "Képernyőmentések formátuma."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr ""
+msgstr "Formspec panelek alapértelmezett háttérszíne"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr ""
+msgstr "Formspec panelek hátterének alapértelmezett átlátszósága"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr ""
+msgstr "Teljes képernyős Formspec panelek háttérszíne"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
+msgstr "Teljes képernyős Formspec panelek hátterének átlátszósága"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background color (R,G,B)."
-msgstr ""
+msgstr "Formspec panelek alapértelmezett háttérszíne (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background opacity (between 0 and 255)."
@@ -3673,6 +3694,8 @@ msgstr "Előre gomb"
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
 msgstr ""
+"A negyedik a négy 2D zajból, amelyek együttesen meghatározzák a dombságok/"
+"hegységek magasságát."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3680,7 +3703,7 @@ msgstr "Fraktál típusa"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
+msgstr "A látótávolságnak az a része, amelynél a köd renderelése kezdődik"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3705,6 +3728,14 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
+"Mekkora távolságból észleljék a kliensek az objektumokat, térképblokkokban "
+"mérve (16 blokk).\n"
+"\n"
+"Ha nagyobbra van állítva, mint az active_block_range, akkor a szervert arra "
+"kényszeríti, hogy\n"
+"az aktív objektumokat betöltve tartsa eddig a távolságig a játékos "
+"tekintetének irányában.\n"
+"(Ez megakadályozza, hogy a mobok hirtelen eltűnjenek a látómezőből)"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -3747,12 +3778,16 @@ msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
 msgstr ""
+"A fénygörbe gradiense a legmagasabb fényszinten.\n"
+"A legmagasabb fényszintek kontrasztrját szabályozza."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Gradient of light curve at minimum light level.\n"
 "Controls the contrast of the lowest light levels."
 msgstr ""
+"A fénygörbe gradiense a legalacsonyabb fényszinten.\n"
+"A legalacsonyabb fényszintek kontrasztrját szabályozza."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -3803,6 +3838,11 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
+"Hagyja, hogy a profiler behangolja magát:\n"
+"* Üres függvény behangolása.\n"
+"Ezáltal mérhető, hogy a hangolás maga mennyi időbe telik (+1 függvényhívás)."
+"\n"
+"* A mintavevő hangolása a mutatószámok frissítésehez."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -3816,8 +3856,7 @@ msgstr "Hőzaj"
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
-"A kezdeti ablak magassága. Teljes képernyős módban nem kerül figyelmbe "
-"vételre."
+"A kezdőablak magassága. Teljes képernyős módban nem kerül figyelmbe vételre."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3881,139 +3920,139 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
-msgstr "Gyorssáv következő gomb"
+msgstr "Gyorselérési sáv következő gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar previous key"
-msgstr "Gyorssáv előző gomb"
+msgstr "Gyorselérési sáv előző gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 1 key"
-msgstr ""
+msgstr "Gyorselérési sáv 1-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 10 key"
-msgstr ""
+msgstr "Gyorselérési sáv 10-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 11 key"
-msgstr ""
+msgstr "Gyorselérési sáv 11-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 12 key"
-msgstr ""
+msgstr "Gyorselérési sáv 12-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 13 key"
-msgstr ""
+msgstr "Gyorselérési sáv 13-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 14 key"
-msgstr ""
+msgstr "Gyorselérési sáv 14-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 15 key"
-msgstr ""
+msgstr "Gyorselérési sáv 15-ös hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 16 key"
-msgstr ""
+msgstr "Gyorselérési sáv 16-os hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 17 key"
-msgstr ""
+msgstr "Gyorselérési sáv 17-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 18 key"
-msgstr ""
+msgstr "Gyorselérési sáv 18-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 19 key"
-msgstr ""
+msgstr "Gyorselérési sáv 19-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 2 key"
-msgstr ""
+msgstr "Gyorselérési sáv 2-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 20 key"
-msgstr ""
+msgstr "Gyorselérési sáv 20-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 21 key"
-msgstr ""
+msgstr "Gyorselérési sáv 21-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 22 key"
-msgstr ""
+msgstr "Gyorselérési sáv 22-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 23 key"
-msgstr ""
+msgstr "Gyorselérési sáv 23-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 24 key"
-msgstr ""
+msgstr "Gyorselérési sáv 24-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 25 key"
-msgstr ""
+msgstr "Gyorselérési sáv 25-ös hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 26 key"
-msgstr ""
+msgstr "Gyorselérési sáv 26-os hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 27 key"
-msgstr ""
+msgstr "Gyorselérési sáv 27-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 28 key"
-msgstr ""
+msgstr "Gyorselérési sáv 28-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 29 key"
-msgstr ""
+msgstr "Gyorselérési sáv 29-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 3 key"
-msgstr ""
+msgstr "Gyorselérési sáv 3-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 30 key"
-msgstr ""
+msgstr "Gyorselérési sáv 30-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 31 key"
-msgstr ""
+msgstr "Gyorselérési sáv 31-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 32 key"
-msgstr ""
+msgstr "Gyorselérési sáv 32-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 4 key"
-msgstr ""
+msgstr "Gyorselérési sáv 4-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 5 key"
-msgstr ""
+msgstr "Gyorselérési sáv 5-ös hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 6 key"
-msgstr ""
+msgstr "Gyorselérési sáv 6-os hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 7 key"
-msgstr ""
+msgstr "Gyorselérési sáv 7-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 8 key"
-msgstr ""
+msgstr "Gyorselérési sáv 8-as hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 9 key"
-msgstr ""
+msgstr "Gyorselérési sáv 9-es hely gomb"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4025,13 +4064,16 @@ msgid ""
 "If negative, liquid waves will move backwards.\n"
 "Requires waving liquids to be enabled."
 msgstr ""
+"Milyen gyorsan mozognak a folyadékhullámok. Magasabb = gyorsabb.\n"
+"Ha negatív, a folyadékhullámok hátrafelé mozognak.\n"
+"A hullámzó folyadékokat engedélyezni kell hozzá."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Mennyi ideig vár a szerver, mielőtt betöltetlenné teszi a nem használt "
+"Mennyi ideig vár a szerver, mielőtt eltávolítja a memóriából a nem használt "
 "térképblokkokat.\n"
 "Magasabb érték egyenletesebb, de több RAM-ot használ."
 
@@ -4083,6 +4125,10 @@ msgid ""
 "invisible\n"
 "so that the utility of noclip mode is reduced."
 msgstr ""
+"Ha engedélyezve, a szerver kiválogatja a takarásban lévő térképblokkokat\n"
+"a játékos szemszögének megfelelően. Ezáltal a kliensnek küldött blokkok\n"
+"száma 50-80%-kal csökkenthető. A klines nem kapja ezentúl a legtöbb nem\n"
+"látható blokkot, emiatt a noclip mód (falonátjárás) kevésbé lesz használható."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4108,7 +4154,8 @@ msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
-"Ha engedélyezve van, akkor a műveletek rögzülnek a visszagörgetéshez.\n"
+"Ha engedélyezve van, akkor a műveletek rögzülnek a visszavonhatóság "
+"érdekében.\n"
 "Ez az opció csak akkor van beolvasva, amikor a szerver elindul."
 
 #: src/settings_translation_file.cpp
@@ -4152,12 +4199,19 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
+"Ha a CSM korlátozás be van kapcsolva az aktív blokktávolságra, akkor a "
+"get_node\n"
+"hívások korlátozva lesznek a játkostól e távolságon belül található "
+"blokkokra."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If the execution of a chat command takes longer than this specified time in\n"
 "seconds, add the time information to the chat command message"
 msgstr ""
+"Ha egy parancs végrehajtása tovább tart, mint az itt másodpercben megadott "
+"idő,\n"
+"az időadatok hozzá lesznek fűzve a parancs visszajelző üzenetéhez"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4166,6 +4220,10 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
+"Ha a debug.txt fájlmérete megabájtban meghaladja megnyitáskor az itt \n"
+"megadott számot, a fájl átnevezésre kerül debug.txt.1-re,\n"
+"és ha létezett egy régebbi debug.txt.1, az törlésre kerül.\n"
+"A debug.txt csak akkor lesz átnevezve, ha ez a beállítás engedélyzve van."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4208,6 +4266,8 @@ msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
+"Beépülő behangolása.\n"
+"Erre általában csak core/builtin közreműködőknek van szükségük"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chat commands on registration."
@@ -4218,24 +4278,27 @@ msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
+"A globális callback függvények behangolása regisztrációkor.\n"
+"(bármi, amit átadsz egy minetest.register_*() függvénynek)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr ""
+msgstr "Az Aktív blokk módosítók akciófüggvényének behangolása regisztrációkor."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
+"A Betöltendő blokk módosítók akciófüggvényének behangolása regisztrációkor."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr ""
+msgstr "Az entitások metódusainak hangolása regisztrációkor."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
-msgstr ""
+msgstr "Behangolás"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
@@ -4244,15 +4307,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr ""
+msgstr "A napszak kliensnek való küldésének gyakorisága."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr "Eszköztár elemek animációi"
+msgstr "Felszerelésben lévő tárgyak animációi"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr "Eszköztár gomb"
+msgstr "Felszerelés gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4305,7 +4368,7 @@ msgstr "Joystick holttér"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr "Joystick frustum érzékenység"
+msgstr "Joystick látómező érzékenység"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
@@ -4553,7 +4616,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Gomb az eszköztár megnyitásához.\n"
+"Gomb a felszerelés megnyitásához.\n"
 "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -5077,6 +5140,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"A profiler kijelzőjének kapcsológombja. Fejlesztéshez használatos.\n"
+"Lásd http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5163,6 +5229,9 @@ msgid ""
 "updated over\n"
 "network."
 msgstr ""
+"A szerver órajelének hossza és az az intervallum, amely alatt az "
+"objektumokat általánosan\n"
+"frissíti a hálózaton."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5178,11 +5247,11 @@ msgstr "Az Aktív Blokk módosító (ABM) végrehajtási ciklusok közötti idő
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Két NodeTimer végrehajtás között eltelt idő"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between active block management cycles"
-msgstr ""
+msgstr "Két aktív blokk kezelési fázis között eltelt idő"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5206,27 +5275,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
-msgstr ""
+msgstr "Fénygörbe kiemelés"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost center"
-msgstr ""
+msgstr "Fénygörbe kiemelés középpontja"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost spread"
-msgstr ""
+msgstr "Fénygörbe kiemelés kiterjedése"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve gamma"
-msgstr ""
+msgstr "Fénygörbe kiemelés gammája"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve high gradient"
-msgstr ""
+msgstr "A fénygörbe tetejének gradiense"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve low gradient"
-msgstr ""
+msgstr "A fénygörbe aljának gradiense"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5248,6 +5317,11 @@ msgid ""
 "-    Downloads performed by main menu (e.g. mod manager).\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"A párhzamos HTTP-kérések számának korlátja. Hatása:\n"
+"-    Médialekérések, ha a szerver remote_media beállítást használ.\n"
+"-    Szerverlista letöltés és szerverközzététel.\n"
+"-    Letöltések a főmenüből (pl. mod manager).\n"
+"Csak akkor van hatása, ha cURL-lel lett összeállítva."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
@@ -5263,7 +5337,7 @@ msgstr "Folyadékhullámzás maximum"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Folyadék sortisztítási ideje"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sinking"
@@ -5287,10 +5361,14 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"A játék profiler betöltése hogy játékprofílozási adatokat gyűjtsön.\n"
+"Elérhetővé teszi a /profiler parancsot, amellyel elérhetők az összeállított "
+"profilok.\n"
+"Hasznos lehet mod fejelsztőknek és szerver üzemeltetőknek."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr "Blokk módosítók betöltése"
+msgstr "Betöltendő blokk módosítók"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5317,11 +5395,11 @@ msgstr "Az összes folyadékot átlátszatlanná teszi"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
-msgstr ""
+msgstr "A térkép tömörítésének foka merevlemezen való tároláshoz"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Network Transfer"
-msgstr ""
+msgstr "A térkép tömörítésének foka hálózati átvitelhez"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -5421,7 +5499,7 @@ msgstr "Térképblokk hálógenerátor MapBlock gyorsítótár mérete MB-ban"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr ""
+msgstr "Térképblokk memóriaürítésének időkorlátja"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
@@ -5501,7 +5579,7 @@ msgstr "Max folyadék feldolgozva lépésenként."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Max. objektumtakarítás az extra blokkora"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -5517,7 +5595,7 @@ msgstr "Maximum FPS, amikor a játék szüneteltetve van, vagy nincs fókuszban.
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr ""
+msgstr "Az árnyékok renderelésének maximális távolsága."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -5525,21 +5603,27 @@ msgstr "Az erőltetett betöltésű blokkok maximuma"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr "Maximum hotbar szélesség"
+msgstr "Gyorselérési sáv maximális szélessége"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
 msgstr ""
+"A véletlenszerűen egy térképdarabkára jutó nagy barlangok számának maximális "
+"korlátja."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
 msgstr ""
+"A véletlenszerűen egy térképdarabkára jutó kis barlangok számának maximális "
+"korlátja."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum liquid resistance. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Maximális közegellenállás folyadékban. A nagy sebességgel folyadékba való\n"
+"belépéskor bekövetkező lassulást szabályozza."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5547,6 +5631,9 @@ msgid ""
 "The maximum total count is calculated dynamically:\n"
 "max_total = ceil((#clients + max_users) * per_client / 4)"
 msgstr ""
+"A szimultán küldött blokkok maximális száma kliensenként.\n"
+"A maximális összértéket így számoljuk dinamikusan:\n"
+"max_total = ceil((#clients + max_users) * per_client / 4)"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
@@ -5574,10 +5661,13 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
+"Az egyszerre folyó letöltések maximális száma. A korláton túli letöltéseket "
+"várólistára teszi.\n"
+"A curl_parallel_limit-nél kisebbnek kell lennie."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
+msgstr "Az erőltetetten betöltött térképblokkok maximális száma."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5593,6 +5683,9 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
+"A lépésenként küldött csomagok maximális száma,\n"
+"ha lassú kapcsolattal rendelkezel, próbáld csökkenteni,\n"
+"de ne csökkentsd a kívánt kliensszám duplája alá."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5615,8 +5708,8 @@ msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
-"Az aktuális ablak maximum hányada a hotbar számára.\n"
-"Hasznos, ha valamit el kell helyezni a hotbar jobb, vagy bal oldalán."
+"Az aktuális ablak maximum hányada a gyorselérési sáv számára.\n"
+"Hasznos, ha valamit el kell helyezni a sáv jobb, vagy bal oldalán."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
@@ -5624,13 +5717,15 @@ msgstr "Az egyidejűleg a kliensenként küldött térképblokkok maximális sz�
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
-msgstr ""
+msgstr "Kimenő üzenetek sorának maximális mérete"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum size of the out chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
+"A kimenő üzenetek sorának maximális mérete.\n"
+"0 letiltja a várolistára helyezést, míg -1 korlátlanná teszi a sor méretét."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5645,6 +5740,8 @@ msgid ""
 "Maximum time an interactive request (e.g. server list fetch) may take, "
 "stated in milliseconds."
 msgstr ""
+"Az interaktív kérések (pl. szerverlista lekérése) számára rendelkezésre álló "
+"maximális idő milliszekundumban."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
@@ -5656,7 +5753,7 @@ msgstr "Menük"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "Poligonháló cashe"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
@@ -5672,7 +5769,7 @@ msgstr "Kijelölt objektum kiemelésére használt módszer."
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr ""
+msgstr "A naplózás csevegésbe írásának minimális szintje."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5689,12 +5786,14 @@ msgstr "Kistérkép letapogatási magasság"
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr ""
-"Az egy térképblokkra véletlenszerűen jutó nagy barlangok számának minimális "
+"A véletlenszerűen egy térképdarabkára jutó nagy barlangok számának minimális "
 "korlátja."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr ""
+"A véletlenszerűen egy térképdarabkára jutó kis barlangok számának minimális "
+"korlátja."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size"
@@ -5721,9 +5820,8 @@ msgid "Monospace font size"
 msgstr "Monospace betűméret"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
-msgstr "Monospace betűméret"
+msgstr "Monospace betűméret osztója"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -5758,6 +5856,8 @@ msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"A zuhanás utáni fejbillenés szorzója.\n"
+"Például: 0 nincs biccentés; 1,0 normál; 2,0 dupla."
 
 #: src/settings_translation_file.cpp
 msgid "Mute key"
@@ -5774,6 +5874,10 @@ msgid ""
 "Current mapgens in a highly unstable state:\n"
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
+"Az új világ létrehozásakor használandó térképgenerátor neve.\n"
+"Új világ főmenüben történő létrehozása felülírja ezt.\n"
+"Jelenleg a következő térképgenerátorok nagyon instabilak:\n"
+"-    Az opcionális lebegő földek a v7-ben (alapértelmezés szerint tiltott)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5805,6 +5909,8 @@ msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
 msgstr ""
+"Figyelt hálózati port (UDP).\n"
+"Főmenüből való indításkor felülíródik ez az érték."
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
@@ -5812,7 +5918,7 @@ msgstr "Az új felhasználóknak ezt a jelszót kell megadniuk."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Noclip"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
@@ -5824,7 +5930,7 @@ msgstr "Node kiemelés"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
-msgstr ""
+msgstr "NodeTimer időköz"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
@@ -5832,7 +5938,7 @@ msgstr "Zajok"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr ""
+msgstr "A térképblokk betöltő szálak száma"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5847,6 +5953,21 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
+"A térképblokkok betöltésére használt szálak száma.\n"
+"Érték 0:\n"
+"-    Automatikus választás. A térképblokkok betöltését végző szálak száma\n"
+"-    \"processzorok száma - 2\" lesz, de legalább 1.\n"
+"Bármilyen más érték:\n"
+"-    Meghatározza a térképblokkbetöltő szálak számát, amelynek alsó korlátja "
+"1.\n"
+"FIGYELEM: A térképblokkbetöltő szálak számának növelése növeli a játékmotor "
+"mapgen\n"
+"folyamatainak sebességét, de csökkentheti a játékteljesítményt azáltal, hogy "
+"más\n"
+"folyamatokat akadályoznak, különösen egyjátékos módban és/vagy Lua kódok "
+"futtatásakor\n"
+"az 'on_generated' eseményben. Sok játékos számára valószínűleg az 1 az "
+"optimális beállítás."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5854,6 +5975,9 @@ msgid ""
 "This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"A /clearobjects parancs által egyidejűleg betölthető extra blokkok száma.\n"
+"Kompromisszum az SQLite tranzakciók erőforrásigénye és a\n"
+"memóriahasználat között (4096=100MB hüvelykujjszabályként)."
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
@@ -5867,6 +5991,8 @@ msgstr "Átlátszatlan folyadékok"
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
 msgstr ""
+"Az alapértelmezett betűtípus mögötti árnyék átlátszatlansága (alfa) 0 és 255 "
+"között."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5874,10 +6000,13 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
+"Megnyitja a szünet menüt, ha az ablak kikerül a fókuszból. Nem szünetel, ha "
+"nyitva van\n"
+"egy formspec panel."
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
-msgstr ""
+msgstr "A csevegésben lévő internetes linkek színének opcionális felülírása."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5885,18 +6014,26 @@ msgid ""
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
+"A tartalék betűtípus elérési útvonala. TrueType betűtípusnak kell lenni.\n"
+"Bizonyos nyelvek ezt a betűtípust használják vagy ha az alapértelmezett "
+"betűtípus nem elérhető."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Path to save screenshots at. Can be an absolute or relative path.\n"
 "The folder will be created if it doesn't already exist."
 msgstr ""
+"A képernyőképek mentésének elérési útvonala. Lehet abszolút vagy relatív "
+"elérési út.\n"
+"Ha még nem létezik a mappa, létre lesz hozva."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Path to shader directory. If no path is defined, default location will be "
 "used."
 msgstr ""
+"Az árnyékolókat tartalmazó mappa elérési útvonala. Ha nincs beállítva, az "
+"alapértelmezett útvonalat használja."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -5907,24 +6044,31 @@ msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
+"Az alapértelmezett betűtípus elérési útja. TrueType betűtípusnak kell lenni."
+"\n"
+"Ha nem lehet betölteni a betűtípust, a tartalék betűtípust fogja használni."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
+"A monospace betűtípus elérési útvonala. TrueType betűtípusnak kell lenni.\n"
+"Ezt a betűtípust használja pl. a konzol és a profiler képernyő."
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
-msgstr ""
+msgstr "Szüneteltetés ha az ablak kikerül a fókuszból"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
 msgstr ""
+"A merevlemezről várólistára töltött blokkok számának korlátja játékosonként"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks to generate"
 msgstr ""
+"A várólistára töltött létrehozandó blokkok számának korlátja játékosonként"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5960,7 +6104,7 @@ msgstr "Játékos neve"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr ""
+msgstr "Játékosátviteli távolság"
 
 #: src/settings_translation_file.cpp
 msgid "Player versus player"
@@ -5983,6 +6127,10 @@ msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
 msgstr ""
+"Ásás és lehelyezés ismétlődésének megakadályozása, amikor nyomva tartod az "
+"egérbombokat.\n"
+"Engedélyezd, ha túl gyakran fordul elő, hogy véletlenül lehelyezel vagy "
+"kiásol blokkokat."
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
@@ -6013,11 +6161,11 @@ msgstr "Profiler váltó gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr ""
+msgstr "Pfolilozás"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "Prometheus figyelési cím"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6026,6 +6174,11 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
+"Prometheus figyelési cím.\n"
+"Ha a Minetest-et az ENABLE_PROMETHEUS opció engedélyezésével állítták össze,"
+"\n"
+"elérhetővé válnak a Prometheus mérőszám figyelői ezen a címen.\n"
+"A mérőszámok itt érhetők el: http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6037,6 +6190,8 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"A felhők kiterjedése 64 blokkos felhőnégyzetek számában mérve.\n"
+"26-nál nagyobb értékek éles határt eredményeznek a felhők sarkainál."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
@@ -6096,22 +6251,32 @@ msgid ""
 "csm_restriction_noderange)\n"
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
+"Korlátozza bizonyos kliensoldali függvényekhez a hozzáférést a szerveren.\n"
+"Kombináld az alábbi bájtcímkéket a kliensoldali képességek korlátozásához,\n"
+"vagy állítsd 0-ra a korlátozások eltávolításához:\n"
+"LOAD_CLIENT_MODS: 1 (letitlja a kliensoldali modok betöltését)\n"
+"CHAT_MESSAGES: 2 (letiltja a send_chat_message hívásokat kliensoldalon)\n"
+"READ_ITEMDEFS: 4 (letiltja a get_item_def hívásokat kliensoldalon)\n"
+"READ_NODEDEFS: 8 (letiltja a get_node_def hívásokat kliensoldalon)\n"
+"LOOKUP_NODES_LIMIT: 16 (korlátozza a get_node hívásokat kliensoldalon a\n"
+"csm_restriction_noderange esetén)\n"
+"READ_PLAYERINFO: 32 (letiltja a get_player_names hívásokat kliensoldalon)"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge mountain spread noise"
-msgstr ""
+msgstr "A hegyvonulatok kiterjedésének zaja"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
-msgstr ""
+msgstr "Hegygerinc zaj"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
-msgstr ""
+msgstr "Víz alatti hegygerinc zaj"
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
-msgstr ""
+msgstr "Hegyvonulatok méretének zaja"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -6143,7 +6308,7 @@ msgstr "Folyóvölgy szélessége"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
-msgstr ""
+msgstr "Visszavonási pontok rögzítése"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
@@ -6163,7 +6328,7 @@ msgstr "Biztonságos ásás és elhelyezés"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
-msgstr ""
+msgstr "Homokos partok képződnek, ha az np_beach meghaladja ezt az értéket."
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6229,10 +6394,13 @@ msgstr "Folyómeder zaj"
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
 msgstr ""
+"A második a négy 2D zajból, amelyek együttesen meghatározzák a dombságok/"
+"hegységek magasságát."
 
 #: src/settings_translation_file.cpp
 msgid "Second of two 3D noises that together define tunnels."
 msgstr ""
+"A második a két 3D zajból, amelyek együttesen meghatározzák az alagutakat."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -6255,7 +6423,6 @@ msgid "Selection box width"
 msgstr "Kijelölő doboz szélessége"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Selects one of 18 fractal types.\n"
 "1 = 4D \"Roundy\" Mandelbrot set.\n"
@@ -6323,7 +6490,7 @@ msgstr "Szerver port"
 
 #: src/settings_translation_file.cpp
 msgid "Server side occlusion culling"
-msgstr ""
+msgstr "Takarásban lévő térképblokkok szerveroldali kiválogatása"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -6350,6 +6517,8 @@ msgid ""
 "Set the shadow strength.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
 msgstr ""
+"Az árnyékok kivehetőségét szabályozza.\n"
+"Kisebb érték világosabb, magasabb érték sötétebb árnyékokat jelent."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6357,6 +6526,9 @@ msgid ""
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 10.0"
 msgstr ""
+"Az árnyékok lágy szélének kiterjedését szabályozza.\n"
+"Kisebb érték élesebb, nagyobb érték lágyabb árnyékokat jelent.\n"
+"Minimális érték: 1,0; maximális érték: 10,0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6364,6 +6536,9 @@ msgid ""
 "Value of 0 means no tilt / vertical orbit.\n"
 "Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
+"A Nap/Hold pályájának fokokban mért döntési szögét szabályozza.\n"
+"A 0 érték azt jelenti, hogy nincs döntés / függőleges a pályájuk.\n"
+"Minimális érték: 0,0; maximális érték: 60,0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6403,6 +6578,9 @@ msgid ""
 "On false, 16 bits texture will be used.\n"
 "This can cause much more artifacts in the shadow."
 msgstr ""
+"Az árnyék textúrájának minőségét 32 bitesre állítja.\n"
+"Ha hamis, 16 bites textúrát fog használni.\n"
+"Ez sokkal több grafikai hibát okoz az árnyékon."
 
 #: src/settings_translation_file.cpp
 msgid "Shader path"
@@ -6426,11 +6604,11 @@ msgstr "Árnyék szűrő minőség"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map max distance in nodes to render shadows"
-msgstr ""
+msgstr "Az árnyéktérkép maximális renderelési távolsága blokkban"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture in 32 bits"
-msgstr ""
+msgstr "32 bites árnyéktérkép textúra"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture size"
@@ -6444,7 +6622,7 @@ msgstr "Betűtípus árnyékának eltolása. Ha 0, akkor nem lesz árnyék rajzo
 
 #: src/settings_translation_file.cpp
 msgid "Shadow strength"
-msgstr ""
+msgstr "Árnyék kivehetősége"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -6485,6 +6663,14 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
+"A mapgen által generált térképdarabka mérete térképblokkokban (16 blokk) "
+"mérve.\n"
+"FIGYELEM!: Nincs értelme és bizonyos veszélyekkel is jár ennek az értéknek\n"
+"5 fölés emelése.\n"
+"Ha csökkentjük ezt az értéket, gyakrabban fordulnak elő barlangok és "
+"tömlöcök.\n"
+"Változtasd meg, ha valami különleges okból kell, de ajánlott\n"
+"változatlanul hagyni."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6492,14 +6678,18 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
+"A poligonhálót generáló MapBlock cache mérete. Növelése megnöveli a\n"
+"cache kiszolgálási teljesítményét, ezáltal csökken a fő szálból másolt "
+"adatok\n"
+"mennyisége, és ezáltal csökken a szaggatás."
 
 #: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
-msgstr ""
+msgstr "Égitestek pályájának döntése"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
-msgstr ""
+msgstr "W szelet"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
@@ -6516,10 +6706,13 @@ msgstr "Kis barlangok minimális száma"
 #: src/settings_translation_file.cpp
 msgid "Small-scale humidity variation for blending biomes on borders."
 msgstr ""
+"A biomok közötti átmeneti határra vonatkozó kisléptékű páratartalom-"
+"ingadozás."
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale temperature variation for blending biomes on borders."
 msgstr ""
+"A biomok közötti átmeneti határra vonatkozó kisléptékű hőmérséklet-ingadozás."
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
@@ -6569,6 +6762,13 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"Meghatározza, mely URL-ről töltse le a kliens a médiatartalmat az UDP "
+"helyett.\n"
+"$filename -nek elérhetőnek kell lennie a $remote_media$filename helyről "
+"cURL\n"
+"használatával (nyilván, a remote_media elérési útnak perjelre kell végződni)."
+"\n"
+"A nem elérhető fájlokat a normál módon fogja letölteni."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6576,6 +6776,9 @@ msgid ""
 "Note that mods or games may explicitly set a stack for certain (or all) "
 "items."
 msgstr ""
+"A blokkok, tárgyak és eszközök alapértelmezett kötegméretét szabályozza.\n"
+"Megjegyzendő, hogy a modok vagy játékok kifejezetten meghatározhatják a "
+"kötegek méretét bizonyos vagy az összes tárgy esetén."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6584,6 +6787,10 @@ msgid ""
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
+"Az árnyéktérkép firssítését széthúzza a megadott számú képkockára.\n"
+"Magasabb érték esetén az árnyékok késhetnek, alacsabb érékek\n"
+"viszont több erőforrást igényelnek.\n"
+"Minimális érték: 1; maximális érték: 16"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6591,6 +6798,9 @@ msgid ""
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
 msgstr ""
+"A fénygörbe kiemelésének hatósugara.\n"
+"A kiemelendő tartomány szélességét szabályozza.\n"
+"A fénygörbe kiemelés Gauss-görbéjének szórása."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
@@ -6606,11 +6816,11 @@ msgstr "Lépcsős hegyek méretének zajossága"
 
 #: src/settings_translation_file.cpp
 msgid "Step mountain spread noise"
-msgstr ""
+msgstr "Lépcsős hegy kiterjedésének zaja"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of 3D mode parallax."
-msgstr ""
+msgstr "3D mód parallax hatásának erőssége."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6618,14 +6828,17 @@ msgid ""
 "The 3 'boost' parameters define a range of the light\n"
 "curve that is boosted in brightness."
 msgstr ""
+"A fénygörbe kiemelésének erőssége.\n"
+"A 3 'boost' parameter a fénygörbe egy tartományát\n"
+"határozza meg, amelyeken erősebbek a fények."
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr ""
+msgstr "Szigorú protokollellenőrzés"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
-msgstr ""
+msgstr "Színkódok kinyerése"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6640,10 +6853,27 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"Az egybefüggő lebegő föld rétegre opcionálisan helyezhető vízfelület szintje."
+"\n"
+"Alapértelmezésben a víz nem engedélyezett és csak akkor helyezi le, ha ez "
+"az\n"
+"érték nagyobb, mint 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (a "
+"vékonyítás\n"
+"felső részének kezdete).\n"
+"***FIGYELEM! VESZÉLYES LEHET A VILÁGOKRA ÉS A SZERVERTELJESÍTMÉNYRE***:\n"
+"Ha endgedélyezve van a vízelhelyezés, úgy kell konfigurálni a lebegő "
+"földeket és\n"
+"tesztelni kell, hogy valóban egybefüggő réteget alkosson, az "
+"'mgv7_floatland_density'\n"
+"értékének 2,0-nak (vagy az 'mgv7_np_floatland'-től függően más szükséges "
+"értéknek)\n"
+"kell lenni, hogy elkerülhető legyen a szervert leterhelő extrém vízfolyás és "
+"az alatta lévő\n"
+"földfelszín elárasztása."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
-msgstr ""
+msgstr "Szinkron SQLite"
 
 #: src/settings_translation_file.cpp
 msgid "Temperature variation for biomes."
@@ -6675,6 +6905,9 @@ msgid ""
 "Controls proportion of world area covered by hills.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
+"A dombok terep zajküszöbe.\n"
+"A világ dombokkal fedett területének arányát szabályozza.\n"
+"Állítsd 0,0-hoz közelebb, hogy az arány növekedjen."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6682,10 +6915,13 @@ msgid ""
 "Controls proportion of world area covered by lakes.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
+"A tavak terep zajküszöbe.\n"
+"A világ tavakkal fedett területének arányát szabályozza.\n"
+"Állítsd 0,0-hoz közelebb, hogy az arány növekedjen."
 
 #: src/settings_translation_file.cpp
 msgid "Terrain persistence noise"
-msgstr ""
+msgstr "Terep folytonossági zaj"
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
@@ -6697,6 +6933,10 @@ msgid ""
 "This must be a power of two.\n"
 "Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
+"Az árnyéktérkép rendereléséhez használt textúraméret.\n"
+"Kettő hatványának kell lennie.\n"
+"Nagyobb számok nagyobb árnyékokat hoznak létre, de ez egyben "
+"erőforrásigényesebb is."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6707,6 +6947,16 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
+"Egy blokk textúráját lehet a blokkhoz vagy a világhoz igazítani.\n"
+"Az első megoldás jobban illik olyan dolgokhoz, mint a gépek, bútorok stb.,\n"
+"míg a másodikkal jobban beleillenek a környezetükbe a lépcsők és "
+"mikroblokkok.\n"
+"Mivel azonban ez a lehetőség még új, és így a régebbi szerverek még nem "
+"használják,\n"
+"ezzel az opcióval ki lehet kényszeríteni ezt bizonyos blokkokra. Meg kell "
+"azonban\n"
+"jegyezni, hogy ez még KÍSÉRLETI fázisban van és lehet, hogy nem működik "
+"helyesen."
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -6721,15 +6971,18 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"A profilok mentéséhez használt alapértelmezett formátum, amikor\n"
+"formátum nélkül kerül meghívásra a `/profiler save [format]` parancs."
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
-msgstr ""
+msgstr "A föld vagy egyéb biom feltöltő blokk mélysége."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
 msgstr ""
+"A profilok mentésének relatív elérési útja a világod elérési útjához képest."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6738,6 +6991,7 @@ msgstr "A használni kívánt joystick azonosítója"
 #: src/settings_translation_file.cpp
 msgid "The length in pixels it takes for touch screen interaction to start."
 msgstr ""
+"Az érintőképernyős interakció megkezdéséhez szükséges távolság pixelekben."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6747,10 +7001,15 @@ msgid ""
 "Default is 1.0 (1/2 node).\n"
 "Requires waving liquids to be enabled."
 msgstr ""
+"A hullámzó folyadékok felszínének maximális magassága.\n"
+"4,0 = A hullámok magasága két blokk.\n"
+"0,0 = A hullámok egyáltalán nem mozognak.\n"
+"Az alapértelmezett érték 1,0 (1/2 blokk).\n"
+"A hullámzó folyadék engedélyezése szükséges hozzá."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "A hálózati interfész, amelyen a szerver figyel."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6771,6 +7030,13 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
+"A játékosok körüli blokktérfogat sugara, amelyen belül érvényesülnek\n"
+"az aktív blokkok dolgai. Térképblokkban (16 blokk) mérve.\n"
+"Az aktív blokkokban betöltődnek az objektumok és ABM-ek futnak.\n"
+"Ez egyben az a legkisebb sugár is, amelyen belül az aktív objektumokról "
+"(mobok) gondoskodik a játék.\n"
+"Ezt a beállítást az active_object_send_range_blocks-szal összhangban kell "
+"megadni."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6781,12 +7047,21 @@ msgid ""
 "On other platforms, OpenGL is recommended.\n"
 "Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
 msgstr ""
+"A renderelő háttérprogram.\n"
+"Ha ezt megváltoztatod, újraindítás szükséges.\n"
+"Megjegyzés: Androidon, hagyd OGLES1-en, ha bizonytalan vagy! Lehet, hogy nem "
+"indul az app különben.\n"
+"Más platformokon az OpenGL az ajánlott.\n"
+"Az árnyékolókat az OpenGL (csak asztali rendszeren) és OGLES2 (kísérleti) "
+"támogatja"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
 msgstr ""
+"A jostick tengelyeinek érzékenysége, amely\n"
+"a játékbeli látómező mozgatását befolyásolja."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6795,6 +7070,12 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"A körülvett, illetve takarásban lévő blokkok árnyékolásának erőssége "
+"(sötétsége).\n"
+"Alacsonyabb érték sötétebb, magasabb érték világosabb. E beállítás érvényes\n"
+"értéktartománya 0,25-től 4,0-ig terjed. Ha a tartományon kívüli értéket "
+"adunk meg,\n"
+"a legközelebbi érvényes értékre lesz állítva."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6802,12 +7083,18 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"A másodpercben megadott idő, ameddig a folyadékok várólistája a számítási\n"
+"teljesítmény fölé nőhet, és ezután megpróbálja csökkenteni a méretét azáltal,"
+"\n"
+"hogy törli a régóta sorbanálló elemeket.  A 0 érték letiltja ezt a funkciót."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"Az ABM-ek rendelkezésére álló lépésenkénti végrehajtási időkeret\n"
+"(az ABM intervallum törtrésze)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6835,26 +7122,33 @@ msgid ""
 "enabled. Also the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
+"Az a függőleges távolság, amely során a hőmérséklet 20 fokkal csökken, ha az "
+"'altitude_chill'\n"
+"be van kapcsolva. Ugyanez a távolság, amely során a páratartalom esik 10 "
+"egységgel, ha az\n"
+"'altitude_dry' be van kapcsolva."
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
+"A harmadik a négy 2D zajból, amelyek együttesen meghatározzák a dombságok/"
+"hegységek magasságát."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
-"Annak az ideje, hogy mennyi ideig \"élnek\" az eldobott tárgyak.\n"
+"Annak az ideje, hogy mennyi ideig maradnak meg az eldobott tárgyak.\n"
 "-1-re állítás kikapcsolja ezt a funkciót."
 
 #: src/settings_translation_file.cpp
 msgid "Time of day when a new world is started, in millihours (0-23999)."
-msgstr ""
+msgstr "Az új világ létrehozásakor érvényes napszak milliórában (0-23999)."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr ""
+msgstr "Idő küldési gyakoriság"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
@@ -6863,6 +7157,8 @@ msgstr "Idő sebessége"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
+"A kliens rendelkezésére álló időkorlát, hogy eltávolítsa a használaton "
+"kívüli térképadatokat a memóriából."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6890,7 +7186,7 @@ msgstr "Érintőképernyő küszöbe"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Teljesítménybeli kompromisszumok"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6920,7 +7216,7 @@ msgstr "A Többjátékos fül alatt megjelenített szerverlista URL-je."
 
 #: src/settings_translation_file.cpp
 msgid "Undersampling"
-msgstr ""
+msgstr "Alulmintavételezés"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6930,6 +7226,12 @@ msgid ""
 "image.\n"
 "Higher values result in a less detailed image."
 msgstr ""
+"Az alulmintavételezés olyan, mintha kisebb képernyőfelbontást használnál, "
+"de\n"
+"csak a játék világára van hatással, a GUI-t változatlanul hagyja.\n"
+"Sokkal jobb teljesítmény érhető el vele annak árán, hogy a kép kevésbé\n"
+"részletgazdaggá válik. Magasabb értékek kevésbé részletes képet "
+"eredményeznek."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6937,7 +7239,7 @@ msgstr "Korlátlan játékosátviteli távolság"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr ""
+msgstr "A használaton kívüli szerveradatok eltávolítása a memóriából"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -6969,6 +7271,9 @@ msgid ""
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
+"Mipmapping használata a textúrák méretezéséhez. Kis mértékben növelheti a\n"
+"teljesítményt, különösen nagy felbontású textúracsomagok használatakor.\n"
+"Gamma-megőrző zsugorítás nem támogatott."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6980,6 +7285,13 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
+"Többmintás élsimítás (MSAA) használata a blokkélek simításához.\n"
+"Ez az algoritmus kisimítja a 3D látómezőt miközben a kép éles marad,\n"
+"a textúrák beljsejét azonban nem módosítja\n"
+"(ami főleg az átlátszó textúráknál vehető észre).\n"
+"A blokkok között látható rések jelennek meg, ha az árnyékolók nincsenek\n"
+"engedélyezve. Ha 0-ra van állítva, az MSAA tiltva van.\n"
+"E beállítás megváltoztatása után újraindítás szükséges."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6987,7 +7299,7 @@ msgstr "Trilineáris szűrés a textúrák méretezéséhez."
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
-msgstr ""
+msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
@@ -7006,7 +7318,6 @@ msgid "Valley profile"
 msgstr "Völgyek profilja"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley slope"
 msgstr "Völgyek meredeksége"
 
@@ -7016,7 +7327,7 @@ msgstr "A biom töltőanyag mélységének változékonysága."
 
 #: src/settings_translation_file.cpp
 msgid "Variation of maximum mountain height (in nodes)."
-msgstr ""
+msgstr "A legnagyobb eltérés a hegyek magasságában (blokkokban)."
 
 #: src/settings_translation_file.cpp
 msgid "Variation of number of caves."
@@ -7027,20 +7338,24 @@ msgid ""
 "Variation of terrain vertical scale.\n"
 "When noise is < -0.55 terrain is near-flat."
 msgstr ""
+"A terep függőleges kiterjedésének mozgástere.\n"
+"Ha a zaj < -0,55, akkor a terep szinte lapos."
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
-msgstr ""
+msgstr "A biomok felületét képező blokkréteg mélységét variálja."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Varies roughness of terrain.\n"
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
+"A terep töredezettségét variálja.\n"
+"Meghatározza a terrain_base és terrain_alt zajok folytonosságának értékét."
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
-msgstr "A szirtek meredekségét állítja."
+msgstr "A szirtek meredekségét variálja."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -7056,7 +7371,7 @@ msgstr "Videó driver"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing factor"
-msgstr ""
+msgstr "Fejbillegési faktor"
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
@@ -7080,7 +7395,7 @@ msgstr "Látóterület"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers Aux1 button"
-msgstr ""
+msgstr "Virtuális joystick gombok Aux1 gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
@@ -7091,6 +7406,8 @@ msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
+"Az összes hang hangereje.\n"
+"A hangrendszer engedélyezésére van szükség hozzá."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7100,6 +7417,11 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"A 4D fraktál generált 3D szeletének W koordinátája.\n"
+"Meghatározza, hogy a 4D-s alakzat mely 3D-s szeletét kell generálni.\n"
+"Megváltoztatja a fraktál alakját.\n"
+"Nincs hatása a 3D fraktálokra.\n"
+"Nagyjából -2 és 2 közötti az értéktartománya."
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
@@ -7159,6 +7481,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"Ha a gui_scaling_filter értéke igaz, minden GUI képet szoftveres\n"
+"szűrő fogja kezelni, de néhány kép közvetlenül a harverre\n"
+"generálódik (pl. a felszerelésben lévő blokkok textúrára renderelése)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7167,6 +7492,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
+"Ha a gui_scaling_filter_txr2img be van kapcsolva, ezeket a képeket\n"
+"a hardverről a szoftverbe másolja méretezésre.  Ha ki van kapcsolva,\n"
+"a régi méretezési módszert használja, azoknál a videó drivereknél,\n"
+"amelyek nem megfelelően támogatják a textúra hardverről való letöltését."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7179,22 +7508,41 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
+"A bilineáris/trilineáris/anizotróp szűrők használatakor, a kis felbontású "
+"textúrák\n"
+"homályosak lehetnek, ezért automatikusan felskálázza őket legközelebbi\n"
+"szomszéd módszerrel, hogy megőrizze az éles pixeleket. Ez a beállítás "
+"meghatározza\n"
+"a minimális textúraméretet a felnagyított textúrákhoz; magasabb értéknél "
+"élesebb,\n"
+"de több memóriát igényel. 2 hatványait ajánlott használni. CSAK akkor "
+"érvényes ez a\n"
+"beállítás, ha a bilineáris/trilineáris/anizotróp szűrés engedélyezett.\n"
+"Ez egyben azon blokkok alap textúraméreteként is használatos, amelyeknél a "
+"világhoz\n"
+"igazítva kell méretezni a textúrát."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"Látszódjon-e a névcímkék háttere alapértelmezésként.\n"
+"A modok ettől még a beállíthatják a hátteret."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
+"Legyen-e független a blokkok textúraanimációinak időzítése az egyes "
+"térképblokkokban."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Lássák-e a játékosokat a kliensek mindenféle távolsági korlát nélkül.\n"
+"Elavult, használd a player_transfer_distance beállítást ehelyett."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
@@ -7219,6 +7567,10 @@ msgid ""
 "In-game, you can toggle the mute state with the mute key or by using the\n"
 "pause menu."
 msgstr ""
+"Némítsuk-e le a hangokat. Bármikor visszakapcsolhatod a hangokat, kivéve,\n"
+"ha a hangrendszer le van tiltva (enable_sound=false).\n"
+"A játékon belül a némítás állapotát a némítás gombbal vagy a szünet\n"
+"menüben tudod beállítani."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7229,6 +7581,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
+"A kezdőablak szélessége. Teljes képernyős módban nem kerül figyelmbe vételre."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -7265,10 +7618,18 @@ msgid ""
 "See also texture_min_size.\n"
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
+"A világhoz igazított textúrák több blokkra is ki kiterjedhetnek. A szerver\n"
+"azonban nem biztos, hogy az általad kívánt módon terjeszti ki azt, különösen,"
+"\n"
+"ha egyedi tervezésű textúracsomagról van szó; ezzel a beállítással a kliens\n"
+"megpróbálja automatikusan meghatározni a méretezést a textúra mérete alapján."
+"\n"
+"Lásd még texture_min_size.\n"
+"Figyelem: Ez KÍSÉRLETI beállítás!"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
-msgstr ""
+msgstr "Világhoz igazított textúrakezelési mód"
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
@@ -7279,6 +7640,8 @@ msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
 msgstr ""
+"A hegyek sűrűséggradiensének alapsíkjának Y koordinátája. A hegyek "
+"függőleges eltolásához használatos."
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
@@ -7295,6 +7658,12 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"Az az Y irányú távolság, amely során a lebegő földek a maximális sűrűségtől "
+"kezdve teljesen elvékonyodnak.\n"
+"A vékonyítás ennél az Y határtól való távolságnál kezdőik.\n"
+"Egybefüggő lebegő föld rétegek esetén, ez a beállítás szabályozza a dombok/"
+"hegyek magasságát.\n"
+"Kisebbnek vagy egyenlőnek kell lennie az Y határok közötti távolság felénél."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
