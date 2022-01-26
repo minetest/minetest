@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"PO-Revision-Date: 2022-01-30 18:51+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -53,7 +53,7 @@ msgstr "Perintah ini dilumpuhkan oleh pelayan."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Lahir semula"
+msgstr "Jelma semula"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -2161,10 +2161,10 @@ msgid ""
 msgstr ""
 "(X,Y,Z) Ofset fraktal dari pusat dunia dalam unit 'skala'.\n"
 "Boleh guna untuk pindahkan titik yang diingini ke (0, 0)\n"
-"untuk cipta titik kelahiran yang sesuai, atau untuk\n"
+"untuk cipta titik jelma yang sesuai, atau untuk\n"
 "membolehkan 'zum masuk' pada titik yang diinginkan\n"
 "dengan menaikkan 'skala'.\n"
-"Nilai lalai disesuaikan untuk titik kelahiran sesuai untuk set Mandelbrot\n"
+"Nilai lalai disesuaikan untuk titik jelma sesuai untuk set Mandelbrot\n"
 "dengan parameter lalai, ia mungkin perlu diubah untuk situasi yang lain.\n"
 "Julat kasarnya -2 sehingga 2. Darabkan dengan 'skala' untuk ofset dalam nod."
 
@@ -3378,6 +3378,10 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Membolehkan keseimbangan yang mengurangkan muatan CPU atau meningkatkan "
+"prestasi kemas gabung\n"
+"dengan mengorbankan glic visual yang kecil yang tidak memberi kesan kepada "
+"kebolehan bermain permainan."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3583,17 +3587,15 @@ msgstr "Saiz fon"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Saiz fon boleh dibahagikan dengan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Saiz fon bagi fon lalai dalan unit titik (pt)."
+msgstr "Saiz fon bagi fon lalai di mana 1 unit = 1 piksel pada 96 DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Saiz fon bagi fon monospace dalam unit titik (pt)."
+msgstr "Saiz fon bagi fon monospace di mana 1 unit = 1 piksel pada 96 DPI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3613,6 +3615,14 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"Untuk fon gaya piksel yang tidak boleh disesuaikan dengan baik, tetapan ini "
+"memastikan saiz fon\n"
+"yang digunakan dengan fon ini akan sentiasa boleh dibahagikan dengan nilai "
+"ini, dalam piksel.\n"
+"Contohnya, sebuah fon piksel dengan tinggi 16 piksel patut tetapkan tetapan "
+"ini menjadi 16, supaya\n"
+"ia hanya guna saiz 16, 32, 48, dll., jadi jika mods meminta fon bersaiz 25 "
+"maka ia akan dapat saiz 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4204,7 +4214,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
-"Jika tetapan ini ditetapkan, pemain akan sentiasa dilahirkan (semula) dekat "
+"Jika tetapan ini ditetapkan, pemain akan sentiasa jelma (semula) dekat "
 "kedudukan yang diberikan."
 
 #: src/settings_translation_file.cpp
@@ -5788,9 +5798,8 @@ msgid "Monospace font size"
 msgstr "Saiz fon monospace"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
-msgstr "Saiz fon monospace"
+msgstr "Saiz fon monospace boleh dibahagikan dengan"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -5909,7 +5918,7 @@ msgstr "Hingar"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr "Jumlah jalur keluar"
+msgstr "Jumlah jalur timbul"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5977,16 +5986,12 @@ msgid "Optional override for chat weblink color."
 msgstr "Pilihan mengatasi warna pautan sesawang di sembang."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
-"Laluan fon berbalik.\n"
-"Jika tetapan “freetype” dibolehkan: Ia mestilah fon TrueType.\n"
-"Jika tetapan “freetype” dilumpuhkan: Ia mestilah fon peta bit atau vektor "
-"XML.\n"
+"Laluan fon berbalik. Mestilah sebuah fon jenis TrueType.\n"
 "Fon ini akan digunakan bagi sesetengah bahasa atau jika fon lalai tidak "
 "tersedia."
 
@@ -6011,28 +6016,20 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Laluan ke direktori tekstur. Semua tekstur dicari dari sini dahulu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"Laluan fon lalai.\n"
-"Jika tetapan “freetype” dibolehkan: Ia mestilah fon TrueType.\n"
-"Jika tetapan “freetype” dilumpuhkan: Ia mestilah fon peta bit atau vektor "
-"XML.\n"
+"Laluan fon lalai. Mestilah sebuah fon jenis TrueType.\n"
 "Fon berbalik akan digunakan sekiranya fon ini tidak dapat dimuatkan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"Laluan fon monospace.\n"
-"Jika tetapan “freetype” dibolehkan: Ia mestilah fon TrueType.\n"
-"Jika tetapan “freetype” dilumpuhkan: Ia mestilah fon peta bit atau vektor "
-"XML.\n"
-"Fon ini digunakan untuk unsur spt. konsol dan skrin pembukah."
+"Laluan fon monospace. Mestilah sebuah fon jenis TrueType.\n"
+"Fon ini digunakan untuk perkara spt. konsol dan skrin pembukah."
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
@@ -6776,7 +6773,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr "Titik lahir statik"
+msgstr "Titik jelma statik"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
@@ -6999,7 +6996,7 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
-"Radius jilid blok di sekitar setiap pemain yang tertakluk kepada benda blok\n"
+"Jejari jilid blok di sekitar setiap pemain yang tertakluk kepada benda blok\n"
 "aktif, dinyatakan dalam blokpeta (16 nod).\n"
 "Dalam blok aktif, objek dimuatkan dan ABM dijalankan.\n"
 "Ini juga jarak minimum di mana objek aktif (mob) dikekalkan.\n"
@@ -7149,7 +7146,7 @@ msgstr "Nilai ambang skrin sentuh"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Keseimbangan untuk prestasi"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -7235,7 +7232,7 @@ msgid ""
 "Gamma correct downscaling is not supported."
 msgstr ""
 "Gunakan pemetaan mip untuk menyesuaikan tekstur. Boleh meningkatkan\n"
-"sedikit prestasi, terutamanya apabila menggunakan pek tekstur berdefinisi\n"
+"sedikit prestasi, terutamanya apabila menggunakan pek tekstur resolusi\n"
 "tinggi. Penyesuai-turun gama secara tepat tidak disokong."
 
 #: src/settings_translation_file.cpp
