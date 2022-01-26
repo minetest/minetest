@@ -114,6 +114,46 @@ float snoise(vec3 p)
 
 #endif
 
+vec3 rgb2hsv(vec3 color)
+{
+	float _max = max(color.r, max(color.g, color.b));
+	float _min = min(color.r, min(color.g, color.b));
+	float delta = _max-_min;
+	float hue = 0;
+	float sat = 0;
+	if (delta != 0)
+	{
+		if (color.r == _max)
+			hue = (color.g - color.b) / delta;
+		else if (color.g == _max)
+			hue = (color.b - color.r) / delta + 2;
+		else
+			hue = (color.r - color.g) / delta + 4;
+		if (hue < 0)
+			hue += 6;
+		hue /= 6.0;
+		sat = delta / _max;
+	}
+	return clamp(vec3(hue, sat, _max), vec3(0.0), vec3(1.0));
+}
+
+vec3 hsv2rgb(vec3 color)
+{
+	float c = color.g * color.b; // s*v
+	float x = c * (1.0 - abs(mod(color.r * 6.0, 2) - 1));
+	float m = color.b - c; // v - c
+	if (color.r < 1.0/6.0)
+		return vec3(c, x, 0) + m;
+	if (color.r < 2.0/6.0)
+		return vec3(x, c, 0) + m;
+	if (color.r < 3.0/6.0)
+		return vec3(0, c, x) + m;
+	if (color.r < 4.0/6.0)
+		return vec3(0, x, c) + m;
+	if (color.r < 5.0/6.0)
+		return vec3(x, 0, c) + m;
+	return vec3(c, 0, x) + m;
+}
 
 
 
@@ -181,26 +221,30 @@ void main(void)
 #else
 	vec4 color = inVertexColor;
 #endif
-	// The alpha gives the ratio of sunlight in the incoming light.
-	nightRatio = 1.0 - color.a;
-	color.rgb = color.rgb * (color.a * dayLight.rgb +
-		nightRatio * artificialLight.rgb) * 2.0;
-	color.a = 1.0;
+	// incoming color is downscaled
+	color.rgb *= 2.0;
 
+	// adjust the brightness, preserving hue and contrast
+
+	// light/shadow balance in the vertex color
+	// this value must match COLOR_LIGHT_FACTOR in mapblock_mesh.cpp
+	const float light_fraction = 0.9;
+	vec3 hsv = rgb2hsv(color.rgb);
+	hsv.b = clamp((pow(hsv.b, log(0.5 * ambientBrightness + 0.5) / log(0.5)) - 1 + light_fraction) / light_fraction, 0.0, 1.0);
+	color.rgb = hsv2rgb(hsv.rgb);
+
+	// The alpha gives the ratio of sunlight in the incoming light.
+	nightRatio = min(1.0, 1.0 - color.a + ambientBrightness);
+	color.rgb = color.rgb * mix(dayLight.rgb, artificialLight.rgb, nightRatio);
+	color.a = 1.0;
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
 	float brightness = (color.r + color.g + color.b) / 3.0;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 
+	varColor.rgb *= ambientColorTint.rgb;
 	varColor = clamp(color, 0.0, 1.0);
-
-	const float light_factor = 0.9; // this portion of the color is light
-	const float shade_factor = 1.0 - light_factor; // this portion of the color is shading
-
-	vec3 shades = ambientBrightness * (1.0 - clamp(shade_factor - varColor.rgb, 0.0, shade_factor) / shade_factor);
-	vec3 lights = 1.0 -  (1.0 - ambientBrightness) * clamp(1 - varColor.rgb, 0.0, light_factor) / light_factor;
-	varColor.rgb = (shades + lights) * ambientColorTint.rgb;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	vec3 nNormal = normalize(vNormal);
