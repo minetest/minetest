@@ -1034,12 +1034,11 @@ core.register_chatcommand("time", {
 		end
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		if not hour then
-			local new_time = tonumber(param)
-			if not new_time then
-				return false, S("Invalid time.")
+			local new_time = tonumber(param) or -1
+			if new_time ~= new_time or new_time < 0 or new_time > 24000 then
+				return false, S("Invalid time (must be between 0 and 24000).")
 			end
-			-- Backward compatibility.
-			core.set_timeofday((new_time % 24000) / 24000)
+			core.set_timeofday(new_time / 24000)
 			core.log("action", name .. " sets time to " .. new_time)
 			return true, S("Time of day changed.")
 		end
