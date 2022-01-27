@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2021-12-05 13:51+0000\n"
+"PO-Revision-Date: 2022-01-29 21:28+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -771,7 +771,7 @@ msgstr "インターネット接続を確認し、公開サーバー一覧を再
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "About"
+msgstr "情報"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -3347,6 +3347,8 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"ゲームのプレイアビリティに影響を与えない小さな視覚的な不具合を犠牲にして\n"
+"CPU負荷を軽減するか、レンダリングパフォーマンスを向上させるトレードオフを有効にします。"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3548,17 +3550,15 @@ msgstr "フォントの大きさ"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "割り切れるフォントサイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "既定のフォントのフォント サイズ (pt)。"
+msgstr "96 DPIで1ユニット＝1ピクセルとなる既定のフォントのフォントサイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "固定幅フォントのフォントサイズ (pt)。"
+msgstr "96 DPIで1ユニット＝1ピクセルとなる固定幅フォントのフォントサイズ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3578,6 +3578,10 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"拡大縮小がうまくいかないピクセルスタイルのフォントの場合、このフォントで\n"
+"使用されるフォントサイズは、常にこの値で割り切れます。例えば高さ16ピクセルの\n"
+"ピクセルフォントの場合、この値を16に設定すると、16、32、48などのサイズにしか\n"
+"なりませんので、25のサイズを要求したMODは32を取得します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5724,9 +5728,8 @@ msgid "Monospace font size"
 msgstr "固定幅フォントのサイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
-msgstr "固定幅フォントのサイズ"
+msgstr "割り切れる固定幅フォントのサイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -5906,19 +5909,13 @@ msgid "Optional override for chat weblink color."
 msgstr "チャットのウェブリンクの色を上書きするオプションです。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
-"フォールバックフォントのパス。\n"
-"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりませ"
-"ん。\n"
-"「フリータイプフォント」が無効な場合：ビットマップまたはXMLベクターフォント\n"
-"でなければなりません。\n"
-"このフォントは特定の言語で使用されるか、規定のフォントが使用できない\n"
-"ときに使用されます。"
+"フォールバックフォントのパス。TrueType フォントでなければなりません。\n"
+"このフォントは特定の言語か、規定のフォントが使用できないときに使用されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5943,29 +5940,19 @@ msgstr ""
 "検索されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"既定のフォントのパス。\n"
-"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりませ"
-"ん。\n"
-"「フリータイプフォント」が無効な場合：ビットマップまたはXMLベクターフォント\n"
-"でなければなりません。\n"
+"既定のフォントのパス。TrueType フォントでなければなりません。\n"
 "このフォールバックフォントはフォントが読み込めないときに使用されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"固定幅フォントのパス。\n"
-"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりませ"
-"ん。\n"
-"「フリータイプフォント」が無効な場合：ビットマップまたはXMLベクターフォント\n"
-"でなければなりません。\n"
+"固定幅フォントのパス。TrueType フォントでなければなりません。\n"
 "このフォントはコンソールや観測記録画面などで使用されます。"
 
 #: src/settings_translation_file.cpp
@@ -7047,7 +7034,7 @@ msgstr "タッチスクリーンのしきい値"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "パフォーマンスのためのトレードオフ"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
