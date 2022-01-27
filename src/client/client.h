@@ -385,6 +385,9 @@ public:
 	bool registerModStorage(ModMetadata *meta) override;
 	void unregisterModStorage(const std::string &name) override;
 
+	// Migrates away old files-based mod storage if necessary
+	void migrateModStorage();
+
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename,
