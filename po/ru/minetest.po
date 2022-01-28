@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
-"Last-Translator: Mikitko <rudzik8@protonmail.com>\n"
+"PO-Revision-Date: 2022-01-29 21:28+0000\n"
+"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -613,7 +613,7 @@ msgstr "Отключено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Изменить"
+msgstr "Редактировать"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -1064,8 +1064,9 @@ msgid "Node Outlining"
 msgstr "Обводка нод"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "None"
-msgstr "Нет"
+msgstr "Ничего"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -2501,7 +2502,7 @@ msgstr "Автоматическая кнопка вперед"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr "Автоматический подъем на одиночные блоки."
+msgstr "Автоматический подъем на одиночные ноды."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
@@ -3390,6 +3391,9 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Обеспечивает компромисс, который снижает использование ЦП или увеличивает "
+"производительность рендеринга\n"
+"ценой мелких визуальных дефектов, не влияющих на геймплей."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3592,8 +3596,9 @@ msgid "Font size"
 msgstr "Размер шрифта"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Размер шрифта, кратный"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3614,6 +3619,7 @@ msgstr ""
 "Значение 0 будет использовать размер шрифта по умолчанию."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "For pixel-style fonts that do not scale well, this ensures that font sizes "
 "used\n"
@@ -3623,6 +3629,12 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"Для шрифтов пиксельного стиля, которые плохо масштабируются, это "
+"гарантирует, что размеры шрифта, используемые\n"
+"с этим шрифтом всегда будут кратны этому значению в пикселях. Например,\n"
+"пиксельный шрифт высотой 16 пикселей должен иметь значение 16, поэтому он "
+"всегда будет иметь только\n"
+"16, 32, 48 и т.д., поэтому мод, запрашивающий размер 25, получит 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7075,7 +7087,7 @@ msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Задержка перед повторным размещением блока в секундах\n"
+"Задержка перед повторным размещением ноды в секундах\n"
 "при удержании клавиши размещения."
 
 #: src/settings_translation_file.cpp
@@ -7151,7 +7163,7 @@ msgstr "Порог сенсорного экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Компромиссы для производительности"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
