@@ -30,7 +30,7 @@ local core_developers = {
 	"v-rob <robinsonvincent89@gmail.com>",
 	"hecks",
 	"Hugues Ross <hugues.ross@gmail.com>",
-	"x2048 <codeforsmile@gmail.com>",
+	"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>",
 }
 
 -- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
