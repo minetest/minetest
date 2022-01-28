@@ -676,7 +676,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 	// Rectangles for 1/2 the "off state" texture
 	core::rect<s32> srchalfrect2, dsthalfrect2;
 
-	if (count % 2 == 1) {
+	if (count % 2 == 1 || maxcount % 2 == 1) {
 		// Need to draw halves: Calculate rectangles
 		srchalfrect  = calculate_clipping_rect(srcd, steppos);
 		dsthalfrect  = calculate_clipping_rect(dstd, steppos);
@@ -711,7 +711,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		}
 	}
 
-	if (stat_texture_bg && maxcount > count / 2) {
+	if (stat_texture_bg && maxcount > count) {
 		// Draw "off state" textures
 		s32 start_offset;
 		if (count % 2 == 1)
@@ -731,8 +731,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 
 		if (maxcount % 2 == 1) {
 			draw2DImageFilterScaled(driver, stat_texture_bg,
-					dsthalfrect + p, srchalfrect,
-					NULL, colors, true);
+				dsthalfrect + p, srchalfrect, NULL, colors, true);
 		}
 	}
 }
