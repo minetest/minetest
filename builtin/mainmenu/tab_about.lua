@@ -28,32 +28,35 @@ local core_developers = {
 	"Lars Hofhansl <larsh@apache.org>",
 	"Pierre-Yves Rollo <dev@pyrollo.com>",
 	"v-rob <robinsonvincent89@gmail.com>",
+	"hecks",
+	"Hugues Ross <hugues.ross@gmail.com>",
+	"x2048 <codeforsmile@gmail.com>",
 }
 
 -- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
 
 local active_contributors = {
-	"Wuzzy [devtest game, visual corrections]",
-	"Zughy [Visual improvements, various fixes]",
-	"Maksim (MoNTE48) [Android]",
+	"Wuzzy [I18n for builtin, liquid features, fixes]",
+	"Zughy [Various features and fixes]",
 	"numzero [Graphics and rendering]",
-	"appgurueu [Various internal fixes]",
-	"Desour [Formspec and vector API changes]",
-	"HybridDog [Rendering fixes and documentation]",
-	"Hugues Ross [Graphics-related improvements]",
-	"ANAND (ClobberXD) [Mouse buttons rebinding]",
-	"luk3yx [Fixes]",
-	"hecks [Audiovisuals, Lua API]",
-	"LoneWolfHT [Object crosshair, documentation fixes]",
-	"Lejo [Server-related improvements]",
-	"EvidenceB [Compass HUD element]",
-	"Paul Ouellette (pauloue) [Lua API, documentation]",
-	"TheTermos [Collision detection, physics]",
+	"Desour [Internal fixes, Clipboard on X11]",
+	"Lars Müller [Various internal fixes]",
+	"JosiahWI [CMake, cleanups and fixes]",
+	"HybridDog [builtin, documentation]",
+	"Jude Melton-Houghton [Database implementation]",
+	"savilli [Fixes]",
+	"Liso [Shadow Mapping]",
+	"MoNTE48 [Build fix]",
+	"Jean-Patrick Guerrero (kilbith) [Fixes]",
+	"ROllerozxa [Code cleanups]",
+	"Lejo [bitop library integration]",
+	"LoneWolfHT [Build fixes]",
+	"NeroBurner [Joystick]",
+	"Elias Fleckenstein [Internal fixes]",
 	"David CARLIER [Unix & Haiku build fixes]",
-	"dcbrwn [Object shading]",
-	"Elias Fleckenstein [API features/fixes]",
-	"Jean-Patrick Guerrero (kilbith) [model element, visual fixes]",
-	"k.h.lai [Memory leak fixes, documentation]",
+	"pecksin [Clickable web links]",
+	"srfqi [Android & rendering fixes]",
+	"EvidenceB [Formspec]",
 }
 
 local previous_core_developers = {
@@ -70,6 +73,7 @@ local previous_core_developers = {
 	"Zeno",
 	"ShadowNinja <shadowninja@minetest.net>",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
+	"Aaron Suen <warr1024@gmail.com>",
 }
 
 local previous_contributors = {
@@ -80,10 +84,10 @@ local previous_contributors = {
 	"MirceaKitsune <mirceakitsune@gmail.com>",
 	"Constantin Wenger (SpeedProg)",
 	"Ciaran Gultnieks (CiaranG)",
-	"stujones11 [Android UX improvements]",
-	"Rogier <rogier777@gmail.com> [Fixes]",
-	"Gregory Currie (gregorycu) [optimisation]",
-	"srifqi [Fixes]",
+	"Paul Ouellette (pauloue)",
+	"stujones11",
+	"Rogier <rogier777@gmail.com>",
+	"Gregory Currie (gregorycu)",
 	"JacobF",
 	"Jeija <jeija@mesecons.net> [HTTP, particles]",
 }
