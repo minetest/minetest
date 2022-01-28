@@ -18,7 +18,7 @@ local breath_bar_definition = {
 	position = {x = 0.5, y = 1},
 	text = "bubble.png",
 	text2 = "bubble_gone.png",
-	number = core.PLAYER_MAX_BREATH_DEFAULT,
+	number = core.PLAYER_MAX_BREATH_DEFAULT * 2,
 	item = core.PLAYER_MAX_BREATH_DEFAULT * 2,
 	direction = 0,
 	size = {x = 24, y = 24},
@@ -31,9 +31,8 @@ local function scaleToDefault(player, field)
 	-- Scale "hp" or "breath" to the default dimensions
 	local current = player["get_" .. field](player)
 	local nominal = core["PLAYER_MAX_" .. field:upper() .. "_DEFAULT"]
-	local max_display = math.max(nominal,
-		math.max(player:get_properties()[field .. "_max"], current))
-	return current / max_display * nominal
+	local max_display = math.max(player:get_properties()[field .. "_max"], current)
+	return math.ceil(current / max_display * nominal)
 end
 
 local function update_builtin_statbars(player)
