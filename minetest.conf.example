@@ -666,69 +666,6 @@
 #    type: bool
 # enable_waving_plants = false
 
-#### Dynamic shadows
-
-#    Set to true to enable Shadow Mapping.
-#    Requires shaders to be enabled.
-#    type: bool
-# enable_dynamic_shadows = false
-
-#    Set the shadow strength.
-#    Lower value means lighter shadows, higher value means darker shadows.
-#    type: float min: 0.05 max: 1
-# shadow_strength = 0.2
-
-#    Maximum distance to render shadows.
-#    type: float min: 10 max: 1000
-# shadow_map_max_distance = 120.0
-
-#    Texture size to render the shadow map on.
-#    This must be a power of two.
-#    Bigger numbers create better shadows but it is also more expensive.
-#    type: int min: 128 max: 8192
-# shadow_map_texture_size = 1024
-
-#    Sets shadow texture quality to 32 bits.
-#    On false, 16 bits texture will be used.
-#    This can cause much more artifacts in the shadow.
-#    type: bool
-# shadow_map_texture_32bit = true
-
-#    Enable Poisson disk filtering.
-#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
-#    type: bool
-# shadow_poisson_filter = true
-
-#    Define shadow filtering quality.
-#    This simulates the soft shadows effect by applying a PCF or Poisson disk
-#    but also uses more resources.
-#    type: enum values: 0, 1, 2
-# shadow_filters = 1
-
-#    Enable colored shadows.
-#    On true translucent nodes cast colored shadows. This is expensive.
-#    type: bool
-# shadow_map_color = false
-
-#    Spread a complete update of shadow map over given amount of frames.
-#    Higher values might make shadows laggy, lower values
-#    will consume more resources.
-#    Minimum value: 1; maximum value: 16
-#    type: int min: 1 max: 16
-# shadow_update_frames = 8
-
-#    Set the soft shadow radius size.
-#    Lower values mean sharper shadows, bigger values mean softer shadows.
-#    Minimum value: 1.0; maximum value: 10.0
-#    type: float min: 1 max: 10
-# shadow_soft_radius = 1.0
-
-#    Set the tilt of Sun/Moon orbit in degrees.
-#    Value of 0 means no tilt / vertical orbit.
-#    Minimum value: 0.0; maximum value: 60.0
-#    type: float min: 0 max: 60
-# shadow_sky_body_orbit_tilt = 0.0
-
 ### Advanced
 
 #    Arm inertia, gives a more realistic movement of
