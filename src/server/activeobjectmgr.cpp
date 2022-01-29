@@ -165,8 +165,8 @@ void ActiveObjectMgr::getObjectsSelectionboxIntersectsLine(const v3f from, const
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
-	std::vector<u16> ids;
-	m_active_objects_by_selectionbox.getIntersectingLine(&ids, from, to);
+	std::vector<u16> ids{
+	    m_active_objects_by_selectionbox.getRegionIdsIntersectedBy(from, to)};
 	for (u16 id : ids) {
 		ServerActiveObject *obj = m_active_objects[id];
 		if (!include_obj_cb || include_obj_cb(obj))

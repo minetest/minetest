@@ -93,25 +93,27 @@ public:
 		m_tree.clear();
 	}
 
-	std::vector<U> getInArea(T space)
+	std::vector<U> getInArea(T space) const
 	{
 		std::vector<sp_util::TaggedBBox<U>> results{};
-		std::vector<U> object_ids{};
+		std::vector<U> objectIds{};
 		m_tree.query(spatial::intersects<3>(sp_util::get_spatial_region(space)),
 				std::back_inserter(results));
-		object_ids.reserve(results.size());
+		objectIds.reserve(results.size());
 		for (const sp_util::TaggedBBox<U> &obj : results) {
-			object_ids.push_back(obj.idTag);
+			objectIds.push_back(obj.idTag);
 		}
 
-		return object_ids;
+		return objectIds;
 	}
 
-	void getInArea(std::vector<U> *result, T space) { *result = getInArea(space); }
+	void getInArea(std::vector<U> *result, T space) const { *result = getInArea(space); }
 
-	void getIntersectingLine(std::vector<U> *result, v3f from, v3f to)
+	std::vector<U> getRegionIdsIntersectedBy(v3f from, v3f) const
 	{
-		throw "Not Implemented";
+		std::vector<U> objectIds{};
+
+		return objectIds;
 	}
 };
 

@@ -36,6 +36,7 @@ public:
 	void testRemoval();
 	void testClear();
 	void testGetInArea();
+	void testGetRegionIdsIntersectedBy();
 };
 
 static TestObjectBoxStore g_test_instance;
@@ -47,6 +48,7 @@ void TestObjectBoxStore::runTests(IGameDef *gamedef)
 	TEST(testRemoval);
 	TEST(testClear);
 	TEST(testGetInArea);
+	TEST(testGetRegionIdsIntersectedBy);
 }
 
 void TestObjectBoxStore::testConstructor()
@@ -143,4 +145,16 @@ void TestObjectBoxStore::testGetInArea()
 	store.getInArea(&res, {{-8.0f, 5.6f, -14.0f}, {13.4f, 10.9f, 3.0f}});
 	UASSERTEQ(std::size_t, res.size(), 2);
 	res.clear();
+}
+
+void TestObjectBoxStore::testGetRegionIdsIntersectedBy()
+{
+	ObjectBoxStore store{};
+	std::vector<u16> res{};
+
+	// line does not intersect one region
+	store.insert(0, {{-5.5f, -5.5f, -5.5f}, {5.5f, 5.5f, 5.5f}});
+	res = store.getRegionIdsIntersectedBy(
+			{-11.0f, -11.0f, -11.0f}, {11.0f, 11.0f, 11.0f});
+	UASSERTEQ(std::size_t, res.size(), 0);
 }
