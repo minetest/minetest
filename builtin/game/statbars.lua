@@ -73,7 +73,7 @@ local function update_builtin_statbars(player)
 	local breath     = player:get_breath()
 	local breath_max = player:get_properties().breath_max
 	if show_breathbar and breath <= breath_max then
-		local number = 2 * scaleToHudMax(player, "breath")
+		local number = scaleToHudMax(player, "breath")
 		if not hud.id_breathbar and breath < breath_max then
 			local hud_def = table.copy(bar_definitions.breath)
 			hud_def.number = number
