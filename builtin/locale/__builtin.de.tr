@@ -139,7 +139,7 @@ This command was disabled by a mod or game.=Dieser Befehl wurde von einer Mod od
 Show or set time of day=Tageszeit anzeigen oder setzen
 Current time is @1:@2.=Es ist jetzt @1:@2 Uhr.
 You don't have permission to run this command (missing privilege: @1).=Sie haben nicht die Erlaubnis, diesen Befehl auszuführen (fehlendes Privileg: @1).
-Invalid time.=Ungültige Zeit.
+Invalid time (must be between 0 and 24000).=
 Time of day changed.=Tageszeit geändert.
 Invalid hour (must be between 0 and 23 inclusive).=Ungültige Stunde (muss zwischen 0 und 23 inklusive liegen).
 Invalid minute (must be between 0 and 59 inclusive).=Ungültige Minute (muss zwischen 0 und 59 inklusive liegen).
@@ -243,3 +243,8 @@ A total of @1 sample(s) were taken.=Es wurden insgesamt @1 Datenpunkt(e) aufgeze
 The output is limited to '@1'.=Die Ausgabe ist beschränkt auf „@1“.
 Saving of profile failed: @1=Speichern des Profils fehlgeschlagen: @1
 Profile saved to @1=Profil abgespeichert nach @1
+
+
+##### not used anymore #####
+
+Invalid time.=Ungültige Zeit.
