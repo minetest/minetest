@@ -17,6 +17,9 @@
 
 --------------------------------------------------------------------------------
 
+local string_to_bool = {["true"]=true, ["false"]=false}
+local bool_to_string = {[true]="true", [false]="false"}
+
 local labels = {
 	leaves = {
 		fgettext("Opaque Leaves"),
@@ -152,8 +155,8 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.settings:get_bool("enable_particles")) .. "]" ..
 		"checkbox[0.25,1;cb_3d_clouds;" .. fgettext("3D Clouds") .. ";"
 				.. dump(core.settings:get_bool("enable_3d_clouds")) .. "]" ..
-		"checkbox[0.25,1.5;cb_opaque_water;" .. fgettext("Opaque Water") .. ";"
-				.. dump(core.settings:get_bool("opaque_water")) .. "]" ..
+		"checkbox[0.25,1.5;cb_opaque_water;" .. fgettext("Translucent Water") .. ";"
+				.. dump(not core.settings:get_bool("opaque_water")) .. "]" ..
 		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
 				.. dump(core.settings:get_bool("connected_glass")) .. "]" ..
 		"dropdown[0.25,2.8;3.5;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"
@@ -263,7 +266,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["cb_opaque_water"] then
-		core.settings:set("opaque_water", fields["cb_opaque_water"])
+		core.settings:set("opaque_water", bool_to_string[(not string_to_bool[fields["cb_opaque_water"]])])
 		return true
 	end
 	if fields["cb_connected_glass"] then
