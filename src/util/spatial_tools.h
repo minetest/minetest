@@ -29,13 +29,11 @@ namespace sp_util
 template <typename T>
 struct TaggedBBox
 {
-	spatial::BoundingBox<double, 3> bbox;
+	spatial::BoundingBox<float, 3> bbox;
 	T idTag;
 
 	TaggedBBox() : bbox{}, idTag{} {}
-	TaggedBBox(spatial::BoundingBox<double, 3> bbox, T idTag) : bbox{bbox}, idTag{idTag}
-	{
-	}
+	TaggedBBox(spatial::BoundingBox<float, 3> bbox, T idTag) : bbox{bbox}, idTag{idTag} {}
 
 	friend bool operator==(const TaggedBBox<T> &a, const TaggedBBox &b)
 	{
@@ -46,29 +44,19 @@ struct TaggedBBox
 template <typename T>
 struct TaggedBBoxIndexable
 {
-	static const double *min(const TaggedBBox<T> &value) { return value.bbox.min; }
-	static const double *max(const TaggedBBox<T> &value) { return value.bbox.max; }
+	static const float *min(const TaggedBBox<T> &value) { return value.bbox.min; }
+	static const float *max(const TaggedBBox<T> &value) { return value.bbox.max; }
 };
 
 template <typename T>
-void get_doubles_from_point(const T &from, double (&to)[3])
+spatial::BoundingBox<float, 3> get_spatial_region(const T &space)
 {
-	to[0] = from.X;
-	to[1] = from.Y;
-	to[2] = from.Z;
-}
-
-template <typename T>
-spatial::BoundingBox<double, 3> get_spatial_region(const T &space)
-{
-	double coordsMin[3];
-	double coordsMax[3];
-	get_doubles_from_point(space.minedge, coordsMin);
-	get_doubles_from_point(space.maxedge, coordsMax);
-	return spatial::BoundingBox<double, 3>{coordsMin, coordsMax};
+	float coordsMin[]{space.minedge.X, space.minedge.Y, space.minedge.Z};
+	float coordsMax[]{space.maxedge.X, space.maxedge.Y, space.maxedge.Z};
+	return spatial::BoundingBox<float, 3>{coordsMin, coordsMax};
 }
 
 template <>
-spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space);
+spatial::BoundingBox<float, 3> get_spatial_region(const aabb3f &space);
 
 } // namespace sp_util

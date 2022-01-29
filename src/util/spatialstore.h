@@ -34,7 +34,7 @@ template <typename T, typename U = u32>
 class SpatialStore
 {
 private:
-	spatial::RTree<double, sp_util::TaggedBBox<U>, 3, 4, 3,
+	spatial::RTree<float, sp_util::TaggedBBox<U>, 3, 4, 3,
 			sp_util::TaggedBBoxIndexable<U>>
 			m_tree;
 	std::map<U, T> m_spacesMap;

@@ -26,13 +26,11 @@ namespace sp_util
 {
 
 template <>
-spatial::BoundingBox<double, 3> get_spatial_region(const aabb3f &space)
+spatial::BoundingBox<float, 3> get_spatial_region(const aabb3f &space)
 {
-	double coordsMin[3];
-	double coordsMax[3];
-	get_doubles_from_point(space.MinEdge, coordsMin);
-	get_doubles_from_point(space.MaxEdge, coordsMax);
-	return spatial::BoundingBox<double, 3>{coordsMin, coordsMax};
+	float coordsMin[]{space.MinEdge.X, space.MinEdge.Y, space.MinEdge.Z};
+	float coordsMax[]{space.MaxEdge.X, space.MaxEdge.Y, space.MaxEdge.Z};
+	return spatial::BoundingBox<float, 3>{coordsMin, coordsMax};
 }
 
 } // namespace sp_util
