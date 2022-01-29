@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-19 22:55+0000\n"
+"PO-Revision-Date: 2022-01-29 21:28+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -3416,6 +3416,10 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Aktiviert Kompromisse, die die CPU-Last verringern oder die Rendering-"
+"Leistung erhöhen\n"
+"auf Kosten kleinerer visueller Fehler, die die Spielbarkeit nicht "
+"beeinträchtigen."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3623,17 +3627,16 @@ msgstr "Schriftgröße"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Schriftgröße teilbar durch"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Schriftgröße der Standardschrift in Punkt (pt)."
+msgstr "Schriftgröße der Standardschrift, wobei 1 Einheit = 1 Pixel bei 96 DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Schriftgröße der Festbreitenschrift in Punkt (pt)."
+msgstr ""
+"Schriftgröße der Festbreitenschrift, wobei 1 Einheit = 1 Pixel bei 96 DPI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3654,6 +3657,15 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"Bei Schriften im Pixelstil, die sich nicht gut skalieren lassen, stellt dies "
+"sicher,\n"
+"dass die mit dieser Schrift verwendeten Schriftgrößen immer durch diesen "
+"Wert\n"
+"in Pixeln teilbar ist. Zum Beispiel: Eine Pixelschrift mit einer Höhe von 16 "
+"Pixeln\n"
+"sollte auf 16 gesetzt werden, so dass sie immer nur die Größe 16, 32, 48 "
+"usw. hat,\n"
+"damit eine Mod, die eine Größe von 25 anfordert, 32 erhält."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5862,9 +5874,8 @@ msgid "Monospace font size"
 msgstr "Größe der Festbreitenschrift"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
-msgstr "Größe der Festbreitenschrift"
+msgstr "Festbreitenschriftgröße teilbar durch"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -6050,17 +6061,12 @@ msgid "Optional override for chat weblink color."
 msgstr "Optionaler manueller Wert für die Farbe von Chat-Weblinks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
-"Pfad der Ersatzschrift.\n"
-"Falls die „freetype“-Einstellung aktiviert ist: Muss eine TrueType-Schrift "
-"sein.\n"
-"Falls die „freetype“-Einstellung deaktiviert ist: Muss eine Bitmap- oder XML-"
-"Vektor-Schrift sein.\n"
+"Pfad der Ersatzschrift. Muss eine TrueType-Schrift sein.\n"
 "Diese Schrift wird für bestimmte Sprachen benutzt, oder, wenn die "
 "Standardschrift nicht verfügbar ist."
 
@@ -6087,30 +6093,20 @@ msgstr ""
 "Pfad der Texturenverzeichnisse. Alle Texturen werden von dort zuerst gesucht."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"Pfad der Standardschrift.\n"
-"Falls die „freetype“-Einstellung aktiviert ist: Muss eine TrueType-Schrift "
-"sein.\n"
-"Falls die „freetype“-Einstellung deaktiviert ist: Muss eine Bitmap- oder XML-"
-"Vektor-Schrift sein.\n"
+"Pfad der Standardschrift. Muss eine TrueType-Schrift sein.\n"
 "Die Ersatzschrift wird benutzt, falls diese Schrift nicht geladen werden "
 "kann."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"Pfad der Festbreitenschrift.\n"
-"Falls die „freetype“-Einstellung aktiviert ist: Muss eine TrueType-Schrift "
-"sein.\n"
-"Falls die „freetype“-Einstellung deaktiviert ist: Muss eine Bitmap- oder XML-"
-"Vektor-Schrift sein.\n"
+"Pfad der Festbreitenschrift. Muss eine TrueType-Schrift sein.\n"
 "Diese Schrift wird z.B. für die Konsole und die Profiler-Anzeige benutzt."
 
 #: src/settings_translation_file.cpp
@@ -7238,7 +7234,7 @@ msgstr "Touchscreenschwellwert"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Kompromisse für Performanz"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
