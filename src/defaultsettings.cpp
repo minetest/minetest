@@ -504,5 +504,10 @@ void set_default_settings(Settings *settings)
 		settings->setDefault("mono_font_size", "14");
 	}
 	// Tablets >= 6.0 use non-Android defaults for these settings
+#else
+	// Altered settings for slow machine based ARMv7 SoC like BCM2835
+#if defined(__ARM_32BIT_STATE)
+	settings->setDefault("client_mapblock_limit", "250");
+#endif
 #endif
 }
