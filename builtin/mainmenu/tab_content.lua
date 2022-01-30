@@ -197,17 +197,17 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 		return true
 	end
 
-	if fields.btn_mod_mgr_use_txp then
-		local txp = packages:get_list()[tabdata.selected_pkg]
-		core.settings:set("texture_path", txp.path)
-		packages = nil
-		return true
-	end
+	if fields.btn_mod_mgr_use_txp or fields.btn_mod_mgr_disable_txp then
+		local txp_path = ""
+		if fields.btn_mod_mgr_use_txp then
+			txp_path = packages:get_list()[tabdata.selected_pkg].path
+		end
 
-
-	if fields.btn_mod_mgr_disable_txp then
-		core.settings:set("texture_path", "")
+		core.settings:set("texture_path", txp_path)
 		packages = nil
+
+		mm_game_theme.init()
+		mm_game_theme.reset()
 		return true
 	end
 
