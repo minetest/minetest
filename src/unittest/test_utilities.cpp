@@ -43,7 +43,6 @@ public:
 	void testPadString();
 	void testStartsWith();
 	void testStrEqual();
-	void testStringTrim();
 	void testStrToIntConversion();
 	void testStringReplace();
 	void testStringAllowed();
@@ -76,7 +75,6 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testPadString);
 	TEST(testStartsWith);
 	TEST(testStrEqual);
-	TEST(testStringTrim);
 	TEST(testStrToIntConversion);
 	TEST(testStringReplace);
 	TEST(testStringAllowed);
@@ -192,6 +190,8 @@ void TestUtilities::testTrim()
 	UASSERT(trim("dirt_with_grass") == "dirt_with_grass");
 	UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 	UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
+	UASSERT(trim("  a") == "a");
+	UASSERT(trim("a   ") == "a");
 }
 
 
@@ -254,15 +254,6 @@ void TestUtilities::testStrEqual()
 {
 	UASSERT(str_equal(utf8_to_wide("abc"), utf8_to_wide("abc")));
 	UASSERT(str_equal(utf8_to_wide("ABC"), utf8_to_wide("abc"), true));
-}
-
-
-void TestUtilities::testStringTrim()
-{
-	UASSERT(trim("  a") == "a");
-	UASSERT(trim("   a  ") == "a");
-	UASSERT(trim("a   ") == "a");
-	UASSERT(trim("") == "");
 }
 
 
