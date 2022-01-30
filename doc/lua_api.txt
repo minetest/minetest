@@ -78,7 +78,7 @@ The game directory can contain the following files:
     * `disallowed_mapgen_settings= <comma-separated mapgen settings>`
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These mapgen settings are hidden for this game in the world creation
-      dialog and game start menu.
+      dialog and game start menu. Add `seed` to hide the seed input field.
     * `disabled_settings = <comma-separated settings>`
       e.g. `disabled_settings = enable_damage, creative_mode`
       These settings are hidden for this game in the "Start game" tab

@@ -315,12 +315,17 @@ local function create_world_formspec(dialogdata)
 		"field[0.3,0.6;6,0.5;te_world_name;" ..
 		fgettext("World name") ..
 		";" .. core.formspec_escape(dialogdata.worldname) .. "]" ..
-		"set_focus[te_world_name;false]" ..
+		"set_focus[te_world_name;false]"
 
-		"field[0.3,1.7;6,0.5;te_seed;" ..
-		fgettext("Seed") ..
-		";".. core.formspec_escape(dialogdata.seed) .. "]" ..
+	if not disallowed_mapgen_settings["seed"] then
 
+		retval = retval .. "field[0.3,1.7;6,0.5;te_seed;" ..
+				fgettext("Seed") ..
+				";".. core.formspec_escape(dialogdata.seed) .. "]"
+
+	end
+
+	retval = retval ..
 		"label[0,2;" .. fgettext("Mapgen") .. "]"..
 		"dropdown[0,2.5;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]"
 
@@ -391,7 +396,7 @@ local function create_world_buttonhandler(this, fields)
 		end
 
 		if message == nil then
-			this.data.seed = fields["te_seed"]
+			this.data.seed = fields["te_seed"] or ""
 			this.data.mg = fields["dd_mapgen"]
 
 			-- actual names as used by engine
@@ -426,7 +431,7 @@ local function create_world_buttonhandler(this, fields)
 	end
 
 	this.data.worldname = fields["te_world_name"]
-	this.data.seed = fields["te_seed"]
+	this.data.seed = fields["te_seed"] or ""
 
 	if fields["games"] then
 		local gameindex = core.get_textlist_index("games")
