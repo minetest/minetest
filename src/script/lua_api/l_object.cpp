@@ -1619,7 +1619,7 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 	lua_newtable(L);
 	const EnumString *esp = es_HudBuiltinElement;
 	for (int i = 0; esp[i].str; i++) {
-		lua_pushboolean(L, (player->hud_flags & esp[i].num) == 0);
+		lua_pushboolean(L, (player->hud_flags & esp[i].num) != 0);
 		lua_setfield(L, -2, esp[i].str);
 	}
 	return 1;
