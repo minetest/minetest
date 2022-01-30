@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-29 21:28+0000\n"
+"PO-Revision-Date: 2022-02-01 11:39+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -1912,7 +1912,7 @@ msgstr "Fehler beim Öffnen der Webseite"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr "Webseite öffnen"
+msgstr "Öffne Webseite"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
