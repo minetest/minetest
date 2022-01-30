@@ -821,9 +821,11 @@ std::wstring translate_string(const std::wstring &s)
 #endif
 }
 
-static const std::array<std::wstring, 22> disallowed_dir_names = {
+static const std::array<std::wstring, 30> disallowed_dir_names = {
 	// Problematic filenames from here:
 	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+	// Plus undocumented values from here:
+	// https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html
 	L"CON",
 	L"PRN",
 	L"AUX",
@@ -837,6 +839,9 @@ static const std::array<std::wstring, 22> disallowed_dir_names = {
 	L"COM7",
 	L"COM8",
 	L"COM9",
+	L"COM\u00B2",
+	L"COM\u00B3",
+	L"COM\u00B9",
 	L"LPT1",
 	L"LPT2",
 	L"LPT3",
@@ -846,12 +851,32 @@ static const std::array<std::wstring, 22> disallowed_dir_names = {
 	L"LPT7",
 	L"LPT8",
 	L"LPT9",
+	L"LPT\u00B2",
+	L"LPT\u00B3",
+	L"LPT\u00B9",
+	L"CONIN$",
+	L"CONOUT$",
 };
 
 /**
  * List of characters that are blacklisted from created directories
  */
 static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
+
+
+/**
+ * @param str
+ * @return A copy of \p str with trailing whitespace removed.
+ */
+static std::wstring wrtrim(const std::wstring &str)
+{
+	size_t back = str.size();
+	while (back > 0 && std::isspace(str[back - 1]))
+		--back;
+
+	return str.substr(0, back);
+}
+
 
 /**
  * Sanitize the name of a new directory. This consists of two stages:
@@ -863,8 +888,10 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 {
 	std::wstring safe_name = utf8_to_wide(str);
 
+	std::wstring dev_name = wrtrim(safe_name);
+
 	for (std::wstring disallowed_name : disallowed_dir_names) {
-		if (str_equal(safe_name, disallowed_name, true)) {
+		if (str_equal(dev_name, disallowed_name, true)) {
 			safe_name = utf8_to_wide(optional_prefix) + safe_name;
 			break;
 		}
