@@ -335,18 +335,35 @@ void final_color_blend(video::SColor *result,
 	video::SColorf c(data);
 	f32 n = 1 - c.a;
 
-	f32 r = c.r * (c.a * dayLight.r + n * artificialColor.r) * 2.0f;
-	f32 g = c.g * (c.a * dayLight.g + n * artificialColor.g) * 2.0f;
-	f32 b = c.b * (c.a * dayLight.b + n * artificialColor.b) * 2.0f;
+	// incoming color is downscaled
+	f32 r = c.r * 2.0f;
+	f32 g = c.g * 2.0f;
+	f32 b = c.b * 2.0f;
 
 	if (lighting != nullptr) {
-		r = (lighting->brightness * (1.0f - rangelim(COLOR_SHADE_FACTOR - r, 0.0f, COLOR_SHADE_FACTOR) / COLOR_SHADE_FACTOR) + 
-				1.0f -  (1.0f - lighting->brightness) * rangelim(1.0f - r, 0.0f, COLOR_LIGHT_FACTOR) / COLOR_LIGHT_FACTOR) * lighting->color_tint.getRed() * ONE_BY_255;
-		g = (lighting->brightness * (1.0f - rangelim(COLOR_SHADE_FACTOR - g, 0.0f, COLOR_SHADE_FACTOR) / COLOR_SHADE_FACTOR) + 
-				1.0f -  (1.0f - lighting->brightness) * rangelim(1.0f - g, 0.0f, COLOR_LIGHT_FACTOR) / COLOR_LIGHT_FACTOR) * lighting->color_tint.getGreen() * ONE_BY_255;
-		b = (lighting->brightness * (1.0f - rangelim(COLOR_SHADE_FACTOR - b, 0.0f, COLOR_SHADE_FACTOR) / COLOR_SHADE_FACTOR) + 
-				1.0f -  (1.0f - lighting->brightness) * rangelim(1.0f - b, 0.0f, COLOR_LIGHT_FACTOR) / COLOR_LIGHT_FACTOR) * lighting->color_tint.getBlue() * ONE_BY_255;
+		// get color value as the largest component
+		float color_value = MYMAX(r, MYMAX(g, b));
+		// scale color relative to its value (like HSV)
+		r /= color_value;
+		g /= color_value;
+		b /= color_value;
+		// adjust color value as scaled brightness - scaled shades (e.g. ambient occlusion)
+		color_value = 1 - (1 - color_value) * (1 - lighting->brightness) -
+				0.3 * lighting->brightness * MYMAX(0, COLOR_SHADE_FACTOR - color_value) / COLOR_SHADE_FACTOR;
+		// stretch back to original color space
+		color_value = MYMIN(1.0, (color_value - COLOR_SHADE_FACTOR) / COLOR_LIGHT_FACTOR);
+
+		r *= color_value;
+		g *= color_value;
+		b *= color_value;
+
+		// adjust night ration for ambient brightness to avoid skewed color
+		n = MYMIN(1.0, n + lighting->brightness);
 	}
+
+	r *= ((1 - n) * dayLight.r + n * artificialColor.r);
+	g *= ((1 - n) * dayLight.g + n * artificialColor.g);
+	b *= ((1 - n) * dayLight.b + n * artificialColor.b);
 
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
@@ -357,6 +374,12 @@ void final_color_blend(video::SColor *result,
 
 	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
 		0, 255) / 8] / 255.0f;
+
+	if (lighting != nullptr) {
+		r *= lighting->color_tint.getRed() * ONE_BY_255;
+		g *= lighting->color_tint.getGreen() * ONE_BY_255;
+		b *= lighting->color_tint.getBlue() * ONE_BY_255;
+	}
 
 	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
 	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
