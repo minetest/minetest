@@ -295,11 +295,11 @@ inline std::string lowercase(const std::string &str)
 inline std::string trim(const std::string &str)
 {
 	size_t front = 0;
+	size_t back = str.size();
 
-	while (std::isspace(str[front]))
+	while (front < back && std::isspace(str[front]))
 		++front;
 
-	size_t back = str.size();
 	while (back > front && std::isspace(str[back - 1]))
 		--back;
 
