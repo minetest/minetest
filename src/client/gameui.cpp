@@ -210,7 +210,6 @@ void GameUI::initFlags()
 {
 	m_flags = GameUI::Flags();
 	m_flags.show_minimal_debug = g_settings->getBool("show_debug");
-	m_flags.show_basic_debug = false;
 }
 
 void GameUI::showMinimap(bool show)

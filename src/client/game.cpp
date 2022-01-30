@@ -1740,7 +1740,7 @@ void Game::processQueues()
 
 void Game::updateDebugState()
 {
-	bool has_basic_debug = client->checkPrivilege("basic_debug");
+	const bool has_basic_debug = true;
 	bool has_debug = client->checkPrivilege("debug");
 
 	if (m_game_ui->m_flags.show_basic_debug) {
@@ -2211,7 +2211,7 @@ void Game::toggleCinematic()
 
 void Game::toggleBlockBounds()
 {
-	if (client->checkPrivilege("basic_debug")) {
+	if (true /* basic_debug */) {
 		enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
 		switch (newmode) {
 			case Hud::BLOCK_BOUNDS_OFF:
@@ -2307,26 +2307,24 @@ void Game::toggleDebug()
 	// The debug text can be in 2 modes: minimal and basic.
 	// * Minimal: Only technical client info that not gameplay-relevant
 	// * Basic: Info that might give gameplay advantage, e.g. pos, angle
-	// Basic mode is used when player has "basic_debug" priv,
-	// otherwise the Minimal mode is used.
+	// Basic mode is always used.
+
+	const bool has_basic_debug = true;
 	if (!m_game_ui->m_flags.show_minimal_debug) {
 		m_game_ui->m_flags.show_minimal_debug = true;
-		if (client->checkPrivilege("basic_debug")) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
-		}
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		m_game_ui->showTranslatedStatusText("Debug info shown");
 	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
-		if (client->checkPrivilege("basic_debug")) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
-		}
 		m_game_ui->m_flags.show_profiler_graph = true;
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
-		if (client->checkPrivilege("basic_debug")) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
-		}
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
