@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 class Settings;
@@ -33,13 +34,16 @@ struct SubgameSpec
 	int release;
 	std::string path;
 	std::string gamemods_path;
-	std::set<std::string> addon_mods_paths;
+
+	/**
+	 * Map from virtual path to mods path
+	 */
+	std::unordered_map<std::string, std::string> addon_mods_paths;
 	std::string menuicon_path;
 
 	SubgameSpec(const std::string &id = "", const std::string &path = "",
 			const std::string &gamemods_path = "",
-			const std::set<std::string> &addon_mods_paths =
-					std::set<std::string>(),
+			const std::unordered_map<std::string, std::string> &addon_mods_paths = {},
 			const std::string &name = "",
 			const std::string &menuicon_path = "",
 			const std::string &author = "", int release = 0) :

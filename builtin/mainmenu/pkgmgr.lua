@@ -100,12 +100,13 @@ local function load_texture_packs(txtpath, retval)
 	end
 end
 
-function get_mods(path,retval,modpack)
+function get_mods(path, virtual_path, retval, modpack)
 	local mods = core.get_dir_list(path, true)
 
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
-			local prefix = path .. DIR_DELIM .. name
+			local mod_path = path .. DIR_DELIM .. name
+			local mod_virtual_path = virtual_path .. "/" .. name
 			local toadd = {
 				dir_name = name,
 				parent_dir = path,
@@ -114,18 +115,18 @@ function get_mods(path,retval,modpack)
 
 			-- Get config file
 			local mod_conf
-			local modpack_conf = io.open(prefix .. DIR_DELIM .. "modpack.conf")
+			local modpack_conf = io.open(mod_path .. DIR_DELIM .. "modpack.conf")
 			if modpack_conf then
 				toadd.is_modpack = true
 				modpack_conf:close()
 
-				mod_conf = Settings(prefix .. DIR_DELIM .. "modpack.conf"):to_table()
+				mod_conf = Settings(mod_path .. DIR_DELIM .. "modpack.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
 					toadd.is_name_explicit = true
 				end
 			else
-				mod_conf = Settings(prefix .. DIR_DELIM .. "mod.conf"):to_table()
+				mod_conf = Settings(mod_path .. DIR_DELIM .. "mod.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
 					toadd.is_name_explicit = true
@@ -136,12 +137,13 @@ function get_mods(path,retval,modpack)
 			toadd.name = name
 			toadd.author = mod_conf.author
 			toadd.release = tonumber(mod_conf.release) or 0
-			toadd.path = prefix
+			toadd.path = mod_path
+			toadd.virtual_path = mod_virtual_path
 			toadd.type = "mod"
 
 			-- Check modpack.txt
 			-- Note: modpack.conf is already checked above
-			local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
+			local modpackfile = io.open(mod_path .. DIR_DELIM .. "modpack.txt")
 			if modpackfile then
 				modpackfile:close()
 				toadd.is_modpack = true
@@ -153,7 +155,7 @@ function get_mods(path,retval,modpack)
 			elseif toadd.is_modpack then
 				toadd.type = "modpack"
 				toadd.is_modpack = true
-				get_mods(prefix, retval, name)
+				get_mods(mod_path, mod_virtual_path, retval, name)
 			end
 		end
 	end
@@ -397,12 +399,23 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 	return true
 end
 
+local function disable_all_by_name(list, name, except)
+	for i=1, #list do
+		if list[i].name == name and list[i] ~= except then
+			list[i].enabled = false
+		end
+	end
+end
+
 ---------- toggles or en/disables a mod or modpack and its dependencies --------
 local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
 	if not mod.is_modpack then
 		-- Toggle or en/disable the mod
 		if toset == nil then
 			toset = not mod.enabled
+		end
+		if toset then
+			disable_all_by_name(list, mod.name, mod)
 		end
 		if mod.enabled ~= toset then
 			mod.enabled = toset
@@ -648,8 +661,8 @@ function pkgmgr.preparemodlist(data)
 
 	--read global mods
 	local modpaths = core.get_modpaths()
-	for _, modpath in ipairs(modpaths) do
-		get_mods(modpath, global_mods)
+	for key, modpath in pairs(modpaths) do
+		get_mods(modpath, key, global_mods)
 	end
 
 	for i=1,#global_mods,1 do
@@ -688,22 +701,37 @@ function pkgmgr.preparemodlist(data)
 				DIR_DELIM .. "world.mt"
 
 	local worldfile = Settings(filename)
-
-	for key,value in pairs(worldfile:to_table()) do
+	for key, value in pairs(worldfile:to_table()) do
 		if key:sub(1, 9) == "load_mod_" then
 			key = key:sub(10)
-			local element = nil
-			for i=1,#retval,1 do
+			local mod_found = false
+
+			local fallback_found = false
+			local fallback_mod = nil
+
+			for i=1, #retval do
 				if retval[i].name == key and
-					not retval[i].is_modpack then
-					element = retval[i]
-					break
+						not retval[i].is_modpack then
+					if core.is_yes(value) or retval[i].virtual_path == value then
+						retval[i].enabled = true
+						mod_found = true
+						break
+					elseif fallback_found then
+						-- Only allow fallback if only one mod matches
+						fallback_mod = nil
+					else
+						fallback_found = true
+						fallback_mod = retval[i]
+					end
 				end
 			end
-			if element ~= nil then
-				element.enabled = value ~= "false" and value ~= "nil" and value
-			else
-				core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
+
+			if not mod_found then
+				if fallback_mod and value:find("/") then
+					fallback_mod.enabled = true
+				else
+					core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
+				end
 			end
 		end
 	end
@@ -797,7 +825,7 @@ function pkgmgr.get_game_mods(gamespec, retval)
 	if gamespec ~= nil and
 		gamespec.gamemods_path ~= nil and
 		gamespec.gamemods_path ~= "" then
-		get_mods(gamespec.gamemods_path, retval)
+		get_mods(gamespec.gamemods_path, ("games/%s/mods"):format(gamespec.id), retval)
 	end
 end
 

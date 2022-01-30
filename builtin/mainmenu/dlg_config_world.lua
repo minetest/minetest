@@ -205,14 +205,19 @@ local function handle_buttons(this, fields)
 		local mods = worldfile:to_table()
 
 		local rawlist = this.data.list:get_raw_list()
+		local was_set = {}
 
 		for i = 1, #rawlist do
 			local mod = rawlist[i]
 			if not mod.is_modpack and
 					not mod.is_game_content then
 				if modname_valid(mod.name) then
-					worldfile:set("load_mod_" .. mod.name,
-						mod.enabled and "true" or "false")
+					if mod.enabled then
+						worldfile:set("load_mod_" .. mod.name, mod.virtual_path)
+						was_set[mod.name] = true
+					elseif not was_set[mod.name] then
+						worldfile:set("load_mod_" .. mod.name, "false")
+					end
 				elseif mod.enabled then
 					gamedata.errormessage = fgettext_ne("Failed to enable mo" ..
 							"d \"$1\" as it contains disallowed characters. " ..
@@ -256,12 +261,26 @@ local function handle_buttons(this, fields)
 	if fields.btn_enable_all_mods then
 		local list = this.data.list:get_raw_list()
 
+		-- When multiple copies of a mod are installed, we need to avoid enabling multiple of them
+		-- at a time. So lets first collect all the enabled mods, and then use this to exclude
+		-- multiple enables.
+
+		local was_enabled = {}
 		for i = 1, #list do
 			if not list[i].is_game_content
-					and not list[i].is_modpack then
-				list[i].enabled = true
+					and not list[i].is_modpack and list[i].enabled then
+				was_enabled[list[i].name] = true
 			end
 		end
+
+		for i = 1, #list do
+			if not list[i].is_game_content and not list[i].is_modpack and
+					not was_enabled[list[i].name] then
+				list[i].enabled = true
+				was_enabled[list[i].name] = true
+			end
+		end
+
 		enabled_all = true
 		return true
 	end

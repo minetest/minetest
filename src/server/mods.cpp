@@ -41,8 +41,10 @@ ServerModManager::ServerModManager(const std::string &worldpath) :
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
 	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
+	std::string game_virtual_path;
+	game_virtual_path.append("games/").append(gamespec.id).append("/mods");
+	addModsInPath(gamespec.gamemods_path, game_virtual_path);
+	addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
 
 	// Load normal mods
 	std::string worldmt = worldpath + DIR_DELIM + "world.mt";

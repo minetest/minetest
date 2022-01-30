@@ -323,9 +323,9 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_newtable(L);
 		int table2 = lua_gettop(L);
 		int internal_index = 1;
-		for (const std::string &addon_mods_path : game.addon_mods_paths) {
+		for (const auto &addon_mods_path : game.addon_mods_paths) {
 			lua_pushnumber(L, internal_index);
-			lua_pushstring(L, addon_mods_path.c_str());
+			lua_pushstring(L, addon_mods_path.second.c_str());
 			lua_settable(L,   table2);
 			internal_index++;
 		}
@@ -533,14 +533,14 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_modpaths(lua_State *L)
 {
-	int index = 1;
 	lua_newtable(L);
+
 	ModApiMainMenu::l_get_modpath(L);
-	lua_rawseti(L, -2, index);
+	lua_setfield(L, -2, "mods");
+
 	for (const std::string &component : getEnvModPaths()) {
-		index++;
 		lua_pushstring(L, component.c_str());
-		lua_rawseti(L, -2, index);
+		lua_setfield(L, -2, fs::AbsolutePath(component).c_str());
 	}
 	return 1;
 }
