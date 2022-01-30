@@ -1744,13 +1744,11 @@ void Game::updateDebugState()
 	bool has_debug = client->checkPrivilege("debug");
 
 	if (m_game_ui->m_flags.show_basic_debug) {
-		if (!has_basic_debug) {
+		if (!has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = false;
-		}
 	} else if (m_game_ui->m_flags.show_minimal_debug) {
-		if (has_basic_debug) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
-		}
 	}
 	if (!has_basic_debug)
 		hud->disableBlockBounds();
@@ -2313,18 +2311,18 @@ void Game::toggleDebug()
 	// otherwise the Minimal mode is used.
 	if (!m_game_ui->m_flags.show_minimal_debug) {
 		m_game_ui->m_flags.show_minimal_debug = true;
-		if (has_basic_debug) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		m_game_ui->showTranslatedStatusText("Debug info shown");
 	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
-		if (has_basic_debug) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = true;
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
-		if (has_basic_debug) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
