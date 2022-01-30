@@ -20,7 +20,7 @@ mm_game_theme = {}
 
 --------------------------------------------------------------------------------
 function mm_game_theme.init()
-	mm_game_theme.defaulttexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
+	mm_game_theme.defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
 	mm_game_theme.basetexturedir = mm_game_theme.defaulttexturedir
 
