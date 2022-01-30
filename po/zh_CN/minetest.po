@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-25 22:04+0000\n"
+"PO-Revision-Date: 2022-01-30 18:51+0000\n"
 "Last-Translator: poi <erbaotao@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
@@ -3325,7 +3325,7 @@ msgstr ""
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
-msgstr ""
+msgstr "允许不影响可玩性的轻微视觉错误，以此减少 CPU 负载，或提高渲染性能。"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -6864,6 +6864,8 @@ msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
 msgstr ""
+"摇杆轴灵敏度（用于移动子游戏中棱台体形状的\n"
+"可见区域的摇杆轴）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6963,7 +6965,7 @@ msgstr "触屏阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "性能权衡"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
