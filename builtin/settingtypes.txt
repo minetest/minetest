@@ -594,7 +594,7 @@ arm_inertia (Arm inertia) bool true
 
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
-fps_max (Maximum FPS) int 60 1
+fps_max (Maximum FPS) int 200 1
 
 #    Maximum FPS when the window is not focused, or when the game is paused.
 fps_max_unfocused (FPS when unfocused or paused) int 20 1

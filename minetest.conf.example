@@ -676,7 +676,7 @@
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 #    type: int min: 1
-# fps_max = 60
+# fps_max = 200
 
 #    Maximum FPS when the window is not focused, or when the game is paused.
 #    type: int min: 1
@@ -3400,4 +3400,3 @@
 #    This should be lower than curl_parallel_limit.
 #    type: int
 # contentdb_max_concurrent_downloads = 3
-
