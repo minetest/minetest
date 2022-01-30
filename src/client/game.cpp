@@ -2231,7 +2231,7 @@ void Game::toggleBlockBounds()
 		}
 
 	} else {
-		m_game_ui->showTranslatedStatusText("Can't show block bounds (need 'basic_debug' privilege)");
+		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by mod or game)");
 	}
 }
 

@@ -1284,8 +1284,8 @@ msgid "Camera update enabled"
 msgstr "Cập nhật máy ảnh đã bật"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr "Không thể hiển thị giới hạn khối (vì phải có quyền 'basic_debug')"
+msgid "Can't show block bounds (disabled by mod or game)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
