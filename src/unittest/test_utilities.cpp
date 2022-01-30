@@ -58,6 +58,7 @@ public:
 	void testStringJoin();
 	void testEulerConversion();
 	void testBase64();
+	void testSanitizeDirName();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +91,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
 	TEST(testBase64);
+	TEST(testSanitizeDirName);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -629,4 +631,13 @@ void TestUtilities::testBase64()
 	UASSERT(base64_is_valid("AAA=A") == false);
 	UASSERT(base64_is_valid("AAAA=A") == false);
 	UASSERT(base64_is_valid("AAAAA=A") == false);
+}
+
+
+void TestUtilities::testSanitizeDirName()
+{
+	UASSERT(sanitizeDirName("a", "_") == "a");
+	UASSERT(sanitizeDirName("COM1", "_") == "_COM1");
+	UASSERT(sanitizeDirName("cOm\u00B2 .txt:a", "_") == "cOm\u00B2 _txt_a");
+	UASSERT(sanitizeDirName("cOnIn$ ", "_") == "_cOnIn$ ");
 }
