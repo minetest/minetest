@@ -185,7 +185,8 @@ void main(void)
 
 	// light/shadow balance in the vertex color
 	// 0.9 is the value of COLOR_LIGHT_FACTOR in mapblock_mesh.cpp
-	const float base_point = 1 - 0.9;
+	const float light_fraction = 0.9;
+	const float base_point = 1 - light_fraction;
 	// get color value as the largest component
 	float color_value = max(color.r, max(color.g, color.b));
 	// scale color relative to its value (like HSV)
@@ -193,8 +194,8 @@ void main(void)
 	// adjust color value as scaled brightness - scaled shades (e.g. ambient occlusion)
 	color_value = 1 - (1 - color_value) * (1 - ambientBrightness) - 
 			0.3 * ambientBrightness * max(0, base_point - color_value) / base_point;
-	 // stretch back to original color space
-	color_value = (color_value - 1 + light_fraction) / light_fraction;
+	// stretch back to original color space
+	color_value = (color_value - base_point) / light_fraction;
 	// restore the color
 	color.rgb *= color_value;
 
