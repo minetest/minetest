@@ -114,49 +114,6 @@ float snoise(vec3 p)
 
 #endif
 
-vec3 rgb2hsv(vec3 color)
-{
-	float _max = max(color.r, max(color.g, color.b));
-	float _min = min(color.r, min(color.g, color.b));
-	float delta = _max-_min;
-	float hue = 0;
-	float sat = 0;
-	if (delta != 0)
-	{
-		if (color.r == _max)
-			hue = (color.g - color.b) / delta;
-		else if (color.g == _max)
-			hue = (color.b - color.r) / delta + 2;
-		else
-			hue = (color.r - color.g) / delta + 4;
-		if (hue < 0)
-			hue += 6;
-		hue /= 6.0;
-		sat = delta / _max;
-	}
-	return clamp(vec3(hue, sat, _max), vec3(0.0), vec3(1.0));
-}
-
-vec3 hsv2rgb(vec3 color)
-{
-	float c = color.g * color.b; // s*v
-	float x = c * (1.0 - abs(mod(color.r * 6.0, 2) - 1));
-	float m = color.b - c; // v - c
-	if (color.r < 1.0/6.0)
-		return vec3(c, x, 0) + m;
-	if (color.r < 2.0/6.0)
-		return vec3(x, c, 0) + m;
-	if (color.r < 3.0/6.0)
-		return vec3(0, c, x) + m;
-	if (color.r < 4.0/6.0)
-		return vec3(0, x, c) + m;
-	if (color.r < 5.0/6.0)
-		return vec3(x, 0, c) + m;
-	return vec3(c, 0, x) + m;
-}
-
-
-
 void main(void)
 {
 	varTexCoord = inTexCoord0.st;
@@ -227,11 +184,19 @@ void main(void)
 	// adjust the brightness, preserving hue and contrast
 
 	// light/shadow balance in the vertex color
-	// this value must match COLOR_LIGHT_FACTOR in mapblock_mesh.cpp
-	const float light_fraction = 0.9;
-	vec3 hsv = rgb2hsv(color.rgb);
-	hsv.b = clamp((pow(hsv.b, log(0.5 * ambientBrightness + 0.5) / log(0.5)) - 1 + light_fraction) / light_fraction, 0.0, 1.0);
-	color.rgb = hsv2rgb(hsv.rgb);
+	// 0.9 is the value of COLOR_LIGHT_FACTOR in mapblock_mesh.cpp
+	const float base_point = 1 - 0.9;
+	// get color value as the largest component
+	float color_value = max(color.r, max(color.g, color.b));
+	// scale color relative to its value (like HSV)
+	color.rgb /= color_value;
+	// adjust color value as scaled brightness - scaled shades (e.g. ambient occlusion)
+	color_value = 1 - (1 - color_value) * (1 - ambientBrightness) - 
+			0.3 * ambientBrightness * max(0, base_point - color_value) / base_point;
+	 // stretch back to original color space
+	color_value = (color_value - 1 + light_fraction) / light_fraction;
+	// restore the color
+	color.rgb *= color_value;
 
 	// The alpha gives the ratio of sunlight in the incoming light.
 	nightRatio = min(1.0, 1.0 - color.a + ambientBrightness);
