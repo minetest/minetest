@@ -2301,7 +2301,7 @@ void Game::toggleDebug()
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
-	// 3x toggle: Debug text and wireframe
+	// 3x toggle: Debug text and wireframe (needs "debug" priv)
 	// Next toggle: Back to initial
 	//
 	// The debug text can be in 2 modes: minimal and basic.
