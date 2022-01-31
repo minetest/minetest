@@ -36,7 +36,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	virtual_size = screensize;
 
 	if (g_settings->getBool("enable_shaders") &&
-			false && g_settings->getBool("enable_dynamic_shadows")) {
+			g_settings->getBool("enable_dynamic_shadows")) {
 		shadow_renderer = new ShadowRenderer(device, client);
 	}
 }
