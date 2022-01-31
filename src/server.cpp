@@ -440,6 +440,7 @@ void Server::init()
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
+	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
 
 	// Read Textures and calculate sha1 sums
@@ -3109,7 +3110,7 @@ std::string Server::getStatusString()
 	// Version
 	os << "version: " << g_version_string;
 	// Game
-	os << " | game: " << (m_gamespec.name.empty() ? m_gamespec.id : m_gamespec.name);
+	os << " | game: " << (m_gamespec.title.empty() ? m_gamespec.id : m_gamespec.title);
 	// Uptime
 	os << " | uptime: " << duration_to_string((int) m_uptime_counter->get());
 	// Max lag estimate
