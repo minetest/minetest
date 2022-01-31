@@ -807,9 +807,10 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 
 	const v3f camera_position = shadow_light_pos;
 	const v3f camera_direction = shadow_light_dir;
+	const float camera_distance = (m_camera_position - shadow_light_pos).getLength();
 	// I "fake" fov just to avoid creating a new function to handle orthographic
 	// projection.
-	const f32 camera_fov = asin(shadow_range / (m_camera_position - shadow_light_pos).getLength());
+	const f32 camera_fov = asin(shadow_range * 1.1 / camera_distance);
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 p_blocks_min;
@@ -823,15 +824,6 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 		block->refDrop();
 	}
 	m_drawlist_shadow.clear();
-
-	// We need to append the blocks from the camera POV because sometimes
-	// they are not inside the light frustum and it creates glitches.
-	// FIXME: This could be removed if we figure out why they are missing
-	// from the light frustum.
-	for (auto &i : m_drawlist) {
-		i.second->refGrab();
-		m_drawlist_shadow[i.first] = i.second;
-	}
 
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
@@ -858,7 +850,7 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 				continue;
 			}
 
-			float range = shadow_range;
+			float range = shadow_range + camera_distance;
 
 			float d = 0.0;
 			if (!isBlockInSight(block->getPos(), camera_position,
