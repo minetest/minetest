@@ -1278,8 +1278,8 @@ msgid "Camera update enabled"
 msgstr "Camera-update ingeschakeld"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
+msgstr "Kan blokgrenzen niet tonen (privilege 'basic_debug' is nodig)"
 
 #: src/client/game.cpp
 msgid "Change Password"

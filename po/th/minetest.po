@@ -1307,7 +1307,7 @@ msgid "Camera update enabled"
 msgstr "เปิดใช้งานการอัปเดตกล้องแล้ว"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (disabled by mod or game)"
+msgid "Can't show block bounds (need 'basic_debug' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
