@@ -303,6 +303,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (!f.walkable)
 				continue;
 
+			// Negative bouncy may have a meaning, but we need +value here.
 			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
 
 			int neighbors = 0;

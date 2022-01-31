@@ -452,7 +452,12 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU16(os, groups.size());
 	for (const auto &group : groups) {
 		os << serializeString16(group.first);
-		writeS16(os, group.second);
+		if (protocol_version < 41 && group.first.compare("bouncy") == 0) {
+			// Old clients may choke on negative bouncy value
+			writeS16(os, abs(group.second));
+		} else {
+			writeS16(os, group.second);
+		}
 	}
 	writeU8(os, param_type);
 	writeU8(os, param_type_2);
