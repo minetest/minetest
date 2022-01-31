@@ -6761,7 +6761,8 @@ object you are working with still exists.
         * `minimap`: Modifies the client's permission to view the minimap.
           The client may locally elect to not view the minimap.
         * `minimap_radar`: is only usable when `minimap` is true
-        * `debug`: Allow showing basic debug info (pos etc.)
+        * `debug`: Allow showing basic debug info that might give a gameplay advantage.
+          This includes map seed, player position, look direction, the pointed node and block bounds.
     * If a flag equals `nil`, the flag is not modified
 * `hud_get_flags()`: returns a table of player HUD flags with boolean values.
     * See `hud_set_flags` for a list of flags that can be toggled.
