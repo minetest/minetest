@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-22 11:52+0000\n"
-"Last-Translator: Mehmet Ali <2045uuttb@relay.firefox.com>\n"
+"PO-Revision-Date: 2022-02-01 11:39+0000\n"
+"Last-Translator: Metehan Özyürek <metehanc8s9@yandex.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -2362,6 +2362,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Kullanıcı arayüzü öğelerini ölçeklemek için kullanılan algılanan görüntü "
+"yoğunluğunu ayarlayın."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -3156,7 +3158,7 @@ msgstr "Boş parolalara izin verme"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
-msgstr ""
+msgstr "Ekran Yoğunluğu Ölçekleme Faktörü"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
