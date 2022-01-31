@@ -17,7 +17,6 @@
 
 --------------------------------------------------------------------------------
 
-local string_to_bool = {["true"]=true, ["false"]=false}
 local bool_to_string = {[true]="true", [false]="false"}
 
 local labels = {
@@ -266,7 +265,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["cb_opaque_water"] then
-		core.settings:set("opaque_water", bool_to_string[(not string_to_bool[fields["cb_opaque_water"]])])
+		core.settings:set("opaque_water", bool_to_string[(not minetest.is_yes(fields["cb_opaque_water"]))])
 		return true
 	end
 	if fields["cb_connected_glass"] then
