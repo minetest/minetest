@@ -864,40 +864,29 @@ static const std::array<std::wstring, 30> disallowed_dir_names = {
 static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
 
 
-/**
- * @param str
- * @return A copy of \p str with trailing whitespace removed.
- */
-static std::wstring wrtrim(const std::wstring &str)
-{
-	size_t back = str.size();
-	while (back > 0 && std::isspace(str[back - 1]))
-		--back;
-
-	return str.substr(0, back);
-}
-
-
-/**
- * Sanitize the name of a new directory. This consists of two stages:
- * 1. Check for 'reserved filenames' that can't be used on some filesystems
- *	and add a prefix to them
- * 2. Remove 'unsafe' characters from the name by replacing them with '_'
- */
 std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
 {
 	std::wstring safe_name = utf8_to_wide(str);
 
-	std::wstring dev_name = wrtrim(safe_name);
-
 	for (std::wstring disallowed_name : disallowed_dir_names) {
-		if (str_equal(dev_name, disallowed_name, true)) {
+		if (str_equal(safe_name, disallowed_name, true)) {
 			safe_name = utf8_to_wide(optional_prefix) + safe_name;
 			break;
 		}
 	}
 
-	for (unsigned long i = 0; i < safe_name.length(); i++) {
+	// Replace leading and trailing spaces with underscores.
+	size_t start = safe_name.find_first_not_of(L' ');
+	size_t end = safe_name.find_last_not_of(L' ');
+	if (start == std::wstring::npos || end == std::wstring::npos)
+		start = end = safe_name.size();
+	for (size_t i = 0; i < start; i++)
+		safe_name[i] = L'_';
+	for (size_t i = end + 1; i < safe_name.size(); i++)
+		safe_name[i] = L'_';
+
+	// Replace other disallowed characters with underscores
+	for (size_t i = 0; i < safe_name.length(); i++) {
 		bool is_valid = true;
 
 		// Unlikely, but control characters should always be blacklisted
@@ -909,7 +898,7 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 		}
 
 		if (!is_valid)
-			safe_name[i] = '_';
+			safe_name[i] = L'_';
 	}
 
 	return wide_to_utf8(safe_name);
