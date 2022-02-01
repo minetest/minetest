@@ -208,11 +208,31 @@ struct ZSTD_Deleter {
 	}
 };
 
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+/*
+ * This is exactly as dumb as it looks.
+ * Yes, this is a memory leak. No, we don't have better solution right now.
+ */
+template<typename T> class leaky_ptr
+{
+	T *value;
+public:
+	leaky_ptr(T *value) : value(value) {};
+	T *get() { return value; }
+};
+#endif
+
 void compressZstd(const u8 *data, size_t data_size, std::ostream &os, int level)
 {
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+	// leaks one context per thread but doesn't crash :shrug:
+	thread_local leaky_ptr<ZSTD_CStream> stream(ZSTD_createCStream());
+#else
 	// reusing the context is recommended for performance
 	// it will destroyed when the thread ends
 	thread_local std::unique_ptr<ZSTD_CStream, ZSTD_Deleter> stream(ZSTD_createCStream());
+#endif
+
 
 	ZSTD_initCStream(stream.get(), level);
 
@@ -256,9 +276,14 @@ void compressZstd(const std::string &data, std::ostream &os, int level)
 
 void decompressZstd(std::istream &is, std::ostream &os)
 {
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+	// leaks one context per thread but doesn't crash :shrug:
+	thread_local leaky_ptr<ZSTD_DStream> stream(ZSTD_createDStream());
+#else
 	// reusing the context is recommended for performance
 	// it will destroyed when the thread ends
 	thread_local std::unique_ptr<ZSTD_DStream, ZSTD_Deleter> stream(ZSTD_createDStream());
+#endif
 
 	ZSTD_initDStream(stream.get());
 

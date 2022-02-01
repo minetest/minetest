@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-09-17 18:38+0000\n"
-"Last-Translator: Ronoaldo Pereira <ronoaldo@gmail.com>\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2021-12-11 04:51+0000\n"
+"Last-Translator: Gabriel Cardoso <g.cardoso@mailfence.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -90,9 +90,8 @@ msgid "OK"
 msgstr "Ok"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Comando não disponível: "
+msgstr "<Comando não disponível>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -298,9 +297,8 @@ msgid "Install missing dependencies"
 msgstr "Instalar dependências ausentes"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "Instalação: Tipo de arquivo \"$1\" não suportado ou corrompido"
+msgstr "Instalação: Tipo de arquivo não suportado ou corrompido"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -631,7 +629,6 @@ msgid "Offset"
 msgstr "Deslocamento"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Persistência"
 
@@ -972,7 +969,6 @@ msgid "Refresh"
 msgstr "Atualizar"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
 msgstr "Descrição do servidor"
 
@@ -1173,9 +1169,8 @@ msgid "Connection error (timed out?)"
 msgstr "Erro de conexão (tempo excedido?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Não foi possível localizar ou carregar jogo \""
+msgstr "Não foi possível localizar ou carregar jogo "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1219,14 +1214,6 @@ msgid "- Address: "
 msgstr "- Endereço: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Modo Criativo: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "-Dano: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Modo: "
 
@@ -1248,14 +1235,13 @@ msgid "- Server Name: "
 msgstr "Nome do servidor: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
 msgstr "Ocorreu um erro:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Acesso negado. Razão:%s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1266,21 +1252,20 @@ msgid "Automatic forward enabled"
 msgstr "Avanço automático para frente habilitado"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Limites de bloco"
+msgstr "Limites de bloco ocultos"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Limites de bloco mostrados para todos os blocos"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Limites de bloco mostrados para o bloco atual"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Limites de bloco mostrados para blocos próximos"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1307,9 +1292,8 @@ msgid "Cinematic mode enabled"
 msgstr "Modo cinemático habilitado"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Mods de Cliente Local"
+msgstr "Cliente desconectado"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1321,7 +1305,7 @@ msgstr "Conectando ao servidor..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "A conexão falhou por motivo desconhecido"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1363,7 +1347,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Não foi possível resolver o endereço:%s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1572,19 +1556,19 @@ msgstr "Som desmutado"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "O servidor provavelmente está executando uma versão diferente de%s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Não foi possível conectar a%s porque o IPv6 está desativado"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Incapaz de escutar em%s porque IPv6 está desabilitado"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Distancia de visualização alterado pra %d"
@@ -1919,13 +1903,12 @@ msgid "Minimap in texture mode"
 msgstr "Minimapa em modo de textura"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Falha ao baixar $1"
+msgstr "Falha ao abrir página da web"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Abrindo página da web"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1935,7 +1918,7 @@ msgstr "As senhas não correspondem!"
 msgid "Register and Join"
 msgstr "Registrar e entrar"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -1956,7 +1939,6 @@ msgid "Proceed"
 msgstr "Continuar"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
 msgstr "\"Especial\" = descer"
 
@@ -2131,9 +2113,9 @@ msgid "Muted"
 msgstr "Mutado"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Volume do som: "
+msgstr "Volume do som: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2399,6 +2381,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Ajuste a densidade de exibição detectada, usada para dimensionar os "
+"elementos da IU."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2699,7 +2683,6 @@ msgid "Chat command time message threshold"
 msgstr "Limite de mensagem de tempo de comando de bate-papo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
 msgstr "Comandos de Chat"
 
@@ -2736,9 +2719,8 @@ msgid "Chat toggle key"
 msgstr "Tecla comutadora de chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Conversa mostrada"
+msgstr "Links de bate-papo"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2761,6 +2743,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Links da web clicáveis (clique do meio ou Ctrl + botão esquerdo) ativados na "
+"saída do console de bate-papo."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2852,7 +2836,6 @@ msgid "Command key"
 msgstr "Tecla de Comando"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
@@ -2867,7 +2850,6 @@ msgstr ""
 "normal)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
@@ -2979,13 +2961,12 @@ msgid "Crosshair alpha"
 msgstr "Alpha do cursor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
-"Alpha do cursor (o quanto ele é opaco, níveis entre 0 e 255).\n"
-"Também controla a cor da cruz do objeto"
+"Alpha do cursor (quanto ele é opaco, níveis entre 0 e 255).\n"
+"Também controla a cor da cruz do objeto."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3064,14 +3045,13 @@ msgid "Default stack size"
 msgstr "Tamanho padrão de stack"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define shadow filtering quality.\n"
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "Define a qualidade de filtragem de sombreamento\n"
-"Isso simula um efeito de sombras suaves aplicando um PCF ou um poisson disk\n"
+"Isso simula um efeito de sombras suaves aplicando um PCF ou um Poisson disk\n"
 "mas também usa mais recursos."
 
 #: src/settings_translation_file.cpp
@@ -3253,25 +3233,23 @@ msgstr ""
 "Esse suporte é experimental e a API pode mudar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
-"Ativa filtragem de poisson disk.\n"
-"Quando em true usa o poisson disk para fazer \"sombras suaves\". Caso "
-"contrário usa filtragem PCF."
+"Ativa filtragem de Poisson disk.\n"
+"Quando em true usa o Poisson disk para fazer \"sombras suaves\". Caso "
+"contrário, usa filtragem PCF."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 "Ativa sombras coloridas.\n"
-"Quando em true nodes translúcidos podem projetar sombras coloridas. Isso é "
-"caro."
+"Quando em true, nodes translúcidos podem projetar sombras coloridas. Requer "
+"o uso de muitos recursos."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3410,6 +3388,12 @@ msgstr ""
 "lugares\n"
 "e os controles de som dentro do jogo se tornarão não funcionais.\n"
 "Mudar esta configuração requer uma reinicialização."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3614,11 +3598,17 @@ msgid "Font size"
 msgstr "Tamanho da fonte"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Tamanho da fonte padrão em pontos (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Tamanho da fonte de largura fixa em pontos (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3629,6 +3619,17 @@ msgstr ""
 "Tamanho da fonte do texto de bate-papo recente e do prompt do bate-papo em "
 "pontos (pt).\n"
 "O valor 0 irá utilizar o tamanho padrão de fonte."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3694,10 +3695,6 @@ msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Fração da distância visível em que a névoa começa a aparecer"
 
 #: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Fontes Freetype"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
@@ -3752,14 +3749,13 @@ msgid "Global callbacks"
 msgstr "Chamadas de retorno Globais"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Atributos de geração de mapa globais.\n"
-"No gerador de mapa v6 a flag 'decorations' controla todas as decorações "
+"No gerador de mapa v6 a flag 'decorations' controla todas as decorações, "
 "exceto árvores\n"
 "e gramas da selva, em todos os outros geradores de mapa essa flag controla "
 "todas as decorações."
@@ -4360,7 +4356,6 @@ msgid "Joystick button repetition interval"
 msgstr "Intervalo de repetição do botão do Joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
 msgstr "\"Zona morta\" do joystick"
 
@@ -5802,7 +5797,6 @@ msgid "Mod channels"
 msgstr "Canais de mod"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Modifies the size of the HUD elements."
 msgstr "Modifica o tamanho dos elementos do hudbar."
 
@@ -5812,6 +5806,11 @@ msgstr "Caminho de fonte monoespaçada"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
+msgstr "Tamanho da fonte monoespaçada"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
 msgstr "Tamanho da fonte monoespaçada"
 
 #: src/settings_translation_file.cpp
@@ -5961,7 +5960,6 @@ msgstr ""
 "'on_generated'. Para muitos usuários, a configuração ideal pode ser '1'."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
 "This is a trade-off between SQLite transaction overhead and\n"
@@ -5997,13 +5995,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
-msgstr ""
+msgstr "Substituição opcional da cor do link do bate-papo."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -6037,10 +6034,9 @@ msgstr ""
 "primeiro daqui."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Caminho para a fonte padrão.\n"
@@ -6050,10 +6046,9 @@ msgstr ""
 "A fonte alternativa será usada se não for possível carregar essa."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Caminho para a fonte monoespaçada.\n"
@@ -6170,7 +6165,6 @@ msgid "Prometheus listener address"
 msgstr "Endereço do Prometheus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
@@ -6526,7 +6520,6 @@ msgstr ""
 "significam sombras mais fortes."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
@@ -6538,7 +6531,6 @@ msgstr ""
 "Valor mínimo 1.0 e valor máximo 10.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the tilt of Sun/Moon orbit in degrees.\n"
 "Value of 0 means no tilt / vertical orbit.\n"
@@ -6655,7 +6647,6 @@ msgstr ""
 "É necessário reiniciar após alterar isso."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show name tag backgrounds by default"
 msgstr "Mostrar plano de fundo da nametag por padrão"
 
@@ -6924,7 +6915,6 @@ msgid "Texture path"
 msgstr "Diretorio da textura"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
@@ -6956,7 +6946,6 @@ msgid "The URL for the content repository"
 msgstr "A url para o repositório de conteúdo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "A zona morta do joystick"
 
@@ -7174,6 +7163,10 @@ msgstr "Atraso de dica de ferramenta"
 #: src/settings_translation_file.cpp
 msgid "Touch screen threshold"
 msgstr "Limiar a tela de toque"
+
+#: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -7519,16 +7512,6 @@ msgstr ""
 "texturas."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Se as fontes FreeType são usadas, requer que suporte FreeType tenha sido "
-"compilado.\n"
-"Se desativado, fontes de bitmap e de vetores XML são usadas em seu lugar."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
@@ -7707,6 +7690,12 @@ msgstr "Tempo limite de cURL"
 msgid "cURL parallel limit"
 msgstr "limite paralelo de cURL"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Modo Criativo: "
+
+#~ msgid "- Damage: "
+#~ msgstr "-Dano: "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7879,6 +7868,9 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Tamanho da fonte reserva em pontos (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Fontes Freetype"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Tela cheia BPP"
@@ -8068,6 +8060,15 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Balanço da água"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Se as fontes FreeType são usadas, requer que suporte FreeType tenha sido "
+#~ "compilado.\n"
+#~ "Se desativado, fontes de bitmap e de vetores XML são usadas em seu lugar."
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "Se dungeons ocasionalmente se projetam do terreno."

@@ -764,10 +764,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if (mesh) {
-			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
-			m_animated_meshnode->grab();
-			mesh->drop(); // The scene node took hold of it
-
 			if (!checkMeshNormals(mesh)) {
 				infostream << "GenericCAO: recalculating normals for mesh "
 					<< m_prop.mesh << std::endl;
@@ -775,6 +771,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 						recalculateNormals(mesh, true, false);
 			}
 
+			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
+			m_animated_meshnode->grab();
+			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(m_prop.visual_size);
 
@@ -1816,6 +1815,7 @@ void GenericCAO::processMessage(const std::string &data)
 			{
 					updateAnimation();
 			}
+			// FIXME: ^ This code is trash. It's also broken.
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION_SPEED) {
 		m_animation_speed = readF32(is);
@@ -1860,6 +1860,8 @@ void GenericCAO::processMessage(const std::string &data)
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
+				// Cap damage overlay to 1 second
+				m_reset_textures_timer = std::min(m_reset_textures_timer, 1.0f);
 				updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 			}
 		}
@@ -1928,6 +1930,8 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
+			// Cap damage overlay to 1 second
+			m_reset_textures_timer = std::min(m_reset_textures_timer, 1.0f);
 			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}

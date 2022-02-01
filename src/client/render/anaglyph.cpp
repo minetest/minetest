@@ -30,6 +30,7 @@ void RenderingCoreAnaglyph::drawAll()
 void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 {
 	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
+	mat.reset();
 	mat.Material.ColorMask = color_mask;
 	mat.EnableFlags = video::EMF_COLOR_MASK;
 	mat.EnablePasses = scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |

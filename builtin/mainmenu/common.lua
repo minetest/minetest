@@ -125,17 +125,21 @@ os.tmpname = function()
 end
 --------------------------------------------------------------------------------
 
-function menu_render_worldlist()
-	local retval = ""
+function menu_render_worldlist(show_gameid)
+	local retval = {}
 	local current_worldlist = menudata.worldlist:get_list()
 
+	local row
 	for i, v in ipairs(current_worldlist) do
-		if retval ~= "" then retval = retval .. "," end
-		retval = retval .. core.formspec_escape(v.name) ..
-				" \\[" .. core.formspec_escape(v.gameid) .. "\\]"
+		row = v.name
+		if show_gameid == nil or show_gameid == true then
+			row = row .. " [" .. v.gameid .. "]"
+		end
+		retval[#retval+1] = core.formspec_escape(row)
+
 	end
 
-	return retval
+	return table.concat(retval, ",")
 end
 
 function menu_handle_key_up_down(fields, textlist, settingname)

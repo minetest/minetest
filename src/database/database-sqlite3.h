@@ -232,3 +232,28 @@ private:
 	sqlite3_stmt *m_stmt_delete_privs = nullptr;
 	sqlite3_stmt *m_stmt_last_insert_rowid = nullptr;
 };
+
+class ModMetadataDatabaseSQLite3 : private Database_SQLite3, public ModMetadataDatabase
+{
+public:
+	ModMetadataDatabaseSQLite3(const std::string &savedir);
+	virtual ~ModMetadataDatabaseSQLite3();
+
+	virtual bool getModEntries(const std::string &modname, StringMap *storage);
+	virtual bool setModEntry(const std::string &modname,
+		const std::string &key, const std::string &value);
+	virtual bool removeModEntry(const std::string &modname, const std::string &key);
+	virtual void listMods(std::vector<std::string> *res);
+
+	virtual void beginSave() { Database_SQLite3::beginSave(); }
+	virtual void endSave() { Database_SQLite3::endSave(); }
+
+protected:
+	virtual void createDatabase();
+	virtual void initStatements();
+
+private:
+	sqlite3_stmt *m_stmt_get = nullptr;
+	sqlite3_stmt *m_stmt_set = nullptr;
+	sqlite3_stmt *m_stmt_remove = nullptr;
+};

@@ -45,7 +45,7 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=1.9.0mt3
+irrlicht_version=1.9.0mt4
 ogg_version=1.3.4
 vorbis_version=1.3.7
 curl_version=7.76.1
@@ -129,7 +129,6 @@ cmake -S $sourcedir -B . \
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
 	-DENABLE_GETTEXT=1 \
-	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
 	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \

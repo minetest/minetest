@@ -34,8 +34,6 @@ enum FontMode : u8 {
 	FM_Standard = 0,
 	FM_Mono,
 	_FM_Fallback, // do not use directly
-	FM_Simple,
-	FM_SimpleMono,
 	FM_MaxMode,
 	FM_Unspecified
 };
@@ -140,9 +138,6 @@ private:
 	/** initialize a new TTF font */
 	gui::IGUIFont *initFont(const FontSpec &spec);
 
-	/** initialize a font without freetype */
-	gui::IGUIFont *initSimpleFont(const FontSpec &spec);
-
 	/** update current minetest skin with font changes */
 	void updateSkin();
 
@@ -165,8 +160,8 @@ private:
 	bool m_default_bold = false;
 	bool m_default_italic = false;
 
-	/** current font engine mode */
-	FontMode m_currentMode = FM_Standard;
+	/** default font engine mode (fixed) */
+	static const FontMode m_currentMode = FM_Standard;
 
 	DISABLE_CLASS_COPY(FontEngine);
 };

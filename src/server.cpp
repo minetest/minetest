@@ -66,6 +66,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "translation.h"
+#include "database/database-sqlite3.h"
+#include "database/database-files.h"
+#include "database/database-dummy.h"
+#include "gameparams.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -344,10 +348,15 @@ Server::~Server()
 		delete m_thread;
 	}
 
+	// Write any changes before deletion.
+	if (m_mod_storage_database)
+		m_mod_storage_database->endSave();
+
 	// Delete things in the reverse order of creation
 	delete m_emerge;
 	delete m_env;
 	delete m_rollback;
+	delete m_mod_storage_database;
 	delete m_banmanager;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -392,6 +401,10 @@ void Server::init()
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
+
+	// Create mod storage database and begin a save for later
+	m_mod_storage_database = openModStorageDatabase(m_path_world);
+	m_mod_storage_database->beginSave();
 
 	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(m_path_world));
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
@@ -499,12 +512,12 @@ void Server::start()
 
 	// ASCII art for the win!
 	std::cerr
-		<< "        .__               __                   __   " << std::endl
-		<< "  _____ |__| ____   _____/  |_  ____   _______/  |_ " << std::endl
-		<< " /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\" << std::endl
-		<< "|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  " << std::endl
-		<< "|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  " << std::endl
-		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
+		<< "         __.               __.                 __.  " << std::endl
+		<< "  _____ |__| ____   _____ /  |_  _____  _____ /  |_ " << std::endl
+		<< " /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\" << std::endl
+		<< "|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  " << std::endl
+		<< "|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  " << std::endl
+		<< "      \\/ \\/     \\/         \\/                  \\/   " << std::endl;
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
@@ -733,20 +746,12 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 		m_clients.unlock();
 
-		// Save mod storages if modified
+		// Write changes to the mod storage
 		m_mod_storage_save_timer -= dtime;
 		if (m_mod_storage_save_timer <= 0.0f) {
 			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-			int n = 0;
-			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-				if (it->second->isModified()) {
-					it->second->save(getModStoragePath());
-					n++;
-				}
-			}
-			if (n > 0)
-				infostream << "Saved " << n << " modified mod storages." << std::endl;
+			m_mod_storage_database->endSave();
+			m_mod_storage_database->beginSave();
 		}
 	}
 
@@ -1090,11 +1095,12 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send inventory
 	SendInventory(playersao, false);
 
-	// Send HP or death screen
+	// Send HP
+	SendPlayerHP(playersao);
+
+	// Send death screen
 	if (playersao->isDead())
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
-	else
-		SendPlayerHP(peer_id);
 
 	// Send Breath
 	SendPlayerBreath(playersao);
@@ -1360,18 +1366,21 @@ void Server::SendMovement(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
+void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
-	if (playersao->isImmortal())
-		return;
+	m_script->player_event(playersao, "health_changed");
+	SendPlayerHP(playersao);
 
-	session_t peer_id = playersao->getPeerID();
-	bool is_alive = !playersao->isDead();
+	// Send to other clients
+	playersao->sendPunchCommand();
 
-	if (is_alive)
-		SendPlayerHP(peer_id);
-	else
-		DiePlayer(peer_id, reason);
+	if (playersao->isDead())
+		HandlePlayerDeath(playersao, reason);
+}
+
+void Server::SendPlayerHP(PlayerSAO *playersao)
+{
+	SendHP(playersao->getPeerID(), playersao->getHP());
 }
 
 void Server::SendHP(session_t peer_id, u16 hp)
@@ -1803,18 +1812,6 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 	else {
 		Send(&pkt);
 	}
-}
-
-void Server::SendPlayerHP(session_t peer_id)
-{
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	SendHP(peer_id, playersao->getHP());
-	m_script->player_event(playersao,"health_changed");
-
-	// Send to other clients
-	playersao->sendPunchCommand();
 }
 
 void Server::SendPlayerBreath(PlayerSAO *sao)
@@ -2745,23 +2742,18 @@ void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 	Something random
 */
 
-void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
+void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
 	infostream << "Server::DiePlayer(): Player "
 			<< playersao->getPlayer()->getName()
 			<< " dies" << std::endl;
 
-	playersao->setHP(0, reason);
 	playersao->clearParentAttachment();
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);
 
-	SendPlayerHP(peer_id);
-	SendDeathscreen(peer_id, false, v3f(0,0,0));
+	SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 }
 
 void Server::RespawnPlayer(session_t peer_id)
@@ -2782,8 +2774,6 @@ void Server::RespawnPlayer(session_t peer_id)
 		// setPos will send the new position to client
 		playersao->setPos(findSpawnPos());
 	}
-
-	SendPlayerHP(peer_id);
 }
 
 
@@ -3119,6 +3109,8 @@ std::string Server::getStatusString()
 	os << "# Server: ";
 	// Version
 	os << "version: " << g_version_string;
+	// Game
+	os << " | game: " << (m_gamespec.name.empty() ? m_gamespec.id : m_gamespec.name);
 	// Uptime
 	os << " | uptime: " << duration_to_string((int) m_uptime_counter->get());
 	// Max lag estimate
@@ -3544,8 +3536,22 @@ bool Server::dynamicAddMedia(std::string filepath,
 	std::unordered_set<session_t> delivered, waiting;
 	m_clients.lock();
 	for (auto &pair : m_clients.getClientList()) {
-		if (pair.second->getState() < CS_DefinitionsSent)
+		if (pair.second->getState() == CS_DefinitionsSent && !ephemeral) {
+			/*
+				If a client is in the DefinitionsSent state it is too late to
+				transfer the file via sendMediaAnnouncement() but at the same
+				time the client cannot accept a media push yet.
+				Short of artificially delaying the joining process there is no
+				way for the server to resolve this so we (currently) opt not to.
+			*/
+			warningstream << "The media \"" << filename << "\" (dynamic) could "
+				"not be delivered to " << pair.second->getName()
+				<< " due to a race condition." << std::endl;
 			continue;
+		}
+		if (pair.second->getState() < CS_Active)
+			continue;
+
 		const auto proto_ver = pair.second->net_proto_version;
 		if (proto_ver < 39)
 			continue;
@@ -3687,11 +3693,6 @@ void Server::getModNames(std::vector<std::string> &modlist)
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
-}
-
-std::string Server::getModStoragePath() const
-{
-	return m_path_world + DIR_DELIM + "mod_storage";
 }
 
 v3f Server::findSpawnPos()
@@ -3857,11 +3858,8 @@ bool Server::registerModStorage(ModMetadata *storage)
 void Server::unregisterModStorage(const std::string &name)
 {
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
-	if (it != m_mod_storages.end()) {
-		// Save unconditionaly on unregistration
-		it->second->save(getModStoragePath());
+	if (it != m_mod_storages.end())
 		m_mod_storages.erase(name);
-	}
 }
 
 void dedicated_server_loop(Server &server, bool &kill)
@@ -3998,4 +3996,107 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	}
 
 	return translations;
+}
+
+ModMetadataDatabase *Server::openModStorageDatabase(const std::string &world_path)
+{
+	std::string world_mt_path = world_path + DIR_DELIM + "world.mt";
+	Settings world_mt;
+	if (!world_mt.readConfigFile(world_mt_path.c_str()))
+		throw BaseException("Cannot read world.mt!");
+
+	std::string backend = world_mt.exists("mod_storage_backend") ?
+		world_mt.get("mod_storage_backend") : "files";
+	if (backend == "files")
+		warningstream << "/!\\ You are using the old mod storage files backend. "
+			<< "This backend is deprecated and may be removed in a future release /!\\"
+			<< std::endl << "Switching to SQLite3 is advised, "
+			<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+
+	return openModStorageDatabase(backend, world_path, world_mt);
+}
+
+ModMetadataDatabase *Server::openModStorageDatabase(const std::string &backend,
+		const std::string &world_path, const Settings &world_mt)
+{
+	if (backend == "sqlite3")
+		return new ModMetadataDatabaseSQLite3(world_path);
+
+	if (backend == "files")
+		return new ModMetadataDatabaseFiles(world_path);
+
+	if (backend == "dummy")
+		return new Database_Dummy();
+
+	throw BaseException("Mod storage database backend " + backend + " not supported");
+}
+
+bool Server::migrateModStorageDatabase(const GameParams &game_params, const Settings &cmd_args)
+{
+	std::string migrate_to = cmd_args.get("migrate-mod-storage");
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+
+	std::string backend = world_mt.exists("mod_storage_backend") ?
+		world_mt.get("mod_storage_backend") : "files";
+	if (backend == migrate_to) {
+		errorstream << "Cannot migrate: new backend is same"
+			<< " as the old one" << std::endl;
+		return false;
+	}
+
+	ModMetadataDatabase *srcdb = nullptr;
+	ModMetadataDatabase *dstdb = nullptr;
+
+	bool succeeded = false;
+
+	try {
+		srcdb = Server::openModStorageDatabase(backend, game_params.world_path, world_mt);
+		dstdb = Server::openModStorageDatabase(migrate_to, game_params.world_path, world_mt);
+
+		dstdb->beginSave();
+
+		std::vector<std::string> mod_list;
+		srcdb->listMods(&mod_list);
+		for (const std::string &modname : mod_list) {
+			StringMap meta;
+			srcdb->getModEntries(modname, &meta);
+			for (const auto &pair : meta) {
+				dstdb->setModEntry(modname, pair.first, pair.second);
+			}
+		}
+
+		dstdb->endSave();
+
+		succeeded = true;
+
+		actionstream << "Successfully migrated the metadata of "
+			<< mod_list.size() << " mods" << std::endl;
+		world_mt.set("mod_storage_backend", migrate_to);
+		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
+			errorstream << "Failed to update world.mt!" << std::endl;
+		else
+			actionstream << "world.mt updated" << std::endl;
+
+	} catch (BaseException &e) {
+		errorstream << "An error occurred during migration: " << e.what() << std::endl;
+	}
+
+	delete srcdb;
+	delete dstdb;
+
+	if (succeeded && backend == "files") {
+		// Back up files
+		const std::string storage_path = game_params.world_path + DIR_DELIM + "mod_storage";
+		const std::string backup_path = game_params.world_path + DIR_DELIM + "mod_storage.bak";
+		if (!fs::Rename(storage_path, backup_path))
+			warningstream << "After migration, " << storage_path
+				<< " could not be renamed to " << backup_path << std::endl;
+	}
+
+	return succeeded;
 }

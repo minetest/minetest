@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 
+#include <cmath>
 #include "threading/mutex_auto_lock.h"
 #include "util/numeric.h"
 #include "hud.h"
@@ -157,6 +158,64 @@ void Player::clearHud()
 		delete hud.back();
 		hud.pop_back();
 	}
+}
+
+#ifndef SERVER
+
+u32 PlayerControl::getKeysPressed() const
+{
+	u32 keypress_bits =
+		( (u32)(jump  & 1) << 4) |
+		( (u32)(aux1  & 1) << 5) |
+		( (u32)(sneak & 1) << 6) |
+		( (u32)(dig   & 1) << 7) |
+		( (u32)(place & 1) << 8) |
+		( (u32)(zoom  & 1) << 9)
+	;
+
+	// If any direction keys are pressed pass those through
+	if (direction_keys != 0)
+	{
+		keypress_bits |= direction_keys;
+	}
+	// Otherwise set direction keys based on joystick movement (for mod compatibility)
+	else if (isMoving())
+	{
+		float abs_d;
+
+		// (absolute value indicates forward / backward)
+		abs_d = abs(movement_direction);
+		if (abs_d < 3.0f / 8.0f * M_PI)
+			keypress_bits |= (u32)1; // Forward
+		if (abs_d > 5.0f / 8.0f * M_PI)
+			keypress_bits |= (u32)1 << 1; // Backward
+
+		// rotate entire coordinate system by 90 degree
+		abs_d = movement_direction + M_PI_2;
+		if (abs_d >= M_PI)
+			abs_d -= 2 * M_PI;
+		abs_d = abs(abs_d);
+		// (value now indicates left / right)
+		if (abs_d < 3.0f / 8.0f * M_PI)
+			keypress_bits |= (u32)1 << 2; // Left
+		if (abs_d > 5.0f / 8.0f * M_PI)
+			keypress_bits |= (u32)1 << 3; // Right
+	}
+
+	return keypress_bits;
+}
+
+#endif
+
+void PlayerControl::unpackKeysPressed(u32 keypress_bits)
+{
+	direction_keys = keypress_bits & 0xf;
+	jump  = keypress_bits & (1 << 4);
+	aux1  = keypress_bits & (1 << 5);
+	sneak = keypress_bits & (1 << 6);
+	dig   = keypress_bits & (1 << 7);
+	place = keypress_bits & (1 << 8);
+	zoom  = keypress_bits & (1 << 9);
 }
 
 void PlayerSettings::readGlobalSettings()

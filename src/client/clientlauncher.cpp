@@ -70,9 +70,9 @@ static void dump_start_data(const GameStartData &data)
 
 ClientLauncher::~ClientLauncher()
 {
-	delete receiver;
-
 	delete input;
+
+	delete receiver;
 
 	delete g_fontengine;
 	delete g_gamecallback;

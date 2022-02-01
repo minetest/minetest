@@ -1,39 +1,39 @@
 -- cache setting
 local enable_damage = core.settings:get_bool("enable_damage")
 
-local health_bar_definition = {
-	hud_elem_type = "statbar",
-	position = {x = 0.5, y = 1},
-	text = "heart.png",
-	text2 = "heart_gone.png",
-	number = core.PLAYER_MAX_HP_DEFAULT,
-	item = core.PLAYER_MAX_HP_DEFAULT,
-	direction = 0,
-	size = {x = 24, y = 24},
-	offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
-}
-
-local breath_bar_definition = {
-	hud_elem_type = "statbar",
-	position = {x = 0.5, y = 1},
-	text = "bubble.png",
-	text2 = "bubble_gone.png",
-	number = core.PLAYER_MAX_BREATH_DEFAULT,
-	item = core.PLAYER_MAX_BREATH_DEFAULT * 2,
-	direction = 0,
-	size = {x = 24, y = 24},
-	offset = {x = 25, y= -(48 + 24 + 16)},
+local bar_definitions = {
+	hp = {
+		hud_elem_type = "statbar",
+		position = {x = 0.5, y = 1},
+		text = "heart.png",
+		text2 = "heart_gone.png",
+		number = core.PLAYER_MAX_HP_DEFAULT,
+		item = core.PLAYER_MAX_HP_DEFAULT,
+		direction = 0,
+		size = {x = 24, y = 24},
+		offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
+	},
+	breath = {
+		hud_elem_type = "statbar",
+		position = {x = 0.5, y = 1},
+		text = "bubble.png",
+		text2 = "bubble_gone.png",
+		number = core.PLAYER_MAX_BREATH_DEFAULT * 2,
+		item = core.PLAYER_MAX_BREATH_DEFAULT * 2,
+		direction = 0,
+		size = {x = 24, y = 24},
+		offset = {x = 25, y= -(48 + 24 + 16)},
+	},
 }
 
 local hud_ids = {}
 
-local function scaleToDefault(player, field)
-	-- Scale "hp" or "breath" to the default dimensions
+local function scaleToHudMax(player, field)
+	-- Scale "hp" or "breath" to the hud maximum dimensions
 	local current = player["get_" .. field](player)
-	local nominal = core["PLAYER_MAX_" .. field:upper() .. "_DEFAULT"]
-	local max_display = math.max(nominal,
-		math.max(player:get_properties()[field .. "_max"], current))
-	return current / max_display * nominal
+	local nominal = bar_definitions[field].item
+	local max_display = math.max(player:get_properties()[field .. "_max"], current)
+	return math.ceil(current / max_display * nominal)
 end
 
 local function update_builtin_statbars(player)
@@ -55,9 +55,9 @@ local function update_builtin_statbars(player)
 	local immortal = player:get_armor_groups().immortal == 1
 
 	if flags.healthbar and enable_damage and not immortal then
-		local number = scaleToDefault(player, "hp")
+		local number = scaleToHudMax(player, "hp")
 		if hud.id_healthbar == nil then
-			local hud_def = table.copy(health_bar_definition)
+			local hud_def = table.copy(bar_definitions.hp)
 			hud_def.number = number
 			hud.id_healthbar = player:hud_add(hud_def)
 		else
@@ -73,9 +73,9 @@ local function update_builtin_statbars(player)
 	local breath     = player:get_breath()
 	local breath_max = player:get_properties().breath_max
 	if show_breathbar and breath <= breath_max then
-		local number = 2 * scaleToDefault(player, "breath")
+		local number = scaleToHudMax(player, "breath")
 		if not hud.id_breathbar and breath < breath_max then
-			local hud_def = table.copy(breath_bar_definition)
+			local hud_def = table.copy(bar_definitions.breath)
 			hud_def.number = number
 			hud.id_breathbar = player:hud_add(hud_def)
 		elseif hud.id_breathbar then
@@ -145,7 +145,7 @@ function core.hud_replace_builtin(hud_name, definition)
 	end
 
 	if hud_name == "health" then
-		health_bar_definition = definition
+		bar_definitions.hp = definition
 
 		for name, ids in pairs(hud_ids) do
 			local player = core.get_player_by_name(name)
@@ -159,7 +159,7 @@ function core.hud_replace_builtin(hud_name, definition)
 	end
 
 	if hud_name == "breath" then
-		breath_bar_definition = definition
+		bar_definitions.breath = definition
 
 		for name, ids in pairs(hud_ids) do
 			local player = core.get_player_by_name(name)

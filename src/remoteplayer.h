@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "player.h"
-#include "cloudparams.h"
 #include "skyparams.h"
 
 class PlayerSAO;

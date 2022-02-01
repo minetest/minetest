@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "metadata.h"
 
+class ModMetadataDatabase;
+
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
 struct ModSpec
@@ -49,17 +51,36 @@ struct ModSpec
 	bool part_of_modpack = false;
 	bool is_modpack = false;
 
+	/**
+	 * A constructed canonical path to represent this mod's location.
+	 * This intended to be used as an identifier for a modpath that tolerates file movement,
+	 * and cannot be used to read the mod files.
+	 *
+	 * Note that `mymod` is the directory name, not the mod name specified in mod.conf.
+	 *
+	 * Ex:
+	 *
+	 * - mods/mymod
+	 * - mods/mymod (1)
+	 *     (^ this would have name=mymod in mod.conf)
+	 * - mods/modpack1/mymod
+	 * - games/mygame/mods/mymod
+	 * - worldmods/mymod
+	 */
+	std::string virtual_path;
+
 	// For logging purposes
 	std::vector<const char *> deprecation_msgs;
 
 	// if modpack:
 	std::map<std::string, ModSpec> modpack_content;
-	ModSpec(const std::string &name = "", const std::string &path = "") :
-			name(name), path(path)
+
+	ModSpec()
 	{
 	}
-	ModSpec(const std::string &name, const std::string &path, bool part_of_modpack) :
-			name(name), path(path), part_of_modpack(part_of_modpack)
+
+	ModSpec(const std::string &name, const std::string &path, bool part_of_modpack, const std::string &virtual_path) :
+			name(name), path(path), part_of_modpack(part_of_modpack), virtual_path(virtual_path)
 	{
 	}
 
@@ -69,8 +90,16 @@ struct ModSpec
 // Retrieves depends, optdepends, is_modpack and modpack_content
 void parseModContents(ModSpec &mod);
 
-std::map<std::string, ModSpec> getModsInPath(
-		const std::string &path, bool part_of_modpack = false);
+/**
+ * Gets a list of all mods and modpacks in path
+ *
+ * @param Path to search, should be absolute
+ * @param part_of_modpack Is this searching within a modpack?
+ * @param virtual_path Virtual path for this directory, see comment in ModSpec
+ * @returns map of mods
+ */
+std::map<std::string, ModSpec> getModsInPath(const std::string &path,
+		const std::string &virtual_path, bool part_of_modpack = false);
 
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
@@ -95,15 +124,25 @@ public:
 
 protected:
 	ModConfiguration(const std::string &worldpath);
-	// adds all mods in the given path. used for games, modpacks
-	// and world-specific mods (worldmods-folders)
-	void addModsInPath(const std::string &path);
+
+	/**
+	 * adds all mods in the given path. used for games, modpacks
+	 * and world-specific mods (worldmods-folders)
+	 *
+	 * @param path To search, should be absolute
+	 * @param virtual_path Virtual path for this directory, see comment in ModSpec
+	 */
+	void addModsInPath(const std::string &path, const std::string &virtual_path);
 
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
+	/**
+	 * @param settings_path Path to world.mt
+	 * @param modPaths Map from virtual name to mod path
+	 */
 	void addModsFromConfig(const std::string &settings_path,
-			const std::set<std::string> &mods);
+			const std::unordered_map<std::string, std::string> &modPaths);
 
 	void checkConflictsAndDeps();
 
@@ -149,20 +188,16 @@ class ModMetadata : public Metadata
 {
 public:
 	ModMetadata() = delete;
-	ModMetadata(const std::string &mod_name);
+	ModMetadata(const std::string &mod_name, ModMetadataDatabase *database);
 	~ModMetadata() = default;
 
 	virtual void clear();
 
-	bool save(const std::string &root_path);
-	bool load(const std::string &root_path);
-
-	bool isModified() const { return m_modified; }
 	const std::string &getModName() const { return m_mod_name; }
 
 	virtual bool setString(const std::string &name, const std::string &var);
 
 private:
 	std::string m_mod_name;
-	bool m_modified = false;
+	ModMetadataDatabase *m_database;
 };
