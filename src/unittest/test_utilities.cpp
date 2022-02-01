@@ -636,8 +636,12 @@ void TestUtilities::testBase64()
 
 void TestUtilities::testSanitizeDirName()
 {
-	UASSERT(sanitizeDirName("a", "_") == "a");
-	UASSERT(sanitizeDirName("COM1", "_") == "_COM1");
-	UASSERT(sanitizeDirName("cOm\u00B2 .txt:a", "_") == "cOm\u00B2 _txt_a");
-	UASSERT(sanitizeDirName("cOnIn$ ", "_") == "_cOnIn$ ");
+	UASSERT(sanitizeDirName("a", "~") == "a");
+	UASSERT(sanitizeDirName("  ", "~") == "__");
+	UASSERT(sanitizeDirName(" a ", "~") == "_a_");
+	UASSERT(sanitizeDirName("COM1", "~") == "~COM1");
+	UASSERT(sanitizeDirName("COM1", ":") == "_COM1");
+	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
+	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
+	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
 }
