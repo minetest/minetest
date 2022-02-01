@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-30 18:51+0000\n"
-"Last-Translator: poi <erbaotao@outlook.com>\n"
+"PO-Revision-Date: 2022-02-02 19:54+0000\n"
+"Last-Translator: Y.W. <y5nw@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -278,8 +278,9 @@ msgstr "下载 $1 失败"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Games"
-msgstr "游戏"
+msgstr "子游戏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
@@ -384,6 +385,7 @@ msgid "Caves"
 msgstr "洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Create"
 msgstr "创建"
 
@@ -416,6 +418,7 @@ msgid "Floatlands (experimental)"
 msgstr "悬空岛（实验性）"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Game"
 msgstr "子游戏"
 
