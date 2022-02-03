@@ -113,6 +113,15 @@ private:
 	// Returns true if the item is (or was) a tool.
 	static int l_add_wear(lua_State *L);
 
+	// add_wear_by_uses(self, uses) -> true/false
+	// The range for "uses" is [0,65536].
+	// Adds wear to the item in such a way that, if
+	// only this function is called to add wear, the item
+	// will be destroyed exactly after `uses` times of calling it.
+	// No-op if `uses` is 0 or item is not a tool.
+	// Returns true if the item is (or was) a tool.
+	static int l_add_wear_by_uses(lua_State *L);
+
 	// add_item(self, itemstack or itemstring or table or nil) -> itemstack
 	// Returns leftover item stack
 	static int l_add_item(lua_State *L);

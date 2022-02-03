@@ -356,6 +356,26 @@ int LuaItemStack::l_add_wear(lua_State *L)
 	return 1;
 }
 
+// add_wear_by_uses(self, uses) -> true/false
+// The range for "uses" is [0,65536].
+// Adds wear to the item in such a way that, if
+// only this function is called to add wear, the item
+// will be destroyed exactly after `uses` times of calling it.
+// No-op if `uses` is 0 or item is not a tool.
+// Returns true if the item is (or was) a tool.
+int LuaItemStack::l_add_wear_by_uses(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+	u32 uses = readParam<int>(L, 2);
+	u16 initial_wear = item.wear;
+	u32 add_wear = calculateResultWear(uses, initial_wear);
+	bool result = item.addWear(add_wear, getGameDef(L)->idef());
+	lua_pushboolean(L, result);
+	return 1;
+}
+
 // add_item(self, itemstack or itemstring or table or nil) -> itemstack
 // Returns leftover item stack
 int LuaItemStack::l_add_item(lua_State *L)
@@ -514,6 +534,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, get_definition),
 	luamethod(LuaItemStack, get_tool_capabilities),
 	luamethod(LuaItemStack, add_wear),
+	luamethod(LuaItemStack, add_wear_by_uses),
 	luamethod(LuaItemStack, add_item),
 	luamethod(LuaItemStack, item_fits),
 	luamethod(LuaItemStack, take_item),
