@@ -37,6 +37,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef SERVER
 
+// When converting light levels to color value, compress the 
+// value by 10% to give place to ambient occlusion and face shading 
+// at the lowest brightness values. COLOR_LIGHT_FACTOR + COLOR_SHADE_FACTOR must always be 1.0
+#define COLOR_LIGHT_FACTOR 0.9f
+#define COLOR_SHADE_FACTOR 0.1f
+
 /**
  * \internal
  *

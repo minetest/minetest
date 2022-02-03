@@ -74,14 +74,14 @@ void set_light_table(float gamma)
 	params.gamma = rangelim(gamma, 0.33f, 3.0f);
 
 // Boundary values should be fixed
-	light_LUT[0] = 0;
+	light_LUT[0] = 255 * COLOR_SHADE_FACTOR;
 	light_LUT[LIGHT_SUN] = 255;
 
 	for (size_t i = 1; i < LIGHT_SUN; i++) {
 		float brightness = decode_light_f((float)i / LIGHT_SUN);
 		// Strictly speaking, rangelim is not necessary here—if the implementation
 		// is conforming. But we don’t want problems in any case.
-		light_LUT[i] = rangelim((s32)(255.0f * brightness), 0, 255);
+		light_LUT[i] = rangelim((s32)(255.0f * (COLOR_SHADE_FACTOR + COLOR_LIGHT_FACTOR * brightness)), 255 * COLOR_SHADE_FACTOR, 255);
 
 		// Ensure light brightens with each level
 		if (i > 0 && light_LUT[i] <= light_LUT[i - 1]) {

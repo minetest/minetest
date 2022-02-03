@@ -32,12 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lighting.h"
 #include <array>
 
-// When converting light levels to color value, compress the 
-// value by 10% to give place to ambient occlusion and face shading 
-// at the lowest brightness values.
-static const float COLOR_LIGHT_FACTOR = 0.9f;
-static const float COLOR_SHADE_FACTOR = 1.0f - COLOR_LIGHT_FACTOR;
-
 /*
 	MeshMakeData
 */
@@ -246,10 +240,6 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 			skip_ambient_occlusion_night = true;
 		}
 	}
-
-	// compress brightness to give place to ambient occlusion
-	light_day = (255 - (255 - light_day) * COLOR_LIGHT_FACTOR);
-	light_night = (255 - (255 - light_night) * COLOR_LIGHT_FACTOR);
 
 	if (ambient_occlusion > 4) {
 		static thread_local const float ao_gamma = rangelim(
