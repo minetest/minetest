@@ -60,7 +60,7 @@ end
 -- The worst-case complexity is O(log n), where n is the number of distinct
 -- expiration times.
 local function remove_first_jobs()
-	local first_expiry = expiries[1]
+	local removed_expiry = expiries[1]
 	local length = #expiries
 	local expiry = expiries[length]
 	expiries[length] = nil
@@ -92,8 +92,8 @@ local function remove_first_jobs()
 		end
 		expiries[index] = expiry
 	end
-	local removed = job_map[first_expiry]
-	job_map[first_expiry] = nil
+	local removed = job_map[removed_expiry]
+	job_map[removed_expiry] = nil
 	return removed
 end
 
