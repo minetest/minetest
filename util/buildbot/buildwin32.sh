@@ -46,16 +46,17 @@ done
 
 # Get stuff
 irrlicht_version=1.9.0mt4
-ogg_version=1.3.4
+ogg_version=1.3.5
+openal_version=1.21.1
 vorbis_version=1.3.7
-curl_version=7.76.1
+curl_version=7.81.0
 gettext_version=0.20.1
-freetype_version=2.10.4
-sqlite3_version=3.35.5
+freetype_version=2.11.1
+sqlite3_version=3.37.2
 luajit_version=2.1.0-beta3
 leveldb_version=1.23
 zlib_version=1.2.11
-zstd_version=1.4.9
+zstd_version=1.5.2
 
 mkdir -p $libdir
 
@@ -78,19 +79,22 @@ download () {
 	fi
 }
 
+# 'dw2' just points to rebuilt versions after a toolchain change
+# this distinction should be gotten rid of next time
+
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
-download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip"
+download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32-dw2.zip" irrlicht-$irrlicht_version.zip
+download "http://minetest.kitsunemimi.pw/dw2/zlib-$zlib_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/dw2/libvorbis-$vorbis_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/curl-$curl_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/gettext-$gettext_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/dw2/gettext-$gettext_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/freetype2-$freetype_version-win32.zip" freetype-$freetype_version.zip
 download "http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/luajit-$luajit_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win32.zip" leveldb-$leveldb_version.zip
-download "http://minetest.kitsunemimi.pw/openal_stripped.zip" '' unzip_nofolder
+download "http://minetest.kitsunemimi.pw/dw2/luajit-$luajit_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/dw2/libleveldb-$leveldb_version-win32.zip" leveldb-$leveldb_version.zip
+download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win32.zip"
 
 # Set source dir, downloading Minetest as needed
 if [ -n "$EXISTING_MINETEST_DIR" ]; then
@@ -154,9 +158,9 @@ cmake -S $sourcedir -B . \
 	-DVORBIS_DLL="$vorbis_dlls" \
 	-DVORBISFILE_LIBRARY=$libdir/libvorbis/lib/libvorbisfile.dll.a \
 	\
-	-DOPENAL_INCLUDE_DIR=$libdir/openal_stripped/include/AL \
-	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/libOpenAL32.dll.a \
-	-DOPENAL_DLL=$libdir/openal_stripped/bin/OpenAL32.dll \
+	-DOPENAL_INCLUDE_DIR=$libdir/openal/include/AL \
+	-DOPENAL_LIBRARY=$libdir/openal/lib/libOpenAL32.dll.a \
+	-DOPENAL_DLL=$libdir/openal/bin/OpenAL32.dll \
 	\
 	-DCURL_DLL=$libdir/curl/bin/libcurl-4.dll \
 	-DCURL_INCLUDE_DIR=$libdir/curl/include \
