@@ -50,6 +50,9 @@ private:
 	// write_json(data[, styled])
 	static int l_write_json(lua_State *L);
 
+	// get_tool_wear_after_use(uses[, initial_wear])
+	static int l_get_tool_wear_after_use(lua_State *L);
+
 	// get_dig_params(groups, tool_capabilities[, wear])
 	static int l_get_dig_params(lua_State *L);
 
