@@ -23,35 +23,35 @@ describe("after", function()
 			result = result .. "b"
 		end)
 		core.after(1, function()
-			result = result .. "b"
-		end)
-		core.after(2, function()
 			result = result .. "c"
 		end)
-		local cancel = core.after(2, function()
+		core.after(2, function()
 			result = result .. "d"
+		end)
+		local cancel = core.after(2, function()
+			result = result .. "e"
 		end)
 		do_step(0)
 		assert.same(result, "a")
 
 		do_step(1)
-		assert.same(result, "abb")
+		assert.same(result, "abc")
 
-		core.after(-1, function()
-			result = result .. "e"
-		end)
-		core.after(1, function()
-			result = result .. "c"
-		end)
 		core.after(2, function()
 			result = result .. "f"
 		end)
+		core.after(1, function()
+			result = result .. "g"
+		end)
+		core.after(-1, function()
+			result = result .. "h"
+		end)
 		cancel:cancel()
 		do_step(1)
-		assert.same(result, "abbecc")
+		assert.same(result, "abchdg")
 
 		do_step(1)
-		assert.same(result, "abbeccf")
+		assert.same(result, "abchdgf")
 	end)
 
 	it("defers jobs with delay 0", function()

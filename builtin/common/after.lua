@@ -1,65 +1,100 @@
--- The jobs are stored in an array representing a binary min-heap. This heap is
--- a binary tree where no child node has an expiration time before its parent.
--- Parent-child relationships are determined by indices. A parent at index i has
--- children at indices i*2 and i*2+1. Child indices beyond the end of the array
--- represent nonexistent children.
--- All this means that, if the first array element exists, there is no other
--- element in the array which expires sooner.
-local jobs = {}
+-- This is an implementation of a job sheduling mechanism. It guarantees that
+-- coexisting jobs will execute primarily in order of least expiry, and
+-- secondarily in order of first registration.
 
--- Adds a job to the heap.
--- The worst-case complexity is O(log n), where n is the heap size.
-local function add_job(job)
-	local expire = job.expire
-	local index = #jobs + 1
-	while index > 1 do
-		local parent_index = math.floor(index / 2)
-		local parent = jobs[parent_index]
-		if expire < parent.expire then
-			jobs[index] = parent
-			index = parent_index
-		else
-			break
-		end
-	end
-	jobs[index] = job
+-- These functions implement an intrusive singly linked list of one or more
+-- elements where the first element has a pointer to the last. The next pointer
+-- is stored with key list_next. The pointer to the last is with key list_end.
+
+local function list_init(first)
+	first.list_end = first
 end
 
--- Removes the first (soonest to expire) job from the heap.
--- The worst-case complexity is O(log n), where n is the heap size.
-local function remove_first_job()
-	local length = #jobs
-	local job = jobs[length]
-	jobs[length] = nil
+local function list_append(first, append)
+	first.list_end.list_next = append
+	first.list_end = append
+end
+
+local function list_append_list(first, first_append)
+	first.list_end.list_next = first_append
+	first.list_end = first_append.list_end
+end
+
+-- The jobs are stored in a map from expiration times to linked lists of jobs
+-- as above. The expiration times are also stored in an array representing a
+-- binary min heap, which is a particular arrangement of binary tree. A parent
+-- at index i has children at indices i*2 and i*2+1. Out-of-bounds indices
+-- represent nonexistent children. A parent is never greater than its children.
+-- This structure means that, if there is at least one job, the next expiration
+-- time is the first item in the array.
+local job_map = {}
+local expiries = {}
+
+-- Adds an individual job with the given expiry.
+-- The worst-case complexity is O(log n), where n is the number of distinct
+-- expiration times.
+local function add_job(expiry, job)
+	local list = job_map[expiry]
+	if list then
+		list_append(list, job)
+	else
+		list_init(job)
+		job_map[expiry] = job
+
+		local index = #expiries + 1
+		while index > 1 do
+			local parent_index = math.floor(index / 2)
+			local parent = expiries[parent_index]
+			if expiry < parent then
+				expiries[index] = parent
+				index = parent_index
+			else
+				break
+			end
+		end
+		expiries[index] = expiry
+	end
+end
+
+-- Removes the next expiring jobs and returns the linked list of them.
+-- The worst-case complexity is O(log n), where n is the number of distinct
+-- expiration times.
+local function remove_first_jobs()
+	local first_expiry = expiries[1]
+	local length = #expiries
+	local expiry = expiries[length]
+	expiries[length] = nil
 	length = length - 1
-	if length == 0 then
-		return
-	end
-	local index = 1
-	while true do
-		local old_index = index
-		local expire = job.expire
-		local left_index = index * 2
-		local right_index = index * 2 + 1
-		if left_index <= length then
-			local left_expire = jobs[left_index].expire
-			if left_expire < expire then
-				index = left_index
-				expire = left_expire
+	if length > 0 then
+		local index = 1
+		while true do
+			local old_index = index
+			local first_expiry = expiry
+			local left_index = index * 2
+			local right_index = index * 2 + 1
+			if left_index <= length then
+				local left_expiry = expiries[left_index]
+				if left_expiry < first_expiry then
+					index = left_index
+					first_expiry = left_expiry
+				end
+			end
+			if right_index <= length then
+				if expiries[right_index] < first_expiry then
+					index = right_index
+				end
+			end
+			if old_index ~= index then
+				expiries[old_index] = expiries[index]
+			else
+				break
 			end
 		end
-		if right_index <= length then
-			if jobs[right_index].expire < expire then
-				index = right_index
-			end
-		end
-		if old_index ~= index then
-			jobs[old_index] = jobs[index]
-		else
-			break
-		end
+		expiries[index] = expiry
 	end
-	jobs[index] = job
+	local removed = job_map[first_expiry]
+	job_map[first_expiry] = nil
+	return removed
 end
 
 local time = 0.0
@@ -72,23 +107,27 @@ core.register_globalstep(function(dtime)
 		return
 	end
 
-	-- List of jobs that have to expired; to be built.
-	local expired = {}
+	-- Remove the expired jobs.
+	local expired = remove_first_jobs()
 
-	-- Remove and collect expired jobs.
-	local first_job = jobs[1]
-	repeat
-		remove_first_job()
-		expired[#expired + 1] = first_job
-		first_job = jobs[1]
-	until not first_job or first_job.expire > time
-	time_next = first_job and first_job.expire or math.huge
+	-- Remove other expired jobs and append them to the list.
+	while true do
+		time_next = expiries[1] or math.huge
+		if time_next > time then
+			break
+		end
+		list_append_list(expired, remove_first_jobs())
+	end
 
 	-- Run the callbacks afterward to prevent infinite loops with core.after(0, ...).
-	for i = 1, #expired do
-		local job = expired[i]
-		core.set_last_run_mod(job.mod_origin)
-		job.func(unpack(job, 1, job.n_args))
+	local last_expired = expired.list_end
+	while true do
+		core.set_last_run_mod(expired.mod_origin)
+		expired.func(unpack(expired, 1, expired.n_args))
+		if expired == last_expired then
+			break
+		end
+		expired = expired.list_next
 	end
 end)
 
@@ -106,17 +145,17 @@ end
 function core.after(after, func, ...)
 	assert(tonumber(after) and not core.is_nan(after) and type(func) == "function",
 		"Invalid minetest.after invocation")
-	local expire = time + after
+
 	local new_job = {
-		expire = expire,
 		mod_origin = core.get_last_run_mod(),
 		func = func,
 		n_args = select("#", ...),
 		...
 	}
 
-	add_job(new_job)
-	time_next = math.min(time_next, expire)
+	local expiry = time + after
+	add_job(expiry, new_job)
+	time_next = math.min(time_next, expiry)
 
 	return setmetatable(new_job, job_metatable)
 end
