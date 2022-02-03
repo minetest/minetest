@@ -177,9 +177,9 @@ cmake -S $sourcedir -B . \
 	-DSQLITE3_LIBRARY=$libdir/sqlite3/lib/libsqlite3.dll.a \
 	-DSQLITE3_DLL=$libdir/sqlite3/bin/libsqlite3-0.dll \
 	\
-	-DLEVELDB_INCLUDE_DIR=$libdir/leveldb/include \
-	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
-	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
+	-Dleveldb_INCLUDE_DIR=$libdir/leveldb/include \
+	-Dleveldb_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
+	-Dleveldb_DLL=$libdir/leveldb/lib/libleveldb.dll
 
 make -j$(nproc)
 
