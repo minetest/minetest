@@ -479,17 +479,9 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	Table field getters
 */
 
-#if defined(__MINGW32__) && !defined(__MINGW64__)
-/* MinGW 32-bit somehow crashes in the std::set destructor when this
- * variable is thread-local, so just don't do that. */
-static std::set<u64> warned_msgs;
-#endif
-
 bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
 {
-#if !defined(__MINGW32__) || defined(__MINGW64__)
 	thread_local std::set<u64> warned_msgs;
-#endif
 
 	int t = lua_type(L, index);
 	if (t == LUA_TNIL)
