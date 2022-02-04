@@ -1697,24 +1697,19 @@ bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 void push_noiseparams(lua_State *L, NoiseParams *np)
 {
 	lua_newtable(L);
-	push_float_string(L, np->offset);
-	lua_setfield(L, -2, "offset");
-	push_float_string(L, np->scale);
-	lua_setfield(L, -2, "scale");
-	push_float_string(L, np->persist);
-	lua_setfield(L, -2, "persistence");
-	push_float_string(L, np->lacunarity);
-	lua_setfield(L, -2, "lacunarity");
-	lua_pushnumber(L, np->seed);
-	lua_setfield(L, -2, "seed");
-	lua_pushnumber(L, np->octaves);
-	lua_setfield(L, -2, "octaves");
+	setfloatfield(L, -1, "offset",      np->offset);
+	setfloatfield(L, -1, "scale",       np->scale);
+	setfloatfield(L, -1, "persist",     np->persist);
+	setfloatfield(L, -1, "persistence", np->persist);
+	setfloatfield(L, -1, "lacunarity",  np->lacunarity);
+	setintfield(  L, -1, "seed",        np->seed);
+	setintfield(  L, -1, "octaves",     np->octaves);
 
 	push_flags_string(L, flagdesc_noiseparams, np->flags,
 		np->flags);
 	lua_setfield(L, -2, "flags");
 
-	push_v3_float_string(L, np->spread);
+	push_v3f(L, np->spread);
 	lua_setfield(L, -2, "spread");
 }
 
