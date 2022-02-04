@@ -154,6 +154,9 @@ local function handle_doubleclick(pkg)
 			core.settings:set("texture_path", pkg.path)
 		end
 		packages = nil
+
+		mm_game_theme.init()
+		mm_game_theme.reset()
 	end
 end
 
