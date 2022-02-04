@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2022-02-05 02:53+0000\n"
+"Last-Translator: Linerly <linerly@protonmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3363,6 +3362,9 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Mengaktifkan pertukaran yang mengurangi beban CPU atau meningkatkan kinerja "
+"rendering\n"
+"atas biaya gangguan visual kecil yang tidak memengaruhi pemutaran game."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3565,17 +3567,15 @@ msgstr "Ukuran fon"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Ukuran fon dapat dibagi dengan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Ukuran fon bawaan dalam poin (pt)."
+msgstr "Ukuran fon bawaan dalam dimana 1 unit = 1 pixel di 96 DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Ukuran fon monospace bawaan dalam poin (pt)."
+msgstr "Ukuran fon monospace bawaan dimana 1 unit = 1 pixel di 96 DPI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3595,6 +3595,13 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"Untuk fon bergaya pixel yang tidak dapat diskalakan dengan baik, ini "
+"memastikan ukuran fon yang digunakan\n"
+"dengan fon ini akan selalu dapat dibagi dengan nilai ini, dalam pixel. "
+"Misalnya,\n"
+"fon pixel setinggi 16 pixel harus diatur ke 16, jadi itu hanya akan "
+"berukuran 16, 32, 48, dll.,\n"
+"jadi sebuah mod yang meminta ukuran 25 akan mendapatkan 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5752,9 +5759,8 @@ msgid "Monospace font size"
 msgstr "Ukuran fon monospace"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
-msgstr "Ukuran fon monospace"
+msgstr "Ukuran fon monospace dapat dibagi dengan"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -5936,16 +5942,14 @@ msgid "Optional override for chat weblink color."
 msgstr "Penimpaan opsional untuk warna tautan web pada obrolan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
-"Jalur ke fon cadangan.\n"
-"Jika pengaturan \"freetype\" dinyalakan, harus fon TrueType.\n"
-"Jika pengaturan \"freetype\" dimatikan, harus fon bitmap atau vektor XML.\n"
-"Fon ini akan dipakai dalam bahasa tertentu jika tidak didukung fon bawaan."
+"Jalur ke fon cadangan. Harus sebuah font TrueType.\n"
+"Fon ini akan digunakan untuk beberapa bahasa atau jika fon bawaan tidak "
+"tersedia."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5967,26 +5971,20 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Jalur ke direktori tekstur. Semua tekstur akan dicari mulai dari sini."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"Jalur ke fon bawaan.\n"
-"Jika pengaturan \"freetype\" dinyalakan, harus fon TrueType.\n"
-"Jika pengaturan \"freetype\" dimatikan, harus fon bitmap atau vektor XML.\n"
+"Jalur ke fon bawaan. Harus sebuah fon TrueType.\n"
 "Fon cadangan akan dipakai jika fon tidak dapat dimuat."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"Jalur ke fon monospace.\n"
-"Jika pengaturan \"freetype\" dinyalakan, harus fon TrueType.\n"
-"Jika pengaturan \"freetype\" dimatikan, harus fon bitmap atau vektor XML.\n"
-"Fon ini dipakai dalam layar konsol dan profiler."
+"Jalur ke fon monospace. Harus sebuah fon TrueType.\n"
+"Fon ini dipakai dalam layar konsol dan profiler, misalnya."
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
@@ -7082,7 +7080,7 @@ msgstr "Ambang batas layar sentuh"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Pertukaran untuk kinerja"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
