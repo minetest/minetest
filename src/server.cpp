@@ -3290,10 +3290,11 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 		return false;
 
 	u32 new_hud_flags = (player->hud_flags & ~mask) | flags;
-	if (new_hud_flags != player->hud_flags) {
-		SendHUDSetFlags(player->getPeerId(), flags, mask);
-		player->hud_flags = new_hud_flags;
-	}
+	if (new_hud_flags == player->hud_flags) // no change
+		return true;
+	
+	SendHUDSetFlags(player->getPeerId(), flags, mask);
+	player->hud_flags = new_hud_flags;
 
 	PlayerSAO* playersao = player->getPlayerSAO();
 
