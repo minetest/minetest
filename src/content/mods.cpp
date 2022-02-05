@@ -218,6 +218,142 @@ std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods)
 	return result;
 }
 
+// Look ma, an inline class!
+class ModsResolver {
+public:
+	// the mods here is a copy of the ModConfiguration unsatisifed mods
+	ModsResolver(std::vector<ModSpec> mods) {
+	  for (ModSpec mod : mods) {
+	    modsByName[mod.name] = mod;
+	  }
+	};
+
+	// the main entry point to start resolving the graph
+	void run();
+
+	// all the valid modspecs already sorted neatly for loading
+	std::vector<ModSpec> sortedMods;
+	// mods that could not be satisfied
+	std::list<ModSpec> unsatisfiedMods;
+	// mods that are valid, but some or all of its optional dependencies
+	// could not be resolved
+	std::list<ModSpec> modsWithUnsatisfiedOptionals;
+private:
+	// resolve the mod by name, not spec, since a mod may not exist
+	void resolveMod(std::string &modname);
+
+	// mods that have already been resolved
+	std::list<std::string> resolvedMods;
+	// mods that have been seen (not neccessarily resolved)
+	std::set<std::string> seenMods;
+	// inner mapping
+	std::map<std::string, ModSpec> modsByName;
+};
+
+void ModsResolver::run()
+{
+	// Step 1: Resolve a mod's dependencies
+	for (auto mod_iter = modsByName.begin(); mod_iter != modsByName.end();) {
+		ModSpec &mod = (*mod_iter).second;
+		resolveMod(mod.name);
+		++mod_iter;
+	}
+
+	// Step 2: Clear any satisfied dep
+	for (auto mod_iter = modsByName.begin(); mod_iter != modsByName.end();) {
+		ModSpec &mod = (*mod_iter).second;
+
+		// Setup unsatisfied mandatory lists
+		mod.unsatisfied_depends = mod.depends;
+
+		// Setup the optional list based on what was actually seen
+		for (std::string modname : mod.optdepends) {
+			if (seenMods.count(modname) > 0) {
+				mod.unsatisfied_optdepends.push_back(modname);
+			}
+		}
+
+		// resolvedMods only contain mods that are known to exist
+		// This loop removes the mod from the unsatisfied deps of the
+		// target mod
+		for (std::string modname : resolvedMods) {
+			mod.unsatisfied_depends.erase(modname);
+			mod.unsatisfied_optdepends.erase(modname);
+		}
+
+		// increment iterator
+		++mod_iter;
+	}
+
+	// Step 3: Check that the mod's deps have been properly satisfied
+	for (std::string modname : resolvedMods) {
+		auto mod_iter = modsByName.find(modname);
+		// sanity check
+		if (mod_iter != modsByName.end()) {
+			ModSpec &mod = (*mod_iter).second;
+
+			// Check if the mod has its mandatory mods satisfied
+			if (mod.unsatisfied_depends.empty()) {
+				// if it has, it can be pushed unto the sortedMods list
+				sortedMods.push_back(mod);
+				// now to give the user some feedback, check if the mod also
+				// satisfied it's optional dependencies
+				if (!mod.unsatisfied_optdepends.empty()) {
+					// if not, then we push it unto the optionals list
+					modsWithUnsatisfiedOptionals.push_back(mod);
+				}
+			} else {
+				// the mod failed one or more mandatory dependencies
+				unsatisfiedMods.push_back(mod);
+			}
+		}
+	}
+}
+
+void ModsResolver::resolveMod(std::string &modname)
+{
+	// behold recursion - the funny thing about this, it sorts itself
+	// based on dependencies, mods that require other mods will naturally
+	// try to load them before itself, ultimately performing the best
+	// sorting possible.
+	// And with recursion the dependencies of the dependencies can be
+	// resolved just the same
+	//
+	// Now the only caveat I can think of is punching a whole in the stack with
+	// a deep dependency graph.
+	//
+	// Circular dependencies are also ignored for the most part due to the
+	// presence of the seenMods set, if we've seen a mod before,
+	// no need to resolve it again, even if it's being resolved further up.
+	//
+	// If circular dependency checks are required, then an additional set
+	// can be added to the resolver class that tracks the mods that are
+	// currently being resolved.
+	if (seenMods.count(modname) == 0) {
+		// immediately mark the mod as seen, to avoid circular deps later on
+		seenMods.insert(modname);
+
+		auto mod_iter = modsByName.find(modname);
+		// Chances are the mod may or may not exist
+		if (mod_iter != modsByName.end()) {
+			ModSpec &mod = (*mod_iter).second;
+
+			// resolve all hard dependencies
+			for (std::string depname : mod.depends) {
+				resolveMod(depname);
+			}
+
+			// resolve all soft dependencies
+			for (std::string depname : mod.optdepends) {
+				resolveMod(depname);
+			}
+
+			// the mod is known to be resolved (as best as it could)
+			resolvedMods.push_back(modname);
+		}
+	}
+}
+
 ModConfiguration::ModConfiguration(const std::string &worldpath)
 {
 }
@@ -230,6 +366,17 @@ void ModConfiguration::printUnsatisfiedModsError() const
 		for (const std::string &unsatisfied_depend : mod.unsatisfied_depends)
 			errorstream << " \"" << unsatisfied_depend << "\"";
 		errorstream << std::endl;
+	}
+}
+
+void ModConfiguration::printModsWithUnsatisfiedOptionalsWarning() const
+{
+	for (const ModSpec &mod : m_mods_with_unsatisfied_optionals) {
+		warningstream << "mod \"" << mod.name
+			    << "\" has unsatisfied dependencies (optional): ";
+		for (const std::string &unsatisfied_depend : mod.unsatisfied_optdepends)
+			warningstream << " \"" << unsatisfied_depend << "\"";
+		warningstream << std::endl;
 	}
 }
 
@@ -391,50 +538,13 @@ void ModConfiguration::checkConflictsAndDeps()
 
 void ModConfiguration::resolveDependencies()
 {
-	// Step 1: Compile a list of the mod names we're working with
-	std::set<std::string> modnames;
-	for (const ModSpec &mod : m_unsatisfied_mods) {
-		modnames.insert(mod.name);
-	}
+	ModsResolver resolver(m_unsatisfied_mods);
 
-	// Step 2: get dependencies (including optional dependencies)
-	// of each mod, split mods into satisfied and unsatisfied
-	std::list<ModSpec> satisfied;
-	std::list<ModSpec> unsatisfied;
-	for (ModSpec mod : m_unsatisfied_mods) {
-		mod.unsatisfied_depends = mod.depends;
-		// check which optional dependencies actually exist
-		for (const std::string &optdep : mod.optdepends) {
-			if (modnames.count(optdep) != 0)
-				mod.unsatisfied_depends.insert(optdep);
-		}
-		// if a mod has no depends it is initially satisfied
-		if (mod.unsatisfied_depends.empty())
-			satisfied.push_back(mod);
-		else
-			unsatisfied.push_back(mod);
-	}
+	resolver.run();
 
-	// Step 3: mods without unmet dependencies can be appended to
-	// the sorted list.
-	while (!satisfied.empty()) {
-		ModSpec mod = satisfied.back();
-		m_sorted_mods.push_back(mod);
-		satisfied.pop_back();
-		for (auto it = unsatisfied.begin(); it != unsatisfied.end();) {
-			ModSpec &mod2 = *it;
-			mod2.unsatisfied_depends.erase(mod.name);
-			if (mod2.unsatisfied_depends.empty()) {
-				satisfied.push_back(mod2);
-				it = unsatisfied.erase(it);
-			} else {
-				++it;
-			}
-		}
-	}
-
-	// Step 4: write back list of unsatisfied mods
-	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
+	m_sorted_mods.assign(resolver.sortedMods.begin(), resolver.sortedMods.end());
+	m_unsatisfied_mods.assign(resolver.unsatisfiedMods.begin(), resolver.unsatisfiedMods.end());
+	m_mods_with_unsatisfied_optionals.assign(resolver.modsWithUnsatisfiedOptionals.begin(), resolver.modsWithUnsatisfiedOptionals.end());
 }
 
 #ifndef SERVER
