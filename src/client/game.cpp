@@ -1740,8 +1740,8 @@ void Game::processQueues()
 void Game::updateDebugState()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	bool has_basic_debug = player->hud_flags & HUD_FLAG_DEBUG;
 	bool has_debug = client->checkPrivilege("debug");
+	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_DEBUG);
 
 	if (m_game_ui->m_flags.show_basic_debug) {
 		if (!has_basic_debug)
@@ -2210,7 +2210,7 @@ void Game::toggleCinematic()
 void Game::toggleBlockBounds()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (!(player->hud_flags & HUD_FLAG_DEBUG)) {
+	if (!(client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_DEBUG))) {
 		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by mod or game)");
 		return;
 	}
@@ -2297,7 +2297,8 @@ void Game::toggleFog()
 void Game::toggleDebug()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	bool has_basic_debug = player->hud_flags & HUD_FLAG_DEBUG;
+	bool has_debug = client->checkPrivilege("debug");
+	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_DEBUG);
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
@@ -2332,7 +2333,7 @@ void Game::toggleDebug()
 		m_game_ui->m_flags.show_basic_debug = false;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
-		if (client->checkPrivilege("debug")) {
+		if (has_debug) {
 			m_game_ui->showTranslatedStatusText("Debug info, profiler graph, and wireframe hidden");
 		} else {
 			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
@@ -3041,7 +3042,6 @@ void Game::updateSound(f32 dtime)
 void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	bool show_debug = player->hud_flags & HUD_FLAG_DEBUG;
 
 	const v3f camera_direction = camera->getDirection();
 	const v3s16 camera_offset  = camera->getOffset();
@@ -3157,7 +3157,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
-		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
+		handlePointingAtObject(pointed, tool_item, player_position,
+				client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_DEBUG));
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
 		runData.punching = true;
