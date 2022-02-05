@@ -1306,7 +1306,7 @@ max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
 server_unload_unused_data_timeout (Unload unused server data) int 29
 
 #    Maximum number of statically stored objects in a block.
-max_objects_per_block (Maximum objects per block) int 64
+max_objects_per_block (Maximum objects per block) int 256
 
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2

@@ -1514,7 +1514,7 @@
 
 #    Maximum number of statically stored objects in a block.
 #    type: int
-# max_objects_per_block = 64
+# max_objects_per_block = 256
 
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 #    type: enum values: 0, 1, 2
