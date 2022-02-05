@@ -105,6 +105,26 @@ std::map<std::string, ModSpec> getModsInPath(const std::string &path,
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
 
+// This structure contains a mod that triggered a circular dependency
+// Note that the mod is likely dependency of the offending mod,
+// and not the offending mod itself.
+// The entire resolution stack is provided with each instance
+struct ModWithCircularDependency
+{
+	ModWithCircularDependency(
+			const std::string &modname, std::list<std::string> &rs) :
+			name(modname),
+			resolution_stack(rs){};
+
+	// which mod encountered a circular dependency loop?
+	std::string name;
+	// the list of mods that were resolving when the mod encountered a
+	// circular dependency, this list will be printed later to the console
+	// to help users debug issues.
+	// otherwise the code can keep churning.
+	std::list<std::string> resolution_stack;
+};
+
 // a ModConfiguration is a subset of installed mods, expected to have
 // all dependencies fullfilled, so it can be used as a list of mods to
 // load when the game starts.
@@ -115,7 +135,8 @@ public:
 	bool isConsistent() const
 	{
 		return m_unsatisfied_mods.empty() &&
-		       m_mods_with_unsatisfied_optionals.empty();
+		       m_mods_with_unsatisfied_optionals.empty() &&
+		       m_mods_with_circular_dependencies.empty();
 	}
 
 	const std::vector<ModSpec> &getMods() const { return m_sorted_mods; }
@@ -127,6 +148,9 @@ public:
 
 	void printUnsatisfiedModsError() const;
 	void printModsWithUnsatisfiedOptionalsWarning() const;
+	void printModsWithCircularDependenciesWarning() const;
+	// Prints all of the above messages to console
+	void printConsistencyMessages() const;
 
 protected:
 	ModConfiguration(const std::string &worldpath);
@@ -178,6 +202,9 @@ private:
 	// 3. world mod in modpack; 4. world mod;
 	// 5. addon mod in modpack; 6. addon mod.
 	std::unordered_set<std::string> m_name_conflicts;
+
+	// mods with dependencies that depended on it
+	std::vector<ModWithCircularDependency> m_mods_with_circular_dependencies;
 
 	// Deleted default constructor
 	ModConfiguration() = default;

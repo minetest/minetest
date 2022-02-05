@@ -226,60 +226,60 @@ public:
 	ModsResolver(std::vector<ModSpec> mods)
 	{
 		for (ModSpec mod : mods) {
-			modsByName[mod.name] = mod;
+			m_mods_by_name[mod.name] = mod;
 		}
 	};
 
 	// the main entry point to start resolving the graph
-	void run();
+	void run(std::vector<ModSpec> &sorted_mods,
+			std::vector<ModSpec> &unsatisfied_mods,
+			std::vector<ModSpec> &mods_with_unsatisfied_dependencies);
 
-	// all the valid modspecs already sorted neatly for loading
-	std::vector<ModSpec> sortedMods;
-	// mods that could not be satisfied
-	std::list<ModSpec> unsatisfiedMods;
-	// mods that are valid, but some or all of its optional dependencies
-	// could not be resolved
-	std::list<ModSpec> modsWithUnsatisfiedOptionals;
+	// any mod that appears twice in a single resolution stack
+	std::list<ModWithCircularDependency> mods_with_circular_dependencies;
 
 private:
 	// resolve the mod by name, not spec, since a mod may not exist
-	void resolveMod(std::string &modname);
+	void resolveMod(const std::string &modname);
 
+	std::list<std::string> m_resolution_stack;
 	// mods that have already been resolved
-	std::list<std::string> resolvedMods;
+	std::list<std::string> m_resolved_modnames;
 	// mods that have been seen (not neccessarily resolved)
-	std::set<std::string> seenMods;
+	std::set<std::string> m_seen_modnames;
 	// inner mapping
-	std::map<std::string, ModSpec> modsByName;
+	std::map<std::string, ModSpec> m_mods_by_name;
 };
 
-void ModsResolver::run()
+void ModsResolver::run(std::vector<ModSpec> &sorted_mods,
+		std::vector<ModSpec> &unsatisfied_mods,
+		std::vector<ModSpec> &mods_with_unsatisfied_optionals)
 {
 	// Step 1: Resolve a mod's dependencies
-	for (auto mod_iter = modsByName.begin(); mod_iter != modsByName.end();) {
+	for (auto mod_iter = m_mods_by_name.begin(); mod_iter != m_mods_by_name.end();) {
 		ModSpec &mod = (*mod_iter).second;
 		resolveMod(mod.name);
 		++mod_iter;
 	}
 
 	// Step 2: Clear any satisfied dep
-	for (auto mod_iter = modsByName.begin(); mod_iter != modsByName.end();) {
+	for (auto mod_iter = m_mods_by_name.begin(); mod_iter != m_mods_by_name.end();) {
 		ModSpec &mod = (*mod_iter).second;
 
 		// Setup unsatisfied mandatory lists
 		mod.unsatisfied_depends = mod.depends;
 
 		// Setup the optional list based on what was actually seen
-		for (std::string modname : mod.optdepends) {
-			if (seenMods.count(modname) > 0) {
+		for (const std::string &modname : mod.optdepends) {
+			if (m_seen_modnames.count(modname) > 0) {
 				mod.unsatisfied_optdepends.insert(modname);
 			}
 		}
 
-		// resolvedMods only contain mods that are known to exist
+		// m_resolved_modnames only contain mods that are known to exist
 		// This loop removes the mod from the unsatisfied deps of the
 		// target mod
-		for (std::string modname : resolvedMods) {
+		for (const std::string &modname : m_resolved_modnames) {
 			mod.unsatisfied_depends.erase(modname);
 			mod.unsatisfied_optdepends.erase(modname);
 		}
@@ -288,32 +288,32 @@ void ModsResolver::run()
 		++mod_iter;
 	}
 
-	// Step 3: Check that the mod's deps have been properly satisfied
-	for (std::string modname : resolvedMods) {
-		auto mod_iter = modsByName.find(modname);
+	// Step 3.0: Check that the mod's deps have been properly satisfied
+	for (const std::string &modname : m_resolved_modnames) {
+		auto mod_iter = m_mods_by_name.find(modname);
 		// sanity check
-		if (mod_iter != modsByName.end()) {
+		if (mod_iter != m_mods_by_name.end()) {
 			ModSpec &mod = (*mod_iter).second;
 
 			// Check if the mod has its mandatory mods satisfied
 			if (mod.unsatisfied_depends.empty()) {
-				// if it has, it can be pushed unto the sortedMods list
-				sortedMods.push_back(mod);
+				// if it has, it can be pushed unto the sorted_mods list
+				sorted_mods.push_back(mod);
 				// now to give the user some feedback, check if the mod
 				// also satisfied it's optional dependencies
 				if (!mod.unsatisfied_optdepends.empty()) {
 					// if not, then we push it unto the optionals list
-					modsWithUnsatisfiedOptionals.push_back(mod);
+					mods_with_unsatisfied_optionals.push_back(mod);
 				}
 			} else {
 				// the mod failed one or more mandatory dependencies
-				unsatisfiedMods.push_back(mod);
+				unsatisfied_mods.push_back(mod);
 			}
 		}
 	}
 }
 
-void ModsResolver::resolveMod(std::string &modname)
+void ModsResolver::resolveMod(const std::string &modname)
 {
 	// behold recursion - the funny thing about this, it sorts itself
 	// based on dependencies, mods that require other mods will naturally
@@ -324,36 +324,41 @@ void ModsResolver::resolveMod(std::string &modname)
 	//
 	// Now the only caveat I can think of is punching a whole in the stack with
 	// a deep dependency graph.
-	//
-	// Circular dependencies are also ignored for the most part due to the
-	// presence of the seenMods set, if we've seen a mod before,
-	// no need to resolve it again, even if it's being resolved further up.
-	//
-	// If circular dependency checks are required, then an additional set
-	// can be added to the resolver class that tracks the mods that are
-	// currently being resolved.
-	if (seenMods.count(modname) == 0) {
-		// immediately mark the mod as seen, to avoid circular deps later on
-		seenMods.insert(modname);
 
-		auto mod_iter = modsByName.find(modname);
+	// This checks the resolving list (stack) for the specified mod
+	bool isResolving = std::find(m_resolution_stack.begin(), m_resolution_stack.end(),
+					   modname) != m_resolution_stack.end();
+
+	if (isResolving) {
+		// if a mod is currently resolving, then a circular dependency has occured
+		// push the entry along with the current resolution stack for later
+		// logging
+		mods_with_circular_dependencies.emplace(
+				mods_with_circular_dependencies.end(), modname,
+				m_resolution_stack);
+	} else if (m_seen_modnames.count(modname) == 0) {
+		// immediately mark the mod as seen, to avoid circular deps later on
+		m_seen_modnames.insert(modname);
+		m_resolution_stack.push_back(modname);
+		auto mod_iter = m_mods_by_name.find(modname);
 		// Chances are the mod may or may not exist
-		if (mod_iter != modsByName.end()) {
+		if (mod_iter != m_mods_by_name.end()) {
 			ModSpec &mod = (*mod_iter).second;
 
 			// resolve all hard dependencies
-			for (std::string depname : mod.depends) {
+			for (const std::string &depname : mod.depends) {
 				resolveMod(depname);
 			}
 
 			// resolve all soft dependencies
-			for (std::string depname : mod.optdepends) {
+			for (const std::string &depname : mod.optdepends) {
 				resolveMod(depname);
 			}
 
 			// the mod is known to be resolved (as best as it could)
-			resolvedMods.push_back(modname);
+			m_resolved_modnames.push_back(modname);
 		}
+		m_resolution_stack.pop_back();
 	}
 }
 
@@ -381,6 +386,24 @@ void ModConfiguration::printModsWithUnsatisfiedOptionalsWarning() const
 			warningstream << " \"" << unsatisfied_depend << "\"";
 		warningstream << std::endl;
 	}
+}
+
+void ModConfiguration::printModsWithCircularDependenciesWarning() const
+{
+	for (const ModWithCircularDependency &mwcd : m_mods_with_circular_dependencies) {
+		warningstream << "circular dependency triggered by \"" << mwcd.name
+			      << "\" check mods in chain; resolution-chain: ";
+		for (const std::string &modname : mwcd.resolution_stack)
+			warningstream << " \"" << modname << "\"";
+		warningstream << std::endl;
+	}
+}
+
+void ModConfiguration::printConsistencyMessages() const
+{
+	printUnsatisfiedModsError();
+	printModsWithUnsatisfiedOptionalsWarning();
+	printModsWithCircularDependenciesWarning();
 }
 
 void ModConfiguration::addModsInPath(const std::string &path, const std::string &virtual_path)
@@ -493,9 +516,7 @@ void ModConfiguration::addModsFromConfig(
 	for (const ModSpec &addon_mod : addon_mods)
 		load_mod_names.erase(addon_mod.name);
 
-	std::vector<ModSpec> unsatisfiedMods = getUnsatisfiedMods();
-
-	for (const ModSpec &unsatisfiedMod : unsatisfiedMods)
+	for (const ModSpec &unsatisfiedMod : m_unsatisfied_mods)
 		load_mod_names.erase(unsatisfiedMod.name);
 
 	if (!load_mod_names.empty()) {
@@ -543,14 +564,17 @@ void ModConfiguration::resolveDependencies()
 {
 	ModsResolver resolver(m_unsatisfied_mods);
 
-	resolver.run();
+	// reset lists
+	m_sorted_mods.clear();
+	m_unsatisfied_mods.clear();
+	m_mods_with_unsatisfied_optionals.clear();
 
-	m_sorted_mods.assign(resolver.sortedMods.begin(), resolver.sortedMods.end());
-	m_unsatisfied_mods.assign(
-			resolver.unsatisfiedMods.begin(), resolver.unsatisfiedMods.end());
-	m_mods_with_unsatisfied_optionals.assign(
-			resolver.modsWithUnsatisfiedOptionals.begin(),
-			resolver.modsWithUnsatisfiedOptionals.end());
+	resolver.run(m_sorted_mods, m_unsatisfied_mods,
+			m_mods_with_unsatisfied_optionals);
+
+	m_mods_with_circular_dependencies.assign(
+			resolver.mods_with_circular_dependencies.begin(),
+			resolver.mods_with_circular_dependencies.end());
 }
 
 #ifndef SERVER

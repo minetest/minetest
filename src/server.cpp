@@ -410,8 +410,7 @@ void Server::init()
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!m_modmgr->isConsistent()) {
-		m_modmgr->printUnsatisfiedModsError();
-		m_modmgr->printModsWithUnsatisfiedOptionalsWarning();
+		m_modmgr->printConsistencyMessages();
 	}
 
 	//lock environment
