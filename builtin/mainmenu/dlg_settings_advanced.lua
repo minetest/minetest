@@ -499,21 +499,20 @@ local function get_current_np_group(setting)
 	local value = core.settings:get_np_group(setting.name)
 	if value == nil then
 		return setting.values
-	else
-		local p = "%g"
-		return {
-			p:format(value.offset),
-			p:format(value.scale),
-			p:format(value.spread.x),
-			p:format(value.spread.y),
-			p:format(value.spread.z),
-			p:format(value.seed),
-			p:format(value.octaves),
-			p:format(value.persistence),
-			p:format(value.lacunarity),
-			value.flags,
-		}
 	end
+	local p = "%g"
+	return {
+		p:format(value.offset),
+		p:format(value.scale),
+		p:format(value.spread.x),
+		p:format(value.spread.y),
+		p:format(value.spread.z),
+		p:format(value.seed),
+		p:format(value.octaves),
+		p:format(value.persistence),
+		p:format(value.lacunarity),
+		value.flags
+	}
 end
 
 local function get_current_np_group_as_string(setting)
