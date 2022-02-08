@@ -497,22 +497,22 @@ end
 
 local function get_current_np_group(setting)
 	local value = core.settings:get_np_group(setting.name)
-	local t = {}
 	if value == nil then
-		t = setting.values
-	else
-		table.insert(t, value.offset)
-		table.insert(t, value.scale)
-		table.insert(t, value.spread.x)
-		table.insert(t, value.spread.y)
-		table.insert(t, value.spread.z)
-		table.insert(t, value.seed)
-		table.insert(t, value.octaves)
-		table.insert(t, value.persistence)
-		table.insert(t, value.lacunarity)
-		table.insert(t, value.flags)
+		return setting.values
 	end
-	return t
+	local p = "%g"
+	return {
+		p:format(value.offset),
+		p:format(value.scale),
+		p:format(value.spread.x),
+		p:format(value.spread.y),
+		p:format(value.spread.z),
+		p:format(value.seed),
+		p:format(value.octaves),
+		p:format(value.persistence),
+		p:format(value.lacunarity),
+		value.flags
+	}
 end
 
 local function get_current_np_group_as_string(setting)
