@@ -7355,7 +7355,7 @@ Used by `minetest.register_entity`.
         -- for more info) by using a '_' prefix
     }
 
-Collision info passed to `on_step`:
+Collision info passed to `on_step` (`moveresult` argument):
 
     {
         touching_ground = boolean,
@@ -7372,6 +7372,8 @@ Collision info passed to `on_step`:
             },
             ...
         }
+        -- `collisions` does not contain data of unloaded mapblock collisions
+        -- or when the velocity changes are negligibly small
     }
 
 ABM (ActiveBlockModifier) definition
