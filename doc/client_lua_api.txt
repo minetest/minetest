@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.5.0
+Minetest Lua Client Modding API Reference 5.6.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>

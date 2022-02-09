@@ -206,7 +206,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Adds new sun, moon and stars packets
 		Minimap modes
 	PROTOCOL VERSION 40:
-		Added 'basic_debug' privilege
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 */
 
@@ -230,7 +229,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                                // base64-encoded SHA-1 (27+\0).
 
 // See also: Formspec Version History in doc/lua_api.txt
-#define FORMSPEC_API_VERSION 4
+#define FORMSPEC_API_VERSION 5
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 

@@ -2250,7 +2250,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts;
-	if (!precheckElement("bgcolor", element, 2, 3, parts))
+	if (!precheckElement("bgcolor", element, 1, 3, parts))
 		return;
 
 	const u32 parameter_count = parts.size();
@@ -2705,7 +2705,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 {
 	std::vector<std::string> parts;
-	if (!precheckElement("set_focus", element, 2, 2, parts))
+	if (!precheckElement("set_focus", element, 1, 2, parts))
 		return;
 
 	if (m_is_form_regenerated)
@@ -3265,7 +3265,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 						((15.0 / 13.0) * (0.85 + mydata.invsize.Y));
 			}
 
-			s32 min_screen_dim = std::min(mydata.screensize.X, mydata.screensize.Y);
+			s32 min_screen_dim = std::min(padded_screensize.X, padded_screensize.Y);
 
 #ifdef HAVE_TOUCHSCREENGUI
 			// In Android, the preferred imgsize should be larger to accommodate the

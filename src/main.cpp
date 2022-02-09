@@ -65,6 +65,14 @@ extern "C" {
 #error Minetest cannot be built without exceptions or RTTI
 #endif
 
+#if defined(__MINGW32__) && !defined(__MINGW64__) && !defined(__clang__) && \
+	(__GNUC__ < 11 || (__GNUC__ == 11 && __GNUC_MINOR__ < 1))
+// see e.g. https://github.com/minetest/minetest/issues/10137
+#warning ==================================
+#warning 32-bit MinGW gcc before 11.1 has known issues with crashes on thread exit, you should upgrade.
+#warning ==================================
+#endif
+
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 
@@ -299,6 +307,8 @@ static void set_allowed_options(OptionList *allowed_options)
 		_("Migrate from current players backend to another (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("migrate-auth", ValueSpec(VALUETYPE_STRING,
 		_("Migrate from current auth backend to another (Only works when using minetestserver or with --server)"))));
+	allowed_options->insert(std::make_pair("migrate-mod-storage", ValueSpec(VALUETYPE_STRING,
+		_("Migrate from current mod storage backend to another (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
@@ -885,6 +895,9 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	if (cmd_args.exists("migrate-auth"))
 		return ServerEnvironment::migrateAuthDatabase(game_params, cmd_args);
+
+	if (cmd_args.exists("migrate-mod-storage"))
+		return Server::migrateModStorageDatabase(game_params, cmd_args);
 
 	if (cmd_args.getFlag("recompress"))
 		return recompress_map_database(game_params, cmd_args, bind_addr);

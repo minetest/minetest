@@ -1026,7 +1026,7 @@ The function of `param1` is determined by `paramtype` in node definition.
 `param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
-    * The value stores light with and without sun in its upper and lower 4 bits
+    * The value stores light with and without sun in its lower and upper 4 bits
       respectively.
     * Required by a light source node to enable spreading its light.
     * Required by the following drawtypes as they determine their visual
@@ -2271,18 +2271,20 @@ Examples
 Version History
 ---------------
 
-* FORMSPEC VERSION 1:
+* Formspec version 1 (pre-5.1.0):
   * (too much)
-* FORMSPEC VERSION 2:
+* Formspec version 2 (5.1.0):
   * Forced real coordinates
   * background9[]: 9-slice scaling parameters
-* FORMSPEC VERSION 3:
+* Formspec version 3 (5.2.0):
   * Formspec elements are drawn in the order of definition
   * bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
   * box[] and image[] elements enable clipping by default
   * new element: scroll_container[]
-* FORMSPEC VERSION 4:
+* Formspec version 4 (5.4.0):
   * Allow dropdown indexing events
+* Formspec version 5 (5.5.0):
+  * Added padding[] element
 
 Elements
 --------
@@ -2386,20 +2388,22 @@ Elements
 * End of a scroll_container, following elements are no longer bound to this
   container.
 
-### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
+### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
-* Show an inventory list if it has been sent to the client. Nothing will
-  be shown if the inventory list is of size 0.
+* Show an inventory list if it has been sent to the client.
+* If the inventory list changes (eg. it didn't exist before, it's resized, or its items
+  are moved) while the formspec is open, the formspec element may (but is not guaranteed
+  to) adapt to the new inventory list.
+* Item slots are drawn in a grid from left to right, then up to down, ordered
+  according to the slot index.
+* `W` and `H` are in inventory slots, not in coordinates.
+* `starting item index` (Optional): The index of the first (upper-left) item to draw.
+  Indices start at `0`. Default is `0`.
+* The number of shown slots is the minimum of `W*H` and the inventory list's size minus
+  `starting item index`.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot by default. Also see
   [Styling Formspecs] for changing the size of slots and spacing.
-
-### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
-
-* Show an inventory list if it has been sent to the client. Nothing will
-  be shown if the inventory list is of size 0.
-* **Note**: With the new coordinate system, the spacing between inventory
-  slots is one-fourth the size of an inventory slot.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -3524,7 +3528,7 @@ Helper functions
 * `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch [, wear]])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
-    * `hp`: How much damage the punch would cause.
+    * `hp`: How much damage the punch would cause (between -65535 and 65535).
     * `wear`: How much wear would be added to the tool (ignored for non-tools).
     Parameters:
     * `groups`: Damage groups of the object
@@ -6714,18 +6718,21 @@ object you are working with still exists.
       `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
     * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
       and exist only to preserve backwards compatibility.
+    * Returns an empty table `{}` if the object is not a player.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
-  keys. Bits:
-    * 0 - up
-    * 1 - down
-    * 2 - left
-    * 3 - right
-    * 4 - jump
-    * 5 - aux1
-    * 6 - sneak
-    * 7 - dig
-    * 8 - place
-    * 9 - zoom
+  keys.
+    * Bits:
+        * 0 - up
+        * 1 - down
+        * 2 - left
+        * 3 - right
+        * 4 - jump
+        * 5 - aux1
+        * 6 - sneak
+        * 7 - dig
+        * 8 - place
+        * 9 - zoom
+    * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -6794,43 +6801,46 @@ object you are working with still exists.
 * `set_sky(sky_parameters)`
     * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
       whether `set_sky` accepts this format. Check the legacy format otherwise.
+    * Passing no arguments resets the sky to its default values.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
+          (default: `#ffffff`)
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.
             * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
+            (default: `"regular"`)
         * `textures`: A table containing up to six textures in the following
             order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
-        * `sky_color`: A table containing the following values, alpha is ignored:
-            * `day_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during the day. (default: `#61b5f5`)
-            * `day_horizon`: ColorSpec, for the bottom half of the
-              `"regular"` sky during the day. (default: `#90d3f6`)
-            * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during dawn/sunset. (default: `#b4bafa`)
+        * `sky_color`: A table used in `"regular"` type only, containing the
+          following values (alpha is ignored):
+            * `day_sky`: ColorSpec, for the top half of the sky during the day.
+              (default: `#61b5f5`)
+            * `day_horizon`: ColorSpec, for the bottom half of the sky during the day.
+              (default: `#90d3f6`)
+            * `dawn_sky`: ColorSpec, for the top half of the sky during dawn/sunset.
+              (default: `#b4bafa`)
               The resulting sky color will be a darkened version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              sky during dawn/sunset. (default: `#bac1f0`)
+            * `dawn_horizon`: ColorSpec, for the bottom half of the sky during dawn/sunset.
+              (default: `#bac1f0`)
               The resulting sky color will be a darkened version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `night_sky`: ColorSpec, for the top half of the `"regular"`
-              sky during the night. (default: `#006bff`)
+            * `night_sky`: ColorSpec, for the top half of the sky during the night.
+              (default: `#006bff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              sky during the night. (default: `#4090ff`)
+            * `night_horizon`: ColorSpec, for the bottom half of the sky during the night.
+              (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `indoors`: ColorSpec, for when you're either indoors or
-              underground. Only applies to the `"regular"` sky.
+            * `indoors`: ColorSpec, for when you're either indoors or underground.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
-              at sunrise and sunset.
+              at sunrise and sunset. (default: `#f47d1d`)
             * `fog_moon_tint`: ColorSpec, changes the fog tinting for the moon
-              at sunrise and sunset.
+              at sunrise and sunset. (default: `#7f99cc`)
             * `fog_tint_type`: string, changes which mode the directional fog
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
@@ -6848,11 +6858,12 @@ object you are working with still exists.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
 * `set_sun(sun_parameters)`:
+    * Passing no arguments resets the sun to its default values.
     * `sun_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the sun is visible.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
-            will re-enable the mesh sun. (default: `"sun.png"`)
+            will re-enable the mesh sun. (default: "sun.png", if it exists)
         * `tonemap`: A 512x1 texture containing the tonemap for the sun
             (default: `"sun_tonemap.png"`)
         * `sunrise`: A regular texture for the sunrise texture.
@@ -6863,17 +6874,21 @@ object you are working with still exists.
 * `get_sun()`: returns a table with the current sun parameters as in
     `set_sun`.
 * `set_moon(moon_parameters)`:
+    * Passing no arguments resets the moon to its default values.
     * `moon_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the moon is visible.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
-            will re-enable the mesh moon. (default: `"moon.png"`)
+            will re-enable the mesh moon. (default: `"moon.png"`, if it exists)
+            Note: Relative to the sun, the moon texture is rotated by 180°.
+            You can use the `^[transformR180` texture modifier to achieve the same orientation.
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
             (default: `"moon_tonemap.png"`)
         * `scale`: Float controlling the overall size of the moon (default: `1`)
 * `get_moon()`: returns a table with the current moon parameters as in
     `set_moon`.
 * `set_stars(star_parameters)`:
+    * Passing no arguments resets stars to their default values.
     * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
@@ -6887,6 +6902,7 @@ object you are working with still exists.
 * `get_stars()`: returns a table with the current stars parameters as in
     `set_stars`.
 * `set_clouds(cloud_parameters)`: set cloud parameters
+    * Passing no arguments resets clouds to their default values.
     * `cloud_parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
         * `color`: basic cloud color with alpha channel, ColorSpec

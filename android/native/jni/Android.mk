@@ -91,7 +91,6 @@ LOCAL_CFLAGS += \
 	-DENABLE_GLES=1                 \
 	-DUSE_CURL=1                    \
 	-DUSE_SOUND=1                   \
-	-DUSE_FREETYPE=1                \
 	-DUSE_LEVELDB=0                 \
 	-DUSE_LUAJIT=1                  \
 	-DUSE_GETTEXT=1                 \

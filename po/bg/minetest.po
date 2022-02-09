@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-10-08 20:02+0000\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
 "Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -88,16 +88,15 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <команда>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
 msgstr "Добре"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Недостъпни команди: "
+msgstr "<няма достъпни>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -303,9 +302,8 @@ msgid "Install missing dependencies"
 msgstr "Инсталиране на липсващи зависимости"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "Инсталиране: Неподдържан вид на файла „$ 1“ или повреден архив"
+msgstr "Инсталиране: Неподдържан вид на файл или повреден архив"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -1179,7 +1177,7 @@ msgstr "Грешка при свързване (изтекло време?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
-msgstr ""
+msgstr "Не може да бъде намерена или заредена игра: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1222,14 +1220,6 @@ msgid "- Address: "
 msgstr "- Адрес: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Творчески режим: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Щети: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Режим: "
 
@@ -1243,6 +1233,7 @@ msgstr "- Обществен: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
+#, fuzzy
 msgid "- PvP: "
 msgstr "- PvP: "
 
@@ -1258,7 +1249,7 @@ msgstr "Възникна грешка:"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Достъпът е отказан. Причина: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1311,7 +1302,7 @@ msgstr "Кинематографичният режим е включен"
 
 #: src/client/game.cpp
 msgid "Client disconnected"
-msgstr ""
+msgstr "Клиентът е изключен"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1323,7 +1314,7 @@ msgstr "Свързване със сървър…"
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Грешка във връзката поради неизвестна причина"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1562,7 +1553,7 @@ msgstr "Звукът е пуснат"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Сървърът вероятно използва друго издание на %s."
 
 #: src/client/game.cpp
 #, c-format
@@ -1574,7 +1565,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Обхватът на видимостта е променен на %d"
@@ -1909,13 +1900,12 @@ msgid "Minimap in texture mode"
 msgstr "Картата е в режим на текстура"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Грешка при изтеглянето на $1"
+msgstr "Грешка при отваряне на страница"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Отваряне на страница"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1925,7 +1915,7 @@ msgstr "Паролите не съвпадат!"
 msgid "Register and Join"
 msgstr "Регистриране и вход"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -1993,7 +1983,7 @@ msgstr "Намал. на звука"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Два пъти „скок“ превключва полета"
+msgstr "Двоен „скок“ превключва летене"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -2118,15 +2108,15 @@ msgid "Muted"
 msgstr "Без звук"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Сила на звука: "
+msgstr "Сила на звука: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Въведете "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -3212,6 +3202,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr ""
 
@@ -3395,17 +3391,32 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3465,10 +3476,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5169,6 +5176,10 @@ msgid "Monospace font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Monospace font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5319,9 +5330,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5344,17 +5353,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6258,6 +6263,10 @@ msgid "Touch screen threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -6543,13 +6552,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6687,6 +6689,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr ""
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Творчески режим: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Щети: "
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Инсталиране: файл: „$1“"

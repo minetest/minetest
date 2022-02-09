@@ -303,8 +303,7 @@ void set_default_settings()
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("serverlist_file", "favoriteservers.json");
 
-#if USE_FREETYPE
-	settings->setDefault("freetype", "true");
+	// General font settings
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
 	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Italic.ttf"));
 	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
@@ -322,14 +321,6 @@ void set_default_settings()
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
 	std::string font_size_str = std::to_string(TTF_DEFAULT_FONT_SIZE);
-#else
-	settings->setDefault("freetype", "false");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
-
-	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
-#endif
-	// General font settings
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("chat_font_size", "0"); // Default "font_size"
@@ -395,7 +386,7 @@ void set_default_settings()
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "6125");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
-	settings->setDefault("max_objects_per_block", "64");
+	settings->setDefault("max_objects_per_block", "256");
 	settings->setDefault("server_map_save_interval", "5.3");
 	settings->setDefault("chat_message_max_size", "500");
 	settings->setDefault("chat_message_limit_per_10sec", "8.0");
@@ -488,7 +479,6 @@ void set_default_settings()
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
 	settings->setDefault("fps_max_unfocused", "10");
-	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");

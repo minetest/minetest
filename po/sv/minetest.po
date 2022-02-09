@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-11-27 18:30+0000\n"
-"Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2021-12-18 21:51+0000\n"
+"Last-Translator: xerxstirb <xerxstirb@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
 "Language: sv\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -52,7 +52,7 @@ msgstr "Detta kommando är inaktiverat av servern."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Återföds"
+msgstr "Återuppstå"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -90,9 +90,8 @@ msgid "OK"
 msgstr "OK"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Kommando inte tillgängligt: "
+msgstr "<inget tillgängligt>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -152,7 +151,7 @@ msgstr "Beroenden:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Inaktivera allt"
+msgstr "Avaktivera alla"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -160,7 +159,7 @@ msgstr "Avaktivera modpaket"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Aktivera alla"
+msgstr "Aktivera allt"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
@@ -249,7 +248,7 @@ msgstr "$1 nödvändiga beroenden kunde inte hittas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 kommer att installeras och $2 beroenden hoppas över."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -297,9 +296,8 @@ msgid "Install missing dependencies"
 msgstr "Installera saknade beroenden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "Installation: ej stöd för filtyp \"$1\" eller trasigt arkiv"
+msgstr "Installation: Filtyp stöds inte eller trasigt arkiv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -630,7 +628,6 @@ msgid "Offset"
 msgstr "Förskjutning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Persistens"
 
@@ -704,7 +701,7 @@ msgstr "Z-spridning"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "absolutvärde"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
@@ -719,7 +716,7 @@ msgstr "standarder"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "lättad"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -1009,7 +1006,7 @@ msgstr "Ändra Tangenter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr "Sammankopplat glas"
+msgstr "Sammanfogat Glas"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
@@ -1168,9 +1165,8 @@ msgid "Connection error (timed out?)"
 msgstr "Anslutningsfel (tidsgräns nådd?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Kunde inte hitta eller ladda spel \""
+msgstr "Kunde inte hitta eller ladda spel: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1213,14 +1209,6 @@ msgid "- Address: "
 msgstr "- Bindningsadress: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Kreativt läge: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Aktivera skada: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Läge: "
 
@@ -1242,14 +1230,13 @@ msgid "- Server Name: "
 msgstr "- Servernamn: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Ett fel uppstod:"
+msgstr "Ett serialiseringsfel uppstod:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Åtkomst nekad. Anledning: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1260,21 +1247,20 @@ msgid "Automatic forward enabled"
 msgstr "Automatiskt framåt aktiverat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Blockgränser"
+msgstr "Blockgränser dolda"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Blockgränser visas för alla block"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Blockgränser visas för det aktuella blocket"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Blockgränser visas för närliggande block"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1286,7 +1272,7 @@ msgstr "Kamerauppdatering aktiverat"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr ""
+msgstr "Kan inte visa blockgränser (behöver behörigheten 'basic_debug')"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1301,9 +1287,8 @@ msgid "Cinematic mode enabled"
 msgstr "Filmiskt länge aktiverat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Klientmoddande"
+msgstr "Klienten frånkopplades"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1315,7 +1300,7 @@ msgstr "Ansluter till server..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Anslutningen misslyckades av okänd anledning"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1357,7 +1342,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Kunde inte lösa adressen: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1560,26 +1545,25 @@ msgid "Sound system is not supported on this build"
 msgstr "Ljudsystem stöds inte i detta bygge"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Ljudvolym"
+msgstr "Ljud påsatt"
 
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Servern kör troligtvist en annan version av %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Kan inte ansluta till %s eftersom IPv6 är inaktiverad"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Kan inte lyssna på %s eftersom IPv6 är inaktiverad"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Visningsområde ändrad till %d"
@@ -1914,13 +1898,12 @@ msgid "Minimap in texture mode"
 msgstr "Minimapp i texturläge"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Misslyckades ladda ner $1"
+msgstr "Misslyckades att öppna hemsida"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Öppnar hemsida"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1930,7 +1913,7 @@ msgstr "Lösenorden matchar inte!"
 msgid "Register and Join"
 msgstr "Registrera och Anslut"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2098,7 +2081,7 @@ msgstr "Slå av/på pitchmove"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr "tryck knapp"
+msgstr "tryck på knapp"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2125,9 +2108,9 @@ msgid "Muted"
 msgstr "Tyst"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Ljudvolym: "
+msgstr "Ljudvolym: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2147,6 +2130,9 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) Fastställer den virtuella joystickens position.\n"
+"Om inaktiverad centreras den virtuella joysticken till det första "
+"fingertryckets position."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2154,6 +2140,9 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
+"(Android) Använd den virtuella joysticken för \"Aux1\"-knappen.\n"
+"Om aktiverad kommer den virtuella joysticken att aktivera \"Aux1\"-knappen "
+"när den är utanför huvudcirkeln."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2185,34 +2174,41 @@ msgid ""
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
 msgstr ""
+"(X,Y,Z) fraktalens skala i noder.\n"
+"Den riktiga storleken kommer att vara 2 till 3 gånger större.\n"
+"Siffrorna kan göras mycket stora, men fraktalen\n"
+"behöver inte rymmas i världen.\n"
+"Öka dessa för att 'zooma' in i fraktalens detaljer.\n"
+"Standardvärdet är för en vertikalt mosad form som passar för\n"
+"en ö, ställ in alla 3 siffrorna lika för den ursprungliga formen."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr ""
+msgstr "2D-brus som styr formen/storleken på berg."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr ""
+msgstr "2D-brus som styr formen/storleken av rullande kullar."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr ""
+msgstr "2D-brus som styr formen/storleken på steppberg."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr ""
+msgstr "2D-brus som styr storleken/förekomsten av bergskedjor med rågångar."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr ""
+msgstr "2D-brus som styr storleken/förekomsten av rullande kullar."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr ""
+msgstr "2D-brus som styr storleken/förekomsten av bergskedjor med rågångar."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr ""
+msgstr "2D-brus som lokaliserar floddalar och kanaler."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2224,7 +2220,7 @@ msgstr "3D-läge"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
-msgstr ""
+msgstr "Parallaxstyrka i 3D-läge"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2245,6 +2241,12 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"3D-brus som definierar strukturen hos floatlands.\n"
+"Om det ändras från standardvärdet kan brusets 'skala' (vanligtvist 0.7) "
+"behöva\n"
+"justeras, eftersom avsmalningen av floatlands fungerar bäst när detta brus "
+"har\n"
+"ett värdeintervall på ungefär -2.0 till 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2256,11 +2258,11 @@ msgstr "3D brusdefinierad terräng."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr ""
+msgstr "3D-brus för bergsöverhäng, klippor osv. Vanligtvist små variationer."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "3D-brus som bestämmer antalet fängelsehålor per mappchunk."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2364,6 +2366,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Justera den identifierade skärmdensiteten, vilket används för skalning av "
+"gränssnittet."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2374,6 +2378,11 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Justerar tätheten hos floatlandslagret.\n"
+"Öka värdet för att öka tätheten. Kan vara positiv eller negativ.\n"
+"Värde = 0.0: 50% av volymen är floatland.\n"
+"Värde = 2.0 (kan vara högre beroende på 'mgv7_np_floatland', testa alltid\n"
+"för att vara säker) skapar ett fast floatlandslager."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2387,6 +2396,12 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
+"Ändrar ljuskurvan genom att tillämpa 'gammakorrigering' på den.\n"
+"Högre värden leder till att de mellersta och lägre ljusnivåerna blir "
+"ljusare.\n"
+"Värdet '1.0' lämnar ljuskurvan oförändrad. Detta har endast betydande\n"
+"effekt på dagsljus och konstgjort ljus, det har väldigt liten effekt på\n"
+"naturligt nattljus."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2418,11 +2433,11 @@ msgstr "Annonsera till serverlistan."
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr ""
+msgstr "Infoga objektnamn"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr ""
+msgstr "Infoga objektnamn till verktygstips."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -2437,6 +2452,8 @@ msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
+"Armtröghet, ger mer realistisk rörelse av armen\n"
+"när kameran förflyttar sig."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -2503,7 +2520,7 @@ msgstr "Bakåttangent"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
-msgstr ""
+msgstr "Grundnivå"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
@@ -2543,7 +2560,7 @@ msgstr "Biotopoljud"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
-msgstr ""
+msgstr "Distans för optimering av blockskickning"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2576,6 +2593,11 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
+"Kameraavståndet 'nära urklippsplan' i noder, mellan 0 och 0.25\n"
+"Fungerar bara på GLES-plattformar. De flesta användare behöver inte ändra "
+"detta.\n"
+"Ökning kan minska artefakter på svagare GPU:er.\n"
+"0.1 = Standard, 0.25 = Bra värde för svagare tabletter."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2638,13 +2660,14 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Center för ljuskurvans förstärkningsområde.\n"
+"0.0 är minsta ljusnivå, 1.0 är högsta ljusnivå."
 
 #: src/settings_translation_file.cpp
 msgid "Chat command time message threshold"
 msgstr "Chattkommando tidströskel"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
 msgstr "Chattkommandon"
 
@@ -2662,7 +2685,7 @@ msgstr "Chattens loggnivå"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
-msgstr ""
+msgstr "Gräns för antalet chattmeddelanden"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message format"
@@ -2674,16 +2697,15 @@ msgstr "Chattmeddelandens sparkningströskel"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Högsta längd för chattmeddelande"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "Chattangent Av/På"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Chatt visas"
+msgstr "Weblänkar i chatt"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2706,6 +2728,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Klickbara weblänkar (mellanklicka eller Ctrl+vänsterklicka) aktiverad i "
+"chattkonsolens utdata."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2725,7 +2749,7 @@ msgstr "Begränsningar för klientmoddning"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Begränsing av klientsidig nodsökningsområde"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2765,6 +2789,13 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Kommaseparerad lista av flaggar som ska döljas i innehållsdatabasen.\n"
+"\"nonfree\" kan användas för att gömma paket som inte kvalifieras som 'fri "
+"programvara',\n"
+"per Free Software Foundations definition.\n"
+"Du kan även specifiera innehållsvarningar.\n"
+"Dessa flaggor är oberoende från Minetest-versioner,\n"
+"så en full lista finns på https://content.minetest.net/help/content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2795,6 +2826,10 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
+"Komprimeringsnivå att använda när mappblock sparas till disk.\n"
+"-1 - använd standardnivå\n"
+"0 - minst komprimering, snabbast\n"
+"9 - bäst komprimering, långsammast"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2803,6 +2838,10 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
+"Komprimeringsnivå att använda när mappblock skickas till klienten.\n"
+"-1 - använd standardnivå\n"
+"0 - minst komprimering, snabbast\n"
+"9 - bäst komprimering, långsammast"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2830,11 +2869,11 @@ msgstr "Konsolhöjd"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "ContentDB Flaggsvartlista"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "ContentDB Högsta Parallella Nedladdningar"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2849,6 +2888,9 @@ msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"Kontinuerlig framåtgående rörelse, växlas med hjälp av autoforward-"
+"tagenten.\n"
+"Tryck på autoforward-knappen igen eller på bakåtknappen för att inaktivera."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -2867,7 +2909,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Styr sjunkhastigheten i vätska."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2883,6 +2925,9 @@ msgid ""
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
 "intensive noise calculations."
 msgstr ""
+"Kontrollerar tunnlarnas bredd, ett mindre värde ger bredare tunnlar.\n"
+"Värde >= 10.0 inaktiverar helt generering av tunnlar och undviker\n"
+"intensiva brusberäkningar."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2897,13 +2942,12 @@ msgid "Crosshair alpha"
 msgstr "Hårkorsalpha"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Hårkorsalpha (ogenomskinlighet, mellan 0 och 255).\n"
-"Kontrollerar även objektets hårkorsfärg"
+"Kontrollerar även objektets hårkorsfärg."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2914,6 +2958,8 @@ msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Hårkorsfärg (R,G,B).\n"
+"Styr även hårkorsets färg på objektet"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2941,7 +2987,7 @@ msgstr "Tangent för volymsänkning"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistance to movement."
-msgstr ""
+msgstr "Minska detta för att öka vätskans motstånd mot rörelser."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2985,6 +3031,10 @@ msgid ""
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
+"Definiera kvaliteten på skuggfiltrering.\n"
+"Detta simulerar den mjuka skuggeffekten genom att tillämpa en PCF- eller "
+"Poisson-skiva\n"
+"men använder också mer resurser."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3095,7 +3145,7 @@ msgstr "Desynkronisera blockanimation"
 
 #: src/settings_translation_file.cpp
 msgid "Dig key"
-msgstr ""
+msgstr "Gräv-knapp"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3111,7 +3161,7 @@ msgstr "Tillåt inte tomma lösenord"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
-msgstr ""
+msgstr "Skalningsfaktor för displaytäthet"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3119,27 +3169,27 @@ msgstr "Domännamn för server, att visas i serverlistan."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "Dubbeltryck på hoppknapp för att flyga"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr ""
+msgstr "Om du trycker på hoppknappen aktiveras flygläge."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "Släpp objekt-tagent"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
-msgstr ""
+msgstr "Dumpa felsökningsinformation för mapgen."
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
-msgstr ""
+msgstr "Maximalt Y för fängelsehålor"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
-msgstr ""
+msgstr "Minimalt Y för fängelsehålor"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
@@ -3150,12 +3200,16 @@ msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
 msgstr ""
+"Aktivera IPv6-stöd (för både klient och server).\n"
+"Krävs för att IPv6-anslutningar ska fungera."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable Lua modding support on client.\n"
 "This support is experimental and API can change."
 msgstr ""
+"Aktivera stöd för Lua-modifiering på klienten.\n"
+"Detta är experimentellt och API:et kan ändras."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3163,56 +3217,65 @@ msgid ""
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
+"Aktivera Poisson-diskfiltrering.\n"
+"När aktiverad används Poisson-disk för att göra \"mjuka skuggor\". Annars "
+"används PCF-filtrering."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
+"Aktivera färgade skuggor.\n"
+"När aktiverad kastar genomskinliga noder färgade skuggor. Detta är intensivt."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
-msgstr ""
+msgstr "Aktivera konsollfönster"
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for all players"
-msgstr ""
+msgstr "Aktivera kreativt läge för alla spelare"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
-msgstr ""
+msgstr "Aktivera joysticks"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
-msgstr ""
+msgstr "Aktivera stöd för mod-kanaler."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr ""
+msgstr "Aktivera modsäkerhet"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "Gör det möjligt för spelare att skadas och dö."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Aktivera slumpmässig användarinmatning (används endast för testning)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable register confirmation"
-msgstr ""
+msgstr "Aktivera registreringsbekräftelse"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable register confirmation when connecting to server.\n"
 "If disabled, new account will be registered automatically."
 msgstr ""
+"Aktivera bekräftelse av registrering när du ansluter till servern.\n"
+"När inaktiverad registreras ett nytt konto automatiskt."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"Möjliggör mjuk belysning med enkel omgivande ocklusion.\n"
+"Inaktivera för prestanda eller för ett annat utseende."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3222,6 +3285,10 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"Aktivera för att hindra gamla klienter från att ansluta.\n"
+"Äldre klienter är kompatibla i och med att de inte krashar när de ansluter\n"
+"till nya servrar, men de kanske inte stöder alla nya funktioner du förväntar "
+"dig."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3230,12 +3297,18 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Aktivera användning av fjärrmedieserver (om tillhandahålld av servern).\n"
+"Fjärrservrar är ett betydligt snabbare sätt att hämta media (t.ex. "
+"texturer)\n"
+"när du ansluter till servern."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable vertex buffer objects.\n"
 "This should greatly improve graphics performance."
 msgstr ""
+"Aktivera vertexbuffertobjekt.\n"
+"Detta bör avsevärt förbättra grafikprestandan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3249,6 +3322,9 @@ msgid ""
 "Ignored if bind_address is set.\n"
 "Needs enable_ipv6 to be enabled."
 msgstr ""
+"Aktivera/avaktivera en IPv6-server.\n"
+"Ignoreras om bind_address är angedd.\n"
+"Kräver att enable_ipv6 är aktiverat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3257,6 +3333,10 @@ msgid ""
 "appearance of high dynamic range images. Mid-range contrast is slightly\n"
 "enhanced, highlights and shadows are gradually compressed."
 msgstr ""
+"Aktiverar Hable's 'Uncharted 2' filmisk tonmappning.\n"
+"Simulerar tonkurvan hos fotografisk film och hur den liknar utseendet\n"
+"på bilder med högt dynamiskt omfång. Kontrasten i mitten av intervallet\n"
+"förstärks något, ljuspunkter och skuggor komprimeras gradvis."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -3264,11 +3344,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Aktiverar cachning av facedirroterade mesher."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr ""
+msgstr "Aktiverar minimap."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3277,14 +3357,24 @@ msgid ""
 "sound controls will be non-functional.\n"
 "Changing this setting requires a restart."
 msgstr ""
+"Aktiverar ljudsystemet.\n"
+"När inaktiverat inaktiveras alla ljud överallt och spelets\n"
+"ljudkontroller kommer inte fungera.\n"
+"Omstart krävs för att ändra den här inställningen."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
-msgstr ""
+msgstr "Intervall för utskrift av motorprofileringsdata"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr ""
+msgstr "Entitetsmetoder"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3298,53 +3388,55 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
-msgstr ""
+msgstr "FPS när ofokuserad eller pausad"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
-msgstr ""
+msgstr "Faktorbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
-msgstr ""
+msgstr "Fallets bobbingfaktor"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
-msgstr ""
+msgstr "Sökväg för reservtypsnitt"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "Snabbknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "Acceleration i snabbt läge"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "Hastighet i snabbt läge"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Snabb rörelse"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Snabb rörelse (via \"Aux1\"-tagenten).\n"
+"Detta kräver \"snabb\"-privilegiet på servern."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
-msgstr ""
+msgstr "Synfält"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
-msgstr ""
+msgstr "Synfält i grader."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3352,18 +3444,20 @@ msgid ""
 "the\n"
 "Multiplayer Tab."
 msgstr ""
+"Filen i client/serverlist/ som innehåller dina favoritservrar som visas i\n"
+"fliken Anslut Spel."
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth"
-msgstr ""
+msgstr "Fyllnadsdjup"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
-msgstr ""
+msgstr "Fyllnadsdjupbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr ""
+msgstr "Filmisk tonmappning"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3375,27 +3469,28 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
-msgstr ""
+msgstr "Filtrering"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
 msgstr ""
+"Första av 4 2D-brus som tillsammans definierar höjden på kullar och berg."
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
-msgstr ""
+msgstr "Första av två 3D-brus som tillsammans definierar tunnlar."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
-msgstr ""
+msgstr "Fastställd kartseed"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr ""
+msgstr "Fast virtuell joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
-msgstr ""
+msgstr "Floatlanddensitet"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland maximum Y"
@@ -3423,56 +3518,73 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "Flygknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Flyga"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Dimma"
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
-msgstr ""
+msgstr "Start av dimma"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "Växlingstagent för dimma"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
-msgstr ""
+msgstr "Fetstilat typsnitt som standard"
 
 #: src/settings_translation_file.cpp
 msgid "Font italic by default"
-msgstr ""
+msgstr "Kursivt typsnitt som standard"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "Typsnittsskugga"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr ""
+msgstr "Genomskinlighet för typsnittsskugga"
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
+msgstr "Typsnittsstorlek"
+
+#: src/settings_translation_file.cpp
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
-msgstr ""
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr "Storleken för standardtypsnittet i punkter (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
-msgstr ""
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
+msgstr "Storleken för monospacetypsnittet i punkter (pt)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3484,70 +3596,69 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Format för skärmdumpar."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr ""
+msgstr "Formspec Standardbakgrundsfärg"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr ""
+msgstr "Formspec Standardbakgrundsopacitet"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr ""
+msgstr "Formspec Standardbakgrundsfärg för fullskärm"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
+msgstr "Formspec Standardbakgrundsopacitet för fullskärm"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background color (R,G,B)."
-msgstr ""
+msgstr "Formspec Standardbakgrundsfärg (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background opacity (between 0 and 255)."
-msgstr ""
+msgstr "Formspec standardbakgrundsopacitet (mellan 0 och 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr ""
+msgstr "Formspec bakgrundsfärg för fullskärm (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
-msgstr ""
+msgstr "Formspec bakgrundsopacitet för fullskärm (mellan 0 och 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr ""
+msgstr "Framåtknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
 msgstr ""
+"Fyra av 4 2D-brus som tillsammans definerar höjden för kullar och berg."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
-msgstr ""
+msgstr "Fraktaltyp"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr ""
+msgstr "Bråkdel av den synliga distansen som dimma börjar"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"Hur långt bort block genereras för klienter, mätt i mappblock (16 noder)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
+"Från hur långt block skickas till klienten, mätt i mappblock (16 noder)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3560,27 +3671,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Fullskärm"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Fullskärmsläge."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Gränssnittsskalning"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr ""
+msgstr "Filter för Gränssnittsskalning"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "Filter för Gränssnittsskalning txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
-msgstr ""
+msgstr "Globala återkallelser"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3603,15 +3714,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitation"
 
 #: src/settings_translation_file.cpp
 msgid "Ground level"
-msgstr ""
+msgstr "Marknivå"
 
 #: src/settings_translation_file.cpp
 msgid "Ground noise"
@@ -3619,15 +3730,15 @@ msgstr "Ytbrus"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
-msgstr ""
+msgstr "HTTP-moddar"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
-msgstr ""
+msgstr "HUD-skalningsfaktor"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "HUD-växlingsknapp"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3648,58 +3759,60 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
-msgstr ""
+msgstr "Värmeblandingsbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
-msgstr ""
+msgstr "Värmebrus"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
-msgstr ""
+msgstr "Höjden av den inledande fönsterstorleken. Ignorerad i fullskärmsläge."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
-msgstr ""
+msgstr "Höjdbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr ""
+msgstr "Höjdvalbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
-msgstr ""
+msgstr "Kullslättning"
 
 #: src/settings_translation_file.cpp
 msgid "Hill threshold"
-msgstr ""
+msgstr "Kulltröskel"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness1 noise"
-msgstr ""
+msgstr "Kullig1 brus"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness2 noise"
-msgstr ""
+msgstr "Kullig2 brus"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness3 noise"
-msgstr ""
+msgstr "Kullig3 brus"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness4 noise"
-msgstr ""
+msgstr "Kullig4 brus"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Hemsida för servern, som visas i serverlistan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"Horisontell acceleration i luften vid hopp eller fall,\n"
+"i noder per sekund per sekund."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4971,32 +5084,28 @@ msgid "Mapgen Fractal"
 msgstr "Mapgen Fraktal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Kartgenerator"
+msgstr "Specifika flaggar för fraktal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5"
-msgstr "Kartgenerator"
+msgstr "Kartgenerator V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5 specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V6"
-msgstr "Kartgenerator"
+msgstr "Kartgenerator V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7"
-msgstr "Kartgenerator"
+msgstr "Kartgenerator V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7 specific flags"
@@ -5240,6 +5349,10 @@ msgid "Monospace font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Monospace font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5390,9 +5503,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5415,17 +5526,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -5446,18 +5553,16 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Pitch move key"
-msgstr "Tangent för filmiskt länge"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "Tangent för filmiskt länge"
+msgstr "Placeraknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -5482,9 +5587,8 @@ msgid "Player versus player"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
-msgstr "Bilinjär filtrering"
+msgstr "Poissonfiltrering"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5636,9 +5740,8 @@ msgid "River depth"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "Grottoljud"
+msgstr "Flodbrus"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5753,7 +5856,6 @@ msgid "Selection box width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Selects one of 18 fractal types.\n"
 "1 = 4D \"Roundy\" Mandelbrot set.\n"
@@ -5775,25 +5877,25 @@ msgid ""
 "17 = 4D \"Mandelbulb\" Mandelbrot set.\n"
 "18 = 4D \"Mandelbulb\" Julia set."
 msgstr ""
-"Val av 18 fractaler från 9 formler.\n"
-"1 = 4D \"Roundy\" mandelbrot set.\n"
-"2 = 4D \"Roundy\" julia set.\n"
-"3 = 4D \"Squarry\" mandelbrot set.\n"
-"4 = 4D \"Squarry\" julia set.\n"
-"5 = 4D \"Mandy Cousin\" mandelbrot set.\n"
-"6 = 4D \"Mandy Cousin\" julia set.\n"
-"7 = 4D \"Variation\" mandelbrot set.\n"
-"8 = 4D \"Variation\" julia set.\n"
-"9 = 3D \"Mandelbrot/Mandelbar\" mandelbrot set.\n"
-"10 = 3D \"Mandelbrot/Mandelbar\" julia set.\n"
-"11 = 3D \"Christmas Tree\" mandelbrot set.\n"
-"12 = 3D \"Christmas Tree\" julia set.\n"
-"13 = 3D \"Mandelbulb\" mandelbrot set.\n"
-"14 = 3D \"Mandelbulb\" julia set.\n"
-"15 = 3D \"Cosine Mandelbulb\" mandelbrot set.\n"
-"16 = 3D \"Cosine Mandelbulb\" julia set.\n"
-"17 = 4D \"Mandelbulb\" mandelbrot set.\n"
-"18 = 4D \"Mandelbulb\" julia set."
+"Val av 18 fraktaler.\n"
+"1 = 4D \"Roundy\" Mandelbrot set.\n"
+"2 = 4D \"Roundy\" Julia set.\n"
+"3 = 4D \"Squarry\" Mandelbrot set.\n"
+"4 = 4D \"Squarry\" Julia set.\n"
+"5 = 4D \"Mandy Cousin\" Mandelbrot set.\n"
+"6 = 4D \"Mandy Cousin\" Julia set.\n"
+"7 = 4D \"Variation\" Mandelbrot set.\n"
+"8 = 4D \"Variation\" Julia set.\n"
+"9 = 3D \"Mandelbrot/Mandelbar\" Mandelbrot set.\n"
+"10 = 3D \"Mandelbrot/Mandelbar\" Julia set.\n"
+"11 = 3D \"Christmas Tree\" Mandelbrot set.\n"
+"12 = 3D \"Christmas Tree\" Julia set.\n"
+"13 = 3D \"Mandelbulb\" Mandelbrot set.\n"
+"14 = 3D \"Mandelbulb\" Julia set.\n"
+"15 = 3D \"Cosine Mandelbulb\" Mandelbrot set.\n"
+"16 = 3D \"Cosine Mandelbulb\" Julia set.\n"
+"17 = 4D \"Mandelbulb\" Mandelbrot set.\n"
+"18 = 4D \"Mandelbulb\" Julia set."
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -5893,9 +5995,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shader path"
-msgstr "Välj sökväg"
+msgstr "Shader-sökväg"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6025,18 +6126,16 @@ msgid "Sneak key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneaking speed"
-msgstr "Nedstigande hastighet"
+msgstr "Smyghastighet"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft shadow radius"
-msgstr "Molnradie"
+msgstr "Radie för mjuk skugga"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6138,9 +6237,8 @@ msgid "Terrain base noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain height"
-msgstr "Bas för terränghöjd"
+msgstr "Terränghöjd"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain higher noise"
@@ -6353,9 +6451,12 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touch screen threshold"
-msgstr "Strandoljudströskel"
+msgstr "Tröskelvärde för pekskärm"
+
+#: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6591,24 +6692,20 @@ msgid "Waving leaves"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids"
-msgstr "Vajande Löv"
+msgstr "Vajande vätskor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave height"
-msgstr "Böljande Vatten"
+msgstr "Våghöjd för vajande vätskor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave speed"
-msgstr "Vajande Löv"
+msgstr "Våghastighet för vajande vätskor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wavelength"
-msgstr "Böljande Vatten"
+msgstr "Våglängd för vajande vätskor"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
@@ -6643,13 +6740,6 @@ msgid ""
 "bilinear/trilinear/anisotropic filtering is enabled.\n"
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6717,9 +6807,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "Världnamn"
+msgstr "Världsstarttid"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6770,14 +6859,12 @@ msgid "Y-level of cavern upper limit."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y-level of higher terrain that creates cliffs."
-msgstr "Y-nivå av lägre terräng och sjöbottnar."
+msgstr "Y-nivå för högre terräng som skapar klippor."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y-level of lower terrain and seabed."
-msgstr "Y-nivå av lägre terräng och sjöbottnar."
+msgstr "Y-nivå för lägre terräng och sjöbottnar."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
@@ -6788,13 +6875,18 @@ msgid "cURL file download timeout"
 msgstr "cURL filhemladdning tidsgräns"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "cURL interactive timeout"
-msgstr "cURL-timeout"
+msgstr "cURL-interaktivtimeout"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "cURL parallellgräns"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Kreativt läge: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Aktivera skada: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6879,6 +6971,9 @@ msgstr "cURL parallellgräns"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Laddar ner och installerar $1, vänligen vänta..."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "FreeType-typsnitt"
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Installera: fil: \"$1\""

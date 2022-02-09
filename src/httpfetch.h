@@ -23,10 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "config.h"
 
-// Can be used in place of "caller" in asynchronous transfers to discard result
-// (used as default value of "caller")
+// These can be used in place of "caller" in to specify special handling.
+// Discard result (used as default value of "caller").
 #define HTTPFETCH_DISCARD 0
+// Indicates that the result should not be discarded when performing a
+// synchronous request (since a real caller ID is not needed for synchronous
+// requests because the result does not have to be retrieved later).
 #define HTTPFETCH_SYNC 1
+// Print response body to console if the server returns an error code.
+#define HTTPFETCH_PRINT_ERR 2
+// Start of regular allocated caller IDs.
+#define HTTPFETCH_CID_START 3
 
 //  Methods
 enum HttpMethod : u8
@@ -43,11 +50,11 @@ struct HTTPFetchRequest
 
 	// Identifies the caller (for asynchronous requests)
 	// Ignored by httpfetch_sync
-	unsigned long caller = HTTPFETCH_DISCARD;
+	u64 caller = HTTPFETCH_DISCARD;
 
 	// Some number that identifies the request
 	// (when the same caller issues multiple httpfetch_async calls)
-	unsigned long request_id = 0;
+	u64 request_id = 0;
 
 	// Timeout for the whole transfer, in milliseconds
 	long timeout;
@@ -85,8 +92,8 @@ struct HTTPFetchResult
 	long response_code = 0;
 	std::string data = "";
 	// The caller and request_id from the corresponding HTTPFetchRequest.
-	unsigned long caller = HTTPFETCH_DISCARD;
-	unsigned long request_id = 0;
+	u64 caller = HTTPFETCH_DISCARD;
+	u64 request_id = 0;
 
 	HTTPFetchResult() = default;
 
@@ -107,19 +114,19 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request);
 
 // If any fetch for the given caller ID is complete, removes it from the
 // result queue, sets the fetch result and returns true. Otherwise returns false.
-bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result);
+bool httpfetch_async_get(u64 caller, HTTPFetchResult &fetch_result);
 
 // Allocates a caller ID for httpfetch_async
 // Not required if you want to set caller = HTTPFETCH_DISCARD
-unsigned long httpfetch_caller_alloc();
+u64 httpfetch_caller_alloc();
 
 // Allocates a non-predictable caller ID for httpfetch_async
-unsigned long httpfetch_caller_alloc_secure();
+u64 httpfetch_caller_alloc_secure();
 
 // Frees a caller ID allocated with httpfetch_caller_alloc
 // Note: This can be expensive, because the httpfetch thread is told
 // to stop any ongoing fetches for the given caller.
-void httpfetch_caller_free(unsigned long caller);
+void httpfetch_caller_free(u64 caller);
 
 // Performs a synchronous HTTP request. This blocks and therefore should
 // only be used from background threads.

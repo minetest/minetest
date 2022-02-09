@@ -121,9 +121,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"date",
 		"difftime",
 		"getenv",
-		"setlocale",
 		"time",
-		"tmpname",
 	};
 	static const char *debug_whitelist[] = {
 		"gethook",
@@ -219,6 +217,7 @@ void ScriptApiSecurity::initializeSecurity()
 	// And replace unsafe ones
 	SECURE_API(os, remove);
 	SECURE_API(os, rename);
+	SECURE_API(os, setlocale);
 
 	lua_setglobal(L, "os");
 	lua_pop(L, 1);  // Pop old OS
@@ -249,6 +248,11 @@ void ScriptApiSecurity::initializeSecurity()
 	}
 	lua_pop(L, 1);  // Pop old jit
 #endif
+
+	// Get rid of 'core' in the old globals, we don't want anyone thinking it's
+	// safe or even usable.
+	lua_pushnil(L);
+	lua_setfield(L, old_globals, "core");
 
 	lua_pop(L, 1); // Pop globals_backup
 
@@ -285,7 +289,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"rawset",
 		"select",
 		"setfenv",
-		// getmetatable can be used to escape the sandbox
+		// getmetatable can be used to escape the sandbox <- ???
 		"setmetatable",
 		"tonumber",
 		"tostring",
@@ -307,7 +311,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"time"
 	};
 	static const char *debug_whitelist[] = {
-		"getinfo",
+		"getinfo", // used by builtin and unset before mods load
 		"traceback"
 	};
 
@@ -866,4 +870,22 @@ int ScriptApiSecurity::sl_os_remove(lua_State *L)
 	lua_pushvalue(L, 1);
 	lua_call(L, 1, 2);
 	return 2;
+}
+
+
+int ScriptApiSecurity::sl_os_setlocale(lua_State *L)
+{
+	const bool cat = lua_gettop(L) > 1;
+	// Don't allow changes
+	if (!lua_isnoneornil(L, 1)) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	push_original(L, "os", "setlocale");
+	lua_pushnil(L);
+	if (cat)
+		lua_pushvalue(L, 2);
+	lua_call(L, cat ? 2 : 1, 1);
+	return 1;
 }

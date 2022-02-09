@@ -753,3 +753,11 @@ inline irr::core::stringw utf8_to_stringw(const std::string &input)
  * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
 std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix);
+
+/**
+ * Prints a sanitized version of a string without control characters.
+ * '\t' and '\n' are allowed, as are UTF-8 control characters (e.g. RTL).
+ * ASCII control characters are replaced with their hex encoding in angle
+ * brackets (e.g. "a\x1eb" -> "a<1e>b").
+ */
+void safe_print_string(std::ostream &os, const std::string &str);

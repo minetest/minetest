@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2020-10-20 18:26+0000\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3.1\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -1237,14 +1237,6 @@ msgid "- Address: "
 msgstr "- علامت: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- مود کرياتيف: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- بوليه چدرا "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- مود: "
 
@@ -1602,7 +1594,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "جارق ڤندڠ دتوکر ک%d"
@@ -1954,7 +1946,7 @@ msgstr "کات لالوان تيدق ڤادن!"
 msgid "Register and Join"
 msgstr "دفتر دان سرتاٴي"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3334,6 +3326,12 @@ msgstr ""
 "ڤڠوبهن تتڤن اين ممرلوکن ڤرمولاٴن سمولا."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr ""
 
@@ -3528,11 +3526,17 @@ msgid "Font size"
 msgstr "سايز فون"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "سايز فون باݢي فون لالاي دالم اونيت تيتيق (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "سايز فون باݢي فون monospace دالم اونيت تيتيق (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3542,6 +3546,17 @@ msgid ""
 msgstr ""
 "سايز فون توليسن سيمبڠ بارو٢ اين دان ڤروم دالم اونيت تيتيق (pt).\n"
 "نيلاي 0 اکن مڠݢوناکن سايز فون لالاي."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3604,10 +3619,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "بهاݢين درڤد جارق بوليه ليهت دمان کابوت مولا دجان"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "فون FreeType"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3945,7 +3956,7 @@ msgid ""
 "If negative, liquid waves will move backwards.\n"
 "Requires waving liquids to be enabled."
 msgstr ""
-"سچڤت مان ݢلورا چچاٴير اکن برݢرق. نيلاي تيڠݢي = لبيه لاجو.\n"
+"سچڤت مان ݢلورا چچاٴير اکن برݢرق. نيلاي تيڠݢي = لبيه چڤت.\n"
 "جيک نيلاي نيݢاتيف⹁ ݢلورا چچاٴير اکن برݢرق کبلاکڠ.\n"
 "ممرلوکن تتڤن چچاٴير برݢلورا دبوليهکن."
 
@@ -5588,6 +5599,11 @@ msgid "Monospace font size"
 msgstr "سايز فون monospace"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "سايز فون monospace"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5745,10 +5761,9 @@ msgid "Optional override for chat weblink color."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5778,10 +5793,9 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "لالوان کديريکتوري تيکستور. سموا تيکستور دچاري دري سيني داهولو."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "لالوان فون لالاي.\n"
@@ -5790,10 +5804,9 @@ msgstr ""
 "فون برباليق اکن دݢوناکن سکيراڽ فون اين تيدق داڤت دمواتکن."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "لالوان فون monospace.\n"
@@ -6811,6 +6824,10 @@ msgid "Touch screen threshold"
 msgstr "نيلاي امبڠ سکرين سنتوه"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -7129,15 +7146,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"منتڤکن سام اد فون FreeType دݢوناکن⹁ ممرلوکن سوکوڠن Freetype\n"
-"دکومڤيل برسام. جيک دلومڤوهکن⹁ فون ڤتا بيت دان ۏيکتور XML اکن دݢوناکن."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7298,6 +7306,12 @@ msgstr ""
 msgid "cURL parallel limit"
 msgstr ""
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- مود کرياتيف: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- بوليه چدرا "
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7387,6 +7401,9 @@ msgstr ""
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "سايز فون باݢي فون برباليق دالم اونيت تيتيق (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "فون FreeType"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "BPP سکرين ڤنوه"
@@ -7492,6 +7509,14 @@ msgstr ""
 
 #~ msgid "View"
 #~ msgstr "ليهت"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "منتڤکن سام اد فون FreeType دݢوناکن⹁ ممرلوکن سوکوڠن Freetype\n"
+#~ "دکومڤيل برسام. جيک دلومڤوهکن⹁ فون ڤتا بيت دان ۏيکتور XML اکن دݢوناکن."
 
 #~ msgid "Yes"
 #~ msgstr "ياٴ"

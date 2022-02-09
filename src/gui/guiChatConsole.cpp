@@ -30,11 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/fontengine.h"
 #include "log.h"
 #include "gettext.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #include <string>
-
-#if USE_FREETYPE
-	#include "irrlicht_changes/CGUITTFont.h"
-#endif
 
 inline u32 clamp_u8(s32 value)
 {
@@ -328,19 +325,16 @@ void GUIChatConsole::drawText()
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
 
-#if USE_FREETYPE
 			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
-				// Draw colored text if FreeType is enabled
-				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
+				// Draw colored text if possible
+				gui::CGUITTFont *tmp = static_cast<gui::CGUITTFont*>(m_font);
 				tmp->draw(
 					fragment.text,
 					destrect,
 					false,
 					false,
 					&AbsoluteClippingRect);
-			} else
-#endif
-			{
+			} else {
 				// Otherwise use standard text
 				m_font->draw(
 					fragment.text.c_str(),

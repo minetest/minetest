@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-08-13 21:34+0000\n"
-"Last-Translator: Zhaolin Lau <zhaolinlau@gmail.com>\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2022-01-30 18:51+0000\n"
+"Last-Translator: poi <erbaotao@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -91,7 +91,7 @@ msgstr "OK"
 #: builtin/fstk/ui.lua
 #, fuzzy
 msgid "<none available>"
-msgstr "命令不可用： "
+msgstr "命令不可用："
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -296,7 +296,7 @@ msgstr "安装缺失的依赖项"
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "安装：“$1“为不支持的文件类型或已损坏"
+msgstr "安装：文件类型不支持或档案已损坏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -520,7 +520,7 @@ msgstr "温带，沙漠，丛林，苔原，泰加林带"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr "地形表面腐烂"
+msgstr "地形表面侵蚀"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -1161,9 +1161,8 @@ msgid "Connection error (timed out?)"
 msgstr "连接出错（超时？）"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "无法找到或者载入游戏 \""
+msgstr "找不到子游戏或者无法载入子游戏： "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1206,14 +1205,6 @@ msgid "- Address: "
 msgstr "- 地址： "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- 创造模式: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- 伤害: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- 模式: "
 
@@ -1235,14 +1226,13 @@ msgid "- Server Name: "
 msgstr "- 服务器名称: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "发生了错误："
+msgstr "序列化发生了错误："
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "访问被拒绝。原因：%s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1294,9 +1284,8 @@ msgid "Cinematic mode enabled"
 msgstr "电影模式已启用"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "客户端mod"
+msgstr "与客户端的连接已断开"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1308,7 +1297,7 @@ msgstr "正在连接服务器..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "连接失败，原因不明"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1350,7 +1339,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "地址无法解析：%s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1559,19 +1548,19 @@ msgstr "已取消静音"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "此服务器运行的可能是别的版本，%s。"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "无法连接到 %s，因为 IPv6 已禁用"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "无法监听 %s，因为 IPv6 已禁用"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "视野范围已改变至%d"
@@ -1906,13 +1895,12 @@ msgid "Minimap in texture mode"
 msgstr "材质模式小地图"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "下载 $1 失败"
+msgstr "网页打不开"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "正在打开网页"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1922,7 +1910,7 @@ msgstr "密码不匹配！"
 msgid "Register and Join"
 msgstr "注册并加入"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2112,9 +2100,9 @@ msgid "Muted"
 msgstr "静音"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "音量： "
+msgstr "音量：%d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2361,8 +2349,9 @@ msgid ""
 msgstr "为支持4K等屏幕，调节像素点密度（非 X11/Android 环境才有效）。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
+msgstr "调整检测到的显示密度，用来缩放 UI 元素。"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2374,10 +2363,10 @@ msgid ""
 "to be sure) creates a solid floatland layer."
 msgstr ""
 "调整悬空岛层的密度。\n"
-"增加值以增加密度。可以是正值或负值。\n"
-"值等于0.0， 容积的50%是floatland。\n"
-"值等于2.0  ，（可以更高，取决于 'mgv7_np_floatland' ，始终测试以确定）\n"
-"创建一个坚实的悬空岛层。"
+"增加值，就增加密度。可以是正值或负值。\n"
+"值等于 0.0， 容积的 50% 是悬空岛。\n"
+"值等于 2.0，（值可以更高，取决于“mgv7_np_floatland”，但一定要测试确定）\n"
+"创建一个密实的悬空岛层。"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2657,9 +2646,8 @@ msgid "Chat command time message threshold"
 msgstr "显示聊天消息执行时间的阀值（秒）"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
-msgstr "聊天命令"
+msgstr "聊天指令"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2694,9 +2682,8 @@ msgid "Chat toggle key"
 msgstr "聊天启用/禁用键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "聊天已显示"
+msgstr "聊天网页链接"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2719,6 +2706,7 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"在聊天控制台输出中启用了可点击的网页链接（中键单击或 Ctrl + 左键单击）。"
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2923,8 +2911,8 @@ msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
-"准星透明度（0-255）。\n"
-"还控制对象准星的颜色"
+"准星不透明度（0-255）。\n"
+"实体准星的不透明度也会使用此值。"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3003,15 +2991,14 @@ msgid "Default stack size"
 msgstr "默认栈大小"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define shadow filtering quality.\n"
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
-"定阴影滤镜的质量\n"
-"通过应用 PCF 或 poisson disk来模拟软阴影效果\n"
-"但这会使用更多的资源。"
+"设定阴影滤镜的质量。\n"
+"使用 PCF 或 泊松盘（Poisson disk）算法模拟软阴影效果\n"
+"但也会使用更多的硬件资源。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3133,7 +3120,7 @@ msgstr "禁止使用空密码"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
-msgstr ""
+msgstr "显示密度比例系数"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3184,14 +3171,13 @@ msgstr ""
 "该功能是实验性的，且API会变动。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
-"启用poisson disk滤镜.\n"
-"使用poisson disk来产生\"软阴影\"，否则将使用PCF 滤镜."
+"启用泊松盘（Poisson disk）滤镜。\n"
+"使用泊松盘算法来产生“软阴影”。不启用的话就会使用 PCF 滤镜。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3334,6 +3320,12 @@ msgstr ""
 "如果禁用，则完全禁用游戏中所有声音。\n"
 "游戏内声音控制将失效。\n"
 "改变此设置需要重启。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr "允许不影响可玩性的轻微视觉错误，以此减少 CPU 负载，或提高渲染性能。"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3532,11 +3524,17 @@ msgid "Font size"
 msgstr "字体大小"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "默认字体大小，单位pt。"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "等宽字体大小，单位pt。"
 
 #: src/settings_translation_file.cpp
@@ -3546,6 +3544,17 @@ msgid ""
 msgstr ""
 "最近聊天文本和聊天提示的字体大小（pt）。\n"
 "值为0将使用默认字体大小。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3607,10 +3616,6 @@ msgstr "分形类型"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "从雾起始点开始雾的可见距离分数"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "FreeType 字体"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4087,7 +4092,7 @@ msgid ""
 "to this distance from the player to the node."
 msgstr ""
 "如果客户端mod方块范围限制启用，限制get_node至玩家\n"
-"到方块的距离"
+"到方块的距离。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5679,6 +5684,11 @@ msgid "Monospace font size"
 msgstr "等宽字体大小"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "等宽字体大小"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "山高度噪声"
 
@@ -5852,13 +5862,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
-msgstr ""
+msgstr "替换聊天网页链接的颜色，可用可不用。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5886,10 +5895,9 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "材质目录路径。所有材质都首先从此路径搜索。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "默认字体路径。\n"
@@ -5898,10 +5906,9 @@ msgstr ""
 "后备字体用于不可用默认字体的语言。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "等宽字体路径。\n"
@@ -6624,6 +6631,10 @@ msgid ""
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
+"把完整地更新一次阴影贴图这项任务分配给多少帧去完成。\n"
+"较高的值可能会使阴影滞后，较低的值\n"
+"将消耗更多硬件资源。\n"
+"最小值：1；最大值：16"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6759,6 +6770,9 @@ msgid ""
 "This must be a power of two.\n"
 "Bigger numbers create better shadows but it is also more expensive."
 msgstr ""
+"用于渲染阴影贴图的材质尺寸。\n"
+"数值必须是 2 的幂。\n"
+"数值更大，阴影更好，但运算也更加复杂。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6786,8 +6800,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "The depth of dirt or other biome filler node."
-msgstr "泥土深度或其他生物群系过滤节点"
+msgstr "泥土深度或其他生物群系过滤节点。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6849,6 +6864,8 @@ msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
 msgstr ""
+"摇杆轴灵敏度（用于移动子游戏中棱台体形状的\n"
+"可见区域的摇杆轴）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6945,6 +6962,10 @@ msgstr "工具提示延迟"
 #: src/settings_translation_file.cpp
 msgid "Touch screen threshold"
 msgstr "触屏阈值"
+
+#: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr "性能权衡"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -7242,13 +7263,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7394,6 +7408,12 @@ msgstr "cURL 超时"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "cURL 并发限制"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- 创造模式: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- 伤害: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7549,6 +7569,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "后备字体大小，单位pt。"
+
+#~ msgid "FreeType fonts"
+#~ msgstr "FreeType 字体"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "全屏 BPP"

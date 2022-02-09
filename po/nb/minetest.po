@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-08-08 01:37+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"Last-Translator: Imre Kristoffer Eilertsen <imreeil42@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -233,7 +233,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 av $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -322,17 +322,16 @@ msgid "No results"
 msgstr "Resultatløst"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Oppdater"
+msgstr "Ingen oppdateringer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Ikke funnet"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Overskriv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -340,7 +339,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Satt i kø"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -785,7 +784,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Om"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -889,7 +888,7 @@ msgstr "Installer spill fra ContentDB"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -900,9 +899,8 @@ msgid "No world created or selected!"
 msgstr "Ingen verden opprettet eller valgt!"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nytt passord"
+msgstr "Passord"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -930,9 +928,8 @@ msgid "Start Game"
 msgstr "Start spill"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Adresse: "
+msgstr "Adresse"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -957,9 +954,8 @@ msgid "Del. Favorite"
 msgstr "Slett favoritt"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Favoritt"
+msgstr "Favoritter"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
@@ -980,7 +976,7 @@ msgstr "Annonseringstjener"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Oppdater"
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1042,15 +1038,15 @@ msgstr "Forseggjorte blader"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Høy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Lav"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Medium"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1139,11 +1135,11 @@ msgstr "Trilineært filter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "Ultrahøy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Veldig lav"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1229,14 +1225,6 @@ msgstr ""
 #: src/client/game.cpp
 msgid "- Address: "
 msgstr "- Adresse: "
-
-#: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Kreativ modus: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Skade: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
@@ -1505,9 +1493,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Enkeltspiller"
+msgstr "Flerspiller"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1597,7 +1584,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Synsrekkevidde endret til %d%%"
@@ -1948,7 +1935,7 @@ msgstr "Passordene samsvarer ikke!"
 msgid "Register and Join"
 msgstr "Registrer og logg inn"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3335,6 +3322,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr ""
 
@@ -3358,7 +3351,7 @@ msgstr "Maks FPS når spillet ikke har fokus eller er pauset"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -3525,17 +3518,32 @@ msgid "Font size"
 msgstr "Skriftstørrelse"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3596,10 +3604,6 @@ msgstr "Fraktaltype"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "FreeType-skrifttyper"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4147,7 +4151,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Iterations"
-msgstr ""
+msgstr "Ringer"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4175,9 +4179,8 @@ msgid "Joystick frustum sensitivity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick type"
-msgstr "Spillstikketype"
+msgstr "Kontrollertype"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4915,7 +4918,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Språk"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -5485,6 +5488,11 @@ msgid "Monospace font size"
 msgstr "Størrelse for monospace skrifttype"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Størrelse for monospace skrifttype"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5552,7 +5560,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Nettverk"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5635,9 +5643,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5660,17 +5666,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -5767,7 +5769,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr ""
+msgstr "Profilering"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -5952,11 +5954,11 @@ msgstr "Mappe for skjermdumper"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
-msgstr ""
+msgstr "Skjermklippformat"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot quality"
-msgstr ""
+msgstr "Skjermklippkvalitet"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6631,6 +6633,10 @@ msgid "Touch screen threshold"
 msgstr "Strandlydsterskel"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -6730,7 +6736,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
-msgstr ""
+msgstr "VSync"
 
 #: src/settings_translation_file.cpp
 msgid "Valley depth"
@@ -6927,13 +6933,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7077,6 +7076,12 @@ msgstr "cURL-tidsgrense"
 msgid "cURL parallel limit"
 msgstr "Maksimal parallellisering i cURL"
 
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Kreativ modus: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Skade: "
+
 #~ msgid "Address / Port"
 #~ msgstr "Adresse / port"
 
@@ -7140,6 +7145,9 @@ msgstr "Maksimal parallellisering i cURL"
 
 #~ msgid "Fallback font size"
 #~ msgstr "Tilbakefallsskriftstørrelse"
+
+#~ msgid "FreeType fonts"
+#~ msgstr "FreeType-skrifttyper"
 
 #~ msgid "Generate Normal Maps"
 #~ msgstr "Generer normale kart"
