@@ -42,7 +42,7 @@ public:
 	virtual void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr) = 0;
 	virtual void removeFromScene(bool permanent) {}
 
-	virtual void updateLight(u32 day_night_ratio) {}
+	virtual void updateLight(u32 day_night_ratio, bool force=false) {}
 
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }

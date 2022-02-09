@@ -204,7 +204,7 @@ public:
 
 	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 	void removeFromScene(bool permanent);
-	void updateLight(u32 day_night_ratio);
+	void updateLight(u32 day_night_ratio, bool force=false);
 	void updateNodePos();
 
 	void step(float dtime, ClientEnvironment *env);
@@ -276,7 +276,7 @@ void TestCAO::removeFromScene(bool permanent)
 	m_node = NULL;
 }
 
-void TestCAO::updateLight(u32 day_night_ratio)
+void TestCAO::updateLight(u32 day_night_ratio, bool force)
 {
 }
 
@@ -859,7 +859,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	}
 }
 
-void GenericCAO::updateLight(u32 day_night_ratio)
+void GenericCAO::updateLight(u32 day_night_ratio, bool force)
 {
 	if (m_glow < 0)
 		return;
@@ -882,7 +882,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 		light_at_pos = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
 	u8 light = decode_light(light_at_pos + m_glow);
-	if (light != m_last_light) {
+	if (force || light != m_last_light) {
 		m_last_light = light;
 		setNodeLight(light);
 	}
@@ -890,8 +890,9 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 
 void GenericCAO::setNodeLight(u8 light)
 {
-	video::SColor color(255, light, light, light);
+	video::SColor color;
 
+	final_color_blend(&color, light, 1000, &m_env->getLocalPlayer()->getLighting());
 	if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
 		if (m_wield_meshnode)
 			m_wield_meshnode->setNodeLightColor(color);
