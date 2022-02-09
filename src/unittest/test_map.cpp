@@ -60,9 +60,9 @@ void TestMap::testMaxMapgenLimit()
 	UASSERT(objectpos_over_limit(v3f(-limit_times_bs-BS)) == true);
 
 	// blockpos_over_max_limit
-	s16 limit_block = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
-	UASSERT(blockpos_over_max_limit(v3s16(limit_block)) == false);
-	UASSERT(blockpos_over_max_limit(v3s16(limit_block+1)) == true);
-	UASSERT(blockpos_over_max_limit(v3s16(-limit_block)) == false);
-	UASSERT(blockpos_over_max_limit(v3s16(-limit_block-1)) == true);
+	pos_t limit_block = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
+	UASSERT(blockpos_over_max_limit(v3pos_t(limit_block)) == false);
+	UASSERT(blockpos_over_max_limit(v3pos_t(limit_block+1)) == true);
+	UASSERT(blockpos_over_max_limit(v3pos_t(-limit_block)) == false);
+	UASSERT(blockpos_over_max_limit(v3pos_t(-limit_block-1)) == true);
 }
