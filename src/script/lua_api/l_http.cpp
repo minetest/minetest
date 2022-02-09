@@ -162,20 +162,6 @@ int ModApiHttp::l_http_fetch_async_get(lua_State *L)
 	return 1;
 }
 
-int ModApiHttp::l_set_http_api_lua(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	// This is called by builtin to give us a function that will later
-	// populate the http_api table with additional method(s).
-	// We need this because access to the HTTP api is security-relevant and
-	// any mod could just mess with a global variable.
-	luaL_checktype(L, 1, LUA_TFUNCTION);
-	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_HTTP_API_LUA);
-
-	return 0;
-}
-
 int ModApiHttp::l_request_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -215,6 +201,22 @@ int ModApiHttp::l_get_http_api(lua_State *L)
 
 #endif
 
+int ModApiHttp::l_set_http_api_lua(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+#if USE_CURL
+	// This is called by builtin to give us a function that will later
+	// populate the http_api table with additional method(s).
+	// We need this because access to the HTTP api is security-relevant and
+	// any mod could just mess with a global variable.
+	luaL_checktype(L, 1, LUA_TFUNCTION);
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_HTTP_API_LUA);
+#endif
+
+	return 0;
+}
+
 void ModApiHttp::Initialize(lua_State *L, int top)
 {
 #if USE_CURL
@@ -230,6 +232,11 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 		API_FCT(request_http_api);
 		API_FCT(set_http_api_lua);
 	}
+
+#else
+
+	// Define this function anyway so builtin can call it without checking
+	API_FCT(set_http_api_lua);
 
 #endif
 }

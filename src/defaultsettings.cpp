@@ -386,7 +386,7 @@ void set_default_settings()
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "6125");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
-	settings->setDefault("max_objects_per_block", "64");
+	settings->setDefault("max_objects_per_block", "256");
 	settings->setDefault("server_map_save_interval", "5.3");
 	settings->setDefault("chat_message_max_size", "500");
 	settings->setDefault("chat_message_limit_per_10sec", "8.0");
@@ -479,7 +479,6 @@ void set_default_settings()
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
 	settings->setDefault("fps_max_unfocused", "10");
-	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");

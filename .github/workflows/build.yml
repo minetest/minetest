@@ -162,13 +162,13 @@ jobs:
 
   win32:
     name: "MinGW cross-compiler (32-bit)"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install compiler
         run: |
           sudo apt-get update -q && sudo apt-get install gettext -qyy
-          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
       - name: Build
@@ -180,13 +180,13 @@ jobs:
 
   win64:
     name: "MinGW cross-compiler (64-bit)"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install compiler
         run: |
           sudo apt-get update -q && sudo apt-get install gettext -qyy
-          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
       - name: Build

@@ -73,13 +73,6 @@ static void set_vector_metatable(lua_State *L)
 	lua_pop(L, 1);
 }
 
-
-void push_float_string(lua_State *L, float value)
-{
-	auto str = ftos(value);
-	lua_pushstring(L, str.c_str());
-}
-
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_createtable(L, 0, 3);
@@ -98,26 +91,6 @@ void push_v2f(lua_State *L, v2f p)
 	lua_pushnumber(L, p.X);
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, p.Y);
-	lua_setfield(L, -2, "y");
-}
-
-void push_v3_float_string(lua_State *L, v3f p)
-{
-	lua_createtable(L, 0, 3);
-	push_float_string(L, p.X);
-	lua_setfield(L, -2, "x");
-	push_float_string(L, p.Y);
-	lua_setfield(L, -2, "y");
-	push_float_string(L, p.Z);
-	lua_setfield(L, -2, "z");
-}
-
-void push_v2_float_string(lua_State *L, v2f p)
-{
-	lua_createtable(L, 0, 2);
-	push_float_string(L, p.X);
-	lua_setfield(L, -2, "x");
-	push_float_string(L, p.Y);
 	lua_setfield(L, -2, "y");
 }
 
@@ -505,17 +478,9 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	Table field getters
 */
 
-#if defined(__MINGW32__) && !defined(__MINGW64__)
-/* MinGW 32-bit somehow crashes in the std::set destructor when this
- * variable is thread-local, so just don't do that. */
-static std::set<u64> warned_msgs;
-#endif
-
 bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
 {
-#if !defined(__MINGW32__) || defined(__MINGW64__)
 	thread_local std::set<u64> warned_msgs;
-#endif
 
 	int t = lua_type(L, index);
 	if (t == LUA_TNIL)

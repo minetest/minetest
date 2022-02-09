@@ -452,7 +452,7 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 				("GOTBLOCKS length is too short");
 	}
 
-	m_clients.lock();
+	ClientInterface::AutoLock lock(m_clients);
 	RemoteClient *client = m_clients.lockedGetClientNoEx(pkt->getPeerId());
 
 	for (u16 i = 0; i < count; i++) {
@@ -460,7 +460,6 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 		*pkt >> p;
 		client->GotBlock(p);
 	}
-	m_clients.unlock();
 }
 
 void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,

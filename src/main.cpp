@@ -65,6 +65,14 @@ extern "C" {
 #error Minetest cannot be built without exceptions or RTTI
 #endif
 
+#if defined(__MINGW32__) && !defined(__MINGW64__) && !defined(__clang__) && \
+	(__GNUC__ < 11 || (__GNUC__ == 11 && __GNUC_MINOR__ < 1))
+// see e.g. https://github.com/minetest/minetest/issues/10137
+#warning ==================================
+#warning 32-bit MinGW gcc before 11.1 has known issues with crashes on thread exit, you should upgrade.
+#warning ==================================
+#endif
+
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 

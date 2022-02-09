@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "network/address.h"
 #include "porting.h"
+#include "threading/mutex_auto_lock.h"
 
 #include <list>
 #include <vector>
@@ -503,9 +504,13 @@ public:
 
 	static std::string state2Name(ClientState state);
 protected:
-	//TODO find way to avoid this functions
-	void lock() { m_clients_mutex.lock(); }
-	void unlock() { m_clients_mutex.unlock(); }
+	class AutoLock {
+	public:
+		AutoLock(ClientInterface &iface): m_lock(iface.m_clients_mutex) {}
+
+	private:
+		RecursiveMutexAutoLock m_lock;
+	};
 
 	RemoteClientMap& getClientList() { return m_clients; }
 

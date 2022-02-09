@@ -198,7 +198,7 @@ build:fedora-28:
   before_script:
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get install -y wget xz-utils unzip git cmake gettext
-    - wget -nv http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+    - wget -nv http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
     - tar -xaf mingw.tar.xz -C /usr
 
 .build_win_template:
