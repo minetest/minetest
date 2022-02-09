@@ -305,7 +305,9 @@ void ClientEnvironment::step(float dtime)
 		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
-		final_color_blend(&lplayer->light_color, light, day_night_ratio);
+		light = decode_light(light & 0x0F) |
+				(decode_light(light >> 4) << 8);
+		final_color_blend(&lplayer->light_color, light, day_night_ratio, &lplayer->getLighting());
 	}
 
 	/*
