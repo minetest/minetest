@@ -447,6 +447,22 @@ void ClientEnvironment::processActiveObjectMessage(u16 id, const std::string &da
 	}
 }
 
+void ClientEnvironment::applyLighting()
+{
+	if (g_settings->getBool("enable_shaders"))
+		return;
+
+	getClientMap().updateMeshes();
+
+	u32 day_night_ratio = getDayNightRatio();
+	auto cb_state = [day_night_ratio] (ClientActiveObject *cao) {
+		cao->updateLight(day_night_ratio, true);
+	};
+
+	m_ao_manager.step(0, cb_state);
+}
+
+
 /*
 	Callbacks for activeobjects
 */

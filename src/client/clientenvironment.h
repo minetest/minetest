@@ -109,6 +109,12 @@ public:
 	void processActiveObjectMessage(u16 id, const std::string &data);
 
 	/*
+	 * Update the lighting of all objects, e.g. when ambient
+	 * light parameters change
+	 */
+	void applyLighting();
+
+	/*
 		Callbacks for activeobjects
 	*/
 

@@ -1701,6 +1701,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	lighting.color_tint = color_tint;
 
 	if (!g_settings->getBool("enable_shaders")) {
-		m_env.getClientMap().updateMeshes();
+		m_env.applyLighting();
 	}
 }
