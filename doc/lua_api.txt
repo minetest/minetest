@@ -6204,45 +6204,53 @@ Sorted alphabetically.
 `AreaStore`
 -----------
 
-A fast access data structure to store areas, and find areas near a given
-position or area.
-Every area has a `data` string attribute to store additional information.
-You can create an empty `AreaStore` by calling `AreaStore()`, or
-`AreaStore(type_name)`. The mod decides where to save and load AreaStore.
-If you chose the parameter-less constructor, a fast implementation will be
-automatically chosen for you.
+AreaStore is a data structure to calculate intersections of 3D cuboid volumes
+and points. The `data` field (string) may be used to store and retrieve any
+mod-relevant information to the specified area.
+
+Despite its name, mods must take care of persisting AreaStore data. They may
+use the provided load and write functions for this.
+
 
 ### Methods
 
-* `get_area(id, include_borders, include_data)`
+* `AreaStore(type_name)`
+    * Returns a new AreaStore instance
+    * `type_name`: optional, forces the internally used API.
+        * Possible values: `"LibSpatial"` (default).
+        * When other values are specified, or SpatialIndex is not available,
+          the custom Minetest functions are used.
+* `get_area(id, include_corners, include_data)`
     * Returns the area information about the specified ID.
     * Returned values are either of these:
 
             nil  -- Area not found
-            true -- Without `include_borders` and `include_data`
+            true -- Without `include_corners` and `include_data`
             {
-                min = pos, max = pos -- `include_borders == true`
+                min = pos, max = pos -- `include_corners == true`
                 data = string        -- `include_data == true`
             }
 
-* `get_areas_for_pos(pos, include_borders, include_data)`
+* `get_areas_for_pos(pos, include_corners, include_data)`
     * Returns all areas as table, indexed by the area ID.
     * Table values: see `get_area`.
-* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`
-    * Returns all areas that contain all nodes inside the area specified by `edge1`
-      and `edge2` (inclusive).
+* `get_areas_in_area(corner1, corner2, accept_overlap, include_corners, include_data)`
+    * Returns all areas that contain all nodes inside the area specified by`
+      `corner1 and `corner2` (inclusive).
     * `accept_overlap`: if `true`, areas are returned that have nodes in
       common (intersect) with the specified area.
     * Returns the same values as `get_areas_for_pos`.
-* `insert_area(edge1, edge2, data, [id])`: inserts an area into the store.
+* `insert_area(corner1, corner2, data, [id])`: inserts an area into the store.
     * Returns the new area's ID, or nil if the insertion failed.
-    * The (inclusive) positions `edge1` and `edge2` describe the area.
+    * The (inclusive) positions `corner1` and `corner2` describe the area.
     * `data` is a string stored with the area.
     * `id` (optional): will be used as the internal area ID if it is an unique
       number between 0 and 2^32-2.
-* `reserve(count)`: reserves resources for at most `count` many contained
-  areas.
-  Only needed for efficiency, and only some implementations profit.
+* `reserve(count)`
+    * Requires SpatialIndex, no-op function otherwise.
+    * Reserves resources for `count` many contained areas to improve
+      efficiency when working with many area entries. Additional areas can still
+      be inserted afterwards at the usual complexity.
 * `remove_area(id)`: removes the area with the given id from the store, returns
   success.
 * `set_cache_params(params)`: sets params for the included prefiltering cache.
