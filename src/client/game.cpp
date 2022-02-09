@@ -3266,7 +3266,7 @@ PointedThing Game::updatePointedThing(
 
 		u32 daynight_ratio = client->getEnv().getDayNightRatio();
 		video::SColor c;
-		final_color_blend(&c, light_level, daynight_ratio);
+		final_color_blend(&c, light_level, daynight_ratio, &client->getEnv().getLocalPlayer()->getLighting());
 
 		// Modify final color a bit with time
 		u32 timer = porting::getTimeMs() % 5000;
