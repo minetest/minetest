@@ -447,7 +447,7 @@ if map format version < 29:
     u8[name_len] name
 
 - Node timers
-if map format version == 25:
+if map format version >= 25:
   u8 length of the data of a single timer (always 2+4+4=10)
   u16 num_of_timers
   foreach num_of_timers:
