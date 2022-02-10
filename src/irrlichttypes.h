@@ -70,11 +70,14 @@ using pos_t = irr::s32;
 // Block position
 using bpos_t = irr::s32;
 
-// Object position
-using opos_t = double;
-
 #else
 using pos_t = irr::s16;
 using bpos_t = irr::s16;
+#endif
+
+#if USE_OPOS64
+// Object position
+using opos_t = double;
+#else
 using opos_t = float;
 #endif

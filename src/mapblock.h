@@ -611,7 +611,7 @@ inline bool objectpos_over_limit(v3f p)
 		p.Z >  max_limit_bs;
 }
 
-#if USE_POS32
+#if USE_OPOS64
 inline bool objectpos_over_limit(v3opos_t p)
 {
 	const opos_t max_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;

@@ -234,7 +234,7 @@ v3d read_v3d(lua_State *L, int index)
 
 v3opos_t read_v3o(lua_State *L, int index)
 {
-#if USE_POS32	
+#if USE_OPOS64
 	return read_v3d(L, index);
 #else
 	return read_v3f(L, index);
@@ -301,7 +301,7 @@ v3f checkFloatPos(lua_State *L, int index)
 
 v3opos_t check_v3o(lua_State *L, int index)
 {
-#if USE_POS32	
+#if USE_OPOS64
 	return check_v3d(L, index);
 #else
 	return check_v3f(L, index);

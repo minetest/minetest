@@ -36,3 +36,4 @@
 #cmakedefine01 CURSES_HAVE_NCURSESW_CURSES_H
 #cmakedefine01 BUILD_UNITTESTS
 #cmakedefine01 USE_POS32
+#cmakedefine01 USE_OPOS64

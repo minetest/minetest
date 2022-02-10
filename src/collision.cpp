@@ -84,7 +84,7 @@ static inline v3f truncate(const v3f& vec, const f32 factor)
 	);
 }
 
-#if USE_POS32
+#if USE_OPOS64
 static inline v3opos_t truncate(const v3opos_t& vec, const f32 factor)
 {
 	return v3opos_t(

@@ -502,7 +502,7 @@ inline void writeV3POS(std::ostream &os, v3pos_t p) {
 }
 
 inline v3opos_t readV3O(std::istream &is) {
-#if USE_POS32
+#if USE_OPOS64
     return readV3F64(is);
 #else
     return readV3F32(is);
@@ -510,7 +510,7 @@ inline v3opos_t readV3O(std::istream &is) {
 }
 
 inline void writeV3O(std::ostream &os, v3opos_t p) {
-#if USE_POS32
+#if USE_OPOS64
     return writeV3F64(os, p);
 #else
     return writeV3F32(os, p);

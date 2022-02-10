@@ -424,7 +424,7 @@ inline aabb3f getNodeBox(v3pos_t p, float d)
 	);
 }
 
-#if USE_POS32
+#if USE_OPOS64
 inline aabb3o getNodeBox(v3pos_t p, opos_t d)
 {
 	return aabb3o(
