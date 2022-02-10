@@ -1240,7 +1240,7 @@ void drawItemStack(
 				break;
 			}
 
-			rect2 = core::rect<s32>(x1, y1, x1, x2);
+			rect2 = core::rect<s32>(x1, y1, x2, y2);
 		}
 
 		video::SColor bgcolor(128, 0, 0, 0);
