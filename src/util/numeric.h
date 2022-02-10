@@ -342,7 +342,7 @@ inline v3f intToFloat(v3s16 p, f32 d)
 	);
 }
 
-#if USE_POS32
+#if USE_OPOS64 || USE_POS32
 inline v3opos_t intToFloat(const v3pos_t & p, const opos_t d)
 {
 	return v3opos_t(

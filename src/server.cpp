@@ -2241,7 +2241,7 @@ void Server::sendAddNode(v3pos_t p, MapNode n, std::unordered_set<u16> *far_play
 		float far_d_nodes, bool remove_metadata)
 {
 	float maxd = far_d_nodes * BS;
-	v3opos_t p_f = intToFloat(p, BS);
+	auto p_f = intToFloat(p, (opos_t)BS);
 	v3bpos_t block_pos = getNodeBlockPos(p);
 
 	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);

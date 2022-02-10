@@ -804,7 +804,7 @@ float RollbackManager::getSuspectNearness(bool is_guess, v3pos_t suspect_p,
 	// Start from 100
 	int f = 100;
 	// Distance (1 node = -x points)
-	f -= POINTS_PER_NODE * intToFloat(suspect_p, 1).getDistanceFrom(intToFloat(action_p, 1));
+	f -= POINTS_PER_NODE * intToFloat(suspect_p, (float)1).getDistanceFrom(intToFloat(action_p, (float)1));
 	// Time (1 second = -x points)
 	f -= 1 * (action_t - suspect_t);
 	// If is a guess, halve the points

@@ -319,7 +319,7 @@ bool Hud::calculateScreenPos(const v3pos_t &camera_offset, HudElement *e, v2s32 
 	v3opos_t w_pos_o = v3fToOpos(e->world_pos) * BS;
 	scene::ICameraSceneNode* camera =
 		client->getSceneManager()->getActiveCamera();
-	auto w_pos = oposToV3f(w_pos_o - intToFloat(camera_offset, BS));
+	auto w_pos = oposToV3f(w_pos_o - intToFloat(camera_offset, (opos_t)BS));
 	core::matrix4 trans = camera->getProjectionMatrix();
 	trans *= camera->getViewMatrix();
 	f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
@@ -898,7 +898,7 @@ void Hud::drawBlockBounds()
 		floorf((float) pos.Z / MAP_BLOCKSIZE)
 	);
 
-	auto offset = intToFloat(client->getCamera()->getOffset(), BS);
+	auto offset = intToFloat(client->getCamera()->getOffset(), (opos_t)BS);
 
 	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ? 2 : 0;
 
@@ -910,8 +910,8 @@ void Hud::drawBlockBounds()
 		v3pos_t blockOffset(x, y, z);
 
 		aabb3f box(
-			oposToV3f(intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset) - halfNode,
-			oposToV3f(intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset) + halfNode
+			oposToV3f(intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, (opos_t)BS) - offset) - halfNode,
+			oposToV3f(intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), (opos_t)BS) - offset) + halfNode
 		);
 
 		driver->draw3DBox(box, video::SColor(255, 255, 0, 0));

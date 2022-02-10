@@ -437,7 +437,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	TimeTaker draw("Drawing mesh buffers");
 
 	core::matrix4 m; // Model matrix
-	auto offset = intToFloat(m_camera_offset, BS);
+	auto offset = intToFloat(m_camera_offset, (opos_t)BS);
 	u32 material_swaps = 0;
 
 	// Render all mesh buffers in order
@@ -470,7 +470,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			++material_swaps;
 		}
 
-		auto block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, BS);
+		auto block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, (opos_t)BS);
 		m.setTranslation(oposToV3f(block_wpos - offset));
 
 		driver->setTransform(video::ETS_WORLD, m);
@@ -752,7 +752,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	TimeTaker draw("Drawing shadow mesh buffers");
 
 	core::matrix4 m; // Model matrix
-	auto offset = intToFloat(m_camera_offset, BS);
+	auto offset = intToFloat(m_camera_offset, (opos_t)BS);
 
 	// Render all layers in order
 	for (auto &lists : drawbufs.lists) {
@@ -775,7 +775,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.Lighting = false;
 				driver->setMaterial(local_material);
 
-				auto block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
+				auto block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, (opos_t)BS);
 				m.setTranslation(oposToV3f(block_wpos - offset));
 
 				driver->setTransform(video::ETS_WORLD, m);
