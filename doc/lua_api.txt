@@ -2174,6 +2174,13 @@ Some of the values in the key-value store are handled specially:
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
+* `count_meta`: Replace the displayed count with any string.
+* `count_alignment`: Set the alignment of the displayed count value. This is an
+  int value. The lowest 2 bits specify the alignment in x-direction, the 3rd and
+  4th bit specify the alignment in y-direction:
+  0 = default, 1 = left / up, 2 = middle, 3 = right / down
+  The default currently is the same as right/down.
+  Example: 6 = 2 + 1*4 = middle,up
 
 Example:
 
