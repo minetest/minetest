@@ -281,3 +281,15 @@ minetest.register_chatcommand("set_displayed_itemcount", {
 		return true, "Displayed itemcount set."
 	end,
 })
+
+minetest.register_chatcommand("dump_item", {
+	params = "",
+	description = "Prints a dump of the wielded item in table form",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		local item = player:get_wielded_item()
+		local str = dump(item:to_table())
+		print(str)
+		return true, str
+	end,
+})
