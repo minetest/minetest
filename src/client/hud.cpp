@@ -1189,10 +1189,8 @@ void drawItemStack(
 		v2s32 sdim(dim.X, dim.Y);
 
 		core::rect<s32> rect2(
-			/*rect.UpperLeftCorner,
-			core::dimension2d<u32>(rect.getWidth(), 15)*/
 			rect.LowerRightCorner - sdim,
-			sdim
+			rect.LowerRightCorner
 		);
 
 		// get the count alignment
@@ -1242,9 +1240,6 @@ void drawItemStack(
 
 			rect2 = core::rect<s32>(x1, y1, x2, y2);
 		}
-
-		video::SColor bgcolor(128, 0, 0, 0);
-		driver->draw2DRectangle(bgcolor, rect2, &viewrect);
 
 		video::SColor color(255, 255, 255, 255);
 		font->draw(text.c_str(), rect2, color, false, false, &viewrect);
