@@ -1242,7 +1242,7 @@ void drawItemStack(
 		}
 
 		video::SColor color(255, 255, 255, 255);
-		font->draw(text.c_str(), rect2, color, false, false, &viewrect);
+		font->draw(utf8_to_wide(text).c_str(), rect2, color, false, false, &viewrect);
 	}
 }
 
