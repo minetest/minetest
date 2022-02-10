@@ -267,7 +267,7 @@ minetest.register_chatcommand("set_displayed_itemcount", {
 			if param:sub(se + 1, se + 4) == " -c " then
 				s = minetest.colorize(param:sub(se + 5), s)
 			end
-			meta:set_string("count", s)
+			meta:set_string("count_meta", s)
 		elseif flag1 == "-a" then
 			local num = tonumber(param:sub(4))
 			if not num then

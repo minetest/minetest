@@ -1181,7 +1181,7 @@ void drawItemStack(
 		driver->draw2DRectangle(color, progressrect2, clip);
 	}
 
-	const std::string &count_text = item.metadata.getString("count");
+	const std::string &count_text = item.metadata.getString("count_meta");
 	if (font != nullptr && (item.count >= 2 || !count_text.empty())) {
 		// Get the item count as a string
 		std::string text = count_text.empty() ? itos(item.count) : count_text;
