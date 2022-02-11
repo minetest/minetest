@@ -22,5 +22,5 @@ void main()
 	tPos = getPerspectiveFactor(pos);
 
 	gl_Position = vec4(tPos.xyz, 1.0);
-	gl_TexCoord[0].st = gl_MultiTexCoord0.st;
+	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
 }
