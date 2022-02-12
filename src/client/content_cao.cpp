@@ -745,9 +745,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		m_meshnode = m_smgr->addMeshSceneNode(mesh, m_matrixnode);
 		m_meshnode->grab();
 		mesh->drop();
-		// Set it to use the materials of the meshbuffers directly.
-		// This is needed for changing the texture in the future
-		m_meshnode->setReadOnlyMaterials(true);
 	} else if (m_prop.visual == "cube") {
 		grabMatrixNode();
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
@@ -1455,23 +1452,23 @@ void GenericCAO::updateTextures(std::string mod)
 				if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-				buf->getMaterial().setTexture(0,
+				auto& material = m_meshnode->getMaterial(0);
+				material.setTexture(0,
 						tsrc->getTextureForMesh(tname));
-				buf->getMaterial().setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
+				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
 				if(!m_prop.colors.empty()) {
-					buf->getMaterial().AmbientColor = m_prop.colors[0];
-					buf->getMaterial().DiffuseColor = m_prop.colors[0];
-					buf->getMaterial().SpecularColor = m_prop.colors[0];
+					material.AmbientColor = m_prop.colors[0];
+					material.DiffuseColor = m_prop.colors[0];
+					material.SpecularColor = m_prop.colors[0];
 				}
 
-				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				material.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+				material.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			{
 				std::string tname = "no_texture.png";
@@ -1480,27 +1477,27 @@ void GenericCAO::updateTextures(std::string mod)
 				else if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
-				buf->getMaterial().setTexture(0,
+				auto& material = m_meshnode->getMaterial(1);
+				material.setTexture(0,
 						tsrc->getTextureForMesh(tname));
-				buf->getMaterial().setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
+				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
 				if (m_prop.colors.size() >= 2) {
-					buf->getMaterial().AmbientColor = m_prop.colors[1];
-					buf->getMaterial().DiffuseColor = m_prop.colors[1];
-					buf->getMaterial().SpecularColor = m_prop.colors[1];
+					material.AmbientColor = m_prop.colors[1];
+					material.DiffuseColor = m_prop.colors[1];
+					material.SpecularColor = m_prop.colors[1];
 				} else if (!m_prop.colors.empty()) {
-					buf->getMaterial().AmbientColor = m_prop.colors[0];
-					buf->getMaterial().DiffuseColor = m_prop.colors[0];
-					buf->getMaterial().SpecularColor = m_prop.colors[0];
+					material.AmbientColor = m_prop.colors[0];
+					material.DiffuseColor = m_prop.colors[0];
+					material.SpecularColor = m_prop.colors[0];
 				}
 
-				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				material.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+				material.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			// Set mesh color (only if lighting is disabled)
 			if (!m_prop.colors.empty() && m_glow < 0)
