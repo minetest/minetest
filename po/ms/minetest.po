@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-30 18:51+0000\n"
+"PO-Revision-Date: 2022-03-21 18:54+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -415,7 +415,7 @@ msgstr "Jisim bumi terapung atas langit"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Tanah terapung (dalam ujikaji)"
+msgstr "Tanah terapung (dalam uji kaji)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -1088,7 +1088,7 @@ msgstr "Pembayang"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
-msgstr "Pembayang (dalam ujikaji)"
+msgstr "Pembayang (dalam uji kaji)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -3215,7 +3215,7 @@ msgid ""
 "This support is experimental and API can change."
 msgstr ""
 "Membolehkan sokongan pembuatan mods Lua dekat klien.\n"
-"Sokongan ini dalam ujikaji dan API boleh berubah."
+"Sokongan ini dalam uji kaji dan API boleh berubah."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4369,8 +4369,8 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen W tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen W buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Tiada kesan terhadap fraktal 3D.\n"
 "Julat kasarnya -2 hingga 2."
@@ -4382,8 +4382,8 @@ msgid ""
 "Alters the shape of the fractal.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen X tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen X buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Julat kasarnya -2 hingga 2."
 
@@ -4394,8 +4394,8 @@ msgid ""
 "Alters the shape of the fractal.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen Y tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen Y buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Julat kasarnya -2 hingga 2."
 
@@ -4406,26 +4406,26 @@ msgid ""
 "Alters the shape of the fractal.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen Z tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen Z buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Julat kasarnya -2 hingga 2."
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
-msgstr "W julia"
+msgstr "W Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia x"
-msgstr "X julia"
+msgstr "X Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia y"
-msgstr "Y julia"
+msgstr "Y Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia z"
-msgstr "Z julia"
+msgstr "Z Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -6923,7 +6923,7 @@ msgstr ""
 "pelayan lama,\n"
 "pilihan ini membolehkan pemaksaan ia untuk jenis nod tertentu. Ambil "
 "perhatian\n"
-"bahawa ia dianggap DALAM UJIKAJI dan mungkin tidak berfungsi dengan betul."
+"bahawa ia dianggap DALAM UJI KAJI dan mungkin tidak berfungsi dengan betul."
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -7017,7 +7017,7 @@ msgstr ""
 "Nota: Di Android, kekalkan dengan OGLES1 jika tidak pasti! Apl mungkin gagal "
 "dimulakan jika ditukar.\n"
 "Di platform lain, OpenGL digalakkan.\n"
-"Pembayang disokong oleh OpenGL (komputer sahaja) dan OGLES2 (dalam ujikaji)"
+"Pembayang disokong oleh OpenGL (komputer sahaja) dan OGLES2 (dalam uji kaji)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7597,7 +7597,7 @@ msgstr ""
 "inginkan, terutamanya jika anda gunakan pek tekstur yang direka secara\n"
 "khusus; dengan pilihan ini, klien akan cuba untuk menentukan skala secara\n"
 "automatik berdasarkan saiz tekstur. Juga lihat texture_min_size.\n"
-"Amaran: Pilihan ini DALAM UJIKAJI!"
+"Amaran: Pilihan ini DALAM UJI KAJI!"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
