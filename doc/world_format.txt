@@ -346,6 +346,9 @@ if map format version >= 29:
   - 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
                  difference when loaded
 
+  u8 name_id_mapping_version
+  - Should be zero for map format version 29.
+  
   u16 num_name_id_mappings
   foreach num_name_id_mappings
     u16 id
@@ -447,7 +450,7 @@ if map format version < 29:
     u8[name_len] name
 
 - Node timers
-if map format version == 25:
+if map format version >= 25:
   u8 length of the data of a single timer (always 2+4+4=10)
   u16 num_of_timers
   foreach num_of_timers:
