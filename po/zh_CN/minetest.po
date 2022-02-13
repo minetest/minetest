@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-02-14 19:57+0000\n"
-"Last-Translator: neinwhal <fishyWET@hotmail.com>\n"
+"Last-Translator: Mivik <mivik@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6196,7 +6196,7 @@ msgstr "当窗口大小改变时自动保存。"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr "保存从服务器收到的地图"
+msgstr "正在保存从服务器收到的地图"
 
 #: src/settings_translation_file.cpp
 msgid ""
