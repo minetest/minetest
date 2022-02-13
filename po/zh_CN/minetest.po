@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-02-02 19:54+0000\n"
-"Last-Translator: Y.W. <y5nw@outlook.com>\n"
+"PO-Revision-Date: 2022-02-14 19:57+0000\n"
+"Last-Translator: neinwhal <fishyWET@hotmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -278,9 +278,8 @@ msgstr "下载 $1 失败"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Games"
-msgstr "子游戏"
+msgstr "游戏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
@@ -302,7 +301,7 @@ msgstr "安装：文件类型不支持或档案已损坏"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Mod"
+msgstr "模组"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -418,9 +417,8 @@ msgid "Floatlands (experimental)"
 msgstr "悬空岛（实验性）"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Game"
-msgstr "子游戏"
+msgstr "游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -1056,8 +1054,9 @@ msgid "Node Outlining"
 msgstr "方块轮廓"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "None"
-msgstr "无"
+msgstr "毫无"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
