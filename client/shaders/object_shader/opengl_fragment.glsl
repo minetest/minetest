@@ -508,7 +508,7 @@ void main(void)
 	// turns out that nightRatio falls off much faster than
 	// actual brightness of artificial light in relation to natual light.
 	// Power ratio was measured on torches in MTG (brightness = 14).
-	float adjusted_night_ratio = pow(nightRatio, 0.6);
+	float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
 
 	// cosine of the normal-to-light angle when
 	// we start to apply self-shadowing
