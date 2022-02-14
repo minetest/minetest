@@ -56,12 +56,6 @@ vec4 getPerspectiveFactor(in vec4 shadowPosition)
 	return shadowPosition;
 }
 
-// assuming near is always 1.0
-float getLinearDepth()
-{
-	return 2.0 * f_shadowfar / (f_shadowfar + 1.0 - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - 1.0));
-}
-
 vec3 getLightSpacePosition()
 {
 	vec4 pLightSpace;
@@ -69,8 +63,7 @@ vec3 getLightSpacePosition()
 	#if DRAW_TYPE == NDT_PLANTLIKE
 	pLightSpace = m_ShadowViewProj * vec4(worldPosition, 1.0);
 	#else
-	float offsetScale = (0.0057 * getLinearDepth() + normalOffsetScale);
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + offsetScale * normalize(vNormal), 1.0);
+	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalOffsetScale * normalize(vNormal), 1.0);
 	#endif
 	pLightSpace = getPerspectiveFactor(pLightSpace);
 	return pLightSpace.xyz * 0.5 + 0.5;
@@ -544,6 +537,5 @@ void main(void)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
-
 	gl_FragColor = vec4(col.rgb, base.a);
 }
