@@ -47,7 +47,7 @@ void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex) {
 		tex.string = lua_tostring(L, -1);
 	} else {
 		luaL_checktype(L, -1, LUA_TTABLE);
-		lua_getfield(L, -1, "img");
+		lua_getfield(L, -1, "name");
 		tex.string = luaL_checkstring(L, -1);
 		lua_pop(L, 1);
 

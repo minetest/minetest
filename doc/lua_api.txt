@@ -8841,7 +8841,7 @@ will be ignored):
             -- number of times the animation is played over the particle's lifespan
 
             start = 0.0;
-            -- point in the particle's lifespan at which the animation begins. 0 is
+            -- point in the spawner's lifespan at which the animation begins. 0 is
             -- the very beginning, 1 is the very end
 
             -- frames can be defined in a number of different ways, depending on the
@@ -8907,6 +8907,9 @@ unless otherwise specified.
     * `'plane'`: the particles are attracted to an (infinite) plane on whose
       surface `origin` designates a point in world coordinate space. use this
       for e.g. particles entering or emerging from a portal.
+  * float range `strength`: the speed with which particles will move towards
+    `attractor`. If negative, the particles will instead move away from that
+    point.
   * vec3 `origin`: the origin point of the shape towards which particles will
     initially be oriented. functions as an offset if `origin_attached` is also
     set.
@@ -8919,9 +8922,6 @@ unless otherwise specified.
     the position of an entity rather than a coordinate in world space.
   * vec3 `angle_attached`: allows the angle to be specified as an offset from
     the position of an entity rather than a coordinate in world space.
-  * float range `strength`: the speed with which particles will move towards
-    `attractor`. If negative, the particles will instead move away from that
-    point.
   * bool `die_on_contact`: if true, the particles' lifetimes are adjusted so
     that they will die as they cross the attractor threshold. this behavior
     is the default but is undesirable for some kinds of animations; set it to
@@ -8941,24 +8941,32 @@ texture string. After v5.5.0, textures can now be specified as a table as well. 
 table contains options that allow simple animations to be applied to the texture.
 
     texture = {
-        img = 'mymod_particle_texture.png';
+        name = 'mymod_particle_texture.png';
         -- the texture specification string
 
         alpha = 1.0;
         -- controls how visible the particle is; at 1.0 the particle is fully
         -- visible, at 0, it is completely invisible.
 
-        scale = {x = 0, y = 0};
+        alpha_tween = {1, 0};
+        -- can be used instead of `alpha` to animate the alpha value over the
+        -- particle's lifetime. these tween tables work identically to the tween
+        -- tables used in particlespawner properties, except that time references
+        -- are understood with respect to the particle's lifetime, not the
+        -- spawner's. {1,0} fades the particle out over its lifetime.
+
+        scale = 1;
+        scale = {x = 1, y = 1};
         -- scales the texture onscreen
 
-        fade_start = 0.0;
-        -- controls where along the particle's lifetime the fading effect begins,
-        -- 0.0 being the beginning and 1.0 being the end
-
-        fade_reps = 1;
-        -- controls how many times the alpha animation will be repeated over the
-        -- particle's lifetime; allowing e.g. a particle to be set to pulse or
-        -- flicker 5 times before disappearing for good.
+        scale_tween = {
+            {x = 1, y = 1};
+            {x = 0, y = 1};
+        };
+        -- animates the scale over the particle's lifetime. works like the
+        -- alpha_tween table, but can accept two-dimensional vectors as well as
+        -- integer values. the example value would cause the particle to shrink
+        -- in one dimension over the course of its life until it disappears
 
         animation = {Tile Animation definition};
         -- overrides the particlespawner's global animation property for a single
