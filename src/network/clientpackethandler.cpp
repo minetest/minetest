@@ -1039,6 +1039,9 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.exptime.end.deSerialize(is);
 		p.size.end.deSerialize(is);
 
+		// properties for legacy texture field
+		p.texture.deSerialize(is, m_proto_ver, true);
+
 		p.drag.deSerialize(is);
 		p.bounce.deSerialize(is);
 		ParticleParamTypes::deSerializeParameterValue(is, p.attractor_kind);

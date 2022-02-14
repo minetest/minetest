@@ -1662,6 +1662,9 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		p.exptime.end.serialize(os);
 		p.size.end.serialize(os);
 
+		// properties for legacy texture field
+		p.texture.serialize(os, protocol_version, true);
+
 		// new properties
 		p.drag.serialize(os);
 		p.bounce.serialize(os);
@@ -3329,7 +3332,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	u32 new_hud_flags = (player->hud_flags & ~mask) | flags;
 	if (new_hud_flags == player->hud_flags) // no change
 		return true;
-	
+
 	SendHUDSetFlags(player->getPeerId(), flags, mask);
 	player->hud_flags = new_hud_flags;
 

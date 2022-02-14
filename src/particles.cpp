@@ -72,25 +72,29 @@ enum class ParticleTextureFlags : u8 {
 	animated = 1
 };
 
-void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver) const {
+void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly) const {
+	/* newPropertiesOnly is used to de/serialize parameters of the legacy texture
+	 * field, which are encoded separately from the texspec string */
 	u8 flags = 0;
 	animated && (flags |= (u8)ParticleTextureFlags::animated);
 	writeU8(os, flags);
 
 	alpha.serialize(os);
 	scale.serialize(os);
-	os << serializeString32(string);
+	if (!newPropertiesOnly)
+		os << serializeString32(string);
 
 	if (animated)
 		animation.serialize(os, protocol_ver);
 }
-void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver) {
+void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly) {
 	u8 flags = readU8(is);
 	animated = (flags & (u8)ParticleTextureFlags::animated);
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);
-	string = deSerializeString32(is);
+	if (!newPropertiesOnly)
+		string = deSerializeString32(is);
 
 	if (animated)
 		animation.deSerialize(is, protocol_ver);

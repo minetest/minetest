@@ -307,8 +307,8 @@ struct ParticleTexture {
 
 struct ServerParticleTexture : public ParticleTexture {
 	std::string string;
-	void serialize(std::ostream &os, u16 protocol_ver) const;
-	void deSerialize(std::istream &is, u16 protocol_ver);
+	void serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly = false) const;
+	void deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly = false);
 };
 
 struct CommonParticleParams {
