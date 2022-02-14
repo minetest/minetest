@@ -36,6 +36,8 @@ const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 varying float vIDiff;
 const float e = 2.718281828459;
 const float BS = 10.0;
+const float bias0 = 0.9;
+const float bias1 = 1.0 - bias0;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 // custom smoothstep implementation because it's not defined in glsl1.2
@@ -104,8 +106,15 @@ void main(void)
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	vec3 nNormal = normalize(vNormal);
 	cosLight = dot(nNormal, -v_LightDirection);
-	float texelSize = 767.0 / f_textureresolution;
-	float slopeScale = clamp(1.0 - abs(cosLight), 0.0, 1.0);
+
+	// Calculate normal offset scale based on the texel size adjusted for 
+	// curvature of the SM texture. This code must be change together with
+	// getPerspectiveFactor or any light-space transformation.
+	float distanceToPlayer = length((eyePosition - worldPosition).xyz) / f_shadowfar;
+	float perspectiveFactor = distanceToPlayer * bias0 + bias1;
+	float texelSize = 1.0 / f_textureresolution;
+	texelSize *= f_shadowfar * perspectiveFactor / (bias1 / perspectiveFactor - texelSize * bias0) * 0.15;
+	float slopeScale = clamp(pow(1.0 - cosLight*cosLight, 0.5), 0.0, 1.0);
 	normalOffsetScale = texelSize * slopeScale;
 	
 	if (f_timeofday < 0.2) {
