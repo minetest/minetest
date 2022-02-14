@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-10-06 14:41+0000\n"
-"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2022-01-23 18:54+0000\n"
+"Last-Translator: rubenwardy <rw@rubenwardy.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1068,7 +1068,7 @@ msgstr "Marcar nodos"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr "Ninguno"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1088,7 +1088,7 @@ msgstr "Pantalla:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr "Configuración"
+msgstr "Ajustes"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
@@ -1222,14 +1222,6 @@ msgid "- Address: "
 msgstr "- Dirección: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Modo creativo: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Daño: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Modo: "
 
@@ -1299,7 +1291,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Cambiar contraseña"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1587,7 +1579,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Rango de visión cambiado a %d"
@@ -1938,7 +1930,7 @@ msgstr "¡Las contraseñas no coinciden!"
 msgid "Register and Join"
 msgstr "Registrarse y unirse"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3401,6 +3393,12 @@ msgstr ""
 "Cambiar esta configuración requiere un reinicio."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Intervalo de impresión de datos del perfil del motor"
 
@@ -3605,11 +3603,17 @@ msgid "Font size"
 msgstr "Tamaño de la fuente"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Tamaño de la fuente por defecto en punto (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Tamaño de la fuente del monoespacio en punto (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3620,6 +3624,17 @@ msgstr ""
 "El tamaño de la fuente del texto del chat reciente y el indicador del chat "
 "en punto (pt).\n"
 "El valor 0 utilizará el tamaño de fuente predeterminado."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3684,10 +3699,6 @@ msgstr "Tipo de fractal"
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr ""
 "Fracción de la distancia visible en la que la niebla se empieza a renderizar"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Fuentes FreeType"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5824,6 +5835,11 @@ msgid "Monospace font size"
 msgstr "Tamaño de fuente monoespaciada"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Tamaño de fuente monoespaciada"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr ""
 
@@ -5978,9 +5994,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -6003,17 +6017,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -6970,6 +6980,10 @@ msgid "Touch screen threshold"
 msgstr "Límite de ruido de playa"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -7263,13 +7277,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -7409,6 +7416,12 @@ msgstr "Tiempo de espera de cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "Límite de cURL en paralelo"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Modo creativo: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Daño: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7581,6 +7594,9 @@ msgstr "Límite de cURL en paralelo"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Tamaño de la fuente de reserva en punto (pt)."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Fuentes FreeType"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Profundidad de color en pantalla completa"

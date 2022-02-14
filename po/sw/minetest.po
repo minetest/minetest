@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -1296,16 +1296,6 @@ msgid "- Address: "
 msgstr "Kumfunga anwani"
 
 #: src/client/game.cpp
-#, fuzzy
-msgid "- Creative Mode: "
-msgstr "Hali ya ubunifu"
-
-#: src/client/game.cpp
-#, fuzzy
-msgid "- Damage: "
-msgstr "Uharibifu"
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr ""
 
@@ -1680,7 +1670,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, fuzzy, c-format
 msgid "Viewing range changed to %d"
 msgstr "Kuonyesha masafa"
@@ -2043,7 +2033,7 @@ msgstr "MaNenotambulishi hayaoani!"
 msgid "Register and Join"
 msgstr ""
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3437,6 +3427,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Injini ubainishaji wa data ya uchapaji nafasi"
 
@@ -3641,17 +3637,32 @@ msgid "Font size"
 msgstr "Ukubwa wa fonti"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3720,11 +3731,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "FreeType fonts"
-msgstr "Fonti Freetype"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5866,6 +5872,11 @@ msgstr "Ukubwa wa fonti wa Monospace"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Ukubwa wa fonti wa Monospace"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mountain height noise"
 msgstr "Mwandishi ramani v7 mlima urefu kelele vigezo"
 
@@ -6032,9 +6043,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -6057,17 +6066,13 @@ msgstr "Njia ya orodha ya unamu. Unamu wote vinatafutizwa kwanza kutoka hapa."
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 
@@ -7108,6 +7113,10 @@ msgid "Touch screen threshold"
 msgstr "Touchthreshold (px)"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
@@ -7435,16 +7444,6 @@ msgstr ""
 "anisotropic ni kuwezeshwa."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Kama freetype fonti hutumiwa, inahitaji msaada wa freetype kuwa alikusanya "
-"katika."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
@@ -7596,6 +7595,14 @@ msgstr "muda wa kuisha wa cURL"
 msgid "cURL parallel limit"
 msgstr "cURL kikomo sambamba"
 
+#, fuzzy
+#~ msgid "- Creative Mode: "
+#~ msgstr "Hali ya ubunifu"
+
+#, fuzzy
+#~ msgid "- Damage: "
+#~ msgstr "Uharibifu"
+
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
 #~ "1 = relief mapping (slower, more accurate)."
@@ -7723,6 +7730,10 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Fonti kivuli Alfa (opaqueness kati ya 0 na 255)."
+
+#, fuzzy
+#~ msgid "FreeType fonts"
+#~ msgstr "Fonti Freetype"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Skrini BPP"
@@ -7863,6 +7874,15 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Waving water"
 #~ msgstr "Waving maji"
+
+#, fuzzy
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Kama freetype fonti hutumiwa, inahitaji msaada wa freetype kuwa "
+#~ "alikusanya katika."
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."

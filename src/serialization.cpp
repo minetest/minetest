@@ -211,8 +211,9 @@ struct ZSTD_Deleter {
 void compressZstd(const u8 *data, size_t data_size, std::ostream &os, int level)
 {
 	// reusing the context is recommended for performance
-	// it will destroyed when the thread ends
+	// it will be destroyed when the thread ends
 	thread_local std::unique_ptr<ZSTD_CStream, ZSTD_Deleter> stream(ZSTD_createCStream());
+
 
 	ZSTD_initCStream(stream.get(), level);
 
@@ -257,7 +258,7 @@ void compressZstd(const std::string &data, std::ostream &os, int level)
 void decompressZstd(std::istream &is, std::ostream &os)
 {
 	// reusing the context is recommended for performance
-	// it will destroyed when the thread ends
+	// it will be destroyed when the thread ends
 	thread_local std::unique_ptr<ZSTD_DStream, ZSTD_Deleter> stream(ZSTD_createDStream());
 
 	ZSTD_initDStream(stream.get());

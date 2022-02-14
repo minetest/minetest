@@ -149,6 +149,15 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);
 
 		playername = getstringfield_default(L, 1, "playername", "");
+
+		lua_getfield(L, 1, "drag");
+		if (lua_istable(L, -1))
+			p.drag = check_v3f(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "bounce");
+		LuaParticleParams::readLuaValue(L, p.bounce);
+		lua_pop(L, 1);
 	}
 
 	getServer(L)->spawnParticle(playername, p);

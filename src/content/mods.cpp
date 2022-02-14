@@ -89,7 +89,7 @@ void parseModContents(ModSpec &spec)
 			modpack2_is.close();
 
 		spec.is_modpack = true;
-		spec.modpack_content = getModsInPath(spec.path, true);
+		spec.modpack_content = getModsInPath(spec.path, spec.virtual_path, true);
 
 	} else {
 		Settings info;
@@ -167,13 +167,14 @@ void parseModContents(ModSpec &spec)
 }
 
 std::map<std::string, ModSpec> getModsInPath(
-		const std::string &path, bool part_of_modpack)
+		const std::string &path, const std::string &virtual_path, bool part_of_modpack)
 {
 	// NOTE: this function works in mutual recursion with parseModContents
 
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
-	std::string modpath;
+	std::string mod_path;
+	std::string mod_virtual_path;
 
 	for (const fs::DirListNode &dln : dirlist) {
 		if (!dln.dir)
@@ -185,10 +186,14 @@ std::map<std::string, ModSpec> getModsInPath(
 		if (modname[0] == '.')
 			continue;
 
-		modpath.clear();
-		modpath.append(path).append(DIR_DELIM).append(modname);
+		mod_path.clear();
+		mod_path.append(path).append(DIR_DELIM).append(modname);
 
-		ModSpec spec(modname, modpath, part_of_modpack);
+		mod_virtual_path.clear();
+		// Intentionally uses / to keep paths same on different platforms
+		mod_virtual_path.append(virtual_path).append("/").append(modname);
+
+		ModSpec spec(modname, mod_path, part_of_modpack, mod_virtual_path);
 		parseModContents(spec);
 		result.insert(std::make_pair(modname, spec));
 	}
@@ -228,9 +233,9 @@ void ModConfiguration::printUnsatisfiedModsError() const
 	}
 }
 
-void ModConfiguration::addModsInPath(const std::string &path)
+void ModConfiguration::addModsInPath(const std::string &path, const std::string &virtual_path)
 {
-	addMods(flattenMods(getModsInPath(path)));
+	addMods(flattenMods(getModsInPath(path, virtual_path)));
 }
 
 void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
@@ -294,29 +299,39 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 }
 
 void ModConfiguration::addModsFromConfig(
-		const std::string &settings_path, const std::set<std::string> &mods)
+		const std::string &settings_path,
+		const std::unordered_map<std::string, std::string> &modPaths)
 {
 	Settings conf;
-	std::set<std::string> load_mod_names;
+	std::unordered_map<std::string, std::string> load_mod_names;
 
 	conf.readConfigFile(settings_path.c_str());
 	std::vector<std::string> names = conf.getNames();
 	for (const std::string &name : names) {
-		if (name.compare(0, 9, "load_mod_") == 0 && conf.get(name) != "false" &&
-				conf.get(name) != "nil")
-			load_mod_names.insert(name.substr(9));
+		const auto &value = conf.get(name);
+		if (name.compare(0, 9, "load_mod_") == 0 && value != "false" &&
+				value != "nil")
+			load_mod_names[name.substr(9)] = value;
 	}
 
 	std::vector<ModSpec> addon_mods;
-	for (const std::string &i : mods) {
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(i));
+	std::unordered_map<std::string, std::vector<std::string>> candidates;
+
+	for (const auto &modPath : modPaths) {
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(modPath.second, modPath.first));
 		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
 				it != addon_mods_in_path.end(); ++it) {
 			const ModSpec &mod = *it;
-			if (load_mod_names.count(mod.name) != 0)
-				addon_mods.push_back(mod);
-			else
+			const auto &pair = load_mod_names.find(mod.name);
+			if (pair != load_mod_names.end()) {
+				if (is_yes(pair->second) || pair->second == mod.virtual_path) {
+					addon_mods.push_back(mod);
+				} else {
+					candidates[pair->first].emplace_back(mod.virtual_path);
+				}
+			} else {
 				conf.setBool("load_mod_" + mod.name, false);
+			}
 		}
 	}
 	conf.updateConfigFile(settings_path.c_str());
@@ -335,9 +350,22 @@ void ModConfiguration::addModsFromConfig(
 
 	if (!load_mod_names.empty()) {
 		errorstream << "The following mods could not be found:";
-		for (const std::string &mod : load_mod_names)
-			errorstream << " \"" << mod << "\"";
+		for (const auto &pair : load_mod_names)
+			errorstream << " \"" << pair.first << "\"";
 		errorstream << std::endl;
+
+		for (const auto &pair : load_mod_names) {
+			const auto &candidate = candidates.find(pair.first);
+			if (candidate != candidates.end()) {
+				errorstream << "Unable to load " << pair.first << " as the specified path "
+					<< pair.second << " could not be found. "
+					<< "However, it is available in the following locations:"
+					<< std::endl;
+				for (const auto &path : candidate->second) {
+					errorstream << " - " << path << std::endl;
+				}
+			}
+		}
 	}
 }
 
@@ -413,10 +441,12 @@ void ModConfiguration::resolveDependencies()
 ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 		ModConfiguration(path)
 {
-	std::set<std::string> paths;
+	std::unordered_map<std::string, std::string> paths;
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
-	paths.insert(path);
-	paths.insert(path_user);
+	if (path != path_user) {
+		paths["share"] = path;
+	}
+	paths["mods"] = path_user;
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
 	addModsFromConfig(settings_path, paths);

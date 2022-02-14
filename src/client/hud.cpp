@@ -676,7 +676,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 	// Rectangles for 1/2 the "off state" texture
 	core::rect<s32> srchalfrect2, dsthalfrect2;
 
-	if (count % 2 == 1) {
+	if (count % 2 == 1 || maxcount % 2 == 1) {
 		// Need to draw halves: Calculate rectangles
 		srchalfrect  = calculate_clipping_rect(srcd, steppos);
 		dsthalfrect  = calculate_clipping_rect(dstd, steppos);
@@ -711,7 +711,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		}
 	}
 
-	if (stat_texture_bg && maxcount > count / 2) {
+	if (stat_texture_bg && maxcount > count) {
 		// Draw "off state" textures
 		s32 start_offset;
 		if (count % 2 == 1)
@@ -731,8 +731,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 
 		if (maxcount % 2 == 1) {
 			draw2DImageFilterScaled(driver, stat_texture_bg,
-					dsthalfrect + p, srchalfrect,
-					NULL, colors, true);
+				dsthalfrect + p, srchalfrect, NULL, colors, true);
 		}
 	}
 }
@@ -1014,6 +1013,10 @@ void drawItemStack(
 	bool has_mesh = false;
 	ItemMesh *imesh;
 
+	core::rect<s32> viewrect = rect;
+	if (clip != nullptr)
+		viewrect.clipAgainst(*clip);
+
 	// Render as mesh if animated or no inventory image
 	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
 		imesh = client->idef()->getWieldMesh(def.name, client);
@@ -1035,9 +1038,6 @@ void drawItemStack(
 		core::rect<s32> oldViewPort = driver->getViewPort();
 		core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
 		core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
-		core::rect<s32> viewrect = rect;
-		if (clip)
-			viewrect.clipAgainst(*clip);
 
 		core::matrix4 ProjMatrix;
 		ProjMatrix.buildProjectionMatrixOrthoLH(2.0f, 2.0f, -1.0f, 100.0f);
@@ -1181,24 +1181,68 @@ void drawItemStack(
 		driver->draw2DRectangle(color, progressrect2, clip);
 	}
 
-	if (font != NULL && item.count >= 2) {
+	const std::string &count_text = item.metadata.getString("count_meta");
+	if (font != nullptr && (item.count >= 2 || !count_text.empty())) {
 		// Get the item count as a string
-		std::string text = itos(item.count);
-		v2u32 dim = font->getDimension(utf8_to_wide(text).c_str());
+		std::string text = count_text.empty() ? itos(item.count) : count_text;
+		v2u32 dim = font->getDimension(utf8_to_wide(unescape_enriched(text)).c_str());
 		v2s32 sdim(dim.X, dim.Y);
 
 		core::rect<s32> rect2(
-			/*rect.UpperLeftCorner,
-			core::dimension2d<u32>(rect.getWidth(), 15)*/
 			rect.LowerRightCorner - sdim,
-			sdim
+			rect.LowerRightCorner
 		);
 
-		video::SColor bgcolor(128, 0, 0, 0);
-		driver->draw2DRectangle(bgcolor, rect2, clip);
+		// get the count alignment
+		s32 count_alignment = stoi(item.metadata.getString("count_alignment"));
+		if (count_alignment != 0) {
+			s32 a_x = count_alignment & 3;
+			s32 a_y = (count_alignment >> 2) & 3;
+
+			s32 x1, x2, y1, y2;
+			switch (a_x) {
+			case 1: // left
+				x1 = rect.UpperLeftCorner.X;
+				x2 = x1 + sdim.X;
+				break;
+			case 2: // middle
+				x1 = (rect.UpperLeftCorner.X + rect.LowerRightCorner.X - sdim.X) / 2;
+				x2 = x1 + sdim.X;
+				break;
+			case 3: // right
+				x2 = rect.LowerRightCorner.X;
+				x1 = x2 - sdim.X;
+				break;
+			default: // 0 = default
+				x1 = rect2.UpperLeftCorner.X;
+				x2 = rect2.LowerRightCorner.X;
+				break;
+			}
+
+			switch (a_y) {
+			case 1: // up
+				y1 = rect.UpperLeftCorner.Y;
+				y2 = y1 + sdim.Y;
+				break;
+			case 2: // middle
+				y1 = (rect.UpperLeftCorner.Y + rect.LowerRightCorner.Y - sdim.Y) / 2;
+				y2 = y1 + sdim.Y;
+				break;
+			case 3: // down
+				y2 = rect.LowerRightCorner.Y;
+				y1 = y2 - sdim.Y;
+				break;
+			default: // 0 = default
+				y1 = rect2.UpperLeftCorner.Y;
+				y2 = rect2.LowerRightCorner.Y;
+				break;
+			}
+
+			rect2 = core::rect<s32>(x1, y1, x2, y2);
+		}
 
 		video::SColor color(255, 255, 255, 255);
-		font->draw(text.c_str(), rect2, color, false, false, clip);
+		font->draw(utf8_to_wide(text).c_str(), rect2, color, false, false, &viewrect);
 	}
 }
 

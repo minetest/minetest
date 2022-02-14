@@ -114,6 +114,19 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeU8(os, node.param2);
 	writeU8(os, node_tile);
 	writeV3F32(os, drag);
+	bounce.serialize(os);
+}
+
+template <typename T, T (reader)(std::istream& is)>
+inline bool streamEndsBeforeParam(T& val, std::istream& is) {
+	// This is kinda awful
+	T tmp = reader(is);
+	if (is.eof())
+		return true;
+	else {
+		val = tmp;
+		return false;
+	}
 }
 
 void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
@@ -130,16 +143,15 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 	animation.deSerialize(is, 6); /* NOT the protocol ver */
 	glow               = readU8(is);
 	object_collision   = readU8(is);
-	// This is kinda awful
-	u16 tmp_param0 = readU16(is);
-	if (is.eof())
+
+	if (streamEndsBeforeParam<u16, readU16>(node.param0, is))
 		return;
-	node.param0 = tmp_param0;
 	node.param2 = readU8(is);
 	node_tile   = readU8(is);
-	if (protocol_ver >= 41) {
-		drag = readV3F32(is);
-	}
+
+	if (streamEndsBeforeParam<v3f, readV3F32>(drag, is))
+		return;
+	bounce.deSerialize(is);
 }
 
 ParticleTexture::ParticleTexture():

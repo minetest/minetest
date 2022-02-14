@@ -1444,11 +1444,7 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 	/*
 		Do not create over max mapgen limit
 	*/
-	const s16 max_limit_bp = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
-	if (p2d.X < -max_limit_bp ||
-			p2d.X >  max_limit_bp ||
-			p2d.Y < -max_limit_bp ||
-			p2d.Y >  max_limit_bp)
+	if (blockpos_over_max_limit(v3s16(p2d.X, 0, p2d.Y)))
 		throw InvalidPositionException("createSector(): pos. over max mapgen limit");
 
 	/*
@@ -1456,9 +1452,6 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 	*/
 
 	sector = new MapSector(this, p2d, m_gamedef);
-
-	// Sector position on map in nodes
-	//v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 
 	/*
 		Insert to container

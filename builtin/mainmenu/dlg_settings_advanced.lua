@@ -378,7 +378,7 @@ local function parse_config_file(read_all, parse_mods)
 		-- Parse mods
 		local mods_category_initialized = false
 		local mods = {}
-		get_mods(core.get_modpath(), mods)
+		get_mods(core.get_modpath(), "mods", mods)
 		for _, mod in ipairs(mods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
@@ -497,44 +497,40 @@ end
 
 local function get_current_np_group(setting)
 	local value = core.settings:get_np_group(setting.name)
-	local t = {}
 	if value == nil then
-		t = setting.values
-	else
-		table.insert(t, value.offset)
-		table.insert(t, value.scale)
-		table.insert(t, value.spread.x)
-		table.insert(t, value.spread.y)
-		table.insert(t, value.spread.z)
-		table.insert(t, value.seed)
-		table.insert(t, value.octaves)
-		table.insert(t, value.persistence)
-		table.insert(t, value.lacunarity)
-		table.insert(t, value.flags)
+		return setting.values
 	end
-	return t
+	local p = "%g"
+	return {
+		p:format(value.offset),
+		p:format(value.scale),
+		p:format(value.spread.x),
+		p:format(value.spread.y),
+		p:format(value.spread.z),
+		p:format(value.seed),
+		p:format(value.octaves),
+		p:format(value.persistence),
+		p:format(value.lacunarity),
+		value.flags
+	}
 end
 
 local function get_current_np_group_as_string(setting)
 	local value = core.settings:get_np_group(setting.name)
-	local t
 	if value == nil then
-		t = setting.default
-	else
-		t = value.offset .. ", " ..
-			value.scale .. ", (" ..
-			value.spread.x .. ", " ..
-			value.spread.y .. ", " ..
-			value.spread.z .. "), " ..
-			value.seed .. ", " ..
-			value.octaves .. ", " ..
-			value.persistence .. ", " ..
-			value.lacunarity
-		if value.flags ~= "" then
-			t = t .. ", " .. value.flags
-		end
+		return setting.default
 	end
-	return t
+	return ("%g, %g, (%g, %g, %g), %g, %g, %g, %g"):format(
+		value.offset,
+		value.scale,
+		value.spread.x,
+		value.spread.y,
+		value.spread.z,
+		value.seed,
+		value.octaves,
+		value.persistence,
+		value.lacunarity
+	) .. (value.flags ~= "" and (", " .. value.flags) or "")
 end
 
 local checkboxes = {} -- handle checkboxes events
@@ -667,7 +663,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
 		local v3f = {}
-		for line in val:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+		for line in val:gmatch("[+-]?[%d.+-eE]+") do -- All numeric characters
 			table.insert(v3f, line)
 		end
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2021-10-05 08:09+0000\n"
 "Last-Translator: phlostically <phlostically@mailinator.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -1216,14 +1216,6 @@ msgid "- Address: "
 msgstr "– Adreso: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "– Krea reĝimo: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "– Difekto: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "– Reĝimo: "
 
@@ -1580,7 +1572,7 @@ msgstr ""
 msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Vidodistanco agordita al %d"
@@ -1931,7 +1923,7 @@ msgstr "Pasvortoj ne kongruas!"
 msgid "Register and Join"
 msgstr "Registriĝi kaj aliĝi"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -3377,6 +3369,12 @@ msgstr ""
 "Ŝanĝo de ĉi tiu agordo postulos restartigon."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Intervalo inter presoj de profilaj datenoj de la motoro"
 
@@ -3580,11 +3578,17 @@ msgid "Font size"
 msgstr "Tipara grandeco"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Grando de la implicita tiparo, punkte (pt)."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Grandeco de la egallarĝa tiparo, punkte (pt)."
 
 #: src/settings_translation_file.cpp
@@ -3594,6 +3598,17 @@ msgid ""
 msgstr ""
 "Grandeco de tiparo de freŝa babila teksto kaj babilujo en punktoj (pt).\n"
 "Valoro 0 uzos la implicitan grandecon de tiparo."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3656,10 +3671,6 @@ msgstr "Speco de fraktalo"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Ono de la videbla distanco, ekde kiu nebulo bildiĝas"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Tiparoj «FreeType»"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5750,6 +5761,11 @@ msgid "Monospace font size"
 msgstr "Grandeco de egalspaca tiparo"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
+msgstr "Grandeco de egalspaca tiparo"
+
+#: src/settings_translation_file.cpp
 msgid "Mountain height noise"
 msgstr "Bruo de monta alteco"
 
@@ -5932,10 +5948,9 @@ msgid "Optional override for chat weblink color."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5967,10 +5982,9 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Dosierindiko al teksturoj. Ĉiuj teksturoj estas unue serĉataj tie."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Dosierindiko al la implicita tiparo.\n"
@@ -5980,10 +5994,9 @@ msgstr ""
 "La reenpaŝa tiparo uziĝos se la tiparo ne povas enlegiĝi."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Dosierindiko al la egallarĝa tiparo.\n"
@@ -7070,6 +7083,10 @@ msgid "Touch screen threshold"
 msgstr "Sojlo de tuŝekrano"
 
 #: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr "Bruo de arboj"
 
@@ -7404,15 +7421,6 @@ msgstr ""
 "grandigado de monde laŭigitaj teksturoj."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Ĉu tiparoj de FreeType uziĝas; postulas entradukitan subtenon de FreeType.\n"
-"Malŝaltite, ĉi tio anstataŭe uzigas tiparojn bitbildajn kaj XML-vektorajn."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
@@ -7580,6 +7588,12 @@ msgstr "Interaga tempolimo de cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "Samtempa limo de cURL"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "– Krea reĝimo: "
+
+#~ msgid "- Damage: "
+#~ msgstr "– Difekto: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7756,6 +7770,9 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Grandeco de la reenpaŝa tiparo, punkte (pt)."
 
+#~ msgid "FreeType fonts"
+#~ msgstr "Tiparoj «FreeType»"
+
 #~ msgid "Full screen BPP"
 #~ msgstr "Kolornombro tutekrane"
 
@@ -7931,6 +7948,15 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Ondanta akvo"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Ĉu tiparoj de FreeType uziĝas; postulas entradukitan subtenon de "
+#~ "FreeType.\n"
+#~ "Malŝaltite, ĉi tio anstataŭe uzigas tiparojn bitbildajn kaj XML-vektorajn."
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."

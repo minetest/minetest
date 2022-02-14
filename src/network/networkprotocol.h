@@ -207,8 +207,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		Added 'basic_debug' privilege
-		v5.5.0: Added new particlespawner parameters
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
+		v5.6.0: Added new particlespawner parameters
 */
 
 #define LATEST_PROTOCOL_VERSION 40
@@ -231,7 +231,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                                // base64-encoded SHA-1 (27+\0).
 
 // See also: Formspec Version History in doc/lua_api.txt
-#define FORMSPEC_API_VERSION 4
+#define FORMSPEC_API_VERSION 5
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -513,6 +513,7 @@ enum ToClientCommand
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
+		-- struct range<T> { T min, T max, f32 bias };
 		v3f1000 pos
 		v3f1000 velocity
 		v3f1000 acceleration
@@ -526,6 +527,10 @@ enum ToClientCommand
 		TileAnimation animation
 		u8 glow
 		u8 object_collision
+		if version>=5.6.0 {
+			v3f1000        drag
+			range<v3f1000> bounce
+		}
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,

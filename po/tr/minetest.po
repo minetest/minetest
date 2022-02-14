@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-27 19:42+0100\n"
-"PO-Revision-Date: 2021-08-04 06:32+0000\n"
-"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
+"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"PO-Revision-Date: 2022-01-22 11:52+0000\n"
+"Last-Translator: Mehmet Ali <2045uuttb@relay.firefox.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -90,9 +90,8 @@ msgid "OK"
 msgstr "Tamam"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Komut kullanılamıyor: "
+msgstr "<mevcut değil>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -297,9 +296,8 @@ msgid "Install missing dependencies"
 msgstr "Eksik bağımlılıkları kur"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "Kur: Desteklenmeyen dosya türü \"$1\" veya bozuk arşiv"
+msgstr "Kur: Desteklenmeyen dosya türü veya bozuk arşiv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -344,7 +342,7 @@ msgstr "Kaldır"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr "Güncelle"
+msgstr "Güncelleme"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
@@ -630,7 +628,6 @@ msgid "Offset"
 msgstr "Kaydırma"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Süreklilik"
 
@@ -1169,9 +1166,8 @@ msgid "Connection error (timed out?)"
 msgstr "Bağlantı hatası (zaman aşımı?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Oyun bulunamıyor veya yüklenemiyor \""
+msgstr "Oyun bulunamadı veya yüklenemedi: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1214,14 +1210,6 @@ msgid "- Address: "
 msgstr "- Adres: "
 
 #: src/client/game.cpp
-msgid "- Creative Mode: "
-msgstr "- Yaratıcı Kip: "
-
-#: src/client/game.cpp
-msgid "- Damage: "
-msgstr "- Hasar: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Kip: "
 
@@ -1243,14 +1231,13 @@ msgid "- Server Name: "
 msgstr "- Sunucu Adı: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Bir hata oluştu:"
+msgstr "Serileştirme hatası oluştu:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Erişim reddedildi. Neden: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1261,21 +1248,20 @@ msgid "Automatic forward enabled"
 msgstr "Kendiliğinden ileri etkin"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Blok sınırları"
+msgstr "Blok sınırları gizli"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Blok sınırları tüm bloklar için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Blok sınırları geçerli blok için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Blok sınırları yakındaki bloklar için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1287,7 +1273,7 @@ msgstr "Kamera güncelleme etkin"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr ""
+msgstr "Blok sınırları gösterilemiyor ('basic_debug' ayrıcalığına ihtiyaç var)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1302,9 +1288,8 @@ msgid "Cinematic mode enabled"
 msgstr "Sinematik kip etkin"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "İstemci modlama"
+msgstr "İstemci bağlantısı kesildi"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1316,7 +1301,7 @@ msgstr "Sunucuya bağlanılıyor..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Bilinmeyen bir nedenle bağlantı başarısız oldu"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1358,7 +1343,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Adres çözümlenemedi: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1567,19 +1552,19 @@ msgstr "Ses açık"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Sunucu muhtemelen farklı bir %s sürümü çalıştırıyor."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "IPv6 devre dışı bırakıldığı için %s bağlantısı kurulamıyor"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "IPv6 devre dışı bırakıldığından %s adresinde dinlenemiyor"
 
-#: src/client/game.cpp src/unittest/test_gettext.cpp
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Görüntüleme uzaklığı değişti: %d"
@@ -1914,13 +1899,12 @@ msgid "Minimap in texture mode"
 msgstr "Doku kipinde mini harita"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "$1 indirilemedi"
+msgstr "Web sayfası açılamadı"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Web sayfası açılıyor"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1930,7 +1914,7 @@ msgstr "Parolalar eşleşmiyor!"
 msgid "Register and Join"
 msgstr "Kaydol ve Katıl"
 
-#: src/gui/guiConfirmRegistration.cpp src/unittest/test_gettext.cpp
+#: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
@@ -2122,9 +2106,9 @@ msgid "Muted"
 msgstr "Ses Kısık"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Ses Seviyesi: "
+msgstr "Ses Seviyesi: %%%d"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2676,7 +2660,6 @@ msgid "Chat command time message threshold"
 msgstr "Sohbet komutu zaman iletisi eşiği"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
 msgstr "Sohbet komutları"
 
@@ -2713,9 +2696,8 @@ msgid "Chat toggle key"
 msgstr "Sohbet açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Sohbet gösteriliyor"
+msgstr "Sohbet web bağlantıları"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2738,6 +2720,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Sohbet konsolu çıktısında etkinleştirilen tıklanabilir (orta tıklama veya "
+"Ctrl+sol tıklama) web bağlantıları."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2827,33 +2811,29 @@ msgid "Command key"
 msgstr "Komut tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Harita kütlerini diske kaydederken kullanılacak ZLib sıkıştırma düzeyi.\n"
-"-1 - Zlib'in varsayılan sıkıştırma düzeyi\n"
+"Harita kütlerini diske kaydederken kullanılacak sıkıştırma düzeyi.\n"
+"-1 - öntanımlı sıkıştırma düzeyini kullan\n"
 "0 - hiçbir sıkıştırma yok, en hızlı\n"
-"9 - en iyi sıkıştırma, en yavaş\n"
-"(seviye 1-3, Zlib'in \"hızlı\" , 4-9 sıradan yöntemi kullanır)"
+"9 - en iyi sıkıştırma, en yavaş"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Harita kütlerini istemciye(client) gönderirken kullanılacak ZLib sıkıştırma "
+"Harita kütlerini istemciye(client) gönderirken kullanılacak sıkıştırma "
 "düzeyi.\n"
-"-1 - Zlib'in varsayılan sıkıştırma düzeyi\n"
+"-1 - öntanımlı sıkıştırma düzeyini kullan\n"
 "0 - hiçbir sıkıştırma yok, en hızlı\n"
-"9 - en iyi sıkıştırma, en yavaş\n"
-"(seviye 1-3, Zlib'in \"hızlı\" , 4-9 sıradan yöntemi kullanır)"
+"9 - en iyi sıkıştırma, en yavaş"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2954,13 +2934,12 @@ msgid "Crosshair alpha"
 msgstr "Artı saydamlığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Artı saydamlığı (solukluk, 0 ile 255 arasında).\n"
-"Ayrıca nesne artı rengini de denetler"
+"Ayrıca nesne artı rengi için de geçerlidir"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3039,14 +3018,13 @@ msgid "Default stack size"
 msgstr "Öntanımlı yığın boyutu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define shadow filtering quality.\n"
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
 "Gölge filtreleme kalitesini tanımla.\n"
-"Bu, bir PCF veya poisson diski uygulayarak yumuşak gölge efektini taklit "
+"Bu, bir PCF veya Poisson diski uygulayarak yumuşak gölge efektini taklit "
 "eder,\n"
 "ancak aynı zamanda daha fazla kaynak kullanır."
 
@@ -3229,23 +3207,21 @@ msgstr ""
 "Bu destek deneyseldir ve API değişebilir."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
 "Poisson disk filtrelemeyi etkinleştir.\n"
-"Doğru ise \"yumuşak gölgeler\" yapmak için poisson diski kullanır. Değilse "
+"Doğru ise \"yumuşak gölgeler\" yapmak için Poisson diski kullanır. Değilse "
 "PCF filtreleme kullanır."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
-"Renkli gölgeleri etkinleştir. \n"
+"Renkli gölgeleri etkinleştir.\n"
 "Doğru ise yarı saydam düğümlerde renkli gölgeler oluşturur. Bu fazla kaynak "
 "kullanır."
 
@@ -3382,6 +3358,12 @@ msgstr ""
 "Devre dışı bırakılırsa, bu tüm sesleri devre dışı kılar ve oyun içindeki\n"
 "ses denetimlerinin işlevi olmaz.\n"
 "Bu ayarı değiştirmek, yeniden başlatma gerektirir."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables tradeoffs that reduce CPU load or increase rendering performance\n"
+"at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3585,11 +3567,17 @@ msgid "Font size"
 msgstr "Yazı tipi boyutu"
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the default font in point (pt)."
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Öntanımlı yazı tipinin nokta (pt) olarak boyutu."
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font in point (pt)."
+#, fuzzy
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
 msgstr "Eş aralıklı yazı tipinin nokta (pt) olarak boyutu."
 
 #: src/settings_translation_file.cpp
@@ -3600,6 +3588,17 @@ msgstr ""
 "Son sohbet metninin ve sohbet isteminin nokta(pt) cinsinden yazı tipi "
 "boyutu.\n"
 "0 değer öntanımlı yazı tipi boyutunu kullanır."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3662,10 +3661,6 @@ msgstr "Fraktal türü"
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
 msgstr "Sisin işlenmeye başlayacağı görünebilir uzaklığın kesiri"
-
-#: src/settings_translation_file.cpp
-msgid "FreeType fonts"
-msgstr "Freetype yazı tipleri"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4319,7 +4314,6 @@ msgid "Joystick button repetition interval"
 msgstr "Joystick düğmesi tekrarlama aralığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
 msgstr "Joystick ölü bölgesi"
 
@@ -5751,9 +5745,8 @@ msgid "Mod channels"
 msgstr "Mod kanalları"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Modifies the size of the HUD elements."
-msgstr "Hudbar öğelerinin boyutunu değiştirir."
+msgstr "HUD ögelerinin boyutunu değiştirir."
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -5761,6 +5754,11 @@ msgstr "Eş aralıklı yazı tipi konumu"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
+msgstr "Eş aralıklı yazı tipi boyutu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Monospace font size divisible by"
 msgstr "Eş aralıklı yazı tipi boyutu"
 
 #: src/settings_translation_file.cpp
@@ -5944,10 +5942,9 @@ msgid "Optional override for chat weblink color."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path of the fallback font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
@@ -5978,10 +5975,9 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "Doku dizini konumu. Tüm dokular ilk burada aranır."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the default font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "Öntanımlı yazı tipi konumu.\n"
@@ -5990,10 +5986,9 @@ msgstr ""
 "Yazı tipi yüklenemiyorsa yedek yazı tipi kullanılır."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Path to the monospace font.\n"
-"If “freetype” setting is enabled: Must be a TrueType font.\n"
-"If “freetype” setting is disabled: Must be a bitmap or XML vectors font.\n"
+"Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "Eş aralıklı yazı tipi konumu.\n"
@@ -6885,9 +6880,8 @@ msgid "The URL for the content repository"
 msgstr "İçerik deposu için URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The dead zone of the joystick"
-msgstr "Joystick ölü bölgesi"
+msgstr "Joystick'in ölü bölgesi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7104,6 +7098,10 @@ msgstr "İpucu gecikmesi"
 #: src/settings_translation_file.cpp
 msgid "Touch screen threshold"
 msgstr "Dokunmatik ekran eşiği"
+
+#: src/settings_translation_file.cpp
+msgid "Tradeoffs for performance"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -7391,9 +7389,8 @@ msgid "Waving plants"
 msgstr "Dalgalanan bitkiler"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Weblink color"
-msgstr "Seçim kutusunu rengi"
+msgstr "Web bağlantısı rengi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7440,16 +7437,6 @@ msgstr ""
 "bilineer/trilineer/anisotropik filtreler etkinse uygulanır.\n"
 "Bu, dünya hizalı doku kendiliğinden boyutlandırmada taban nod doku boyutu\n"
 "olarak da kullanılır."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether FreeType fonts are used, requires FreeType support to be compiled "
-"in.\n"
-"If disabled, bitmap and XML vectors fonts are used instead."
-msgstr ""
-"Freetype yazı tiplerinin kullanılıp kullanılmayacağını, freetype desteği ile "
-"derlenmiş olmalıdır.\n"
-"Devre dışı kılınırsa, yerine bitmap ve XML vektör yazı tipleri kullanılır."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7628,6 +7615,12 @@ msgstr "cURL etkileşimli zaman aşımı"
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr "cURL paralel sınırı"
+
+#~ msgid "- Creative Mode: "
+#~ msgstr "- Yaratıcı Kip: "
+
+#~ msgid "- Damage: "
+#~ msgstr "- Hasar: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7809,6 +7802,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Yedek yazı tipinin nokta (pt) olarak boyutu."
+
+#~ msgid "FreeType fonts"
+#~ msgstr "Freetype yazı tipleri"
 
 #~ msgid "Full screen BPP"
 #~ msgstr "Tam ekran BPP"
@@ -7998,6 +7994,15 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Waving water"
 #~ msgstr "Dalgalanan su"
+
+#~ msgid ""
+#~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
+#~ "in.\n"
+#~ "If disabled, bitmap and XML vectors fonts are used instead."
+#~ msgstr ""
+#~ "Freetype yazı tiplerinin kullanılıp kullanılmayacağını, freetype desteği "
+#~ "ile derlenmiş olmalıdır.\n"
+#~ "Devre dışı kılınırsa, yerine bitmap ve XML vektör yazı tipleri kullanılır."
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "Zindanların bazen araziden yansıyıp yansımayacağı."

@@ -139,7 +139,7 @@ This command was disabled by a mod or game.=Questo comando è stato disabilitato
 Show or set time of day=Mostra o imposta l'orario della giornata
 Current time is @1:@2.=Orario corrente: @1:@2.
 You don't have permission to run this command (missing privilege: @1).=Non hai il permesso di eseguire questo comando (privilegio mancante: @1) 
-Invalid time.=Orario non valido.
+Invalid time (must be between 0 and 24000).=
 Time of day changed.=Orario della giornata cambiato.
 Invalid hour (must be between 0 and 23 inclusive).=Ora non valida (deve essere tra 0 e 23 inclusi)
 Invalid minute (must be between 0 and 59 inclusive).=Minuto non valido (deve essere tra 0 e 59 inclusi)
@@ -247,6 +247,7 @@ Profile saved to @1=
 
 ##### not used anymore #####
 
+Invalid time.=Orario non valido.
 [all | privs | <cmd>]=[all | privs | <comando>]
 Get help for commands or list privileges=Richiama la finestra d'aiuto dei comandi o dei privilegi
 Allows enabling various debug options that may affect gameplay=Permette di abilitare varie opzioni di debug che potrebbero influenzare l'esperienza di gioco
