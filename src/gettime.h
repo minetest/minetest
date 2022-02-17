@@ -33,10 +33,16 @@ enum TimePrecision
 inline std::string getTimestamp()
 {
 	time_t t = time(NULL);
-	// This is not really thread-safe but it won't break anything
-	// except its own output, so just go with it.
-	struct tm *tm = localtime(&t);
+	struct tm tm;
+
+#ifdef _WIN32
+	// Yes, Microsoft has inverted the order of arguments.
+	localtime_s(&tm, &t);
+#else
+	localtime_r(&t, &tm);
+#endif
+
 	char cs[20]; // YYYY-MM-DD HH:MM:SS + '\0'
-	strftime(cs, 20, "%Y-%m-%d %H:%M:%S", tm);
+	strftime(cs, 20, "%Y-%m-%d %H:%M:%S", &tm);
 	return cs;
 }

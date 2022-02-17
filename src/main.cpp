@@ -129,6 +129,7 @@ static OptionList allowed_options;
 int main(int argc, char *argv[])
 {
 	int retval;
+	tzset();
 	debug_set_exception_handler();
 
 	g_logger.registerThread("Main");

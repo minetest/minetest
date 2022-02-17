@@ -1811,10 +1811,17 @@ void Client::makeScreenshot()
 		return;
 
 	time_t t = time(NULL);
-	struct tm *tm = localtime(&t);
+	struct tm tm;
+
+#ifdef _WIN32
+	// Microsoft has inverted the order of arguments.
+	localtime_s(&tm, &t);
+#else
+	localtime_r(&t, &tm);
+#endif
 
 	char timetstamp_c[64];
-	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
+	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", &tm);
 
 	std::string screenshot_dir;
 
