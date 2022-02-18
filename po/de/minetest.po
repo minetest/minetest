@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-02-01 11:39+0000\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"PO-Revision-Date: 2022-02-19 17:59+0000\n"
+"Last-Translator: debiankaios <info@debiankaios.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -820,7 +820,7 @@ msgstr "Onlineinhalte durchsuchen"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr "Inhalte"
+msgstr "Inhalt"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
