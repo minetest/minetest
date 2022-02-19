@@ -113,8 +113,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	projmatrix = f;
 
 	// update the frustum settings
-	future_frustum.position = cam->getPosition() - 1600.0f * direction;
-	future_frustum.length = 1600.0f;
+	future_frustum.position = cam->getPosition() - 20000.0f * direction;
+	future_frustum.length = 20000.0f;
 	future_frustum.ViewMat = viewmatrix;
 	future_frustum.ProjOrthMat = projmatrix;
 	future_frustum.camera_offset = cam->getOffset();
