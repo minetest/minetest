@@ -1084,8 +1084,6 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.size.end = p.size.start;
 	}
 
-	skipLegacyWorkaround:;
-
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;
 	event->add_particlespawner.p           = new ParticleSpawnerParameters(p);
