@@ -206,9 +206,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Adds new sun, moon and stars packets
 		Minimap modes
 	PROTOCOL VERSION 40:
-		Added 'basic_debug' privilege
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
-		v5.6.0: Added new particlespawner parameters
+		Added new particlespawner parameters (5.6.0)
 */
 
 #define LATEST_PROTOCOL_VERSION 40
@@ -559,7 +558,7 @@ enum ToClientCommand
 		u8 glow
 		u8 object_collision
 
-		-- since v5.5.0
+		-- since v5.6.0
 
 		f32 pos_start_bias
 		f32 vel_start_bias

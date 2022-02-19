@@ -1645,7 +1645,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.glow << p.object_collision;
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
 
-	/* serialize v5.5.0 particle fields */ {
+	/* serialize v5.6.0 particle fields */ {
 		// initial bias for older properties
 		pkt << p.pos.start.bias
 			<< p.vel.start.bias

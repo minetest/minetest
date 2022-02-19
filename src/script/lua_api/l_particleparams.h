@@ -206,7 +206,7 @@ namespace LuaParticleParams {
 		} else lua_pop(L,1);
 
 		// the goto did not trigger, so this table is not present either
-		// check for pre-5.5.0 legacy values
+		// check for pre-5.6.0 legacy values
 		readLegacyValue(L, name, field.start);
 
 		set_uniform: field.end = field.start;
