@@ -452,14 +452,20 @@ inline irr::video::SColor multiplyColorValue(const irr::video::SColor &color, fl
 template <typename T> inline T numericAbsolute(T v) { return v < 0 ? T(-v) : v;                }
 template <typename T> inline T numericSign(T v)     { return T(v < 0 ? -1 : (v == 0 ? 0 : 1)); }
 
-inline v3f vecAbsolute(v3f v) {
-	return v3f(numericAbsolute(v.X),
-	           numericAbsolute(v.Y),
-	           numericAbsolute(v.Z));
+inline v3f vecAbsolute(v3f v)
+{
+	return v3f(
+		numericAbsolute(v.X),
+		numericAbsolute(v.Y),
+		numericAbsolute(v.Z)
+	);
 }
 
-inline v3f vecSign(v3f v) {
-	return v3f(numericSign(v.X),
-	           numericSign(v.Y),
-	           numericSign(v.Z));
+inline v3f vecSign(v3f v)
+{
+	return v3f(
+		numericSign(v.X),
+		numericSign(v.Y),
+		numericSign(v.Z)
+	);
 }

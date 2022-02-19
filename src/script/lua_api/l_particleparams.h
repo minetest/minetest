@@ -26,12 +26,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "particles.h"
 
-namespace LuaParticleParams {
+namespace LuaParticleParams
+{
 	using namespace ParticleParamTypes;
 
 	template<typename T>
-	inline void readNumericLuaValue(lua_State* L, T& ret) {
-		if (lua_isnil(L,-1)) return;
+	inline void readNumericLuaValue(lua_State* L, T& ret)
+	{
+		if (lua_isnil(L,-1))
+			return;
 		if (std::is_integral<T>())
 			ret = lua_tointeger(L, -1);
 		else
@@ -39,7 +42,8 @@ namespace LuaParticleParams {
 	}
 
 	template <typename T, size_t N>
-	inline void readNumericLuaValue(lua_State* L, Parameter<T,N>& ret) {
+	inline void readNumericLuaValue(lua_State* L, Parameter<T,N>& ret)
+	{
 		readNumericLuaValue<T>(L, ret.val);
 	}
 
@@ -50,7 +54,8 @@ namespace LuaParticleParams {
 	inline void readLuaValue(lua_State* L, u16& ret)          { readNumericLuaValue(L, ret); }
 	inline void readLuaValue(lua_State* L, u8& ret)           { readNumericLuaValue(L, ret); }
 
-	inline void readLuaValue(lua_State* L, v3fParameter& ret) {
+	inline void readLuaValue(lua_State* L, v3fParameter& ret)
+	{
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
 			auto n = lua_tonumber(L, -1);
 			ret = v3fParameter(n,n,n);
@@ -59,7 +64,8 @@ namespace LuaParticleParams {
 		}
 	}
 
-	inline void readLuaValue(lua_State* L, v2fParameter& ret) {
+	inline void readLuaValue(lua_State* L, v2fParameter& ret)
+	{
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
 			auto n = lua_tonumber(L, -1);
 			ret = v2fParameter(n,n);
@@ -68,7 +74,8 @@ namespace LuaParticleParams {
 		}
 	}
 
-	inline void readLuaValue(lua_State* L, TweenStyle& ret) {
+	inline void readLuaValue(lua_State* L, TweenStyle& ret)
+	{
 		static const EnumString opts[] = {
 			{(int)TweenStyle::fwd,     "fwd"},
 			{(int)TweenStyle::rev,     "rev"},
@@ -79,14 +86,14 @@ namespace LuaParticleParams {
 
 		luaL_checktype(L, -1, LUA_TSTRING);
 		int v = (int)TweenStyle::fwd;
-		if (string_to_enum(opts, v, std::string(lua_tostring(L, -1))) == false) {
-			lua_pushliteral(L, "tween style must be one of ('fwd', 'rev', 'pulse', 'flicker')");
-			lua_error(L);
+		if (!string_to_enum(opts, v, lua_tostring(L, -1))) {
+			throw LuaError("tween style must be one of ('fwd', 'rev', 'pulse', 'flicker')");
 		}
 		ret = (TweenStyle)v;
 	}
 
-	inline void readLuaValue(lua_State* L, AttractorKind& ret) {
+	inline void readLuaValue(lua_State* L, AttractorKind& ret)
+	{
 		static const EnumString opts[] = {
 			{(int)AttractorKind::none,  "none"},
 			{(int)AttractorKind::point, "point"},
@@ -97,15 +104,15 @@ namespace LuaParticleParams {
 
 		luaL_checktype(L, -1, LUA_TSTRING);
 		int v = (int)AttractorKind::none;
-		if (string_to_enum(opts, v, std::string(lua_tostring(L, -1))) == false) {
-			lua_pushliteral(L, "attractor kind must be one of ('none', 'point', 'line', 'plane')");
-			lua_error(L);
+		if (!string_to_enum(opts, v, lua_tostring(L, -1))) {
+			throw LuaError("attractor kind must be one of ('none', 'point', 'line', 'plane')");
 		}
 		ret = (AttractorKind)v;
 	}
 
 	template <typename T> void
-	readLuaValue(lua_State* L, RangedParameter<T>& field) {
+	readLuaValue(lua_State* L, RangedParameter<T>& field)
+	{
 		if (lua_isnil(L,-1))
 			return;
 		if (!lua_istable(L,-1)) // is this is just a literal value?
@@ -131,15 +138,16 @@ namespace LuaParticleParams {
 		return;
 
 		set_uniform:
-			readLuaValue(L, field.min);
-			readLuaValue(L, field.max);
+		readLuaValue(L, field.min);
+		readLuaValue(L, field.max);
 	}
 
 	template <typename T> void
 	readLegacyValue(lua_State* L, const char* name, T& field) {}
 
 	template <typename T> void
-	readLegacyValue(lua_State* L, const char* name, RangedParameter<T>& field) {
+	readLegacyValue(lua_State* L, const char* name, RangedParameter<T>& field)
+	{
 		int tbl = lua_gettop(L);
 		lua_pushliteral(L, "min");
 		lua_pushstring(L, name);
@@ -164,6 +172,7 @@ namespace LuaParticleParams {
 	readTweenTable(lua_State* L, const char* name, TweenedParameter<T>& field)
 	{
 		int tbl = lua_gettop(L);
+
 		lua_pushstring(L, name);
 		lua_pushliteral(L, "_tween");
 		lua_concat(L, 2);
@@ -195,7 +204,9 @@ namespace LuaParticleParams {
 			lua_pop(L, 1);
 
 			goto done;
-		} else lua_pop(L,1);
+		} else {
+			lua_pop(L,1);
+		}
 		// the table is not present; check for nonanimated values
 
 		lua_getfield(L, tbl, name);
@@ -203,22 +214,28 @@ namespace LuaParticleParams {
 			readLuaValue(L, field.start);
 			lua_settop(L, tbl);
 			goto set_uniform;
-		} else lua_pop(L,1);
+		} else {
+			lua_pop(L,1);
+		}
 
 		// the goto did not trigger, so this table is not present either
 		// check for pre-5.6.0 legacy values
 		readLegacyValue(L, name, field.start);
 
-		set_uniform: field.end = field.start;
-		done: lua_settop(L, tbl); // clean up after ourselves
+		set_uniform:
+		field.end = field.start;
+		done:
+		lua_settop(L, tbl); // clean up after ourselves
 	}
 
-	inline u16 readAttachmentID(lua_State* L, const char* name) {
+	inline u16 readAttachmentID(lua_State* L, const char* name)
+	{
 		u16 id = 0;
 		lua_getfield(L, -1, name);
 		if (!lua_isnil(L, -1)) {
 			ObjectRef *ref = ObjectRef::checkobject(L, -1);
-			id = ObjectRef::getobject(ref) -> getId();
+			if (auto obj = ObjectRef::getobject(ref))
+				id = obj->getId();
 		}
 		lua_pop(L, 1);
 		return id;

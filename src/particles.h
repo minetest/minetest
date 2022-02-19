@@ -32,7 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This file defines the particle-related structures that both the server and
 // client need. The ParticleManager and rendering is in client/particles.h
 
-namespace ParticleParamTypes {
+namespace ParticleParamTypes
+{
 	template<typename T> using BlendFunction = T(float,T,T);
 	#define DECL_PARAM_SRZRS(type) \
 		void serializeParameterValue  (std::ostream& os, type   v); \
@@ -49,7 +50,8 @@ namespace ParticleParamTypes {
 	DECL_PARAM_OVERLOADS(v3f);
 
 	template <typename T, size_t PN>
-	struct Parameter {
+	struct Parameter
+	{
 		using ValType = T;
 		using pickFactors = float[PN];
 
@@ -57,57 +59,55 @@ namespace ParticleParamTypes {
 		using This = Parameter<T, PN>;
 
 		Parameter() = default;
-		Parameter(const This& a) : val(a.val) {};
+		Parameter(const This& a) = default;
 		template <typename... Args>
-		Parameter(Args... args) : val(args...) {};
+		Parameter(Args... args) : val(args...) {}
 
 		virtual void serialize(std::ostream &os) const
 			{ serializeParameterValue  (os, this->val); }
 		virtual void deSerialize(std::istream &is)
 			{ deSerializeParameterValue(is, this->val); }
 
-		virtual T interpolate(float fac, const This& against) const {
+		virtual T interpolate(float fac, const This& against) const
+		{
 			return interpolateParameterValue(fac, this->val, against.val);
 		}
 
-		static T
-		pick(float* f, const This& a, const This& b) {
+		static T pick(float* f, const This& a, const This& b)
+		{
 			return pickParameterValue(f, a.val, b.val);
 		}
 
 		operator T() const { return val; }
-		T operator = (T b) { return val = b; }
+		T operator=(T b) { return val = b; }
 
 	};
 
 	template <typename T> T numericalBlend(float fac, T min, T max)
 		{ return min + ((max - min) * fac); }
 
-
 	template <typename T, size_t N>
 	struct VectorParameter : public Parameter<T,N> {
 		using This = VectorParameter<T,N>;
 		template <typename... Args>
-		VectorParameter(Args... args) : Parameter<T,N>(args...) {};
+		VectorParameter(Args... args) : Parameter<T,N>(args...) {}
 	};
 
 	template <typename T, size_t PN>
-	std::string dump(const Parameter<T,PN>& p) {
-		std::stringstream s;
-		s << p.val;
-		return s.str();
+	std::string dump(const Parameter<T,PN>& p)
+	{
+		return std::to_string(p.val);
 	}
 
 	template <typename T, size_t N>
-	std::string dump(const VectorParameter<T,N>& v) {
-		std::stringstream s;
-		s << "vec"<<N<<"<"<< v.val.X
-					<< "," << v.val.Y;
-		if (N==3) {
-			s << "," << v.val.Z;
-		}
-		s << ">";
-		return s.str();
+	std::string dump(const VectorParameter<T,N>& v)
+	{
+		std::ostringstream oss;
+		if (N == 3)
+			oss << PP(v.val);
+		else
+			oss << PP2(v.val);
+		return oss.str();
 	}
 
 	using u8Parameter  = Parameter<u8,  1>;
@@ -120,7 +120,8 @@ namespace ParticleParamTypes {
 	using v3fParameter = VectorParameter<v3f, 3>;
 
 	template <typename T>
-	struct RangedParameter {
+	struct RangedParameter
+	{
 		using ValType = T;
 		using This = RangedParameter<T>;
 
@@ -129,32 +130,37 @@ namespace ParticleParamTypes {
 
 		RangedParameter() = default;
 		RangedParameter(const This& a) = default;
-		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {};
-		template <typename M> RangedParameter(M b) : min(b),     max(b)     {};
+		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {}
+		template <typename M> RangedParameter(M b) : min(b),     max(b)     {}
 
 		// these functions handle the old range serialization "format"; bias must
 		// be manually encoded in a separate part of the stream. NEVER ADD FIELDS
 		// TO THESE FUNCTIONS
-		void legacySerialize(std::ostream& os) const {
+		void legacySerialize(std::ostream& os) const
+		{
 			min.serialize(os);
 			max.serialize(os);
 		}
-		void legacyDeSerialize(std::istream& is) {
+		void legacyDeSerialize(std::istream& is)
+		{
 			min.deSerialize(is);
 			max.deSerialize(is);
 		}
 
 		// these functions handle the format used by new fields. new fields go here
-		void serialize(std::ostream &os) const {
+		void serialize(std::ostream &os) const
+		{
 			legacySerialize(os);
 			writeF32(os, bias);
-		};
-		void deSerialize(std::istream &is) {
+		}
+		void deSerialize(std::istream &is)
+		{
 			legacyDeSerialize(is);
 			bias = readF32(is);
-		};
+		}
 
-		This interpolate(float fac, const This against) const {
+		This interpolate(float fac, const This against) const
+		{
 			This r;
 			r.min = min.interpolate(fac, against.min);
 			r.max = max.interpolate(fac, against.max);
@@ -162,7 +168,8 @@ namespace ParticleParamTypes {
 			return r;
 		}
 
-		T pickWithin() {
+		T pickWithin() const
+		{
 			typename T::pickFactors values;
 			auto p = numericAbsolute(bias) + 1;
 			for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); ++i) {
@@ -177,8 +184,9 @@ namespace ParticleParamTypes {
 	};
 
 	template <typename T>
-	std::string dump(const RangedParameter<T>& r) {
-		std::stringstream s;
+	std::string dump(const RangedParameter<T>& r)
+	{
+		std::ostringstream s;
 		s << "range<" << dump(r.min) << " ~ " << dump(r.max);
 		if (r.bias != 0)
 			s << " :: " << r.bias;
@@ -189,7 +197,8 @@ namespace ParticleParamTypes {
 	enum class TweenStyle { fwd, rev, pulse, flicker };
 
 	template <typename T>
-	struct TweenedParameter {
+	struct TweenedParameter
+	{
 		using ValType = T;
 		using This = TweenedParameter<T>;
 
@@ -201,10 +210,11 @@ namespace ParticleParamTypes {
 
 		TweenedParameter() = default;
 		TweenedParameter(const This& a) = default;
-		TweenedParameter(T _start, T _end)          : start(_start),  end(_end) {};
-		template <typename M> TweenedParameter(M b) : start(b),       end(b) {};
+		TweenedParameter(T _start, T _end)          : start(_start),  end(_end) {}
+		template <typename M> TweenedParameter(M b) : start(b),       end(b) {}
 
-		T blend(float fac) const {
+		T blend(float fac) const
+		{
 			// warp time coordinates in accordance w/ settings
 			if (fac > beginning) {
 				// remap for beginning offset
@@ -244,27 +254,28 @@ namespace ParticleParamTypes {
 			return start.interpolate(fac, end);
 		}
 
-		void serialize(std::ostream &os) const {
-			writeU8(os, (u8)style);
+		void serialize(std::ostream &os) const
+		{
+			writeU8(os, static_cast<u8>(style));
 			writeU16(os, reps);
 			writeF32(os, beginning);
 			start.serialize(os);
 			end.serialize(os);
-		};
-		void deSerialize(std::istream &is) {
-			u8 st = readU8(is);
-			style = (TweenStyle)st;
+		}
+		void deSerialize(std::istream &is)
+		{
+			style = static_cast<TweenStyle>(readU8(is));
 			reps = readU16(is);
 			beginning = readF32(is);
 			start.deSerialize(is);
 			end.deSerialize(is);
-		};
-
+		}
 	};
 
 	template <typename T>
-	std::string dump(const TweenedParameter<T>& t) {
-		std::stringstream s;
+	std::string dump(const TweenedParameter<T>& t)
+	{
+		std::ostringstream s;
 		const char* icon;
 		switch (t.style) {
 			case TweenStyle::fwd: icon = "→"; break;
@@ -297,22 +308,23 @@ namespace ParticleParamTypes {
 	#undef DECL_PARAM_OVERLOADS
 }
 
-struct ParticleTexture {
+struct ParticleTexture
+{
 	bool animated = false;
 	TileAnimationParams animation;
-	ParticleParamTypes::f32Tween alpha = (f32)1;
-	ParticleParamTypes::v2fTween scale; //= (v2f){1.f,1.f};
-
-	ParticleTexture();
+	ParticleParamTypes::f32Tween alpha{1.0f};
+	ParticleParamTypes::v2fTween scale{v2f(1.0f)};
 };
 
-struct ServerParticleTexture : public ParticleTexture {
+struct ServerParticleTexture : public ParticleTexture
+{
 	std::string string;
 	void serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly = false) const;
 	void deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly = false);
 };
 
-struct CommonParticleParams {
+struct CommonParticleParams
+{
 	bool collisiondetection = false;
 	bool collision_removal = false;
 	bool object_collision = false;
@@ -343,7 +355,8 @@ struct CommonParticleParams {
 	}
 };
 
-struct ParticleParameters : CommonParticleParams {
+struct ParticleParameters : CommonParticleParams
+{
 	v3f pos;
 	v3f vel;
 	v3f acc;
@@ -356,7 +369,8 @@ struct ParticleParameters : CommonParticleParams {
 	void deSerialize(std::istream &is, u16 protocol_ver);
 };
 
-struct ParticleSpawnerParameters : CommonParticleParams {
+struct ParticleSpawnerParameters : CommonParticleParams
+{
 	u16 amount = 1;
 	f32 time = 1;
 
@@ -369,16 +383,17 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 		attractor_kind;
 	ParticleParamTypes::v3fTween
 		attractor, attractor_angle;
-	u16 attractor_attachment = 0, /* object IDs */
+	// object IDs
+	u16 attractor_attachment = 0,
 	    attractor_angle_attachment = 0;
+	// do particles disappear when they cross the attractor threshold?
 	bool attractor_kill = true;
-	/* do particles disappear when they cross the attractor threshold? */
 
 	ParticleParamTypes::f32RangeTween
-		exptime = (f32)1,
-		size    = (f32)1,
-		attract = (f32)0,
-		bounce  = (f32)0;
+		exptime{1.0f},
+		size   {1.0f},
+		attract{0.0f},
+		bounce {0.0f};
 
 	// For historical reasons no (de-)serialization methods here
 };
