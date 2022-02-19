@@ -199,13 +199,10 @@ jobs:
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
-    #### Disabled due to Irrlicht switch
-    if: false
-    #### Disabled due to Irrlicht switch
     env:
       VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
 #                    2020.11
-      vcpkg_packages: irrlicht zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
     strategy:
       fail-fast: false
       matrix:
@@ -224,10 +221,16 @@ jobs:
 #        type: [portable, installer]
 # The installer type is working, but disabled, to save runner jobs.
 # Enable it, when working on the installer.
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Checkout Irrlicht
+        uses: actions/checkout@v2
+        with:
+          name: minetest/irrlicht
+          ref: refs/heads/master
+          path: lib/irrlichtmt
 
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v5
