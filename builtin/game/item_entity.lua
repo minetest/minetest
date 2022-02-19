@@ -195,7 +195,12 @@ core.register_entity(":__builtin:item", {
 		if not self.physical_state then
 			return -- Don't do anything
 		end
-
+		
+		if moveresult == nil then
+			self.object:remove()
+			return 
+		end -- Don't do anything if not moved
+		
 		assert(moveresult,
 			"Collision info missing, this is caused by an out-of-date/buggy mod or game")
 
