@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
 #include "util/base64.h"
+#include "client/fontengine.h"
+#include "irrlicht_changes/CGUITTFont.h"
 
 /*
 	A cache from texture name to texture path
@@ -1827,7 +1829,57 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 			pngimg->drop();
 		}
-		else
+		/*
+			[text:char
+			Render a character at given position
+		*/
+		else if (str_starts_with(part_of_name, "[text:")) {
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string textdef = sf.next("");
+
+			irr::gui::CGUITTFont *font =
+					static_cast<irr::gui::CGUITTFont *>(g_fontengine->getFont());
+			auto dimenson = font->getDimension(textdef.data());
+			video::IImage *textimg = font->createTextureFromChar(*textdef.data());
+#if FALSE
+			// another implemention: render a row of text, but these text aligns incorrectly.
+			int currentpos = 0;
+			for each (auto character in textdef) {
+				video::IImage *fontimg = font->createTextureFromChar(character);
+				auto dim = fontimg->getDimension();
+				dim.Width += 1;
+				dim.Height += 1;
+				fontimg->copyToWithAlpha(baseimg, v2s32(currentpos, 0),
+					core::rect<s32>(dim),
+					video::SColor(255, 255, 255, 255), NULL);
+				currentpos += dim.Width;
+				fontimg->drop();
+			}
+#endif
+
+			if (baseimg) {
+				blitBaseImage(textimg, baseimg);
+			} else {
+				warningstream << "Using font img as base img, please specify background "
+								 "texture before [text"
+							  << std::endl;
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dimenson);
+				textimg->copyTo(baseimg);
+			}
+#if FALSE
+			// method that do not blit image, instead copy directly
+			if (!baseimg) {
+				core::dimension2d<u32> dim = fontimg->getDimension();
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+			}
+			core::rect<s32> rect(fontimg->getDimension());
+			fontimg->copyToWithAlpha(
+					baseimg, v2s32(0), rect, video::SColor(255, 255, 255, 255), NULL);
+
+#endif // FALSEif FALSE
+			textimg->drop();
+		}else
 		{
 			errorstream << "generateImagePart(): Invalid "
 					" modification: \"" << part_of_name << "\"" << std::endl;

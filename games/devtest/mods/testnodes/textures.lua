@@ -171,3 +171,12 @@ minetest.register_node("testnodes:generated_png_dst_emb", {
 
 	groups = { dig_immediate = 2 },
 })
+minetest.register_node("testnodes:glyph_font", {
+	description = S("Combine Test Node"),
+	tiles = {{
+		name = "testnodes_generated_mb.png^[text:helloworld",
+		align_style = "world",
+		scale = 8,
+	}},
+	groups = { dig_immediate = 2 },
+})
