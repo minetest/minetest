@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <matrix4.h>
 #include "util/basic_macros.h"
+#include "constants.h"
 
 class Camera;
 class Client;
@@ -67,7 +68,7 @@ public:
 	/// Gets the light's far value.
 	f32 getMaxFarValue() const
 	{
-		return farPlane;
+		return farPlane * BS;
 	}
 
 
