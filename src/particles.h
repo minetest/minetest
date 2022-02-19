@@ -128,7 +128,7 @@ namespace ParticleParamTypes {
 		f32 bias = 0;
 
 		RangedParameter() = default;
-		RangedParameter(const This& a)             : min(a.min), max(a.max) {};
+		RangedParameter(const This& a) = default;
 		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {};
 		template <typename M> RangedParameter(M b) : min(b),     max(b)     {};
 
@@ -158,6 +158,7 @@ namespace ParticleParamTypes {
 			This r;
 			r.min = min.interpolate(fac, against.min);
 			r.max = max.interpolate(fac, against.max);
+			r.bias = bias;
 			return r;
 		}
 
