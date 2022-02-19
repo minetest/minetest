@@ -74,8 +74,7 @@ vec3 getLightSpacePosition()
 	#if DRAW_TYPE == NDT_PLANTLIKE
 	pLightSpace = m_ShadowViewProj * vec4(worldPosition, 1.0);
 	#else
-	float offsetScale = (0.0057 * getLinearDepth() + normalOffsetScale);
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + offsetScale * normalize(vNormal), 1.0);
+	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalOffsetScale * normalize(vNormal), 1.0);
 	#endif
 	pLightSpace = getPerspectiveFactor(pLightSpace);
 	return pLightSpace.xyz * 0.5 + 0.5;
