@@ -65,6 +65,59 @@ for a=1,#alphas do
 	})
 end
 
+-- Node texture gamma test
+
+-- All nodes of the same type (grayscale, color, paletted) will look
+-- identical (except for numbers) if Minetest does gamma correction.
+--
+-- The two rightmost bars (solid color & alternating horizontal lines)
+-- should appear as about the same color if Minetests gamma correction
+-- is correctly configured for your monitor.
+
+-- PNG textures for the gamma test nodes were downloaded from:
+-- <http://www.schaik.com/pngsuite2011/pngsuite_gam_png.html>
+--
+-- The license text for these textures is available at:
+-- <http://www.schaik.com/pngsuite2011/PngSuite.LICENSE>
+--
+-- The relevant license text is quoted verbatim below:
+--
+-- Permission to use, copy, modify and distribute these images for any
+-- purpose and without fee is hereby granted.
+--
+-- (c) Willem van Schaik, 1996, 2011
+
+local gammas_png = {
+	{ "g03n0g16", "grayscale, file-gamma = 0.35" },
+	{ "g03n2c08", "color, file-gamma = 0.35" },
+	{ "g03n3p04", "paletted, file-gamma = 0.35" },
+	{ "g04n0g16", "grayscale, file-gamma = 0.45" },
+	{ "g04n2c08", "color, file-gamma = 0.45" },
+	{ "g04n3p04", "paletted, file-gamma = 0.45" },
+	{ "g05n0g16", "grayscale, file-gamma = 0.55" },
+	{ "g05n2c08", "color, file-gamma = 0.55" },
+	{ "g05n3p04", "paletted, file-gamma = 0.55" },
+	{ "g07n0g16", "grayscale, file-gamma = 0.70" },
+	{ "g07n2c08", "color, file-gamma = 0.70" },
+	{ "g07n3p04", "paletted, file-gamma = 0.70" },
+	{ "g10n0g16", "grayscale, file-gamma = 1.00" },
+	{ "g10n2c08", "color, file-gamma = 1.00" },
+	{ "g10n3p04", "paletted, file-gamma = 1.00" },
+	{ "g25n0g16", "grayscale, file-gamma = 2.50" },
+	{ "g25n2c08", "color, file-gamma = 2.50" },
+	{ "g25n3p04", "paletted, file-gamma = 2.50" },
+}
+
+for i=1,#gammas_png do
+	id = gammas_png[i][1]
+	description = gammas_png[i][2]
+	minetest.register_node("testnodes:gamma_png_" .. id, {
+		description = S("Texture Gamma Test Node (PNG, @1)", description),
+		tiles = { "testnodes_" .. id .. ".png" },
+		groups = { dig_immediate = 2 },
+	})
+end
+
 -- Generate PNG textures
 
 local function mandelbrot(w, h, iterations)
