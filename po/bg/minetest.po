@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
+"PO-Revision-Date: 2022-04-11 15:08+0000\n"
 "Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -160,7 +160,7 @@ msgstr "Изключване всички"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Изключване на пакет с модификации"
+msgstr "Изкл. на пакета"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -168,7 +168,7 @@ msgstr "Включване всички"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Включване на пакет с модификации"
+msgstr "Вкл. на пакета"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -708,7 +708,7 @@ msgstr "Разпределение по Z"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "абсолютна стойност"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
@@ -840,7 +840,7 @@ msgstr "Няма зависимости."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr "Пакетът няма описание"
+msgstr "Пакетът е без описание"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
@@ -961,7 +961,7 @@ msgstr "Включване към игра"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr "Ping"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -977,7 +977,7 @@ msgstr "Описание на сървър"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr "2x"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
@@ -985,11 +985,11 @@ msgstr "Тримерни облаци"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr "4x"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr "8x"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
@@ -1080,7 +1080,7 @@ msgstr "Непрозрачна вода"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr "Частици"
+msgstr "Отломки"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -1177,7 +1177,7 @@ msgstr "Грешка при свързване (изтекло време?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
-msgstr "Не може да бъде намерена или заредена игра: "
+msgstr "Играта не може да бъде намерена или заредена: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1233,9 +1233,8 @@ msgstr "- Обществен: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
-#, fuzzy
 msgid "- PvP: "
-msgstr "- PvP: "
+msgstr ""
 
 #: src/client/game.cpp
 msgid "- Server Name: "
@@ -1260,21 +1259,20 @@ msgid "Automatic forward enabled"
 msgstr "Автоматичното движение напред е включено"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Block bounds hidden"
-msgstr "Граници на блокове"
+msgstr "Контурите на блоковете са скрити"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Контурите на всички блокове са видими"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Контурите на текущия блок са видими"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Контурите на близките блокове са видими"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1287,6 +1285,8 @@ msgstr "Опресняването на екрана при движение е 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
 msgstr ""
+"Контурите на блоковете не могат да бъдат показани (заб.: липсва правото "
+"„basic_debug“)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1947,7 +1947,7 @@ msgstr "Автоматично скачане"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr "Aux1"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -2308,7 +2308,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr ""
+msgstr "Добавят се отломки при копане на възел."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2458,7 +2458,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
-msgstr ""
+msgstr "Основни права"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
@@ -2827,7 +2827,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Creative"
-msgstr ""
+msgstr "Творчески"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2901,7 +2901,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Подразбирани права"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
@@ -3022,7 +3022,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
-msgstr ""
+msgstr "Отломки при копане"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
@@ -3099,7 +3099,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for all players"
-msgstr ""
+msgstr "Задаване на творчески режим на всички играчи"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -3266,6 +3266,8 @@ msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Бърздо движение чрез клавиш „Aux1“.\n"
+"Изисква правото „fast“ от сървъра."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3857,6 +3859,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Ако е включено заедно с режима на летене, играчът може да лети през плътни "
+"възли.\n"
+"Изисква правото „noclip“ от сървъра."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5400,6 +5405,8 @@ msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"Играчът може да лети без да се влияе от гравитацията.\n"
+"Изисква правото „fly“ от сървъра."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
@@ -5441,7 +5448,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "Правата, които играчите с „basic_privs“ могат да получат"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
@@ -5469,7 +5476,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
-msgstr "Частта от големи пещери, които съдържат течност."
+msgstr "Съотношението на големи пещери, съдържащи течности."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6144,6 +6151,8 @@ msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Правата, които получават новите играчи.\n"
+"В играта вижте „/privs“ за пълен списък от права за сървъра и модификациите."
 
 #: src/settings_translation_file.cpp
 msgid ""
