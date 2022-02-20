@@ -1741,7 +1741,7 @@ void Game::updateDebugState()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	bool has_debug = client->checkPrivilege("debug");
-	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_DEBUG);
+	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 
 	if (m_game_ui->m_flags.show_basic_debug) {
 		if (!has_basic_debug)
@@ -2210,7 +2210,7 @@ void Game::toggleCinematic()
 void Game::toggleBlockBounds()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (!(client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_DEBUG))) {
+	if (!(client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG))) {
 		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by mod or game)");
 		return;
 	}
@@ -2298,7 +2298,7 @@ void Game::toggleDebug()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	bool has_debug = client->checkPrivilege("debug");
-	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_DEBUG);
+	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
@@ -3158,7 +3158,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position,
-				client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_DEBUG));
+				client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG));
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
 		runData.punching = true;

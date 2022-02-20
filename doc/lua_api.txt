@@ -6761,7 +6761,7 @@ object you are working with still exists.
         * `minimap`: Modifies the client's permission to view the minimap.
           The client may locally elect to not view the minimap.
         * `minimap_radar`: is only usable when `minimap` is true
-        * `debug`: Allow showing basic debug info that might give a gameplay advantage.
+        * `basic_debug`: Allow showing basic debug info that might give a gameplay advantage.
           This includes map seed, player position, look direction, the pointed node and block bounds.
 		  Does not affect players with the `debug` privilege.
     * If a flag equals `nil`, the flag is not modified
