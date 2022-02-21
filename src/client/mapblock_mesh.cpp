@@ -1015,6 +1015,7 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 	nodes.clear();
 
 	std::vector<s32> indexes;
+	indexes.reserve(triangles->size());
 	for (u16 i = 0; i < triangles->size(); i++)
 		indexes.push_back(i);
 
@@ -1513,8 +1514,8 @@ void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &
 	for (auto i : triangle_refs) {
 		const auto &t = m_transparent_triangles[i];
 		if (current_buffer != t.buffer) {
-			if (current_buffer != nullptr) {
-				this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+			if (current_buffer) {
+				m_transparent_buffers.emplace_back(current_buffer, current_strain);
 				current_strain.clear();
 			}
 			current_buffer = t.buffer;
@@ -1524,9 +1525,8 @@ void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &
 		current_strain.push_back(t.p3);
 	}
 
-	if (current_strain.size() > 0) {
-		this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
-	}
+	if (!current_strain.empty())
+		m_transparent_buffers.emplace_back(current_buffer, current_strain);
 }
 
 void MapBlockMesh::consolidateTransparentBuffers()

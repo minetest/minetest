@@ -1388,9 +1388,11 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	}
 
 	if (isTransparent) {
+		std::vector<float> sections;
+		sections.reserve(8 + 2 * boxes.size());
 		for (int axis = 0; axis < 3; axis++) {
 			// identify sections
-			std::vector<float> sections;
+			sections.clear();
 
 			// Default split at node bounds, up to 3 nodes in each direction
 			for (float s = -3.5f * BS; s < 4.0f * BS; s += 1.0f * BS)

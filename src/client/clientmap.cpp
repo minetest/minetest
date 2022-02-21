@@ -349,7 +349,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Update transparent meshes
 	*/
 	if (is_transparent_pass)
-		this->updateTransparentMeshBuffers();
+		updateTransparentMeshBuffers();
 
 	/*
 		Draw the selected MapBlocks
