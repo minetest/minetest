@@ -3327,8 +3327,8 @@ as produced by `vector.new`.
 Compatibility notes
 -------------------
 
-Internally, a vector is implemented as a table with the 3 fields `x`, `y` and `z`.
-Example: `{x = 0, y = 1, z = 0}`.
+Internally, a vector is implemented using a table with the 3 fields `x`, `y` and `z`.
+It's similar to this: `{x = 0, y = 1, z = 0}`, but with a metatable.
 
 Historically (before Minetest 5.5.0), vectors used to be defined as tables of the
 form `{x = num, y = num, z = num}`, without any metatable. You might find this in
