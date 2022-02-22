@@ -3309,8 +3309,10 @@ Spatial vectors are used for various things, including, but not limited to:
 * positions
 * position differences
 * velocities
+* accelerations
 * euler angles (Yes, using spatial vectors here has no real semantic meaning. It's
-  just 3 values.)
+  just 3 values. Therefore, most operations make make no sense and should not be
+  used on vectors of euler angles.)
 * dimensions (Sizes in 3 directions.)
 
 Note that they are *not* used for:
