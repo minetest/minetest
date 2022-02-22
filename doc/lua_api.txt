@@ -3312,8 +3312,8 @@ Spatial vectors are used for various things, including, but not limited to:
 * velocities
 * accelerations
 * euler angles (Yes, using spatial vectors here has no real semantic meaning. It's
-  just 3 values. Therefore, most operations make make no sense and should not be
-  used on vectors of euler angles.)
+  just 3 values. Therefore, most operations make no sense and should not be used
+  on vectors of euler angles.)
 * dimensions (Sizes in 3 directions.)
 
 Note that they are *not* used for:
@@ -3501,7 +3501,9 @@ Further helpers
 There are more helper functions involving vectors, but they are listed elsewhere
 because they only work on specific sorts of vectors or involve things that are not
 vectors.
+
 For example:
+
 * `minetest.hash_node_position` (Only works on node positions.)
 * `minetest.dir_to_wallmounted` (Involves wallmounted param2 values.)
 
