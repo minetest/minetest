@@ -44,7 +44,7 @@ void GUIBackgroundImage::draw()
 
 	core::rect<s32> rect = AbsoluteRect;
 	if (m_autoclip)
-		rect.LowerRightCorner += Parent->getAbsolutePosition().getSize();
+		rect.LowerRightCorner += Parent->getAbsoluteClippingRect().getSize();
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
