@@ -3306,6 +3306,7 @@ For details on what a spatial vectors is, please refer to Wikipedia:
 https://en.wikipedia.org/wiki/Euclidean_vector.
 
 Spatial vectors are used for various things, including, but not limited to:
+
 * positions
 * position differences
 * velocities
@@ -3316,14 +3317,17 @@ Spatial vectors are used for various things, including, but not limited to:
 * dimensions (Sizes in 3 directions.)
 
 Note that they are *not* used for:
+
 * n-dimensional vectors where n is not 3 (ie. n=2)
 * arrays of the form `{num, num, num}`
 
 The API documentation may refer to spatial vectors by any of the following notations:
+
 * `(x, y, z)` (Used rarely, and only if it's clear that it's a vector.)
 * `vector.new(x, y, z)`
 * `{x=num, y=num, z=num}`
-They are all (if not stated otherwise) referring to the same thing, that is: vectors
+
+They are all (if not stated otherwise) referring to the same thing, that is: vectors,
 as produced by `vector.new`.
 
 Compatibility notes
