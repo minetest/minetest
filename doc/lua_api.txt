@@ -3300,7 +3300,7 @@ The following functions provide escape sequences:
 Spatial Vectors
 ===============
 
-Minetest stores 3-dimensional spatial vectors in Lua as tuples of 3 coordinates,
+Minetest stores 3-dimensional spatial vectors in Lua as tables of 3 coordinates,
 and has a class to represent them (`vector.*`), which this chapter is about.
 For details on what a spatial vectors is, please refer to Wikipedia:
 https://en.wikipedia.org/wiki/Euclidean_vector.
