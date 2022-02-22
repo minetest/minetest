@@ -1570,7 +1570,7 @@ Exact pointing location (currently only `Raycast` supports these fields):
   from 1).
 * `pointed_thing.intersection_normal`: Unit vector, points outwards of the
   selected selection box. This specifies which face is pointed at.
-  Is a null vector `(0, 0, 0)` when the pointer is inside the selection box.
+  Is a null vector `vector.zero()` when the pointer is inside the selection box.
 
 
 
@@ -3318,7 +3318,7 @@ Note that they are *not* used for:
 * arrays of the form `{num, num, num}`
 
 The API documentation may refer to spatial vectors by any of the following notations:
-* `(x, y, z)`
+* `(x, y, z)` (Used rarely, and only if it's clear that it's a vector.)
 * `vector.new(x, y, z)`
 * `{x=num, y=num, z=num}`
 They are all (if not stated otherwise) referring to the same thing, that is: vectors
