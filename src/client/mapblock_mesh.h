@@ -141,12 +141,10 @@ public:
 	scene::IMeshBuffer *getBuffer() const { return m_buffer; }
 	const std::vector<u16> &getVertexIndexes() const { return m_vertex_indexes; }
 
-	void beforeDraw();
+	void beforeDraw() const;
 private:
 	scene::SMeshBuffer *m_buffer;
 	std::vector<u16> m_vertex_indexes;
-
-	friend class MapBlockMesh;
 };
 
 /*
@@ -208,7 +206,7 @@ public:
 	void consolidateTransparentBuffers();
 
 	/// get the list of transparent buffers
-	std::vector<PartialMeshBuffer> &getTransparentBuffers()
+	const std::vector<PartialMeshBuffer> &getTransparentBuffers() const
 	{
 		return this->m_transparent_buffers;
 	}

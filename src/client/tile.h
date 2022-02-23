@@ -259,19 +259,6 @@ struct TileLayer
 			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
 	}
 
-	bool isLiquid() const
-	{
-		switch (material_type) {
-		case TILE_MATERIAL_LIQUID_OPAQUE:
-		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
-		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
-		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
-			return true;
-		}
-		return false;
-	}
-
 	bool isTransparent() const
 	{
 		switch (material_type) {

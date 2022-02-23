@@ -164,7 +164,7 @@ private:
 		v3s16 m_pos;
 		union {
 			scene::IMeshBuffer *m_buffer;
-			PartialMeshBuffer *m_partial_buffer;
+			const PartialMeshBuffer *m_partial_buffer;
 		};
 		bool m_reuse_material:1;
 		bool m_use_partial_buffer:1;
@@ -173,7 +173,7 @@ private:
 			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
 		{}
 
-		DrawDescriptor(const v3s16 &pos, PartialMeshBuffer *buffer) :
+		DrawDescriptor(const v3s16 &pos, const PartialMeshBuffer *buffer) :
 			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
 	};

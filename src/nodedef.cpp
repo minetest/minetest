@@ -666,7 +666,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		const TileSpec &tile, const TileDef &tiledef, video::SColor color,
 		u8 material_type, u32 shader_id, bool backface_culling,
-		const TextureSettings &tsettings, AlphaMode alpha)
+		const TextureSettings &tsettings)
 {
 	layer->shader_id     = shader_id;
 	layer->texture       = tsrc->getTextureForMesh(tiledef.name, &layer->texture_id);
@@ -964,11 +964,11 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				tsettings.world_aligned_mode, drawtype);
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
 				color, material_type, tile_shader,
-				tdef[j].backface_culling, tsettings, alpha);
+				tdef[j].backface_culling, tsettings);
 		if (!tdef_overlay[j].name.empty())
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
 					color, overlay_material, overlay_shader,
-					tdef[j].backface_culling, tsettings, alpha);
+					tdef[j].backface_culling, tsettings);
 	}
 
 	MaterialType special_material = material_type;
@@ -984,7 +984,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
-				tdef_spec[j].backface_culling, tsettings, alpha);
+				tdef_spec[j].backface_culling, tsettings);
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||

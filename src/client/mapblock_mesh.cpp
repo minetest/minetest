@@ -1163,7 +1163,7 @@ void MapBlockBspTree::traverse(s32 node, const v3f &viewpoint, std::vector<s32> 
 	PartialMeshBuffer
 */
 
-void PartialMeshBuffer::beforeDraw()
+void PartialMeshBuffer::beforeDraw() const
 {
 	// Patch the indexes in the mesh buffer before draw
 
