@@ -1172,7 +1172,7 @@ void PartialMeshBuffer::beforeDraw() const
 		for (auto index : m_vertex_indexes)
 			m_buffer->Indices.push_back(index);
 	}
-	m_buffer->setDirty();
+	m_buffer->setDirty(scene::EBT_INDEX);
 }
 
 /*
