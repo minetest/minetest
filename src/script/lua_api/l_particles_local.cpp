@@ -71,7 +71,7 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "texture");
-	if (not lua_isnil(L, -1)) {
+	if (!lua_isnil(L, -1)) {
 		LuaParticleParams::readTexValue(L,p.texture);
 	}
 	lua_pop(L, 1);
@@ -106,6 +106,7 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	p.size = 1;
 
 	// read spawner parameters from the table
+	using namespace ParticleParamTypes;
 	LuaParticleParams::readTweenTable(L, "pos", p.pos);
 	LuaParticleParams::readTweenTable(L, "vel", p.vel);
 	LuaParticleParams::readTweenTable(L, "acc", p.acc);
@@ -118,17 +119,17 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 		lua_getfield(L, -1, "kind");
 		LuaParticleParams::readLuaValue(L, p.attractor_kind);
 		lua_pop(L,1);
-		if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
+		if (p.attractor_kind != AttractorKind::none) {
 			LuaParticleParams::readTweenTable(L, "strength", p.attract);
 			LuaParticleParams::readTweenTable(L, "origin", p.attractor);
 			p.attractor_attachment = LuaParticleParams::readAttachmentID(L, "origin_attached");
-			if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
+			if (p.attractor_kind != AttractorKind::point) {
 				LuaParticleParams::readTweenTable(L, "angle", p.attractor_angle);
 				p.attractor_angle_attachment = LuaParticleParams::readAttachmentID(L, "angle_attached");
 			}
 		}
 	} else {
-		p.attractor_kind = ParticleParamTypes::AttractorKind::none;
+		p.attractor_kind = AttractorKind::none;
 	}
 	lua_pop(L,1);
 	LuaParticleParams::readTweenTable(L, "attractor", p.attractor);

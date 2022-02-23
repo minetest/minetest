@@ -8682,6 +8682,8 @@ Used by `minetest.add_particle`.
 
         texture = "image.png",
         -- The texture of the particle
+        -- v5.6.0 and later: alo supports the table format described in the
+        -- following section
 
         playername = "singleplayer",
         -- Optional, if specified spawns particle only on the player's client
@@ -8703,14 +8705,21 @@ Used by `minetest.add_particle`.
         -- If set to a valid number 1-6, specifies the tile from which the
         -- particle texture is picked.
         -- Otherwise, the default behavior is used. (currently: any random tile)
+
+        drag = {x=0, y=0, z=0},
+        -- v5.6.0 and later: Optional drag value, consult the following section
+
+        bounce = {min = ..., max = ..., bias = 0},
+        -- v5.6.0 and later: Optional bounce range, consult the following section
     }
 
 
 `ParticleSpawner` definition
 ----------------------------
+
 Used by `minetest.add_particlespawner`.
 
-Before v5.5.0, particlespawners used a different syntax and had a more limited set
+Before v5.6.0, particlespawners used a different syntax and had a more limited set
 of features. Definition fields that are the same in both legacy and modern versions
 are shown in the next listing, and the fields that are used by legacy versions are
 shown separated by a comment; the modern fields are too complex to compactly
@@ -8760,11 +8769,11 @@ will be ignored.
 
         animation = {Tile Animation definition},
         -- Optional, specifies how to animate the particles' texture
-	    -- v5.5.0 and later: set length to -1 to sychronize the length
-	    -- of the animation with the expiration time of individual particles.
-	    -- (-2 causes the animation to be played twice, and so on)
+        -- v5.6.0 and later: set length to -1 to sychronize the length
+        -- of the animation with the expiration time of individual particles.
+        -- (-2 causes the animation to be played twice, and so on)
 
-        glow = 0
+        glow = 0,
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
 
@@ -8799,6 +8808,7 @@ will be ignored.
     }
 
 ### Modern definition fields
+
 After v5.6.0, spawner properties can be defined in several different ways depending
 on the level of control you need. `pos` for instance can be set as a single vector,
 in which case all particles will appear at that exact point throughout the lifetime
@@ -8809,15 +8819,15 @@ lower-precedence and higher-precedence field are present, the lower-precedence f
 will be ignored):
 
     {
-	    maxpos = {x = 0, y = 0, z = 0};
-	    minpos = {x = 0, y = 0, z = 0};
+      maxpos = {x = 0, y = 0, z = 0},
+      minpos = {x = 0, y = 0, z = 0},
         -- old syntax
 
-        pos = 0;
-        -- all components of every particle's position vector will be set to this
-        -- value
+      pos = 0,
+      -- all components of every particle's position vector will be set to this
+      -- value
 
-	    pos = {x = 0, y = 0, z = 0};
+      pos = {x = 0, y = 0, z = 0},
         -- all particles will appear at this exact position throughout the lifetime
         -- of the particlespawner
 
@@ -8825,45 +8835,44 @@ will be ignored):
             -- the particle will appear at a position that is picked at random from
             -- within a cubic range
 
-            min = {x = 0, y = 0, z = 0};
+            min = {x = 0, y = 0, z = 0},
             -- `min` is the minimum value this property will be set to in particles
             -- spawned by the generator
 
-            max = {x = 0, y = 0, z = 0});
+            max = {x = 0, y = 0, z = 0},
             -- `max` is the minimum value this property will be set to in particles
             -- spawned by the generator
 
-            bias = 0;
+            bias = 0,
             -- when `bias` is 0, all random values are exactly as likely as any
             -- other. when it is positive, the higher it is, the more likely values
             -- will appear towards the minimum end of the allowed spectrum. when
             -- it is negative, the lower it is, the more likely values will appear
             -- towards the maximum end of the allowed spectrum. the curve is
             -- exponential and there is no particular maximum or minimum value
-        };
+        },
 
-        pos_tween = … ;
-        -- like `pos`, except the possible values will change over the lifetime of
-        -- the particle spawner. a tween table should consist of a list of frames
+        pos_tween = ...,
+        -- a tween table should consist of a list of frames in the same form as the pos property above
         -- which the engine will interpolate between, and optionally a number of
         -- properties that control how the interpolation takes place. currently
-        -- **only two frames**, the first and the last, are used. any of the above
+        -- **only two frames**, the first (`from`) and the last (`to`), are used. any of the above
         -- definition styles can be used here as well in any combination
 
         pos_tween = {
-            style = 'fwd';
+            style = "fwd",
             -- linear animation from first to last frame (default)
-            style = 'rev';
+            style = "rev",
             -- linear animation from last to first frame
-            style = 'pulse';
+            style = "pulse",
             -- linear animation from first to last then back to first again
-            style = 'flicker';
-            -- like 'pulse', but slightly randomized to add a bit of stutter
+            style = "flicker",
+            -- like "pulse", but slightly randomized to add a bit of stutter
 
-            reps = 1;
+            reps = 1,
             -- number of times the animation is played over the particle's lifespan
 
-            start = 0.0;
+            start = 0.0,
             -- point in the spawner's lifespan at which the animation begins. 0 is
             -- the very beginning, 1 is the very end
 
@@ -8871,20 +8880,20 @@ will be ignored):
             -- underlying type of the property. for now, all but the first and last
             -- frame are ignored
 
-            0, 0;
+            0, 0,
             -- absolute values
 
-            {x = 0, y = 0, z = 0};
-            {x = 0, y = 0, z = 0};
+            {x = 0, y = 0, z = 0},
+            {x = 0, y = 0, z = 0},
             -- vector values
 
-            { min = {x=0, y=0, z=0}, max = {x=0, y=0, z=0}, bias = 0 };
-            { min = {x=0, y=0, z=0}, max = {x=0, y=0, z=0}, bias = 0 };
+            { min = {x=0, y=0, z=0}, max = {x=0, y=0, z=0}, bias = 0 },
+            { min = {x=0, y=0, z=0}, max = {x=0, y=0, z=0}, bias = 0 },
             -- vector ranges
 
-            0, { min = {x=0, y=0, z=0}, max = {x=0, y=0, z=0}), bias = 0 };
+            0, { min = {x=0, y=0, z=0}, max = {x=0, y=0, z=0}, bias = 0 },
             -- mixed
-        };
+        },
     }
 
 All of the properties that can be defined in this way are listed in the next
@@ -8920,14 +8929,14 @@ unless otherwise specified.
   cases **`vel` should be set to 0**. `attract` has the fields:
   * string `kind`: selects the kind of shape towards which the particles will
     be oriented. it must have one of the following values:
-    * `'none'`: no attractor is set and the `attractor` table is ignored
-    * `'point'`: the particles are attracted to a specific point in space.
+    * `"none"`: no attractor is set and the `attractor` table is ignored
+    * `"point"`: the particles are attracted to a specific point in space.
       use this also if you want a sphere-like effect, in combination with
       the `radius` property.
-    * `'line'`: the particles are attracted to an (infinite) line passing
+    * `"line"`: the particles are attracted to an (infinite) line passing
       through the points `origin` and `angle`. use this for e.g. beacon
       effects, energy beam effects, etc.
-    * `'plane'`: the particles are attracted to an (infinite) plane on whose
+    * `"plane"`: the particles are attracted to an (infinite) plane on whose
       surface `origin` designates a point in world coordinate space. use this
       for e.g. particles entering or emerging from a portal.
   * float range `strength`: the speed with which particles will move towards
@@ -8938,9 +8947,9 @@ unless otherwise specified.
     set.
   * vec3 `angle`: sets the direction in which the attractor shape faces. for
     lines, this sets the angle of the line; e.g. a vector of (0,1,0) will
-	create a vertical line that passes through `origin`. for planes, `angle`
-	is the surface normal of an infinite plane on whose surface `origin` is
-	a point. functions as an offset if `angle_attached` is also set.
+    create a vertical line that passes through `origin`. for planes, `angle`
+    is the surface normal of an infinite plane on whose surface `origin` is
+    a point. functions as an offset if `angle_attached` is also set.
   * vec3 `origin_attached`: allows the origin to be specified as an offset from
     the position of an entity rather than a coordinate in world space.
   * vec3 `angle_attached`: allows the angle to be specified as an offset from
@@ -8959,39 +8968,40 @@ unless otherwise specified.
   "roundcube" emitter volume).
 
 ### Textures
-In versions before v5.5.0, particlespawner textures could only be specified as a single
-texture string. After v5.5.0, textures can now be specified as a table as well. This
+
+In versions before v5.6.0, particlespawner textures could only be specified as a single
+texture string. After v5.6.0, textures can now be specified as a table as well. This
 table contains options that allow simple animations to be applied to the texture.
 
     texture = {
-        name = 'mymod_particle_texture.png';
+        name = "mymod_particle_texture.png",
         -- the texture specification string
 
-        alpha = 1.0;
+        alpha = 1.0,
         -- controls how visible the particle is; at 1.0 the particle is fully
         -- visible, at 0, it is completely invisible.
 
-        alpha_tween = {1, 0};
+        alpha_tween = {1, 0},
         -- can be used instead of `alpha` to animate the alpha value over the
         -- particle's lifetime. these tween tables work identically to the tween
         -- tables used in particlespawner properties, except that time references
         -- are understood with respect to the particle's lifetime, not the
         -- spawner's. {1,0} fades the particle out over its lifetime.
 
-        scale = 1;
-        scale = {x = 1, y = 1};
+        scale = 1,
+        scale = {x = 1, y = 1},
         -- scales the texture onscreen
 
         scale_tween = {
-            {x = 1, y = 1};
-            {x = 0, y = 1};
-        };
+            {x = 1, y = 1},
+            {x = 0, y = 1},
+        },
         -- animates the scale over the particle's lifetime. works like the
         -- alpha_tween table, but can accept two-dimensional vectors as well as
         -- integer values. the example value would cause the particle to shrink
         -- in one dimension over the course of its life until it disappears
 
-        animation = {Tile Animation definition};
+        animation = {Tile Animation definition},
         -- overrides the particlespawner's global animation property for a single
         -- specific texture
     }
@@ -9001,35 +9011,36 @@ Instead of setting a single texture definition, it is also possible to set a
 Every time a particle is spawned, the engine will pick a texture at random from
 the `texpool` and assign it as that particle's texture. You can also specify a
 `texture` in addition to a `texpool`; the `texture` value will be ignored on newer
-clients but will be sent to older (pre-v5.5.0) clients that do not implement
+clients but will be sent to older (pre-v5.6.0) clients that do not implement
 texpools.
 
     texpool = {
-        'mymod_particle_texture.png';
-        { img = 'mymod_spark.png', fade = 'out' };
+        "mymod_particle_texture.png";
+        { img = "mymod_spark.png", fade = "out" },
         {
-        	img = 'mymod_dust.png';
-        	alpha = 0.3;
-        	scale = 1.5;
-        	animation = {
-                type = 'vertical_frames';
-                aspect_w = 16, aspect_h = 16;
-                length = -3;
+          img = "mymod_dust.png",
+          alpha = 0.3,
+          scale = 1.5,
+          animation = {
+                type = "vertical_frames",
+                aspect_w = 16, aspect_h = 16,
+                length = -3,
                 -- repeat the animation three times over the particle's lifetime
-        	};
-        };
-	}
+          },
+        },
+  }
 
 #### List of animatable texture properties
+
 While animated particlespawner values vary over the course of the particlespawner's
 lifetime, animated texture properties vary over the lifespans of the individual
 particles spawned with that texture. So a particle with the texture property
 
     alpha_tween = {
-        0.0, 1.0;
-        style = 'pulse';
-        rep = 4;
-	}
+        0.0, 1.0,
+        style = "pulse",
+        rep = 4,
+  }
 
 would be invisible at its spawning, pulse visible four times throughout its
 lifespan, and then vanish again before expiring.

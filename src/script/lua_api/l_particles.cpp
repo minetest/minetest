@@ -26,47 +26,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "particles.h"
 
-// add_particle({pos=, velocity=, acceleration=, expirationtime=,
-//     size=, collisiondetection=, collision_removal=, object_collision=,
-//     vertical=, texture=, player=})
-// pos/velocity/acceleration = {x=num, y=num, z=num}
-// expirationtime = num (seconds)
-// size = num
-// collisiondetection = bool
-// collision_removal = bool
-// object_collision = bool
-// vertical = bool
-// texture = e.g."default_wood.png"
-// animation = TileAnimation definition
-// glow = num
-
-void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex) {
+void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex)
+{
 	StackUnroller unroll(L);
+
 	tex.animated = false;
 	if (lua_isstring(L, -1)) {
 		tex.string = lua_tostring(L, -1);
-	} else {
-		luaL_checktype(L, -1, LUA_TTABLE);
-		tex.string = getstringfield_default(L, -1, "name", nullptr);
-
-		lua_getfield(L, -1, "animation");
-		if (! lua_isnil(L, -1)) {
-			tex.animated = true;
-			tex.animation = read_animation_definition(L, -1);
-		}
-		lua_pop(L, 1);
-
-		LuaParticleParams::readTweenTable(L, "alpha", tex.alpha);
-		LuaParticleParams::readTweenTable(L, "scale", tex.scale);
+		return;
 	}
+
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_getfield(L, -1, "name");
+	tex.string = luaL_checkstring(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "animation");
+	if (! lua_isnil(L, -1)) {
+		tex.animated = true;
+		tex.animation = read_animation_definition(L, -1);
+	}
+	lua_pop(L, 1);
+
+	LuaParticleParams::readTweenTable(L, "alpha", tex.alpha);
+	LuaParticleParams::readTweenTable(L, "scale", tex.scale);
 }
 
+// add_particle({...})
 int ModApiParticles::l_add_particle(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	// Get parameters
-	struct ParticleParameters p;
+	ParticleParameters p;
 	std::string playername;
 
 	if (lua_gettop(L) > 1) // deprecated
@@ -132,7 +124,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		lua_pop(L, 1);
 
 		lua_getfield(L, 1, "texture");
-		if (! lua_isnil(L, -1)) {
+		if (!lua_isnil(L, -1)) {
 			LuaParticleParams::readTexValue(L, p.texture);
 		}
 		lua_pop(L, 1);
@@ -162,29 +154,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	return 1;
 }
 
-// add_particlespawner({amount=, time=,
-//				minpos=, maxpos=,
-//				minvel=, maxvel=,
-//				minacc=, maxacc=,
-//				minexptime=, maxexptime=,
-//				minsize=, maxsize=,
-//				collisiondetection=,
-//				collision_removal=,
-//				object_collision=,
-//				vertical=,
-//				texture=,
-//				player=})
-// minpos/maxpos/minvel/maxvel/minacc/maxacc = {x=num, y=num, z=num}
-// minexptime/maxexptime = num (seconds)
-// minsize/maxsize = num
-// collisiondetection = bool
-// collision_removal = bool
-// object_collision = bool
-// vertical = bool
-// texture = e.g."default_wood.png"
-// animation = TileAnimation definition
-// glow = num
-
+// add_particlespawner({...})
 int ModApiParticles::l_add_particlespawner(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -245,27 +215,24 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			lua_getfield(L, -1, "kind");
 			LuaParticleParams::readLuaValue(L, p.attractor_kind);
 			lua_pop(L,1);
+
 			lua_getfield(L, -1, "die_on_contact");
-			if (!lua_isnil(L,-1)) {
-				bool v = lua_toboolean(L, -1);
-				p.attractor_kill = v;
-			}
+			if (!lua_isnil(L, -1))
+				p.attractor_kill = readParam<bool>(L, -1);
 			lua_pop(L,1);
 
-			if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
+			if (p.attractor_kind != AttractorKind::none) {
 				LuaParticleParams::readTweenTable(L, "strength", p.attract);
 				LuaParticleParams::readTweenTable(L, "origin", p.attractor);
 				p.attractor_attachment = LuaParticleParams::readAttachmentID(L, "origin_attached");
-				if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
+				if (p.attractor_kind != AttractorKind::point) {
 					LuaParticleParams::readTweenTable(L, "angle", p.attractor_angle);
 					p.attractor_angle_attachment = LuaParticleParams::readAttachmentID(L, "angle_attached");
 				}
 			}
 		} else {
-			p.attractor_kind = ParticleParamTypes::AttractorKind::none;
+			p.attractor_kind = AttractorKind::none;
 		}
-// 		using ParticleParamTypes::dump;
-// 		std::cerr<<((u16)p.attractor_kind)<<" :: attractor strength " << (f32)p.attract.start.min <<":" << dump(p.attract)<< " / att origin " << dump(p.attractor) << " / angle " << dump(p.attractor_angle)<<"\n";
 		lua_pop(L,1);
 		LuaParticleParams::readTweenTable(L, "radius", p.radius);
 
@@ -288,7 +255,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		}
 
 		lua_getfield(L, 1, "texture");
-		if (not lua_isnil(L, -1)) {
+		if (!lua_isnil(L, -1)) {
 			LuaParticleParams::readTexValue(L, p.texture);
 		}
 		lua_pop(L, 1);

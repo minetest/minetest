@@ -31,23 +31,26 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
-struct ClientTexture {
+struct ClientTexture
+{
 	/* per-spawner structure used to store the ParticleTexture structs
 	 * that spawned particles will refer to through ClientTexRef */
 	ParticleTexture tex;
-	video::ITexture* ref = nullptr;
+	video::ITexture *ref = nullptr;
+
 	ClientTexture() = default;
 	ClientTexture(const ClientTexture&) = default;
-	ClientTexture(const ServerParticleTexture& p, ITextureSource* t):
+	ClientTexture(const ServerParticleTexture& p, ITextureSource *t):
 			tex(p),
-			ref(t -> getTextureForMesh(p.string)) {};
+			ref(t->getTextureForMesh(p.string)) {};
 };
 
-struct ClientTexRef {
+struct ClientTexRef
+{
 	/* per-particle structure used to avoid massively duplicating the
 	 * fairly large ParticleTexture struct */
-	ParticleTexture* tex = nullptr;
-	video::ITexture* ref = nullptr;
+	ParticleTexture *tex = nullptr;
+	video::ITexture *ref = nullptr;
 	ClientTexRef() = default;
 	ClientTexRef(const ClientTexRef&) = default;
 
@@ -60,15 +63,16 @@ struct ClientTexRef {
 };
 
 class ParticleSpawner;
+
 class Particle : public scene::ISceneNode
 {
-	public:
+public:
 	Particle(
-		IGameDef* gamedef,
+		IGameDef *gamedef,
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		const ParticleParameters &p,
-		const ClientTexRef& texture,
+		const ClientTexRef &texture,
 		v2f texpos,
 		v2f texsize,
 		video::SColor color
@@ -98,7 +102,7 @@ class Particle : public scene::ISceneNode
 	bool get_expired ()
 	{ return m_expiration < m_time; }
 
-	ParticleSpawner* m_parent;
+	ParticleSpawner *m_parent;
 
 private:
 	void updateLight();
@@ -144,20 +148,21 @@ private:
 class ParticleSpawner
 {
 public:
-	ParticleSpawner(IGameDef* gamedef,
+	ParticleSpawner(IGameDef *gamedef,
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &p,
 		u16 attached_id,
-		std::unique_ptr<ClientTexture[]>& texpool,
+		std::unique_ptr<ClientTexture[]> &texpool,
 		size_t texcount,
 		ParticleManager* p_manager);
 
 	void step(float dtime, ClientEnvironment *env);
 
 	size_t m_active;
-	bool m_dying;
-	bool get_expired ()
+
+	bool getExpired() const
 	{ return m_dying || (p.amount <= 0 && p.time != 0); }
+	void setDying() { m_dying = true; }
 
 private:
 	void spawnParticle(ClientEnvironment *env, float radius,
@@ -165,6 +170,7 @@ private:
 
 	ParticleManager *m_particlemanager;
 	float m_time;
+	bool m_dying;
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;

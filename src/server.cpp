@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-# include "server.h"
+#include "server.h"
 #include <iostream>
 #include <queue>
 #include <algorithm>
@@ -1589,12 +1589,12 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
-		const v3f pos = ((
+		const v3f pos = (
 			p.pos.start.min.val +
 			p.pos.start.max.val +
 			p.pos.end.min.val +
 			p.pos.end.max.val
-		) / 4.0f) * BS;
+		) / 4.0f * BS;
 		const float radius_sq = radius * radius;
 		/* Don't send short-lived spawners to distant players.
 		 * This could be replaced with proper tracking at some point. */
@@ -1623,7 +1623,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 100, peer_id);
 
 	pkt << p.amount << p.time;
-	/* serialize legacy fields */ {
+	{ // serialize legacy fields
 		std::ostringstream os(std::ios_base::binary);
 		p.pos.start.legacySerialize(os);
 		p.vel.start.legacySerialize(os);
@@ -1645,7 +1645,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.glow << p.object_collision;
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
 
-	/* serialize v5.5.0 particle fields */ {
+	{ // serialize new fields
 		// initial bias for older properties
 		pkt << p.pos.start.bias
 			<< p.vel.start.bias
@@ -1682,7 +1682,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		p.radius.serialize(os);
 
 		ParticleParamTypes::serializeParameterValue(os, (u16)p.texpool.size());
-		for(const auto& tex : p.texpool) {
+		for (const auto& tex : p.texpool) {
 			tex.serialize(os, protocol_version);
 		}
 

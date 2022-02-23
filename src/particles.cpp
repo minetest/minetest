@@ -20,13 +20,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 using namespace ParticleParamTypes;
 
-v2f ParticleParamTypes::pickParameterValue(float* f, const v2f a, const v2f b) {
+v2f ParticleParamTypes::pickParameterValue(float* f, const v2f a, const v2f b)
+{
 	return v2f(
 		numericalBlend(f[0], a.X, b.X),
 		numericalBlend(f[1], a.Y, b.Y)
 	);
 }
-v3f ParticleParamTypes::pickParameterValue(float* f, const v3f a, const v3f b) {
+
+v3f ParticleParamTypes::pickParameterValue(float* f, const v3f a, const v3f b)
+{
 	return v3f(
 		numericalBlend(f[0], a.X, b.X),
 		numericalBlend(f[1], a.Y, b.Y),
@@ -35,9 +38,14 @@ v3f ParticleParamTypes::pickParameterValue(float* f, const v3f a, const v3f b) {
 }
 
 v2f ParticleParamTypes::interpolateParameterValue(float fac, const v2f a, const v2f b)
-		{ return b.getInterpolated(a, fac); }
+{
+	return b.getInterpolated(a, fac);
+}
+
 v3f ParticleParamTypes::interpolateParameterValue(float fac, const v3f a, const v3f b)
-		{ return b.getInterpolated(a, fac); }
+{
+	return b.getInterpolated(a, fac);
+}
 
 #define PARAM_PVFN(n) ParticleParamTypes::n##ParameterValue
 #define PARAM_DEF_SRZR(T, wr, rd) \
@@ -72,11 +80,13 @@ enum class ParticleTextureFlags : u8 {
 	animated = 1
 };
 
-void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly) const {
+void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly) const
+{
 	/* newPropertiesOnly is used to de/serialize parameters of the legacy texture
 	 * field, which are encoded separately from the texspec string */
 	u8 flags = 0;
-	animated && (flags |= (u8)ParticleTextureFlags::animated);
+	if (animated)
+		flags |= static_cast<u8>(ParticleTextureFlags::animated);
 	writeU8(os, flags);
 
 	alpha.serialize(os);
@@ -87,9 +97,11 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 	if (animated)
 		animation.serialize(os, protocol_ver);
 }
-void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly) {
+
+void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly)
+{
 	u8 flags = readU8(is);
-	animated = (flags & (u8)ParticleTextureFlags::animated);
+	animated = !!(flags & static_cast<u8>(ParticleTextureFlags::animated));
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);
@@ -122,15 +134,14 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 }
 
 template <typename T, T (reader)(std::istream& is)>
-inline bool streamEndsBeforeParam(T& val, std::istream& is) {
+inline bool streamEndsBeforeParam(T& val, std::istream& is)
+{
 	// This is kinda awful
 	T tmp = reader(is);
 	if (is.eof())
 		return true;
-	else {
-		val = tmp;
-		return false;
-	}
+	val = tmp;
+	return false;
 }
 
 void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
@@ -157,6 +168,3 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 		return;
 	bounce.deSerialize(is);
 }
-
-ParticleTexture::ParticleTexture():
-	scale(1.f, 1.f) {}
