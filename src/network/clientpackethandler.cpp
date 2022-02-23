@@ -1011,6 +1011,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.glow = readU8(is);
 	p.object_collision = readU8(is);
 
+	bool legacy_format = true;
+
 	// This is kinda awful
 	do {
 		u16 tmp_param0 = readU16(is);
@@ -1050,9 +1052,9 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			p.attract.deSerialize(is);
 			p.attractor.deSerialize(is);
 			p.attractor_attachment = readU16(is);
-			p.attractor_kill = (bool)(readU8(is) & 1);
 			/* we only check the first bit, in order to allow this value
 			 * to be turned into a bit flag field later if needed */
+			p.attractor_kill = !!(readU8(is) & 1);
 			if (p.attractor_kind != AttractorKind::point) {
 				p.attractor_angle.deSerialize(is);
 				p.attractor_angle_attachment = readU16(is);
@@ -1068,10 +1070,10 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			p.texpool.push_back(newtex);
 		}
 
-		goto skipLegacyWorkaround;
+		legacy_format = false;
 	} while(0);
 
-	/* maintain legacy compat */ {
+	if (legacy_format) {
 		// there's no tweening data to be had, so we need to set the
 		// legacy params to constant values, otherwise everything old
 		// will tween to zero
@@ -1081,8 +1083,6 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.exptime.end = p.exptime.start;
 		p.size.end = p.size.start;
 	}
-
-	skipLegacyWorkaround:;
 
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;

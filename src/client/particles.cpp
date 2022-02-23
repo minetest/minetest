@@ -41,7 +41,7 @@ Particle::Particle(
 	IGameDef *gamedef,
 	LocalPlayer *player,
 	ClientEnvironment *env,
-	const ParticleParameters& p,
+	const ParticleParameters &p,
 	const ClientTexRef& texture,
 	v2f texpos,
 	v2f texsize,
@@ -61,11 +61,11 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
 	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	m_material.MaterialTypeParam = irr::video::pack_textureBlendFunc(
-			irr::video::EBF_SRC_ALPHA,
-			irr::video::EBF_ONE_MINUS_SRC_ALPHA,
-			irr::video::EMFN_MODULATE_1X,
-			irr::video::EAS_TEXTURE | irr::video::EAS_VERTEX_COLOR);
+	m_material.MaterialTypeParam = video::pack_textureBlendFunc(
+			video::EBF_SRC_ALPHA,
+			video::EBF_ONE_MINUS_SRC_ALPHA,
+			video::EMFN_MODULATE_1X,
+			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
 	m_material.setFlag(video::EMF_BLEND_OPERATION, true);
 	m_material.setTexture(0, m_texture.ref);
 	m_texpos = texpos;
@@ -105,7 +105,8 @@ Particle::Particle(
 	updateVertices();
 }
 
-Particle::~Particle() {
+Particle::~Particle()
+{
 	/* if our textures aren't owned by a particlespawner, we need to clean
 	 * them up ourselves when the particle dies */
 	if (m_parent == nullptr)
@@ -148,24 +149,25 @@ void Particle::step(float dtime)
 		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
 			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
 			m_object_collision);
+
 		f32 bounciness = m_bounce.pickWithin();
-		if (r.collides && (m_collision_removal || (bounciness > 0))) {
+		if (r.collides && (m_collision_removal || bounciness > 0)) {
 			if (m_collision_removal) {
 				// force expiration of the particle
-				m_expiration = -1.0;
+				m_expiration = -1.0f;
 			} else if (bounciness > 0) {
 				/* cheap way to get a decent bounce effect is to only invert the
 				 * largest component of the velocity vector, so e.g. you don't
 				 * have a rock immediately bounce back in your face when you try
 				 * to skip it across the water (as would happen if we simply
 				 * downscaled and negated the velocity vector) */
-				if ((av.Y > av.X) && (av.Y > av.Z)) {
+				if (av.Y > av.X && av.Y > av.Z) {
 					m_velocity.Y = -(m_velocity.Y * bounciness);
-				} else if ((av.X > av.Y) && (av.X > av.Z)) {
+				} else if (av.X > av.Y && av.X > av.Z) {
 					m_velocity.X = -(m_velocity.X * bounciness);
-				} else if ((av.Z > av.Y) && (av.Z > av.X)) {
+				} else if (av.Z > av.Y && av.Z > av.X) {
 					m_velocity.Z = -(m_velocity.Z * bounciness);
-				} else { /* well now we're in a bit of a pickle */
+				} else { // well now we're in a bit of a pickle
 					m_velocity = -(m_velocity * bounciness);
 				}
 			}
@@ -178,6 +180,7 @@ void Particle::step(float dtime)
 		m_velocity += m_acceleration * dtime;
 		m_pos += m_velocity * dtime;
 	}
+
 	if (m_animation.type != TAT_NONE) {
 		m_animation_time += dtime;
 		int frame_length_i, frame_count;
@@ -193,7 +196,7 @@ void Particle::step(float dtime)
 
 	// animate particle alpha in accordance with settings
 	if (m_texture.tex != nullptr)
-		m_alpha = m_texture.tex -> alpha.blend(m_time / (m_expiration+0.1));
+		m_alpha = m_texture.tex -> alpha.blend(m_time / (m_expiration+0.1f));
 	else
 		m_alpha = 1.f;
 
@@ -322,13 +325,14 @@ ParticleSpawner::ParticleSpawner(
 		max_particles = p.amount * longestLife;
 	}
 
-	p_manager -> reserveParticleSpace(max_particles * 1.2);
+	p_manager->reserveParticleSpace(max_particles * 1.2);
 }
 
 namespace {
-	GenericCAO* findObjectByID(ClientEnvironment* env, u16 id) {
-		if (id == 0) return nullptr;
-		return dynamic_cast<GenericCAO *>(env->getActiveObject(id));
+	GenericCAO *findObjectByID(ClientEnvironment *env, u16 id) {
+		if (id == 0)
+			return nullptr;
+		return env->getGenericCAO(id);
 	}
 }
 
@@ -337,7 +341,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 {
 	float fac = 0;
 	if (p.time != 0) { // ensure safety from divide-by-zeroes
-		fac = m_time / (p.time+0.1);
+		fac = m_time / (p.time+0.1f);
 	}
 
 	auto r_pos = p.pos.blend(fac);
@@ -372,9 +376,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pos.Z += camera_offset.Z;
 	}
 
-	if (pos.getDistanceFromSQ(ppos) > (radius*radius))
-		// we can avoid an expensive square root invocation for each particle
-		// by squaring the value to be compared against instead
+	if (pos.getDistanceFromSQ(ppos) > radius*radius)
 		return;
 
 	// Parameters for the single particle we're about to spawn
@@ -412,20 +414,22 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pp.pos += ofs * mag;
 	}
 
-	if ((p.attractor_kind != ParticleParamTypes::AttractorKind::none) && (attract != 0)) {
+	if (p.attractor_kind != ParticleParamTypes::AttractorKind::none && attract != 0) {
 		v3f dir;
-		f32 dist=0; /* =0 necessary to silence warning */
+		f32 dist = 0; /* =0 necessary to silence warning */
 		switch (p.attractor_kind) {
-			case ParticleParamTypes::AttractorKind::none: /* silence warning */ break;
+			case ParticleParamTypes::AttractorKind::none:
+				break;
 
 			case ParticleParamTypes::AttractorKind::point: {
 				dist = pp.pos.getDistanceFrom(attractor);
 				dir = pp.pos - attractor;
 				dir.normalize();
-			} break;
+				break;
+			}
 
 			case ParticleParamTypes::AttractorKind::line: {
-			// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
 				const auto& lorigin = attractor;
 				v3f ldir = attractor_angle;
 				ldir.normalize();
@@ -437,16 +441,17 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 				dir = (point_on_line - pp.pos);
 				dir.normalize();
 				dir *= -1; // flip it around so strength=1 attracts, not repulses
-			} break;
+				break;
+			}
 
 			case ParticleParamTypes::AttractorKind::plane: {
-			// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
 				const v3f& porigin = attractor;
 				v3f normal = attractor_angle;
 				normal.normalize();
 				v3f point_to_origin = porigin - pp.pos;
 				f32 factor = normal.dotProduct(point_to_origin);
-				if (numericAbsolute(factor) == 0.0f) { /* does -0.f == 0.f in C++? TODO */
+				if (numericAbsolute(factor) == 0.0f) {
 					dir = normal;
 				} else {
 					factor = numericSign(factor);
@@ -454,14 +459,16 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 				}
 				dist = numericAbsolute(normal.dotProduct(pp.pos - porigin));
 				dir *= -1; // flip it around so strength=1 attracts, not repulses
-			} break;
+				break;
+			}
 		}
+
 		f32 speedTowards = numericAbsolute(attract) * dist;
 		v3f avel = dir * speedTowards;
-		if (attract > 0 and speedTowards > 0) {
+		if (attract > 0 && speedTowards > 0) {
 			avel *= -1;
 			if (p.attractor_kill) {
-			// make sure the particle dies after crossing the attractor threshold
+				// make sure the particle dies after crossing the attractor threshold
 				f32 timeToCenter = dist / speedTowards;
 				if (timeToCenter < pp.expirationtime)
 					pp.expirationtime = timeToCenter;
@@ -488,8 +495,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		texture = decltype(texture)(m_texpool[m_texcount == 1 ? 0 : myrand_range(0,m_texcount-1)]);
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
-		if (texture.tex -> animated)
-			pp.animation = texture.tex -> animation;
+		if (texture.tex->animated)
+			pp.animation = texture.tex->animation;
 	}
 
 	// synchronize animation length with particle life if desired
@@ -524,7 +531,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		texsize,
 		color
 	);
-	pa -> m_parent = this;
+	pa->m_parent = this;
 	m_particlemanager->addParticle(pa);
 }
 
@@ -538,7 +545,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	bool unloaded = false;
 	const core::matrix4 *attached_absolute_pos_rot_matrix = nullptr;
 	if (m_attached_id) {
-		if (GenericCAO *attached = dynamic_cast<GenericCAO *>(env->getActiveObject(m_attached_id))) {
+		if (GenericCAO *attached = env->getGenericCAO(m_attached_id)) {
 			attached_absolute_pos_rot_matrix = attached->getAbsolutePosRotMatrix();
 		} else {
 			unloaded = true;
@@ -598,13 +605,15 @@ void ParticleManager::stepSpawners(float dtime)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
-		if (i->second->get_expired()) {
+		if (i->second->getExpired()) {
 			// the particlespawner owns the textures, so we need to make
 			// sure there are no active particles before we free it
-			if (i -> second -> m_active == 0) {
+			if (i->second->m_active == 0) {
 				delete i->second;
 				m_particle_spawners.erase(i++);
-			} else ++i;
+			} else {
+				++i;
+			}
 		} else {
 			i->second->step(dtime, m_env);
 			++i;
@@ -619,7 +628,7 @@ void ParticleManager::stepParticles(float dtime)
 		if ((*i)->get_expired()) {
 			if ((*i)->m_parent) {
 				assert((*i)->m_parent->m_active != 0);
-				-- (*i)->m_parent->m_active;
+				--(*i)->m_parent->m_active;
 			}
 			(*i)->remove();
 			delete *i;
@@ -665,18 +674,19 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			// texture pool
 			std::unique_ptr<ClientTexture[]> texpool = nullptr;
 			size_t txpsz = 0;
-			auto texsrc = client -> tsrc();
-			if (! p.texpool.empty()) {
+			if (!p.texpool.empty()) {
 				txpsz = p.texpool.size();
 				texpool = decltype(texpool)(new ClientTexture [txpsz]);
 
 				for (size_t i = 0; i < txpsz; ++i) {
-					texpool[i] = ClientTexture(p.texpool[i], texsrc);
+					texpool[i] = ClientTexture(p.texpool[i], client->tsrc());
 				}
 			} else {
 				// no texpool in use, use fallback texture
 				txpsz = 1;
-				texpool = decltype(texpool)(new ClientTexture[1] {ClientTexture(p.texture, texsrc)});
+				texpool = decltype(texpool)(new ClientTexture[1] {
+					ClientTexture(p.texture, client->tsrc())
+				});
 			}
 
 			auto toadd = new ParticleSpawner(client, player,
@@ -706,9 +716,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 						texsize, &color, p.node_tile);
 			} else {
 				/* with no particlespawner to own the texture, we need
-				 * to save it on the heap. it will be freed when * the
+				 * to save it on the heap. it will be freed when the
 				 * particle is destroyed */
-				auto texstore = new ClientTexture(p.texture, client -> tsrc());
+				auto texstore = new ClientTexture(p.texture, client->tsrc());
 
 				texture = ClientTexRef(*texstore);
 				texpos = v2f(0.0f, 0.0f);
@@ -794,7 +804,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	ParticleParameters p;
-	video::ITexture* ref = nullptr;
+	video::ITexture *ref = nullptr;
 	v2f texpos, texsize;
 	video::SColor color;
 
@@ -857,6 +867,6 @@ void ParticleManager::deleteParticleSpawner(u64 id)
 	MutexAutoLock lock(m_spawner_list_lock);
 	auto it = m_particle_spawners.find(id);
 	if (it != m_particle_spawners.end()) {
-		it->second->m_dying = true;
+		it->second->setDying();
 	}
 }

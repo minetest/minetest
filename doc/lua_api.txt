@@ -8682,6 +8682,8 @@ Used by `minetest.add_particle`.
 
         texture = "image.png",
         -- The texture of the particle
+        -- v5.6.0 and later: alo supports the table format described in the
+        -- following section
 
         playername = "singleplayer",
         -- Optional, if specified spawns particle only on the player's client
@@ -8703,6 +8705,12 @@ Used by `minetest.add_particle`.
         -- If set to a valid number 1-6, specifies the tile from which the
         -- particle texture is picked.
         -- Otherwise, the default behavior is used. (currently: any random tile)
+
+        drag = {x=0, y=0, z=0},
+        -- v5.6.0 and later: Optional drag value, consult the following section
+
+        bounce = {min = ..., max = ..., bias = 0},
+        -- v5.6.0 and later: Optional bounce range, consult the following section
     }
 
 
@@ -8711,7 +8719,7 @@ Used by `minetest.add_particle`.
 
 Used by `minetest.add_particlespawner`.
 
-Before v5.5.0, particlespawners used a different syntax and had a more limited set
+Before v5.6.0, particlespawners used a different syntax and had a more limited set
 of features. Definition fields that are the same in both legacy and modern versions
 are shown in the next listing, and the fields that are used by legacy versions are
 shown separated by a comment; the modern fields are too complex to compactly
@@ -8761,9 +8769,9 @@ will be ignored.
 
         animation = {Tile Animation definition},
         -- Optional, specifies how to animate the particles' texture
-	    -- v5.5.0 and later: set length to -1 to sychronize the length
-	    -- of the animation with the expiration time of individual particles.
-	    -- (-2 causes the animation to be played twice, and so on)
+        -- v5.6.0 and later: set length to -1 to sychronize the length
+        -- of the animation with the expiration time of individual particles.
+        -- (-2 causes the animation to be played twice, and so on)
 
         glow = 0,
         -- Optional, specify particle self-luminescence in darkness.
@@ -8811,15 +8819,15 @@ lower-precedence and higher-precedence field are present, the lower-precedence f
 will be ignored):
 
     {
-	    maxpos = {x = 0, y = 0, z = 0},
-	    minpos = {x = 0, y = 0, z = 0},
+      maxpos = {x = 0, y = 0, z = 0},
+      minpos = {x = 0, y = 0, z = 0},
         -- old syntax
 
-        pos = 0,
-        -- all components of every particle's position vector will be set to this
-        -- value
+      pos = 0,
+      -- all components of every particle's position vector will be set to this
+      -- value
 
-	    pos = {x = 0, y = 0, z = 0},
+      pos = {x = 0, y = 0, z = 0},
         -- all particles will appear at this exact position throughout the lifetime
         -- of the particlespawner
 
@@ -8939,9 +8947,9 @@ unless otherwise specified.
     set.
   * vec3 `angle`: sets the direction in which the attractor shape faces. for
     lines, this sets the angle of the line; e.g. a vector of (0,1,0) will
-	create a vertical line that passes through `origin`. for planes, `angle`
-	is the surface normal of an infinite plane on whose surface `origin` is
-	a point. functions as an offset if `angle_attached` is also set.
+    create a vertical line that passes through `origin`. for planes, `angle`
+    is the surface normal of an infinite plane on whose surface `origin` is
+    a point. functions as an offset if `angle_attached` is also set.
   * vec3 `origin_attached`: allows the origin to be specified as an offset from
     the position of an entity rather than a coordinate in world space.
   * vec3 `angle_attached`: allows the angle to be specified as an offset from
@@ -8961,8 +8969,8 @@ unless otherwise specified.
 
 ### Textures
 
-In versions before v5.5.0, particlespawner textures could only be specified as a single
-texture string. After v5.5.0, textures can now be specified as a table as well. This
+In versions before v5.6.0, particlespawner textures could only be specified as a single
+texture string. After v5.6.0, textures can now be specified as a table as well. This
 table contains options that allow simple animations to be applied to the texture.
 
     texture = {
@@ -9003,24 +9011,24 @@ Instead of setting a single texture definition, it is also possible to set a
 Every time a particle is spawned, the engine will pick a texture at random from
 the `texpool` and assign it as that particle's texture. You can also specify a
 `texture` in addition to a `texpool`; the `texture` value will be ignored on newer
-clients but will be sent to older (pre-v5.5.0) clients that do not implement
+clients but will be sent to older (pre-v5.6.0) clients that do not implement
 texpools.
 
     texpool = {
         "mymod_particle_texture.png";
         { img = "mymod_spark.png", fade = "out" },
         {
-        	img = "mymod_dust.png",
-        	alpha = 0.3,
-        	scale = 1.5,
-        	animation = {
+          img = "mymod_dust.png",
+          alpha = 0.3,
+          scale = 1.5,
+          animation = {
                 type = "vertical_frames",
                 aspect_w = 16, aspect_h = 16,
                 length = -3,
                 -- repeat the animation three times over the particle's lifetime
-        	},
+          },
         },
-	}
+  }
 
 #### List of animatable texture properties
 
@@ -9032,7 +9040,7 @@ particles spawned with that texture. So a particle with the texture property
         0.0, 1.0,
         style = "pulse",
         rep = 4,
-	}
+  }
 
 would be invisible at its spawning, pulse visible four times throughout its
 lifespan, and then vanish again before expiring.
