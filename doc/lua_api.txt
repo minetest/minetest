@@ -1683,10 +1683,10 @@ wear value. Syntax:
 
 Examples:
 
-* `'default:apple'`: 1 apple
-* `'default:dirt 5'`: 5 dirt
-* `'default:pick_stone'`: a new stone pickaxe
-* `'default:pick_wood 1 21323'`: a wooden pickaxe, ca. 1/3 worn out
+* `"default:apple"`: 1 apple
+* `"default:dirt 5"`: 5 dirt
+* `"default:pick_stone"`: a new stone pickaxe
+* `"default:pick_wood 1 21323"`: a wooden pickaxe, ca. 1/3 worn out
 
 ### Table format
 
@@ -1776,21 +1776,21 @@ Groups in crafting recipes
 An example: Make meat soup from any meat, any water and any bowl:
 
     {
-        output = 'food:meat_soup_raw',
+        output = "food:meat_soup_raw",
         recipe = {
-            {'group:meat'},
-            {'group:water'},
-            {'group:bowl'},
+            {"group:meat"},
+            {"group:water"},
+            {"group:bowl"},
         },
-        -- preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+        -- preserve = {"group:bowl"}, -- Not implemented yet (TODO)
     }
 
 Another example: Make red wool from white wool and red dye:
 
     {
-        type = 'shapeless',
-        output = 'wool:red',
-        recipe = {'wool:white', 'group:dye,basecolor_red'},
+        type = "shapeless",
+        output = "wool:red",
+        recipe = {"wool:white", "group:dye,basecolor_red"},
     }
 
 Special groups
@@ -5987,11 +5987,11 @@ Misc.
            This is due to the fact that JSON has two distinct array and object
            values.
     * Example: `write_json({10, {a = false}})`,
-      returns `"[10, {\"a\": false}]"`
+      returns `'[10, {"a": false}]'`
 * `minetest.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
-    * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
+    * Example: `serialize({foo="bar"})`, returns `'return { ["foo"] = "bar" }'`
 * `minetest.deserialize(string[, safe])`: returns a table
     * Convert a string returned by `minetest.serialize` into a table
     * `string` is loaded in an empty sandbox environment.
@@ -6003,7 +6003,7 @@ Misc.
      value of `safe`. It is fine to serialize then deserialize user-provided
      data, but directly providing user input to deserialize is always unsafe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
-      returns `{foo='bar'}`
+      returns `{foo="bar"}`
     * Example: `deserialize('print("foo")')`, returns `nil`
       (function call fails), returns
       `error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)`
@@ -8096,11 +8096,11 @@ Used by `minetest.register_craft`.
 ### Shaped
 
     {
-        output = 'default:pick_stone',
+        output = "default:pick_stone",
         recipe = {
-            {'default:cobble', 'default:cobble', 'default:cobble'},
-            {'', 'default:stick', ''},
-            {'', 'default:stick', ''},  -- Also groups; e.g. 'group:crumbly'
+            {"default:cobble", "default:cobble", "default:cobble"},
+            {"", "default:stick", ""},
+            {"", "default:stick", ""},  -- Also groups; e.g. "group:crumbly"
         },
         replacements = <list of item pairs>,
         -- replacements: replace one input item with another item on crafting
@@ -8111,7 +8111,7 @@ Used by `minetest.register_craft`.
 
     {
         type = "shapeless",
-        output = 'mushrooms:mushroom_stew',
+        output = "mushrooms:mushroom_stew",
         recipe = {
             "mushrooms:bowl",
             "mushrooms:mushroom_brown",

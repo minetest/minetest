@@ -128,9 +128,7 @@ public:
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version = 0;
-
-	// v1 for clients older than 5.1.0-dev
-	u16 formspec_version = 1;
+	u16 formspec_version = 0;
 
 	session_t getPeerId() const { return m_peer_id; }
 
