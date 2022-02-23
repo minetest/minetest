@@ -8856,7 +8856,7 @@ will be ignored):
         -- a tween table should consist of a list of frames in the same form as the pos property above
         -- which the engine will interpolate between, and optionally a number of
         -- properties that control how the interpolation takes place. currently
-        -- **only two frames**, the first (`from`) and the last (`to`), are used. any of the above
+        -- **only two frames**, the first and the last, are used. any of the above
         -- definition styles can be used here as well in any combination
 
         pos_tween = {
@@ -9016,9 +9016,9 @@ texpools.
 
     texpool = {
         "mymod_particle_texture.png";
-        { img = "mymod_spark.png", fade = "out" },
+        { name = "mymod_spark.png", fade = "out" },
         {
-          img = "mymod_dust.png",
+          name = "mymod_dust.png",
           alpha = 0.3,
           scale = 1.5,
           animation = {
