@@ -83,7 +83,7 @@ local function init_globals()
 	menudata.worldlist:set_sortmode("alphabetic")
 
 	if not core.settings:get("menu_last_game") then
-		local default_game = core.settings:get("default_game") or "minetest"
+		local default_game = core.settings:get("default_game") or "devtest"
 		core.settings:set("menu_last_game", default_game)
 	end
 
