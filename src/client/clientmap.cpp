@@ -783,13 +783,19 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 	}
 
+	uint buffer_count = 0;
+	for (auto &lists : grouped_buffers.lists)
+		for (MeshBufList &list : lists)
+			buffer_count += list.bufs.size();
+	
+	draw_order.reserve(draw_order.size() + buffer_count);
+	
 	// Capture draw order for all solid meshes
 	for (auto &lists : grouped_buffers.lists) {
 		for (MeshBufList &list : lists) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
+			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it)
 				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
-			}
 		}
 	}
 
