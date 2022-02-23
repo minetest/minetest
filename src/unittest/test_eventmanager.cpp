@@ -82,7 +82,7 @@ void TestEventManager::testDeregister()
 void TestEventManager::testRealEvent()
 {
 	EventManager ev;
-	std::unique_ptr<EventManagerTest> emt(new EventManagerTest());
+	auto emt = std::make_unique<EventManagerTest>();
 	ev.reg(MtEvent::PLAYER_REGAIN_GROUND, EventManagerTest::eventTest, emt.get());
 
 	// Put event & verify event value
@@ -93,7 +93,7 @@ void TestEventManager::testRealEvent()
 void TestEventManager::testRealEventAfterDereg()
 {
 	EventManager ev;
-	std::unique_ptr<EventManagerTest> emt(new EventManagerTest());
+	auto emt = std::make_unique<EventManagerTest>();
 	ev.reg(MtEvent::PLAYER_REGAIN_GROUND, EventManagerTest::eventTest, emt.get());
 
 	// Put event & verify event value

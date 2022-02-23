@@ -56,7 +56,7 @@ void TestAddress::testIsLocalhost()
 	UASSERT(!Address(172, 45, 37, 68, 0).isLocalhost());
 
 	// v6
-	std::unique_ptr<IPv6AddressBytes> ipv6Bytes(new IPv6AddressBytes());
+	auto ipv6Bytes = std::make_unique<IPv6AddressBytes>();
 	std::vector<u8> ipv6RawAddr = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
 	memcpy(ipv6Bytes->bytes, &ipv6RawAddr[0], 16);
 	UASSERT(Address(ipv6Bytes.get(), 0).isLocalhost())
