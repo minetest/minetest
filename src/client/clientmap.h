@@ -86,7 +86,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset);
+	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, v3s16 offset);
 
 	/*
 		Forcefully get a sector from somewhere

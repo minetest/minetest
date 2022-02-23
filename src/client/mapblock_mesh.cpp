@@ -1048,9 +1048,8 @@ static const MeshTriangle *findSplitCandidate(const std::vector<s32> &list, cons
 s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list, u32 depth)
 {
 	// if the list is empty, don't bother
-	if (list.size() == 0) {
+	if (list.empty())
 		return -1;
-	}
 
 	// if there is only one triangle, or the delta is insanely small, this is a leaf node
 	if (list.size() == 1 || delta < 0.01) {
@@ -1084,14 +1083,13 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 	// define the new split-plane
 	v3f candidate_normal(normal.Z, normal.X, normal.Y);
 	float candidate_delta = delta;
-	if (depth % 3 == 2) {
+	if (depth % 3 == 2)
 		candidate_delta /= 2;
-	}
 
 	s32 front_index = -1;
 	s32 back_index = -1;
 
-	if (front_list.size() > 0) {
+	if (!front_list.empty()) {
 		v3f next_normal = candidate_normal;
 		v3f next_origin = origin + delta * normal;
 		float next_delta = candidate_delta;
@@ -1103,11 +1101,11 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 		front_index = buildTree(next_normal, next_origin, next_delta, front_list, depth + 1);
 
 		// if there are no other triangles, don't create a new node
-		if (back_list.size() == 0 && node_list.size() == 0)
+		if (back_list.empty() && node_list.empty())
 			return front_index;
 	}
 
-	if (back_list.size() > 0) {
+	if (!back_list.empty()) {
 		v3f next_normal = candidate_normal;
 		v3f next_origin = origin - delta * normal;
 		float next_delta = candidate_delta;
@@ -1120,7 +1118,7 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 		back_index = buildTree(next_normal, next_origin, next_delta, back_list, depth + 1);
 
 		// if there are no other triangles, don't create a new node
-		if (front_list.size() == 0 && node_list.size() == 0)
+		if (front_list.empty() && node_list.empty())
 			return back_index;
 	}
 
@@ -1168,7 +1166,7 @@ void PartialMeshBuffer::beforeDraw() const
 	// Patch the indexes in the mesh buffer before draw
 
 	m_buffer->Indices.clear();
-	if (m_vertex_indexes.size() > 0) {
+	if (!m_vertex_indexes.empty()) {
 		for (auto index : m_vertex_indexes)
 			m_buffer->Indices.push_back(index);
 	}
@@ -1497,7 +1495,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos)
 {
 	// nothing to do if the entire block is opaque
-	if (m_transparent_triangles.size() == 0)
+	if (m_transparent_triangles.empty())
 		return;
 
 	v3f block_posf = intToFloat(block_pos * MAP_BLOCKSIZE, BS);
@@ -1550,7 +1548,7 @@ void MapBlockMesh::consolidateTransparentBuffers()
 		current_strain.push_back(t.p3);
 	}
 
-	if (current_strain.size() > 0) {
+	if (!current_strain.empty()) {
 		this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
 	}
 }

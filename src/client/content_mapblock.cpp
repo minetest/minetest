@@ -1405,6 +1405,9 @@ void MapblockMeshGenerator::drawNodeboxNode()
 			}
 
 			// split the boxes at recorded sections
+			// limit splits to avoid runaway crash if inner loop adds infinite splits
+			// due to e.g. precision problems.
+			// 100 is just an arbitrary, reasonably high number.
 			for (size_t i = 0; i < boxes.size() && i < 100; i++) {
 				aabb3f *box = &boxes[i];
 				for (float section : sections) {
