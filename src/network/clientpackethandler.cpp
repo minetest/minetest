@@ -1020,6 +1020,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node.param2 = readU8(is);
 		p.node_tile   = readU8(is);
 
+		// v >= 5.6.0
 		f32 tmp_sbias = readF32(is);
 		if (is.eof())
 			break;
