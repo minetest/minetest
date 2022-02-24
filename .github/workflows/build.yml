@@ -202,7 +202,7 @@ jobs:
     env:
       VCPKG_VERSION: 5cf60186a241e84e8232641ee973395d4fde90e1
       # 2022.02
-      VCPKG_DEFAULT_TRIPLET: ${{ matrix.config.vcpkg_triplet }}
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false
       matrix:
@@ -234,11 +234,13 @@ jobs:
           ref: "1.9.0mt4"
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v10.1
+        uses: lukka/run-vcpkg@v7
         with:
+          vcpkgArguments: ${{env.vcpkg_packages}}
+          vcpkgDirectory: '${{ github.workspace }}\vcpkg'
           appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
-          vcpkgJsonGlob: '**/util/ci/vcpkg.json'
+          vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
 
       - name: Minetest CMake
         run: |
