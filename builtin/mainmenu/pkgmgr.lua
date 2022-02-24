@@ -414,17 +414,17 @@ local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mo
 		if toset == nil then
 			toset = not mod.enabled
 		end
-		if toset then
-			disable_all_by_name(list, mod.name, mod)
-		end
 		if mod.enabled ~= toset then
-			mod.enabled = toset
 			toggled_mods[#toggled_mods+1] = mod.name
 		end
 		if toset then
 			-- Mark this mod for recursive dependency traversal
 			enabled_mods[mod.name] = true
+
+			-- Disable other mods with the same name
+			disable_all_by_name(list, mod.name, mod)
 		end
+		mod.enabled = toset
 	else
 		-- Toggle or en/disable every mod in the modpack,
 		-- interleaved unsupported
@@ -481,6 +481,7 @@ function pkgmgr.enable_mod(this, toset)
 			end
 		end
 	end
+
 	-- If sp is 0, every dependency is already activated
 	while sp > 0 do
 		local name = to_enable[sp]
@@ -493,7 +494,7 @@ function pkgmgr.enable_mod(this, toset)
 				core.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
-				if mod_to_enable.enabled == false then
+				if not mod_to_enable.enabled then
 					mod_to_enable.enabled = true
 					toggled_mods[#toggled_mods+1] = mod_to_enable.name
 				end
@@ -668,6 +669,7 @@ function pkgmgr.preparemodlist(data)
 	for i=1,#global_mods,1 do
 		global_mods[i].type = "mod"
 		global_mods[i].loc = "global"
+		global_mods[i].enabled = false
 		retval[#retval + 1] = global_mods[i]
 	end
 
