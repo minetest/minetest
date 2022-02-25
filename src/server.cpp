@@ -1104,20 +1104,21 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerBreath(playersao);
 
 	/*
-		Print out action
+		Update player list and print action
 	*/
 	{
-		Address addr = getPeerAddress(player->getPeerId());
-		std::string ip_str = addr.serializeString();
-		const std::vector<std::string> &names = m_clients.getPlayerNames();
+		NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
+		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(player->getName());
+		m_clients.sendToAll(&notice_pkt);
+	}
+	{
+		std::string ip_str = getPeerAddress(player->getPeerId()).serializeString();
+		const auto &names = m_clients.getPlayerNames();
 
 		actionstream << player->getName() << " [" << ip_str << "] joins game. List of players: ";
-
-		for (const std::string &name : names) {
+		for (const std::string &name : names)
 			actionstream << name << " ";
-		}
-
-		actionstream << player->getName() <<std::endl;
+		actionstream << player->getName() << std::endl;
 	}
 	return playersao;
 }

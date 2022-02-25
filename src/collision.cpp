@@ -303,7 +303,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (!f.walkable)
 				continue;
 
-			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
+			// Negative bouncy may have a meaning, but we need +value here.
+			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
 
 			int neighbors = 0;
 			if (f.drawtype == NDT_NODEBOX &&
