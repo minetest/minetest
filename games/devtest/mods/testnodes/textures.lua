@@ -171,3 +171,120 @@ minetest.register_node("testnodes:generated_png_dst_emb", {
 
 	groups = { dig_immediate = 2 },
 })
+
+--[[
+
+The following nodes can be used to demonstrate the TGA format support.
+
+Minetest supports TGA types 1, 2, 3 & 10. While adding the support for
+TGA type 9 (RLE-compressed, color-mapped) is easy, it is not advisable
+to do so, as it is not backwards compatible with any Minetest pre-5.5;
+content creators should therefore either use TGA type 1 or 10, or PNG.
+
+TODO: Types 1, 2 & 10 should have two test nodes each (i.e. bottom-top
+and top-bottom) for 16bpp (A1R5G5B5), 24bpp (B8G8R8), 32bpp (B8G8R8A8)
+colors.
+
+Note: Minetest requires the optional TGA footer for a texture to load.
+If a TGA image does not load in Minetest, append eight (8) null bytes,
+then the string “TRUEVISION-XFILE.”, then another null byte.
+
+]]--
+
+minetest.register_node("testnodes:tga_type1_24bpp_bt", {
+	description = S("TGA Type 1 (color-mapped RGB) 24bpp bottom-top Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type1_24bpp_bt.tga" },
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type1_24bpp_tb", {
+	description = S("TGA Type 1 (color-mapped RGB) 24bpp top-bottom Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type1_24bpp_tb.tga" },
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type2_16bpp_bt", {
+	description = S("TGA Type 2 (uncompressed RGB) 16bpp bottom-top Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type2_16bpp_bt.tga" },
+	use_texture_alpha = "clip",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type2_16bpp_tb", {
+	description = S("TGA Type 2 (uncompressed RGB) 16bpp top-bottom Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type2_16bpp_tb.tga" },
+	use_texture_alpha = "clip",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type2_32bpp_bt", {
+	description = S("TGA Type 2 (uncompressed RGB) 32bpp bottom-top Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type2_32bpp_bt.tga" },
+	use_texture_alpha = "blend",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type2_32bpp_tb", {
+	description = S("TGA Type 2 (uncompressed RGB) 32bpp top-bottom Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type2_32bpp_tb.tga" },
+	use_texture_alpha = "blend",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type3_16bpp_bt", {
+	description = S("TGA Type 3 (uncompressed grayscale) 16bpp bottom-top Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type3_16bpp_bt.tga" },
+	use_texture_alpha = "blend",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type3_16bpp_tb", {
+	description = S("TGA Type 3 (uncompressed grayscale) 16bpp top-bottom Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type3_16bpp_tb.tga" },
+	use_texture_alpha = "blend",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type10_32bpp_bt", {
+	description = S("TGA Type 10 (RLE-compressed RGB) 32bpp bottom-top Test Node"),
+	tiles = { "testnodes_tga_type10_32bpp_bt.tga" },
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	use_texture_alpha = "blend",
+	groups = { dig_immediate = 2 },
+})
+
+minetest.register_node("testnodes:tga_type10_32bpp_tb", {
+	description = S("TGA Type 10 (RLE-compressed RGB) 32bpp top-bottom Test Node"),
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = { "testnodes_tga_type10_32bpp_tb.tga" },
+	use_texture_alpha = "blend",
+	groups = { dig_immediate = 2 },
+})

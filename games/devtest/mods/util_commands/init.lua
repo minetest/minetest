@@ -246,3 +246,50 @@ function minetest.handle_node_drops(pos, drops, digger)
 		end
 	end
 end
+
+minetest.register_chatcommand("set_displayed_itemcount", {
+	params = "(-s \"<string>\" [-c <color>]) | -a <alignment_num>",
+	description = "Set the displayed itemcount of the wielded item",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		local item = player:get_wielded_item()
+		local meta = item:get_meta()
+		local flag1 = param:sub(1, 2)
+		if flag1 == "-s" then
+			if param:sub(3, 4) ~= " \"" then
+				return false, "Error: Space and string with \"s expected after -s."
+			end
+			local se = param:find("\"", 5, true)
+			if not se then
+				return false, "Error: String with two \"s expected after -s."
+			end
+			local s = param:sub(5, se - 1)
+			if param:sub(se + 1, se + 4) == " -c " then
+				s = minetest.colorize(param:sub(se + 5), s)
+			end
+			meta:set_string("count_meta", s)
+		elseif flag1 == "-a" then
+			local num = tonumber(param:sub(4))
+			if not num then
+				return false, "Error: Invalid number: "..param:sub(4)
+			end
+			meta:set_int("count_alignment", num)
+		else
+			return false
+		end
+		player:set_wielded_item(item)
+		return true, "Displayed itemcount set."
+	end,
+})
+
+minetest.register_chatcommand("dump_item", {
+	params = "",
+	description = "Prints a dump of the wielded item in table form",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		local item = player:get_wielded_item()
+		local str = dump(item:to_table())
+		print(str)
+		return true, str
+	end,
+})
