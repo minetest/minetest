@@ -149,8 +149,8 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	v3s16 minp = check_v3pos(L, 2);
-	v3s16 maxp = check_v3pos(L, 3);
+	auto minp = check_v3pos(L, 2);
+	auto maxp = check_v3pos(L, 3);
 	sortBoxVerticies(minp, maxp);
 
 	bool include_corners = true;
