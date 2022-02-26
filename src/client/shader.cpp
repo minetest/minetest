@@ -40,20 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "config.h"
 
-#if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-#include <GLES/gl.h>
-#else
-#include <GLES2/gl2.h>
-#endif
-#else
-#ifndef __APPLE__
-#include <GL/gl.h>
-#else
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl.h>
-#endif
-#endif
+#include <mt_opengl.h>
 
 /*
 	A cache from shader name to shader path
@@ -667,13 +654,19 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		)";
 	}
 
+	// Since this is the first time we're using the GL bindings be extra careful.
+	// This should be removed before 5.6.0 or similar.
+	if (!GL.GetString) {
+		errorstream << "OpenGL procedures were not loaded correctly, "
+			"please open a bug report with details about your platform/OS." << std::endl;
+		abort();
+	}
+
 	bool use_discard = use_gles;
-#ifdef __unix__
 	// For renderers that should use discard instead of GL_ALPHA_TEST
-	const char* gl_renderer = (const char*)glGetString(GL_RENDERER);
-	if (strstr(gl_renderer, "GC7000"))
+	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
+	if (strstr(renderer, "GC7000"))
 		use_discard = true;
-#endif
 	if (use_discard) {
 		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
 			shaders_header << "#define USE_DISCARD 1\n";
