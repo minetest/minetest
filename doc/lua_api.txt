@@ -4557,16 +4557,38 @@ Spawn a small apple tree:
 Privileges
 ==========
 
-Privileges provide a means for games and mods to allow server administrators 
-to control access to special abilities. For example, game moderators
-may need to teleport to any place in the world, and this ability is managed
-using `teleport` privilege.
+Privileges provide a means for server administrators to give certain players
+access to special abilities in the engine, games or mods.
+For example, game moderators may need to travel instantly to any place in the world, 
+this ability is implemented in `/teleport` command which requires `teleport` privilege.
+
+Registering privileges
+----------------------
+
+A mod can register a custom privilege using `minetest.register_privilege` function 
+to give server administrators fine-grained access control over mod functionality.
+
+Checking privileges
+-------------------
+
+A mod can call `minetest.check_player_privs` to test whether a player has privileges 
+to perform an operation.
+Also, when registering a chat command with `minetest.register_chatcommand` a mod can
+declare privileges that the command requires using the `privs` field of the command
+definition.
+
+Managing player privileges
+--------------------------
+
+A mod can update player privileges using `minetest.set_player_privs` function.
+Players holding the `privs` privilege can see and manage privileges for all
+players on the server.
 
 Built-in privileges
 -------------------
 
 Minetest includes a set of built-in privileges that control capabilities
-provided by the Minetest engine:
+provided by the Minetest engine and can be used by mods:
 
   * Basic privileges are normally granted to all players:
       * `shout`: can communicate using the in-game chat.
@@ -4602,19 +4624,6 @@ provided by the Minetest engine:
       * `server`: can use `/fixlight`, `/deleteblocks` and `/deleteobjects`
         commands. Can clear inventory of other players using `/clearinv` command.
       * `rollback`: can use `/rollback_check` and `/rollback` commands.
-
-Custom privileges
------------------
-
-A mod can register custom privileges using `minetest.register_privilege` function 
-to give server administrators fine-grained access control over mod functionality.
-
-Checking privileges
--------------------
-
-A mod can call `minetest.check_player_privs` to test whether a player has privileges 
-to perform an operation. Chat commands can also assert privileges defined in the `privs`
-field of the command definition, see also `minetest.register_chatcommand`.
 
 Related settings
 ----------------
