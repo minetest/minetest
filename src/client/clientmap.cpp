@@ -783,7 +783,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 	}
 
-	uint buffer_count = 0;
+	u32 buffer_count = 0;
 	for (auto &lists : grouped_buffers.lists)
 		for (MeshBufList &list : lists)
 			buffer_count += list.bufs.size();
