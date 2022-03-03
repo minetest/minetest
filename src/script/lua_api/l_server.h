@@ -109,6 +109,8 @@ private:
 	// do_async_callback(func, serialized_params)
 	static int l_do_async_callback(lua_State *L);
 
+	static int l_test_serialization(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

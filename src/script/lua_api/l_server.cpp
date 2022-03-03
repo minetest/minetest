@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "common/c_serialize.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
 #include "scripting_server.h"
@@ -561,6 +562,26 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 	return 1;
 }
 
+int ModApiServer::l_test_serialization(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	int top = lua_gettop(L);
+	auto *pv = script_pack(L, 1);
+	if (top != lua_gettop(L))
+		warningstream << "leaked stuff on stack..." << std::endl;
+
+	script_dump_packed(pv);
+
+	top = lua_gettop(L);
+	script_unpack(L, pv);
+	if (top + 1 != lua_gettop(L))
+		warningstream << "left wrong stuff on stack" << std::endl;
+	delete pv;
+
+	return 1;
+}
+
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
@@ -596,4 +617,5 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(notify_authentication_modified);
 
 	API_FCT(do_async_callback);
+	API_FCT(test_serialization);
 }
