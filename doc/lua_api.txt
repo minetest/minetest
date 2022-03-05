@@ -4634,6 +4634,8 @@ Utilities
           abm_min_max_y = true,
           -- dynamic_add_media supports passing a table with options (5.5.0)
           dynamic_add_media_table = true,
+          -- allows get_sky to return a table instead of separate values (5.6.0)
+          get_sky_as_table = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6869,9 +6871,15 @@ object you are working with still exists.
         * `"plain"`: Uses 0 textures, `bgcolor` used
     * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
       `"plain"` custom skyboxes (default: `true`)
-* `get_sky()`: returns base_color, type, table of textures, clouds.
-* `get_sky_color()`: returns a table with the `sky_color` parameters as in
-    `set_sky`.
+* `get_sky(as_table)`:
+    * `as_table`: boolean that determines whether the deprecated version of this
+    function is being used.
+        * `true` returns a table containing sky parameters as defined in `set_sky(sky_parameters)`.
+        * Deprecated: `false` or `nil` returns base_color, type, table of textures,
+        clouds.
+* `get_sky_color()`:
+    * Deprecated: Use `get_sky(as_table)` instead.
+    * returns a table with the `sky_color` parameters as in `set_sky`.
 * `set_sun(sun_parameters)`:
     * Passing no arguments resets the sun to its default values.
     * `sun_parameters` is a table with the following optional fields:
