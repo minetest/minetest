@@ -1877,6 +1877,33 @@ int ObjectRef::l_set_sky(lua_State *L)
 	return 1;
 }
 
+static void push_sky_color(lua_State *L, const SkyboxParams &params)
+{
+	lua_newtable(L);
+	if (params.type == "regular") {
+		push_ARGB8(L, params.sky_color.day_sky);
+		lua_setfield(L, -2, "day_sky");
+		push_ARGB8(L, params.sky_color.day_horizon);
+		lua_setfield(L, -2, "day_horizon");
+		push_ARGB8(L, params.sky_color.dawn_sky);
+		lua_setfield(L, -2, "dawn_sky");
+		push_ARGB8(L, params.sky_color.dawn_horizon);
+		lua_setfield(L, -2, "dawn_horizon");
+		push_ARGB8(L, params.sky_color.night_sky);
+		lua_setfield(L, -2, "night_sky");
+		push_ARGB8(L, params.sky_color.night_horizon);
+		lua_setfield(L, -2, "night_horizon");
+		push_ARGB8(L, params.sky_color.indoors);
+		lua_setfield(L, -2, "indoors");
+	}
+	push_ARGB8(L, params.fog_sun_tint);
+	lua_setfield(L, -2, "fog_sun_tint");
+	push_ARGB8(L, params.fog_moon_tint);
+	lua_setfield(L, -2, "fog_moon_tint");
+	lua_pushstring(L, params.fog_tint_type.c_str());
+	lua_setfield(L, -2, "fog_tint_type");
+}
+
 // get_sky(self, as_table)
 int ObjectRef::l_get_sky(lua_State *L)
 {
@@ -1921,29 +1948,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 	lua_pushboolean(L, skybox_params.clouds);
 	lua_setfield(L, -2, "clouds");
 
-	lua_newtable(L);
-	if (skybox_params.type == "regular") {
-		push_ARGB8(L, skybox_params.sky_color.day_sky);
-		lua_setfield(L, -2, "day_sky");
-		push_ARGB8(L, skybox_params.sky_color.day_horizon);
-		lua_setfield(L, -2, "day_horizon");
-		push_ARGB8(L, skybox_params.sky_color.dawn_sky);
-		lua_setfield(L, -2, "dawn_sky");
-		push_ARGB8(L, skybox_params.sky_color.dawn_horizon);
-		lua_setfield(L, -2, "dawn_horizon");
-		push_ARGB8(L, skybox_params.sky_color.night_sky);
-		lua_setfield(L, -2, "night_sky");
-		push_ARGB8(L, skybox_params.sky_color.night_horizon);
-		lua_setfield(L, -2, "night_horizon");
-		push_ARGB8(L, skybox_params.sky_color.indoors);
-		lua_setfield(L, -2, "indoors");
-	}
-	push_ARGB8(L, skybox_params.fog_sun_tint);
-	lua_setfield(L, -2, "fog_sun_tint");
-	push_ARGB8(L, skybox_params.fog_moon_tint);
-	lua_setfield(L, -2, "fog_moon_tint");
-	lua_pushstring(L, skybox_params.fog_tint_type.c_str());
-	lua_setfield(L, -2, "fog_tint_type");
+	push_sky_color(L, skybox_params);
 	lua_setfield(L, -2, "sky_color");
 	return 1;
 }
@@ -1962,30 +1967,7 @@ int ObjectRef::l_get_sky_color(lua_State *L)
 		return 0;
 
 	const SkyboxParams &skybox_params = player->getSkyParams();
-
-	lua_newtable(L);
-	if (skybox_params.type == "regular") {
-		push_ARGB8(L, skybox_params.sky_color.day_sky);
-		lua_setfield(L, -2, "day_sky");
-		push_ARGB8(L, skybox_params.sky_color.day_horizon);
-		lua_setfield(L, -2, "day_horizon");
-		push_ARGB8(L, skybox_params.sky_color.dawn_sky);
-		lua_setfield(L, -2, "dawn_sky");
-		push_ARGB8(L, skybox_params.sky_color.dawn_horizon);
-		lua_setfield(L, -2, "dawn_horizon");
-		push_ARGB8(L, skybox_params.sky_color.night_sky);
-		lua_setfield(L, -2, "night_sky");
-		push_ARGB8(L, skybox_params.sky_color.night_horizon);
-		lua_setfield(L, -2, "night_horizon");
-		push_ARGB8(L, skybox_params.sky_color.indoors);
-		lua_setfield(L, -2, "indoors");
-	}
-	push_ARGB8(L, skybox_params.fog_sun_tint);
-	lua_setfield(L, -2, "fog_sun_tint");
-	push_ARGB8(L, skybox_params.fog_moon_tint);
-	lua_setfield(L, -2, "fog_moon_tint");
-	lua_pushstring(L, skybox_params.fog_tint_type.c_str());
-	lua_setfield(L, -2, "fog_tint_type");
+	push_sky_color(L, skybox_params);
 	return 1;
 }
 
