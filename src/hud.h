@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_FLAG_BREATHBAR_VISIBLE     (1 << 4)
 #define HUD_FLAG_MINIMAP_VISIBLE       (1 << 5)
 #define HUD_FLAG_MINIMAP_RADAR_VISIBLE (1 << 6)
+#define HUD_FLAG_BASIC_DEBUG           (1 << 7)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2

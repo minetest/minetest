@@ -1617,20 +1617,11 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 		return 0;
 
 	lua_newtable(L);
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE);
-	lua_setfield(L, -2, "hotbar");
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_HEALTHBAR_VISIBLE);
-	lua_setfield(L, -2, "healthbar");
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE);
-	lua_setfield(L, -2, "crosshair");
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE);
-	lua_setfield(L, -2, "wielditem");
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_BREATHBAR_VISIBLE);
-	lua_setfield(L, -2, "breathbar");
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
-	lua_setfield(L, -2, "minimap");
-	lua_pushboolean(L, player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
-	lua_setfield(L, -2, "minimap_radar");
+	const EnumString *esp = es_HudBuiltinElement;
+	for (int i = 0; esp[i].str; i++) {
+		lua_pushboolean(L, (player->hud_flags & esp[i].num) != 0);
+		lua_setfield(L, -2, esp[i].str);
+	}
 	return 1;
 }
 
