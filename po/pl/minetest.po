@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-02-02 19:54+0000\n"
-"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"PO-Revision-Date: 2022-03-07 08:56+0000\n"
+"Last-Translator: Jakub Z <mrkubax10@onet.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -310,7 +310,7 @@ msgstr "Instalacja moda: nieznany typ pliku \"$1\" lub uszkodzone archiwum"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Mody"
+msgstr "Modyfikacje"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -350,7 +350,7 @@ msgstr "Odinstaluj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr "Aktualizacja"
+msgstr "Aktualizuj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
@@ -670,7 +670,7 @@ msgstr "Skaluj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "Szukaj"
+msgstr "Wyszukaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -906,7 +906,6 @@ msgid "Install games from ContentDB"
 msgstr "Instaluj gry z ContentDB"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Name"
 msgstr "Nazwa"
 
@@ -919,7 +918,6 @@ msgid "No world created or selected!"
 msgstr "Nie wybrano bądź nie utworzono świata!"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Password"
 msgstr "Hasło"
 
