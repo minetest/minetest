@@ -18,18 +18,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
+#include <type_traits>
 using namespace ParticleParamTypes;
 
-v2f ParticleParamTypes::pickParameterValue(float* f, const v2f a, const v2f b)
-{
+#define PARAM_PVFN(n) ParticleParamTypes::n##ParameterValue
+v2f PARAM_PVFN(pick) (float* f, const v2f a, const v2f b) {
 	return v2f(
 		numericalBlend(f[0], a.X, b.X),
 		numericalBlend(f[1], a.Y, b.Y)
 	);
 }
 
-v3f ParticleParamTypes::pickParameterValue(float* f, const v3f a, const v3f b)
-{
+v3f PARAM_PVFN(pick) (float* f, const v3f a, const v3f b) {
 	return v3f(
 		numericalBlend(f[0], a.X, b.X),
 		numericalBlend(f[1], a.Y, b.Y),
@@ -37,27 +37,15 @@ v3f ParticleParamTypes::pickParameterValue(float* f, const v3f a, const v3f b)
 	);
 }
 
-v2f ParticleParamTypes::interpolateParameterValue(float fac, const v2f a, const v2f b)
-{
-	return b.getInterpolated(a, fac);
-}
+v2f PARAM_PVFN(interpolate) (float fac, const v2f a, const v2f b)
+	{ return b.getInterpolated(a, fac); }
+v3f PARAM_PVFN(interpolate) (float fac, const v3f a, const v3f b)
+	{ return b.getInterpolated(a, fac); }
 
-v3f ParticleParamTypes::interpolateParameterValue(float fac, const v3f a, const v3f b)
-{
-	return b.getInterpolated(a, fac);
-}
-
-#define PARAM_PVFN(n) ParticleParamTypes::n##ParameterValue
 #define PARAM_DEF_SRZR(T, wr, rd) \
 	void PARAM_PVFN(serialize)  (std::ostream& os, T  v) {wr(os,v);  } \
 	void PARAM_PVFN(deSerialize)(std::istream& is, T& v) {v = rd(is);}
 
-#define PARAM_DEF_ENUM(enumerator,underlying_type) \
-	void PARAM_PVFN(serialize) (std::ostream& os, enumerator k) \
-		{ PARAM_PVFN(serialize)(os, (underlying_type)k); }      \
-	void PARAM_PVFN(deSerialize) (std::istream& is, enumerator& k) \
-		{ underlying_type v; PARAM_PVFN(deSerialize)(is,v); k = (enumerator)v; }
-	// strong typing: not always such a good thing
 
 #define PARAM_DEF_NUM(T, wr, rd) PARAM_DEF_SRZR(T, wr, rd) \
 	T PARAM_PVFN(interpolate)(float fac, const T a, const T b) \
@@ -65,29 +53,69 @@ v3f ParticleParamTypes::interpolateParameterValue(float fac, const v3f a, const 
 	T PARAM_PVFN(pick)       (float* f, const T a, const T b) \
 			{ return numericalBlend<T>(f[0],a,b); }
 
-PARAM_DEF_NUM(u8,  writeU8,    readU8);
-PARAM_DEF_NUM(u16, writeU16,   readU16);
-PARAM_DEF_NUM(u32, writeU32,   readU32);
+PARAM_DEF_NUM(u8,  writeU8,    readU8);  PARAM_DEF_NUM(s8,  writeS8,    readS8);
+PARAM_DEF_NUM(u16, writeU16,   readU16); PARAM_DEF_NUM(s16, writeS16,   readS16);
+PARAM_DEF_NUM(u32, writeU32,   readU32); PARAM_DEF_NUM(s32, writeS32,   readS32);
 PARAM_DEF_NUM(f32, writeF32,   readF32);
-PARAM_DEF_ENUM(ParticleParamTypes::AttractorKind, u8);
 PARAM_DEF_SRZR(v2f, writeV2F32, readV2F32);
 PARAM_DEF_SRZR(v3f, writeV3F32, readV3F32);
+
+/* C++ is a strongly typed language. this means that enums cannot be implicitly
+ * cast to integers, as they can be in C. while this may sound good in principle,
+ * it means that our normal serialization functions cannot be called on
+ * enumerations unless they are explicitly cast to a particular type first. this
+ * is problematic, because in C++ enums can have any integral type as an underlying
+ * type, and that type would need to be named everywhere an enumeration is
+ * de/serialized.
+ *
+ * this is obviously not cool, both in terms of writing legible, succinct code,
+ * and in terms of robustness: the underlying type might be changed at some point,
+ * e.g. if a bitmask gets too big for its britches. we could use an equivalent of
+ * `std::to_underlying(value)` everywhere we need to deal with enumerations, but
+ * that's hideous and unintuitive. instead, we supply the following functions to
+ * transparently map enumeration types to their underlying values.
+ *
+ * this is your brain on C++. */
+
+template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
+PARAM_PVFN(serialize) (std::ostream& os, E k) {
+	PARAM_PVFN(serialize) (os, (std::underlying_type_t<E>)k);
+}
+
+template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
+PARAM_PVFN(deSerialize) (std::istream& os, E& k) {
+	std::underlying_type_t<E> v;
+	PARAM_PVFN(deSerialize) (is, v);
+	k = (E)v;
+}
 
 enum class ParticleTextureFlags : u8 {
 	/* each value specifies a bit in a bitmask; if the maximum value
 	 * goes above 1<<7 the type of the flags field must be changed
 	 * from u8, which will necessitate a protocol change! */
-	animated = 1
+
+	// the first bit indicates whether the texture is animated
+	animated = 1;
+
+	// blendmode is encoded by (flags |= (u8)blend << 1); retrieve with
+	// (flags & ParticleTextureFlags::blend) >> 1
+	blend = 0x7 << 1;
 };
+
+/* define some shorthand so we don't have to repeat ourselves or use
+ * decltype everywhere */
+using FlagT = std::underlying_type_t<ParticleTextureFlags>;
 
 void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly) const
 {
 	/* newPropertiesOnly is used to de/serialize parameters of the legacy texture
 	 * field, which are encoded separately from the texspec string */
-	u8 flags = 0;
+	FlagT flags = 0;
 	if (animated)
-		flags |= static_cast<u8>(ParticleTextureFlags::animated);
-	writeU8(os, flags);
+		flags |= FlagT(ParticleTextureFlags::animated);
+	if (blendmode != BlendMode::alpha)
+		flags |= FlagT(blendmode) << 1;
+	serializeParamValue(os, flags);
 
 	alpha.serialize(os);
 	scale.serialize(os);
@@ -100,8 +128,11 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 
 void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly)
 {
-	u8 flags = readU8(is);
-	animated = !!(flags & static_cast<u8>(ParticleTextureFlags::animated));
+	FlagT flags = 0;
+	deserializeParamValue(is, flags);
+
+	animated = !!(flags & FlagT(ParticleTextureFlags::animated));
+	blendmode = BlendMode((flags & FlagT(ServerParticleTexture::blend)) >> 1);
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);
@@ -130,6 +161,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeU8(os, node.param2);
 	writeU8(os, node_tile);
 	writeV3F32(os, drag);
+	jitter.serialize(os);
 	bounce.serialize(os);
 }
 
@@ -166,5 +198,6 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 
 	if (streamEndsBeforeParam<v3f, readV3F32>(drag, is))
 		return;
+	jitter.deSerialize(is);
 	bounce.deSerialize(is);
 }

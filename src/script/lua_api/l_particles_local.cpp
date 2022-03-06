@@ -55,6 +55,14 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 		p.drag = check_v3f(L, -1);
 	lua_pop(L, 1);
 
+	lua_getfield(L, 1, "jitter");
+	LuaParticleParams::readLuaValue(L, p.jitter);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "bounce");
+	LuaParticleParams::readLuaValue(L, p.bounce);
+	lua_pop(L, 1);
+
 	p.expirationtime = getfloatfield_default(L, 1, "expirationtime",
 		p.expirationtime);
 	p.size = getfloatfield_default(L, 1, "size", p.size);
@@ -113,12 +121,20 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	LuaParticleParams::readTweenTable(L, "size", p.size);
 	LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
 	LuaParticleParams::readTweenTable(L, "drag", p.drag);
+	LuaParticleParams::readTweenTable(L, "jitter", p.jitter);
+	LuaParticleParams::readTweenTable(L, "bounce", p.bounce);
 	lua_getfield(L, 1, "attract");
 	if (!lua_isnil(L, -1)) {
 		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "kind");
 		LuaParticleParams::readLuaValue(L, p.attractor_kind);
 		lua_pop(L,1);
+
+		lua_getfield(L, -1, "die_on_contact");
+		if (!lua_isnil(L, -1))
+			p.attractor_kill = readParam<bool>(L, -1);
+		lua_pop(L,1);
+
 		if (p.attractor_kind != AttractorKind::none) {
 			LuaParticleParams::readTweenTable(L, "strength", p.attract);
 			LuaParticleParams::readTweenTable(L, "origin", p.attractor);
@@ -132,7 +148,6 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 		p.attractor_kind = AttractorKind::none;
 	}
 	lua_pop(L,1);
-	LuaParticleParams::readTweenTable(L, "attractor", p.attractor);
 	LuaParticleParams::readTweenTable(L, "radius", p.radius);
 
 	p.collisiondetection = getboolfield_default(L, 1,
@@ -146,8 +161,20 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	p.animation = read_animation_definition(L, -1);
 	lua_pop(L, 1);
 
+	lua_getfield(L, 1, "attached");
+	if (!lua_isnil(L, -1)) {
+		ObjectRef *ref = ObjectRef::checkobject(L, -1);
+		lua_pop(L, 1);
+		attached = ObjectRef::getobject(ref);
+	}
+
+	lua_getfield(L, 1, "texture");
+	if (!lua_isnil(L, -1)) {
+		LuaParticleParams::readTexValue(L, p.texture);
+	}
+	lua_pop(L, 1);
+
 	p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
-	p.texture.string = getstringfield_default(L, 1, "texture", p.texture.string);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
 
 	lua_getfield(L, 1, "texpool");

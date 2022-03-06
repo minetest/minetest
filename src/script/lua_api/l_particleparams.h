@@ -110,6 +110,25 @@ namespace LuaParticleParams
 		ret = (AttractorKind)v;
 	}
 
+	inline void readLuaValue(lua_State* L, BlendMode& ret)
+	{
+		static const EnumString opts[] = {
+			{(int)BlendMode::alpha,  "alpha"},
+			{(int)BlendMode::add,    "add"},
+			{(int)BlendMode::sub,    "sub"},
+			{(int)BlendMode::screen, "screen"},
+			{(int)BlendMode::ghost,  "ghost"},
+			{0, nullptr},
+		};
+
+		luaL_checktype(L, -1, LUA_TSTRING);
+		int v = (int)BlendMode::alpha;
+		if (!string_to_enum(opts, v, lua_tostring(L, -1))) {
+			throw LuaError("blend mode must be one of ('alpha', 'add', 'sub', 'screen', 'ghost')");
+		}
+		ret = (BlendMode)v;
+	}
+
 	template <typename T> void
 	readLuaValue(lua_State* L, RangedParameter<T>& field)
 	{

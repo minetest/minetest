@@ -50,6 +50,10 @@ void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex)
 
 	LuaParticleParams::readTweenTable(L, "alpha", tex.alpha);
 	LuaParticleParams::readTweenTable(L, "scale", tex.scale);
+
+	lua_getfield(L, -1, "blend");
+	LuaParticleParams::readLuaValue(L, tex.blendmode);
+	lua_pop(L, 1);
 }
 
 // add_particle({...})
@@ -145,6 +149,10 @@ int ModApiParticles::l_add_particle(lua_State *L)
 			p.drag = check_v3f(L, -1);
 		lua_pop(L, 1);
 
+		lua_getfield(L, 1, "jitter");
+		LuaParticleParams::readLuaValue(L, p.jitter);
+		lua_pop(L, 1);
+
 		lua_getfield(L, 1, "bounce");
 		LuaParticleParams::readLuaValue(L, p.bounce);
 		lua_pop(L, 1);
@@ -208,6 +216,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		LuaParticleParams::readTweenTable(L, "size", p.size);
 		LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
 		LuaParticleParams::readTweenTable(L, "drag", p.drag);
+		LuaParticleParams::readTweenTable(L, "jitter", p.jitter);
 		LuaParticleParams::readTweenTable(L, "bounce", p.bounce);
 		lua_getfield(L, 1, "attract");
 		if (!lua_isnil(L, -1)) {

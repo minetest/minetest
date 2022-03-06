@@ -576,6 +576,7 @@ enum ToClientCommand
 		--      v3f drag_end_min
 		--      v3f drag_end_max
 		--      f32 drag_end_bias
+		tween<range<v3f>> jitter
 		tween<range<f32>> bounce
 
 		u8 attraction_kind

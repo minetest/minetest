@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <vector>
 #include <ctgmath>
+#include <type_traits>
 #include "irrlichttypes_bloated.h"
 #include "tileanimation.h"
 #include "mapnode.h"
@@ -42,12 +43,41 @@ namespace ParticleParamTypes
 		type interpolateParameterValue(float  fac,  const type a, const type b); \
 		type pickParameterValue       (float* facs, const type a, const type b);
 
-	DECL_PARAM_OVERLOADS(u8);
-	DECL_PARAM_OVERLOADS(u16);
-	DECL_PARAM_OVERLOADS(u32);
+	DECL_PARAM_OVERLOADS(u8);  DECL_PARAM_OVERLOADS(s8);
+	DECL_PARAM_OVERLOADS(u16); DECL_PARAM_OVERLOADS(s16);
+	DECL_PARAM_OVERLOADS(u32); DECL_PARAM_OVERLOADS(s32);
 	DECL_PARAM_OVERLOADS(f32);
 	DECL_PARAM_OVERLOADS(v2f);
 	DECL_PARAM_OVERLOADS(v3f);
+
+	/* C++ is a strongly typed language. this means that enums cannot be implicitly
+	 * cast to integers, as they can be in C. while this may sound good in principle,
+	 * it means that our normal serialization functions cannot be called on
+	 * enumerations unless they are explicitly cast to a particular type first. this
+	 * is problematic, because in C++ enums can have any integral type as an underlying
+	 * type, and that type would need to be named everywhere an enumeration is
+	 * de/serialized.
+	 *
+	 * this is obviously not cool, both in terms of writing legible, succinct code,
+	 * and in terms of robustness: the underlying type might be changed at some point,
+	 * e.g. if a bitmask gets too big for its britches. we could use an equivalent of
+	 * `std::to_underlying(value)` everywhere we need to deal with enumerations, but
+	 * that's hideous and unintuitive. instead, we supply the following functions to
+	 * transparently map enumeration types to their underlying values. */
+
+	template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
+	void serializeParameterValue(std::ostream& os, E k) {
+		serializeParameterValue(os, (std::underlying_type_t<E>)k);
+	}
+
+	template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
+	void deSerializeParameterValue(std::istream& is, E& k) {
+		std::underlying_type_t<E> v;
+		deSerializeParameterValue(is, v);
+		k = (E)v;
+	}
+
+	/* this is your brain on C++. */
 
 	template <typename T, size_t PN>
 	struct Parameter
@@ -94,13 +124,13 @@ namespace ParticleParamTypes
 	};
 
 	template <typename T, size_t PN>
-	std::string dump(const Parameter<T,PN>& p)
+	inline std::string dump(const Parameter<T,PN>& p)
 	{
 		return std::to_string(p.val);
 	}
 
 	template <typename T, size_t N>
-	std::string dump(const VectorParameter<T,N>& v)
+	inline std::string dump(const VectorParameter<T,N>& v)
 	{
 		std::ostringstream oss;
 		if (N == 3)
@@ -110,9 +140,9 @@ namespace ParticleParamTypes
 		return oss.str();
 	}
 
-	using u8Parameter  = Parameter<u8,  1>;
-	using u16Parameter = Parameter<u16, 1>;
-	using u32Parameter = Parameter<u32, 1>;
+	using u8Parameter  = Parameter<u8,  1>; using s8Parameter  = Parameter<s8,  1>;
+	using u16Parameter = Parameter<u16, 1>; using s16Parameter = Parameter<s16, 1>;
+	using u32Parameter = Parameter<u32, 1>; using s32Parameter = Parameter<s32, 1>;
 
 	using f32Parameter = Parameter<f32, 1>;
 
@@ -184,7 +214,7 @@ namespace ParticleParamTypes
 	};
 
 	template <typename T>
-	std::string dump(const RangedParameter<T>& r)
+	inline std::string dump(const RangedParameter<T>& r)
 	{
 		std::ostringstream s;
 		s << "range<" << dump(r.min) << " ~ " << dump(r.max);
@@ -194,7 +224,7 @@ namespace ParticleParamTypes
 		return s.str();
 	}
 
-	enum class TweenStyle { fwd, rev, pulse, flicker };
+	enum class TweenStyle : u8 { fwd, rev, pulse, flicker };
 
 	template <typename T>
 	struct TweenedParameter
@@ -273,7 +303,7 @@ namespace ParticleParamTypes
 	};
 
 	template <typename T>
-	std::string dump(const TweenedParameter<T>& t)
+	inline std::string dump(const TweenedParameter<T>& t)
 	{
 		std::ostringstream s;
 		const char* icon;
@@ -290,14 +320,13 @@ namespace ParticleParamTypes
 		return s.str();
 	}
 
-	enum class AttractorKind { none, point, line, plane };
-	DECL_PARAM_SRZRS(AttractorKind);
+	enum class AttractorKind : u8 { none, point, line, plane       };
+	enum class BlendMode     : u8 { alpha, add, sub, screen, ghost };
 
 	// these are consistently-named convenience aliases to make code more readable without `using ParticleParamTypes` declarations
 	using v3fRange = RangedParameter<v3fParameter>;
 	using f32Range = RangedParameter<f32Parameter>;
 
-	// these aliases bind tweened parameter types to the functions used to blend them
 	using v2fTween      = TweenedParameter<v2fParameter>;
 	using v3fTween      = TweenedParameter<v3fParameter>;
 	using f32Tween      = TweenedParameter<f32Parameter>;
@@ -311,6 +340,7 @@ namespace ParticleParamTypes
 struct ParticleTexture
 {
 	bool animated = false;
+	ParticleParamTypes::BlendMode blendmode;
 	TileAnimationParams animation;
 	ParticleParamTypes::f32Tween alpha{1.0f};
 	ParticleParamTypes::v2fTween scale{v2f(1.0f)};
@@ -357,13 +387,10 @@ struct CommonParticleParams
 
 struct ParticleParameters : CommonParticleParams
 {
-	v3f pos;
-	v3f vel;
-	v3f acc;
-	v3f drag;
-	f32 expirationtime = 1;
-	f32 size = 1;
+	v3f pos, vel, acc, drag;
+	f32 size = 1, expirationtime = 1;
 	ParticleParamTypes::f32Range bounce;
+	ParticleParamTypes::v3fRange jitter;
 
 	void serialize(std::ostream &os, u16 protocol_ver) const;
 	void deSerialize(std::istream &is, u16 protocol_ver);
@@ -377,7 +404,7 @@ struct ParticleSpawnerParameters : CommonParticleParams
 	std::vector<ServerParticleTexture> texpool;
 
 	ParticleParamTypes::v3fRangeTween
-		pos, vel, acc, drag, radius;
+		pos, vel, acc, drag, radius, jitter;
 
 	ParticleParamTypes::AttractorKind
 		attractor_kind;

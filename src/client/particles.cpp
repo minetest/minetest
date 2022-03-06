@@ -55,6 +55,41 @@ Particle::Particle(
 	m_gamedef = gamedef;
 	m_env = env;
 
+	// translate blend modes to GL blend functions
+	video::E_BLEND_FACTOR bfsrc, bfdst;
+	video::E_BLEND_OPERATION blendop;
+	switch (texture.tex -> blendmode) {
+		case ParticleParamTypes::BlendMode::alpha:
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
+			blendop = video::EBO_ADD;
+		break;
+
+		case ParticleParamTypes::BlendMode::add:
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_DST_ALPHA;
+			blendop = video::EBO_ADD;
+		break;
+
+		case ParticleParamTypes::BlendMode::sub:
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_DST_ALPHA;
+			blendop = video::EBO_REVSUBTRACT;
+		break;
+
+		case ParticleParamTypes::BlendMode::screen:
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_DST_ALPHA;
+			blendop = video::EBO_MAX;
+		break;
+
+		case ParticleParamTypes::BlendMode::ghost:
+			src = video::EBF_SRC_COLOR;
+			dst = video::EBF_ONE_MINUS_SRC_COLOR;
+			blendop = video::EBO_ADD;
+		break;
+	}
+
 	// Texture
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -62,10 +97,10 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
 	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
 	m_material.MaterialTypeParam = video::pack_textureBlendFunc(
-			video::EBF_SRC_ALPHA,
-			video::EBF_ONE_MINUS_SRC_ALPHA,
+			bfsrc, bfdst,
 			video::EMFN_MODULATE_1X,
 			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
+	m_material.BlendOperation = blendop;
 	m_material.setFlag(video::EMF_BLEND_OPERATION, true);
 	m_material.setTexture(0, m_texture.ref);
 	m_texpos = texpos;
@@ -81,6 +116,7 @@ Particle::Particle(
 	m_velocity = p.vel;
 	m_acceleration = p.acc;
 	m_drag = p.drag;
+	m_jitter = p.jitter;
 	m_bounce = p.bounce;
 	m_expiration = p.expirationtime;
 	m_player = player;
@@ -137,10 +173,10 @@ void Particle::step(float dtime)
 {
 	m_time += dtime;
 
-	// apply drag (not handled by collisionMoveSimple)
+	// apply drag (not handled by collisionMoveSimple) and brownian motion
 	v3f av = vecAbsolute(m_velocity);
 	av -= av * (m_drag * dtime);
-	m_velocity = av * vecSign(m_velocity);
+	m_velocity = av*vecSign(m_velocity) + v3f(m_jitter.pickWithin())*dtime;
 
 	if (m_collisiondetection) {
 		aabb3f box = m_collisionbox;
@@ -160,7 +196,10 @@ void Particle::step(float dtime)
 				 * largest component of the velocity vector, so e.g. you don't
 				 * have a rock immediately bounce back in your face when you try
 				 * to skip it across the water (as would happen if we simply
-				 * downscaled and negated the velocity vector) */
+				 * downscaled and negated the velocity vector). this means
+				 * bounciness will work properly for cubic objects, but meshes
+				 * with diagonal angles and entities will not yield the correct
+				 * visual. this is probably unavoidable */
 				if (av.Y > av.X && av.Y > av.Z) {
 					m_velocity.Y = -(m_velocity.Y * bounciness);
 				} else if (av.X > av.Y && av.X > av.Z) {
@@ -349,6 +388,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto r_acc = p.acc.blend(fac);
 	auto r_drag = p.drag.blend(fac);
 	auto r_radius = p.radius.blend(fac);
+	auto r_jitter = p.jitter.blend(fac);
 	auto r_bounce = p.bounce.blend(fac);
 	v3f  attractor = p.attractor.blend(fac);
 	v3f  attractor_angle = p.attractor_angle.blend(fac);
@@ -386,6 +426,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	pp.vel = r_vel.pickWithin();
 	pp.acc = r_acc.pickWithin();
 	pp.drag = r_drag.pickWithin();
+	pp.jitter = r_jitter;
 	pp.bounce = r_bounce;
 
 	if (attached_absolute_pos_rot_matrix) {

@@ -49,8 +49,8 @@ struct ClientTexRef
 {
 	/* per-particle structure used to avoid massively duplicating the
 	 * fairly large ParticleTexture struct */
-	ParticleTexture *tex = nullptr;
-	video::ITexture *ref = nullptr;
+	ParticleTexture* tex = nullptr;
+	video::ITexture* ref = nullptr;
 	ClientTexRef() = default;
 	ClientTexRef(const ClientTexRef&) = default;
 
@@ -125,6 +125,7 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 	v3f m_drag;
+	ParticleParamTypes::v3fRange m_jitter;
 	ParticleParamTypes::f32Range m_bounce;
 	LocalPlayer *m_player;
 	float m_size;

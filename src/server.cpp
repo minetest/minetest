@@ -1668,6 +1668,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 		// new properties
 		p.drag.serialize(os);
+		p.jitter.serialize(os);
 		p.bounce.serialize(os);
 		ParticleParamTypes::serializeParameterValue(os, p.attractor_kind);
 		if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
