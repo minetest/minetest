@@ -215,6 +215,10 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
 
+	lua_pushliteral(L, "__metatable_debug");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);  // hide metatable from Lua debug.getmetatable()
+
 	lua_pushliteral(L, "metadata_class");
 	lua_pushlstring(L, className, strlen(className));
 	lua_settable(L, metatable);

@@ -56,6 +56,10 @@ files["builtin/game/init.lua"] = {
 	globals = { "profiler" },
 }
 
+files["builtin/game/secure_sandbox.lua"] = {
+	globals = { debug = { "getmetatable", "setmetatable" }},
+}
+
 files["builtin/common/filterlist.lua"] = {
 	globals = {
 		"filterlist",

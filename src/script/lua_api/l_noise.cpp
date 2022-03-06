@@ -112,6 +112,10 @@ void LuaPerlinNoise::Register(lua_State *L)
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
 
+	lua_pushliteral(L, "__metatable_debug");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
@@ -370,6 +374,10 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
 
+	lua_pushliteral(L, "__metatable_debug");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
@@ -475,6 +483,10 @@ void LuaPseudoRandom::Register(lua_State *L)
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
 
+	lua_pushliteral(L, "__metatable_debug");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
@@ -571,6 +583,10 @@ void LuaPcgRandom::Register(lua_State *L)
 	int metatable = lua_gettop(L);
 
 	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__metatable_debug");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
 
@@ -686,6 +702,10 @@ void LuaSecureRandom::Register(lua_State *L)
 	int metatable = lua_gettop(L);
 
 	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__metatable_debug");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
 

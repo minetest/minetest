@@ -1371,7 +1371,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_newtable(L);
 	if (player == nullptr)
 		return 1;
-	
+
 	const PlayerControl &control = player->getPlayerControl();
 	lua_pushboolean(L, control.direction_keys & (1 << 0));
 	lua_setfield(L, -2, "up");
@@ -2325,6 +2325,10 @@ void ObjectRef::Register(lua_State *L)
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+	lua_pushliteral(L, "__metatable_debug");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);  // hide metatable from Lua debug.getmetatable()
 
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);

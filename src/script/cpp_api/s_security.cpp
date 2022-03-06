@@ -127,8 +127,8 @@ void ScriptApiSecurity::initializeSecurity()
 		"gethook",
 		"traceback",
 		"getinfo",
-		"getmetatable",
-		"setmetatable",
+		"getmetatable", // overwritten in builtin to respect "__metatable_debug"
+		"setmetatable", // same as above
 		"upvalueid",
 		"sethook",
 		"debug",

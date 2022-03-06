@@ -23,8 +23,25 @@ functionality in the engine and API, and to document it here.
 Programming in Lua
 ------------------
 
-If you have any difficulty in understanding this, please read
-[Programming in Lua](http://www.lua.org/pil/).
+Lua version 5.1 is used. LuaJIT and PUC Lua are supported.
+
+If you have any difficulty in understanding this document, please read
+[Programming in Lua](https://www.lua.org/pil/).
+Also look at the [Lua 5.1 Reference Manual](https://www.lua.org/manual/5.1/).
+
+Changes to the Lua std library
+------------------------------
+
+Due to security reasons, mods are executed in a sandboxed environment (see also
+`minetest.request_insecure_environment()`). Mods therefore do not have access to
+all functions in the std library. To see what is available, iterate over `_G`.
+
+There are also functions that are available, but were changed in their functionality:
+
+* `debug.getmetatable`: The metatable's `"__metatable_debug"` field is returned
+  instead of the metatable, if it is not `nil`.
+* `debug.setmetatable`: Raises an error if the original metatable has a non-`nil`
+  `"__metatable_debug"` field.
 
 Startup
 -------

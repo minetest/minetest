@@ -209,6 +209,9 @@ void LuaCamera::Register(lua_State *L)
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
 
+	// (no need to set "__metatable_debug" because client-side API has no
+	// debug.getmetatable() or debug.setmetatable())
+
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
