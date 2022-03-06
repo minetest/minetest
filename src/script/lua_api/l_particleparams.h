@@ -117,7 +117,6 @@ namespace LuaParticleParams
 			{(int)BlendMode::add,    "add"},
 			{(int)BlendMode::sub,    "sub"},
 			{(int)BlendMode::screen, "screen"},
-			{(int)BlendMode::ghost,  "ghost"},
 			{0, nullptr},
 		};
 

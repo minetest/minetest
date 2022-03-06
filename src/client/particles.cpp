@@ -82,12 +82,6 @@ Particle::Particle(
 			bfdst = video::EBF_DST_ALPHA;
 			blendop = video::EBO_MAX;
 		break;
-
-		case ParticleParamTypes::BlendMode::ghost:
-			src = video::EBF_SRC_COLOR;
-			dst = video::EBF_ONE_MINUS_SRC_COLOR;
-			blendop = video::EBO_ADD;
-		break;
 	}
 
 	// Texture

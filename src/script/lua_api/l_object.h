@@ -316,9 +316,10 @@ private:
 	// set_sky(self, sky_parameters)
 	static int l_set_sky(lua_State *L);
 
-	// get_sky(self)
+	// get_sky(self, as_table)
 	static int l_get_sky(lua_State *L);
 
+	// DEPRECATED
 	// get_sky_color(self)
 	static int l_get_sky_color(lua_State* L);
 

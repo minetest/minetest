@@ -60,46 +60,19 @@ PARAM_DEF_NUM(f32, writeF32,   readF32);
 PARAM_DEF_SRZR(v2f, writeV2F32, readV2F32);
 PARAM_DEF_SRZR(v3f, writeV3F32, readV3F32);
 
-/* C++ is a strongly typed language. this means that enums cannot be implicitly
- * cast to integers, as they can be in C. while this may sound good in principle,
- * it means that our normal serialization functions cannot be called on
- * enumerations unless they are explicitly cast to a particular type first. this
- * is problematic, because in C++ enums can have any integral type as an underlying
- * type, and that type would need to be named everywhere an enumeration is
- * de/serialized.
- *
- * this is obviously not cool, both in terms of writing legible, succinct code,
- * and in terms of robustness: the underlying type might be changed at some point,
- * e.g. if a bitmask gets too big for its britches. we could use an equivalent of
- * `std::to_underlying(value)` everywhere we need to deal with enumerations, but
- * that's hideous and unintuitive. instead, we supply the following functions to
- * transparently map enumeration types to their underlying values.
- *
- * this is your brain on C++. */
-
-template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
-PARAM_PVFN(serialize) (std::ostream& os, E k) {
-	PARAM_PVFN(serialize) (os, (std::underlying_type_t<E>)k);
-}
-
-template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
-PARAM_PVFN(deSerialize) (std::istream& os, E& k) {
-	std::underlying_type_t<E> v;
-	PARAM_PVFN(deSerialize) (is, v);
-	k = (E)v;
-}
-
 enum class ParticleTextureFlags : u8 {
 	/* each value specifies a bit in a bitmask; if the maximum value
 	 * goes above 1<<7 the type of the flags field must be changed
 	 * from u8, which will necessitate a protocol change! */
 
 	// the first bit indicates whether the texture is animated
-	animated = 1;
+	animated = 1,
 
-	// blendmode is encoded by (flags |= (u8)blend << 1); retrieve with
-	// (flags & ParticleTextureFlags::blend) >> 1
-	blend = 0x7 << 1;
+	/* the next three bits indicate the blending mode of the texture
+	 * blendmode is encoded by (flags |= (u8)blend << 1); retrieve with
+	 * (flags & ParticleTextureFlags::blend) >> 1. note that the third
+	 * bit is currently reserved for adding more blend modes in the future */
+	blend = 0x7 << 1,
 };
 
 /* define some shorthand so we don't have to repeat ourselves or use
@@ -115,7 +88,7 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 		flags |= FlagT(ParticleTextureFlags::animated);
 	if (blendmode != BlendMode::alpha)
 		flags |= FlagT(blendmode) << 1;
-	serializeParamValue(os, flags);
+	serializeParameterValue(os, flags);
 
 	alpha.serialize(os);
 	scale.serialize(os);
@@ -129,10 +102,10 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly)
 {
 	FlagT flags = 0;
-	deserializeParamValue(is, flags);
+	deSerializeParameterValue(is, flags);
 
 	animated = !!(flags & FlagT(ParticleTextureFlags::animated));
-	blendmode = BlendMode((flags & FlagT(ServerParticleTexture::blend)) >> 1);
+	blendmode = BlendMode((flags & FlagT(ParticleTextureFlags::blend)) >> 1);
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);

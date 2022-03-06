@@ -99,8 +99,7 @@ class PrometheusMetricsBackend : public MetricsBackend
 {
 public:
 	PrometheusMetricsBackend(const std::string &addr) :
-			MetricsBackend(), m_exposer(std::unique_ptr<prometheus::Exposer>(
-							  new prometheus::Exposer(addr))),
+			MetricsBackend(), m_exposer(std::make_unique<prometheus::Exposer>(addr)),
 			m_registry(std::make_shared<prometheus::Registry>())
 	{
 		m_exposer->RegisterCollectable(m_registry);

@@ -35,6 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace ParticleParamTypes
 {
+	template <bool cond, typename T>
+	using enableIf = typename std::enable_if<cond, T>::type;
+	// std::enable_if_t does not appear to be present in GCC????
+	// std::is_enum_v also missing. wtf. these are supposed to be
+	// present as of c++14
+
 	template<typename T> using BlendFunction = T(float,T,T);
 	#define DECL_PARAM_SRZRS(type) \
 		void serializeParameterValue  (std::ostream& os, type   v); \
@@ -65,12 +71,12 @@ namespace ParticleParamTypes
 	 * that's hideous and unintuitive. instead, we supply the following functions to
 	 * transparently map enumeration types to their underlying values. */
 
-	template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
+	template <typename E, enableIf<std::is_enum<E>::value, bool> = true>
 	void serializeParameterValue(std::ostream& os, E k) {
 		serializeParameterValue(os, (std::underlying_type_t<E>)k);
 	}
 
-	template <typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
+	template <typename E, enableIf<std::is_enum<E>::value, bool> = true>
 	void deSerializeParameterValue(std::istream& is, E& k) {
 		std::underlying_type_t<E> v;
 		deSerializeParameterValue(is, v);
@@ -320,8 +326,8 @@ namespace ParticleParamTypes
 		return s.str();
 	}
 
-	enum class AttractorKind : u8 { none, point, line, plane       };
-	enum class BlendMode     : u8 { alpha, add, sub, screen, ghost };
+	enum class AttractorKind : u8 { none, point, line, plane };
+	enum class BlendMode     : u8 { alpha, add, sub, screen  };
 
 	// these are consistently-named convenience aliases to make code more readable without `using ParticleParamTypes` declarations
 	using v3fRange = RangedParameter<v3fParameter>;
@@ -340,7 +346,7 @@ namespace ParticleParamTypes
 struct ParticleTexture
 {
 	bool animated = false;
-	ParticleParamTypes::BlendMode blendmode;
+	ParticleParamTypes::BlendMode blendmode = ParticleParamTypes::BlendMode::alpha;
 	TileAnimationParams animation;
 	ParticleParamTypes::f32Tween alpha{1.0f};
 	ParticleParamTypes::v2fTween scale{v2f(1.0f)};

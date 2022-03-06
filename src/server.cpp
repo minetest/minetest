@@ -255,7 +255,7 @@ Server::Server(
 #if USE_PROMETHEUS
 	m_metrics_backend = std::unique_ptr<MetricsBackend>(createPrometheusMetricsBackend());
 #else
-	m_metrics_backend = std::unique_ptr<MetricsBackend>(new MetricsBackend());
+	m_metrics_backend = std::make_unique<MetricsBackend>();
 #endif
 
 	m_uptime_counter = m_metrics_backend->addCounter("minetest_core_server_uptime", "Server uptime (in seconds)");
@@ -407,7 +407,7 @@ void Server::init()
 	m_mod_storage_database = openModStorageDatabase(m_path_world);
 	m_mod_storage_database->beginSave();
 
-	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(m_path_world));
+	m_modmgr = std::make_unique<ServerModManager>(m_path_world);
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!m_modmgr->isConsistent()) {
@@ -427,7 +427,7 @@ void Server::init()
 	m_script = new ServerScripting(this);
 
 	// Must be created before mod loading because we have some inventory creation
-	m_inventory_mgr = std::unique_ptr<ServerInventoryManager>(new ServerInventoryManager());
+	m_inventory_mgr = std::make_unique<ServerInventoryManager>();
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 

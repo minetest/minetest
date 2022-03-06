@@ -161,13 +161,6 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	p.animation = read_animation_definition(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, 1, "attached");
-	if (!lua_isnil(L, -1)) {
-		ObjectRef *ref = ObjectRef::checkobject(L, -1);
-		lua_pop(L, 1);
-		attached = ObjectRef::getobject(ref);
-	}
-
 	lua_getfield(L, 1, "texture");
 	if (!lua_isnil(L, -1)) {
 		LuaParticleParams::readTexValue(L, p.texture);

@@ -23,6 +23,7 @@ core.features = {
 	abm_min_max_y = true,
 	particlespawner_tweenable = true,
 	dynamic_add_media_table = true,
+	get_sky_as_table = true,
 }
 
 function core.has_feature(arg)

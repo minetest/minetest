@@ -48,12 +48,13 @@ void LuaParticleParams::readTexValue(lua_State* L, ServerParticleTexture& tex)
 	}
 	lua_pop(L, 1);
 
-	LuaParticleParams::readTweenTable(L, "alpha", tex.alpha);
-	LuaParticleParams::readTweenTable(L, "scale", tex.scale);
-
 	lua_getfield(L, -1, "blend");
 	LuaParticleParams::readLuaValue(L, tex.blendmode);
 	lua_pop(L, 1);
+
+	LuaParticleParams::readTweenTable(L, "alpha", tex.alpha);
+	LuaParticleParams::readTweenTable(L, "scale", tex.scale);
+
 }
 
 // add_particle({...})
