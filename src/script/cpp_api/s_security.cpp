@@ -129,15 +129,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"getinfo",
 		"getmetatable",
 		"setmetatable",
-		"upvalueid",
 		"sethook",
-		"debug",
-	};
-	static const char *package_whitelist[] = {
-		"config",
-		"cpath",
-		"path",
-		"searchpath",
 	};
 #if USE_LUAJIT
 	static const char *jit_whitelist[] = {
@@ -229,14 +221,6 @@ void ScriptApiSecurity::initializeSecurity()
 	copy_safe(L, debug_whitelist, sizeof(debug_whitelist));
 	lua_setglobal(L, "debug");
 	lua_pop(L, 1);  // Pop old debug
-
-
-	// Copy safe package fields
-	lua_getfield(L, old_globals, "package");
-	lua_newtable(L);
-	copy_safe(L, package_whitelist, sizeof(package_whitelist));
-	lua_setglobal(L, "package");
-	lua_pop(L, 1);  // Pop old package
 
 #if USE_LUAJIT
 	// Copy safe jit functions, if they exist
