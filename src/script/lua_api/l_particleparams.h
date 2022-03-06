@@ -35,6 +35,7 @@ namespace LuaParticleParams
 	{
 		if (lua_isnil(L,-1))
 			return;
+
 		if (std::is_integral<T>())
 			ret = lua_tointeger(L, -1);
 		else
@@ -56,6 +57,9 @@ namespace LuaParticleParams
 
 	inline void readLuaValue(lua_State* L, v3fParameter& ret)
 	{
+		if (lua_isnil(L, -1))
+			return;
+
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
 			auto n = lua_tonumber(L, -1);
 			ret = v3fParameter(n,n,n);
@@ -66,6 +70,9 @@ namespace LuaParticleParams
 
 	inline void readLuaValue(lua_State* L, v2fParameter& ret)
 	{
+		if (lua_isnil(L, -1))
+			return;
+
 		if (lua_isnumber(L, -1)) { // shortcut for uniform vectors
 			auto n = lua_tonumber(L, -1);
 			ret = v2fParameter(n,n);
@@ -76,6 +83,9 @@ namespace LuaParticleParams
 
 	inline void readLuaValue(lua_State* L, TweenStyle& ret)
 	{
+		if (lua_isnil(L, -1))
+			return;
+
 		static const EnumString opts[] = {
 			{(int)TweenStyle::fwd,     "fwd"},
 			{(int)TweenStyle::rev,     "rev"},
@@ -94,6 +104,9 @@ namespace LuaParticleParams
 
 	inline void readLuaValue(lua_State* L, AttractorKind& ret)
 	{
+		if (lua_isnil(L, -1))
+			return;
+
 		static const EnumString opts[] = {
 			{(int)AttractorKind::none,  "none"},
 			{(int)AttractorKind::point, "point"},
@@ -112,6 +125,9 @@ namespace LuaParticleParams
 
 	inline void readLuaValue(lua_State* L, BlendMode& ret)
 	{
+		if (lua_isnil(L, -1))
+			return;
+
 		static const EnumString opts[] = {
 			{(int)BlendMode::alpha,  "alpha"},
 			{(int)BlendMode::add,    "add"},
@@ -123,7 +139,7 @@ namespace LuaParticleParams
 		luaL_checktype(L, -1, LUA_TSTRING);
 		int v = (int)BlendMode::alpha;
 		if (!string_to_enum(opts, v, lua_tostring(L, -1))) {
-			throw LuaError("blend mode must be one of ('alpha', 'add', 'sub', 'screen', 'ghost')");
+			throw LuaError("blend mode must be one of ('alpha', 'add', 'sub', 'screen')");
 		}
 		ret = (BlendMode)v;
 	}

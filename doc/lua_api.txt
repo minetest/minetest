@@ -8701,7 +8701,7 @@ Used by `minetest.add_particle`.
 
         texture = "image.png",
         -- The texture of the particle
-        -- v5.6.0 and later: alo supports the table format described in the
+        -- v5.6.0 and later: also supports the table format described in the
         -- following section
 
         playername = "singleplayer",
@@ -8835,22 +8835,22 @@ of the spawner. Alternately, it can be specified as a min-max pair, specifying a
 cubic range the particles can appear randomly within. The following definitions are
 all equivalent, listed in order of precedence from lowest to highest (if both a
 lower-precedence and higher-precedence field are present, the lower-precedence field
-will be ignored):
+will be ignored, allowing for graceful degradation in older clients):
 
     {
       maxpos = {x = 0, y = 0, z = 0},
       minpos = {x = 0, y = 0, z = 0},
-        -- old syntax
+      -- old syntax
 
       pos = 0,
       -- all components of every particle's position vector will be set to this
       -- value
 
       pos = {x = 0, y = 0, z = 0},
-        -- all particles will appear at this exact position throughout the lifetime
-        -- of the particlespawner
+      -- all particles will appear at this exact position throughout the lifetime
+      -- of the particlespawner
 
-        pos = {
+      pos = {
             -- the particle will appear at a position that is picked at random from
             -- within a cubic range
 
@@ -8871,7 +8871,7 @@ will be ignored):
             -- exponential and there is no particular maximum or minimum value
         },
 
-        pos_tween = ...,
+        pos_tween = {...},
         -- a tween table should consist of a list of frames in the same form as the pos property above
         -- which the engine will interpolate between, and optionally a number of
         -- properties that control how the interpolation takes place. currently
@@ -8926,6 +8926,8 @@ unless otherwise specified.
 * vec3 range `vel`: the initial velocity of the particle
 * vec3 range `acc`: the direction and speed with which the particle
   accelerates
+* vec3 range `jitter`: offsets the velocity of each particle by a random
+  amount within the specified range each frame. used to create Brownian motion.
 * vec3 range `drag`: the amount by which absolute particle velocity along
   each axis is decreased per second.  a value of 1.0 means that the particle
   will be slowed to a stop over the space of a second; a value of -1.0 means
@@ -8969,10 +8971,10 @@ unless otherwise specified.
     create a vertical line that passes through `origin`. for planes, `angle`
     is the surface normal of an infinite plane on whose surface `origin` is
     a point. functions as an offset if `angle_attached` is also set.
-  * vec3 `origin_attached`: allows the origin to be specified as an offset from
-    the position of an entity rather than a coordinate in world space.
-  * vec3 `angle_attached`: allows the angle to be specified as an offset from
-    the position of an entity rather than a coordinate in world space.
+  * entity `origin_attached`: allows the origin to be specified as an offset
+    from the position of an entity rather than a coordinate in world space.
+  * entity `angle_attached`: allows the angle to be specified as an offset
+    from the position of an entity rather than a coordinate in world space.
   * bool `die_on_contact`: if true, the particles' lifetimes are adjusted so
     that they will die as they cross the attractor threshold. this behavior
     is the default but is undesirable for some kinds of animations; set it to
@@ -9019,6 +9021,24 @@ table contains options that allow simple animations to be applied to the texture
         -- alpha_tween table, but can accept two-dimensional vectors as well as
         -- integer values. the example value would cause the particle to shrink
         -- in one dimension over the course of its life until it disappears
+
+        blend = "alpha",
+        -- (default) blends transparent pixels with those they are drawn atop
+        -- according to the alpha channel of the source texture. useful for
+        -- e.g. material objects like rocks, dirt, smoke, or node chunks
+        blend = "add",
+        -- adds the value of pixels to those underneath them, modulo the sources
+        -- alpha channel. useful for e.g. bright light effects like sparks or fire
+        blend = "screen",
+        -- like "add" but less bright. useful for subtler light effecs. note that
+        -- this is NOT formally equivalent to the "screen" effect used in image
+        -- editors and compositors, but an approximation based on OpenGL blending
+        -- functions
+        blend = "sub",
+        -- the inverse of "add"; the value of the source pixel is subtracted from
+        -- the pixel underneath it. a white pixel will turn whatever is underneath
+        -- it black; a black pixel will be "transparent". useful for creating
+        -- darkening effects
 
         animation = {Tile Animation definition},
         -- overrides the particlespawner's global animation property for a single
