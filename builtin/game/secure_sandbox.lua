@@ -7,7 +7,8 @@ done in C++.
 -- Overwrite debug.getmetatable and debug.setmetatable, so that they have the same
 -- semantics with the metatable field "__metatable_debug" as getmetatable and
 -- setmetatable have with the "__metatable" field.
-do
+-- If mod security is off, they are not restricted.
+if minetest.settings:get_bool("secure.enable_security", true) then
 	local debug_getmetatable_orig = debug.getmetatable
 	local debug_setmetatable_orig = debug.setmetatable
 	-- store error in local variable, so that mods can't overwrite it later
