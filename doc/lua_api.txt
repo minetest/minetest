@@ -3370,6 +3370,8 @@ reasons.)
 Where `v` is a vector and `foo` stands for any function name, `v:foo(...)` does
 the same as `vector.foo(v, ...)`, apart from deprecated functionality.
 
+Where `v` is a vector, `tostring(v)` does the same as `v:to_string()`.
+
 The metatable that is used for vectors can be accessed via `vector.metatable`.
 Do not modify it!
 
