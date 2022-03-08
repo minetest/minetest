@@ -98,6 +98,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"type",
 		"unpack",
 		"_VERSION",
+		"vector",
 		"xpcall",
 	};
 	static const char *whitelist_tables[] = {
@@ -296,6 +297,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"type",
 		"unpack",
 		"_VERSION",
+		"vector",
 		"xpcall",
 		// Completely safe libraries
 		"coroutine",

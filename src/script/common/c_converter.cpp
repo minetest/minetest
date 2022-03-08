@@ -51,28 +51,6 @@ if (value < F1000_MIN || value > F1000_MAX) { \
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
 
-/**
- * A helper which sets (if available) the vector metatable from builtin as metatable
- * for the table on top of the stack
- */
-static void set_vector_metatable(lua_State *L)
-{
-	// get vector.metatable
-	lua_getglobal(L, "vector");
-	if (!lua_istable(L, -1)) {
-		// there is no global vector table
-		lua_pop(L, 1);
-		errorstream << "set_vector_metatable in c_converter.cpp: " <<
-				"missing global vector table" << std::endl;
-		return;
-	}
-	lua_getfield(L, -1, "metatable");
-	// set the metatable
-	lua_setmetatable(L, -3);
-	// pop vector global
-	lua_pop(L, 1);
-}
-
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_createtable(L, 0, 3);
@@ -82,7 +60,8 @@ void push_v3f(lua_State *L, v3f p)
 	lua_setfield(L, -2, "y");
 	lua_pushnumber(L, p.Z);
 	lua_setfield(L, -2, "z");
-	set_vector_metatable(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_setmetatable(L, -2);
 }
 
 void push_v2f(lua_State *L, v2f p)
@@ -275,7 +254,8 @@ void push_v3s16(lua_State *L, v3s16 p)
 	lua_setfield(L, -2, "y");
 	lua_pushinteger(L, p.Z);
 	lua_setfield(L, -2, "z");
-	set_vector_metatable(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_setmetatable(L, -2);
 }
 
 v3s16 read_v3s16(lua_State *L, int index)
