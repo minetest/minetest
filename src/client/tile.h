@@ -195,7 +195,8 @@ struct TileLayer
 			texture_id == other.texture_id &&
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
-			color == other.color &&
+			has_color == other.has_color &&
+			(!has_color || color == other.color) &&
 			scale == other.scale;
 	}
 
@@ -290,7 +291,7 @@ struct TileLayer
 	 */
 	video::SColor color;
 
-	u8 scale;
+	u8 scale = 1;
 };
 
 /*!
