@@ -196,7 +196,7 @@ struct TileLayer
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
 			has_color == other.has_color &&
-			(!has_color || color == other.color) &&
+			color == other.color &&
 			scale == other.scale;
 	}
 
@@ -289,7 +289,7 @@ struct TileLayer
 	 * The color of the tile, or if the tile does not own
 	 * a color then the color of the node owning this tile.
 	 */
-	video::SColor color;
+	video::SColor color = video::SColor(0, 0, 0, 0);
 
 	u8 scale = 1;
 };
