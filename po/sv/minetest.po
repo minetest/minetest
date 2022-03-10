@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2021-12-18 21:51+0000\n"
-"Last-Translator: xerxstirb <xerxstirb@gmail.com>\n"
+"PO-Revision-Date: 2022-07-17 18:26+0000\n"
+"Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
 "Language: sv\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -450,11 +450,11 @@ msgstr "Kartgenerator"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Mapgen-flaggor"
+msgstr "Kartgenerator-flaggor"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Mapgen-specifika flaggor"
+msgstr "Kartgenerator-specifika flaggor"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -557,7 +557,7 @@ msgstr "Är du säker på att du vill radera \"$1\"?"
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr "Radera"
+msgstr "Ta bort"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -777,7 +777,7 @@ msgstr "Om"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr "Aktiva Bidragande"
+msgstr "Aktiva bidragande"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
@@ -861,15 +861,15 @@ msgstr "Kreativt läge"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr "Aktivera Skada"
+msgstr "Aktivera skada"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr "Bilda Spel"
+msgstr "Hosta spel"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr "Värdserver"
+msgstr "Hosta server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -893,7 +893,7 @@ msgstr "Lösenord"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr "Starta Spel"
+msgstr "Starta spel"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
@@ -913,7 +913,7 @@ msgstr "Serverport"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr "Starta Spel"
+msgstr "Starta spel"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -938,7 +938,7 @@ msgstr "Skada / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
-msgstr "Radera Favorit"
+msgstr "Radera favorit"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -946,11 +946,11 @@ msgstr "Favoriter"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr "Inkompatibla Servrar"
+msgstr "Inkompatibla servrar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr "Anslut Spel"
+msgstr "Anslut till spel"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -958,7 +958,7 @@ msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
-msgstr "Offentliga Servrar"
+msgstr "Offentliga servrar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
@@ -986,7 +986,7 @@ msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr "Alla Inställningar"
+msgstr "Alla inställningar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1006,7 +1006,7 @@ msgstr "Ändra Tangenter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr "Sammanfogat Glas"
+msgstr "Sammanfogat glas"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
@@ -1018,7 +1018,7 @@ msgstr "Dynamiska skuggor: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr "Fina Löv"
+msgstr "Sofistikerade löv"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
@@ -1058,7 +1058,7 @@ msgstr "Nodkontur"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr "Ingen"
+msgstr "Inget"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1126,15 +1126,15 @@ msgstr "Väldigt Låg"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr "Vajande Löv"
+msgstr "Vajande löv"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr "Vajande Vätskor"
+msgstr "Vajande vätskor"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr "Vajande Växter"
+msgstr "Vajande växter"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1276,7 +1276,7 @@ msgstr "Kan inte visa blockgränser (behöver behörigheten 'basic_debug')"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Ändra Lösenord"
+msgstr "Ändra lösenord"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1502,11 +1502,11 @@ msgstr "På"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "Höjdförändringsläge avaktiverad"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "Höjdförändringsläge aktiverad"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
@@ -1983,7 +1983,7 @@ msgstr "Sänk volym"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Dubbeltryck \"hoppa\" för att slå på/av flygande"
+msgstr "Dubbeltr. \"hoppa\" för att växla flygläge"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -2049,35 +2049,35 @@ msgstr "Smyg"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr "Slå av/på HUD"
+msgstr "Växla HUD"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr "Slå av/på chattlog"
+msgstr "Växla chattlog"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "Slå av/på snabb"
+msgstr "Växla snabbläge"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "Slå av/på flygläge"
+msgstr "Växla flygläge"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr "Slå av/på dimma"
+msgstr "Växla dimma"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr "Slå av/på minimapp"
+msgstr "Växla minimapp"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Slå av/på noclip"
+msgstr "Växla noclip"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr "Slå av/på pitchmove"
+msgstr "Växla höjdförändr."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2609,7 +2609,7 @@ msgstr "Kamerautjämning i filmiskt läge"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr "Av/på-tangent för kamerauppdatering"
+msgstr "Växeltagent för kamerauppdatering"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2701,7 +2701,7 @@ msgstr "Högsta längd för chattmeddelande"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr "Chattangent Av/På"
+msgstr "Tagent för växling av chattangent"
 
 #: src/settings_translation_file.cpp
 msgid "Chat weblinks"
@@ -3181,7 +3181,7 @@ msgstr "Släpp objekt-tagent"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
-msgstr "Dumpa felsökningsinformation för mapgen."
+msgstr "Dumpa felsökningsinformation för kartgeneratorn."
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
@@ -3315,6 +3315,8 @@ msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Aktivera guppande och mängden guppande.\n"
+"Till exempel: 0 för inget guppande, 1.0 för normalt, 2.0 för dubbla."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3340,7 +3342,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "Aktiverar animering av lagerföremål."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -3367,6 +3369,9 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Aktiverar kompromisser som reducerar CPU-belastning eller förbättrar "
+"prestanda\n"
+"fast som introducerar små visuella fel som inte påverkar spelbarheten."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3494,11 +3499,11 @@ msgstr "Floatlanddensitet"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland maximum Y"
-msgstr ""
+msgstr "Floatlands högsta Y"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland minimum Y"
-msgstr ""
+msgstr "Floatlands minsta Y"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland noise"
@@ -3506,15 +3511,15 @@ msgstr "Floatlandbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland taper exponent"
-msgstr ""
+msgstr "Floatlands avsmalningsexponent"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland tapering distance"
-msgstr ""
+msgstr "Floatlands avsmalningsdistans"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
-msgstr ""
+msgstr "Floatlands vattennivå"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -3558,23 +3563,24 @@ msgstr "Typsnittsstorlek"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Typsnittsstorlek delbar med"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Storleken för standardtypsnittet i punkter (pt)."
+msgstr "Storleken för standardtypsnittet där 1 enhet = 1 pixel när DPI är 96"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "Storleken för monospacetypsnittet i punkter (pt)."
+msgstr "Storleken för monospacetypsnittet där 1 enhet = 1 pixel när DPI är 96"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
+"Typsnittsstorlek för den senaste chattexten och chattprompten i punkter (pt)."
+"\n"
+"Värdet 0 använder standardstorleken."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3593,6 +3599,9 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"Formatet för spelares chattmeddelanden. De följande strängar är giltiga "
+"platshållare:\n"
+"@name, @message, @timestamp (ej obligatoriskt)"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3699,18 +3708,26 @@ msgid ""
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
+"Globala kartgeneratorattribut.\n"
+"I kartgeneratorn v6 kontrollerar 'decorations'-flaggan alla dekorationer "
+"förutom träd\n"
+"och djungelgräd, i alla andra kartgeneratorer styr flaggan alla dekorationer."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
 msgstr ""
+"Gradienten av ljuskurvan vid högsta ljusnivå.\n"
+"Styr kontrasten av de högsta ljusnivåerna."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Gradient of light curve at minimum light level.\n"
 "Controls the contrast of the lowest light levels."
 msgstr ""
+"Gradienten av ljuskurvan vid minsta ljusnivå.\n"
+"Styr kontrasten av de minsta ljusnivåerna."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -3819,12 +3836,16 @@ msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"Horisontell och vertikal acceleration i snabbläge,\n"
+"i noder per sekund per sekund."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
 msgstr ""
+"Horisontell och vertikal acceleration på marken eller klättrande\n"
+"i noder per sekund per sekund."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3964,7 +3985,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
-msgstr ""
+msgstr "Hur djupt floder ska gå."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3972,48 +3993,58 @@ msgid ""
 "If negative, liquid waves will move backwards.\n"
 "Requires waving liquids to be enabled."
 msgstr ""
+"Hur snabbt vätskevågor förflyttas. Högre = snabbare.\n"
+"Om negativt kommer vågorna förflyttas bakåt.\n"
+"Kräver vajande vätskor för att aktiveras."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"Hur länge servern kommer vänta innan den urladdar oanvända mappblock.\n"
+"Högre värde är smidigare, men använder mer RAM."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
-msgstr ""
+msgstr "Hur bred floder ska vara."
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
-msgstr ""
+msgstr "Luftfuktighetsblandbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity noise"
-msgstr ""
+msgstr "Luftfuktighetsbrus"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity variation for biomes."
-msgstr ""
+msgstr "Variationen i luftfuktighet för biotoper."
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6-server"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
+"Om FPS skulle gå högre än detta begränsas den genom\n"
+"att sova för att inte slösa på resurser utan någon anledning."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If disabled, \"Aux1\" key is used to fly fast if both fly and fast mode are\n"
 "enabled."
 msgstr ""
+"Om avaktiverad används \"Aux1\"-knappen för att flyga snabbt om både flyg- "
+"och snabbläge\n"
+"är aktiverade."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4098,11 +4129,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Ignorera världfel"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
-msgstr ""
+msgstr "In-game"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
