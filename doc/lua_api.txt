@@ -3307,38 +3307,28 @@ https://en.wikipedia.org/wiki/Euclidean_vector.
 
 Spatial vectors are used for various things, including, but not limited to:
 
-* positions
-* position differences
-* velocities
-* accelerations
-* euler angles (Yes, using spatial vectors here has no real semantic meaning. It's
-  just 3 values. Therefore, most operations make no sense and should not be used
-  on vectors of euler angles.)
-* dimensions (Sizes in 3 directions.)
+* any 3D spatial vector (x/y/z-directions)
+* Euler angles (pitch/yaw/roll in radians) (Spatial vectors have no real semantic
+  meaning here. Therefore, most vector operations make no sense in this use case.)
 
 Note that they are *not* used for:
 
 * n-dimensional vectors where n is not 3 (ie. n=2)
 * arrays of the form `{num, num, num}`
 
-The API documentation may refer to spatial vectors by any of the following notations:
+The API documentation may refer to spatial vectors, as produced by `vector.new`,
+by any of the following notations:
 
 * `(x, y, z)` (Used rarely, and only if it's clear that it's a vector.)
 * `vector.new(x, y, z)`
-* `{x=num, y=num, z=num}`
-
-They are all (if not stated otherwise) referring to the same thing, that is: vectors,
-as produced by `vector.new`.
+* `{x=num, y=num, z=num}` (Even here you are still supposed to use `vector.new`.)
 
 Compatibility notes
 -------------------
 
-Internally, a vector is implemented using a table with the 3 fields `x`, `y` and `z`.
-It's similar to this: `{x = 0, y = 1, z = 0}`, but with a metatable.
-
-Historically (before Minetest 5.5.0), vectors used to be defined as tables of the
-form `{x = num, y = num, z = num}`, without any metatable. You might find this in
-old code.
+Vectors used to be defined as tables of the form `{x = num, y = num, z = num}`.
+Since Minetest 5.5.0, vectors additionally have a metatable to enable easier use.
+Those old-style vectors can still be found in old mod code.
 
 Most functions by Minetest that take vectors will continue to able to handle them,
 but passing such manually constructed tables to Minetest's or some other mod's
@@ -3353,9 +3343,8 @@ the future.
 In your own code, or if you define your own API, you can, of course, still use
 other representations of vectors.
 
-A mod should can expect to get vectors of this class whenever they come from the
-engine.
-In the future, the same should apply for vectors coming from other mods.
+Vectors provided by API functions will provide an instance of this class if not
+stated otherwise. Mods should adapt this for convenience reasons.
 
 Special properties of the class
 -------------------------------
@@ -3364,13 +3353,12 @@ Vectors can be indexed with numbers and allow method and operator syntax.
 
 All these forms of addressing a vector `v` are valid:
 `v[1]`, `v[3]`, `v.x`, `v[1] = 42`, `v.y = 13`
-(Though using letters over numbers is preferable due to performance and compatibility
-reasons.)
+Note: Prefer letter over number indexing for performance and compatibility reasons.
 
 Where `v` is a vector and `foo` stands for any function name, `v:foo(...)` does
 the same as `vector.foo(v, ...)`, apart from deprecated functionality.
 
-Where `v` is a vector, `tostring(v)` does the same as `v:to_string()`.
+`tostring` is defined for vectors, see `vector.to_string`.
 
 The metatable that is used for vectors can be accessed via `vector.metatable`.
 Do not modify it!
@@ -3405,6 +3393,7 @@ vectors are written like this: `(x, y, z)`:
     * `init`: If given starts looking for the vector at this string index.
 * `vector.to_string(v)`:
     * Returns a string of the form `"(x, y, z)"`.
+    *  `tostring(v)` does the same.
 * `vector.direction(p1, p2)`:
     * Returns a vector of length 1 with direction `p1` to `p2`.
     * If `p1` and `p2` are identical, returns `(0, 0, 0)`.
