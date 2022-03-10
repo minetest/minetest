@@ -723,7 +723,7 @@ protected:
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
 	void updateSound(f32 dtime);
-	void processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug);
+	void processPlayerInteraction(f32 dtime, bool show_hud);
 	/*!
 	 * Returns the object or node the player is pointing at.
 	 * Also updates the selected thing in the Hud.
@@ -1134,8 +1134,7 @@ void Game::run()
 		updateDebugState();
 		updateCamera(dtime);
 		updateSound(dtime);
-		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud,
-			m_game_ui->m_flags.show_basic_debug);
+		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud);
 		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
@@ -1740,17 +1739,16 @@ void Game::processQueues()
 
 void Game::updateDebugState()
 {
-	const bool has_basic_debug = true;
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	bool has_debug = client->checkPrivilege("debug");
+	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 
 	if (m_game_ui->m_flags.show_basic_debug) {
-		if (!has_basic_debug) {
+		if (!has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = false;
-		}
 	} else if (m_game_ui->m_flags.show_minimal_debug) {
-		if (has_basic_debug) {
+		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
-		}
 	}
 	if (!has_basic_debug)
 		hud->disableBlockBounds();
@@ -2211,27 +2209,27 @@ void Game::toggleCinematic()
 
 void Game::toggleBlockBounds()
 {
-	if (true /* basic_debug */) {
-		enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
-		switch (newmode) {
-			case Hud::BLOCK_BOUNDS_OFF:
-				m_game_ui->showTranslatedStatusText("Block bounds hidden");
-				break;
-			case Hud::BLOCK_BOUNDS_CURRENT:
-				m_game_ui->showTranslatedStatusText("Block bounds shown for current block");
-				break;
-			case Hud::BLOCK_BOUNDS_NEAR:
-				m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
-				break;
-			case Hud::BLOCK_BOUNDS_MAX:
-				m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
-				break;
-			default:
-				break;
-		}
-
-	} else {
-		m_game_ui->showTranslatedStatusText("Can't show block bounds (need 'basic_debug' privilege)");
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (!(client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG))) {
+		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by mod or game)");
+		return;
+	}
+	enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
+	switch (newmode) {
+		case Hud::BLOCK_BOUNDS_OFF:
+			m_game_ui->showTranslatedStatusText("Block bounds hidden");
+			break;
+		case Hud::BLOCK_BOUNDS_CURRENT:
+			m_game_ui->showTranslatedStatusText("Block bounds shown for current block");
+			break;
+		case Hud::BLOCK_BOUNDS_NEAR:
+			m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
+			break;
+		case Hud::BLOCK_BOUNDS_MAX:
+			m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
+			break;
+		default:
+			break;
 	}
 }
 
@@ -2298,6 +2296,9 @@ void Game::toggleFog()
 
 void Game::toggleDebug()
 {
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	bool has_debug = client->checkPrivilege("debug");
+	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
@@ -2307,9 +2308,8 @@ void Game::toggleDebug()
 	// The debug text can be in 2 modes: minimal and basic.
 	// * Minimal: Only technical client info that not gameplay-relevant
 	// * Basic: Info that might give gameplay advantage, e.g. pos, angle
-	// Basic mode is always used.
-
-	const bool has_basic_debug = true;
+	// Basic mode is used when player has the debug HUD flag set,
+	// otherwise the Minimal mode is used.
 	if (!m_game_ui->m_flags.show_minimal_debug) {
 		m_game_ui->m_flags.show_minimal_debug = true;
 		if (has_basic_debug)
@@ -2333,7 +2333,7 @@ void Game::toggleDebug()
 		m_game_ui->m_flags.show_basic_debug = false;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
-		if (client->checkPrivilege("debug")) {
+		if (has_debug) {
 			m_game_ui->showTranslatedStatusText("Debug info, profiler graph, and wireframe hidden");
 		} else {
 			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
@@ -3039,7 +3039,7 @@ void Game::updateSound(f32 dtime)
 }
 
 
-void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
+void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -3157,7 +3157,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		auto player_position  = player->getPosition();
-		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
+		handlePointingAtObject(pointed, tool_item, player_position,
+				client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG));
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
 		runData.punching = true;

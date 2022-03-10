@@ -20,7 +20,7 @@ APP_CPPFLAGS := -g -Og -fno-omit-frame-pointer
 endif
 
 APP_CFLAGS   := $(APP_CPPFLAGS) -Wno-inconsistent-missing-override -Wno-parentheses-equality
-APP_CXXFLAGS := $(APP_CPPFLAGS) -fexceptions -frtti -std=gnu++17
+APP_CXXFLAGS := $(APP_CPPFLAGS) -fexceptions -frtti -std=gnu++14
 APP_LDFLAGS  := -Wl,--no-warn-mismatch,--gc-sections,--icf=safe
 
 ifeq ($(APP_ABI),arm64-v8a)

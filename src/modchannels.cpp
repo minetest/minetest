@@ -88,8 +88,7 @@ bool ModChannelMgr::canWriteOnChannel(const std::string &channel) const
 
 void ModChannelMgr::registerChannel(const std::string &channel)
 {
-	m_registered_channels[channel] =
-			std::unique_ptr<ModChannel>(new ModChannel(channel));
+	m_registered_channels[channel] = std::make_unique<ModChannel>(channel);
 }
 
 bool ModChannelMgr::setChannelState(const std::string &channel, ModChannelState state)
