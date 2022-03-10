@@ -26,12 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class FakeServer : public Server
 {
 public:
-	// clang-format off
 	FakeServer() : Server("fakeworld", SubgameSpec("fakespec", "fakespec"), true,
 					Address(), true, nullptr)
 	{
 	}
-	// clang-format on
 
 private:
 	void SendChatMessage(session_t peer_id, const ChatMessage &message)
@@ -95,7 +93,7 @@ void TestServerShutdownState::testTrigger()
 
 void TestServerShutdownState::testTick()
 {
-	std::unique_ptr<FakeServer> fakeServer(new FakeServer());
+	auto fakeServer = std::make_unique<FakeServer>();
 	Server::ShutdownState ss;
 	ss.trigger(28.0f, "testtrigger", true);
 	ss.tick(0.0f, fakeServer.get());

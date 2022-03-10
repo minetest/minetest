@@ -74,8 +74,7 @@ vec3 getLightSpacePosition()
 	#if DRAW_TYPE == NDT_PLANTLIKE
 	pLightSpace = m_ShadowViewProj * vec4(worldPosition, 1.0);
 	#else
-	float offsetScale = (0.0057 * getLinearDepth() + normalOffsetScale);
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + offsetScale * normalize(vNormal), 1.0);
+	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalOffsetScale * normalize(vNormal), 1.0);
 	#endif
 	pLightSpace = getPerspectiveFactor(pLightSpace);
 	return pLightSpace.xyz * 0.5 + 0.5;
@@ -187,6 +186,9 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 
 	if (PCFBOUND == 0.0) return 0.0;
 	// Return fast if sharp shadows are requested
+	if (PCFBOUND == 0.0)
+		return 0.0;
+
 	if (SOFTSHADOWRADIUS <= 1.0) {
 		perspectiveFactor = getDeltaPerspectiveFactor(baseLength);
 		return max(2 * length(smTexCoord.xy) * 2048 / f_textureresolution / pow(perspectiveFactor, 3), SOFTSHADOWRADIUS);
@@ -514,8 +516,12 @@ void main(void)
 	// Power ratio was measured on torches in MTG (brightness = 14).
 	float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
 
-	if (f_normal_length != 0 && cosLight < 0.035) {
-		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, 0.035)/0.035);
+	// Apply self-shadowing when light falls at a narrow angle to the surface
+	// Cosine of the cut-off angle.
+	const float self_shadow_cutoff_cosine = 0.035;
+	if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
+		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+		shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 	}
 
 	shadow_int *= f_adj_shadow_strength;
@@ -526,8 +532,6 @@ void main(void)
 			(1.0 - adjusted_night_ratio) * ( // natural light
 					col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
 					dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
-	// col.r = 0.5 * clamp(getPenumbraRadius(ShadowMapSampler, posLightSpace.xy, posLightSpace.z, 1.0) / SOFTSHADOWRADIUS, 0.0, 1.0) + 0.5 * col.r;
-	// col.r = adjusted_night_ratio; // debug night ratio adjustment
 #endif
 
 #if ENABLE_TONE_MAPPING

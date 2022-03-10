@@ -308,6 +308,7 @@ void SpatialAreaStore::getAreasInArea(std::vector<Area *> *result,
 SpatialAreaStore::~SpatialAreaStore()
 {
 	delete m_tree;
+	delete m_storagemanager;
 }
 
 SpatialAreaStore::SpatialAreaStore()

@@ -58,15 +58,13 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	const v3f &viewUp = cam->getCameraNode()->getUpVector();
 	v3f viewRight = look.crossProduct(viewUp);
 
-	v3f farCorner = look + viewRight * tanFovX + viewUp * tanFovY;
+	v3f farCorner = (look + viewRight * tanFovX + viewUp * tanFovY).normalize();
 	// Compute the frustumBoundingSphere radius
 	v3f boundVec = (camPos + farCorner * sfFar) - newCenter;
-	radius = boundVec.getLength() * 2.0f;
+	radius = boundVec.getLength();
 	// boundVec.getLength();
-	float vvolume = radius * 2.0f;
-
+	float vvolume = radius;
 	v3f frustumCenter = newCenter;
-	// probar radius multipliacdor en funcion del I, a menor I mas multiplicador
 	v3f eye_displacement = direction * vvolume;
 
 	// we must compute the viewmat with the position - the camera offset

@@ -675,7 +675,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	bool has_scale = tiledef.scale > 0;
 	bool use_autoscale = tsettings.autoscale_mode == AUTOSCALE_FORCE ||
 		(tsettings.autoscale_mode == AUTOSCALE_ENABLE && !has_scale);
-	if (use_autoscale) {
+	if (use_autoscale && layer->texture) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
 		float size = std::fmin(texture_size.Width, texture_size.Height);
@@ -711,6 +711,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	// Animation parameters
 	int frame_count = 1;
 	if (layer->material_flags & MATERIAL_FLAG_ANIMATION) {
+		assert(layer->texture);
 		int frame_length_ms;
 		tiledef.animation.determineParams(layer->texture->getOriginalSize(),
 				&frame_count, &frame_length_ms, NULL);
@@ -721,14 +722,13 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	if (frame_count == 1) {
 		layer->material_flags &= ~MATERIAL_FLAG_ANIMATION;
 	} else {
-		std::ostringstream os(std::ios::binary);
-		if (!layer->frames) {
+		assert(layer->texture);
+		if (!layer->frames)
 			layer->frames = new std::vector<FrameSpec>();
-		}
 		layer->frames->resize(frame_count);
 
+		std::ostringstream os(std::ios::binary);
 		for (int i = 0; i < frame_count; i++) {
-
 			FrameSpec frame;
 
 			os.str("");
