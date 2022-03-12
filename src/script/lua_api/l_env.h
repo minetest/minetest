@@ -214,7 +214,7 @@ public:
 	static const EnumString es_BlockStatusType[];
 };
 
-class LuaABM : public ActiveBlockModifier {
+class AbstractLuaABM : public virtual ActiveBlockModifier {
 private:
 	int m_id;
 
@@ -225,8 +225,11 @@ private:
 	bool m_simple_catch_up;
 	s16 m_min_y;
 	s16 m_max_y;
+protected:
+	// Prepares the action function for calling, putting at the top of the stack.
+	void prepareAction(ServerScripting *scriptIface, const char *field_name);
 public:
-	LuaABM(lua_State *L, int id,
+	AbstractLuaABM(lua_State *L, int id,
 			const std::vector<std::string> &trigger_contents,
 			const std::vector<std::string> &required_neighbors,
 			float trigger_interval, u32 trigger_chance, bool simple_catch_up, s16 min_y, s16 max_y):
@@ -268,8 +271,35 @@ public:
 	{
 		return m_max_y;
 	}
+};
+
+class LuaABM : public AbstractLuaABM {
+public:
+	LuaABM(lua_State *L, int id,
+			const std::vector<std::string> &trigger_contents,
+			const std::vector<std::string> &required_neighbors,
+			float trigger_interval, u32 trigger_chance, bool simple_catch_up, s16 min_y, s16 max_y):
+		ActiveBlockModifier(),
+		AbstractLuaABM(L, id, trigger_contents, required_neighbors,
+				trigger_interval, trigger_chance, simple_catch_up, min_y, max_y)
+	{
+	}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider);
+};
+
+class LuaBulkABM : public AbstractLuaABM, public BulkActiveBlockModifier {
+public:
+	LuaBulkABM(lua_State *L, int id,
+			const std::vector<std::string> &trigger_contents,
+			const std::vector<std::string> &required_neighbors,
+			float trigger_interval, u32 trigger_chance, bool simple_catch_up, s16 min_y, s16 max_y):
+		ActiveBlockModifier(),
+		AbstractLuaABM(L, id, trigger_contents, required_neighbors,
+				trigger_interval, trigger_chance, simple_catch_up, min_y, max_y)
+	{
+	}
+	virtual void trigger(ServerEnvironment *env, const std::vector<v3s16> &pos_list);
 };
 
 class LuaLBM : public LoadingBlockModifierDef

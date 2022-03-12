@@ -56,6 +56,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PARTICLE_SPAWNER_NO_EXPIRY -1024.f
 
 /*
+	BulkActiveBlockModifier
+*/
+
+void BulkActiveBlockModifier::prime()
+{
+	m_pos_list.clear();
+	m_primed = true;
+}
+
+void BulkActiveBlockModifier::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+{
+	if (m_primed)
+		m_pos_list.emplace_back(p);
+}
+
+void BulkActiveBlockModifier::apply(ServerEnvironment *env)
+{
+	bool primed = m_primed;
+	m_primed = false;
+	if (!m_pos_list.empty() && primed)
+		trigger(env, m_pos_list);
+}
+
+/*
 	ABMWithState
 */
 
@@ -1007,7 +1031,17 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 {
+	for (const ABMWithState abm_with_state : m_abms) {
+		if (abm_with_state.abm == abm)
+			throw AlreadyExistsException("Same ABM added twice");
+	}
 	m_abms.emplace_back(abm);
+}
+
+void ServerEnvironment::addBulkActiveBlockModifier(BulkActiveBlockModifier *abm)
+{
+	addActiveBlockModifier(abm);
+	m_bulk_abms.push_back(abm);
 }
 
 void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
@@ -1441,6 +1475,10 @@ void ServerEnvironment::step(float dtime)
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 		TimeTaker timer("modify in active blocks per interval");
 
+		for (BulkActiveBlockModifier *abm : m_bulk_abms) {
+			abm->prime();
+		}
+
 		// Shuffle to prevent persistent artifacts of ordering
 		std::shuffle(m_abms.begin(), m_abms.end(), m_rgen);
 
@@ -1483,6 +1521,11 @@ void ServerEnvironment::step(float dtime)
 				break;
 			}
 		}
+
+		for (BulkActiveBlockModifier *abm : m_bulk_abms) {
+			abm->apply(this);
+		}
+
 		g_profiler->avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
 		g_profiler->avg("ServerEnv: active blocks cached", blocks_cached);
 		g_profiler->avg("ServerEnv: active blocks scanned for ABMs", blocks_scanned);

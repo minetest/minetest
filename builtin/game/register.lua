@@ -95,7 +95,8 @@ function core.register_abm(spec)
 	-- Add to core.registered_abms
 	check_node_list(spec.nodenames, "nodenames")
 	check_node_list(spec.neighbors, "neighbors")
-	assert(type(spec.action) == "function", "Required field 'action' of type function")
+	assert(type(spec.action) == "function" or type(spec.bulk_action) == "function",
+		"Required field 'action' or 'bulk_action' of type function")
 	core.registered_abms[#core.registered_abms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end

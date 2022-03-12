@@ -78,6 +78,29 @@ public:
 		u32 active_object_count, u32 active_object_count_wider){};
 };
 
+// Extension of ActiveBlockModifier that processes all node positions at once.
+class BulkActiveBlockModifier : public virtual ActiveBlockModifier
+{
+public:
+	BulkActiveBlockModifier() = default;
+	virtual ~BulkActiveBlockModifier() = default;
+
+	// Called before an ABM run.
+	void prime();
+
+	void trigger(ServerEnvironment *env, v3s16 p, MapNode n) override;
+
+	// Called after an ABM run.
+	void apply(ServerEnvironment *env);
+
+	// Acts on the list of positions found during an ABM run.
+	virtual void trigger(ServerEnvironment *env, const std::vector<v3s16> &pos_list) = 0;
+
+private:
+	bool m_primed = false;
+	std::vector<v3s16> m_pos_list;
+};
+
 struct ABMWithState
 {
 	ActiveBlockModifier *abm;
@@ -317,6 +340,7 @@ public:
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
+	void addBulkActiveBlockModifier(BulkActiveBlockModifier *abm);
 	void addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm);
 
 	/*
@@ -478,6 +502,8 @@ private:
 	u32 m_last_clear_objects_time = 0;
 	// Active block modifiers
 	std::vector<ABMWithState> m_abms;
+	// These point to ABMs kept in m_abms
+	std::vector<BulkActiveBlockModifier *> m_bulk_abms;
 	LBMManager m_lbm_mgr;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval = 0.1f;

@@ -119,7 +119,9 @@ public:
 	void checkSetByBuiltin();
 
 protected:
+	friend class AbstractLuaABM;
 	friend class LuaABM;
+	friend class LuaBulkABM;
 	friend class LuaLBM;
 	friend class InvRef;
 	friend class ObjectRef;

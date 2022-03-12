@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <algorithm>
+#include <climits>
 #include "lua_api/l_env.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_nodemeta.h"
@@ -40,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include "util/basic_macros.h"
 #include "util/string.h"
 #include "translation.h"
 #ifndef SERVER
@@ -65,17 +67,9 @@ const EnumString ModApiEnvMod::es_BlockStatusType[] =
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
-		u32 active_object_count, u32 active_object_count_wider)
+void AbstractLuaABM::prepareAction(ServerScripting *scriptIface, const char *field_name)
 {
-	ServerScripting *scriptIface = env->getScriptIface();
-	scriptIface->realityCheck();
-
 	lua_State *L = scriptIface->getStack();
-	sanity_check(lua_checkstack(L, 20));
-	StackUnroller stack_unroller(L);
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get registered_abms
 	lua_getglobal(L, "core");
@@ -92,11 +86,27 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 
 	scriptIface->setOriginFromTable(-1);
 
-	// Call action
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_getfield(L, -1, "action");
+	lua_getfield(L, -1, field_name);
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_remove(L, -2); // Remove registered_abms[m_id]
+}
+
+void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
+		u32 active_object_count, u32 active_object_count_wider)
+{
+	ServerScripting *scriptIface = env->getScriptIface();
+	scriptIface->realityCheck();
+
+	lua_State *L = scriptIface->getStack();
+	sanity_check(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	prepareAction(scriptIface, "action");
+
+	// Call action
 	push_v3s16(L, p);
 	pushnode(L, n);
 	lua_pushnumber(L, active_object_count);
@@ -105,8 +115,33 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	int result = lua_pcall(L, 4, 0, error_handler);
 	if (result)
 		scriptIface->scriptError(result, "LuaABM::trigger");
+}
 
-	lua_pop(L, 1); // Pop error handler
+void LuaBulkABM::trigger(ServerEnvironment *env, const std::vector<v3s16> &pos_list)
+{
+	ServerScripting *scriptIface = env->getScriptIface();
+	scriptIface->realityCheck();
+
+	lua_State *L = scriptIface->getStack();
+	sanity_check(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	prepareAction(scriptIface, "bulk_action");
+
+	// Call action
+	lua_createtable(L, (int) MYMIN(pos_list.size(), (size_t) INT_MAX), 0);
+	int i = 1;
+	for (const v3s16 &p : pos_list) {
+		push_v3s16(L, p);
+		lua_rawseti(L, -2, i);
+		i++;
+	}
+
+	int result = lua_pcall(L, 1, 0, error_handler);
+	if (result)
+		scriptIface->scriptError(result, "LuaBulkABM::trigger");
 }
 
 void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)

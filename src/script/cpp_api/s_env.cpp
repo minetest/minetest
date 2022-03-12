@@ -147,14 +147,26 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		s16 max_y = INT16_MAX;
 		getintfield(L, current_abm, "max_y", max_y);
 
-		lua_getfield(L, current_abm, "action");
-		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
+		bool bulk = false;
+		lua_getfield(L, current_abm, "bulk_action");
+		if (lua_isfunction(L, current_abm + 1)) {
+			bulk = true;
+		} else {
+			lua_pop(L, 1);
+			lua_getfield(L, current_abm, "action");
+			luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
+		}
 		lua_pop(L, 1);
 
-		LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
-			trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
-
-		env->addActiveBlockModifier(abm);
+		if (bulk) {
+			LuaBulkABM *abm = new LuaBulkABM(L, id, trigger_contents, required_neighbors,
+				trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
+			env->addBulkActiveBlockModifier(abm);
+		} else {
+			LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
+				trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
+			env->addActiveBlockModifier(abm);
+		}
 
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
