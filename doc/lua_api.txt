@@ -3328,16 +3328,13 @@ Compatibility notes
 
 Vectors used to be defined as tables of the form `{x = num, y = num, z = num}`.
 Since Minetest 5.5.0, vectors additionally have a metatable to enable easier use.
-Those old-style vectors can still be found in old mod code.
+Note: Those old-style vectors can still be found in old mod code. Hence, mod and
+engine APIs still need to be able to cope with them in many places.
 
-Most functions by Minetest that take vectors will continue to able to handle them,
-but passing such manually constructed tables to Minetest's or some other mod's
-functions (if they want a vector) is considered deprecated and is strongly
-discouraged.
-The rationale behind this is that Minetest's functions can be overridden by mods,
-or may pass given vectors as argument to some callback function. And the mod that
-gets the vector in the end may want to depend on having a vector with the here
-defined interface.
+Manually constructed tables are deprecated and highly discouraged. This interface
+should be used to ensure seamless compatibility between mods and the Minetest API.
+This is especially important to callback function parameters and functions overwritten
+by mods.
 Also, though not likely, the internal implementation of a vector might change in
 the future.
 In your own code, or if you define your own API, you can, of course, still use
