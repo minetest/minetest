@@ -118,12 +118,8 @@ size_t ShadowRenderer::getDirectionalLightCount() const
 f32 ShadowRenderer::getMaxShadowFar() const
 {
 	if (!m_light_list.empty()) {
-		float wanted_range = m_client->getEnv().getClientMap().getWantedRange();
-
-		float zMax = m_light_list[0].getMaxFarValue() > wanted_range
-					     ? wanted_range
-					     : m_light_list[0].getMaxFarValue();
-		return zMax * MAP_BLOCKSIZE;
+		float zMax = m_light_list[0].getMaxFarValue();
+		return zMax;
 	}
 	return 0.0f;
 }

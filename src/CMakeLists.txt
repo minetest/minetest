@@ -98,28 +98,13 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-
-option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
+# TODO: this should be removed one day, we can enable it unconditionally
+option(ENABLE_GLES "Enable extra support code for OpenGL ES" FALSE)
 mark_as_advanced(ENABLE_GLES)
 
 option(ENABLE_TOUCH "Enable Touchscreen support" FALSE)
 if(ENABLE_TOUCH)
 	add_definitions(-DHAVE_TOUCHSCREENGUI)
-endif()
-
-if(BUILD_CLIENT)
-	# transitive dependency from Irrlicht (see longer explanation below)
-	if(NOT WIN32)
-		if(ENABLE_GLES)
-			find_package(OpenGLES2 REQUIRED)
-		else()
-			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
-				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
-			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
-
-			find_package(OpenGL REQUIRED)
-		endif()
-	endif()
 endif()
 
 if(BUILD_CLIENT)
@@ -544,18 +529,6 @@ if(BUILD_CLIENT)
 		)
 	endif()
 
-	if(ENABLE_GLES)
-		target_link_libraries(
-			${PROJECT_NAME}
-			${OPENGLES2_LIBRARIES}
-			${EGL_LIBRARIES}
-		)
-	else()
-		target_link_libraries(
-			${PROJECT_NAME}
-			${OPENGL_LIBRARIES}
-		)
-	endif()
 	if(USE_GETTEXT)
 		target_link_libraries(
 			${PROJECT_NAME}
