@@ -30,7 +30,10 @@ public:
 			m_light_mvp_setting("LightMVP"),
 			m_map_resolution_setting("MapResolution"),
 			m_max_far_setting("MaxFar"),
-			m_color_map_sampler_setting("ColorMapSampler")
+			m_color_map_sampler_setting("ColorMapSampler"),
+			m_perspective_bias0("xyPerspectiveBias0"),
+			m_perspective_bias1("xyPerspectiveBias1"),
+			m_perspective_zbias("zPerspectiveBias")
 	{}
 
 	void OnSetMaterial(const video::SMaterial &material) override {}
@@ -45,4 +48,7 @@ private:
 	CachedVertexShaderSetting<f32> m_map_resolution_setting;
 	CachedVertexShaderSetting<f32> m_max_far_setting;
 	CachedPixelShaderSetting<s32> m_color_map_sampler_setting;
+	CachedVertexShaderSetting<f32> m_perspective_bias0;
+	CachedVertexShaderSetting<f32> m_perspective_bias1;
+	CachedVertexShaderSetting<f32> m_perspective_zbias;
 };

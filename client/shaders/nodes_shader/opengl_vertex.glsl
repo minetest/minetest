@@ -45,8 +45,8 @@ varying float nightRatio;
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
-const float bias0 = 0.9;
-const float bias1 = 1.0 - bias0;
+uniform float xyPerspectiveBias0;
+uniform float xyPerspectiveBias1;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 // custom smoothstep implementation because it's not defined in glsl1.2
@@ -206,9 +206,9 @@ void main(void)
 		// Distance from the vertex to the player
 		float distanceToPlayer = length(eyeToVertex - v_LightDirection * dot(eyeToVertex, v_LightDirection)) / f_shadowfar;
 		// perspective factor estimation according to the 
-		float perspectiveFactor = distanceToPlayer * bias0 + bias1;
+		float perspectiveFactor = distanceToPlayer * xyPerspectiveBias0 + xyPerspectiveBias1;
 		float texelSize = f_shadowfar * perspectiveFactor * perspectiveFactor /
-				(f_textureresolution * bias1  - perspectiveFactor * bias0);
+				(f_textureresolution * xyPerspectiveBias1  - perspectiveFactor * xyPerspectiveBias0);
 		float slopeScale = clamp(pow(1.0 - cosLight*cosLight, 0.5), 0.0, 1.0);
 		normalOffsetScale = texelSize * slopeScale;
 

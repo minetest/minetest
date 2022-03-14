@@ -59,6 +59,10 @@ ShadowRenderer::~ShadowRenderer()
 
 	if (m_shadow_depth_cb)
 		delete m_shadow_depth_cb;
+	if (m_shadow_depth_entity_cb)
+		delete m_shadow_depth_entity_cb;
+	if (m_shadow_depth_trans_cb)
+		delete m_shadow_depth_trans_cb;
 	if (m_shadow_mix_cb)
 		delete m_shadow_mix_cb;
 	m_shadow_node_array.clear();
@@ -252,6 +256,10 @@ void ShadowRenderer::updateSMTextures()
 			// Static shader values.
 			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
 			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
+			m_shadow_depth_entity_cb->MapRes = m_shadow_depth_cb->MapRes;
+			m_shadow_depth_entity_cb->MaxFar = m_shadow_depth_cb->MaxFar;
+			m_shadow_depth_trans_cb->MapRes = m_shadow_depth_cb->MapRes;
+			m_shadow_depth_trans_cb->MaxFar = m_shadow_depth_cb->MaxFar;
 
 			// set the Render Target
 			// right now we can only render in usual RTT, not
@@ -344,7 +352,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 void ShadowRenderer::drawDebug()
 {
 	/* this code just shows shadows textures in screen and in ONLY for debugging*/
-	#if 0
+	#if 1
 	// this is debug, ignore for now.
 	if (shadowMapTextureFinal)
 		m_driver->draw2DImage(shadowMapTextureFinal,
@@ -533,6 +541,8 @@ void ShadowRenderer::createShaders()
 		if (depth_shader == -1) {
 			// upsi, something went wrong loading shader.
 			delete m_shadow_depth_cb;
+			m_shadow_depth_cb = nullptr;
+			m_shadows_enabled = false;
 			m_shadows_supported = false;
 			errorstream << "Error compiling shadow mapping shader." << std::endl;
 			return;
@@ -559,15 +569,19 @@ void ShadowRenderer::createShaders()
 			errorstream << "Error shadow mapping fs shader not found." << std::endl;
 			return;
 		}
+		m_shadow_depth_entity_cb = new ShadowDepthShaderCB();
 
 		depth_shader_entities = gpu->addHighLevelShaderMaterial(
 				readShaderFile(depth_shader_vs).c_str(), "vertexMain",
 				video::EVST_VS_1_1,
 				readShaderFile(depth_shader_fs).c_str(), "pixelMain",
-				video::EPST_PS_1_2, m_shadow_depth_cb);
+				video::EPST_PS_1_2, m_shadow_depth_entity_cb);
 
 		if (depth_shader_entities == -1) {
 			// upsi, something went wrong loading shader.
+			delete m_shadow_depth_entity_cb;
+			m_shadow_depth_entity_cb = nullptr;
+			m_shadows_enabled = false;
 			m_shadows_supported = false;
 			errorstream << "Error compiling shadow mapping shader (dynamic)." << std::endl;
 			return;
@@ -643,6 +657,7 @@ void ShadowRenderer::createShaders()
 		if (depth_shader_trans == -1) {
 			// upsi, something went wrong loading shader.
 			delete m_shadow_depth_trans_cb;
+			m_shadow_depth_trans_cb = nullptr;
 			m_shadow_map_colored = false;
 			m_shadows_supported = false;
 			errorstream << "Error compiling colored shadow mapping shader." << std::endl;
