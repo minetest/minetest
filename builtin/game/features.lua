@@ -27,6 +27,7 @@ core.features = {
 	get_light_data_buffer = true,
 	mod_storage_on_disk = true,
 	compress_zstd = true,
+	after_order_expiry_registration = true,
 }
 
 function core.has_feature(arg)

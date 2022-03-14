@@ -4912,6 +4912,9 @@ Utilities
           mod_storage_on_disk = true,
           -- "zstd" method for compress/decompress (5.7.0)
           compress_zstd = true,
+          -- minetest.after guarantees that coexisting jobs are executed primarily
+          -- in order of expiry and secondarily in order of registration (5.7.0)
+          after_order_expiry_registration = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
