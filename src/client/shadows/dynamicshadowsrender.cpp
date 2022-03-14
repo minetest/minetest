@@ -256,10 +256,14 @@ void ShadowRenderer::updateSMTextures()
 			// Static shader values.
 			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
 			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
-			m_shadow_depth_entity_cb->MapRes = m_shadow_depth_cb->MapRes;
-			m_shadow_depth_entity_cb->MaxFar = m_shadow_depth_cb->MaxFar;
-			m_shadow_depth_trans_cb->MapRes = m_shadow_depth_cb->MapRes;
-			m_shadow_depth_trans_cb->MaxFar = m_shadow_depth_cb->MaxFar;
+			if (m_shadow_depth_entity_cb) {
+				m_shadow_depth_entity_cb->MapRes = m_shadow_depth_cb->MapRes;
+				m_shadow_depth_entity_cb->MaxFar = m_shadow_depth_cb->MaxFar;
+			}
+			if (m_shadow_depth_trans_cb) {
+				m_shadow_depth_trans_cb->MapRes = m_shadow_depth_cb->MapRes;
+				m_shadow_depth_trans_cb->MaxFar = m_shadow_depth_cb->MaxFar;
+			}
 
 			// set the Render Target
 			// right now we can only render in usual RTT, not
