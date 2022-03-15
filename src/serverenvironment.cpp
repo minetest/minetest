@@ -77,6 +77,7 @@ void BulkActiveBlockModifier::apply(ServerEnvironment *env)
 	m_primed = false;
 	if (!m_pos_list.empty() && primed)
 		trigger(env, m_pos_list);
+	m_pos_list.clear();
 }
 
 /*
