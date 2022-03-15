@@ -444,6 +444,14 @@ end
 
 
 --------------------------------------------------------------------------------
+
+local function parse_area_string(pos, sub1, sub2, relative_to)
+	local newpos = string.sub(pos, sub1, sub2)
+	local pp = {}
+	pp.x, pp.y, pp.z = string.match(newpos, "([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)")
+	return core.parse_coordinates(pp.x, pp.y, pp.z, relative_to)
+end
+
 function core.string_to_area(value, relative_to)
 	local p1, p2 = unpack(value:split(") ("))
 	if p1 == nil or p2 == nil then
@@ -451,13 +459,8 @@ function core.string_to_area(value, relative_to)
 	end
 
 	if relative_to then
-		p1 = string.sub(p1, 2)
-		p2 = string.sub(p2, 1, -2)
-		local pp1, pp2 = {}, {}
-		pp1.x, pp1.y, pp1.z = string.match(p1, "([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)")
-		pp2.x, pp2.y, pp2.z = string.match(p2, "([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)")
-		p1 = core.parse_coordinates(pp1.x, pp1.y, pp1.z, relative_to)
-		p2 = core.parse_coordinates(pp2.x, pp2.y, pp2.z, relative_to)
+		p1 = parse_area_string(p1, 2, nil, relative_to)
+		p2 = parse_area_string(p2, 1, -2, relative_to)
 	else
 		p1 = core.string_to_pos(p1 .. ")")
 		p2 = core.string_to_pos("(" .. p2)
@@ -726,10 +729,10 @@ of a chat command parameter, using the chat command tilde notation.
 Parameters:
 * arg: String snippet containing the number; possible values:
     * "<number>": return as number
-    * "~<number>": return absvalue + <number>
-    * "~": return absvalue
+    * "~<number>": return relative_to + <number>
+    * "~": return relative_to
     * Anything else will return `nil`
-* absvalue: Number to which the `arg` number might be relative to
+* relative_to: Number to which the `arg` number might be relative to
 
 Returns:
 A number or `nil`, depending on `arg.
@@ -739,17 +742,17 @@ Examples:
 * `core.parse_relative_number("~5", 10)` returns 15
 * `core.parse_relative_number("~", 10)` returns 10
 ]]
-function core.parse_relative_number(arg, absvalue)
+function core.parse_relative_number(arg, relative_to)
 	if not arg then
 		return nil
 	elseif arg == "~" then
-		return absvalue
+		return relative_to
 	elseif string.sub(arg, 1, 1) == "~" then
 		local number = tonumber(string.sub(arg, 2))
 		if not number then
 			return nil
 		end
-		return absvalue + number
+		return relative_to + number
 	else
 		return tonumber(arg)
 	end

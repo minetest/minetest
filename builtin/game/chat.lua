@@ -1064,13 +1064,7 @@ core.register_chatcommand("time", {
 			return false, S("You don't have permission to run "
 				.. "this command (missing privilege: @1).", "settime")
 		end
-		local hour, minute = param:match("^([%d~-]+):([%d-]+)$")
-		if hour then
-			hour = string.trim(hour)
-		end
-		if minute then
-			minute = string.trim(minute)
-		end
+		local hour, minute = param:match("^(~?[-]?%d+):([-]?%d+)$")
 		if not hour or not minute then
 			local new_time = core.parse_relative_number(param, core.get_timeofday() * 24000)
 			if not new_time then
