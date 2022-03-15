@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-03-16 06:13+0000\n"
-"Last-Translator: Thomas Wiegand <weblate.org@wiegand.info>\n"
+"Last-Translator: TZTarzan <khunsatyptiphan@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
 "th/>\n"
 "Language: th\n"
@@ -20,35 +20,35 @@ msgstr "ขนาดสูงสุดของคิวการแชทนอ
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr "คำสั่งว่าง"
+msgstr "คำสั่งว่างเปล่า"
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "ออกจากเมนู"
+msgstr "ออกไปยังเมนูหลัก"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "ท้องถิ่นคำสั่ง: "
+msgstr "คำสั่งไม่ถูกต้อง: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "ออกคำสั่ง: "
+msgstr "คำสั่งที่มีปัญหา: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "เล่นคนเดียว"
+msgstr "รายชื่อผู้เล่นที่ออนไลน์"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "เล่นคนเดียว: "
+msgstr "ผู้เล่นที่ออนไลน์: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "คิวออกแชทว่างเปล่า."
+msgstr "คิวนอกแชทว่างเปล่า"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "คำสั่งนี้ถูกปิดการใช้งานโดยเซิร์ฟเวอร์."
+msgstr "คำสั่งนี้ถูกปิดการใช้งานโดยเซิร์ฟเวอร์"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -60,11 +60,11 @@ msgstr "คุณตายแล้ว"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr "ท้องถิ่นคำสั่ง:"
+msgstr "คำสั่งที่ใช้ได้:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr "ท้องถิ่นคำสั่ง: "
+msgstr "คำสั่งที่ใช้ได้: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -72,14 +72,14 @@ msgstr "ไม่มีคำสั่ง: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr "รับความช่วยเหลือสำหรับคำสั่ง"
+msgstr "รับความช่วยเหลือสำหรับการพิมพ์คำสั่ง"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
 "ใช้ '.help <cmd>' เพื่อรับข้อมูลเพิ่มเติม หรือใช้ '.help all' "
-"เพื่อแสดงรายการทุกอย่าง."
+"เพื่อแสดงรายการคำสั่งทั้งหมด"
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -95,7 +95,7 @@ msgstr "<ไม่มี>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "เกิดข้อผิดพลาดในสคริปต์ Lua เช่น mod:"
+msgstr "เกิดข้อผิดพลาดในสคริปต์ลูอา เช่น ม็อด:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -1322,19 +1322,19 @@ msgid ""
 "- %s: chat\n"
 msgstr ""
 "การควบคุม:\n"
-"-%s1: เลื่อนไปข้างหน้า\n"
-"-%s2: เลื่อนไปข้างหลัง\n"
-"-%s3: เลื่อนไปทางซ้าย\n"
-"-%s4: เลื่อนไปทางขวา\n"
-"-%s5: กระโดด / ปีน\n"
-"-%s6: แอบดู / ลงไป\n"
-"-%s7: วางรายการ\n"
-"-%s8: สินค้าคงคลัง\n"
-"- เมาส์: เลี้ยว / มอง\n"
-"- เมาส์ซ้าย: ขุด / เจาะ\n"
-"- เมาส์ขวา: สถานที่ / การใช้งาน\n"
-"- ล้อเมาส์: เลือกรายการ\n"
-"-%s9: แชท\n"
+"-%s1: เคลื่อนที่ไปข้างหน้า\n"
+"-%s2: เคลื่อนที่ไปข้างหลัง\n"
+"-%s3: เคลื่อนที่ไปทางซ้าย\n"
+"-%s4: เคลื่อนที่ไปทางขวา\n"
+"-%s5: กระโดด/ปีนขึ้น\n"
+"-%s6: ขุด/ชก\n"
+"-%s7: วาง/ใช้\n"
+"-%s8: ช่องเก็บของ\n"
+"- เมาส์: หัน/มอง\n"
+"- เมาส์ซ้าย: ขุด/ชก\n"
+"- เมาส์ขวา: วาง/ใช้\n"
+"- ลูกกลิ้งเมาส์: เลือกไอเทม\n"
+"-%s9: เปิดช่องแชท\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -2497,9 +2497,8 @@ msgid "Aux1 key"
 msgstr "ปุ่มกระโดด"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
-msgstr "คีย์พิเศษสำหรับการปีนเขา/เรียง"
+msgstr "คีย์พิเศษสำหรับการปีนขึ้น/ลง"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2550,24 +2549,20 @@ msgid "Block send optimize distance"
 msgstr "บล็อกส่งระยะทางเพิ่มประสิทธิภาพ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold and italic font path"
-msgstr "เส้นทางฟอนต์ monospace"
+msgstr "ไดเรกเตอรีฟอนต์หนาเอียง"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold and italic monospace font path"
-msgstr "เส้นทางฟอนต์ monospace"
+msgstr "ไดเรกเตอรีฟอนต์หนาเอียงสำหรับฟอนต์ขนาดคงที่"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold font path"
-msgstr "เส้นทางแบบอักษร"
+msgstr "ไดเรกเตอรีฟอนต์หนา"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold monospace font path"
-msgstr "เส้นทางฟอนต์ monospace"
+msgstr "ไดเรกเตอรีฟอนต์หนาแบบขนาดคงที่"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2658,14 +2653,12 @@ msgid "Chat command time message threshold"
 msgstr "เกณฑ์ข้อความเวลาคำสั่งแชท"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
-msgstr "คำสั่ง"
+msgstr "คำสั่งแชท"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "ขนาดตัวอักษร"
+msgstr "ขนาดฟอนต์ในแชท"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -2977,7 +2970,7 @@ msgstr "ลดระดับเสียงที่สำคัญ"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistance to movement."
-msgstr ""
+msgstr "ลดค่านี้เพื่อเพิ่มแรงต้านทานของของเหลวต่อการเคลื่อนที่"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2985,7 +2978,7 @@ msgstr "ขั้นตอนเซิร์ฟเวอร์เฉพาะ"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "ค่าความเร่งเริ่มต้น"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
@@ -3012,9 +3005,8 @@ msgid "Default report format"
 msgstr "รูปแบบรายงานเริ่มต้น"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "เกมเริ่มต้น"
+msgstr "ค่าขนาดสแต็คเริ่มต้น"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3218,9 +3210,8 @@ msgid "Enable console window"
 msgstr "เปิดใช้งานหน้าต่างคอนโซล"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
-msgstr "เปิดใช้งานโหมดสร้างสรรค์สำหรับแผนที่ที่สร้างขึ้นใหม่."
+msgstr "เปิดใช้งานโหมดสร้างสรรค์สำหรับผู้เล่นทั้งหมด"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -3514,9 +3505,8 @@ msgid "Floatland water level"
 msgstr "ระดับน้ำลอยน้ำ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fly key"
-msgstr "ปุ่ม Fly"
+msgstr "ปุ่มบิน"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -4245,14 +4235,12 @@ msgid "Invert vertical mouse movement."
 msgstr "กลับเคลื่อนไหวเมาส์แนวตั้ง."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Italic font path"
-msgstr "เส้นทางฟอนต์ monospace"
+msgstr "ไดเรกเตอรีฟอนต์ตัวเอียง"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Italic monospace font path"
-msgstr "เส้นทางฟอนต์ monospace"
+msgstr "ไดเรกเตอรีฟอนต์ตัวเอียงแบบขนาดคงที่"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
@@ -5796,9 +5784,8 @@ msgid ""
 msgstr "ชื่อของเซิร์ฟเวอร์ที่จะแสดงเมื่อผู้เล่นเข้าร่วมและในรายการเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
-msgstr "ใกล้เครื่องบิน"
+msgstr "ระนาบใกล้"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5817,9 +5804,8 @@ msgid "New users need to input this password."
 msgstr "ผู้ใช้ใหม่ต้องป้อนรหัสผ่านนี้."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Noclip"
-msgstr "Noclip (? คลิปไม่)"
+msgstr "โนคลิป (ทะลุผ่านบล็อก)"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
@@ -5969,9 +5955,8 @@ msgid "Pitch move mode"
 msgstr "โหมดย้ายสนาม"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place key"
-msgstr "ปุ่ม Fly"
+msgstr "ปุ่มวาง"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6091,9 +6076,8 @@ msgid "Recent Chat Messages"
 msgstr "ข้อความแชทล่าสุด"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "เส้นทางแบบอักษร"
+msgstr "ไดเรกเตอรีฟอนต์แบบปกติ"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
