@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2021-12-02 01:31+0000\n"
-"Last-Translator: Simone Starace <simone.starace93@gmail.com>\n"
+"PO-Revision-Date: 2022-03-18 02:57+0000\n"
+"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -346,7 +346,7 @@ msgstr "Aggiorna"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr "Aggiornat tutti [$1]"
+msgstr "Aggiorna tutti [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -777,7 +777,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "Riguardo a"
+msgstr "Informazioni"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -3413,6 +3413,9 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Consente compromessi che riducono il carico della CPU o aumentano le "
+"prestazioni di rendering\n"
+"a scapito di piccoli difetti visivi che non influiscono sulla giocabilità."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3622,7 +3625,7 @@ msgstr "Dimensione del carattere"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "Dimensione carattere divisibile per"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
