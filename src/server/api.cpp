@@ -1,5 +1,6 @@
 #include "api.h"
 #include "scripting_server.h"
+#include "util/Optional.h"
 
 namespace api
 {
@@ -101,7 +102,9 @@ bool Router::can_bypass_userlimit(const std::string &name, const std::string &ip
 	return false;
 }
 
-void Router::on_joinplayer(ServerActiveObject *player)
+void Router::on_joinplayer (
+      ServerActiveObject *player,
+      s64 last_login)
 {
 	for (const auto &impl : m_player_implementations)
 		impl->on_joinplayer(player);
@@ -148,10 +151,10 @@ void Router::on_playerReceiveFields(ServerActiveObject *player,
 		impl->on_playerReceiveFields(player, formname, fields);
 }
 
-void Router::on_auth_failure(const std::string &name, const std::string &ip)
+void Router::on_authplayer(const std::string &name, const std::string &ip, bool is_success)
 {
 	for (const auto &impl : m_player_implementations)
-		impl->on_auth_failure(name, ip);
+      impl->on_authplayer(name, ip, is_success);
 }
 
 /*
@@ -249,11 +252,15 @@ std::string Router::formatChatMessage(const std::string &name, const std::string
 	return "";
 }
 
-bool Router::getAuth(const std::string &playername, std::string *dst_password,
-		std::set<std::string> *dst_privs)
+bool Router::getAuth (
+      const std::string &playername,
+      std::string *dst_password,
+      std::set<std::string> *dst_privs,
+      s64 *dst_last_login)
 {
-	for (const auto &impl : m_global_implementations) {
-		if (impl->getAuth(playername, dst_password, dst_privs))
+   for (const std::shared_ptr<Global> &impl : m_global_implementations)
+   {
+      if (impl->getAuth(playername, dst_password, dst_privs, dst_last_login))
 			return true;
 	}
 
@@ -262,14 +269,14 @@ bool Router::getAuth(const std::string &playername, std::string *dst_password,
 
 void Router::createAuth(const std::string &playername, const std::string &password)
 {
-	for (const auto &impl : m_global_implementations) {
+   for (const std::shared_ptr<Global> &impl : m_global_implementations) {
 		impl->createAuth(playername, password);
 	}
 }
 
 bool Router::setPassword(const std::string &playername, const std::string &password)
 {
-	for (const auto &impl : m_global_implementations) {
+   for (const std::shared_ptr<Global> &impl : m_global_implementations) {
 		if (impl->setPassword(playername, password))
 			return true;
 	}
@@ -277,7 +284,26 @@ bool Router::setPassword(const std::string &playername, const std::string &passw
 	return false;
 }
 
-void Router::environment_Step(float dtime)
+// u32 Router::allocateDynamicMediaCallback(lua_State *L, int f_idx) // TODO: test if needed
+// {}
+
+void Router::freeDynamicMediaCallback(u32 token)
+{
+   for (const std::shared_ptr<Global> &impl : m_global_implementations)
+   {
+      impl->freeDynamicMediaCallback(token);
+   }
+}
+
+void Router::on_dynamic_media_added(u32 token, const char *playername) // TODO: test if needed
+{
+   for (const std::shared_ptr<Global> &impl : m_global_implementations)
+   {
+      impl->on_dynamic_media_added(token, playername);
+   }
+}
+
+void Router::environment_Step(float dtime) // TODO: test if needed
 {
 	for (const auto &impl : m_env_implementations)
 		impl->environment_Step(dtime);
@@ -394,6 +420,12 @@ void Router::luaentity_Activate(u16 id, const std::string &staticdata, u32 dtime
 		impl->luaentity_Activate(id, staticdata, dtime_s);
 }
 
+void Router::luaentity_Deactivate(u16 id)
+{
+   for (const auto &impl : m_entity_implementations)
+      impl->luaentity_Deactivate(id);
+}
+
 void Router::luaentity_Remove(u16 id)
 {
 	for (const auto &impl : m_entity_implementations)
@@ -415,18 +447,18 @@ void Router::luaentity_GetProperties(
 		impl->luaentity_GetProperties(id, self, prop);
 }
 
-void Router::on_entity_step(u16 id, float dtime, const collisionMoveResult *moveresult)
+void Router::luaentity_Step(u16 id, float dtime, const collisionMoveResult *moveresult)
 {
 	for (const auto &impl : m_entity_implementations)
-		impl->on_entity_step(id, dtime, moveresult);
+      impl->luaentity_Step(id, dtime, moveresult);
 }
 
-bool Router::on_entity_punched(u16 id, ServerActiveObject *puncher,
+bool Router::luaentity_Punch(u16 id, ServerActiveObject *puncher,
 		float time_from_last_punch, const ToolCapabilities *toolcap, v3f dir,
 		s16 damage)
 {
 	for (const auto &impl : m_entity_implementations) {
-		if (impl->on_entity_punched(id, puncher, time_from_last_punch, toolcap,
+      if (impl->luaentity_Punch(id, puncher, time_from_last_punch, toolcap,
 				    dir, damage))
 			return true;
 	}
@@ -434,20 +466,20 @@ bool Router::on_entity_punched(u16 id, ServerActiveObject *puncher,
 	return false;
 }
 
-bool Router::on_entity_death(u16 id, ServerActiveObject *killer)
+bool Router::luaentity_on_death(u16 id, ServerActiveObject *killer)
 {
 	for (const auto &impl : m_entity_implementations) {
-		if (impl->on_entity_death(id, killer))
+      if (impl->luaentity_on_death(id, killer))
 			return true;
 	}
 
 	return false;
 }
 
-void Router::on_entity_rightclick(u16 id, ServerActiveObject *clicker)
+void Router::luaentity_Rightclick(u16 id, ServerActiveObject *clicker)
 {
 	for (const auto &impl : m_entity_implementations)
-		impl->on_entity_rightclick(id, clicker);
+      impl->luaentity_Rightclick(id, clicker);
 }
 
 void Router::luaentity_on_attach_child(u16 id, ServerActiveObject *child)
@@ -492,7 +524,9 @@ bool Router::item_OnDrop(ItemStack &item, ServerActiveObject *dropper, v3f pos)
 }
 
 bool Router::item_OnPlace(
-		ItemStack &item, ServerActiveObject *placer, const PointedThing &pointed)
+      Optional<ItemStack> &item,
+      ServerActiveObject *placer,
+      const PointedThing &pointed)
 {
 	for (const auto &impl : m_item_implementations) {
 		if (impl->item_OnPlace(item, placer, pointed))
@@ -503,7 +537,9 @@ bool Router::item_OnPlace(
 }
 
 bool Router::item_OnUse(
-		ItemStack &item, ServerActiveObject *user, const PointedThing &pointed)
+      Optional<ItemStack> &item,
+      ServerActiveObject *user,
+      const PointedThing &pointed)
 {
 	for (const auto &impl : m_item_implementations) {
 		if (impl->item_OnUse(item, user, pointed))
@@ -513,11 +549,13 @@ bool Router::item_OnUse(
 	return false;
 }
 
-bool Router::item_OnSecondaryUse(
-		ItemStack &item, ServerActiveObject *user, const PointedThing &pointed)
+bool Router::item_OnSecondaryUse (
+      Optional<ItemStack> &item,
+      ServerActiveObject *user,
+      const PointedThing &pointed)
 {
 	for (const auto &impl : m_item_implementations) {
-		if (impl->item_OnSecondaryUse(item, user, pointed))
+      if (impl->item_OnSecondaryUse (item, user, pointed))
 			return true;
 	}
 

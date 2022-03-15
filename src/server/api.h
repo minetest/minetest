@@ -20,6 +20,7 @@ struct ObjectProperties;
 struct PlayerHPChangeReason;
 struct PointedThing;
 struct ToolCapabilities;
+template <typename T> class Optional;
 
 namespace api
 {
@@ -35,6 +36,7 @@ class ModChannels;
 class Node;
 class NodeMeta;
 class Player;
+// struct lua_State;
 
 class Router
 {
@@ -61,10 +63,16 @@ public:
 	std::string formatChatMessage(
 			const std::string &name, const std::string &message);
 
-	bool getAuth(const std::string &playername, std::string *dst_password,
-			std::set<std::string> *dst_privs);
+   /* auth */
+   bool getAuth(const std::string &playername, std::string *dst_password,
+         std::set<std::string> *dst_privs, s64 *dst_last_login = nullptr);
 	void createAuth(const std::string &playername, const std::string &password);
 	bool setPassword(const std::string &playername, const std::string &password);
+
+   /* dynamic media handling */
+   // static u32 allocateDynamicMediaCallback(lua_State *L, int f_idx);
+   void freeDynamicMediaCallback(u32 token);
+   void on_dynamic_media_added(u32 token, const char *playername);
 
 	/*
 	 * Environment routes
@@ -91,7 +99,7 @@ public:
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 			std::string *reason);
 	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
-	void on_joinplayer(ServerActiveObject *player);
+   void on_joinplayer(ServerActiveObject *player, s64 last_login);
 	void on_leaveplayer(ServerActiveObject *player, bool timeout);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
@@ -101,7 +109,7 @@ public:
 			const PlayerHPChangeReason &reason);
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
-	void on_auth_failure(const std::string &name, const std::string &ip);
+   void on_authplayer(const std::string &name, const std::string &ip, bool is_success);
 
 	// Player inventory callbacks
 	// Return number of accepted items to be moved
@@ -128,12 +136,12 @@ public:
 	 */
 
 	bool item_OnDrop(ItemStack &item, ServerActiveObject *dropper, v3f pos);
-	bool item_OnPlace(ItemStack &item, ServerActiveObject *placer,
-			const PointedThing &pointed);
-	bool item_OnUse(ItemStack &item, ServerActiveObject *user,
-			const PointedThing &pointed);
-	bool item_OnSecondaryUse(ItemStack &item, ServerActiveObject *user,
-			const PointedThing &pointed);
+   bool item_OnPlace(Optional<ItemStack> &item, ServerActiveObject *placer,
+         const PointedThing &pointed);
+   bool item_OnUse(Optional<ItemStack> &item, ServerActiveObject *user,
+         const PointedThing &pointed);
+   bool item_OnSecondaryUse(Optional<ItemStack> &item, ServerActiveObject *user,
+         const PointedThing &pointed);
 	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
 			const InventoryList *old_craft_grid,
 			const InventoryLocation &craft_inv);
@@ -173,16 +181,17 @@ public:
 
 	bool luaentity_Add(u16 id, const char *name);
 	void luaentity_Activate(u16 id, const std::string &staticdata, u32 dtime_s);
+   void luaentity_Deactivate(u16 id);
 	void luaentity_Remove(u16 id);
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(
 			u16 id, ServerActiveObject *self, ObjectProperties *prop);
-	void on_entity_step(u16 id, float dtime, const collisionMoveResult *moveresult);
-	bool on_entity_punched(u16 id, ServerActiveObject *puncher,
+   void luaentity_Step(u16 id, float dtime, const collisionMoveResult *moveresult);
+   bool luaentity_Punch(u16 id, ServerActiveObject *puncher,
 			float time_from_last_punch, const ToolCapabilities *toolcap,
 			v3f dir, s16 damage);
-	bool on_entity_death(u16 id, ServerActiveObject *killer);
-	void on_entity_rightclick(u16 id, ServerActiveObject *clicker);
+   bool luaentity_on_death(u16 id, ServerActiveObject *killer);
+   void luaentity_Rightclick(u16 id, ServerActiveObject *clicker);
 	void luaentity_on_attach_child(u16 id, ServerActiveObject *child);
 	void luaentity_on_detach_child(u16 id, ServerActiveObject *child);
 	void luaentity_on_detach(u16 id, ServerActiveObject *parent);

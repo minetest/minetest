@@ -44,13 +44,13 @@ public:
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,
 			ServerActiveObject *self, ObjectProperties *prop);
-	void on_entity_step(u16 id, float dtime,
+   void luaentity_Step(u16 id, float dtime,
 		const collisionMoveResult *moveresult);
-	bool on_entity_punched(u16 id,
+   bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
 			const ToolCapabilities *toolcap, v3f dir, s32 damage);
-	bool on_entity_death(u16 id, ServerActiveObject *killer);
-	void on_entity_rightclick(u16 id, ServerActiveObject *clicker);
+   bool luaentity_on_death(u16 id, ServerActiveObject *killer);
+   void luaentity_Rightclick(u16 id, ServerActiveObject *clicker);
 	void luaentity_on_attach_child(u16 id, ServerActiveObject *child);
 	void luaentity_on_detach_child(u16 id, ServerActiveObject *child);
 	void luaentity_on_detach(u16 id, ServerActiveObject *parent);

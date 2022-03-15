@@ -47,11 +47,13 @@ public:
 	{
 		return 0;
 	}
-	virtual void on_playerReceiveFields(ServerActiveObject *player,
+
+   virtual void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields)
 	{
 	}
-	virtual void on_auth_failure(const std::string &name, const std::string &ip) {}
+
+   virtual void on_authplayer(const std::string &name, const std::string &ip, bool is_success) {}
 
 	virtual int player_inventory_AllowMove(
 			const MoveAction &ma, int count, ServerActiveObject *player)

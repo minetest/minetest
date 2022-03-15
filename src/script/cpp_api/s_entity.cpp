@@ -264,7 +264,7 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	lua_pop(L, 1);
 }
 
-void ScriptApiEntity::on_entity_step(u16 id, float dtime,
+void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
 	const collisionMoveResult *moveresult)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -298,11 +298,13 @@ void ScriptApiEntity::on_entity_step(u16 id, float dtime,
 
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
 //                       tool_capabilities, direction, damage)
-bool ScriptApiEntity::on_entity_punched(u16 id,
+bool ScriptApiEntity::luaentity_Punch(u16 id,
 		ServerActiveObject *puncher, float time_from_last_punch,
 		const ToolCapabilities *toolcap, v3f dir, s32 damage)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -362,13 +364,13 @@ bool ScriptApiEntity::luaentity_run_simple_callback(u16 id,
 	return retval;
 }
 
-bool ScriptApiEntity::on_entity_death(u16 id, ServerActiveObject *killer)
+bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
 {
 	return luaentity_run_simple_callback(id, killer, "on_death");
 }
 
 // Calls entity:on_rightclick(ObjectRef clicker)
-void ScriptApiEntity::on_entity_rightclick(u16 id, ServerActiveObject *clicker)
+void ScriptApiEntity::luaentity_Rightclick(u16 id, ServerActiveObject *clicker)
 {
 	luaentity_run_simple_callback(id, clicker, "on_rightclick");
 }

@@ -123,7 +123,7 @@ void LuaEntitySAO::dispatchScriptDeactivate()
 	// and that it isn't already gone.
 	// The latter also prevents this from ever being called twice.
 	if (m_registered && !isGone())
-		m_env->getScriptIface()->luaentity_Deactivate(m_id);
+      m_env->getApiRouter()->luaentity_Deactivate(m_id);
 }
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
@@ -199,7 +199,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 
 	if (m_registered)
-		m_env->getApiRouter()->on_entity_step(m_id, dtime, moveresult_p);
+	{
+      m_env->getApiRouter()->luaentity_Step(m_id, dtime, moveresult_p);
+	}
 
 	if (!send_recommended)
 		return;
@@ -282,7 +284,8 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	os<<serializeString16(m_init_name);
 	// state
 	if(m_registered){
-		std::string state = m_env->getApiRouter()->luaentity_GetStaticdata(m_id);
+		std::string state = m_env->getApiRouter()->
+			luaentity_GetStaticdata(m_id);
 		os<<serializeString32(state);
 	} else {
 		os<<serializeString32(m_init_state);
@@ -328,7 +331,7 @@ u32 LuaEntitySAO::punch(v3f dir,
 			time_from_last_punch,
 			initial_wear);
 
-	bool damage_handled = m_env->getApiRouter()->on_entity_punched(m_id, puncher,
+   bool damage_handled = m_env->getApiRouter()->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir, result.did_punch ? result.damage : 0);
 
 	if (!damage_handled) {
@@ -344,7 +347,7 @@ u32 LuaEntitySAO::punch(v3f dir,
 	if (getHP() == 0 && !isGone()) {
 		clearParentAttachment();
 		clearChildAttachments();
-		m_env->getApiRouter()->on_entity_death(m_id, puncher);
+      m_env->getApiRouter()->luaentity_on_death(m_id, puncher);
 		markForRemoval();
 	}
 
@@ -363,7 +366,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 	if (!m_registered)
 		return;
 
-	m_env->getApiRouter()->on_entity_rightclick(m_id, clicker);
+   m_env->getApiRouter()->luaentity_Rightclick(m_id, clicker);
 }
 
 void LuaEntitySAO::setPos(const v3f &pos)

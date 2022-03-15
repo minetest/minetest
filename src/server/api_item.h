@@ -1,6 +1,7 @@
 #pragma once
 
 class InventoryList;
+template <typename T> class Optional;
 struct InventoryLocation;
 struct ItemStack;
 struct PointedThing;
@@ -20,24 +21,23 @@ public:
 	{
 		return false;
 	}
-	virtual bool item_OnPlace(ItemStack &item, ServerActiveObject *placer,
+   virtual bool item_OnPlace(Optional<ItemStack> &item, ServerActiveObject *placer,
 			const PointedThing &pointed)
 	{
 		return false;
 	}
-	virtual bool item_OnUse(ItemStack &item, ServerActiveObject *user,
+   virtual bool item_OnUse(Optional<ItemStack> &item, ServerActiveObject *user,
 			const PointedThing &pointed)
 	{
 		return false;
 	}
-	virtual bool item_OnSecondaryUse(ItemStack &item, ServerActiveObject *user,
+   virtual bool item_OnSecondaryUse(Optional<ItemStack> &item, ServerActiveObject *user,
 			const PointedThing &pointed)
 	{
 		return false;
 	}
-	virtual bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
-			const InventoryList *old_craft_grid,
-			const InventoryLocation &craft_inv)
+   virtual bool item_OnCraft (Optional<ItemStack> &item, ServerActiveObject *user,
+         const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 	{
 		return false;
 	}

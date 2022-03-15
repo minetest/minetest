@@ -511,7 +511,6 @@ void Server::init()
 	m_craftdef->initHashes(this);
 
 	// Initialize Environment
-
 	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
 	m_env = new ServerEnvironment(servermap, m_api_router.get(), this, m_path_world);
 
@@ -2710,7 +2709,7 @@ void Server::stepPendingDynMediaCallbacks(float dtime)
 			fs::DeleteSingleFileOrEmptyDirectory(m_media[name].path);
 			m_media.erase(name);
 		}
-		getScriptIface()->freeDynamicMediaCallback(it->first);
+      getApiRouter()->freeDynamicMediaCallback(it->first);
 		it = m_pending_dyn_media.erase(it);
 	}
 }
@@ -3619,7 +3618,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 	// Run callback for players that already had the file delivered (legacy-only)
 	for (session_t peer_id : delivered) {
 		if (auto player = m_env->getPlayer(peer_id))
-			getScriptIface()->on_dynamic_media_added(token, player->getName());
+         getApiRouter()->on_dynamic_media_added(token, player->getName());
 	}
 
 	// Save all others in our pending state

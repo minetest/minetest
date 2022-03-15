@@ -416,8 +416,8 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	}
 
 	s64 last_login;
-	m_api_router->getAuth(playersao->getPlayer()->getName(), nullptr, nullptr, &last_login); // TODO m_script --> m_api_router ????
-	m_api_router->on_joinplayer(playersao, last_login);
+   m_api_router->getAuth (playersao->getPlayer()->getName(), nullptr, nullptr, &last_login);
+   m_api_router->on_joinplayer (playersao, last_login);
 
 	// Send shutdown timer if shutdown has been scheduled
 	if (m_shutdown_state.isTimerRunning())
@@ -1817,7 +1817,7 @@ void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 		if (it->second.waiting_players.count(peer_id)) {
 			it->second.waiting_players.erase(peer_id);
 			if (player)
-				getScriptIface()->on_dynamic_media_added(token, player->getName());
+            getApiRouter()->on_dynamic_media_added(token, player->getName());
 		}
 	}
 }
