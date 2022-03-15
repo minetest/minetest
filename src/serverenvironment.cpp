@@ -1031,7 +1031,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 {
-	for (const ABMWithState abm_with_state : m_abms) {
+	for (const ABMWithState &abm_with_state : m_abms) {
 		if (abm_with_state.abm == abm)
 			throw AlreadyExistsException("Same ABM added twice");
 	}
