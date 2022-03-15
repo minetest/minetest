@@ -130,8 +130,13 @@ local function parse_range_str(player_name, str)
 			return false, S("Unable to get position of player @1.", player_name)
 		end
 	else
-		p1, p2 = core.string_to_area(str)
-		if p1 == nil then
+		local player = core.get_player_by_name(player_name)
+		local relpos
+		if player then
+			relpos = player:get_pos()
+		end
+		p1, p2 = core.string_to_area(str, relpos)
+		if p1 == nil or p2 == nil then
 			return false, S("Incorrect area format. "
 				.. "Expected: (x1,y1,z1) (x2,y2,z2)")
 		end
@@ -569,10 +574,16 @@ core.register_chatcommand("teleport", {
 	description = S("Teleport to position or player"),
 	privs = {teleport=true},
 	func = function(name, param)
+		local player = core.get_player_by_name(name)
+		local relpos
+		if player then
+			relpos = player:get_pos()
+		end
 		local p = {}
-		p.x, p.y, p.z = param:match("^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p = vector.apply(p, tonumber)
-		if p.x and p.y and p.z then
+		p.x, p.y, p.z = string.match(param, "^([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)$")
+		p = core.parse_coordinates(p.x, p.y, p.z, relpos)
+		local teleportee = core.get_player_by_name(name)
+		if p and p.x and p.y and p.z then
 			return teleport_to_pos(name, p)
 		end
 
@@ -586,9 +597,19 @@ core.register_chatcommand("teleport", {
 			"other players (missing privilege: @1).", "bring")
 
 		local teleportee_name
+		p = {}
 		teleportee_name, p.x, p.y, p.z = param:match(
-				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+				"^([^ ]+) +([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)$")
+		if teleportee_name then
+			local teleportee = core.get_player_by_name(teleportee_name)
+			if not teleportee then
+				return
+			end
+			relpos = teleportee:get_pos()
+			p = core.parse_coordinates(p.x, p.y, p.z, relpos)
+		end
 		p = vector.apply(p, tonumber)
+
 		if teleportee_name and p.x and p.y and p.z then
 			if not has_bring_priv then
 				return false, missing_bring_msg
@@ -837,7 +858,7 @@ core.register_chatcommand("spawnentity", {
 	description = S("Spawn entity at given (or your) position"),
 	privs = {give=true, interact=true},
 	func = function(name, param)
-		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
+		local entityname, pstr = string.match(param, "^([^ ]+) *(.*)$")
 		if not entityname then
 			return false, S("EntityName required.")
 		end
@@ -851,11 +872,15 @@ core.register_chatcommand("spawnentity", {
 		if not core.registered_entities[entityname] then
 			return false, S("Cannot spawn an unknown entity.")
 		end
-		if p == "" then
+		local p
+		if pstr == "" then
 			p = player:get_pos()
 		else
-			p = core.string_to_pos(p)
-			if p == nil then
+			p = {}
+			p.x, p.y, p.z = string.match(pstr, "^([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)$")
+			local relpos = player:get_pos()
+			p = core.parse_coordinates(p.x, p.y, p.z, relpos)
+			if not (p and p.x and p.y and p.z) then
 				return false, S("Invalid parameters (@1).", param)
 			end
 		end
@@ -1014,6 +1039,13 @@ core.register_chatcommand("status", {
 	end,
 })
 
+local function get_time(timeofday)
+	local time = math.floor(timeofday * 1440)
+	local minute = time % 60
+	local hour = (time - minute) / 60
+	return time, hour, minute
+end
+
 core.register_chatcommand("time", {
 	params = S("[<0..23>:<0..59> | <0..24000>]"),
 	description = S("Show or set time of day"),
@@ -1032,9 +1064,20 @@ core.register_chatcommand("time", {
 			return false, S("You don't have permission to run "
 				.. "this command (missing privilege: @1).", "settime")
 		end
-		local hour, minute = param:match("^(%d+):(%d+)$")
-		if not hour then
-			local new_time = tonumber(param) or -1
+		local hour, minute = param:match("^([%d~-]+):([%d-]+)$")
+		if hour then
+			hour = string.trim(hour)
+		end
+		if minute then
+			minute = string.trim(minute)
+		end
+		if not hour or not minute then
+			local new_time = core.parse_relative_number(param, core.get_timeofday() * 24000)
+			if not new_time then
+				new_time = tonumber(param) or -1
+			else
+				new_time = new_time % 24000
+			end
 			if new_time ~= new_time or new_time < 0 or new_time > 24000 then
 				return false, S("Invalid time (must be between 0 and 24000).")
 			end
@@ -1042,14 +1085,40 @@ core.register_chatcommand("time", {
 			core.log("action", name .. " sets time to " .. new_time)
 			return true, S("Time of day changed.")
 		end
+		local relative = false
+		if string.sub(hour, 1,1) == "~" then
+			relative = true
+			hour = string.sub(hour, 2)
+		end
+		local new_time
 		hour = tonumber(hour)
 		minute = tonumber(minute)
-		if hour < 0 or hour > 23 then
-			return false, S("Invalid hour (must be between 0 and 23 inclusive).")
-		elseif minute < 0 or minute > 59 then
-			return false, S("Invalid minute (must be between 0 and 59 inclusive).")
+		if not hour or not minute then
+			return false
 		end
-		core.set_timeofday((hour * 60 + minute) / 1440)
+		if not relative then
+			if hour < 0 or hour > 23 then
+				return false, S("Invalid hour (must be between 0 and 23 inclusive).")
+			elseif minute < 0 or minute > 59 then
+				return false, S("Invalid minute (must be between 0 and 59 inclusive).")
+			end
+			new_time = (hour * 60 + minute) / 1440
+		else
+			if minute < 0 or minute > 59 then
+				return false, S("Invalid minute (must be between 0 and 59 inclusive).")
+			end
+			local current_time = core.get_timeofday()
+			local time_diff = (math.abs(hour) * 60 + minute) / 1440
+			-- negative time
+			if hour < 0 then
+				time_diff = -time_diff
+			end
+			new_time = current_time + time_diff
+			local _
+			new_time = new_time % 1.0
+			_, hour, minute = get_time(new_time)
+		end
+		core.set_timeofday(new_time)
 		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
 		return true, S("Time of day changed.")
 	end,

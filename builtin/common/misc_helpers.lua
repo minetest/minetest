@@ -444,14 +444,24 @@ end
 
 
 --------------------------------------------------------------------------------
-function core.string_to_area(value)
+function core.string_to_area(value, relative_to)
 	local p1, p2 = unpack(value:split(") ("))
 	if p1 == nil or p2 == nil then
 		return nil
 	end
 
-	p1 = core.string_to_pos(p1 .. ")")
-	p2 = core.string_to_pos("(" .. p2)
+	if relative_to then
+		p1 = string.sub(p1, 2)
+		p2 = string.sub(p2, 1, -2)
+		local pp1, pp2 = {}, {}
+		pp1.x, pp1.y, pp1.z = string.match(p1, "([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)")
+		pp2.x, pp2.y, pp2.z = string.match(p2, "([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)")
+		p1 = core.parse_coordinates(pp1.x, pp1.y, pp1.z, relative_to)
+		p2 = core.parse_coordinates(pp2.x, pp2.y, pp2.z, relative_to)
+	else
+		p1 = core.string_to_pos(p1 .. ")")
+		p2 = core.string_to_pos("(" .. p2)
+	end
 	if p1 == nil or p2 == nil then
 		return nil
 	end
@@ -469,9 +479,17 @@ local function test_string_to_area()
 
 	p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
 	assert(p1 == nil and p2 == nil)
-end
 
-test_string_to_area()
+	p1, p2 = core.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})
+	assert(type(p1) == "table" and type(p2) == "table")
+	assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
+	assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
+
+	p1, p2 = core.string_to_area("(1 2 3) (~5 ~-5 ~)", {x=10,y=10,z=10})
+	assert(type(p1) == "table" and type(p2) == "table")
+	assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
+	assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
+end
 
 --------------------------------------------------------------------------------
 function table.copy(t, seen)
@@ -701,3 +719,70 @@ end
 function core.is_nan(number)
 	return number ~= number
 end
+
+--[[ Helper function for parsing an optionally relative number
+of a chat command parameter, using the chat command tilde notation.
+
+Parameters:
+* arg: String snippet containing the number; possible values:
+    * "<number>": return as number
+    * "~<number>": return absvalue + <number>
+    * "~": return absvalue
+    * Anything else will return `nil`
+* absvalue: Number to which the `arg` number might be relative to
+
+Returns:
+A number or `nil`, depending on `arg.
+
+Examples:
+* `core.parse_relative_number("5", 10)` returns 5
+* `core.parse_relative_number("~5", 10)` returns 15
+* `core.parse_relative_number("~", 10)` returns 10
+]]
+function core.parse_relative_number(arg, absvalue)
+	if not arg then
+		return nil
+	elseif arg == "~" then
+		return absvalue
+	elseif string.sub(arg, 1, 1) == "~" then
+		local number = tonumber(string.sub(arg, 2))
+		if not number then
+			return nil
+		end
+		return absvalue + number
+	else
+		return tonumber(arg)
+	end
+end
+
+--[[ Helper function to parse coordinates that might be relative
+to another position; supports chat command tilde notation.
+Intended to be used in chat command parameter parsing.
+
+Parameters:
+* x, y, z: Parsed x, y, and z coordinates as strings
+* relative_to: Position to which to compare the position
+
+Syntax of x, y and z:
+* "<number>": return as number
+* "~<number>": return <number> + player position on this axis
+* "~": return player position on this axis
+
+Returns: a vector or nil for invalid input or if player does not exist
+]]
+function core.parse_coordinates(x, y, z, relative_to)
+	if not relative_to then
+		return nil
+	end
+	local rx = core.parse_relative_number(x, relative_to.x)
+	local ry = core.parse_relative_number(y, relative_to.y)
+	local rz = core.parse_relative_number(z, relative_to.z)
+	if not rx or not ry or not rz then
+		return nil
+	end
+	return { x = rx, y = ry, z = rz }
+end
+
+-- Run tests
+-----------------------------------------------------------------------------
+test_string_to_area()
