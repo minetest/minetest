@@ -3464,7 +3464,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	} else if (predicted_f.param_type_2 == CPT2_FACEDIR ||
 			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR ||
 			predicted_f.param_type_2 == CPT2_4DIR ||
-			predicted_f.param_type_2 == CPT2_FACEDIR) {
+			predicted_f.param_type_2 == CPT2_COLORED_4DIR) {
 		v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
 		if (abs(dir.X) > abs(dir.Z)) {

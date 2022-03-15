@@ -241,7 +241,7 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 			u8 index = facedir * 4 + rot;
 			param2 &= ~31;
 			param2 |= rotate_facedir[index];
-		} else {
+		} else if (cpt2 == CPT2_4DIR || cpt2 == CPT2_COLORED_4DIR) {
 			u8 fourdir = param2 & 3;
 			u8 index = fourdir + rot;
 			param2 &= ~3;

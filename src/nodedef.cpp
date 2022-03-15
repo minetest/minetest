@@ -1253,7 +1253,6 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			if (features.param_type_2 == CPT2_FACEDIR ||
 					features.param_type_2 == CPT2_COLORED_FACEDIR ||
 					features.param_type_2 == CPT2_4DIR ||
-					features.param_type_2 == CPT2_COLORED_FACEDIR ||
 					features.param_type_2 == CPT2_COLORED_4DIR) {
 				// Get maximal coordinate
 				f32 coords[] = {
@@ -1738,7 +1737,8 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 					f2.param_type_2 == CPT2_COLORED_FACEDIR) {
 				return (f2.connect_sides
 					& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
-			} else  {
+			} else if (f2.param_type_2 == CPT2_4DIR ||
+					f2.param_type_2 == CPT2_COLORED_4DIR) {
 				return (f2.connect_sides
 					& rot[(connect_face * 4) + (to.param2 & 0x03)]);
 			}
