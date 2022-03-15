@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
 #include "util/Optional.h"
+#include "server/api_item.h"
 
 struct PointedThing;
 struct ItemStack;
@@ -33,7 +34,7 @@ class InventoryList;
 struct InventoryLocation;
 
 class ScriptApiItem
-: virtual public ScriptApiBase
+: virtual public ScriptApiBase, virtual public api::server::Item
 {
 public:
 	/*

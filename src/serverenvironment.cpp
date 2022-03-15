@@ -392,11 +392,11 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	ServerScripting *scriptIface, Server *server,
+	api::server::Router *router, Server *server,
 	const std::string &path_world):
 	Environment(server),
 	m_map(map),
-	m_script(scriptIface),
+	m_api_router(router),
 	m_server(server),
 	m_path_world(path_world),
 	m_rgen(seed())
@@ -892,7 +892,7 @@ public:
 			for (ActiveABM &aabm : *m_aabms[c]) {
 				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
 					continue;
-				
+
 				if (myrand() % aabm.chance != 0)
 					continue;
 
@@ -987,7 +987,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 		for (const NodeTimer &elapsed_timer : elapsed_timers) {
 			n = block->getNodeNoEx(elapsed_timer.position);
 			v3s16 p = elapsed_timer.position + block->getPosRelative();
-			if (m_script->node_on_timer(p, n, elapsed_timer.elapsed))
+			if (m_api_router->node_on_timer(p, n, elapsed_timer.elapsed))
 				block->setNodeTimer(NodeTimer(elapsed_timer.timeout, 0,
 					elapsed_timer.position));
 		}
@@ -1013,7 +1013,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 	// Call destructor
 	if (cf_old.has_on_destruct)
-		m_script->node_on_destruct(p, n_old);
+		m_api_router->node_on_destruct(p, n_old);
 
 	// Replace node
 	if (!m_map->addNodeWithEvent(p, n))
@@ -1024,7 +1024,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 	// Call post-destructor
 	if (cf_old.has_after_destruct)
-		m_script->node_after_destruct(p, n_old);
+		m_api_router->node_after_destruct(p, n_old);
 
 	// Retrieve node content features
 	// if new node is same as old, reuse old definition to prevent a lookup
@@ -1032,7 +1032,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 	// Call constructor
 	if (cf_new.has_on_construct)
-		m_script->node_on_construct(p, n);
+		m_api_router->node_on_construct(p, n);
 
 	return true;
 }
@@ -1044,7 +1044,7 @@ bool ServerEnvironment::removeNode(v3s16 p)
 
 	// Call destructor
 	if (ndef->get(n_old).has_on_destruct)
-		m_script->node_on_destruct(p, n_old);
+		m_api_router->node_on_destruct(p, n_old);
 
 	// Replace with air
 	// This is slightly optimized compared to addNodeWithEvent(air)
@@ -1056,7 +1056,7 @@ bool ServerEnvironment::removeNode(v3s16 p)
 
 	// Call post-destructor
 	if (ndef->get(n_old).has_after_destruct)
-		m_script->node_after_destruct(p, n_old);
+		m_api_router->node_after_destruct(p, n_old);
 
 	// Air doesn't require constructor
 	return true;
@@ -1178,7 +1178,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
-		m_script->removeObjectReference(obj);
+		m_api_router->removeObjectReference(obj);
 
 		// Delete active object
 		if (obj->environmentDeletes())
@@ -1418,7 +1418,7 @@ void ServerEnvironment::step(float dtime)
 				for (const NodeTimer &elapsed_timer: elapsed_timers) {
 					n = block->getNodeNoEx(elapsed_timer.position);
 					p2 = elapsed_timer.position + block->getPosRelative();
-					if (m_script->node_on_timer(p2, n, elapsed_timer.elapsed)) {
+					if (m_api_router->node_on_timer(p2, n, elapsed_timer.elapsed)) {
 						block->setNodeTimer(NodeTimer(
 							elapsed_timer.timeout, 0, elapsed_timer.position));
 					}
@@ -1481,7 +1481,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Step script environment (run global on_step())
 	*/
-	m_script->environment_Step(dtime);
+	m_api_router->environment_Step(dtime);
 
 	/*
 		Step active objects
@@ -1759,7 +1759,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	}
 
 	// Register reference in scripting api (must be done before post-init)
-	m_script->addObjectReference(object);
+	m_api_router->addObjectReference(object);
 	// Post-initialize object
 	object->addedToEnvironment(dtime_s);
 
@@ -1849,7 +1849,7 @@ void ServerEnvironment::removeRemovedObjects()
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
-		m_script->removeObjectReference(obj);
+		m_api_router->removeObjectReference(obj);
 
 		// Delete
 		if (obj->environmentDeletes())
@@ -2114,7 +2114,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
-		m_script->removeObjectReference(obj);
+		m_api_router->removeObjectReference(obj);
 
 		// Delete active object
 		if (obj->environmentDeletes())

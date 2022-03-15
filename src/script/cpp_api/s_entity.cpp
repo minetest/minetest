@@ -19,11 +19,71 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_entity.h"
 #include "cpp_api/s_internal.h"
+#include "lua_api/l_object.h"
 #include "log.h"
 #include "object_properties.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
+
+/*
+ * How ObjectRefs are handled in Lua:
+ * When an active object is created, an ObjectRef is created on the Lua side
+ * and stored in core.object_refs[id].
+ * Methods that require an ObjectRef to a certain object retrieve it from that
+ * table instead of creating their own.(*)
+ * When an active object is removed, the existing ObjectRef is invalidated
+ * using ::set_null() and removed from the core.object_refs table.
+ * (*) An exception to this are NULL ObjectRefs and anonymous ObjectRefs
+ *     for objects without ID.
+ *     It's unclear what the latter are needed for and their use is problematic
+ *     since we lose control over the ref and the contained pointer.
+ */
+
+void ScriptApiEntity::addObjectReference(ServerActiveObject *cobj)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	//infostream<<"scriptapi_add_object_reference: id="<<cobj->getId()<<std::endl;
+
+	// Create object on stack
+	ObjectRef::create(L, cobj); // Puts ObjectRef (as userdata) on stack
+	int object = lua_gettop(L);
+
+	// Get core.object_refs table
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "object_refs");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int objectstable = lua_gettop(L);
+
+	// object_refs[id] = object
+	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushvalue(L, object); // Copy object to top of stack
+	lua_settable(L, objectstable);
+}
+
+void ScriptApiEntity::removeObjectReference(ServerActiveObject *cobj)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
+
+	// Get core.object_refs table
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "object_refs");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int objectstable = lua_gettop(L);
+
+	// Get object_refs[id]
+	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_gettable(L, objectstable);
+	// Set object reference to NULL
+	ObjectRef::set_null(L);
+	lua_pop(L, 1); // pop object
+
+	// Set object_refs[id] = nil
+	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushnil(L);
+	lua_settable(L, objectstable);
+}
 
 bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 {
@@ -204,7 +264,7 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	lua_pop(L, 1);
 }
 
-void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
+void ScriptApiEntity::on_entity_step(u16 id, float dtime,
 	const collisionMoveResult *moveresult)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -238,13 +298,11 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
 
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
 //                       tool_capabilities, direction, damage)
-bool ScriptApiEntity::luaentity_Punch(u16 id,
+bool ScriptApiEntity::on_entity_punched(u16 id,
 		ServerActiveObject *puncher, float time_from_last_punch,
 		const ToolCapabilities *toolcap, v3f dir, s32 damage)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -304,13 +362,13 @@ bool ScriptApiEntity::luaentity_run_simple_callback(u16 id,
 	return retval;
 }
 
-bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
+bool ScriptApiEntity::on_entity_death(u16 id, ServerActiveObject *killer)
 {
 	return luaentity_run_simple_callback(id, killer, "on_death");
 }
 
 // Calls entity:on_rightclick(ObjectRef clicker)
-void ScriptApiEntity::luaentity_Rightclick(u16 id, ServerActiveObject *clicker)
+void ScriptApiEntity::on_entity_rightclick(u16 id, ServerActiveObject *clicker)
 {
 	luaentity_run_simple_callback(id, clicker, "on_rightclick");
 }

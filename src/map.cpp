@@ -758,7 +758,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 		// on_flood() the node
 		if (floodable_node != CONTENT_AIR) {
-			if (env->getScriptIface()->node_on_flood(p0, n00, n0))
+			if (env->getApiRouter()->node_on_flood(p0, n00, n0))
 				continue;
 		}
 

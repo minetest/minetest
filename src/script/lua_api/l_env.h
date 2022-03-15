@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "raycast.h"
 
+class ServerScripting;
+
 class ModApiEnvMod : public ModApiBase {
 private:
 	// set_node(pos, node)
@@ -114,7 +116,7 @@ private:
 
 	// get_objects_inside_radius(pos, radius)
 	static int l_get_objects_inside_radius(lua_State *L);
-	
+
 	// get_objects_in_area(pos, minp, maxp)
 	static int l_get_objects_in_area(lua_State *L);
 

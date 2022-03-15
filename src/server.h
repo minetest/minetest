@@ -45,6 +45,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <unordered_set>
 
+namespace api { namespace server {
+class Router;
+}}
 class ChatEvent;
 struct ChatEventChat;
 struct ChatInterface;
@@ -268,7 +271,7 @@ public:
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
-	ServerScripting *getScriptIface(){ return m_script; }
+	api::server::Router *getApiRouter() { return m_api_router.get(); }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -587,9 +590,8 @@ private:
 	// Emerge manager
 	EmergeManager *m_emerge = nullptr;
 
-	// Scripting
-	// Envlock and conlock should be locked when using Lua
-	ServerScripting *m_script = nullptr;
+	// Api call router
+	std::unique_ptr<api::server::Router> m_api_router;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;

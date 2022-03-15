@@ -228,7 +228,7 @@ void UnitSAO::onAttach(int parent_id)
 
 	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
 		// Call parent's on_attach field
-		m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
+		m_env->getApiRouter()->luaentity_on_attach_child(parent_id, this);
 	}
 }
 
@@ -239,13 +239,13 @@ void UnitSAO::onDetach(int parent_id)
 
 	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
 	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
-		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
+		m_env->getApiRouter()->luaentity_on_detach(m_id, parent);
 
 	if (!parent || parent->isGone())
 		return; // Do not try to notify soon gone parent
 
 	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
-		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
+		m_env->getApiRouter()->luaentity_on_detach_child(parent_id, this);
 }
 
 ObjectProperties *UnitSAO::accessObjectProperties()

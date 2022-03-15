@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
+#include "server/api.h"
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "util/auth.h"
@@ -198,7 +199,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	{
 		std::string reason;
-		if (m_script->on_prejoinplayer(playername, addr_s, &reason)) {
+		if (m_api_router->on_prejoinplayer(playername, addr_s, &reason)) {
 			actionstream << "Server: Player with the name \"" << playerName <<
 				"\" tried to connect from " << addr_s <<
 				" but it was disallowed for the following reason: " << reason <<
@@ -215,7 +216,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// Don't enforce for users that have some admin right or mod permits it.
 	if (m_clients.isUserLimitReached() &&
 			playername != g_settings->get("name") &&
-			!m_script->can_bypass_userlimit(playername, addr_s)) {
+			!m_api_router->can_bypass_userlimit(playername, addr_s)) {
 		actionstream << "Server: " << playername << " tried to join from " <<
 			addr_s << ", but there are already max_users=" <<
 			g_settings->getU16("max_users") << " players." << std::endl;
@@ -227,7 +228,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		Compose auth methods for answer
 	*/
 	std::string encpwd; // encrypted Password field for the user
-	bool has_auth = m_script->getAuth(playername, &encpwd, NULL);
+	bool has_auth = m_api_router->getAuth(playername, &encpwd, NULL);
 	u32 auth_mechs = 0;
 
 	client->chosen_mech = AUTH_MECHANISM_NONE;
@@ -415,8 +416,8 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	}
 
 	s64 last_login;
-	m_script->getAuth(playersao->getPlayer()->getName(), nullptr, nullptr, &last_login);
-	m_script->on_joinplayer(playersao, last_login);
+	m_api_router->getAuth(playersao->getPlayer()->getName(), nullptr, nullptr, &last_login); // TODO m_script --> m_api_router ????
+	m_api_router->on_joinplayer(playersao, last_login);
 
 	// Send shutdown timer if shutdown has been scheduled
 	if (m_shutdown_state.isTimerRunning())
@@ -502,7 +503,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
-		m_script->on_cheat(playersao, "moved_too_fast");
+		m_api_router->on_cheat(playersao, "moved_too_fast");
 		SendMovePlayer(pkt->getPeerId());
 	}
 }
@@ -898,7 +899,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 				<< "d=" << d << ", max_d=" << max_d
 				<< "; ignoring." << std::endl;
 		// Call callbacks
-		m_script->on_cheat(player->getPlayerSAO(), "interacted_too_far");
+		m_api_router->on_cheat(player->getPlayerSAO(), "interacted_too_far");
 		return false;
 	}
 	return true;
@@ -965,7 +966,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			client->SetBlockNotSent(blockpos);
 		}
 		// Call callbacks
-		m_script->on_cheat(playersao, "interacted_while_dead");
+		m_api_router->on_cheat(playersao, "interacted_while_dead");
 		return;
 	}
 
@@ -1039,7 +1040,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			if (playersao->getId() == pointed_object->getId()) {
 				actionstream << "Server: " << player->getName()
 					<< " attempted to interact with themselves" << std::endl;
-				m_script->on_cheat(playersao, "interacted_with_self");
+				m_api_router->on_cheat(playersao, "interacted_with_self");
 				return;
 			}
 			target_pos = pointed_object->getBasePosition();
@@ -1080,7 +1081,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			}
 
 			if (n.getContent() != CONTENT_IGNORE)
-				m_script->node_on_punch(p_under, n, playersao, pointed);
+				m_api_router->node_on_punch(p_under, n, playersao, pointed);
 
 			// Cheat prevention
 			playersao->noCheatDigStart(p_under);
@@ -1146,7 +1147,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 						<< PP(p_under) << "; not digging." << std::endl;
 				is_valid_dig = false;
 				// Call callbacks
-				m_script->on_cheat(playersao, "finished_unknown_dig");
+				m_api_router->on_cheat(playersao, "finished_unknown_dig");
 			}
 
 			// Get player's wielded item
@@ -1171,7 +1172,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 						<< std::endl;
 				is_valid_dig = false;
 				// Call callbacks
-				m_script->on_cheat(playersao, "dug_unbreakable");
+				m_api_router->on_cheat(playersao, "dug_unbreakable");
 			}
 			// Check digging time
 			// If already invalidated, we don't have to
@@ -1196,14 +1197,14 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 						<< "too fast; not digging." << std::endl;
 				is_valid_dig = false;
 				// Call callbacks
-				m_script->on_cheat(playersao, "dug_too_fast");
+				m_api_router->on_cheat(playersao, "dug_too_fast");
 			}
 		}
 
 		/* Actually dig node */
 
 		if (is_valid_dig && n.getContent() != CONTENT_IGNORE)
-			m_script->node_on_dig(p_under, n, playersao);
+			m_api_router->node_on_dig(p_under, n, playersao);
 
 		v3s16 blockpos = getNodeBlockPos(p_under);
 		RemoteClient *client = getClient(peer_id);
@@ -1242,13 +1243,13 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					<< pointed_object->getDescription() << std::endl;
 
 			// Do stuff
-			if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
+			if (m_api_router->item_OnSecondaryUse(selected_item, playersao, pointed)) {
 				if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 					SendInventory(playersao, true);
 			}
 
 			pointed_object->rightClick(playersao);
-		} else if (m_script->item_OnPlace(selected_item, playersao, pointed)) {
+		} else if (m_api_router->item_OnPlace(selected_item, playersao, pointed)) {
 			// Placement was handled in lua
 
 			// Apply returned ItemStack
@@ -1284,7 +1285,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << player->getName() << " uses " << selected_item->name
 				<< ", pointing at " << pointed.dump() << std::endl;
 
-		if (m_script->item_OnUse(selected_item, playersao, pointed)) {
+		if (m_api_router->item_OnUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 				SendInventory(playersao, true);
@@ -1303,7 +1304,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
 
-		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
+		if (m_api_router->item_OnSecondaryUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
 				SendInventory(playersao, true);
@@ -1381,7 +1382,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 	// Check the target node for rollback data; leave others unnoticed
 	RollbackNode rn_old(&m_env->getMap(), p, this);
 
-	m_script->node_on_receive_fields(p, formname, fields, playersao);
+	m_api_router->node_on_receive_fields(p, formname, fields, playersao);
 
 	// Report rollback data
 	RollbackNode rn_new(&m_env->getMap(), p, this);
@@ -1427,7 +1428,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	}
 
 	if (client_formspec_name.empty()) { // pass through inventory submits
-		m_script->on_playerReceiveFields(playersao, client_formspec_name, fields);
+		m_api_router->on_playerReceiveFields(playersao, client_formspec_name, fields);
 		return;
 	}
 
@@ -1440,7 +1441,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 			if (it != fields.end() && it->second == "true")
 				m_formspec_state_data.erase(peer_state_iterator);
 
-			m_script->on_playerReceiveFields(playersao, client_formspec_name, fields);
+			m_api_router->on_playerReceiveFields(playersao, client_formspec_name, fields);
 			return;
 		}
 		actionstream << "'" << player->getName()
@@ -1497,8 +1498,8 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		std::string initial_ver_key;
 
 		initial_ver_key = encode_srp_verifier(verification_key, salt);
-		m_script->createAuth(playername, initial_ver_key);
-		m_script->on_authplayer(playername, addr_s, true);
+		m_api_router->createAuth(playername, initial_ver_key);
+		m_api_router->on_authplayer(playername, addr_s, true);
 
 		acceptAuth(peer_id, false);
 	} else {
@@ -1510,7 +1511,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		}
 		m_clients.event(peer_id, CSE_SudoLeave);
 		std::string pw_db_field = encode_srp_verifier(verification_key, salt);
-		bool success = m_script->setPassword(playername, pw_db_field);
+		bool success = m_api_router->setPassword(playername, pw_db_field);
 		if (success) {
 			actionstream << playername << " changes password" << std::endl;
 			SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
@@ -1689,16 +1690,16 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 		actionstream << "Server: User " << playername << " at " << addr_s
 			<< " supplied wrong password (auth mechanism: SRP)." << std::endl;
-		m_script->on_authplayer(playername, addr_s, false);
+		m_api_router->on_authplayer(playername, addr_s, false);
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_PASSWORD);
 		return;
 	}
 
 	if (client->create_player_on_auth_success) {
-		m_script->createAuth(playername, client->enc_pwd);
+		m_api_router->createAuth(playername, client->enc_pwd);
 
 		std::string checkpwd; // not used, but needed for passing something
-		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
+		if (!m_api_router->getAuth(playername, &checkpwd, NULL)) {
 			errorstream << "Server: " << playername <<
 				" cannot be authenticated (auth handler does not work?)" <<
 				std::endl;
@@ -1708,7 +1709,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		client->create_player_on_auth_success = false;
 	}
 
-	m_script->on_authplayer(playername, addr_s, true);
+	m_api_router->on_authplayer(playername, addr_s, true);
 	acceptAuth(peer_id, wantSudo);
 }
 

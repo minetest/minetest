@@ -68,7 +68,7 @@ const EnumString ModApiEnvMod::es_BlockStatusType[] =
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider)
 {
-	ServerScripting *scriptIface = env->getScriptIface();
+	ServerScripting *scriptIface = env->getApiRouter()->getLuaAPI();
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();
@@ -111,7 +111,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 
 void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 {
-	ServerScripting *scriptIface = env->getScriptIface();
+	ServerScripting *scriptIface = env->getApiRouter()->getLuaAPI();
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();
@@ -757,7 +757,7 @@ int ModApiEnvMod::l_get_objects_in_area(lua_State *L)
 {
 	GET_ENV_PTR;
 	ScriptApiBase *script = getScriptApiBase(L);
-	
+
 	v3f minp = read_v3f(L, 1) * BS;
 	v3f maxp = read_v3f(L, 2) * BS;
 	aabb3f box(minp, maxp);
@@ -1231,7 +1231,7 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 		int args_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
 		state = new ScriptCallbackState;
-		state->script       = getServer(L)->getScriptIface();
+		state->script       = getServer(L)->getApiRouter()->getLuaAPI();
 		state->callback_ref = callback_ref;
 		state->args_ref     = args_ref;
 		state->refcount     = num_blocks;
@@ -1409,7 +1409,7 @@ int ModApiEnvMod::l_compare_block_status(lua_State *L)
 	v3s16 nodepos = check_v3s16(L, 1);
 	std::string condition_s = luaL_checkstring(L, 2);
 	auto status = env->getBlockStatus(getNodeBlockPos(nodepos));
-	
+
 	int condition_i = -1;
 	if (!string_to_enum(es_BlockStatusType, condition_i, condition_s))
 		return 0; // Unsupported

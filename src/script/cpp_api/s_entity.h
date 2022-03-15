@@ -21,15 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
+#include "server/api_entity.h"
 
 struct ObjectProperties;
 struct ToolCapabilities;
 struct collisionMoveResult;
 
 class ScriptApiEntity
-		: virtual public ScriptApiBase
+		: virtual public ScriptApiBase,
+		  virtual public api::server::Entity
 {
 public:
+	/* object */
+	void addObjectReference(ServerActiveObject *cobj);
+	void removeObjectReference(ServerActiveObject *cobj);
+
 	bool luaentity_Add(u16 id, const char *name);
 	void luaentity_Activate(u16 id,
 			const std::string &staticdata, u32 dtime_s);
@@ -38,13 +44,13 @@ public:
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,
 			ServerActiveObject *self, ObjectProperties *prop);
-	void luaentity_Step(u16 id, float dtime,
+	void on_entity_step(u16 id, float dtime,
 		const collisionMoveResult *moveresult);
-	bool luaentity_Punch(u16 id,
+	bool on_entity_punched(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
 			const ToolCapabilities *toolcap, v3f dir, s32 damage);
-	bool luaentity_on_death(u16 id, ServerActiveObject *killer);
-	void luaentity_Rightclick(u16 id, ServerActiveObject *clicker);
+	bool on_entity_death(u16 id, ServerActiveObject *killer);
+	void on_entity_rightclick(u16 id, ServerActiveObject *clicker);
 	void luaentity_on_attach_child(u16 id, ServerActiveObject *child);
 	void luaentity_on_detach_child(u16 id, ServerActiveObject *child);
 	void luaentity_on_detach(u16 id, ServerActiveObject *parent);

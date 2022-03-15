@@ -22,12 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
 #include "mapnode.h"
+#include "server/api_environment.h"
 #include <vector>
 
 class ServerEnvironment;
 struct ScriptCallbackState;
 
-class ScriptApiEnv : virtual public ScriptApiBase
+class ScriptApiEnv : virtual public ScriptApiBase, virtual public api::server::Environment
 {
 public:
 	// Called on environment step

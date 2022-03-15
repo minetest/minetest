@@ -343,65 +343,6 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 		getstringfield_default(L, index, "mod_origin", "") : "";
 }
 
-/*
- * How ObjectRefs are handled in Lua:
- * When an active object is created, an ObjectRef is created on the Lua side
- * and stored in core.object_refs[id].
- * Methods that require an ObjectRef to a certain object retrieve it from that
- * table instead of creating their own.(*)
- * When an active object is removed, the existing ObjectRef is invalidated
- * using ::set_null() and removed from the core.object_refs table.
- * (*) An exception to this are NULL ObjectRefs and anonymous ObjectRefs
- *     for objects without ID.
- *     It's unclear what the latter are needed for and their use is problematic
- *     since we lose control over the ref and the contained pointer.
- */
-
-void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
-{
-	SCRIPTAPI_PRECHECKHEADER
-	//infostream<<"scriptapi_add_object_reference: id="<<cobj->getId()<<std::endl;
-
-	// Create object on stack
-	ObjectRef::create(L, cobj); // Puts ObjectRef (as userdata) on stack
-	int object = lua_gettop(L);
-
-	// Get core.object_refs table
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-
-	// object_refs[id] = object
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_pushvalue(L, object); // Copy object to top of stack
-	lua_settable(L, objectstable);
-}
-
-void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
-{
-	SCRIPTAPI_PRECHECKHEADER
-	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
-
-	// Get core.object_refs table
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-
-	// Get object_refs[id]
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_gettable(L, objectstable);
-	// Set object reference to NULL
-	ObjectRef::set_null(L);
-	lua_pop(L, 1); // pop object
-
-	// Set object_refs[id] = nil
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_pushnil(L);
-	lua_settable(L, objectstable);
-}
-
 // Creates a new anonymous reference if cobj=NULL or id=0
 void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 		ServerActiveObject *cobj)

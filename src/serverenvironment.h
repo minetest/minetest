@@ -28,6 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <random>
 
+namespace api { namespace server {
+class Router;
+}}
 class IGameDef;
 class ServerMap;
 struct GameParams;
@@ -41,7 +44,7 @@ class ActiveBlockModifier;
 struct StaticObject;
 class ServerActiveObject;
 class Server;
-class ServerScripting;
+class Settings;
 
 /*
 	{Active, Loading} block modifier interface.
@@ -197,7 +200,7 @@ enum ClearObjectsMode {
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, ServerScripting *scriptIface,
+	ServerEnvironment(ServerMap *map, api::server::Router *router,
 		Server *server, const std::string &path_world);
 	~ServerEnvironment();
 
@@ -206,8 +209,8 @@ public:
 	ServerMap & getServerMap();
 
 	//TODO find way to remove this fct!
-	ServerScripting* getScriptIface()
-	{ return m_script; }
+	api::server::Router* getApiRouter()
+	{ return m_api_router; }
 
 	Server *getGameDef()
 	{ return m_server; }
@@ -436,8 +439,8 @@ private:
 
 	// The map
 	ServerMap *m_map;
-	// Lua state
-	ServerScripting* m_script;
+	// Api callback router
+	api::server::Router* m_api_router;
 	// Server definition
 	Server *m_server;
 	// Active Object Manager

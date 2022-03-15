@@ -333,6 +333,7 @@ add_subdirectory(unittest)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
+add_subdirectory(libserver)
 
 set(common_SRCS
 	${database_SRCS}
@@ -508,6 +509,7 @@ if(BUILD_CLIENT)
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}
+		${PROJECT_NAME}api
 		${ZLIB_LIBRARIES}
 		IrrlichtMt::IrrlichtMt
 		${ZSTD_LIBRARY}
@@ -578,6 +580,7 @@ if(BUILD_SERVER)
 	target_include_directories(${PROJECT_NAME}server PRIVATE ${IRRLICHT_INCLUDES})
 	target_link_libraries(
 		${PROJECT_NAME}server
+		${PROJECT_NAME}api
 		${ZLIB_LIBRARIES}
 		${ZSTD_LIBRARY}
 		${SQLITE3_LIBRARY}

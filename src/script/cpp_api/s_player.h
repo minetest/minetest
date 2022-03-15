@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
 #include "util/string.h"
+#include "server/api_player.h"
 
 struct MoveAction;
 struct InventoryLocation;
@@ -30,7 +31,7 @@ struct ToolCapabilities;
 struct PlayerHPChangeReason;
 class ServerActiveObject;
 
-class ScriptApiPlayer : virtual public ScriptApiBase
+class ScriptApiPlayer : virtual public ScriptApiBase, virtual public api::server::Player
 {
 public:
 	virtual ~ScriptApiPlayer() = default;

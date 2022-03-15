@@ -63,6 +63,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "chat_interface.h"
 #include "remoteplayer.h"
+#include "libserver/libserver.h"
+#include "server/api.h"
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "translation.h"
@@ -236,6 +238,7 @@ Server::Server(
 			CONNECTION_TIMEOUT,
 			m_bind_addr.isIPv6(),
 			this)),
+	m_api_router(new api::server::Router()),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
@@ -326,7 +329,7 @@ Server::~Server()
 		// Execute script shutdown hooks
 		infostream << "Executing shutdown hooks" << std::endl;
 		try {
-			m_script->on_shutdown();
+			m_api_router->on_shutdown();
 		} catch (ModError &e) {
 			errorstream << "ModError: " << e.what() << std::endl;
 			if (m_on_shutdown_errmsg) {
@@ -364,7 +367,7 @@ Server::~Server()
 
 	// Deinitialize scripting
 	infostream << "Server: Deinitializing scripting" << std::endl;
-	delete m_script;
+	// delete m_script; // TODO: ?????
 	delete m_startup_server_map; // if available
 	delete m_game_settings;
 
@@ -423,14 +426,62 @@ void Server::init()
 	// Initialize scripting
 	infostream << "Server: Initializing Lua" << std::endl;
 
-	m_script = new ServerScripting(this);
+	std::shared_ptr<ServerScripting> script = std::make_shared<ServerScripting>(this);
+	m_api_router->registerAPI<api::server::Entity>(script);
+	m_api_router->registerAPI<api::server::Environment>(script);
+	m_api_router->registerAPI<api::server::Global>(script);
+	m_api_router->registerAPI<api::server::Inventory>(script);
+	m_api_router->registerAPI<api::server::Item>(script);
+	m_api_router->registerAPI<api::server::ModChannels>(script);
+	m_api_router->registerAPI<api::server::Node>(script);
+	m_api_router->registerAPI<api::server::NodeMeta>(script);
+	m_api_router->registerAPI<api::server::Player>(script);
+
+	m_api_router->setLuaAPI(script.get());
+
+	// Load minetest api library modules
+	for (const auto &api: get_minetest_entity_apis()) {
+		m_api_router->registerAPI<api::server::Entity>(api);
+	}
+
+	for (const auto &api: get_minetest_environment_apis()) {
+		m_api_router->registerAPI<api::server::Environment>(api);
+	}
+
+	for (const auto &api: get_minetest_global_apis()) {
+		m_api_router->registerAPI<api::server::Global>(api);
+	}
+
+	for (const auto &api: get_minetest_inventory_apis()) {
+		m_api_router->registerAPI<api::server::Inventory>(api);
+	}
+
+	for (const auto &api: get_minetest_item_apis()) {
+		m_api_router->registerAPI<api::server::Item>(api);
+	}
+
+	for (const auto &api: get_minetest_modchannels_apis()) {
+		m_api_router->registerAPI<api::server::ModChannels>(api);
+	}
+
+	for (const auto &api: get_minetest_node_apis()) {
+		m_api_router->registerAPI<api::server::Node>(api);
+	}
+
+	for (const auto &api: get_minetest_nodemeta_apis()) {
+		m_api_router->registerAPI<api::server::NodeMeta>(api);
+	}
+
+	for (const auto &api: get_minetest_player_apis()) {
+		m_api_router->registerAPI<api::server::Player>(api);
+	}
 
 	// Must be created before mod loading because we have some inventory creation
 	m_inventory_mgr = std::make_unique<ServerInventoryManager>();
 
-	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
-	m_modmgr->loadMods(m_script);
+	m_modmgr->loadMods(script.get());
 
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
@@ -460,8 +511,9 @@ void Server::init()
 	m_craftdef->initHashes(this);
 
 	// Initialize Environment
+
 	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
-	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
+	m_env = new ServerEnvironment(servermap, m_api_router.get(), this, m_path_world);
 
 	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
@@ -478,7 +530,7 @@ void Server::init()
 	}
 
 	// Give environment reference to scripting api
-	m_script->initializeEnvironment(m_env);
+	script->initializeEnvironment(m_env);
 
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
@@ -1362,7 +1414,7 @@ void Server::SendMovement(session_t peer_id)
 
 void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
-	m_script->player_event(playersao, "health_changed");
+	m_api_router->player_event(playersao, "health_changed");
 	SendPlayerHP(playersao);
 
 	// Send to other clients
@@ -1812,7 +1864,7 @@ void Server::SendPlayerBreath(PlayerSAO *sao)
 {
 	assert(sao);
 
-	m_script->player_event(sao, "breath_changed");
+	m_api_router->player_event(sao, "breath_changed");
 	SendBreath(sao->getPeerID(), sao->getBreath());
 }
 
@@ -1878,7 +1930,7 @@ void Server::SendPlayerPrivileges(session_t peer_id)
 		return;
 
 	std::set<std::string> privs;
-	m_script->getAuth(player->getName(), NULL, &privs);
+	m_api_router->getAuth(player->getName(), NULL, &privs);
 
 	NetworkPacket pkt(TOCLIENT_PRIVILEGES, 0, peer_id);
 	pkt << (u16) privs.size();
@@ -2734,7 +2786,7 @@ void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason 
 	playersao->clearParentAttachment();
 
 	// Trigger scripted stuff
-	m_script->on_dieplayer(playersao, reason);
+	m_api_router->on_dieplayer(playersao, reason);
 
 	SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 }
@@ -2752,7 +2804,7 @@ void Server::RespawnPlayer(session_t peer_id)
 			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
 	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
 
-	bool repositioned = m_script->on_respawnplayer(playersao);
+	bool repositioned = m_api_router->on_respawnplayer(playersao);
 	if (!repositioned) {
 		// setPos will send the new position to client
 		playersao->setPos(findSpawnPos());
@@ -2866,7 +2918,7 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			notice << (u8) PLAYER_LIST_REMOVE  << (u16) 1 << player_name;
 			m_clients.sendToAll(&notice);
 			// run scripts
-			m_script->on_leaveplayer(playersao, reason == CDR_TIMEOUT);
+			m_api_router->on_leaveplayer(playersao, reason == CDR_TIMEOUT);
 
 			playersao->disconnected();
 		}
@@ -2926,7 +2978,7 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	loc.setPlayer(player->getName());
 	std::vector<ItemStack> output_replacements;
 	getCraftingResult(&player->inventory, preview, output_replacements, false, this);
-	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(),
+	m_api_router->item_CraftPredict(preview, player->getPlayerSAO(),
 			clist, loc);
 
 	InventoryList *plist = player->inventory.getList("craftpreview");
@@ -2941,7 +2993,7 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 	if (evt->type == CET_NICK_ADD) {
 		// The terminal informed us of its nick choice
 		m_admin_nick = ((ChatEventNick *)evt)->nick;
-		if (!m_script->getAuth(m_admin_nick, NULL, NULL)) {
+		if (!m_api_router->getAuth(m_admin_nick, NULL, NULL)) {
 			errorstream << "You haven't set up an account." << std::endl
 				<< "Please log in using the client as '"
 				<< m_admin_nick << "' with a secure password." << std::endl
@@ -3000,7 +3052,7 @@ std::wstring Server::handleChat(const std::string &name,
 	}
 
 	// Run script hook, exit if script ate the chat message
-	if (m_script->on_chat_message(name, message))
+	if (m_api_router->on_chat_message(name, message))
 		return L"";
 
 	// Line to send
@@ -3019,7 +3071,7 @@ std::wstring Server::handleChat(const std::string &name,
 #ifdef __ANDROID__
 		line += L"<" + utf8_to_wide(name) + L"> " + wmessage;
 #else
-		line += utf8_to_wide(m_script->formatChatMessage(name,
+		line += utf8_to_wide(m_api_router->formatChatMessage(name,
 				wide_to_utf8(wmessage)));
 #endif
 	}
@@ -3132,7 +3184,7 @@ std::string Server::getStatusString()
 std::set<std::string> Server::getPlayerEffectivePrivs(const std::string &name)
 {
 	std::set<std::string> privs;
-	m_script->getAuth(name, NULL, &privs);
+	m_api_router->getAuth(name, NULL, &privs);
 	return privs;
 }
 
@@ -3275,7 +3327,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	u32 new_hud_flags = (player->hud_flags & ~mask) | flags;
 	if (new_hud_flags == player->hud_flags) // no change
 		return true;
-	
+
 	SendHUDSetFlags(player->getPeerId(), flags, mask);
 	player->hud_flags = new_hud_flags;
 
@@ -3284,7 +3336,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	if (!playersao)
 		return false;
 
-	m_script->player_event(playersao, "hud_changed");
+	m_api_router->player_event(playersao, "hud_changed");
 	return true;
 }
 
@@ -3824,7 +3876,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 
 	/* Run scripts */
 	if (newplayer) {
-		m_script->on_newplayer(playersao);
+		m_api_router->on_newplayer(playersao);
 	}
 
 	return playersao;
@@ -3956,7 +4008,7 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 
 	if (from_peer != PEER_ID_SERVER) {
-		m_script->on_modchannel_message(channel, sender, message);
+		m_api_router->on_modchannel_message(channel, sender, message);
 	}
 }
 

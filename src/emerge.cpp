@@ -628,7 +628,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 		Run Lua on_generated callbacks
 	*/
 	try {
-		m_server->getScriptIface()->environment_OnGenerated(
+		m_server->getApiRouter()->environment_OnGenerated(
 			minp, maxp, m_mapgen->blockseed);
 	} catch (LuaError &e) {
 		m_server->setAsyncFatalError(e);
