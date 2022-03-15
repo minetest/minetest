@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-03-18 02:57+0000\n"
-"Last-Translator: Artur Adamczyk <artur.adamczyk@szkolazmartwychwstanek.pl>\n"
+"Last-Translator: Jakub Z <mrkubax10@onet.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -2081,7 +2081,6 @@ msgid "Toggle noclip"
 msgstr "Przełącz tryb noclip"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
 msgstr "Przełączanie przemieszczania"
 
@@ -2827,30 +2826,29 @@ msgid "Command key"
 msgstr "Klawisz komend"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Poziom kompresji jaki ma być stosowany przy zapisie bloków map na dysk.\n"
+"Poziom kompresji jaki ma być stosowany przy zapisie bloków mapy na dysk.\n"
 "-1 - użyj domyślnego poziomu kompresji\n"
-"0 - najmniejsza kompresja, najszybsza\n"
-"9 - najlepsza kompresja, najwolniejsza"
+"0 - najmniejsza kompresja, najszybciej\n"
+"9 - najlepsza kompresja, najwolniej"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Poziom kompresji jaki ma być użyty podczas wysyłania mapbloków do klienta.\n"
+"Poziom kompresji jaki ma być użyty podczas wysyłania bloków mapy do klienta."
+"\n"
 "-1 - użyj domyślnego poziomu kompresji\n"
-"0 - najmniejsza kompresja, najszybsza\n"
-"9 - najlepsza kompresja, najwolniejsza"
+"0 - najmniejsza kompresja, najszybciej\n"
+"9 - najlepsza kompresja, najwolniej"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2881,7 +2879,6 @@ msgid "ContentDB Flag Blacklist"
 msgstr "Flaga czarnej listy ContentDB"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB Max Concurrent Downloads"
 msgstr "Maksymalna liczba jednoczesnych pobrań ContentDB"
 
