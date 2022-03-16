@@ -71,8 +71,8 @@ public:
 
    /* dynamic media handling */
    // static u32 allocateDynamicMediaCallback(lua_State *L, int f_idx);
-   void freeDynamicMediaCallback(u32 token);
-   void on_dynamic_media_added(u32 token, const char *playername);
+   void freeDynamicMediaCallback (u32 token);
+   void on_dynamic_media_added (u32 token, const char *playername);
 
 	/*
 	 * Environment routes
@@ -90,6 +90,9 @@ public:
 	// Called after emerge of a block queued from core.emerge_area()
 	void on_emerge_area_completion(v3s16 blockpos, int action, void *state);
 
+   // Called after liquid transform changes
+   void on_liquid_transformed(const std::vector<std::pair<v3s16, MapNode>> &list);
+
 	/*
 	 * Player callback routes
 	 */
@@ -105,6 +108,7 @@ public:
 	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
 			float time_from_last_punch, const ToolCapabilities *toolcap,
 			v3f dir, s16 damage);
+   void on_rightclickplayer(ServerActiveObject *player, ServerActiveObject *clicker);
 	s32 on_player_hpchange(ServerActiveObject *player, s32 hp_change,
 			const PlayerHPChangeReason &reason);
 	void on_playerReceiveFields(ServerActiveObject *player,

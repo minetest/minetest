@@ -21,6 +21,9 @@ public:
 
 	// Called after emerge of a block queued from core.emerge_area()
 	virtual void on_emerge_area_completion(v3s16 blockpos, int action, void *state) {}
+
+   // Called after liquid transform changes
+   virtual void on_liquid_transformed(const std::vector<std::pair<v3s16, MapNode>> &list) {}
 };
 }
 }

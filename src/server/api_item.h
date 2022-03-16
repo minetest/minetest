@@ -36,7 +36,7 @@ public:
 	{
 		return false;
 	}
-   virtual bool item_OnCraft (Optional<ItemStack> &item, ServerActiveObject *user,
+   virtual bool item_OnCraft (ItemStack &item, ServerActiveObject *user,
          const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 	{
 		return false;

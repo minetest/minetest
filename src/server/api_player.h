@@ -42,6 +42,9 @@ public:
 	{
 		return false;
 	}
+
+   virtual void on_rightclickplayer(ServerActiveObject *player, ServerActiveObject *clicker) {}
+
 	virtual s32 on_player_hpchange(ServerActiveObject *player, s32 hp_change,
 			const PlayerHPChangeReason &reason)
 	{

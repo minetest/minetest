@@ -135,6 +135,12 @@ bool Router::on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitt
 	return false;
 }
 
+void Router::on_rightclickplayer(ServerActiveObject *player, ServerActiveObject *clicker)
+{
+   for (const auto &impl : m_player_implementations)
+      impl->on_rightclickplayer(player, clicker);
+}
+
 s32 Router::on_player_hpchange(ServerActiveObject *player, s32 hp_change,
 		const PlayerHPChangeReason &reason)
 {
@@ -285,7 +291,15 @@ bool Router::setPassword(const std::string &playername, const std::string &passw
 }
 
 // u32 Router::allocateDynamicMediaCallback(lua_State *L, int f_idx) // TODO: test if needed
-// {}
+// {
+//    for (const std::shared_ptr<Global> &impl : m_global_implementations)
+//    {
+//       if (impl->allocateDynamicMediaCallback (L, f_idx))
+//          return 0;
+//    }
+//
+//    return 0;
+// }
 
 void Router::freeDynamicMediaCallback(u32 token)
 {
@@ -295,7 +309,7 @@ void Router::freeDynamicMediaCallback(u32 token)
    }
 }
 
-void Router::on_dynamic_media_added(u32 token, const char *playername) // TODO: test if needed
+void Router::on_dynamic_media_added(u32 token, const char *playername)
 {
    for (const std::shared_ptr<Global> &impl : m_global_implementations)
    {
@@ -303,7 +317,7 @@ void Router::on_dynamic_media_added(u32 token, const char *playername) // TODO: 
    }
 }
 
-void Router::environment_Step(float dtime) // TODO: test if needed
+void Router::environment_Step(float dtime)
 {
 	for (const auto &impl : m_env_implementations)
 		impl->environment_Step(dtime);
@@ -325,6 +339,12 @@ void Router::on_emerge_area_completion(v3s16 blockpos, int action, void *state)
 {
 	for (const auto &impl : m_env_implementations)
 		impl->on_emerge_area_completion(blockpos, action, state);
+}
+
+void Router::on_liquid_transformed(const std::vector<std::pair<v3s16, MapNode>> &list)
+{
+   for (const auto &impl : m_env_implementations)
+      impl->on_liquid_transformed(list);
 }
 
 bool Router::node_on_punch(v3s16 p, MapNode node, ServerActiveObject *puncher,

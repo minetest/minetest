@@ -460,7 +460,7 @@ u32 PlayerSAO::punch(v3f dir,
 
 void PlayerSAO::rightClick(ServerActiveObject *clicker)
 {
-	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
+   m_env->getApiRouter()->on_rightclickplayer(this, clicker);
 }
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
