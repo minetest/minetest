@@ -2306,8 +2306,11 @@ int ObjectRef::l_set_lighting(lua_State *L)
 
 	luaL_checktype(L, 2, LUA_TTABLE);
 	Lighting lighting = player->getLighting();
-
-	lighting.shadow_intensity = getfloatfield_default(L, 2, "shadow_intensity",    lighting.shadow_intensity);
+	lua_getfield(L, 2, "shadows");
+	if (lua_istable(L, -1)) {
+		lighting.shadow_intensity = getfloatfield_default(L, -1, "intensity",    lighting.shadow_intensity);
+	}
+	lua_pop(L, -1);
 
 	getServer(L)->setLighting(player, lighting);
 	lua_pushboolean(L, true);
@@ -2325,9 +2328,11 @@ int ObjectRef::l_get_lighting(lua_State *L)
 
 	const Lighting &lighting = player->getLighting();
 
-	lua_newtable(L);
+	lua_newtable(L); // result
+	lua_newtable(L); // "shadows"
 	lua_pushnumber(L, lighting.shadow_intensity);
-	lua_setfield(L, -2, "shadow_intensity");
+	lua_setfield(L, -2, "intensity");
+	lua_setfield(L, -2, "shadows");
 	return 1;
 }
 
