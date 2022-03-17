@@ -58,7 +58,11 @@ Particle::Particle(
 	// translate blend modes to GL blend functions
 	video::E_BLEND_FACTOR bfsrc, bfdst;
 	video::E_BLEND_OPERATION blendop;
-	switch (texture.tex -> blendmode) {
+	const auto blendmode = texture.tex != nullptr
+			? texture.tex -> blendmode
+			: ParticleParamTypes::BlendMode::alpha;
+
+	switch (blendmode) {
 		case ParticleParamTypes::BlendMode::alpha:
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
@@ -89,8 +93,11 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
+
 	// correctly render layered transparent particles -- see #10398
 	m_material.setFlag(video::EMF_ZWRITE_ENABLE, true);
+
+	// enable alpha blending and set blend mode
 	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
 	m_material.MaterialTypeParam = video::pack_textureBlendFunc(
 			bfsrc, bfdst,
