@@ -226,7 +226,9 @@ void GameUI::showTranslatedStatusText(const char *str)
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 {
-	setStaticText(m_guitext_chat, chat_text);
+	EnrichedString str(chat_text);
+	str.setBackground(video::SColor(90, 0, 0, 0));
+	setStaticText(m_guitext_chat, str);
 
 	m_recent_chat_count = recent_chat_count;
 }
