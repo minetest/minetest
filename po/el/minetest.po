@@ -16,11 +16,11 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Διαγραφή της ουράς συνομιλίας"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Χωρίς εντολή."
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -29,51 +29,51 @@ msgstr "Έξοδος στο Μενού"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Ακυρη εντολή: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Εκδόθηκε εντολή: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "Λίστα Συνδεδεμένων παικτών"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Συνδεδεμένοι παίκτες: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Η ουρά συνομιλίας είναι τώρα κενή."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Αυτή η εντολή είναι απενεργοποιημένη από τον διακομιστή."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Επανεμφάνηση"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Πέθανες"
+msgstr "Είσαι νεκρός"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Διαθέσιμες εντολές:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Διαθέσιμες εντολές: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Η εντολή δεν είναι διαθέσιμη: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Βοήθεια για τις εντολές"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -94,7 +94,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Ένα σφάλμα προέκυψε σε ένα σενάριο Lua:"
+msgstr "Ένα σφάλμα προέκυψε σε ένα Lua script:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -130,7 +130,7 @@ msgstr "Υποστηρίζουμε μόνο το πρωτόκολλο έκδοσ
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Υποστηρίζουμε τις εκδόσεις πρωτοκόλλων μεταξύ της έκδοσης $1 και $2."
+msgstr "Υποστηρίζουμε τις εκδόσεις πρωτοκόλλων μεταξύ των εκδόσεων $1 και $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -154,7 +154,7 @@ msgstr "Απενεργοποίηση όλων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Απενεργοποίηση modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -162,7 +162,7 @@ msgstr "Ενεργοποίηση όλων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Ενεργοποίηση modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -172,7 +172,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Εύρεση περισσότερων Mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -188,19 +188,19 @@ msgstr "Δεν παρέχεται περιγραφή παιχνιδιού."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Δεν υπάρχουν απαραίτητες εξαρτήσεις"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Δεν παρέχεται περιγραφή modpack."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Δεν υπάρχουν προαιρετικές εξαρτήσεις"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Προαιρετικές εξαρτήσεις:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -213,14 +213,14 @@ msgstr "Κόσμος:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "ενεργοποιήθηκε"
+msgstr "ενεργοποιημένο"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr "Το \"$1\" ήδη υπάρχει. Θέλετε να το αντικαταστήσετε;"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
+msgid "Οι εξαρτήσεις $1 και $2 θα εγκατασταθούν."
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
@@ -239,15 +239,15 @@ msgstr "Λήψη ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "Δεν ήταν δυνατή η εύρεση των απαιτούμενων εξαρτήσεων $1."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "Θα εγκατασταθεί το $1 και οι εξαρτήσεις $2 θα παραβλεφθούν."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr "Όλα τα Πακέτα"
+msgstr "Όλα τα πακέτα"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
@@ -259,11 +259,11 @@ msgstr "Πίσω στο Κύριο Μενού"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr ""
+msgstr "Βασικό παιχνίδι:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "Το ContentDB δεν είναι διαθέσιμο όταν το Minetest μεταγλωττίστηκε χωρίς cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -271,7 +271,7 @@ msgstr "Λήψη ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Η λήψη του $1 απέτυχε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -288,11 +288,11 @@ msgstr "Εγκατάσταση $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr ""
+msgstr "Εγκατάσταση των εξαρτήσεων που λείπουν"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install: Unsupported file type or broken archive"
-msgstr ""
+msgstr "Εγκατάσταση: Μη υποστηριζόμενος τύπος αρχείου ή κατεστραμμένο αρχείο"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -301,7 +301,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Δεν ήταν δυνατή η ανάκτηση πακέτων"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -309,7 +309,7 @@ msgstr "Χωρίς αποτελέσματα"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Δεν υπάρχουν ενημερώσεις"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
@@ -317,19 +317,19 @@ msgstr "Δε βρέθηκε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Αντικατάσταση"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Ελέγξτε ότι το βασικό παιχνίδι είναι σωστό."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Σε ουρά"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Πακέτα υφής"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -345,23 +345,23 @@ msgstr "Ενημέρωση Όλων [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Δείτε περισσότερες πληροφορίες σε ένα πρόγραμμα περιήγησης ιστού"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Ένας κόσμος με το όνομα \"$1\" υπάρχει ήδη"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Πρόσθετο έδαφος"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Ψύχρα σε υψόμετρο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Ξηρό υψόμετρο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -373,11 +373,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Σπήλαια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Σπηλιές"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -385,31 +385,31 @@ msgstr "Δημιουργία"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "Διακοσμήσεις"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "Κατεβάστε ένα παιχνίδι, όπως το Minetest Game, από το minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Κατεβάστε ένα από το minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Μπουντρούμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Επίπεδο έδαφος"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Πλωτά τμήματα στεριάς στον ουρανό"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Πλωτή γη (πειραματικό)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -417,7 +417,7 @@ msgstr "Παιχνίδι"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Δημιουργία non-fractal εδάφους: ωκεανοί και υπόγεια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -425,11 +425,11 @@ msgstr "Λόφοι"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Υγρά ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Αύζηση της υγρασίας γύρω από τα ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -437,19 +437,19 @@ msgstr "Λίμνες"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Η χαμηλή υγρασία και η υψηλή ζέστη προκαλούν ρηχά ή ξηρά ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Δημιουργία χάρτη"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Ρυθμίσεις δημιουργίας χάρτη"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "Ειδικές ρυθμίσεις δημιουργίας χάρτη"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -457,11 +457,11 @@ msgstr "Βουνά"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Ροή λάσπης"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Δίκτυο σηράγγων και σπηλαίων"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -469,11 +469,11 @@ msgstr "Κανένα παιχνίδι επιλεγμένο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Μείωση της θερμότητα με το υψόμετρο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Μείωση της υγρασίας με το υψόμετρο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
@@ -481,7 +481,7 @@ msgstr "Ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Ποτάμια στο επίπεδο της θάλασσας"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -500,39 +500,39 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Δομές που εμφανίζονται στο έδαφος, συνήθως δέντρα και φυτά"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Εύκρατο, Έρημος"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Εύκρατο, Έρημος, Ζούγκλα"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Εύκρατο, Έρημος, Ζούγκλα, Τούντρα, Τάιγκα"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Διάβρωση επιφάνειας εδάφους"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Δέντρα και γρασίδι ζούγκλας"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Μεταβολή βάθους ποταμού"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Πολύ μεγάλα σπήλαια βαθιά στο υπόγειο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
-msgstr ""
+msgstr "Προειδοποίηση: Τα Development Test προορίζονται για προγραμματιστές."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -540,11 +540,11 @@ msgstr "Όνομα κόσμου"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Δεν έχετε εγκαταστήσει παιχνίδια."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε το \"$1\";"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -554,15 +554,15 @@ msgstr "Διαγραφή"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: απέτυχε η διαγραφή του \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: μη έγκυρη διαδρομή \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Διαγραφή Κόσμου \"$1\";"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -570,7 +570,7 @@ msgstr "Αποδοχή"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Μετονομασία Modpack"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -584,7 +584,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "2D θόρυβος"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -604,7 +604,7 @@ msgstr "Επεξεργασία"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Ενεργοποιημένο"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -624,15 +624,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Εισαγάγετε έναν έγκυρο ακέραιο αριθμό."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Εισαγάγετε έναν έγκυρο αριθμό."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Επαναφορά προεπιλογής"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -656,11 +656,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "Η τιμή πρέπει να είναι τουλάχιστον $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "Η τιμή δεν πρέπει να είναι μεγαλύτερη από $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
