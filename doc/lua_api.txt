@@ -3542,6 +3542,10 @@ Helper functions
     * `tool_capabilities`: Tool capabilities table of the item
     * `time_from_last_punch`: time in seconds since last punch action
     * `wear`: Amount of wear the item starts with (default: 0)
+* `minetest.light_equivalent(node1, node2)`:
+    Returns whether the nodes have the same lighting characteristics, meaning they can be
+    swapped without necessitating a light update.
+    * `node1` and `node2` are node names or tables representing nodes.
 
 
 

@@ -175,6 +175,22 @@ function core.strip_param2_color(param2, paramtype2)
 	return param2
 end
 
+function core.light_equivalent(node1, node2)
+	local nodename1 = type(node1) == "table" and node1.name or node1
+	local nodename2 = type(node2) == "table" and node2.name or node2
+	local def1 = core.registered_nodes[nodename1]
+	if not def1 then
+		error("Invalid first node name " .. tostring(nodename1))
+	end
+	local def2 = core.registered_nodes[nodename2]
+	if not def2 then
+		error("Invalid second node name " .. tostring(nodename2))
+	end
+	return (def1.paramtype == "light") == (def2.paramtype == "light")
+			and def1.sunlight_propagates == def2.sunlight_propagates
+			and def1.light_source == def2.light_source
+end
+
 local function has_all_groups(tbl, required_groups)
 	if type(required_groups) == "string" then
 		return (tbl[required_groups] or 0) ~= 0

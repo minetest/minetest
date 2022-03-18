@@ -6,6 +6,44 @@ local function test_random()
 end
 unittests.register("test_random", test_random)
 
+local function test_light_equivalent()
+	local function assert_equivalence(a, b, equiv)
+		if core.light_equivalent(a, b) ~= equiv then
+			error(("%s %s light-wise equivalent to %s"):format(
+				core.write_json(a),
+				equiv and "is not" or "is",
+				core.write_json(b)
+			))
+		end
+	end
+	local function test_noncommutatively(a, b, equiv)
+		local node_a = {name = a, param1 = 0, param2 = 0}
+		local node_b = {name = b, param1 = 0, param2 = 0}
+		assert_equivalence(a, b, equiv)
+		assert_equivalence(node_a, b, equiv)
+		assert_equivalence(a, node_b, equiv)
+		assert_equivalence(node_a, node_b, equiv)
+	end
+	local function test(a, b, equiv)
+		test_noncommutatively(a, b, equiv)
+		test_noncommutatively(b, a, equiv)
+	end
+
+	test("ignore", "ignore", true)
+	test("basenodes:water_source", "basenodes:water_flowing", true)
+	test("basenodes:water_source", "mapgen_water_source", true)
+	test("basenodes:lava_source", "basenodes:lava_flowing", true)
+	test("basenodes:water_source", "basenodes:lava_flowing", false)
+	test("mapgen_water_source", "mapgen_lava_source", false)
+	test("basenodes:stone", "basenodes:dirt_with_grass", true)
+	test("basenodes:tree", "basenodes:leaves", false)
+	test("basenodes:leaves", "basenodes:jungleleaves", true)
+	test("basenodes:leaves", "basenodes:lava_source", false)
+	test("basenodes:leaves", "basenodes:apple", false)
+	test("basenodes:apple", "air", true)
+end
+unittests.register("test_light_equivalent", test_light_equivalent)
+
 local function test_dynamic_media(cb, player)
 	if core.get_player_information(player:get_player_name()).protocol_version < 40 then
 		core.log("warning", "test_dynamic_media: Client too old, skipping test.")
