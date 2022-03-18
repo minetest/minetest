@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Greek (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-03-11 03:36+0000\n"
-"Last-Translator: THANOS SIOURDAKIS <siourdakisthanos@gmail.com>\n"
+"PO-Revision-Date: 2022-03-21 18:54+0000\n"
+"Last-Translator: DeadManWalking <deadmanwalkingto@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/minetest/minetest/"
 "el/>\n"
 "Language: el\n"
@@ -16,20 +16,19 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Διαγραφή της ουράς συνομιλίας"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Κενή εντολή."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Έξοδος στο Μενού"
+msgstr "Έξοδος στο κεντρικό μενού"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Άκυρη εντολή: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -37,23 +36,23 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "Λίστα συνδεδεμένων παικτών"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Συνδεδεμένοι παίκτες: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Η ουρά συνομιλίας είναι τώρα κενή."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Αυτή η εντολή είναι απενεργοποιημένη από τον διακομιστή."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Επανεμφάνηση"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -61,28 +60,30 @@ msgstr "Πέθανες"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Διαθέσιμες εντολές:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Διαθέσιμες εντολές: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Η εντολή δεν είναι διαθέσιμη: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Βοήθεια για τις εντολές"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Χρησιμοποιήστε το '.help <cmd>' για να λάβετε περισσότερες πληροφορίες ή το "
+"'.help all' για την λίστα των εντολών."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <εντολή>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -90,7 +91,7 @@ msgstr "Εντάξει"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<κανένα διαθέσιμο>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -154,7 +155,7 @@ msgstr "Απενεργοποίηση όλων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Απενεργοποίηση πακέτου τροποποιήσεων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -162,21 +163,23 @@ msgstr "Ενεργοποίηση όλων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Ενεργοποίηση πακέτου τροποποιήσεων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"Η ενεργοποίηση του mod \"$1\" απέτυχε καθώς περιέχει μη επιτρεπόμενους "
+"χαρακτήρες. Επιτρέπονται μόνο χαρακτήρες [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Εύρεση Περισσότερων Τροποποιήσεων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Τροποποίηση:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
@@ -188,19 +191,19 @@ msgstr "Δεν παρέχεται περιγραφή παιχνιδιού."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Δεν υπάρχουν απαραίτητες εξαρτήσεις"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Δεν παρέχεται περιγραφή για το πακέτο τροποποιήσεων."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Δεν υπάρχουν προαιρετικές εξαρτήσεις"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Προαιρετικές εξαρτήσεις:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -221,17 +224,19 @@ msgstr "Το \"$1\" ήδη υπάρχει. Θέλετε να το αντικατ
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Οι εξαρτήσεις $1 και $2 θα εγκατασταθούν."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 με $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 σε λήψη,\n"
+"$2 σε αναμονή"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
@@ -239,11 +244,11 @@ msgstr "Λήψη ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "Δεν ήταν δυνατή η εύρεση των απαιτούμενων εξαρτήσεων $1."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "Θα εγκατασταθεί το $1 και οι εξαρτήσεις $2 θα παραβλεφθούν."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -259,11 +264,12 @@ msgstr "Πίσω στο Κύριο Μενού"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr ""
+msgstr "Βασικό παιχνίδι:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr ""
+"Το ContentDB δεν είναι διαθέσιμο όταν το Minetest μεταγλωττίστηκε χωρίς cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -271,7 +277,7 @@ msgstr "Λήψη ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Η λήψη του $1 απέτυχε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -288,20 +294,20 @@ msgstr "Εγκατάσταση $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr ""
+msgstr "Εγκατάσταση των εξαρτήσεων που λείπουν"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install: Unsupported file type or broken archive"
-msgstr ""
+msgstr "Εγκατάσταση: Μη υποστηριζόμενος τύπος αρχείου ή κατεστραμμένο αρχείο"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "Τροποποιήσεις"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Δεν ήταν δυνατή η ανάκτηση πακέτων"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -309,7 +315,7 @@ msgstr "Χωρίς αποτελέσματα"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Δεν υπάρχουν ενημερώσεις"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
@@ -317,19 +323,19 @@ msgstr "Δε βρέθηκε"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Αντικατάσταση"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Ελέγξτε ότι το βασικό παιχνίδι είναι σωστό."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Σε αναμονή"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Πακέτα υφής"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -345,23 +351,23 @@ msgstr "Ενημέρωση Όλων [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Δείτε περισσότερες πληροφορίες σε ένα πρόγραμμα περιήγησης ιστού"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Υπάρχει ήδη ένας κόσμος με το όνομα \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Πρόσθετο έδαφος"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Κρύο υψομέτρου"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Ξηρασία υψομέτρου"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -373,11 +379,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Σπήλαια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Σπηλιές"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -385,31 +391,31 @@ msgstr "Δημιουργία"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "Διακοσμήσεις"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "Κατέβασε ένα παιχνίδι, όπως το Minetest Game, από το minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Κατέβασε ένα από το minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Μπουντρούμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Επίπεδο έδαφος"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Αιωρούμενες μάζες γης στον ουρανό"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Αιωρούμενες μάζες γης (πειραματικό)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -417,7 +423,7 @@ msgstr "Παιχνίδι"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Δημιουργία non-fractal εδάφους: ωκεανοί και υπόγεια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -425,11 +431,11 @@ msgstr "Λόφοι"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Υγρά ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Αύξηση της υγρασίας γύρω από τα ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -437,19 +443,19 @@ msgstr "Λίμνες"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Η χαμηλή υγρασία και η υψηλή ζέστη προκαλούν ρηχά ή ξηρά ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Δημιουργία χάρτη"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Ρυθμίσεις δημιουργίας χάρτη"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "Ειδικές ρυθμίσεις δημιουργίας χάρτη"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -457,11 +463,11 @@ msgstr "Βουνά"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Ροή λάσπης"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Δίκτυο σηράγγων και σπηλαίων"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -469,11 +475,11 @@ msgstr "Κανένα παιχνίδι επιλεγμένο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Μείωση της θερμότητας με το υψόμετρο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Μείωση της υγρασίας με το υψόμετρο"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
@@ -481,7 +487,7 @@ msgstr "Ποτάμια"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Ποτάμια στο επίπεδο της θάλασσας"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -497,42 +503,44 @@ msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Κατασκευές που εμφανίζονται στο έδαφος (καμία επίδραση στα δέντρα και το "
+"γρασίδι της ζούγκλας που δημιουργήθηκε από v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Δομές που εμφανίζονται στο έδαφος, συνήθως δέντρα και φυτά"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Εύκρατο, Έρημος"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Εύκρατο, Έρημος, Ζούγκλα"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Εύκρατο, Έρημος, Ζούγκλα, Τούντρα, Τάιγκα"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Διάβρωση επιφάνειας εδάφους"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Δέντρα και γρασίδι ζούγκλας"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Μεταβολή βάθους ποταμού"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Πολύ μεγάλα σπήλαια βαθιά στο υπέδαφος"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
-msgstr ""
+msgstr "Προειδοποίηση: Τα Development Test προορίζονται για προγραμματιστές."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -540,11 +548,11 @@ msgstr "Όνομα κόσμου"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Δεν έχετε εγκαταστήσει παιχνίδια."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε το \\\"$1\\\";"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -554,15 +562,15 @@ msgstr "Διαγραφή"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: απέτυχε η διαγραφή του \\\"$1\\\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: μη έγκυρη διαδρομή \\\"$1\\\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Διαγραφή Κόσμου \\\"$1\\\";"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -570,25 +578,27 @@ msgstr "Αποδοχή"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Μετονομασία Modpack:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Αυτό το modpack έχει ένα ρητό όνομα που δίνεται στο modpack.conf το οποίο θα "
+"παρακάμψει οποιαδήποτε μετονομασία εδώ."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Δεν δόθηκε περιγραφή της ρύθμισης)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "2D θόρυβος"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Επιστροφή στη σελίδα Ρυθμίσεις"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -604,7 +614,7 @@ msgstr "Επεξεργασία"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Ενεργοποιημένο"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -612,11 +622,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Οκτάβες"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Αντιστάθμιση"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistence"
@@ -624,19 +634,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Εισαγάγετε έναν έγκυρο ακέραιο αριθμό."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Εισαγάγετε έναν έγκυρο αριθμό."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Επαναφορά προεπιλογής"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Κλίμακα"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -652,15 +662,15 @@ msgstr "Επιλογή αρχείου"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Εμφάνιση τεχνικών ονομάτων"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "Η τιμή πρέπει να είναι τουλάχιστον $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "Η τιμή δεν πρέπει να είναι μεγαλύτερη από $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -668,7 +678,7 @@ msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Χ εξάπλωση"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
@@ -676,7 +686,7 @@ msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Υ εξάπλωση"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
@@ -684,7 +694,7 @@ msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Ζ εξάπλωση"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -692,14 +702,14 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "απόλυτη τιμή"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "προεπιλογή"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -707,47 +717,51 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "Ομαλός Χάρτης"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Ενεργοποιημένο)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 Τροποποιήσεις"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Αποτυχία εγκατάστασης $1 έως $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
 msgstr ""
+"Εγκατάσταση Τροποποίησης: Δεν είναι δυνατή η εύρεση του πραγματικού ονόματος "
+"τροποποίησης για: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
+"Εγκατάσταση Τροποποίησης: Δεν είναι δυνατή η εύρεση του κατάλληλου ονόματος "
+"φακέλου για την τροποποίηση $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
+msgstr "Δεν είναι δυνατή η εύρεση έγκυρης τροποποίησης ή πακέτου τροποποίησης"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "Δεν είναι δυνατή η εγκατάσταση $1 ως πακέτου υφής"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr ""
+msgstr "Δεν είναι δυνατή η εγκατάσταση ενός παιχνιδιού ως $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr ""
+msgstr "Δεν είναι δυνατή η εγκατάσταση τροποποίησης ως $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr ""
+msgstr "Δεν είναι δυνατή η εγκατάσταση πακέτου τροποποίησης ως $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -755,7 +769,7 @@ msgstr "Φόρτωση..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr ""
+msgstr "Η λίστα δημόσιων διακομιστών είναι απενεργοποιημένη"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -765,11 +779,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Σχετικά"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Ενεργοί Συντελεστές"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
@@ -777,25 +791,28 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Βασικοί Προγραμματιστές"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
-msgstr ""
+msgstr "Άνοιγμα Καταλόγου Δεδομένων Χρήστη"
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Ανοίγει τον κατάλογο που περιέχει κόσμους, παιχνίδια, τροποποιήσεις που "
+"παρέχονται από τον χρήστη,\n"
+"και πακέτα υφής σε έναν διαχειριστή αρχείων / εξερευνητή."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Προηγούμενοι Συντελεστές"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Προηγούμενοι Βασικοί Προγραμματιστές"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -807,7 +824,7 @@ msgstr "Περιεχόμενο"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "Απενεργοποίηση πακέτου υφής"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
@@ -819,11 +836,11 @@ msgstr "Εγκαταστημένα Πακέτα:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Χωρίς εξαρτήσεις."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "Δεν υπάρχει διαθέσιμη περιγραφή πακέτου"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
@@ -835,31 +852,31 @@ msgstr "Απεγκατάσταση πακέτου"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "Χρήση Πακέτου Υφής"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "Ανακοίνωση Διακομιστή"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Δεσμευμένη διεύθυνση"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Λειτουργία Δημιουργίας"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Ενεργοποίηση Ζημίας"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "Φιλοξενία Παιχνιδιού"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "Διακομιστής Φιλοξενίας"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -875,7 +892,7 @@ msgstr "Νέο"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Κανένας κόσμος δεν δημιουργήθηκε ούτε επιλέχθηκε!"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Password"
@@ -883,7 +900,7 @@ msgstr "Κωδικός"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "Εκκίνηση Παιχνιδιού"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
@@ -891,7 +908,7 @@ msgstr "Θήρα"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr ""
+msgstr "Επιλογή Τροποποιήσεων"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -906,9 +923,8 @@ msgid "Start Game"
 msgstr "Εκκίνηση Παιχνιδιού"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Διεύθυνση: "
+msgstr "Διεύθυνση"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -920,12 +936,12 @@ msgstr "Σύνδεση"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Λειτουργία Δημιουργίας"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
-msgstr ""
+msgstr "Μάχες μεταξύ παιχτών"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
@@ -933,15 +949,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
-msgstr ""
+msgstr "Αγαπημένα"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Μη συμβατοί διακομιστές"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Συμμετοχή στο Παιχνίδι"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -949,16 +965,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
-msgstr ""
+msgstr "Δημόσιοι Διακομιστές"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Ανανέωση"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "Περιγραφή διακομιστή"
+msgstr "Περιγραφή Διακομιστή"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -986,11 +1001,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "Αυτόματη αποθήκευση Μεγέθους Οθόνης"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "Διγραμμικό Φίλτρο"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -1002,27 +1017,27 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
-msgstr ""
+msgstr "Δυναμικές σκιές"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Δυναμικές σκιές: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "Φανταχτερά Φύλλα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Υψηλό"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Χαμηλό"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Μεσαίο"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1034,7 +1049,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "Χωρίς Φίλτρο"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -1042,11 +1057,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Επισήμανση Στοιχείων"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr ""
+msgstr "Περίγραμμα Στοιχείων"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -1054,15 +1069,15 @@ msgstr "Κανένα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "Αδιαφανή Φύλλα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "Αδιαφανές Νερό"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "Σωματίδια"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -1086,51 +1101,51 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Απλά Φύλλα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Απαλός Φωτισμός"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Υφή:"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr ""
+msgstr "Χαρτογράφηση Τόνου"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr ""
+msgstr "Όριο αφής: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "Τριγραμμικό Φίλτρο"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "Εξαιρετικά Υψηλό"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Πολύ Χαμηλό"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Κινούμενα Φύλλα"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "Κυματιζόμενα Υγρά"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "Κυματιζόμενα Φυτά"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "Λήξη χρονικού ορίου σύνδεσης."
 
 #: src/client/client.cpp
 msgid "Done!"
@@ -1138,31 +1153,31 @@ msgstr "Έτοιμο!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Εκκίνηση στοιχείων"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Εκκίνηση στοιχείων..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Φόρτωση υφών..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Ανακατασκευή σκίαστρων..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Σφάλμα σύνδεσης (λήξη χρόνου;)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
-msgstr ""
+msgstr "Δεν ήταν δυνατή η εύρεση ή η φόρτωση του παιχνιδιού: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Μη έγκυρη προδιαγραφή παιχνιδιού."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1170,11 +1185,11 @@ msgstr "Κύριο μενού"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Δεν έχει επιλεγεί κόσμος και δεν παρέχεται διεύθυνση."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Το όνομα παίκτη είναι πολύ μεγάλο."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1182,17 +1197,19 @@ msgstr "Παρακαλώ επιλέξτε ένα όνομα!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Απέτυχε το άνοιγμα του παρεχόμενου αρχείου κωδικού πρόσβασης: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Το αρχείο του Κόσμου δεν υπάρχει: "
 
 #: src/client/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Ελέγξτε το debug.txt για λεπτομέρειες."
 
 #: src/client/game.cpp
 msgid "- Address: "
@@ -1200,7 +1217,7 @@ msgstr "- Διεύθυνση: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- Λειτουργία: "
 
 #: src/client/game.cpp
 msgid "- Port: "
@@ -1227,43 +1244,45 @@ msgstr "Παρουσιάστηκε σφάλμα:"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Δεν επιτρέπεται η πρόσβαση. Αιτία: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr ""
+msgstr "Η αυτόματη προώθηση είναι απενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Automatic forward enabled"
-msgstr ""
+msgstr "Η αυτόματη προώθηση είναι ενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
+msgstr "Αποκλεισμός ορίων κρυφά"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Τα όρια μπλοκ εμφανίζονται για όλα τα μπλοκ"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Εμφανίζονται όρια αποκλεισμού για το τρέχον μπλοκ"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Εμφανίζονται όρια αποκλεισμού για κοντινά μπλοκ"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr ""
+msgstr "Η ενημέρωση κάμερας απενεργοποιήθηκε"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
-msgstr ""
+msgstr "Η ενημέρωση κάμερας ενεργοποιήθηκε"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (need 'basic_debug' privilege)"
 msgstr ""
+"Δεν είναι δυνατή η εμφάνιση ορίων μπλοκ (χρειάζεται το δικαίωμα \"basic_debug"
+"\")"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1271,27 +1290,27 @@ msgstr "Αλλαγή Κωδικού"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr ""
+msgstr "Η κινηματογραφική λειτουργία απενεργοποιήθηκε"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr ""
+msgstr "Η κινηματογραφική λειτουργία ενεργοποιήθηκε"
 
 #: src/client/game.cpp
 msgid "Client disconnected"
-msgstr ""
+msgstr "Ο πελάτης αποσυνδέθηκε"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "Η δέσμη ενεργειών από την πλευρά του πελάτη είναι απενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Σύνδεση με διακομιστή..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Η σύνδεση απέτυχε για άγνωστο λόγο"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1315,31 +1334,47 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Στοιχεία ελέγχου:\n"
+"- %s: κίνηση προς τα εμπρός\n"
+"- %s: κίνηση προς τα πίσω\n"
+"- %s: κίνηση αριστερά\n"
+"- %s: κίνηση δεξιά\n"
+"- %s: άλμα/σκαρφάλωμα\n"
+"- %s: σκάψιμο/διάτρηση\n"
+"- %s: τοποθέτηση/χρήση\n"
+"- %s: ολίσθηση/κατέβασμα\n"
+"- %s: απόθεση αντικειμένου\n"
+"- %s: αποθέματα\n"
+"- Ποντίκι: στροφή/παρακολούθηση\n"
+"- Τροχός ποντικιού: επιλογή στοιχείου\n"
+"- %s: συνομιλία\n"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Δεν ήταν δυνατή η επίλυση της διεύθυνσης: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Δημιουργία πελάτη..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Δημιουργία διακομιστή..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Κρυφές πληροφορίες εντοπισμού σφαλμάτων και γράφημα προφίλ"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr ""
+msgstr "Εμφάνιση πληροφοριών εντοπισμού σφαλμάτων"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr ""
+"Απόκρυψη πληροφοριών εντοπισμού σφαλμάτων, γραφήματος προφίλ και wireframe"
 
 #: src/client/game.cpp
 msgid ""
@@ -1356,14 +1391,26 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Προεπιλεγμένα στοιχεία ελέγχου:\n"
+"Δεν εμφανίζεται μενού:\n"
+"- ένα πάτημα: κουμπί ενεργοποίησης\n"
+"- διπλό πάτημα: θέση/χρήση\n"
+"- σύρσιμο δαχτύλου: παρακολούθηση γύρω\n"
+"Ορατό μενού/απόθεμα:\n"
+"- διπλό πάτημα (εξωτερικό):\n"
+"  -->κλείσιμο\n"
+"- στοίβα αφής, υποδοχή αφής:\n"
+"  --> μετακίνηση στοίβας\n"
+"- άγγιγμα & σύρσιμο, πάτημα του 2ου δαχτύλου\n"
+"  --> τοποθέτηση μεμονωμένου αντικειμένου στην υποδοχή\n"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "Απενεργοποιημένο το απεριόριστο εύρος προβολής"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "Ενεργοποιημένο το απεριόριστο εύρος προβολής"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1375,35 +1422,37 @@ msgstr "Έξοδος στο ΛΣ"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr ""
+msgstr "Γρήγορη λειτουργία απενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr ""
+msgstr "Γρήγορη λειτουργία ενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
 msgstr ""
+"Γρήγορη λειτουργία ενεργοποιημένη (σημείωση: δεν υπάρχει προνόμιο \"fast\")"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr ""
+msgstr "Λειτουργία πτήσης απενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr ""
+msgstr "Λειτουργία πτήσης ενεργοποιημένη"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
 msgstr ""
+"Λειτουργία πτήσης ενεργοποιημένη (σημείωση: δεν υπάρχει προνόμιο \"fly\")"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr ""
+msgstr "Η ομίχλη απενεργοποιήθηκε"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr ""
+msgstr "Η ομίχλη ενεργοποιήθηκε"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1411,15 +1460,15 @@ msgstr "Πληροφορίες Παιχνιδιού:"
 
 #: src/client/game.cpp
 msgid "Game paused"
-msgstr ""
+msgstr "Το παιχνίδι διακόπηκε"
 
 #: src/client/game.cpp
 msgid "Hosting server"
-msgstr ""
+msgstr "Διακομιστής Φιλοξενίας"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Ορισμοί στοιχείων..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
@@ -1439,7 +1488,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Multiplayer"
-msgstr ""
+msgstr "Πολλοί παίκτες"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1479,15 +1528,15 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr ""
+msgstr "Απομακρυσμένος διακομιστής"
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "Επίλυση διεύθυνσης..."
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Τερματισμός Λειτουργίας..."
 
 #: src/client/game.cpp
 msgid "Singleplayer"
@@ -1503,11 +1552,11 @@ msgstr "Σίγαση Ήχου"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Το Σύστημα Ήχου είναι απενεργοποιημένο"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Το Σύστημα Ήχου δεν υποστηρίζεται σε αυτή την έκδοση"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1516,37 +1565,37 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Ο διακομιστής πιθανότατα εκτελεί διαφορετική έκδοση του %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Δεν είναι δυνατή η σύνδεση στο %s επειδή το IPv6 είναι απενεργοποιημένο"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Δεν είναι δυνατή η ακρόαση στο %s επειδή το IPv6 είναι απενεργοποιημένο"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr ""
+msgstr "Το εύρος προβολής άλλαξε σε %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Το εύρος προβολής πρέπει να είναι έως: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "Το εύρος προβολής πρέπει να είναι τουλάχιστον: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "Η ένταση άλλαξε σε %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -1554,7 +1603,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "Το ζουμ είναι απενεργοποιημένο από το παιχνίδι ή την τροποποίηση"
 
 #: src/client/game.cpp
 msgid "ok"
@@ -1562,11 +1611,11 @@ msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr ""
+msgstr "Συνομιλία κρυφή"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Συνομιλία εμφανής"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
@@ -1623,7 +1672,7 @@ msgstr "Βοήθεια"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Σπίτι"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
@@ -1688,63 +1737,63 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr "Numpad *"
+msgstr "Αριθμητικό Πληκτρολόγιο *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr "Numpad +"
+msgstr "Αριθμητικό Πληκτρολόγιο +"
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr "Numpad -"
+msgstr "Αριθμητικό Πληκτρολόγιο -"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr "Numpad ."
+msgstr "Αριθμητικό Πληκτρολόγιο ."
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr "Numpad /"
+msgstr "Αριθμητικό Πληκτρολόγιο /"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr "Numpad 0"
+msgstr "Αριθμητικό Πληκτρολόγιο 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr "Numpad 1"
+msgstr "Αριθμητικό Πληκτρολόγιο 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr "Numpad 2"
+msgstr "Αριθμητικό Πληκτρολόγιο 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr "Numpad 3"
+msgstr "Αριθμητικό Πληκτρολόγιο 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr "Numpad 4"
+msgstr "Αριθμητικό Πληκτρολόγιο 4"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr "Numpad 5"
+msgstr "Αριθμητικό Πληκτρολόγιο 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr "Numpad 6"
+msgstr "Αριθμητικό Πληκτρολόγιο 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr "Numpad 7"
+msgstr "Αριθμητικό Πληκτρολόγιο 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr "Numpad 8"
+msgstr "Αριθμητικό Πληκτρολόγιο 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr "Numpad 9"
+msgstr "Αριθμητικό Πληκτρολόγιο 9"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
@@ -2065,9 +2114,9 @@ msgid "Muted"
 msgstr "Σε σίγαση"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Ένταση ήχου: "
+msgstr "Sound Volume: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2544,9 +2593,8 @@ msgid "Chat command time message threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
-msgstr "Εντολή"
+msgstr "Εντολές Συνομιλίας"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -6640,7 +6688,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
-msgstr ""
+msgstr "Παράλληλο όριο cURL"
 
 #~ msgid "Address / Port"
 #~ msgstr "Διεύθυνση / Θήρα"
