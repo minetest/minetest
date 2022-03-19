@@ -171,8 +171,15 @@ void Map::setNode(v3s16 p, MapNode & n)
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	setNode(block, relpos, n);
+}
+
+void Map::setNode(MapBlock *block, v3s16 relpos, MapNode &n)
+{
 	// Never allow placing CONTENT_IGNORE, it causes problems
 	if(n.getContent() == CONTENT_IGNORE){
+		v3s16 blockpos = block->getPos();
+		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
 		bool temp_bool;
 		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
 				<<" while trying to replace \""
@@ -191,7 +198,12 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	RollbackNode rollback_oldnode(this, p, m_gamedef);
 
 	// This is needed for updating the lighting
-	MapNode oldnode = getNode(p);
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	if (block->isDummy())
+		throw InvalidPositionException();
+	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
+	MapNode oldnode = block->getNodeUnsafe(relpos);
 
 	// Remove node metadata
 	if (remove_metadata) {
@@ -199,18 +211,29 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 
 	// Set the node on the map
-	// Ignore light (because calling voxalgo::update_lighting_nodes)
-	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-	setNode(p, n);
+	const ContentFeatures &cf = m_nodedef->get(n);
+	const ContentFeatures &oldcf = m_nodedef->get(oldnode);
+	if (cf.lightingEquivalent(oldcf)) {
+		// No light update needed, just copy over the old light.
+		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldcf), cf);
+		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldcf), cf);
+		setNode(block, relpos, n);
 
-	// Update lighting
-	std::vector<std::pair<v3s16, MapNode> > oldnodes;
-	oldnodes.emplace_back(p, oldnode);
-	voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
+		modified_blocks[blockpos] = block;
+	} else {
+		// Ignore light (because calling voxalgo::update_lighting_nodes)
+		n.setLight(LIGHTBANK_DAY, 0, cf);
+		n.setLight(LIGHTBANK_NIGHT, 0, cf);
+		setNode(block, relpos, n);
 
-	for (auto &modified_block : modified_blocks) {
-		modified_block.second->expireDayNightDiff();
+		// Update lighting
+		std::vector<std::pair<v3s16, MapNode> > oldnodes;
+		oldnodes.emplace_back(p, oldnode);
+		voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
+
+		for (auto &modified_block : modified_blocks) {
+			modified_block.second->expireDayNightDiff();
+		}
 	}
 
 	// Report for rollback

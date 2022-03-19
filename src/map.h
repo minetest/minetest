@@ -295,6 +295,9 @@ protected:
 		float step, float stepfac, float start_offset, float end_offset,
 		u32 needed_count);
 
+	// helper function, throws InvalidPositionException if block is a dummy
+	void setNode(MapBlock *block, v3s16 relpos, MapNode &n);
+
 private:
 	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;
 	u32 m_unprocessed_count = 0;
