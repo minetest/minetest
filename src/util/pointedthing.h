@@ -95,7 +95,7 @@ struct PointedThing
 	//! Constructor for POINTEDTHING_OBJECT
 	PointedThing(s16 id, const v3opos_t &point, const v3pos_t &normal, f32 distSq);
 	std::string dump() const;
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, const u16 proto_ver) const;
 	void deSerialize(std::istream &is);
 	/*!
 	 * This function ignores the intersection point and normal.

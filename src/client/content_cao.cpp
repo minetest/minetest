@@ -378,7 +378,7 @@ void GenericCAO::processInitData(const std::string &data)
 	m_name = deSerializeString16(is);
 	m_is_player = readU8(is);
 	m_id = readU16(is);
-	m_position = readV3O(is);
+	m_position = readV3O(is, m_client->getProtoVersion());
 	m_rotation = readV3F32(is);
 	m_hp = readU16(is);
 
@@ -1727,7 +1727,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
-		m_position = readV3O(is);
+		m_position = readV3O(is, /* todo after write version: m_client->getProtoVersion()*/);
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
 		m_rotation = readV3F32(is);

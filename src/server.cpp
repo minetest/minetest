@@ -18,13 +18,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "server.h"
+#include <cstddef>
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include "clientiface.h"
+#include "exceptions.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "ban.h"
+#include "util/metricsbackend.h"
 #include "environment.h"
 #include "map.h"
 #include "threading/mutex_auto_lock.h"
@@ -1180,8 +1185,9 @@ void Server::ProcessData(NetworkPacket *pkt)
 			return;
 		}
 
-		u8 peer_ser_ver = getClient(peer_id, CS_InitDone)->serialization_version;
-
+		RemoteClient * client = getClient(peer_id, CS_InitDone);
+		u8 peer_ser_ver = client->serialization_version;
+		pkt->setProtoVer(client->net_proto_version);
 		if(peer_ser_ver == SER_FMT_VER_INVALID) {
 			errorstream << "Server::ProcessData(): Cancelling: Peer"
 					" serialization format invalid or not initialized."
@@ -1425,7 +1431,7 @@ void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 void Server::SendItemDef(session_t peer_id,
 		IItemDefManager *itemdef, u16 protocol_version)
 {
-	NetworkPacket pkt(TOCLIENT_ITEMDEF, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_ITEMDEF, 0, peer_id, 0);
 
 	/*
 		u16 command
@@ -1448,7 +1454,7 @@ void Server::SendItemDef(session_t peer_id,
 void Server::SendNodeDef(session_t peer_id,
 	const NodeDefManager *nodedef, u16 protocol_version)
 {
-	NetworkPacket pkt(TOCLIENT_NODEDEF, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_NODEDEF, 0, peer_id, 0);
 
 	/*
 		u16 command
@@ -1569,7 +1575,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	}
 	assert(protocol_version != 0);
 
-	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 0, peer_id, protocol_version);
 
 	{
 		// NetworkPacket and iostreams are incompatible...
@@ -1616,7 +1622,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	}
 	assert(protocol_version != 0);
 
-	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 100, peer_id);
+	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 100, peer_id, protocol_version);
 
 	pkt << p.amount << p.time << p.minpos << p.maxpos << p.minvel
 		<< p.maxvel << p.minacc << p.maxacc << p.minexptime << p.maxexptime
@@ -1827,7 +1833,7 @@ void Server::SendMovePlayer(session_t peer_id)
 	// Send attachment updates instantly to the client prior updating position
 	sao->sendOutdatedData();
 
-	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
+	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof_v3opos(sao->getPlayer()->protocol_version) + sizeof(f32) * 2, peer_id, sao->getPlayer()->protocol_version);
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
 	{
@@ -2209,9 +2215,6 @@ void Server::sendRemoveNode(v3pos_t p, std::unordered_set<u16> *far_players,
 	v3opos_t p_f = posToOpos(p, BS);
 	v3bpos_t block_pos = getNodeBlockPos(p);
 
-	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
-	pkt << p;
-
 	std::vector<session_t> clients = m_clients.getClientIDs();
 	ClientInterface::AutoLock clientlock(m_clients);
 
@@ -2232,6 +2235,8 @@ void Server::sendRemoveNode(v3pos_t p, std::unordered_set<u16> *far_players,
 				client->SetBlockNotSent(block_pos);
 			continue;
 		}
+		NetworkPacket pkt(TOCLIENT_REMOVENODE, sizeof_v3pos(player->protocol_version), 0, player->protocol_version);
+		pkt << p;
 
 		// Send as reliable
 		m_clients.send(client_id, 0, &pkt, true);
@@ -2245,10 +2250,6 @@ void Server::sendAddNode(v3pos_t p, MapNode n, std::unordered_set<u16> *far_play
 	auto p_f = intToFloat(p, (opos_t)BS);
 	v3bpos_t block_pos = getNodeBlockPos(p);
 
-	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
-	pkt << p << n.param0 << n.param1 << n.param2
-			<< (u8) (remove_metadata ? 0 : 1);
-
 	std::vector<session_t> clients = m_clients.getClientIDs();
 	ClientInterface::AutoLock clientlock(m_clients);
 
@@ -2269,6 +2270,9 @@ void Server::sendAddNode(v3pos_t p, MapNode n, std::unordered_set<u16> *far_play
 				client->SetBlockNotSent(block_pos);
 			continue;
 		}
+
+		NetworkPacket pkt(TOCLIENT_ADDNODE, sizeof_v3pos(player->protocol_version) + 2 + 1 + 1 + 1, 0, player->protocol_version);
+		pkt << p << n.param0 << n.param1 << n.param2 << (u8) (remove_metadata ? 0 : 1);
 
 		// Send as reliable
 		m_clients.send(client_id, 0, &pkt, true);
@@ -2336,7 +2340,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
-	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + s.size(), peer_id);
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, sizeof_v3pos(m_env->getPlayer(peer_id)->protocol_version) + s.size(), peer_id, m_env->getPlayer(peer_id)->protocol_version);
 
 	pkt << block->getPos();
 	pkt.putRawString(s.c_str(), s.size());

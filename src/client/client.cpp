@@ -875,6 +875,7 @@ void Client::ReceiveAll()
 		try {
 			if (!m_con->TryReceive(&pkt))
 				break;
+			pkt.setProtoVer(m_proto_ver);
 			ProcessData(&pkt);
 		} catch (const con::InvalidIncomingDataException &e) {
 			infostream << "Client::ReceiveAll(): "
@@ -978,7 +979,9 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4+4+4] u8 fov*80
 		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 	*/
-	*pkt << position << speed << pitch << yaw << keyPressed;
+	pkt->writeV3S32(position);
+	pkt->writeV3S32(speed); 
+	*pkt << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
 }
 
@@ -1010,7 +1013,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 	pkt << myplayer->getWieldIndex();
 
 	std::ostringstream tmp_os(std::ios::binary);
-	pointed.serialize(tmp_os);
+	pointed.serialize(tmp_os, m_proto_ver);
 
 	pkt.putLongString(tmp_os.str());
 
@@ -1143,7 +1146,7 @@ void Client::sendDeletedBlocks(std::vector<v3bpos_t> &blocks)
 
 void Client::sendGotBlocks(const std::vector<v3bpos_t> &blocks)
 {
-	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6 * blocks.size());
+	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + sizeof_v3pos(m_proto_ver) * blocks.size(), 0, m_proto_ver);
 	pkt << (u8) blocks.size();
 	for (const v3bpos_t &block : blocks)
 		pkt << block;

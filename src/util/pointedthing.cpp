@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "pointedthing.h"
 
+#include "gamedef.h"
 #include "serialize.h"
 #include "exceptions.h"
 #include <sstream>
@@ -69,16 +70,18 @@ std::string PointedThing::dump() const
 	return os.str();
 }
 
-void PointedThing::serialize(std::ostream &os) const
+void PointedThing::serialize(std::ostream &os, const u16 proto_ver) const
 {
-	writeU8(os, 0); // version
+
+	const int version = proto_ver >= 41 ? 1 : 0;
+	writeU8(os, version); // version
 	writeU8(os, (u8)type);
 	switch (type) {
 	case POINTEDTHING_NOTHING:
 		break;
 	case POINTEDTHING_NODE:
-		writeV3POS(os, node_undersurface);
-		writeV3POS(os, node_abovesurface);
+		writeV3POS(os, node_undersurface, proto_ver);
+		writeV3POS(os, node_abovesurface, proto_ver);
 		break;
 	case POINTEDTHING_OBJECT:
 		writeS16(os, object_id);
@@ -89,15 +92,15 @@ void PointedThing::serialize(std::ostream &os) const
 void PointedThing::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if (version != 0) throw SerializationError(
+	if (version != 0 && version != 1) throw SerializationError(
 			"unsupported PointedThing version");
 	type = (PointedThingType) readU8(is);
 	switch (type) {
 	case POINTEDTHING_NOTHING:
 		break;
 	case POINTEDTHING_NODE:
-		node_undersurface = readV3POS(is);
-		node_abovesurface = readV3POS(is);
+		node_undersurface = readV3POS(is, version >= 1 ? 41 : 40);
+		node_abovesurface = readV3POS(is, version >= 1 ? 41 : 40);
 		break;
 	case POINTEDTHING_OBJECT:
 		object_id = readS16(is);

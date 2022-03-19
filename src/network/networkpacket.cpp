@@ -23,14 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "networkprotocol.h"
 
-NetworkPacket::NetworkPacket(u16 command, u32 datasize, session_t peer_id):
-m_datasize(datasize), m_command(command), m_peer_id(peer_id)
-{
-	m_data.resize(m_datasize);
-}
-
-NetworkPacket::NetworkPacket(u16 command, u32 datasize):
-m_datasize(datasize), m_command(command)
+NetworkPacket::NetworkPacket(u16 command, u32 datasize, session_t peer_id, u16 proto_ver):
+m_datasize(datasize), m_command(command), m_peer_id(peer_id), m_proto_ver(proto_ver)
 {
 	m_data.resize(m_datasize);
 }
@@ -450,8 +444,16 @@ NetworkPacket& NetworkPacket::operator>>(v3f& dst)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator>>(v3d& dst)
+#if USE_POS32
+NetworkPacket& NetworkPacket::operator>>(v3opos_t& dst)
 {
+	if (m_proto_ver < 41) {
+		v3f tmp;
+		*this >> tmp;
+		dst = v3fToOpos(tmp);
+		return *this;
+	}
+
 	checkReadOffset(m_read_offset, sizeof(dst));
 
 	dst = readV3F64(&m_data[m_read_offset]);
@@ -459,6 +461,7 @@ NetworkPacket& NetworkPacket::operator>>(v3d& dst)
 	m_read_offset += sizeof(dst);
 	return *this;
 }
+#endif
 
 NetworkPacket& NetworkPacket::operator>>(s16& dst)
 {
@@ -512,15 +515,34 @@ NetworkPacket& NetworkPacket::operator>>(v2s32& dst)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator>>(v3s32& dst)
+v3s32 NetworkPacket::readV3S32()
 {
 	checkReadOffset(m_read_offset, 12);
 
-	dst = readV3S32(&m_data[m_read_offset]);
+	v3s32 dst = ::readV3S32(&m_data[m_read_offset]);
+
+	m_read_offset += 12;
+	return dst;
+}
+
+#if USE_POS32
+NetworkPacket& NetworkPacket::operator>>(v3pos_t& dst)
+{
+	if (m_proto_ver < 41) {
+		v3s16 tmp;
+		*this >> tmp;
+		dst = s16ToPos(tmp);
+		return *this;
+	}
+
+	checkReadOffset(m_read_offset, 12);
+
+	dst = ::readV3S32(&m_data[m_read_offset]);
 
 	m_read_offset += 12;
 	return *this;
 }
+#endif
 
 NetworkPacket& NetworkPacket::operator<<(v2f src)
 {
@@ -537,13 +559,20 @@ NetworkPacket& NetworkPacket::operator<<(v3f src)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(v3d src)
+#if USE_POS32
+NetworkPacket& NetworkPacket::operator<<(v3opos_t src)
 {
+	if (m_proto_ver < 41) {
+		*this << oposToV3f(src);
+		return *this;
+	}
+
 	*this << (double)src.X;
 	*this << (double)src.Y;
 	*this << (double)src.Z;
 	return *this;
 }
+#endif
 
 NetworkPacket& NetworkPacket::operator<<(v3s16 src)
 {
@@ -560,12 +589,26 @@ NetworkPacket& NetworkPacket::operator<<(v2s32 src)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(v3s32 src)
+#if USE_POS32
+NetworkPacket& NetworkPacket::operator<<(v3pos_t src)
 {
+	if (m_proto_ver < 41) {
+        *this << posToS16(src);
+		return *this;
+	}
+
 	*this << (s32) src.X;
 	*this << (s32) src.Y;
 	*this << (s32) src.Z;
 	return *this;
+}
+#endif
+
+void NetworkPacket::writeV3S32(const v3s32 &src)
+{
+	*this << (s32) src.X;
+	*this << (s32) src.Y;
+	*this << (s32) src.Z;
 }
 
 NetworkPacket& NetworkPacket::operator>>(video::SColor& dst)

@@ -238,7 +238,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString16(""); // name
 	writeU8(os, 0); // is_player
 	writeU16(os, getId()); //id
-	writeV3O(os, m_base_position);
+	writeV3O(os, m_base_position, protocol_version);
 	writeV3F32(os, m_rotation);
 	writeU16(os, m_hp);
 
@@ -515,7 +515,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		m_rotation,
 		do_interpolate,
 		is_movement_end,
-		update_interval
+		update_interval		
 	);
 	// create message and add to list
 	m_messages_out.emplace(getId(), false, str);

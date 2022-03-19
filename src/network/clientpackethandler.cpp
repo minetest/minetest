@@ -285,13 +285,12 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 void Client::handleCommand_BlockData(NetworkPacket* pkt)
 {
 	// Ignore too small packet
-	if (pkt->getSize() < sizeof(v3bpos_t))
+	if (pkt->getSize() < sizeof_v3pos(pkt->getProtoVer()))
 		return;
 
 	v3bpos_t p;
 	*pkt >> p;
-
-	std::string datastring(pkt->getString(sizeof(p)), pkt->getSize() - sizeof(p));
+	std::string datastring(pkt->getString(sizeof_v3pos(pkt->getProtoVer())), pkt->getSize() - sizeof_v3pos(pkt->getProtoVer()));
 	std::istringstream istr(datastring, std::ios_base::binary);
 
 	MapSector *sector;
@@ -600,8 +599,8 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	*pkt >> pos >> pitch >> yaw;
 
 	player->setPosition(pos);
-
-	infostream << "Client got TOCLIENT_MOVE_PLAYER"
+	
+		infostream << "Client got TOCLIENT_MOVE_PLAYER"
 			<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
 			<< " pitch=" << pitch
 			<< " yaw=" << yaw

@@ -275,7 +275,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		<< auth_mechs << std::endl;
 
 	NetworkPacket resp_pkt(TOCLIENT_HELLO,
-		1 + 4 + legacyPlayerNameCasing.size(), peer_id);
+		1 + 4 + legacyPlayerNameCasing.size(), peer_id, 0);
 
 	u16 depl_compress_mode = NETPROTO_COMPRESSION_NONE;
 	resp_pkt << depl_serial_v << depl_compress_mode << net_proto_version
@@ -407,7 +407,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	// Send player list to this client
 	{
 		const std::vector<std::string> &players = m_clients.getPlayerNames();
-		NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
+		NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id , 0);
 		list_pkt << (u8) PLAYER_LIST_INIT << (u16) players.size();
 		for (const auto &player : players)
 			list_pkt << player;
@@ -464,8 +464,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	s32 f32pitch, f32yaw;
 	u8 f32fov;
 
-	*pkt >> ps;
-	*pkt >> ss;
+	ps = pkt->readV3S32();
+	ss = pkt->readV3S32();
 	*pkt >> f32pitch;
 	*pkt >> f32yaw;
 
@@ -1625,7 +1625,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		return;
 	}
 
-	NetworkPacket resp_pkt(TOCLIENT_SRP_BYTES_S_B, 0, peer_id);
+	NetworkPacket resp_pkt(TOCLIENT_SRP_BYTES_S_B, 0, peer_id, 0);
 	resp_pkt << salt << std::string(bytes_B, len_B);
 	Send(&resp_pkt);
 }
@@ -1723,7 +1723,7 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 
 	session_t peer_id = pkt->getPeerId();
 	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_SIGNAL,
-		1 + 2 + channel_name.size(), peer_id);
+		1 + 2 + channel_name.size(), peer_id, 0);
 
 	// Send signal to client to notify join succeed or not
 	if (g_settings->getBool("enable_mod_channels") &&
@@ -1748,7 +1748,7 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 
 	session_t peer_id = pkt->getPeerId();
 	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_SIGNAL,
-		1 + 2 + channel_name.size(), peer_id);
+		1 + 2 + channel_name.size(), peer_id, 0);
 
 	// Send signal to client to notify join succeed or not
 	if (g_settings->getBool("enable_mod_channels") &&
@@ -1783,7 +1783,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	// If channel not registered, signal it and ignore message
 	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
 		NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_SIGNAL,
-			1 + 2 + channel_name.size(), peer_id);
+			1 + 2 + channel_name.size(), peer_id, 0);
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED << channel_name;
 		Send(&resp_pkt);
 		return;

@@ -469,49 +469,61 @@ MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(v3d,   V3F64,   24);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
-inline pos_t readPOS(std::istream &is) {
+inline pos_t readPOS(std::istream &is, const u16 proto_ver = 0) {
 #if USE_POS32
-	return readS32(is);
+	if (proto_ver >= 41)
+		return readS32(is);
+	return readS16(is);
 #else
 	return readS16(is);
 #endif
 }
 
-inline void writePOS(std::ostream &os, pos_t i) {
+inline void writePOS(std::ostream &os, pos_t i, const u16 proto_ver = 0) {
 #if USE_POS32
-	return writeS32(os, i);
+	if (proto_ver >= 41)
+		return writeS32(os, i);
+	return writeS16(os, i);
 #else
 	return writeS16(os, i);
 #endif
 }
 
-inline v3pos_t readV3POS(std::istream &is) {
+inline v3pos_t readV3POS(std::istream &is, const u16 proto_ver = 0) {
 #if USE_POS32
-    return readV3S32(is);
+	if (proto_ver >= 41)
+	    return readV3S32(is);
+    return s16ToPos(readV3S16(is));
 #else
     return readV3S16(is);
 #endif
 }
 
-inline void writeV3POS(std::ostream &os, v3pos_t p) {
+inline void writeV3POS(std::ostream &os, v3pos_t p, const u16 proto_ver = 0) {
 #if USE_POS32
-    return writeV3S32(os, p);
+	if (proto_ver >= 41)
+	    return writeV3S32(os, p);
+    return writeV3S16(os, posToS16(p));
 #else
     return writeV3S16(os, p);
 #endif
 }
 
-inline v3opos_t readV3O(std::istream &is) {
+inline v3opos_t readV3O(std::istream &is, const u16 proto_ver = 0) {
 #if USE_OPOS64
-    return readV3F64(is);
+	if (proto_ver >= 41)
+	    return readV3F64(is);
+    return v3fToOpos(readV3F32(is));
 #else
     return readV3F32(is);
 #endif
 }
 
-inline void writeV3O(std::ostream &os, v3opos_t p) {
+inline void writeV3O(std::ostream &os, v3opos_t p, const u16 proto_ver = 0) {
 #if USE_OPOS64
-    return writeV3F64(os, p);
+	if (proto_ver >= 41)
+	    return writeV3F64(os, p);
+    return writeV3F32(os, oposToV3f(p));
 #else
     return writeV3F32(os, p);
 #endif

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "util/string.h"
+#include "config.h"
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -207,9 +208,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
+	PROTOCOL VERSION 41:
+		Convert coordinates to s16->s32 and float->double
 */
 
+#if USE_POS32
+#define LATEST_PROTOCOL_VERSION 41
+#else
 #define LATEST_PROTOCOL_VERSION 40
+#endif
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
