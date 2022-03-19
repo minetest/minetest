@@ -255,6 +255,10 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_pushnil(L);
 	lua_setfield(L, old_globals, "core");
 
+	// 'vector' as well.
+	lua_pushnil(L);
+	lua_setfield(L, old_globals, "vector");
+
 	lua_pop(L, 1); // Pop globals_backup
 
 
