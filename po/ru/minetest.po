@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-02-14 19:57+0000\n"
-"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
+"PO-Revision-Date: 2022-04-01 06:08+0000\n"
+"Last-Translator: Lesha Vel <lesha.programmer@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -297,10 +297,8 @@ msgid "Install missing dependencies"
 msgstr "Установить недостающие зависимости"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr ""
-"Установка мода: неподдерживаемый тип файла или повреждённый архив \"$1\""
+msgstr "Установка мода: неподдерживаемый тип файла или повреждённый архив"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -632,9 +630,8 @@ msgid "Offset"
 msgstr "Смещение"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
-msgstr "Персистенция"
+msgstr "Упорство"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -1064,7 +1061,6 @@ msgid "Node Outlining"
 msgstr "Обводка нод"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "None"
 msgstr "Ничего"
 
@@ -2829,30 +2825,28 @@ msgid "Command key"
 msgstr "Команда"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Уровень сжатия ZLib для использования при сохранении картографических блоков "
-"на диске.\n"
-"-1 - уровень сжатия Zlib по умолчанию\n"
-"0 - без компрессора, самый быстрый\n"
+"Уровень сжатия для использования при сохранении картографических блоков на "
+"диске.\n"
+"-1 - уровень сжатия по умолчанию\n"
+"0 - без сжатия, самый быстрый\n"
 "9 - лучшее сжатие, самое медленное\n"
 "(уровни 1-3 используют \"быстрый\" метод Zlib, 4-9 используют обычный метод)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Уровень сжатия ZLib для использования при отправке блоков карты клиенту.\n"
-"-1 - уровень сжатия Zlib по умолчанию\n"
+"Уровень сжатия для использования при отправке блоков карты клиенту.\n"
+"-1 - уровень сжатия по умолчанию\n"
 "0 - без компрессора, самый быстрый\n"
 "9 - лучшее сжатие, самое медленное\n"
 "(уровни 1-3 используют \"быстрый\" метод Zlib, 4-9 используют обычный метод)"
