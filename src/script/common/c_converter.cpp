@@ -52,8 +52,7 @@ if (value < F1000_MIN || value > F1000_MAX) { \
 
 
 /**
- * A helper which sets (if available) the vector metatable from builtin as metatable
- * for the table on top of the stack
+ * A helper which sets the vector metatable for the table on top of the stack
  */
 static void set_vector_metatable(lua_State *L)
 {
