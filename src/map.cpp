@@ -245,20 +245,22 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		m_gamedef->rollback()->reportAction(action);
 	}
 
-	/*
-		Add neighboring liquid nodes and this node to transform queue.
-		(it's vital for the node itself to get updated last, if it was removed.)
-	 */
+	if (!cf.liquidEquivalent(oldcf)) {
+		/*
+			Add neighboring liquid nodes and this node to transform queue.
+			(it's vital for the node itself to get updated last, if it was removed.)
+		 */
 
-	for (const v3s16 &dir : g_7dirs) {
-		v3s16 p2 = p + dir;
+		for (const v3s16 &dir : g_7dirs) {
+			v3s16 p2 = p + dir;
 
-		bool is_valid_position;
-		MapNode n2 = getNode(p2, &is_valid_position);
-		if(is_valid_position &&
-				(m_nodedef->get(n2).isLiquid() ||
-				n2.getContent() == CONTENT_AIR))
-			m_transforming_liquid.push_back(p2);
+			bool is_valid_position;
+			MapNode n2 = getNode(p2, &is_valid_position);
+			if(is_valid_position &&
+					(m_nodedef->get(n2).isLiquid() ||
+					n2.getContent() == CONTENT_AIR))
+				m_transforming_liquid.push_back(p2);
+		}
 	}
 }
 
