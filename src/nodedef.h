@@ -478,20 +478,6 @@ struct ContentFeatures
 		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
 	}
 
-	bool liquidEquivalent(const ContentFeatures &other) const {
-		if (liquid_type != other.liquid_type)
-			return false;
-		switch (liquid_type) {
-		case LIQUID_NONE:
-			return floodable == other.floodable;
-		case LIQUID_SOURCE:
-			return liquid_alternative_flowing_id == other.liquid_alternative_flowing_id;
-		default:
-			// Can't be sure they have the same liquid level.
-			return false;
-		}
-	}
-
 	bool lightingEquivalent(const ContentFeatures &other) const {
 		return light_propagates == other.light_propagates
 				&& sunlight_propagates == other.sunlight_propagates
