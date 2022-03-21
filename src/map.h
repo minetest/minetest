@@ -54,10 +54,6 @@ struct BlockMakeData;
 	MapEditEvent
 */
 
-#define MAPTYPE_BASE 0
-#define MAPTYPE_SERVER 1
-#define MAPTYPE_CLIENT 2
-
 enum MapEditEventType{
 	// Node added (changed from air or something else to something)
 	MEET_ADDNODE,
@@ -127,11 +123,6 @@ public:
 	virtual ~Map();
 	DISABLE_CLASS_COPY(Map);
 
-	virtual s32 mapType() const
-	{
-		return MAPTYPE_BASE;
-	}
-
 	/*
 		Drop (client) or delete (server) the map.
 	*/
@@ -180,7 +171,7 @@ public:
 	/*
 		These handle lighting but not faces.
 	*/
-	void addNodeAndUpdate(v3s16 p, MapNode n,
+	virtual void addNodeAndUpdate(v3s16 p, MapNode n,
 			std::map<v3s16, MapBlock*> &modified_blocks,
 			bool remove_metadata = true);
 	void removeNodeAndUpdate(v3s16 p,
@@ -200,6 +191,11 @@ public:
 
 	virtual void save(ModifiedState save_level) { FATAL_ERROR("FIXME"); }
 
+	/*
+		Return true unless the map definitely cannot save blocks.
+	*/
+	virtual bool maySaveBlocks() { return true; }
+
 	// Server implements these.
 	// Client leaves them as no-op.
 	virtual bool saveBlock(MapBlock *block) { return false; }
@@ -207,14 +203,14 @@ public:
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
-		Saves modified blocks before unloading on MAPTYPE_SERVER.
+		Saves modified blocks before unloading if possible.
 	*/
 	void timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			std::vector<v3s16> *unloaded_blocks=NULL);
 
 	/*
 		Unloads all blocks with a zero refCount().
-		Saves modified blocks before unloading on MAPTYPE_SERVER.
+		Saves modified blocks before unloading if possible.
 	*/
 	void unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks=NULL);
 
@@ -225,9 +221,6 @@ public:
 
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
-
-	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks,
-			ServerEnvironment *env);
 
 	/*
 		Node metadata
@@ -267,12 +260,8 @@ public:
 		Variables
 	*/
 
-	void transforming_liquid_add(v3s16 p);
-
 	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
 protected:
-	friend class LuaVoxelManip;
-
 	IGameDef *m_gamedef;
 
 	std::set<MapEventReceiver*> m_event_receivers;
@@ -283,9 +272,6 @@ protected:
 	MapSector *m_sector_cache = nullptr;
 	v2s16 m_sector_cache_p;
 
-	// Queued transforming water nodes
-	UniqueQueue<v3s16> m_transforming_liquid;
-
 	// This stores the properties of the nodes on the map.
 	const NodeDefManager *m_nodedef;
 
@@ -294,12 +280,6 @@ protected:
 	bool isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		float step, float stepfac, float start_offset, float end_offset,
 		u32 needed_count);
-
-private:
-	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;
-	u32 m_unprocessed_count = 0;
-	u64 m_inc_trending_up_start_time = 0; // milliseconds
-	bool m_queue_size_timer_started = false;
 };
 
 /*
@@ -316,11 +296,6 @@ public:
 	*/
 	ServerMap(const std::string &savedir, IGameDef *gamedef, EmergeManager *emerge, MetricsBackend *mb);
 	~ServerMap();
-
-	s32 mapType() const
-	{
-		return MAPTYPE_SERVER;
-	}
 
 	/*
 		Get a sector from somewhere.
@@ -364,6 +339,10 @@ public:
 
 	bool isBlockInQueue(v3s16 pos);
 
+	void addNodeAndUpdate(v3s16 p, MapNode n,
+			std::map<v3s16, MapBlock*> &modified_blocks,
+			bool remove_metadata) override;
+
 	/*
 		Database functions
 	*/
@@ -406,9 +385,16 @@ public:
 	bool repairBlockLight(v3s16 blockpos,
 		std::map<v3s16, MapBlock *> *modified_blocks);
 
+	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks,
+			ServerEnvironment *env);
+
+	void transforming_liquid_add(v3s16 p);
+
 	MapSettingsManager settings_mgr;
 
 private:
+	friend class LuaVoxelManip;
+
 	// Emerge manager
 	EmergeManager *m_emerge;
 
@@ -418,6 +404,13 @@ private:
 	int m_map_compression_level;
 
 	std::set<v3s16> m_chunks_in_progress;
+
+	// Queued transforming water nodes
+	UniqueQueue<v3s16> m_transforming_liquid;
+	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;
+	u32 m_unprocessed_count = 0;
+	u64 m_inc_trending_up_start_time = 0; // milliseconds
+	bool m_queue_size_timer_started = false;
 
 	/*
 		Metadata is re-written on disk only if this is true.

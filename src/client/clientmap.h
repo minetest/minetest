@@ -75,9 +75,9 @@ public:
 
 	virtual ~ClientMap() = default;
 
-	s32 mapType() const
+	bool maySaveBlocks() override
 	{
-		return MAPTYPE_CLIENT;
+		return false;
 	}
 
 	void drop()
