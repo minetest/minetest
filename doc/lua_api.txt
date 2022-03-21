@@ -7208,6 +7208,7 @@ child will follow movement and rotation of that bone.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
             will re-enable the mesh sun. (default: "sun.png", if it exists)
+            At sunrise, the texture appears non-rotated in the east (+X).
         * `tonemap`: A 512x1 texture containing the tonemap for the sun
             (default: `"sun_tonemap.png"`)
         * `sunrise`: A regular texture for the sunrise texture.
@@ -7215,6 +7216,8 @@ child will follow movement and rotation of that bone.
         * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
             (default: `true`)
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
+            Note: For equal `scale` values, the sun is bigger than the moon by a
+            factor of `0.119/0.076`.
 * `get_sun()`: returns a table with the current sun parameters as in
     `set_sun`.
 * `set_moon(moon_parameters)`:
@@ -7224,11 +7227,14 @@ child will follow movement and rotation of that bone.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
             will re-enable the mesh moon. (default: `"moon.png"`, if it exists)
-            Note: Relative to the sun, the moon texture is rotated by 180°.
+            At sunrise, the texture appears non-rotated in the west (-X).
+            Note: Relative to the sun, the moon texture is hence rotated by 180°.
             You can use the `^[transformR180` texture modifier to achieve the same orientation.
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
             (default: `"moon_tonemap.png"`)
         * `scale`: Float controlling the overall size of the moon (default: `1`)
+            Note: For equal `scale` values, the sun is bigger than the moon by a
+            factor of `0.119/0.076`.
 * `get_moon()`: returns a table with the current moon parameters as in
     `set_moon`.
 * `set_stars(star_parameters)`:
