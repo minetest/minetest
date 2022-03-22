@@ -158,6 +158,11 @@ void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 		disable();
 }
 
+v3f ShadowRenderer::getCameraPos() const
+{
+	auto cam = m_client->getCamera();
+	return cam->getPosition() - intToFloat(cam->getOffset(), BS);
+}
 
 void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
@@ -261,6 +266,7 @@ void ShadowRenderer::updateSMTextures()
 					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
+					cb->CameraPos = getCameraPos();
 				}
 
 			// set the Render Target
@@ -322,9 +328,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
-			// Static shader values.
-			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
-			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
+			// Static shader values for entities are set in updateSMTextures
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,

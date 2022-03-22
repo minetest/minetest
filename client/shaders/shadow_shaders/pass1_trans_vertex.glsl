@@ -1,4 +1,5 @@
 uniform mat4 LightMVP; // world matrix
+uniform vec4 CameraPos;
 varying vec4 tPos;
 #ifdef COLORED_SHADOWS
 varying vec3 varColor;

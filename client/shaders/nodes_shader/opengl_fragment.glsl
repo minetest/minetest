@@ -17,6 +17,7 @@ uniform float animationTimer;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
+	uniform vec4 v_CameraPos;
 	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float cosLight;
