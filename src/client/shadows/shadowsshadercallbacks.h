@@ -42,6 +42,7 @@ public:
 			s32 userData) override;
 
 	f32 MaxFar{2048.0f}, MapRes{1024.0f};
+	f32 PerspectiveBiasXY {0.9f}, PerspectiveBiasZ {0.5f};
 
 private:
 	CachedVertexShaderSetting<f32, 16> m_light_mvp_setting;

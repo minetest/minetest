@@ -326,13 +326,13 @@ public:
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);
 
-			f32 bias0 = 0.9f;
+			f32 bias0 = shadow->getPerspectiveBiasXY();
 			m_perspective_bias0_vertex.set(&bias0, services);
 			m_perspective_bias0_pixel.set(&bias0, services);
 			f32 bias1 = 1.0f - bias0 + 1e-5f;
 			m_perspective_bias1_vertex.set(&bias1, services);
 			m_perspective_bias1_pixel.set(&bias1, services);
-			f32 zbias = 0.5;
+			f32 zbias = shadow->getPerspectiveBiasZ();
 			m_perspective_zbias_vertex.set(&zbias, services);
 			m_perspective_zbias_pixel.set(&zbias, services);
 		}

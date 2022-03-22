@@ -32,7 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_device(device), m_smgr(device->getSceneManager()),
-		m_driver(device->getVideoDriver()), m_client(client), m_current_frame(0)
+		m_driver(device->getVideoDriver()), m_client(client), m_current_frame(0),
+		m_perspective_bias_xy(0.9), m_perspective_bias_z(0.5)
 {
 	m_shadows_supported = true; // assume shadows supported. We will check actual support in initialize
 	m_shadows_enabled = true;
@@ -254,16 +255,13 @@ void ShadowRenderer::updateSMTextures()
 		// Update SM incrementally:
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values.
-			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
-			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
-			if (m_shadow_depth_entity_cb) {
-				m_shadow_depth_entity_cb->MapRes = m_shadow_depth_cb->MapRes;
-				m_shadow_depth_entity_cb->MaxFar = m_shadow_depth_cb->MaxFar;
-			}
-			if (m_shadow_depth_trans_cb) {
-				m_shadow_depth_trans_cb->MapRes = m_shadow_depth_cb->MapRes;
-				m_shadow_depth_trans_cb->MaxFar = m_shadow_depth_cb->MaxFar;
-			}
+			for (auto cb : {m_shadow_depth_cb, m_shadow_depth_entity_cb, m_shadow_depth_trans_cb})
+				if (cb) {
+					cb->MapRes = (f32)m_shadow_map_texture_size;
+					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
+					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
+					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
+				}
 
 			// set the Render Target
 			// right now we can only render in usual RTT, not
@@ -356,7 +354,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 void ShadowRenderer::drawDebug()
 {
 	/* this code just shows shadows textures in screen and in ONLY for debugging*/
-	#if 0
+	#if 1
 	// this is debug, ignore for now.
 	if (shadowMapTextureFinal)
 		m_driver->draw2DImage(shadowMapTextureFinal,
