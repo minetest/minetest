@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-02-28 10:59+0000\n"
-"Last-Translator: MinecraftTAO <guangtao13631219661@outlook.com>\n"
+"PO-Revision-Date: 2022-03-24 18:55+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11.1-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -279,7 +279,7 @@ msgstr "下载 $1 失败"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr "游戏"
+msgstr "子游戏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
@@ -301,7 +301,7 @@ msgstr "安装：文件类型不支持或档案已损坏"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "模组"
+msgstr "Mod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -417,7 +417,7 @@ msgstr "悬空岛（实验性）"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr "游戏"
+msgstr "子游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -1053,9 +1053,8 @@ msgid "Node Outlining"
 msgstr "方块轮廓"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "None"
-msgstr "毫无"
+msgstr "无"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
