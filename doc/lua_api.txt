@@ -7208,7 +7208,7 @@ child will follow movement and rotation of that bone.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
             will re-enable the mesh sun. (default: "sun.png", if it exists)
-            At sunrise, the texture appears non-rotated in the east (+X).
+            At sunrise, the texture appears non-rotated.
         * `tonemap`: A 512x1 texture containing the tonemap for the sun
             (default: `"sun_tonemap.png"`)
         * `sunrise`: A regular texture for the sunrise texture.
@@ -7227,7 +7227,7 @@ child will follow movement and rotation of that bone.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
             will re-enable the mesh moon. (default: `"moon.png"`, if it exists)
-            At sunrise, the texture appears non-rotated in the west (-X).
+            At sunrise, the texture appears non-rotated.
             Note: Relative to the sun, the moon texture is hence rotated by 180°.
             You can use the `^[transformR180` texture modifier to achieve the same orientation.
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
