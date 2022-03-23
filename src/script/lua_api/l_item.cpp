@@ -369,8 +369,7 @@ int LuaItemStack::l_add_wear_by_uses(lua_State *L)
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
 	u32 uses = readParam<int>(L, 2);
-	u16 initial_wear = item.wear;
-	u32 add_wear = calculateResultWear(uses, initial_wear);
+	u32 add_wear = calculateResultWear(uses, item.wear);
 	bool result = item.addWear(add_wear, getGameDef(L)->idef());
 	lua_pushboolean(L, result);
 	return 1;
