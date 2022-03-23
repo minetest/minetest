@@ -50,9 +50,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	camPos2 += look * sfNear;
 
 	// center point of light frustum
-	float end = sfNear + sfFar;
-	newCenter = camPos + look * (sfNear + 0.05f * end);
-	v3f world_center = camPos2 + look * (sfNear + 0.05f * end);
+	newCenter = camPos + look * 0.35f * (sfFar - sfNear);
+	v3f world_center = camPos2 + look * 0.35f * (sfFar - sfNear);
 
 	// Create a vector to the frustum far corner
 	const v3f &viewUp = cam->getCameraNode()->getUpVector();
