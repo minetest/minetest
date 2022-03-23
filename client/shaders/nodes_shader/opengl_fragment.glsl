@@ -51,14 +51,16 @@ const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
 uniform float zPerspectiveBias;
+float scale;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
 {
-
+	shadowPosition.xy = (shadowPosition.xy - v_CameraPos.xy) / scale;
 	float pDistance = length(shadowPosition.xy);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
 
 	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
+	shadowPosition.xy = scale * shadowPosition.xy + v_CameraPos.xy;
 
 	return shadowPosition;
 }
@@ -172,13 +174,13 @@ float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDis
 
 float getBaseLength(vec2 smTexCoord)
 {
-	float l = length(2.0 * smTexCoord.xy - 1.0);     // length in texture coords
+	float l = length(2.0 * smTexCoord.xy - 1.0 - v_CameraPos.xy) / scale;     // length in texture coords
 	return xyPerspectiveBias1 / (1.0 / l - xyPerspectiveBias0); 				 // return to undistorted coords
 }
 
 float getDeltaPerspectiveFactor(float l)
 {
-	return 0.1 / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
+	return 0.03 / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
 }
 
 float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDistance, float multiplier)
@@ -465,6 +467,8 @@ vec4 applyToneMapping(vec4 color)
 
 void main(void)
 {
+	scale = 0.8 + pow(length(v_CameraPos.xy), 2.0);
+
 	vec3 color;
 	vec2 uv = varTexCoord.st;
 
@@ -490,7 +494,9 @@ void main(void)
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
 		vec3 posLightSpace = getLightSpacePosition();
 
-		float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 50.0));
+		float distance_rate = (1 - pow(clamp(0.5 / scale * length(2.0 * (posLightSpace.xy - 0.5) - v_CameraPos.xy),0.0,1.0), 50.0));
+		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
+			distance_rate = 0.0;
 		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
