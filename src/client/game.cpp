@@ -4035,11 +4035,14 @@ void Game::updateShadows()
 	if (!shadow)
 		return;
 
-	shadow->setShadowIntensity(client->getEnv().getLocalPlayer()->getLighting().shadow_intensity);
-
 	float in_timeofday = fmod(runData.time_of_day_smooth, 1.0f);
 
-	float timeoftheday = fmod(getWickedTimeOfDay(in_timeofday) + 0.75f, 0.5f) + 0.25f;
+	float timeoftheday = getWickedTimeOfDay(in_timeofday);
+	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
+	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
+	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
+
+	timeoftheday = fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;
 
 	v3f light(0.0f, 0.0f, -1.0f);
