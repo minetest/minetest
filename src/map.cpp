@@ -173,7 +173,7 @@ static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
 		v3s16 blockpos = block->getPos();
 		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
 		bool temp_bool;
-		errorstream<<"set_node_in_block(): Not allowing to place CONTENT_IGNORE"
+		errorstream<<"Not allowing to place CONTENT_IGNORE"
 				<<" while trying to replace \""
 				<<nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
 				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
