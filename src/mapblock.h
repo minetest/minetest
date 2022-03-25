@@ -336,6 +336,10 @@ public:
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
 
+	// Sets the node if it is not CONTENT_IGNORE, otherwise emitting an error
+	// message and doing nothing (placing CONTENT_IGNORE causes problems).
+	void setNodeNoCheckNoIgnore(v3s16 p, MapNode n);
+
 	// These functions consult the parent container if the position
 	// is not valid on this MapBlock.
 	bool isValidPositionParent(v3s16 p);
