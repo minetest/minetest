@@ -88,20 +88,6 @@ MapBlock::~MapBlock()
 	delete[] data;
 }
 
-void MapBlock::setNodeNoCheckNoIgnore(v3s16 p, MapNode n)
-{
-	if(n.getContent() == CONTENT_IGNORE) {
-		bool temp_bool;
-		const std::string &old =
-				m_parent->getNodeDefManager()->get(getNodeNoCheck(p, &temp_bool)).name;
-		errorstream<<"MapBlock::setNodeNoCheckNoIgnore(): "
-				<<"Not allowing placement of CONTENT_IGNORE while trying to replace \""<<old
-				<<"\" at "<<PP(m_pos_relative + p)<<" (block "<<PP(m_pos)<<")"<<std::endl;
-		return;
-	}
-	setNodeNoCheck(p, n);
-}
-
 bool MapBlock::isValidPositionParent(v3s16 p)
 {
 	if (isValidPosition(p)) {
