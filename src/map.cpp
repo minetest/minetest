@@ -198,12 +198,13 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	// Collect old node for rollback
 	RollbackNode rollback_oldnode(this, p, m_gamedef);
 
-	// This is needed for updating the lighting
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
 	if (block->isDummy())
 		throw InvalidPositionException();
 	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
+
+	// This is needed for updating the lighting
 	MapNode oldnode = block->getNodeUnsafe(relpos);
 
 	// Remove node metadata
