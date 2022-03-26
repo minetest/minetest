@@ -97,6 +97,7 @@ ClientMap::ClientMap(
 	m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
 	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
 	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
+	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
 
 }
 
@@ -957,7 +958,8 @@ void ClientMap::updateTransparentMeshBuffers()
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
-	const f32 MAX_SORT_DISTANCE = BS * BS * 75 * 75; // 75 nodes, 1.5x animation threshold
+	f32 sorting_distance_sq = pow(m_cache_transparency_sorting_distance * BS, 2.0f);
+
 
 	// Update the order of transparent mesh buffers in each mesh
 	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
@@ -971,7 +973,7 @@ void ClientMap::updateTransparentMeshBuffers()
 			v3s16 block_pos = block->getPos();
 			v3f block_pos_f = intToFloat(block_pos * MAP_BLOCKSIZE + MAP_BLOCKSIZE / 2, BS);
 			f32 distance = m_camera_position.getDistanceFromSQ(block_pos_f);
-			if (distance <= MAX_SORT_DISTANCE) {
+			if (distance <= sorting_distance_sq) {
 				block->mesh->updateTransparentBuffers(m_camera_position, block_pos);
 				++sorted_blocks;
 			}
