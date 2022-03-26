@@ -34,6 +34,8 @@ const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 	uniform float f_textureresolution;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
+	uniform float f_timeofday;
+	uniform float f_shadow_strength;
 	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float cosLight;
@@ -470,55 +472,57 @@ void main(void)
 	col.rgb *= vIDiff;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-	float shadow_int = 0.0;
-	vec3 shadow_color = vec3(0.0, 0.0, 0.0);
-	vec3 posLightSpace = getLightSpacePosition();
+	if (f_shadow_strength > 0.0) {
+		float shadow_int = 0.0;
+		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
+		vec3 posLightSpace = getLightSpacePosition();
 
-	float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 20.0));
-	float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z  ),0.0);
+		float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 20.0));
+		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z  ),0.0);
 
-	if (distance_rate > 1e-7) {
+		if (distance_rate > 1e-7) {
 	
 #ifdef COLORED_SHADOWS
-		vec4 visibility;
-		if (cosLight > 0.0)
-			visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
-		else
-			visibility = vec4(1.0, 0.0, 0.0, 0.0);
-		shadow_int = visibility.r;
-		shadow_color = visibility.gba;
+			vec4 visibility;
+			if (cosLight > 0.0)
+				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+			else
+				visibility = vec4(1.0, 0.0, 0.0, 0.0);
+			shadow_int = visibility.r;
+			shadow_color = visibility.gba;
 #else
-		if (cosLight > 0.0)
-			shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
-		else
-			shadow_int = 1.0;
+			if (cosLight > 0.0)
+				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+			else
+				shadow_int = 1.0;
 #endif
-		shadow_int *= distance_rate;
-		shadow_int = clamp(shadow_int, 0.0, 1.0);
+			shadow_int *= distance_rate;
+			shadow_int = clamp(shadow_int, 0.0, 1.0);
 
+		}
+
+		// turns out that nightRatio falls off much faster than
+		// actual brightness of artificial light in relation to natual light.
+		// Power ratio was measured on torches in MTG (brightness = 14).
+		float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
+
+		// cosine of the normal-to-light angle when
+		// we start to apply self-shadowing
+		const float self_shadow_cutoff_cosine = 0.14;
+		if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
+			shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+			shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+		}
+
+		shadow_int *= f_adj_shadow_strength;
+
+		// calculate fragment color from components:
+		col.rgb =
+				adjusted_night_ratio * col.rgb + // artificial light
+				(1.0 - adjusted_night_ratio) * ( // natural light
+						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
+						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	}
-
-	// turns out that nightRatio falls off much faster than
-	// actual brightness of artificial light in relation to natual light.
-	// Power ratio was measured on torches in MTG (brightness = 14).
-	float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
-
-	// cosine of the normal-to-light angle when
-	// we start to apply self-shadowing
-	const float self_shadow_cutoff_cosine = 0.14;
-	if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
-		shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
-		shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
-	}
-
-	shadow_int *= f_adj_shadow_strength;
-	
-	// calculate fragment color from components:
-	col.rgb =
-			adjusted_night_ratio * col.rgb + // artificial light
-			(1.0 - adjusted_night_ratio) * ( // natural light
-					col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
-					dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 #endif
 
 #if ENABLE_TONE_MAPPING

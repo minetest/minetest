@@ -7,6 +7,7 @@ experimental = {}
 dofile(minetest.get_modpath("experimental").."/detached.lua")
 dofile(minetest.get_modpath("experimental").."/items.lua")
 dofile(minetest.get_modpath("experimental").."/commands.lua")
+dofile(minetest.get_modpath("experimental").."/lighting.lua")
 
 function experimental.print_to_everything(msg)
 	minetest.log("action", msg)
