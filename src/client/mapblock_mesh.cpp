@@ -1055,14 +1055,7 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 
 	// if there is only one triangle, or the delta is insanely small, this is a leaf node
 	if (list.size() == 1 || delta < 0.01) {
-		struct TreeNode node;
-		node.normal = normal;
-		node.origin = origin;
-		node.triangle_refs = list;
-		node.front_ref = -1;
-		node.back_ref = -1;
-		nodes.push_back(node);
-
+		nodes.emplace_back(normal, origin, list, -1, -1);
 		return nodes.size() - 1;
 	}
 
@@ -1124,13 +1117,7 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 			return back_index;
 	}
 
-	struct TreeNode node;
-	node.normal = normal;
-	node.origin = origin;
-	node.triangle_refs = node_list;
-	node.front_ref = front_index;
-	node.back_ref = back_index;
-	nodes.push_back(node);
+	nodes.emplace_back(normal, origin, node_list, front_index, back_index);
 
 	return nodes.size() - 1;
 }

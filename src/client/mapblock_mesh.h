@@ -120,6 +120,11 @@ private:
 		std::vector<s32> triangle_refs;
 		s32 front_ref;
 		s32 back_ref;
+
+		TreeNode() = default;
+		TreeNode(const v3f &normal, const v3f &origin, const std::vector<s32> &triangle_refs, s32 front_ref, s32 back_ref) :
+				normal(normal), origin(origin), triangle_refs(triangle_refs), front_ref(front_ref), back_ref(back_ref)
+		{}
 	};
 
 
