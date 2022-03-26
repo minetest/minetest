@@ -1014,9 +1014,11 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 
 	nodes.clear();
 
+	// assert that triangle index can fit into s32
+	assert(triangles->size() <= 0x7FFFFFFFL);
 	std::vector<s32> indexes;
 	indexes.reserve(triangles->size());
-	for (u16 i = 0; i < triangles->size(); i++)
+	for (u32 i = 0; i < triangles->size(); i++)
 		indexes.push_back(i);
 
 	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes, 0);
