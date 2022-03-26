@@ -1359,7 +1359,7 @@ void push_inventory_list(lua_State *L, const InventoryList &invlist)
 /******************************************************************************/
 void push_inventory_lists(lua_State *L, const Inventory &inv)
 {
-	const std::vector<InventoryList *> &lists = inv.getLists();
+	const auto &lists = inv.getLists();
 	lua_createtable(L, 0, lists.size());
 	for(const InventoryList *list : lists) {
 		const std::string &name = list->getName();
