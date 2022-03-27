@@ -82,18 +82,18 @@ public:
 
 	void updateAttributes()
 	{
-		const v3f &v1 = buffer->getPosition(p1);
-		const v3f &v2 = buffer->getPosition(p2);
-		const v3f &v3 = buffer->getPosition(p3);
+		v3f v1 = buffer->getPosition(p1);
+		v3f v2 = buffer->getPosition(p2);
+		v3f v3 = buffer->getPosition(p3);
 
 		centroid = (v1 + v2 + v3) / 3;
 		areaSQ = (v2-v1).crossProduct(v3-v1).getLengthSQ() / 4;
 	}
 
 	v3f getNormal() const {
-		const v3f &v1 = buffer->getPosition(p1);
-		const v3f &v2 = buffer->getPosition(p2);
-		const v3f &v3 = buffer->getPosition(p3);
+		v3f v1 = buffer->getPosition(p1);
+		v3f v2 = buffer->getPosition(p2);
+		v3f v3 = buffer->getPosition(p3);
 
 		return (v2-v1).crossProduct(v3-v1);
 	}
@@ -106,7 +106,7 @@ public:
 
 	void buildTree(const std::vector<MeshTriangle> *triangles);
 
-	void traverse(const v3f &viewpoint, std::vector<s32> &output) const
+	void traverse(v3f viewpoint, std::vector<s32> &output) const
 	{
 		traverse(root, viewpoint, output);
 	}
@@ -122,14 +122,14 @@ private:
 		s32 back_ref;
 
 		TreeNode() = default;
-		TreeNode(const v3f &normal, const v3f &origin, const std::vector<s32> &triangle_refs, s32 front_ref, s32 back_ref) :
+		TreeNode(v3f normal, v3f origin, const std::vector<s32> &triangle_refs, s32 front_ref, s32 back_ref) :
 				normal(normal), origin(origin), triangle_refs(triangle_refs), front_ref(front_ref), back_ref(back_ref)
 		{}
 	};
 
 
 	s32 buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list, u32 depth);
-	void traverse(s32 node, const v3f &viewpoint, std::vector<s32> &output) const;
+	void traverse(s32 node, v3f viewpoint, std::vector<s32> &output) const;
 
 	const std::vector<MeshTriangle> *triangles = nullptr; // this reference is managed externally
 	std::vector<TreeNode> nodes; // list of nodes
@@ -207,7 +207,7 @@ public:
 	}
 
 	/// update transparent buffers to render towards the camera
-	void updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos);
+	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
 	void consolidateTransparentBuffers();
 
 	/// get the list of transparent buffers

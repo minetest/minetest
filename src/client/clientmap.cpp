@@ -101,7 +101,7 @@ ClientMap::ClientMap(
 
 }
 
-void ClientMap::updateCamera(const v3f &pos, const v3f &dir, f32 fov, v3s16 offset)
+void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 {
 	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);

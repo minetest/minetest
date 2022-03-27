@@ -1122,7 +1122,7 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 	return nodes.size() - 1;
 }
 
-void MapBlockBspTree::traverse(s32 node, const v3f &viewpoint, std::vector<s32> &output) const
+void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output) const
 {
 	if (node < 0) return; // recursion break;
 
@@ -1481,7 +1481,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	return true;
 }
 
-void MapBlockMesh::updateTransparentBuffers(const v3f &camera_pos, const v3s16 &block_pos)
+void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 {
 	// nothing to do if the entire block is opaque
 	if (m_transparent_triangles.empty())

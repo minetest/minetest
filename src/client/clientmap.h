@@ -86,7 +86,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, v3s16 offset);
+	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset);
 
 	/*
 		Forcefully get a sector from somewhere
@@ -169,11 +169,11 @@ private:
 		bool m_reuse_material:1;
 		bool m_use_partial_buffer:1;
 
-		DrawDescriptor(const v3s16 &pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+		DrawDescriptor(v3s16 pos, scene::IMeshBuffer *buffer, bool reuse_material) :
 			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
 		{}
 
-		DrawDescriptor(const v3s16 &pos, const PartialMeshBuffer *buffer) :
+		DrawDescriptor(v3s16 pos, const PartialMeshBuffer *buffer) :
 			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
 	};
