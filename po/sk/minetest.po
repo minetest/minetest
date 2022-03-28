@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-03-29 19:04+0000\n"
-"Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
+"PO-Revision-Date: 2022-03-29 19:05+0000\n"
+"Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -347,7 +347,7 @@ msgstr "Odinštaluj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr "Updatuj"
+msgstr "Aktualizuj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
