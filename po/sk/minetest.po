@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-03-29 19:05+0000\n"
-"Last-Translator: Marian <daretmavi@gmail.com>\n"
+"PO-Revision-Date: 2022-03-30 12:15+0000\n"
+"Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "Vymaž výstupnú komunikačnú frontu"
+msgstr "Vyprázdniť výstupný komunikačný poradovník"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
@@ -29,7 +29,7 @@ msgstr "Prázdny príkaz."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Návrat do menu"
+msgstr "Návrat do hlavnej ponuky"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -41,15 +41,15 @@ msgstr "Spustený príkaz: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "Zoznam online hráčov"
+msgstr "Vypísať pripojených hráčov"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Online hráči: "
+msgstr "Pripojení hráči: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "Výstupná komunikačná fronty je teraz prázdna."
+msgstr "Výstupný komunikačný poradovník je teraz prázdny."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -77,7 +77,7 @@ msgstr "Príkaz nie je k dispozícií: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr "Zobraz pomoc k príkazom"
+msgstr "Zobraz pomocníka k príkazom"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -88,11 +88,11 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr "[all | <cmd>]"
+msgstr "[all | <príkaz>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr "OK"
+msgstr "V poriadku"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -100,15 +100,15 @@ msgstr "<nie je k dispozícií>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Chyba v lua skripte:"
+msgstr "Objavila sa chyba v lua skripte:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr "Chyba:"
+msgstr "Objavila sa chyba:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "Hlavné menu"
+msgstr "Hlavná ponuka"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -116,11 +116,11 @@ msgstr "Znova pripojiť"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Server požadoval obnovu spojenia:"
+msgstr "Server požiadal o obnovu spojenia:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Nesúhlas verzií protokolov. "
+msgstr "Verzie protokolov sa nezhodujú. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -128,15 +128,15 @@ msgstr "Server vyžaduje protokol verzie $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Server podporuje verzie protokolov: $1 - $2. "
+msgstr "Server podporuje verzie protokolov medzi $1 a $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Podporujeme len protokol verzie $1."
+msgstr "Podporujeme iba protokol verzie $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Podporujeme verzie protokolov: $1 - $2."
+msgstr "Podporujeme verzie protokolov medzi $1 a $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -152,43 +152,43 @@ msgstr "Zrušiť"
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "Závislosti:"
+msgstr "Nevyhnutné doplnky:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Deaktivuj všetko"
+msgstr "Zakázať všetko"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Deaktivuj balíček rozšírení"
+msgstr "Deaktivuj balíček modifikácií"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Aktivuj všetko"
+msgstr "Povoliť všetko"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Aktivuj balíček rozšírení"
+msgstr "Povoliť balíček modifikácií"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Nepodarilo sa aktivovať rozšírenie \"$1\" lebo obsahuje nepovolené znaky. "
+"Nepodarilo sa povoliť modifikáciu \"$1\" pretože obsahuje nepovolené znaky. "
 "Povolené sú len znaky [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Nájdi viac rozšírení"
+msgstr "Nájdi viac modifikácií"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod:"
+msgstr "Modifikácia:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "Bez (voliteľných) závislostí"
+msgstr "Bez (voliteľných) nevyhnutných doplnkov"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -196,7 +196,7 @@ msgstr "Popis hry nie je k dispozícií."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "Bez povinných závislostí"
+msgstr "Bez povinných nevyhnutných doplnkov"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -204,11 +204,11 @@ msgstr "Popis balíka rozšírení nie je k dispozícií."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "Bez voliteľných závislostí"
+msgstr "Bez voliteľných nevuhnutných doplnkov"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "Voliteľné závislosti:"
+msgstr "Voliteľné nevyhnutné doplnky:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -221,7 +221,7 @@ msgstr "Svet:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "aktívne"
+msgstr "povolené"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -229,7 +229,7 @@ msgstr "\"$1\" už exituje. Chcel by si ho prepísať?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Závislosti $1 a $2 budú nainštalované."
+msgstr "Nevyhnutné doplnky $1 a $2 budú nainštalované."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -240,7 +240,7 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
-"$1 sťahujem,\n"
+"$1 sa sťahuje,\n"
 "$2 čaká v rade"
 
 #: builtin/mainmenu/dlg_contentstore.lua
@@ -249,23 +249,23 @@ msgstr "$1 sťahujem..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr "$1 požadované závislosti nie je možné nájsť."
+msgstr "$1 požadované nevyhnutné doplnky nie je možné nájsť."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 bude nainštalovaný, a $2 závislosti budú preskočené."
+msgstr "$1 bude nainštalovaný a $2 nevyhnutné doplnky budú vynechané."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr "Všetko"
+msgstr "Všetky balíky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr "Už je nainštalované"
+msgstr "Už nainštalované"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "Hlavné menu"
+msgstr "Späť na Hlavnú ponuku"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
@@ -290,15 +290,15 @@ msgstr "Hry"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr "Inštaluj"
+msgstr "Nainštalovať"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
-msgstr "Inštaluj $1"
+msgstr "Nainštalovať $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr "Nainštaluj chýbajúce závislosti"
+msgstr "Nainštalovať chýbajúce nevyhnutné doplnky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install: Unsupported file type or broken archive"
@@ -315,7 +315,7 @@ msgstr "Nepodarilo sa stiahnuť žiadne balíčky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Bez výsledku"
+msgstr "Bez výsledkov"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
@@ -327,7 +327,7 @@ msgstr "Nenájdené"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr "Prepíš"
+msgstr "Prepísať"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -339,19 +339,19 @@ msgstr "Čaká v rade"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr "Textúry"
+msgstr "Balíky textúr"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr "Odinštaluj"
+msgstr "Odinštalovať"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr "Aktualizuj"
+msgstr "Aktualizácia"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr "Aktualizuj všetky [$1]"
+msgstr "Aktualizovať všetky [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -359,7 +359,7 @@ msgstr "Pozri si viac informácií vo webovom prehliadači"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Svet menom \"$1\" už existuje"
+msgstr "Svet s názvom \"$1\" už existuje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
