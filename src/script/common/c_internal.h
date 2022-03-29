@@ -55,6 +55,7 @@ extern "C" {
 #define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
 #define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
 #define CUSTOM_RIDX_HTTP_API_LUA        (CUSTOM_RIDX_BASE + 4)
+#define CUSTOM_RIDX_VECTOR_METATABLE    (CUSTOM_RIDX_BASE + 5)
 
 
 // Determine if CUSTOM_RIDX_SCRIPTAPI will hold a light or full userdata
