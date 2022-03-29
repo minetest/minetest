@@ -6355,9 +6355,9 @@ An `InvRef` is a reference to an inventory.
 * `set_width(listname, width)`: set width of list; currently used for crafting
 * `get_stack(listname, i)`: get a copy of stack index `i` in list
 * `set_stack(listname, i, stack)`: copy `stack` to index `i` in list
-* `get_list(listname)`: return full list
+* `get_list(listname)`: return full list (list of `ItemStack`s)
 * `set_list(listname, list)`: set full list (size will not change)
-* `get_lists()`: returns list of inventory lists
+* `get_lists()`: returns table that maps listnames to inventory lists
 * `set_lists(lists)`: sets inventory lists (size will not change)
 * `add_item(listname, stack)`: add item somewhere in list, returns leftover
   `ItemStack`.
