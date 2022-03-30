@@ -938,6 +938,12 @@ Call these functions only at load time!
 * `minetest.display_chat_message(message)` returns true on success
 	* Shows a chat message to the current player.
 
+Setting-related
+---------------
+
+* `minetest.settings`: Settings object containing all of the settings from the
+  main config file (`minetest.conf`). Check lua_api.txt for more infos.
+
 Class reference
 ---------------
 
