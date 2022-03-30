@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-03-30 12:15+0000\n"
-"Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
+"PO-Revision-Date: 2022-04-01 06:08+0000\n"
+"Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -184,7 +184,7 @@ msgstr "Nájdi viac modifikácií"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Modifikácia:"
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
@@ -824,7 +824,7 @@ msgstr "Hľadaj nový obsah na internete"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr "Obsah"
+msgstr "Doplnky"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
