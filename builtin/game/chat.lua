@@ -342,7 +342,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 		has_irrevokable_priv = true
 	end
 	if privs_unknown ~= "" then
-		core.chat_send_player(caller, privs_unknown)
+		return false, privs_unknown
 	end
 	if has_irrevokable_priv then
 		if is_singleplayer then
