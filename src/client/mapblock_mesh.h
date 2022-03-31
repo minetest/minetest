@@ -99,6 +99,10 @@ public:
 	}
 };
 
+/**
+ * Implements a binary space partitioning tree 
+ * See also: https://en.wikipedia.org/wiki/Binary_space_partitioning
+ */
 class MapBlockBspTree
 {
 public:

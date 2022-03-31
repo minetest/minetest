@@ -1389,14 +1389,21 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	if (isTransparent) {
 		std::vector<float> sections;
+		// Preallocate 8 default splits + Min&Max for each nodebox
 		sections.reserve(8 + 2 * boxes.size());
+
 		for (int axis = 0; axis < 3; axis++) {
 			// identify sections
-			sections.clear();
 
-			// Default split at node bounds, up to 3 nodes in each direction
-			for (float s = -3.5f * BS; s < 4.0f * BS; s += 1.0f * BS)
-				sections.push_back(s);
+			if (axis == 0) {
+				// Default split at node bounds, up to 3 nodes in each direction
+				for (float s = -3.5f * BS; s < 4.0f * BS; s += 1.0f * BS)
+					sections.push_back(s);
+			}
+			else {
+				// Avoid readding the same 8 default splits for Y and Z
+				sections.resize(8);
+			}
 
 			// Add edges of existing node boxes, rounded to 1E-3
 			for (size_t i = 0; i < boxes.size(); i++) {

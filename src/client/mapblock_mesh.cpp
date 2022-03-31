@@ -1024,13 +1024,22 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes, 0);
 }
 
+/**
+ * @brief Find a candidate plane to split a set of triangles in two
+ * 
+ * The candidate plane is represented by one of the triangles from the set.
+ * 
+ * @param list Vector of indexes of the triangles in the set
+ * @param triangles Vector of all triangles in the BSP tree
+ * @return Address of the triangle that represents the proposed split plane
+ */
 static const MeshTriangle *findSplitCandidate(const std::vector<s32> &list, const std::vector<MeshTriangle> &triangles)
 {
-	// find best origin as a center of the cluster.
-	v3f origin(0, 0, 0);
+	// find the center of the cluster.
+	v3f center(0, 0, 0);
 	size_t n = list.size();
 	for (s32 i : list) {
-		origin += triangles[i].centroid / n;
+		center += triangles[i].centroid / n;
 	}
 
 	// find the triangle with the largest area and closest to the center
@@ -1040,7 +1049,7 @@ static const MeshTriangle *findSplitCandidate(const std::vector<s32> &list, cons
 		ith_triangle = &triangles[i];
 		if (ith_triangle->areaSQ > candidate_triangle->areaSQ ||
 				(ith_triangle->areaSQ == candidate_triangle->areaSQ &&
-				ith_triangle->centroid.getDistanceFromSQ(origin) < candidate_triangle->centroid.getDistanceFromSQ(origin))) {
+				ith_triangle->centroid.getDistanceFromSQ(center) < candidate_triangle->centroid.getDistanceFromSQ(center))) {
 			candidate_triangle = ith_triangle;
 		}
 	}
