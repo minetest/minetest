@@ -90,6 +90,9 @@ public:
 	float getShadowStrength() const { return m_shadows_enabled ? m_shadow_strength : 0.0f; }
 	float getTimeOfDay() const { return m_time_day; }
 
+	f32 getPerspectiveBiasXY() { return m_perspective_bias_xy; }
+	f32 getPerspectiveBiasZ() { return m_perspective_bias_z; }
+
 private:
 	video::ITexture *getSMTexture(const std::string &shadow_map_name,
 			video::ECOLOR_FORMAT texture_format,
@@ -131,6 +134,8 @@ private:
 	bool m_shadow_map_colored;
 	u8 m_map_shadow_update_frames; /* Use this number of frames to update map shaodw */
 	u8 m_current_frame{0}; /* Current frame */
+	f32 m_perspective_bias_xy;
+	f32 m_perspective_bias_z;
 
 	video::ECOLOR_FORMAT m_texture_format{video::ECOLOR_FORMAT::ECF_R16F};
 	video::ECOLOR_FORMAT m_texture_format_color{video::ECOLOR_FORMAT::ECF_R16G16};
@@ -146,6 +151,7 @@ private:
 	s32 mixcsm_shader{-1};
 
 	ShadowDepthShaderCB *m_shadow_depth_cb{nullptr};
+	ShadowDepthShaderCB *m_shadow_depth_entity_cb{nullptr};
 	ShadowDepthShaderCB *m_shadow_depth_trans_cb{nullptr};
 
 	shadowScreenQuad *m_screen_quad{nullptr};

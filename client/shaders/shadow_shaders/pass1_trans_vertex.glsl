@@ -4,15 +4,15 @@ varying vec4 tPos;
 varying vec3 varColor;
 #endif
 
-const float bias0 = 0.9;
-const float zPersFactor = 0.5;
-const float bias1 = 1.0 - bias0 + 1e-6;
+uniform float xyPerspectiveBias0;
+uniform float xyPerspectiveBias1;
+uniform float zPerspectiveBias;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
 {
 	float pDistance = length(shadowPosition.xy);
-	float pFactor = pDistance * bias0 + bias1;
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPersFactor);
+	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
+	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
 
 	return shadowPosition;
 }
