@@ -592,9 +592,10 @@ enable_waving_plants (Waving plants) bool false
 #    Requires shaders to be enabled.
 enable_dynamic_shadows (Dynamic shadows) bool false
 
-#    Set the shadow strength.
+#    Set the shadow strength gamma.
+#    Adjusts the intensity of in-game dynamic shadows.
 #    Lower value means lighter shadows, higher value means darker shadows.
-shadow_strength (Shadow strength) float 0.2 0.05 1.0
+shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 
 #    Maximum distance to render shadows.
 shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 120.0 10.0 1000.0
@@ -856,6 +857,10 @@ autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 #    Show entity selection boxes
 #    A restart is required after changing this.
 show_entity_selectionbox (Show entity selection boxes) bool false
+
+#    Distance in nodes at which transparency depth sorting is enabled
+#    Use this to limit the performance impact of transparency depth sorting
+transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
 
 [*Menus]
 

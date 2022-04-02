@@ -52,25 +52,12 @@ if (value < F1000_MIN || value > F1000_MAX) { \
 
 
 /**
- * A helper which sets (if available) the vector metatable from builtin as metatable
- * for the table on top of the stack
+ * A helper which sets the vector metatable for the table on top of the stack
  */
 static void set_vector_metatable(lua_State *L)
 {
-	// get vector.metatable
-	lua_getglobal(L, "vector");
-	if (!lua_istable(L, -1)) {
-		// there is no global vector table
-		lua_pop(L, 1);
-		errorstream << "set_vector_metatable in c_converter.cpp: " <<
-				"missing global vector table" << std::endl;
-		return;
-	}
-	lua_getfield(L, -1, "metatable");
-	// set the metatable
-	lua_setmetatable(L, -3);
-	// pop vector global
-	lua_pop(L, 1);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_setmetatable(L, -2);
 }
 
 void push_v3f(lua_State *L, v3f p)

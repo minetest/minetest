@@ -281,15 +281,7 @@ bool ScriptApiClient::on_inventory_open(Inventory *inventory)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_inventory_open");
 
-	std::vector<const InventoryList*> lists = inventory->getLists();
-	std::vector<const InventoryList*>::iterator iter = lists.begin();
-	lua_createtable(L, 0, lists.size());
-	for (; iter != lists.end(); iter++) {
-		const char* name = (*iter)->getName().c_str();
-		lua_pushstring(L, name);
-		push_inventory_list(L, inventory, name);
-		lua_rawset(L, -3);
-	}
+	push_inventory_lists(L, *inventory);
 
 	try {
 		runCallbacks(1, RUN_CALLBACKS_MODE_OR);

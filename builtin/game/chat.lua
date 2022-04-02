@@ -1282,7 +1282,7 @@ local function handle_kill_command(killer, victim)
 			return false, S("@1 is already dead.", victim)
 		end
 	end
-	if not killer == victim then
+	if killer ~= victim then
 		core.log("action", string.format("%s killed %s", killer, victim))
 	end
 	-- Kill victim

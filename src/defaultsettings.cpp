@@ -244,6 +244,7 @@ void set_default_settings()
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
+	settings->setDefault("transparency_sorting_distance", "16");
 
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
@@ -266,7 +267,7 @@ void set_default_settings()
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
-	settings->setDefault("shadow_strength", "0.2");
+	settings->setDefault("shadow_strength_gamma", "1.0");
 	settings->setDefault("shadow_map_max_distance", "200.0");
 	settings->setDefault("shadow_map_texture_size", "2048");
 	settings->setDefault("shadow_map_texture_32bit", "true");

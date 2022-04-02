@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "localplayer.h"
 #include <cmath>
+#include "irr_v3d.h"
 #include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
@@ -672,19 +673,21 @@ v3pos_t LocalPlayer::getStandingNodePos()
 
 v3pos_t LocalPlayer::getFootstepNodePos()
 {
+	v3opos_t feet_pos = getPosition() + v3opos_t(0.0f, m_collisionbox.MinEdge.Y, 0.0f);
+
 	// Emit swimming sound if the player is in liquid
 	if (in_liquid_stable)
-		return floatToInt(getPosition(), BS);
+		return floatToInt(feet_pos, BS);
 
 	// BS * 0.05 below the player's feet ensures a 1/16th height
 	// nodebox is detected instead of the node below it.
 	if (touching_ground)
-		return floatToInt(getPosition() - v3opos_t(0.0f, BS * 0.05f, 0.0f), BS);
+		return floatToInt(feet_pos - v3opos_t(0.0f, BS * 0.05f, 0.0f), BS);
 
 	// A larger distance below is necessary for a footstep sound
 	// when landing after a jump or fall. BS * 0.5 ensures water
 	// sounds when swimming in 1 node deep water.
-	return floatToInt(getPosition() - v3opos_t(0.0f, BS * 0.5f, 0.0f), BS);
+	return floatToInt(feet_pos - v3opos_t(0.0f, BS * 0.5f, 0.0f), BS);
 }
 
 v3pos_t LocalPlayer::getLightPosition() const

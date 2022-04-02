@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irr_v3d.h"
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
 #include "camera.h"
@@ -56,6 +57,7 @@ struct MeshBufListList
 
 class Client;
 class ITextureSource;
+class PartialMeshBuffer;
 
 /*
 	ClientMap
@@ -85,21 +87,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(const v3opos_t &pos, const v3f &dir, f32 fov, const v3pos_t &offset)
-	{
-		v3bpos_t previous_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
-
-		m_camera_position = pos;
-		m_camera_direction = dir;
-		m_camera_fov = fov;
-		m_camera_offset = offset;
-
-		v3bpos_t current_block = getContainerPos(floatToInt(m_camera_position, BS) + m_camera_offset, MAP_BLOCKSIZE);
-
-		// reorder the blocks when camera crosses block boundary
-		if (previous_block != current_block)
-			m_needs_update_drawlist = true;
-	}
+	void updateCamera(v3opos_t pos, v3f dir, f32 fov, v3pos_t offset);
 
 	/*
 		Forcefully get a sector from somewhere
@@ -150,6 +138,10 @@ public:
 	f32 getCameraFov() const { return m_camera_fov; }
 
 private:
+
+	// update the vertex order in transparent mesh buffers
+	void updateTransparentMeshBuffers();
+
 	// Orders blocks by distance to the camera
 	class MapBlockComparer
 	{
@@ -167,6 +159,26 @@ private:
 		v3bpos_t m_camera_block;
 	};
 
+
+	// reference to a mesh buffer used when rendering the map.
+	struct DrawDescriptor {
+		v3pos_t m_pos;
+		union {
+			scene::IMeshBuffer *m_buffer;
+			const PartialMeshBuffer *m_partial_buffer;
+		};
+		bool m_reuse_material:1;
+		bool m_use_partial_buffer:1;
+
+		DrawDescriptor(v3pos_t pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
+		{}
+
+		DrawDescriptor(v3pos_t pos, const PartialMeshBuffer *buffer) :
+			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
+		{}
+	};
+
 	Client *m_client;
 	RenderingEngine *m_rendering_engine;
 
@@ -179,6 +191,7 @@ private:
 	v3f m_camera_direction = v3f(0,0,1);
 	f32 m_camera_fov = M_PI;
 	v3pos_t m_camera_offset;
+	bool m_needs_update_transparent_meshes = true;
 
 	std::map<v3bpos_t, MapBlock*, MapBlockComparer> m_drawlist;
 	std::map<v3bpos_t, MapBlock*> m_drawlist_shadow;
@@ -190,4 +203,5 @@ private:
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
 	bool m_added_to_shadow_renderer{false};
+	u16 m_cache_transparency_sorting_distance;
 };

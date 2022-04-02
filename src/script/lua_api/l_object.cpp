@@ -2295,6 +2295,47 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 	return 0;
 }
 
+// set_lighting(self, lighting)
+int ObjectRef::l_set_lighting(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	luaL_checktype(L, 2, LUA_TTABLE);
+	Lighting lighting = player->getLighting();
+	lua_getfield(L, 2, "shadows");
+	if (lua_istable(L, -1)) {
+		lighting.shadow_intensity = getfloatfield_default(L, -1, "intensity",    lighting.shadow_intensity);
+	}
+	lua_pop(L, -1);
+
+	getServer(L)->setLighting(player, lighting);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_lighting(self)
+int ObjectRef::l_get_lighting(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	const Lighting &lighting = player->getLighting();
+
+	lua_newtable(L); // result
+	lua_newtable(L); // "shadows"
+	lua_pushnumber(L, lighting.shadow_intensity);
+	lua_setfield(L, -2, "intensity");
+	lua_setfield(L, -2, "shadows");
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {}
@@ -2448,5 +2489,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, send_mapblock),
 	luamethod(ObjectRef, set_minimap_modes),
+	luamethod(ObjectRef, set_lighting),
+	luamethod(ObjectRef, get_lighting),
 	{0,0}
 };

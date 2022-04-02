@@ -36,3 +36,15 @@ local function test_dynamic_media(cb, player)
 	-- if the callback isn't called this test will just hang :shrug:
 end
 unittests.register("test_dynamic_media", test_dynamic_media, {async=true, player=true})
+
+local function test_v3f_metatable(player)
+	assert(vector.check(player:get_pos()))
+end
+unittests.register("test_v3f_metatable", test_v3f_metatable, {player=true})
+
+local function test_v3s16_metatable(player, pos)
+	local node = minetest.get_node(pos)
+	local found_pos = minetest.find_node_near(pos, 0, node.name, true)
+	assert(vector.check(found_pos))
+end
+unittests.register("test_v3s16_metatable", test_v3s16_metatable, {map=true})
