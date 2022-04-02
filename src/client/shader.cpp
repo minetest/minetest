@@ -228,6 +228,8 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
 	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
+	CachedVertexShaderSetting<f32> m_sm_scale_vertex;
+	CachedPixelShaderSetting<f32> m_sm_scale_pixel;
 
 #if ENABLE_GLES
 	// Modelview matrix
@@ -261,6 +263,8 @@ public:
 		, m_perspective_bias1_pixel("xyPerspectiveBias1")
 		, m_perspective_zbias_vertex("zPerspectiveBias")
 		, m_perspective_zbias_pixel("zPerspectiveBias")
+		, m_sm_scale_vertex("shadowMapScale")
+		, m_sm_scale_pixel("shadowMapScale")
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -323,9 +327,13 @@ public:
 			f32 shadowFar = shadow->getMaxShadowFar();
 			m_shadowfar.set(&shadowFar, services);
 
-			float camera_pos[4];
-			shadowViewProj.transformVect(camera_pos, shadow->getPlayerPos());
-			m_camera_pos.set(camera_pos, services);
+			f32 cam_pos[4];
+			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
+			m_camera_pos.set(cam_pos, services);
+
+			f32 shadow_map_scale = light.getShadowMapScale();
+			m_sm_scale_vertex.set(&shadow_map_scale, services);
+			m_sm_scale_pixel.set(&shadow_map_scale, services);
 
 			// I dont like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??

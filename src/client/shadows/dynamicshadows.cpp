@@ -40,6 +40,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	// adjusted frustum boundaries
 	float sfNear = future_frustum.zNear;
 	float sfFar = adjustDist(future_frustum.zFar, cam->getFovY());
+	float cosLightAngle = abs(look.dotProduct(direction));
+	float sinLightAngle = sqrt(1.0f - powf(cosLightAngle, 2.0f));
 
 	// adjusted camera positions
 	v3f camPos2 = cam->getPosition();
@@ -50,8 +52,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	camPos2 += look * sfNear;
 
 	// center point of light frustum
-	newCenter = camPos + look * 0.35f * (sfFar - sfNear);
-	v3f world_center = camPos2 + look * 0.35f * (sfFar - sfNear);
+	newCenter = camPos + look * (0.05f + 0.3f * sinLightAngle) * (sfFar - sfNear);
+	v3f world_center = camPos2 + look * (0.05f + 0.3f * sinLightAngle) * (sfFar - sfNear);
 
 	// Create a vector to the frustum far corner
 	const v3f &viewUp = cam->getCameraNode()->getUpVector();
@@ -77,6 +79,11 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 			future_frustum.length, -future_frustum.length,
 			future_frustum.length,false);
 	future_frustum.camera_offset = cam->getOffset();
+	f32 cam_pos1[4];
+	future_frustum.ViewMat.transformVect(cam_pos1, camPos);
+	f32 cam_pos2[4];
+	future_frustum.ProjOrthMat.transformVec4(cam_pos2, cam_pos1);
+	future_frustum.scale = 0.8f + MYMAX(abs(cam_pos2[0]), abs(cam_pos2[1]));
 }
 
 DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
@@ -148,6 +155,16 @@ v3f DirectionalLight::getPlayerPos() const
 v3f DirectionalLight::getFuturePlayerPos() const
 {
 	return future_frustum.player;
+}
+
+f32 DirectionalLight::getShadowMapScale() const
+{
+	return shadow_frustum.scale;
+}
+
+f32 DirectionalLight::getFutureShadowMapScale() const
+{
+	return future_frustum.scale;
 }
 
 const m4f &DirectionalLight::getViewMatrix() const

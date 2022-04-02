@@ -278,7 +278,8 @@ void ShadowRenderer::updateSMTextures()
 					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
-					cb->CameraPos = getFuturePlayerPos();
+					cb->CameraPos = light.getFuturePlayerPos();
+					cb->ShadowMapScale = light.getFutureShadowMapScale();
 				}
 			
 			// set the Render Target
@@ -343,7 +344,8 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			// Static shader values for entities are set in updateSMTextures
 			// SM texture for entities is not updated incrementally and 
 			// must by updated using current player position.
-			m_shadow_depth_entity_cb->CameraPos = getPlayerPos();
+			m_shadow_depth_entity_cb->CameraPos = light.getPlayerPos();
+			m_shadow_depth_entity_cb->ShadowMapScale = light.getShadowMapScale();
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
