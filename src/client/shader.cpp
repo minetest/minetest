@@ -324,7 +324,7 @@ public:
 			m_shadowfar.set(&shadowFar, services);
 
 			float camera_pos[4];
-			shadowViewProj.transformVect(camera_pos, shadow->getCameraPos());
+			shadowViewProj.transformVect(camera_pos, shadow->getPlayerPos());
 			m_camera_pos.set(camera_pos, services);
 
 			// I dont like using this hardcoded value. maybe something like

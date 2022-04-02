@@ -63,7 +63,8 @@ public:
 	DirectionalLight &getDirectionalLight(u32 index = 0);
 	size_t getDirectionalLightCount() const;
 	f32 getMaxShadowFar() const;
-	v3f getCameraPos() const;
+	v3f getPlayerPos() const;
+	v3f getFuturePlayerPos() const;
 
 	/// Adds a shadow to the scene node.
 	/// The shadow mode can be ESM_BOTH, or ESM_RECEIVE.

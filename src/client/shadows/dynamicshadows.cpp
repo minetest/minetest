@@ -69,6 +69,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
 	v3f eye = frustumCenter - eye_displacement;
+	future_frustum.player = camPos;
 	future_frustum.position = world_center - eye_displacement;
 	future_frustum.length = vvolume;
 	future_frustum.ViewMat.buildCameraLookAtMatrixLH(eye, frustumCenter, v3f(0.0f, 1.0f, 0.0f));
@@ -114,6 +115,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 		v3f rotated_offset;
 		shadow_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - shadow_frustum.camera_offset, BS));
 		shadow_frustum.ViewMat.setTranslation(shadow_frustum.ViewMat.getTranslation() + rotated_offset);
+		shadow_frustum.player += intToFloat(shadow_frustum.camera_offset - cam->getOffset(), BS);
 		shadow_frustum.camera_offset = cam_offset;
 	}
 }
@@ -136,6 +138,16 @@ void DirectionalLight::setDirection(v3f dir)
 v3f DirectionalLight::getPosition() const
 {
 	return shadow_frustum.position;
+}
+
+v3f DirectionalLight::getPlayerPos() const
+{
+	return shadow_frustum.player;
+}
+
+v3f DirectionalLight::getFuturePlayerPos() const
+{
+	return future_frustum.player;
 }
 
 const m4f &DirectionalLight::getViewMatrix() const

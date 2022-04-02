@@ -158,10 +158,22 @@ void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 		disable();
 }
 
-v3f ShadowRenderer::getCameraPos() const
+v3f ShadowRenderer::getPlayerPos() const
 {
-	auto cam = m_client->getCamera();
-	return cam->getPosition() - intToFloat(cam->getOffset(), BS);
+	if (m_light_list.empty()) {
+		auto cam = m_client->getCamera();
+		return cam->getPosition() - intToFloat(cam->getOffset(), BS);
+	}
+	return m_light_list[0].getPlayerPos();
+}
+
+v3f ShadowRenderer::getFuturePlayerPos() const
+{
+	if (getDirectionalLightCount() == 0) {
+		auto cam = m_client->getCamera();
+		return cam->getPosition() - intToFloat(cam->getOffset(), BS);
+	}
+	return m_light_list[0].getFuturePlayerPos();
 }
 
 void ShadowRenderer::addNodeToShadowList(
@@ -266,9 +278,9 @@ void ShadowRenderer::updateSMTextures()
 					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
-					cb->CameraPos = getCameraPos();
+					cb->CameraPos = getFuturePlayerPos();
 				}
-
+			
 			// set the Render Target
 			// right now we can only render in usual RTT, not
 			// Depth texture is available in irrlicth maybe we
@@ -329,6 +341,9 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values for entities are set in updateSMTextures
+			// SM texture for entities is not updated incrementally and 
+			// must by updated using current player position.
+			m_shadow_depth_entity_cb->CameraPos = getPlayerPos();
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
