@@ -1795,6 +1795,16 @@ void Server::SendOverrideDayNightRatio(session_t peer_id, bool do_override,
 	Send(&pkt);
 }
 
+void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
+{
+	NetworkPacket pkt(TOCLIENT_SET_LIGHTING,
+			4, peer_id);
+	
+	pkt << lighting.shadow_intensity;
+
+	Send(&pkt);
+}
+
 void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
 	NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
@@ -3384,6 +3394,13 @@ void Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 	sanity_check(player);
 	player->overrideDayNightRatio(do_override, ratio);
 	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
+}
+
+void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
+{
+	sanity_check(player);
+	player->setLighting(lighting);
+	SendSetLighting(player->getPeerId(), lighting);
 }
 
 void Server::notifyPlayers(const std::wstring &msg)

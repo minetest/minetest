@@ -45,8 +45,8 @@ varying float nightRatio;
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
-const float bias0 = 0.9;
-const float bias1 = 1.0 - bias0;
+uniform float xyPerspectiveBias0;
+uniform float xyPerspectiveBias1;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 // custom smoothstep implementation because it's not defined in glsl1.2
@@ -195,34 +195,35 @@ void main(void)
 	varColor = clamp(color, 0.0, 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-	vec3 nNormal = normalize(vNormal);
-	cosLight = dot(nNormal, -v_LightDirection);
-	
-	// Calculate normal offset scale based on the texel size adjusted for 
-	// curvature of the SM texture. This code must be change together with
-	// getPerspectiveFactor or any light-space transformation.
-	vec3 eyeToVertex = worldPosition - eyePosition + cameraOffset;
-	// Distance from the vertex to the player
-	float distanceToPlayer = length(eyeToVertex - v_LightDirection * dot(eyeToVertex, v_LightDirection)) / f_shadowfar;
-	// perspective factor estimation according to the 
-	float perspectiveFactor = distanceToPlayer * bias0 + bias1;
-	float texelSize = f_shadowfar * perspectiveFactor * perspectiveFactor /
-			(f_textureresolution * bias1  - perspectiveFactor * bias0);
-	float slopeScale = clamp(pow(1.0 - cosLight*cosLight, 0.5), 0.0, 1.0);
-	normalOffsetScale = texelSize * slopeScale;
+	if (f_shadow_strength > 0.0) {
+		vec3 nNormal = normalize(vNormal);
+		cosLight = dot(nNormal, -v_LightDirection);
+		
+		// Calculate normal offset scale based on the texel size adjusted for 
+		// curvature of the SM texture. This code must be change together with
+		// getPerspectiveFactor or any light-space transformation.
+		vec3 eyeToVertex = worldPosition - eyePosition + cameraOffset;
+		// Distance from the vertex to the player
+		float distanceToPlayer = length(eyeToVertex - v_LightDirection * dot(eyeToVertex, v_LightDirection)) / f_shadowfar;
+		// perspective factor estimation according to the 
+		float perspectiveFactor = distanceToPlayer * xyPerspectiveBias0 + xyPerspectiveBias1;
+		float texelSize = f_shadowfar * perspectiveFactor * perspectiveFactor /
+				(f_textureresolution * xyPerspectiveBias1  - perspectiveFactor * xyPerspectiveBias0);
+		float slopeScale = clamp(pow(1.0 - cosLight*cosLight, 0.5), 0.0, 1.0);
+		normalOffsetScale = texelSize * slopeScale;
 
-	if (f_timeofday < 0.2) {
-		adj_shadow_strength = f_shadow_strength * 0.5 *
-			(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
-	} else if (f_timeofday >= 0.8) {
-		adj_shadow_strength = f_shadow_strength * 0.5 *
-			mtsmoothstep(0.8, 0.83, f_timeofday);
-	} else {
-		adj_shadow_strength = f_shadow_strength *
-			mtsmoothstep(0.20, 0.25, f_timeofday) *
-			(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
+		if (f_timeofday < 0.2) {
+			adj_shadow_strength = f_shadow_strength * 0.5 *
+				(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
+		} else if (f_timeofday >= 0.8) {
+			adj_shadow_strength = f_shadow_strength * 0.5 *
+				mtsmoothstep(0.8, 0.83, f_timeofday);
+		} else {
+			adj_shadow_strength = f_shadow_strength *
+				mtsmoothstep(0.20, 0.25, f_timeofday) *
+				(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
+		}
+		f_normal_length = length(vNormal);
 	}
-	f_normal_length = length(vNormal);
 #endif
-
 }

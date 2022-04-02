@@ -1,4 +1,5 @@
 _G.core = {}
+_G.vector = {metatable = {}}
 
 _G.setfenv = require 'busted.compatibility'.setfenv
 

@@ -210,17 +210,23 @@ public:
 
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
-	CachedVertexShaderSetting<float, 16> m_world_view_proj;
-	CachedVertexShaderSetting<float, 16> m_world;
+	CachedVertexShaderSetting<f32, 16> m_world_view_proj;
+	CachedVertexShaderSetting<f32, 16> m_world;
 
 	// Shadow-related
-	CachedPixelShaderSetting<float, 16> m_shadow_view_proj;
-	CachedPixelShaderSetting<float, 3> m_light_direction;
-	CachedPixelShaderSetting<float> m_texture_res;
-	CachedPixelShaderSetting<float> m_shadow_strength;
-	CachedPixelShaderSetting<float> m_time_of_day;
-	CachedPixelShaderSetting<float> m_shadowfar;
+	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
+	CachedPixelShaderSetting<f32, 3> m_light_direction;
+	CachedPixelShaderSetting<f32> m_texture_res;
+	CachedPixelShaderSetting<f32> m_shadow_strength;
+	CachedPixelShaderSetting<f32> m_time_of_day;
+	CachedPixelShaderSetting<f32> m_shadowfar;
 	CachedPixelShaderSetting<s32> m_shadow_texture;
+	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
+	CachedVertexShaderSetting<f32> m_perspective_bias1_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
+	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
 
 #if ENABLE_GLES
 	// Modelview matrix
@@ -247,6 +253,12 @@ public:
 		, m_time_of_day("f_timeofday")
 		, m_shadowfar("f_shadowfar")
 		, m_shadow_texture("ShadowMapSampler")
+		, m_perspective_bias0_vertex("xyPerspectiveBias0")
+		, m_perspective_bias0_pixel("xyPerspectiveBias0")
+		, m_perspective_bias1_vertex("xyPerspectiveBias1")
+		, m_perspective_bias1_pixel("xyPerspectiveBias1")
+		, m_perspective_zbias_vertex("zPerspectiveBias")
+		, m_perspective_zbias_pixel("zPerspectiveBias")
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -293,26 +305,36 @@ public:
 			shadowViewProj *= light.getViewMatrix();
 			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
 
-			float v_LightDirection[3];
+			f32 v_LightDirection[3];
 			light.getDirection().getAs3Values(v_LightDirection);
 			m_light_direction.set(v_LightDirection, services);
 
-			float TextureResolution = light.getMapResolution();
+			f32 TextureResolution = light.getMapResolution();
 			m_texture_res.set(&TextureResolution, services);
 
-			float ShadowStrength = shadow->getShadowStrength();
+			f32 ShadowStrength = shadow->getShadowStrength();
 			m_shadow_strength.set(&ShadowStrength, services);
 
-			float timeOfDay = shadow->getTimeOfDay();
+			f32 timeOfDay = shadow->getTimeOfDay();
 			m_time_of_day.set(&timeOfDay, services);
 
-			float shadowFar = shadow->getMaxShadowFar();
+			f32 shadowFar = shadow->getMaxShadowFar();
 			m_shadowfar.set(&shadowFar, services);
 
 			// I dont like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);
+
+			f32 bias0 = shadow->getPerspectiveBiasXY();
+			m_perspective_bias0_vertex.set(&bias0, services);
+			m_perspective_bias0_pixel.set(&bias0, services);
+			f32 bias1 = 1.0f - bias0 + 1e-5f;
+			m_perspective_bias1_vertex.set(&bias1, services);
+			m_perspective_bias1_pixel.set(&bias1, services);
+			f32 zbias = shadow->getPerspectiveBiasZ();
+			m_perspective_zbias_vertex.set(&zbias, services);
+			m_perspective_zbias_pixel.set(&zbias, services);
 		}
 	}
 };

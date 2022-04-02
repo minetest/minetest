@@ -202,6 +202,7 @@ EmergeManager::~EmergeManager()
 			delete m_mapgens[i];
 	}
 
+	delete biomegen;
 	delete biomemgr;
 	delete oremgr;
 	delete decomgr;

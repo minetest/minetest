@@ -214,11 +214,16 @@ int InvRef::l_get_list(lua_State *L)
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
 	Inventory *inv = getinv(L, ref);
-	if(inv){
-		push_inventory_list(L, inv, listname);
-	} else {
+	if (!inv) {
 		lua_pushnil(L);
+		return 1;
 	}
+	InventoryList *invlist = inv->getList(listname);
+	if (!invlist) {
+		lua_pushnil(L);
+		return 1;
+	}
+	push_inventory_list(L, *invlist);
 	return 1;
 }
 
@@ -242,7 +247,7 @@ int InvRef::l_set_list(lua_State *L)
 	return 0;
 }
 
-// get_lists(self) -> list of InventoryLists
+// get_lists(self) -> table that maps listnames to InventoryLists
 int InvRef::l_get_lists(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -251,15 +256,7 @@ int InvRef::l_get_lists(lua_State *L)
 	if (!inv) {
 		return 0;
 	}
-	std::vector<const InventoryList*> lists = inv->getLists();
-	std::vector<const InventoryList*>::iterator iter = lists.begin();
-	lua_createtable(L, 0, lists.size());
-	for (; iter != lists.end(); iter++) {
-		const char* name = (*iter)->getName().c_str();
-		lua_pushstring(L, name);
-		push_inventory_list(L, inv, name);
-		lua_rawset(L, -3);
-	}
+	push_inventory_lists(L, *inv);
 	return 1;
 }
 
