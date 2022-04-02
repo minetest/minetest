@@ -253,7 +253,7 @@ public:
 		, m_shadow_strength("f_shadow_strength")
 		, m_time_of_day("f_timeofday")
 		, m_shadowfar("f_shadowfar")
-		, m_camera_pos("v_CameraPos")
+		, m_camera_pos("CameraPos")
 		, m_shadow_texture("ShadowMapSampler")
 		, m_perspective_bias0_vertex("xyPerspectiveBias0")
 		, m_perspective_bias0_pixel("xyPerspectiveBias0")
