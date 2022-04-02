@@ -65,6 +65,7 @@ public:
 	}
 
 	void setSunVisible(bool sun_visible) { m_sun_params.visible = sun_visible; }
+	bool getSunVisible() const { return m_sun_params.visible; }
 	void setSunTexture(const std::string &sun_texture,
 		const std::string &sun_tonemap, ITextureSource *tsrc);
 	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
@@ -72,6 +73,7 @@ public:
 	void setSunriseTexture(const std::string &sunglow_texture, ITextureSource* tsrc);
 
 	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
+	bool getMoonVisible() const { return m_moon_params.visible; }
 	void setMoonTexture(const std::string &moon_texture,
 		const std::string &moon_tonemap, ITextureSource *tsrc);
 	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }

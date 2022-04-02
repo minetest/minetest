@@ -72,6 +72,7 @@ struct SkyboxParams;
 struct SunParams;
 struct MoonParams;
 struct StarParams;
+struct Lighting;
 class ServerThread;
 class ServerModManager;
 class ServerInventoryManager;
@@ -336,6 +337,8 @@ public:
 
 	void overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
+	void setLighting(RemotePlayer *player, const Lighting &lighting);
+
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
@@ -462,6 +465,7 @@ private:
 	void SendSetStars(session_t peer_id, const StarParams &params);
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
+	void SendSetLighting(session_t peer_id, const Lighting &lighting);
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
 

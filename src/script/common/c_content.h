@@ -55,6 +55,7 @@ struct ObjectProperties;
 struct SimpleSoundSpec;
 struct ServerSoundParams;
 class Inventory;
+class InventoryList;
 struct NodeBox;
 struct ContentFeatures;
 struct TileDef;
@@ -120,8 +121,9 @@ void               push_object_properties    (lua_State *L,
                                               ObjectProperties *prop);
 
 void               push_inventory_list       (lua_State *L,
-                                              Inventory *inv,
-                                              const char *name);
+                                              const InventoryList &invlist);
+void               push_inventory_lists      (lua_State *L,
+                                              const Inventory &inv);
 void               read_inventory_list       (lua_State *L, int tableindex,
                                               Inventory *inv, const char *name,
                                               Server *srv, int forcesize=-1);

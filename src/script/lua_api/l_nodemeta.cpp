@@ -127,18 +127,14 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 	// fields
 	MetaDataRef::handleToTable(L, _meta);
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *) _meta;
 
 	// inventory
-	lua_newtable(L);
 	Inventory *inv = meta->getInventory();
 	if (inv) {
-		std::vector<const InventoryList *> lists = inv->getLists();
-		for(std::vector<const InventoryList *>::const_iterator
-				i = lists.begin(); i != lists.end(); ++i) {
-			push_inventory_list(L, inv, (*i)->getName().c_str());
-			lua_setfield(L, -2, (*i)->getName().c_str());
-		}
+		push_inventory_lists(L, *inv);
+	} else {
+		lua_newtable(L);
 	}
 	lua_setfield(L, -2, "inventory");
 }
