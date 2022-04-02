@@ -858,6 +858,10 @@ autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 #    A restart is required after changing this.
 show_entity_selectionbox (Show entity selection boxes) bool false
 
+#    Distance in nodes at which transparency depth sorting is enabled
+#    Use this to limit the performance impact of transparency depth sorting
+transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
+
 [*Menus]
 
 #    Use a cloud animation for the main menu background.

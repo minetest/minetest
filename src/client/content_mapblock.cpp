@@ -381,12 +381,12 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		box.MinEdge *= f->visual_scale;
 		box.MaxEdge *= f->visual_scale;
 	}
-	box.MinEdge += origin;
-	box.MaxEdge += origin;
 	if (!txc) {
 		generateCuboidTextureCoords(box, texture_coord_buf);
 		txc = texture_coord_buf;
 	}
+	box.MinEdge += origin;
+	box.MaxEdge += origin;
 	if (!tiles) {
 		tiles = &tile;
 		tile_count = 1;
@@ -1377,6 +1377,59 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
+
+	bool isTransparent = false;
+
+	for (const TileSpec &tile : tiles) {
+		if (tile.layers[0].isTransparent()) {
+			isTransparent = true;
+			break;
+		}
+	}
+
+	if (isTransparent) {
+		std::vector<float> sections;
+		// Preallocate 8 default splits + Min&Max for each nodebox
+		sections.reserve(8 + 2 * boxes.size());
+
+		for (int axis = 0; axis < 3; axis++) {
+			// identify sections
+
+			if (axis == 0) {
+				// Default split at node bounds, up to 3 nodes in each direction
+				for (float s = -3.5f * BS; s < 4.0f * BS; s += 1.0f * BS)
+					sections.push_back(s);
+			}
+			else {
+				// Avoid readding the same 8 default splits for Y and Z
+				sections.resize(8);
+			}
+
+			// Add edges of existing node boxes, rounded to 1E-3
+			for (size_t i = 0; i < boxes.size(); i++) {
+				sections.push_back(std::floor(boxes[i].MinEdge[axis] * 1E3) * 1E-3);
+				sections.push_back(std::floor(boxes[i].MaxEdge[axis] * 1E3) * 1E-3);
+			}
+
+			// split the boxes at recorded sections
+			// limit splits to avoid runaway crash if inner loop adds infinite splits
+			// due to e.g. precision problems.
+			// 100 is just an arbitrary, reasonably high number.
+			for (size_t i = 0; i < boxes.size() && i < 100; i++) {
+				aabb3f *box = &boxes[i];
+				for (float section : sections) {
+					if (box->MinEdge[axis] < section && box->MaxEdge[axis] > section) {
+						aabb3f copy(*box);
+						copy.MinEdge[axis] = section;
+						box->MaxEdge[axis] = section;
+						boxes.push_back(copy);
+						box = &boxes[i]; // find new address of the box in case of reallocation
+					}
+				}
+			}
+		}
+	}
+
 	for (auto &box : boxes)
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
