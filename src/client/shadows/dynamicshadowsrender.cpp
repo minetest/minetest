@@ -158,24 +158,6 @@ void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 		disable();
 }
 
-v3f ShadowRenderer::getPlayerPos() const
-{
-	if (m_light_list.empty()) {
-		auto cam = m_client->getCamera();
-		return cam->getPosition() - intToFloat(cam->getOffset(), BS);
-	}
-	return m_light_list[0].getPlayerPos();
-}
-
-v3f ShadowRenderer::getFuturePlayerPos() const
-{
-	if (getDirectionalLightCount() == 0) {
-		auto cam = m_client->getCamera();
-		return cam->getPosition() - intToFloat(cam->getOffset(), BS);
-	}
-	return m_light_list[0].getFuturePlayerPos();
-}
-
 void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
 {
@@ -279,7 +261,6 @@ void ShadowRenderer::updateSMTextures()
 					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
 					cb->CameraPos = light.getFuturePlayerPos();
-					cb->ShadowMapScale = light.getFutureShadowMapScale();
 				}
 			
 			// set the Render Target
@@ -345,7 +326,6 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			// SM texture for entities is not updated incrementally and 
 			// must by updated using current player position.
 			m_shadow_depth_entity_cb->CameraPos = light.getPlayerPos();
-			m_shadow_depth_entity_cb->ShadowMapScale = light.getShadowMapScale();
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,

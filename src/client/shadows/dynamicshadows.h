@@ -37,7 +37,6 @@ struct shadowFrustum
 	v3f position;
 	v3f player;
 	v3s16 camera_offset;
-	f32 scale{1.0f};
 };
 
 class DirectionalLight
@@ -61,9 +60,6 @@ public:
 	v3f getPosition() const;
 	v3f getPlayerPos() const;
 	v3f getFuturePlayerPos() const;
-
-	f32 getShadowMapScale() const;
-	f32 getFutureShadowMapScale() const;
 
 	/// Gets the light's matrices.
 	const core::matrix4 &getViewMatrix() const;

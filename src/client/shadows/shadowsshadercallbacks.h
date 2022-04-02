@@ -34,8 +34,7 @@ public:
 			m_perspective_bias0("xyPerspectiveBias0"),
 			m_perspective_bias1("xyPerspectiveBias1"),
 			m_perspective_zbias("zPerspectiveBias"),
-			m_cam_pos_setting("CameraPos"),
-			m_sm_scale_vertex("shadowMapScale")
+			m_cam_pos_setting("CameraPos")
 	{}
 
 	void OnSetMaterial(const video::SMaterial &material) override {}
@@ -46,7 +45,6 @@ public:
 	f32 MaxFar{2048.0f}, MapRes{1024.0f};
 	f32 PerspectiveBiasXY {0.9f}, PerspectiveBiasZ {0.5f};
 	v3f CameraPos;
-	f32 ShadowMapScale;
 
 private:
 	CachedVertexShaderSetting<f32, 16> m_light_mvp_setting;
@@ -57,5 +55,4 @@ private:
 	CachedVertexShaderSetting<f32> m_perspective_bias1;
 	CachedVertexShaderSetting<f32> m_perspective_zbias;
 	CachedVertexShaderSetting<f32, 4> m_cam_pos_setting;
-	CachedVertexShaderSetting<f32> m_sm_scale_vertex;
 };
