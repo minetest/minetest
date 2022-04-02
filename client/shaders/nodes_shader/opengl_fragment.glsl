@@ -51,17 +51,16 @@ const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
 uniform float zPerspectiveBias;
-uniform float shadowMapScale;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
 {
-	shadowPosition.xy = (shadowPosition.xy - CameraPos.xy) / shadowMapScale;
-	float pDistance = length(shadowPosition.xy);
+	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
+	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
+	float pDistance = length(l);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
-	shadowPosition.xy = shadowMapScale * shadowPosition.xy + CameraPos.xy;
-
+	l /= pFactor;
+	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
+	shadowPosition.z *= zPerspectiveBias;
 	return shadowPosition;
 }
 
@@ -174,7 +173,7 @@ float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDis
 
 float getBaseLength(vec2 smTexCoord)
 {
-	float l = length(2.0 * smTexCoord.xy - 1.0 - CameraPos.xy) / shadowMapScale;     // length in texture coords
+	float l = length(2.0 * smTexCoord.xy - 1.0 - CameraPos.xy);     // length in texture coords
 	return xyPerspectiveBias1 / (1.0 / l - xyPerspectiveBias0); 				 // return to undistorted coords
 }
 
@@ -492,7 +491,7 @@ void main(void)
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
 		vec3 posLightSpace = getLightSpacePosition();
 
-		float distance_rate = (1 - pow(clamp(0.5 / shadowMapScale * length(2.0 * (posLightSpace.xy - 0.5) - CameraPos.xy),0.0,1.0), 50.0));
+		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
 		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
 			distance_rate = 0.0;
 		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);

@@ -5,15 +5,16 @@ varying vec4 tPos;
 uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
 uniform float zPerspectiveBias;
-uniform float shadowMapScale;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
 {
-	shadowPosition.xy = (shadowPosition.xy - CameraPos.xy) / shadowMapScale;
-	float pDistance = length(shadowPosition.xy);
+	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
+	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
+	float pDistance = length(l);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
-	shadowPosition.xy = shadowMapScale * shadowPosition.xy + CameraPos.xy;
+	l /= pFactor;
+	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
+	shadowPosition.z *= zPerspectiveBias;
 	return shadowPosition;
 }
 
