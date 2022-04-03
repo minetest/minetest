@@ -1846,6 +1846,11 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 				throw SerializationError("Lua key to convert to JSON is not a string or number");
 			}
 		}
+
+		if (root.type() == Json::nullValue) {
+			// table is empty
+			root = Json::Value(Json::arrayValue);
+		}
 	} else if (type == LUA_TNIL) {
 		root = Json::nullValue;
 	} else {
