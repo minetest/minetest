@@ -187,7 +187,6 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float baseLength = getBaseLength(smTexCoord);
 	float perspectiveFactor;
 
-	if (PCFBOUND == 0.0) return 0.0;
 	// Return fast if sharp shadows are requested
 	if (PCFBOUND == 0.0)
 		return 0.0;
@@ -497,7 +496,7 @@ void main(void)
 		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
-		
+
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
 			if (cosLight > 0.0)
@@ -531,7 +530,7 @@ void main(void)
 		}
 
 		shadow_int *= f_adj_shadow_strength;
-		
+
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
