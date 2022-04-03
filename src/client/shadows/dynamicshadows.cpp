@@ -29,7 +29,6 @@ using m4f = core::matrix4;
 
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
-	float radius;
 	v3f newCenter;
 	v3f look = cam->getDirection();
 
@@ -42,16 +41,16 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float sfFar = adjustDist(future_frustum.zFar, cam->getFovY());
 
 	// adjusted camera positions
-	v3f camPos2 = cam->getPosition();
-	v3f camPos = v3f(camPos2.X - cam->getOffset().X * BS,
-			camPos2.Y - cam->getOffset().Y * BS,
-			camPos2.Z - cam->getOffset().Z * BS);
-	camPos += look * sfNear;
-	camPos2 += look * sfNear;
+	v3f cam_pos_world = cam->getPosition();
+	v3f cam_pos_scene = v3f(cam_pos_world.X - cam->getOffset().X * BS,
+			cam_pos_world.Y - cam->getOffset().Y * BS,
+			cam_pos_world.Z - cam->getOffset().Z * BS);
+	cam_pos_scene += look * sfNear;
+	cam_pos_world += look * sfNear;
 
 	// center point of light frustum
-	newCenter = camPos + look * 0.35 * (sfFar - sfNear);
-	v3f world_center = camPos2 + look * 0.35 * (sfFar - sfNear);
+	v3f center_scene = cam_pos_scene + look * 0.35 * (sfFar - sfNear);
+	v3f center_world = cam_pos_world + look * 0.35 * (sfFar - sfNear);
 
 	// Create a vector to the frustum far corner
 	const v3f &viewUp = cam->getCameraNode()->getUpVector();
@@ -59,23 +58,21 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	v3f farCorner = (look + viewRight * tanFovX + viewUp * tanFovY).normalize();
 	// Compute the frustumBoundingSphere radius
-	v3f boundVec = (camPos + farCorner * sfFar) - newCenter;
-	radius = boundVec.getLength();
-	// boundVec.getLength();
-	float vvolume = radius;
-	v3f frustumCenter = newCenter;
-	v3f eye_displacement = direction * vvolume;
+	v3f boundVec = (cam_pos_scene + farCorner * sfFar) - center_scene;
+	float radius = boundVec.getLength();
+	float length = radius * 3.0f;
+	v3f eye_displacement = direction * length;
 
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
-	v3f eye = frustumCenter - eye_displacement;
-	future_frustum.player = camPos;
-	future_frustum.position = world_center - eye_displacement;
-	future_frustum.length = vvolume;
-	future_frustum.ViewMat.buildCameraLookAtMatrixLH(eye, frustumCenter, v3f(0.0f, 1.0f, 0.0f));
-	future_frustum.ProjOrthMat.buildProjectionMatrixOrthoLH(future_frustum.length,
-			future_frustum.length, -future_frustum.length,
-			future_frustum.length,false);
+	v3f eye = center_scene - eye_displacement;
+	future_frustum.player = cam_pos_scene;
+	future_frustum.position = center_world - eye_displacement;
+	future_frustum.length = length;
+	future_frustum.radius = radius;
+	future_frustum.ViewMat.buildCameraLookAtMatrixLH(eye, center_scene, v3f(0.0f, 1.0f, 0.0f));
+	future_frustum.ProjOrthMat.buildProjectionMatrixOrthoLH(radius, radius, 
+			0.0f, length, false);
 	future_frustum.camera_offset = cam->getOffset();
 }
 
@@ -105,7 +102,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	createSplitMatrices(cam);
 	// get the draw list for shadows
 	client->getEnv().getClientMap().updateDrawListShadow(
-			getPosition(), getDirection(), future_frustum.length);
+			getPosition(), getDirection(), future_frustum.radius, future_frustum.length);
 	should_update_map_shadow = true;
 	dirty = true;
 

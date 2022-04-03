@@ -32,6 +32,7 @@ struct shadowFrustum
 	f32 zNear{0.0f};
 	f32 zFar{0.0f};
 	f32 length{0.0f};
+	f32 radius{0.0f};
 	core::matrix4 ProjOrthMat;
 	core::matrix4 ViewMat;
 	v3f position;
