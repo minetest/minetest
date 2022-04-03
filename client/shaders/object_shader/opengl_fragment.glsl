@@ -182,7 +182,7 @@ float getBaseLength(vec2 smTexCoord)
 
 float getDeltaPerspectiveFactor(float l)
 {
-	return 0.03 / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
+	return 0.04 * pow(512.0 / f_textureresolution, 0.4) / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
 }
 
 float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDistance, float multiplier)
