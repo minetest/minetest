@@ -563,22 +563,25 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 	return 1;
 }
 
-int ModApiServer::l_test_serialization(lua_State *L)
+// meant exclusively for unittests
+int ModApiServer::l_serialize_roundtrip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	int top = lua_gettop(L);
 	auto *pv = script_pack(L, 1);
 	if (top != lua_gettop(L))
-		warningstream << "leaked stuff on stack..." << std::endl;
+		throw LuaError("stack values leaked");
 
+#ifndef NDEBUG
 	script_dump_packed(pv);
+#endif
 
 	top = lua_gettop(L);
 	script_unpack(L, pv);
-	if (top + 1 != lua_gettop(L))
-		warningstream << "left wrong stuff on stack" << std::endl;
 	delete pv;
+	if (top + 1 != lua_gettop(L))
+		throw LuaError("stack values leaked");
 
 	return 1;
 }
@@ -618,5 +621,5 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(notify_authentication_modified);
 
 	API_FCT(do_async_callback);
-	API_FCT(test_serialization);
+	API_FCT(serialize_roundtrip);
 }

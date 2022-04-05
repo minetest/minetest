@@ -175,6 +175,7 @@ dofile(modpath .. "/misc.lua")
 dofile(modpath .. "/player.lua")
 dofile(modpath .. "/crafting.lua")
 dofile(modpath .. "/itemdescription.lua")
+dofile(modpath .. "/async_env.lua")
 
 --------------
 
