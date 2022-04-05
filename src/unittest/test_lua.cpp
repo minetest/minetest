@@ -47,27 +47,34 @@ void TestLua::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace
+{
+
+class DestructorDetector {
+public:
+	DestructorDetector(bool *did_destruct): m_did_destruct(did_destruct)
+	{
+		*m_did_destruct = false;
+	}
+
+	~DestructorDetector()
+	{
+		*m_did_destruct = true;
+	}
+
+private:
+	bool *m_did_destruct;
+};
+
+} // namespace
+
 void TestLua::testLuaDestructors()
 {
 	bool did_destruct = false;
 
 	lua_State *L = luaL_newstate();
 	lua_cpcall(L, [](lua_State *L) -> int {
-		class DestructorDetector {
-		public:
-			DestructorDetector(bool *did_destruct): m_did_destruct(did_destruct)
-			{
-				*m_did_destruct = false;
-			}
-
-			~DestructorDetector()
-			{
-				*m_did_destruct = true;
-			}
-
-		private:
-			bool *m_did_destruct;
-		} destructor_detector((bool *)lua_topointer(L, 1));
+		DestructorDetector destructor_detector(reinterpret_cast<bool*>(lua_touserdata(L, 1)));
 		luaL_error(L, "error");
 		return 0;
 	}, (void *)&did_destruct);
