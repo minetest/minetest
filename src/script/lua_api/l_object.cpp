@@ -1371,7 +1371,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_newtable(L);
 	if (player == nullptr)
 		return 1;
-	
+
 	const PlayerControl &control = player->getPlayerControl();
 	lua_pushboolean(L, control.direction_keys & (1 << 0));
 	lua_setfield(L, -2, "up");
@@ -1713,6 +1713,35 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 	const std::string &name = player->getHotbarSelectedImage();
 
 	lua_pushlstring(L, name.c_str(), name.size());
+	return 1;
+}
+
+//get_celestial_vault(self)
+int ObjectRef::l_get_celestial_vault(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	// sky must be retrieved in this way for now because of `as_table` in get_sky().
+	// Please remove this mess (lua_insert included) with the next major release
+	lua_pushboolean(L, true);
+	l_get_sky(L);
+	lua_remove(L, -2);
+
+	lua_newtable(L);
+	lua_insert(L, -2);	// moving the table before l_get_sky, so to include it
+	lua_setfield(L, -2, "sky");
+	l_get_sun(L);
+	lua_setfield(L, -2, "sun");
+	l_get_moon(L);
+	lua_setfield(L, -2, "moon");
+	l_get_stars(L);
+	lua_setfield(L, -2, "stars");
+	l_get_clouds(L);
+	lua_setfield(L, -2, "clouds");
 	return 1;
 }
 
@@ -2470,6 +2499,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_get_hotbar_image),
 	luamethod(ObjectRef, hud_set_hotbar_selected_image),
 	luamethod(ObjectRef, hud_get_hotbar_selected_image),
+	luamethod(ObjectRef, get_celestial_vault),
 	luamethod(ObjectRef, set_sky),
 	luamethod(ObjectRef, get_sky),
 	luamethod(ObjectRef, get_sky_color),

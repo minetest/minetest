@@ -313,6 +313,9 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
+	// get_celestial_vault(self)
+	static int l_get_celestial_vault(lua_State *L);
+
 	// set_sky(self, sky_parameters)
 	static int l_set_sky(lua_State *L);
 
@@ -379,7 +382,7 @@ private:
 
 	// set_lighting(self, lighting)
 	static int l_set_lighting(lua_State *L);
-	
+
 	// get_lighting(self)
 	static int l_get_lighting(lua_State *L);
 };
