@@ -3,14 +3,14 @@ if core.get_cache_path == nil then -- TODO
 
 core.log("info", "Initializing Asynchronous environment for game")
 
-function core.job_processor(func, serialized_params)
-	local params = core.deserialize(serialized_params)
-
-	print('will call ' .. tostring(func) .. ' with ' .. tostring(#params) .. ' args')
+function core.job_processor(func, params)
+	print('will call ' .. tostring(func) .. ' with ' .. #params .. ' args')
 
 	local retval = {func(unpack(params))}
 
-	return core.serialize(retval)
+	print('returned ' .. #retval .. ' values')
+
+	return retval
 end
 
 else

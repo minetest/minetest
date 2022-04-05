@@ -1,9 +1,8 @@
 
 core.async_jobs = {}
 
-function core.async_event_handler(jobid, serialized_retval)
+function core.async_event_handler(jobid, retval)
 	print("finish j " .. jobid)
-	local retval = core.deserialize(serialized_retval)
 	local callback = core.async_jobs[jobid]
 	assert(type(callback) == "function")
 	callback(unpack(retval))
@@ -14,11 +13,9 @@ function core.handle_async(func, callback, ...)
 	assert(type(func) == "function" and type(callback) == "function",
 		"Invalid minetest.handle_async invocation")
 	local job_params = {...}
-
-	local serialized_params = core.serialize(job_params)
 	local mod_origin = core.get_last_run_mod()
 
-	local jobid = core.do_async_callback(func, serialized_params, mod_origin)
+	local jobid = core.do_async_callback(func, job_params, mod_origin)
 	print("start j " .. jobid)
 	core.async_jobs[jobid] = callback
 

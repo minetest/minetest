@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 #include "cpp_api/s_async.h"
 
+struct PackedValue;
+
 /*****************************************************************************/
 /* Scripting <-> Server Game Interface                                       */
 /*****************************************************************************/
@@ -54,7 +56,7 @@ public:
 
 	// Pass job to async threads
 	u32 queueAsync(std::string &&serialized_func,
-		std::string &&serialized_param, const std::string &mod_origin);
+		PackedValue *param, const std::string &mod_origin);
 
 private:
 	void InitializeModApi(lua_State *L, int top);

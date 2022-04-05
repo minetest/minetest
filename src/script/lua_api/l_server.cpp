@@ -532,7 +532,7 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 	ServerScripting *script = getScriptApi<ServerScripting>(L);
 
 	luaL_checktype(L, 1, LUA_TFUNCTION);
-	luaL_checktype(L, 2, LUA_TSTRING);
+	luaL_checktype(L, 2, LUA_TTABLE);
 	luaL_checktype(L, 3, LUA_TSTRING);
 
 	// Safely call string.dump on the function
@@ -545,17 +545,18 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 	lua_pushvalue(L, 1);
 	lua_call(L, 1, 1);
 
-	size_t func_length, param_length;
+	size_t func_length;
 	const char *serialized_func_raw = lua_tolstring(L, -1, &func_length);
-	const char *serialized_param_raw = lua_tolstring(L, 2, &param_length);
 
-	printf("func_l: %zu param_l: %zu\n", func_length, param_length);
+	PackedValue *param = script_pack(L, 2);
+
+	printf("func_l: %zu param: %p\n", func_length, param);
 
 	std::string mod_origin = readParam<std::string>(L, 3);
 
 	u32 jobId = script->queueAsync(
 		std::string(serialized_func_raw, func_length),
-		std::string(serialized_param_raw, param_length), mod_origin);
+		param, mod_origin);
 
 	lua_settop(L, 0);
 	lua_pushinteger(L, jobId);

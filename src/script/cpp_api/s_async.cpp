@@ -32,6 +32,7 @@ extern "C" {
 #include "filesys.h"
 #include "porting.h"
 #include "common/c_internal.h"
+#include "common/c_serialize.h"
 #include "lua_api/l_base.h"
 
 /******************************************************************************/
@@ -103,6 +104,24 @@ u32 AsyncEngine::queueAsyncJob(std::string &&func, std::string &&params,
 	return jobId;
 }
 
+u32 AsyncEngine::queueAsyncJob(std::string &&func, PackedValue *params,
+		const std::string &mod_origin)
+{
+	jobQueueMutex.lock();
+	u32 jobId = jobIdCounter++;
+
+	jobQueue.emplace_back();
+	auto &to_add = jobQueue.back();
+	to_add.id = jobId;
+	to_add.function = std::move(func);
+	to_add.params_ext.reset(params);
+	to_add.mod_origin = mod_origin;
+
+	jobQueueCounter.post();
+	jobQueueMutex.unlock();
+	return jobId;
+}
+
 /******************************************************************************/
 bool AsyncEngine::getJob(LuaJobInfo *job)
 {
@@ -148,7 +167,10 @@ void AsyncEngine::step(lua_State *L)
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 
 		lua_pushinteger(L, j.id);
-		lua_pushlstring(L, j.result.data(), j.result.size());
+		if (j.result_ext)
+			script_unpack(L, j.result_ext.get());
+		else
+			lua_pushlstring(L, j.result.data(), j.result.size());
 
 		// Call handler
 		const char *origin = j.mod_origin.empty() ? nullptr : j.mod_origin.c_str();
@@ -230,6 +252,8 @@ void* AsyncWorkerThread::run()
 		if (!jobDispatcher->getJob(&j) || stopRequested())
 			continue;
 
+		const bool use_ext = !!j.params_ext;
+
 		lua_getfield(L, -1, "job_processor");
 		if (lua_isnil(L, -1))
 			FATAL_ERROR("Unable to get async job processor!");
@@ -239,7 +263,10 @@ void* AsyncWorkerThread::run()
 			errorstream << "ASYNC WORKER: Unable to deserialize function" << std::endl;
 			lua_pushnil(L);
 		}
-		lua_pushlstring(L, j.params.data(), j.params.size());
+		if (use_ext)
+			script_unpack(L, j.params_ext.get());
+		else
+			lua_pushlstring(L, j.params.data(), j.params.size());
 
 		// Call it
 		setOriginDirect(j.mod_origin.empty() ? nullptr : j.mod_origin.c_str());
@@ -255,16 +282,19 @@ void* AsyncWorkerThread::run()
 			}
 		} else {
 			// Fetch result
-			size_t length;
-			const char *retval = lua_tolstring(L, -1, &length);
-			j.result.assign(retval, length);
+			if (use_ext) {
+				j.result_ext.reset(script_pack(L, -1));
+			} else {
+				size_t length;
+				const char *retval = lua_tolstring(L, -1, &length);
+				j.result.assign(retval, length);
+			}
 		}
 
 		lua_pop(L, 1);  // Pop retval
 
 		// Put job result
-		if (!j.result.empty())
-			jobDispatcher->putJobResult(std::move(j));
+		jobDispatcher->putJobResult(std::move(j));
 	}
 
 	lua_pop(L, 2);  // Pop core and error handler

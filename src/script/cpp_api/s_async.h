@@ -21,10 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <deque>
+#include <memory>
 
+#include <lua.h>
 #include "threading/semaphore.h"
 #include "threading/thread.h"
-#include "lua.h"
+#include "common/c_serialize.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
 
@@ -43,8 +45,12 @@ struct LuaJobInfo
 	std::string function;
 	// Parameter to be passed to function (serialized)
 	std::string params;
+	// Alternative parameters
+	std::unique_ptr<PackedValue> params_ext;
 	// Result of function call (serialized)
 	std::string result;
+	// Alternative result
+	std::unique_ptr<PackedValue> result_ext;
 	// Name of the mod who invoked this call
 	std::string mod_origin;
 	// JobID used to identify a job and match it to callback
@@ -95,6 +101,15 @@ public:
 	 * @return jobid The job is queued
 	 */
 	u32 queueAsyncJob(std::string &&func, std::string &&params,
+			const std::string &mod_origin = "");
+
+	/**
+	 * Queue an async job
+	 * @param func Serialized lua function
+	 * @param params Serialized parameters (takes ownership!)
+	 * @return ID of queued job
+	 */
+	u32 queueAsyncJob(std::string &&func, PackedValue *params,
 			const std::string &mod_origin = "");
 
 	/**
