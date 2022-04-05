@@ -16,31 +16,31 @@
 		<p>
 			Minetest is an infinite-world block sandbox game and game engine.
 		</p><p xml:lang="de">
-			Minetest ist ein Sandkastenspiel und Spielengine mit unendlichen Welten
+			Minetest ist ein Sandkastenspiel und eine Spielengine mit unendlichen Welten.
 		</p><p>
 			Players can create and destroy various types of blocks in a
 			three-dimensional open world. This allows forming structures in
 			every possible creation, on multiplayer servers or in singleplayer.
 		</p><p xml:lang="de">
-			Spieler können in einer offenen 3D Welt viele verschiedene Arten von
+			Spieler können in einer offenen 3D-Welt viele verschiedene Arten von
 			Blöcken platzieren und abbauen. Dies erlaubt das Bauen von allen möglichen
 			Strukturen im Einzelspieler oder auf Mehrspielerservern.
 		</p><p>
 			Minetest is designed to be simple, stable, and portable.
 			It is lightweight enough to run on fairly old hardware.
 		</p><p xml:lang="de">
-			Minetest ist designt um einfach stabil und portabel zu sein.
+			Minetest ist designt, um einfach stabil und portabel zu sein.
 			Es ist leichtgewichtig genug, um auf relativ alter Hardware zu laufen.
 		</p><p>
 			Minetest has many features, including:
 		</p><p xml:lang="de">
-			Mintest besitzt viele Features, unteranderem:
+			Minetest besitzt viele Features, unter anderem:
 		</p>
 		<ul>
 			<li>Ability to walk around, dig, and build in a near-infinite voxel world</li>
 			<li xml:lang="de">Die Möglichkeit, in einer nahezu unendlichen Voxel-Welt herumzulaufen, zu graben und zu bauen</li>
 			<li>Crafting of items from raw materials</li>
-			<li xml:lang="de">Items können aus Rohmaterialien gecraftet werden</li>
+			<li xml:lang="de">Items können aus Rohmaterialien gefertigt werden</li>
 			<li>Fast and able to run on old and slow hardware</li>
 			<li xml:lang="de">Gute Performance selbst auf älterer und langsamer Hardware>/Li>
 			<li>A simple modding API that supports many additions and modifications to the game</li>
