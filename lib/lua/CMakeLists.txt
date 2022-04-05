@@ -35,9 +35,6 @@ mark_as_advanced(LUA_USE_DLOPEN)
 option(LUA_ANSI "Disable non-ANSI features." ${DEFAULT_ANSI})
 mark_as_advanced(LUA_ANSI)
 
-option(LUA_COMPILE_AS_C "Compile Lua as C rather than C++." FALSE)
-mark_as_advanced(LUA_COMPILE_AS_C)
-
 if(LUA_USE_DLOPEN)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_DLOPEN")
 	if(NOT APPLE)
@@ -53,14 +50,12 @@ if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")
 endif(LUA_ANSI)
 
-if (NOT LUA_COMPILE_AS_C)
-	# Force compilation as C++.
-	if(WIN32)
-		set(COMMON_CFLAGS "${COMMON_CFLAGS} -TP")
-	else()
-		set(COMMON_CFLAGS "${COMMON_CFLAGS} -xc++")
-	endif()
-endif(NOT LUA_COMPILE_AS_C)
+# Force compilation as C++.
+if(WIN32)
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -TP")
+else()
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -xc++")
+endif()
 
 # COMMON_CFLAGS has no effect without this line
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
@@ -68,12 +63,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
 
 # Standard flags to use for each build type.
 if(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic")
-	if(LUA_COMPILE_AS_C)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
-	else()
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11")
-	endif()
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic -std=gnu++14")
 	set(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}     -O2")
 	set(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}       -O0 -g")
 	set(CMAKE_C_FLAGS_PROFILE        "${CMAKE_C_FLAGS_PROFILE}     -O1 -g")
