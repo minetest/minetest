@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "noise.h"
 
 /*
@@ -36,10 +37,10 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
-	static int l_get_2d(lua_State *L);
-	static int l_get_3d(lua_State *L);
+	ENTRY_POINT_DECL(l_get_2d);
+	ENTRY_POINT_DECL(l_get_3d);
 
 public:
 	LuaPerlinNoise(NoiseParams *params);
@@ -47,7 +48,7 @@ public:
 
 	// LuaPerlinNoise(seed, octaves, persistence, scale)
 	// Creates an LuaPerlinNoise and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaPerlinNoise *checkobject(lua_State *L, int narg);
 
@@ -68,16 +69,16 @@ class LuaPerlinNoiseMap : public ModApiBase
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
-	static int l_get_2d_map(lua_State *L);
-	static int l_get_2d_map_flat(lua_State *L);
-	static int l_get_3d_map(lua_State *L);
-	static int l_get_3d_map_flat(lua_State *L);
+	ENTRY_POINT_DECL(l_get_2d_map);
+	ENTRY_POINT_DECL(l_get_2d_map_flat);
+	ENTRY_POINT_DECL(l_get_3d_map);
+	ENTRY_POINT_DECL(l_get_3d_map_flat);
 
-	static int l_calc_2d_map(lua_State *L);
-	static int l_calc_3d_map(lua_State *L);
-	static int l_get_map_slice(lua_State *L);
+	ENTRY_POINT_DECL(l_calc_2d_map);
+	ENTRY_POINT_DECL(l_calc_3d_map);
+	ENTRY_POINT_DECL(l_get_map_slice);
 
 public:
 	LuaPerlinNoiseMap(NoiseParams *np, s32 seed, v3s16 size);
@@ -86,7 +87,7 @@ public:
 
 	// LuaPerlinNoiseMap(np, size)
 	// Creates an LuaPerlinNoiseMap and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaPerlinNoiseMap *checkobject(lua_State *L, int narg);
 
@@ -107,17 +108,17 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// next(self, min=0, max=32767) -> get next value
-	static int l_next(lua_State *L);
+	ENTRY_POINT_DECL(l_next);
 
 public:
 	LuaPseudoRandom(s32 seed) : m_pseudo(seed) {}
 
 	// LuaPseudoRandom(seed)
 	// Creates an LuaPseudoRandom and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaPseudoRandom *checkobject(lua_State *L, int narg);
 
@@ -138,14 +139,14 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// next(self, min=-2147483648, max=2147483647) -> get next value
-	static int l_next(lua_State *L);
+	ENTRY_POINT_DECL(l_next);
 
 	// rand_normal_dist(self, min=-2147483648, max=2147483647, num_trials=6) ->
 	// get next normally distributed random value
-	static int l_rand_normal_dist(lua_State *L);
+	ENTRY_POINT_DECL(l_rand_normal_dist);
 
 public:
 	LuaPcgRandom(u64 seed) : m_rnd(seed) {}
@@ -153,7 +154,7 @@ public:
 
 	// LuaPcgRandom(seed)
 	// Creates an LuaPcgRandom and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaPcgRandom *checkobject(lua_State *L, int narg);
 
@@ -176,17 +177,17 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// next_bytes(self, count) -> get count many bytes
-	static int l_next_bytes(lua_State *L);
+	ENTRY_POINT_DECL(l_next_bytes);
 
 public:
 	bool fillRandBuf();
 
 	// LuaSecureRandom()
 	// Creates an LuaSecureRandom and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaSecureRandom *checkobject(lua_State *L, int narg);
 

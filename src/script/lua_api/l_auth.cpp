@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_auth.h"
-#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_base.h"
@@ -69,7 +68,7 @@ void ModApiAuth::pushAuthEntry(lua_State *L, const AuthEntry &authEntry)
 }
 
 // auth_read(name)
-int ModApiAuth::l_auth_read(lua_State *L)
+ENTRY_POINT_DEF(ModApiAuth, l_auth_read)
 {
 	NO_MAP_LOCK_REQUIRED;
 	AuthDatabase *auth_db = getAuthDb(L);
@@ -86,7 +85,7 @@ int ModApiAuth::l_auth_read(lua_State *L)
 }
 
 // auth_save(table)
-int ModApiAuth::l_auth_save(lua_State *L)
+ENTRY_POINT_DEF(ModApiAuth, l_auth_save)
 {
 	NO_MAP_LOCK_REQUIRED;
 	AuthDatabase *auth_db = getAuthDb(L);
@@ -123,7 +122,7 @@ int ModApiAuth::l_auth_save(lua_State *L)
 }
 
 // auth_create(table)
-int ModApiAuth::l_auth_create(lua_State *L)
+ENTRY_POINT_DEF(ModApiAuth, l_auth_create)
 {
 	NO_MAP_LOCK_REQUIRED;
 	AuthDatabase *auth_db = getAuthDb(L);
@@ -162,7 +161,7 @@ int ModApiAuth::l_auth_create(lua_State *L)
 }
 
 // auth_delete(name)
-int ModApiAuth::l_auth_delete(lua_State *L)
+ENTRY_POINT_DEF(ModApiAuth, l_auth_delete)
 {
 	NO_MAP_LOCK_REQUIRED;
 	AuthDatabase *auth_db = getAuthDb(L);
@@ -174,7 +173,7 @@ int ModApiAuth::l_auth_delete(lua_State *L)
 }
 
 // auth_list_names()
-int ModApiAuth::l_auth_list_names(lua_State *L)
+ENTRY_POINT_DEF(ModApiAuth, l_auth_list_names)
 {
 	NO_MAP_LOCK_REQUIRED;
 	AuthDatabase *auth_db = getAuthDb(L);
@@ -193,7 +192,7 @@ int ModApiAuth::l_auth_list_names(lua_State *L)
 }
 
 // auth_reload()
-int ModApiAuth::l_auth_reload(lua_State *L)
+ENTRY_POINT_DEF(ModApiAuth, l_auth_reload)
 {
 	NO_MAP_LOCK_REQUIRED;
 	AuthDatabase *auth_db = getAuthDb(L);

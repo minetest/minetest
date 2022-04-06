@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_camera.h"
 #include <cmath>
 #include "script/common/c_converter.h"
-#include "l_internal.h"
 #include "client/content_cao.h"
 #include "client/camera.h"
 #include "client/client.h"
@@ -52,7 +51,7 @@ void LuaCamera::create(lua_State *L, Camera *m)
 }
 
 // set_camera_mode(self, mode)
-int LuaCamera::l_set_camera_mode(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_set_camera_mode)
 {
 	Camera *camera = getobject(L, 1);
 	GenericCAO *playercao = getClient(L)->getEnv().getLocalPlayer()->getCAO();
@@ -70,7 +69,7 @@ int LuaCamera::l_set_camera_mode(lua_State *L)
 }
 
 // get_camera_mode(self)
-int LuaCamera::l_get_camera_mode(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_camera_mode)
 {
 	Camera *camera = getobject(L, 1);
 	if (!camera)
@@ -82,7 +81,7 @@ int LuaCamera::l_get_camera_mode(lua_State *L)
 }
 
 // get_fov(self)
-int LuaCamera::l_get_fov(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_fov)
 {
 	Camera *camera = getobject(L, 1);
 	if (!camera)
@@ -101,7 +100,7 @@ int LuaCamera::l_get_fov(lua_State *L)
 }
 
 // get_pos(self)
-int LuaCamera::l_get_pos(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_pos)
 {
 	Camera *camera = getobject(L, 1);
 	if (!camera)
@@ -112,7 +111,7 @@ int LuaCamera::l_get_pos(lua_State *L)
 }
 
 // get_offset(self)
-int LuaCamera::l_get_offset(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_offset)
 {
 	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
 	sanity_check(player);
@@ -122,7 +121,7 @@ int LuaCamera::l_get_offset(lua_State *L)
 }
 
 // get_look_dir(self)
-int LuaCamera::l_get_look_dir(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_look_dir)
 {
 	Camera *camera = getobject(L, 1);
 	if (!camera)
@@ -134,7 +133,7 @@ int LuaCamera::l_get_look_dir(lua_State *L)
 
 // get_look_horizontal(self)
 // FIXME: wouldn't localplayer be a better place for this?
-int LuaCamera::l_get_look_horizontal(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_look_horizontal)
 {
 	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
 	sanity_check(player);
@@ -145,7 +144,7 @@ int LuaCamera::l_get_look_horizontal(lua_State *L)
 
 // get_look_vertical(self)
 // FIXME: wouldn't localplayer be a better place for this?
-int LuaCamera::l_get_look_vertical(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_look_vertical)
 {
 	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
 	sanity_check(player);
@@ -155,7 +154,7 @@ int LuaCamera::l_get_look_vertical(lua_State *L)
 }
 
 // get_aspect_ratio(self)
-int LuaCamera::l_get_aspect_ratio(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, l_get_aspect_ratio)
 {
 	Camera *camera = getobject(L, 1);
 	if (!camera)
@@ -191,7 +190,7 @@ Camera *LuaCamera::getobject(lua_State *L, int narg)
 	return camera;
 }
 
-int LuaCamera::gc_object(lua_State *L)
+ENTRY_POINT_DEF(LuaCamera, gc_object)
 {
 	LuaCamera *o = *(LuaCamera **)(lua_touserdata(L, 1));
 	delete o;

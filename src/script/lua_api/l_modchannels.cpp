@@ -20,10 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include <log.h>
 #include "lua_api/l_modchannels.h"
-#include "l_internal.h"
 #include "modchannels.h"
 
-int ModApiChannels::l_mod_channel_join(lua_State *L)
+ENTRY_POINT_DEF(ModApiChannels, l_mod_channel_join)
 {
 	if (!lua_isstring(L, 1))
 		return 0;
@@ -55,14 +54,14 @@ ModChannelRef::ModChannelRef(const std::string &modchannel) :
 {
 }
 
-int ModChannelRef::l_leave(lua_State *L)
+ENTRY_POINT_DEF(ModChannelRef, l_leave)
 {
 	ModChannelRef *ref = checkobject(L, 1);
 	getGameDef(L)->leaveModChannel(ref->m_modchannel_name);
 	return 0;
 }
 
-int ModChannelRef::l_send_all(lua_State *L)
+ENTRY_POINT_DEF(ModChannelRef, l_send_all)
 {
 	ModChannelRef *ref = checkobject(L, 1);
 	ModChannel *channel = getobject(L, ref);
@@ -76,7 +75,7 @@ int ModChannelRef::l_send_all(lua_State *L)
 	return 0;
 }
 
-int ModChannelRef::l_is_writeable(lua_State *L)
+ENTRY_POINT_DEF(ModChannelRef, l_is_writeable)
 {
 	ModChannelRef *ref = checkobject(L, 1);
 	ModChannel *channel = getobject(L, ref);
@@ -119,7 +118,7 @@ void ModChannelRef::create(lua_State *L, const std::string &channel)
 	lua_setmetatable(L, -2);
 }
 
-int ModChannelRef::gc_object(lua_State *L)
+ENTRY_POINT_DEF(ModChannelRef, gc_object)
 {
 	ModChannelRef *o = *(ModChannelRef **)(lua_touserdata(L, 1));
 	delete o;

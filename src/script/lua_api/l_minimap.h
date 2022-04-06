@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "l_base.h"
+#include "l_internal.h"
 
 class Minimap;
 
@@ -30,22 +31,22 @@ private:
 	static const luaL_Reg methods[];
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
-	static int l_get_pos(lua_State *L);
-	static int l_set_pos(lua_State *L);
+	ENTRY_POINT_DECL(l_get_pos);
+	ENTRY_POINT_DECL(l_set_pos);
 
-	static int l_get_angle(lua_State *L);
-	static int l_set_angle(lua_State *L);
+	ENTRY_POINT_DECL(l_get_angle);
+	ENTRY_POINT_DECL(l_set_angle);
 
-	static int l_get_mode(lua_State *L);
-	static int l_set_mode(lua_State *L);
+	ENTRY_POINT_DECL(l_get_mode);
+	ENTRY_POINT_DECL(l_set_mode);
 
-	static int l_show(lua_State *L);
-	static int l_hide(lua_State *L);
+	ENTRY_POINT_DECL(l_show);
+	ENTRY_POINT_DECL(l_hide);
 
-	static int l_set_shape(lua_State *L);
-	static int l_get_shape(lua_State *L);
+	ENTRY_POINT_DECL(l_set_shape);
+	ENTRY_POINT_DECL(l_get_shape);
 
 	Minimap *m_minimap = nullptr;
 

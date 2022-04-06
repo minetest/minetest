@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "lua_api/l_metadata.h"
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
@@ -53,10 +54,10 @@ private:
 	}
 
 	// Exported functions
-	static int l_set_tool_capabilities(lua_State *L);
+	ENTRY_POINT_DECL(l_set_tool_capabilities);
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 public:
 	ItemStackMetaRef(ItemStack *istack): istack(istack) {}
 	~ItemStackMetaRef() = default;

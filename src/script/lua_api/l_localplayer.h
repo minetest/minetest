@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "l_base.h"
+#include "l_internal.h"
 
 class LocalPlayer;
 
@@ -30,72 +31,72 @@ private:
 	static const luaL_Reg methods[];
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// get_velocity(self)
-	static int l_get_velocity(lua_State *L);
+	ENTRY_POINT_DECL(l_get_velocity);
 
 	// get_hp(self)
-	static int l_get_hp(lua_State *L);
+	ENTRY_POINT_DECL(l_get_hp);
 
 	// get_name(self)
-	static int l_get_name(lua_State *L);
+	ENTRY_POINT_DECL(l_get_name);
 
 	// get_wield_index(self)
-	static int l_get_wield_index(lua_State *L);
+	ENTRY_POINT_DECL(l_get_wield_index);
 
 	// get_wielded_item(self)
-	static int l_get_wielded_item(lua_State *L);
+	ENTRY_POINT_DECL(l_get_wielded_item);
 
-	static int l_is_attached(lua_State *L);
-	static int l_is_touching_ground(lua_State *L);
-	static int l_is_in_liquid(lua_State *L);
-	static int l_is_in_liquid_stable(lua_State *L);
-	static int l_is_climbing(lua_State *L);
-	static int l_swimming_vertical(lua_State *L);
+	ENTRY_POINT_DECL(l_is_attached);
+	ENTRY_POINT_DECL(l_is_touching_ground);
+	ENTRY_POINT_DECL(l_is_in_liquid);
+	ENTRY_POINT_DECL(l_is_in_liquid_stable);
+	ENTRY_POINT_DECL(l_is_climbing);
+	ENTRY_POINT_DECL(l_swimming_vertical);
 
-	static int l_get_physics_override(lua_State *L);
+	ENTRY_POINT_DECL(l_get_physics_override);
 
-	static int l_get_override_pos(lua_State *L);
+	ENTRY_POINT_DECL(l_get_override_pos);
 
-	static int l_get_last_pos(lua_State *L);
-	static int l_get_last_velocity(lua_State *L);
-	static int l_get_last_look_vertical(lua_State *L);
-	static int l_get_last_look_horizontal(lua_State *L);
+	ENTRY_POINT_DECL(l_get_last_pos);
+	ENTRY_POINT_DECL(l_get_last_velocity);
+	ENTRY_POINT_DECL(l_get_last_look_vertical);
+	ENTRY_POINT_DECL(l_get_last_look_horizontal);
 
 	// get_control(self)
-	static int l_get_control(lua_State *L);
+	ENTRY_POINT_DECL(l_get_control);
 
 	// get_breath(self)
-	static int l_get_breath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_breath);
 
 	// get_pos(self)
-	static int l_get_pos(lua_State *L);
+	ENTRY_POINT_DECL(l_get_pos);
 
 	// get_movement_acceleration(self)
-	static int l_get_movement_acceleration(lua_State *L);
+	ENTRY_POINT_DECL(l_get_movement_acceleration);
 
 	// get_movement_speed(self)
-	static int l_get_movement_speed(lua_State *L);
+	ENTRY_POINT_DECL(l_get_movement_speed);
 
 	// get_movement(self)
-	static int l_get_movement(lua_State *L);
+	ENTRY_POINT_DECL(l_get_movement);
 
 	// get_armor_groups(self)
-	static int l_get_armor_groups(lua_State *L);
+	ENTRY_POINT_DECL(l_get_armor_groups);
 
 	// hud_add(self, id, form)
-	static int l_hud_add(lua_State *L);
+	ENTRY_POINT_DECL(l_hud_add);
 
 	// hud_rm(self, id)
-	static int l_hud_remove(lua_State *L);
+	ENTRY_POINT_DECL(l_hud_remove);
 
 	// hud_change(self, id, stat, data)
-	static int l_hud_change(lua_State *L);
+	ENTRY_POINT_DECL(l_hud_change);
 	// hud_get(self, id)
-	static int l_hud_get(lua_State *L);
+	ENTRY_POINT_DECL(l_hud_get);
 
-	static int l_get_move_resistance(lua_State *L);
+	ENTRY_POINT_DECL(l_get_move_resistance);
 
 	LocalPlayer *m_localplayer = nullptr;
 

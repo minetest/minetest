@@ -39,6 +39,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		luamethod(class, good),               \
 		luamethod_dep(class, good, bad)
 
+#if USE_LUAJIT
+
+#define ENTRY_POINT_DECL(name) static int name(lua_State *L);
+#define ENTRY_POINT_DEF(class, name) int class::name(lua_State *L) // function body follows
+
+#else
+
+// C++ exception wrappers must be added per-function with PUC Lua.
+#define ENTRY_POINT_DECL(name) \
+		static int name(lua_State *L); \
+		static int name##_body_(lua_State *L);
+#define ENTRY_POINT_DEF(class, name) \
+		int class::name(lua_State *L) { return script_exception_wrapper(L, name##_body_); } \
+		int class::name##_body_(lua_State *L)
+
+#endif
+
 #define API_FCT(name) registerFunction(L, #name, l_##name, top)
 
 // For future use

@@ -19,11 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_storage.h"
-#include "l_internal.h"
 #include "content/mods.h"
 #include "server.h"
 
-int ModApiStorage::l_get_mod_storage(lua_State *L)
+ENTRY_POINT_DEF(ModApiStorage, l_get_mod_storage)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (!lua_isstring(L, -1)) {
@@ -75,7 +74,7 @@ void StorageRef::create(lua_State *L, ModMetadata *object)
 	lua_setmetatable(L, -2);
 }
 
-int StorageRef::gc_object(lua_State *L)
+ENTRY_POINT_DEF(StorageRef, gc_object)
 {
 	StorageRef *o = *(StorageRef **)(lua_touserdata(L, 1));
 	// Server side

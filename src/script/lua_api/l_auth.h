@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class AuthDatabase;
 struct AuthEntry;
@@ -28,22 +29,22 @@ class ModApiAuth : public ModApiBase
 {
 private:
 	// auth_read(name)
-	static int l_auth_read(lua_State *L);
+	ENTRY_POINT_DECL(l_auth_read);
 
 	// auth_save(table)
-	static int l_auth_save(lua_State *L);
+	ENTRY_POINT_DECL(l_auth_save);
 
 	// auth_create(table)
-	static int l_auth_create(lua_State *L);
+	ENTRY_POINT_DECL(l_auth_create);
 
 	// auth_delete(name)
-	static int l_auth_delete(lua_State *L);
+	ENTRY_POINT_DECL(l_auth_delete);
 
 	// auth_list_names()
-	static int l_auth_list_names(lua_State *L);
+	ENTRY_POINT_DECL(l_auth_list_names);
 
 	// auth_reload()
-	static int l_auth_reload(lua_State *L);
+	ENTRY_POINT_DECL(l_auth_reload);
 
 	// helper for auth* methods
 	static AuthDatabase *getAuthDb(lua_State *L);

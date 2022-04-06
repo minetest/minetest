@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_settings.h"
-#include "lua_api/l_internal.h"
 #include "cpp_api/s_security.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/string.h" // FlagDesc
@@ -90,7 +89,7 @@ void LuaSettings::create(lua_State *L, Settings *settings,
 
 
 // garbage collector
-int LuaSettings::gc_object(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, gc_object)
 {
 	LuaSettings* o = *(LuaSettings **)(lua_touserdata(L, 1));
 	delete o;
@@ -99,7 +98,7 @@ int LuaSettings::gc_object(lua_State* L)
 
 
 // get(self, key) -> value
-int LuaSettings::l_get(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_get)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -116,7 +115,7 @@ int LuaSettings::l_get(lua_State* L)
 }
 
 // get_bool(self, key) -> boolean
-int LuaSettings::l_get_bool(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_get_bool)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -137,7 +136,7 @@ int LuaSettings::l_get_bool(lua_State* L)
 }
 
 // get_np_group(self, key) -> value
-int LuaSettings::l_get_np_group(lua_State *L)
+ENTRY_POINT_DEF(LuaSettings, l_get_np_group)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings *o = checkobject(L, 1);
@@ -155,7 +154,7 @@ int LuaSettings::l_get_np_group(lua_State *L)
 }
 
 // get_flags(self, key) -> table or nil
-int LuaSettings::l_get_flags(lua_State *L)
+ENTRY_POINT_DEF(LuaSettings, l_get_flags)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings *o = checkobject(L, 1);
@@ -179,7 +178,7 @@ int LuaSettings::l_get_flags(lua_State *L)
 }
 
 // set(self, key, value)
-int LuaSettings::l_set(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_set)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -196,7 +195,7 @@ int LuaSettings::l_set(lua_State* L)
 }
 
 // set_bool(self, key, value)
-int LuaSettings::l_set_bool(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_set_bool)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -212,7 +211,7 @@ int LuaSettings::l_set_bool(lua_State* L)
 }
 
 // set_np_group(self, key, value)
-int LuaSettings::l_set_np_group(lua_State *L)
+ENTRY_POINT_DEF(LuaSettings, l_set_np_group)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings *o = checkobject(L, 1);
@@ -229,7 +228,7 @@ int LuaSettings::l_set_np_group(lua_State *L)
 }
 
 // remove(self, key) -> success
-int LuaSettings::l_remove(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_remove)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -245,7 +244,7 @@ int LuaSettings::l_remove(lua_State* L)
 }
 
 // get_names(self) -> {key1, ...}
-int LuaSettings::l_get_names(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_get_names)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -263,7 +262,7 @@ int LuaSettings::l_get_names(lua_State* L)
 }
 
 // write(self) -> success
-int LuaSettings::l_write(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_write)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -302,7 +301,7 @@ static void push_settings_table(lua_State *L, const Settings *settings)
 }
 
 // to_table(self) -> {[key1]=value1,...}
-int LuaSettings::l_to_table(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, l_to_table)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
@@ -343,7 +342,7 @@ void LuaSettings::Register(lua_State* L)
 
 // LuaSettings(filename)
 // Creates a LuaSettings and leaves it on top of the stack
-int LuaSettings::create_object(lua_State* L)
+ENTRY_POINT_DEF(LuaSettings, create_object)
 {
 	NO_MAP_LOCK_REQUIRED;
 	bool write_allowed = true;

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "lua_api/l_metadata.h"
 #include "irrlichttypes_bloated.h"
 #include "nodemetadata.h"
@@ -68,13 +69,13 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// get_inventory(self)
-	static int l_get_inventory(lua_State *L);
+	ENTRY_POINT_DECL(l_get_inventory);
 
 	// mark_as_private(self, <string> or {<string>, <string>, ...})
-	static int l_mark_as_private(lua_State *L);
+	ENTRY_POINT_DECL(l_mark_as_private);
 
 public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);

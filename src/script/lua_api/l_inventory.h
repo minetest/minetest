@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 #include "inventory.h"
 #include "inventorymanager.h"
@@ -49,59 +50,59 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// is_empty(self, listname) -> true/false
-	static int l_is_empty(lua_State *L);
+	ENTRY_POINT_DECL(l_is_empty);
 
 	// get_size(self, listname)
-	static int l_get_size(lua_State *L);
+	ENTRY_POINT_DECL(l_get_size);
 
 	// get_width(self, listname)
-	static int l_get_width(lua_State *L);
+	ENTRY_POINT_DECL(l_get_width);
 
 	// set_size(self, listname, size)
-	static int l_set_size(lua_State *L);
+	ENTRY_POINT_DECL(l_set_size);
 
 	// set_width(self, listname, size)
-	static int l_set_width(lua_State *L);
+	ENTRY_POINT_DECL(l_set_width);
 
 	// get_stack(self, listname, i) -> itemstack
-	static int l_get_stack(lua_State *L);
+	ENTRY_POINT_DECL(l_get_stack);
 
 	// set_stack(self, listname, i, stack) -> true/false
-	static int l_set_stack(lua_State *L);
+	ENTRY_POINT_DECL(l_set_stack);
 
 	// get_list(self, listname) -> list or nil
-	static int l_get_list(lua_State *L);
+	ENTRY_POINT_DECL(l_get_list);
 
 	// set_list(self, listname, list)
-	static int l_set_list(lua_State *L);
+	ENTRY_POINT_DECL(l_set_list);
 
 	// get_lists(self) -> list of InventoryLists
-	static int l_get_lists(lua_State *L);
+	ENTRY_POINT_DECL(l_get_lists);
 
 	// set_lists(self, lists)
-	static int l_set_lists(lua_State *L);
+	ENTRY_POINT_DECL(l_set_lists);
 
 	// add_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
 	// Returns the leftover stack
-	static int l_add_item(lua_State *L);
+	ENTRY_POINT_DECL(l_add_item);
 
 	// room_for_item(self, listname, itemstack or itemstring or table or nil) -> true/false
 	// Returns true if the item completely fits into the list
-	static int l_room_for_item(lua_State *L);
+	ENTRY_POINT_DECL(l_room_for_item);
 
 	// contains_item(self, listname, itemstack or itemstring or table or nil, [match_meta]) -> true/false
 	// Returns true if the list contains the given count of the given item name
-	static int l_contains_item(lua_State *L);
+	ENTRY_POINT_DECL(l_contains_item);
 
 	// remove_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
 	// Returns the items that were actually removed
-	static int l_remove_item(lua_State *L);
+	ENTRY_POINT_DECL(l_remove_item);
 
 	// get_location() -> location (like get_inventory(location))
-	static int l_get_location(lua_State *L);
+	ENTRY_POINT_DECL(l_get_location);
 
 public:
 	InvRef(const InventoryLocation &loc);
@@ -116,11 +117,11 @@ public:
 
 class ModApiInventory : public ModApiBase {
 private:
-	static int l_create_detached_inventory_raw(lua_State *L);
+	ENTRY_POINT_DECL(l_create_detached_inventory_raw);
 
-	static int l_remove_detached_inventory_raw(lua_State *L);
+	ENTRY_POINT_DECL(l_remove_detached_inventory_raw);
 
-	static int l_get_inventory(lua_State *L);
+	ENTRY_POINT_DECL(l_get_inventory);
 
 public:
 	static void Initialize(lua_State *L, int top);

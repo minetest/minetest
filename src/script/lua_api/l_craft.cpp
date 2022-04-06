@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "lua_api/l_craft.h"
-#include "lua_api/l_internal.h"
 #include "lua_api/l_item.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
@@ -129,7 +128,7 @@ bool ModApiCraft::readCraftReplacements(lua_State *L, int index,
 	return true;
 }
 // register_craft({output=item, recipe={{item00,item10},{item01,item11}})
-int ModApiCraft::l_register_craft(lua_State *L)
+ENTRY_POINT_DEF(ModApiCraft, l_register_craft)
 {
 	NO_MAP_LOCK_REQUIRED;
 	//infostream<<"register_craft"<<std::endl;
@@ -280,7 +279,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 }
 
 // clear_craft({[output=item], [recipe={{item00,item10},{item01,item11}}])
-int ModApiCraft::l_clear_craft(lua_State *L)
+ENTRY_POINT_DEF(ModApiCraft, l_clear_craft)
 {
 	NO_MAP_LOCK_REQUIRED;
 	luaL_checktype(L, 1, LUA_TTABLE);
@@ -368,7 +367,7 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 }
 
 // get_craft_result(input)
-int ModApiCraft::l_get_craft_result(lua_State *L)
+ENTRY_POINT_DEF(ModApiCraft, l_get_craft_result)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -482,7 +481,7 @@ static void push_craft_recipes(lua_State *L, IGameDef *gdef,
 
 
 // get_craft_recipe(result item)
-int ModApiCraft::l_get_craft_recipe(lua_State *L)
+ENTRY_POINT_DEF(ModApiCraft, l_get_craft_recipe)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -505,7 +504,7 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 }
 
 // get_all_craft_recipes(result item)
-int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
+ENTRY_POINT_DEF(ModApiCraft, l_get_all_craft_recipes)
 {
 	NO_MAP_LOCK_REQUIRED;
 

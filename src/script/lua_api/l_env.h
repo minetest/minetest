@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "serverenvironment.h"
 #include "raycast.h"
 
@@ -27,179 +28,179 @@ class ModApiEnvMod : public ModApiBase {
 private:
 	// set_node(pos, node)
 	// pos = {x=num, y=num, z=num}
-	static int l_set_node(lua_State *L);
+	ENTRY_POINT_DECL(l_set_node);
 
 	// bulk_set_node([pos1, pos2, ...], node)
 	// pos = {x=num, y=num, z=num}
-	static int l_bulk_set_node(lua_State *L);
+	ENTRY_POINT_DECL(l_bulk_set_node);
 
-	static int l_add_node(lua_State *L);
+	ENTRY_POINT_DECL(l_add_node);
 
 	// remove_node(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_remove_node(lua_State *L);
+	ENTRY_POINT_DECL(l_remove_node);
 
 	// swap_node(pos, node)
 	// pos = {x=num, y=num, z=num}
-	static int l_swap_node(lua_State *L);
+	ENTRY_POINT_DECL(l_swap_node);
 
 	// get_node(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_get_node(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node);
 
 	// get_node_or_nil(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_get_node_or_nil(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_or_nil);
 
 	// get_node_light(pos, timeofday)
 	// pos = {x=num, y=num, z=num}
 	// timeofday: nil = current time, 0 = night, 0.5 = day
-	static int l_get_node_light(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_light);
 
 	// get_natural_light(pos, timeofday)
 	// pos = {x=num, y=num, z=num}
 	// timeofday: nil = current time, 0 = night, 0.5 = day
-	static int l_get_natural_light(lua_State *L);
+	ENTRY_POINT_DECL(l_get_natural_light);
 
 	// place_node(pos, node)
 	// pos = {x=num, y=num, z=num}
-	static int l_place_node(lua_State *L);
+	ENTRY_POINT_DECL(l_place_node);
 
 	// dig_node(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_dig_node(lua_State *L);
+	ENTRY_POINT_DECL(l_dig_node);
 
 	// punch_node(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_punch_node(lua_State *L);
+	ENTRY_POINT_DECL(l_punch_node);
 
 	// get_node_max_level(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_get_node_max_level(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_max_level);
 
 	// get_node_level(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_get_node_level(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_level);
 
 	// set_node_level(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_set_node_level(lua_State *L);
+	ENTRY_POINT_DECL(l_set_node_level);
 
 	// add_node_level(pos)
 	// pos = {x=num, y=num, z=num}
-	static int l_add_node_level(lua_State *L);
+	ENTRY_POINT_DECL(l_add_node_level);
 
 	// find_nodes_with_meta(pos1, pos2)
-	static int l_find_nodes_with_meta(lua_State *L);
+	ENTRY_POINT_DECL(l_find_nodes_with_meta);
 
 	// get_meta(pos)
-	static int l_get_meta(lua_State *L);
+	ENTRY_POINT_DECL(l_get_meta);
 
 	// get_node_timer(pos)
-	static int l_get_node_timer(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_timer);
 
 	// add_entity(pos, entityname) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
-	static int l_add_entity(lua_State *L);
+	ENTRY_POINT_DECL(l_add_entity);
 
 	// add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
-	static int l_add_item(lua_State *L);
+	ENTRY_POINT_DECL(l_add_item);
 
 	// get_connected_players()
-	static int l_get_connected_players(lua_State *L);
+	ENTRY_POINT_DECL(l_get_connected_players);
 
 	// get_player_by_name(name)
-	static int l_get_player_by_name(lua_State *L);
+	ENTRY_POINT_DECL(l_get_player_by_name);
 
 	// get_objects_inside_radius(pos, radius)
-	static int l_get_objects_inside_radius(lua_State *L);
+	ENTRY_POINT_DECL(l_get_objects_inside_radius);
 	
 	// get_objects_in_area(pos, minp, maxp)
-	static int l_get_objects_in_area(lua_State *L);
+	ENTRY_POINT_DECL(l_get_objects_in_area);
 
 	// set_timeofday(val)
 	// val = 0...1
-	static int l_set_timeofday(lua_State *L);
+	ENTRY_POINT_DECL(l_set_timeofday);
 
 	// get_timeofday() -> 0...1
-	static int l_get_timeofday(lua_State *L);
+	ENTRY_POINT_DECL(l_get_timeofday);
 
 	// get_gametime()
-	static int l_get_gametime(lua_State *L);
+	ENTRY_POINT_DECL(l_get_gametime);
 
 	// get_day_count() -> int
-	static int l_get_day_count(lua_State *L);
+	ENTRY_POINT_DECL(l_get_day_count);
 
 	// find_node_near(pos, radius, nodenames, search_center) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-	static int l_find_node_near(lua_State *L);
+	ENTRY_POINT_DECL(l_find_node_near);
 
 	// find_nodes_in_area(minp, maxp, nodenames) -> list of positions
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-	static int l_find_nodes_in_area(lua_State *L);
+	ENTRY_POINT_DECL(l_find_nodes_in_area);
 
 	// find_surface_nodes_in_area(minp, maxp, nodenames) -> list of positions
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-	static int l_find_nodes_in_area_under_air(lua_State *L);
+	ENTRY_POINT_DECL(l_find_nodes_in_area_under_air);
 
 	// fix_light(p1, p2) -> true/false
-	static int l_fix_light(lua_State *L);
+	ENTRY_POINT_DECL(l_fix_light);
 
 	// load_area(p1)
-	static int l_load_area(lua_State *L);
+	ENTRY_POINT_DECL(l_load_area);
 
 	// emerge_area(p1, p2)
-	static int l_emerge_area(lua_State *L);
+	ENTRY_POINT_DECL(l_emerge_area);
 
 	// delete_area(p1, p2) -> true/false
-	static int l_delete_area(lua_State *L);
+	ENTRY_POINT_DECL(l_delete_area);
 
 	// get_perlin(seeddiff, octaves, persistence, scale)
 	// returns world-specific PerlinNoise
-	static int l_get_perlin(lua_State *L);
+	ENTRY_POINT_DECL(l_get_perlin);
 
 	// get_perlin_map(noiseparams, size)
 	// returns world-specific PerlinNoiseMap
-	static int l_get_perlin_map(lua_State *L);
+	ENTRY_POINT_DECL(l_get_perlin_map);
 
 	// get_voxel_manip()
 	// returns world-specific voxel manipulator
-	static int l_get_voxel_manip(lua_State *L);
+	ENTRY_POINT_DECL(l_get_voxel_manip);
 
 	// clear_objects()
 	// clear all objects in the environment
-	static int l_clear_objects(lua_State *L);
+	ENTRY_POINT_DECL(l_clear_objects);
 
 	// spawn_tree(pos, treedef)
-	static int l_spawn_tree(lua_State *L);
+	ENTRY_POINT_DECL(l_spawn_tree);
 
 	// line_of_sight(pos1, pos2) -> true/false
-	static int l_line_of_sight(lua_State *L);
+	ENTRY_POINT_DECL(l_line_of_sight);
 
 	// raycast(pos1, pos2, objects, liquids) -> Raycast
-	static int l_raycast(lua_State *L);
+	// ENTRY_POINT_DECL(l_raycast); (Alias of LuaRaycast::create_object);
 
 	// find_path(pos1, pos2, searchdistance,
 	//     max_jump, max_drop, algorithm) -> table containing path
-	static int l_find_path(lua_State *L);
+	ENTRY_POINT_DECL(l_find_path);
 
 	// transforming_liquid_add(pos)
-	static int l_transforming_liquid_add(lua_State *L);
+	ENTRY_POINT_DECL(l_transforming_liquid_add);
 
 	// forceload_block(blockpos)
 	// forceloads a block
-	static int l_forceload_block(lua_State *L);
+	ENTRY_POINT_DECL(l_forceload_block);
 
 	// forceload_free_block(blockpos)
 	// stops forceloading a position
-	static int l_forceload_free_block(lua_State *L);
+	ENTRY_POINT_DECL(l_forceload_free_block);
 
 	// compare_block_status(nodepos)
-	static int l_compare_block_status(lua_State *L);
+	ENTRY_POINT_DECL(l_compare_block_status);
 
 	// Get a string translated server side
-	static int l_get_translated_string(lua_State * L);
+	ENTRY_POINT_DECL(l_get_translated_string);
 
 	/* Helpers */
 
@@ -302,13 +303,13 @@ private:
 	// Exported functions
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	/*!
 	 * Raycast:next() -> pointed_thing
 	 * Returns the next pointed thing on the ray.
 	 */
-	static int l_next(lua_State *L);
+	ENTRY_POINT_DECL(l_next);
 public:
 	//! Constructor with the same arguments as RaycastState.
 	LuaRaycast(
@@ -319,7 +320,7 @@ public:
 	{}
 
 	//! Creates a LuaRaycast and leaves it on top of the stack.
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	/*!
 	 * Returns the Raycast from the stack or throws an error.

@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_nodemeta.h"
-#include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "common/c_content.h"
 #include "serverenvironment.h"
@@ -83,7 +82,7 @@ int NodeMetaRef::gc_object(lua_State *L) {
 }
 
 // get_inventory(self)
-int NodeMetaRef::l_get_inventory(lua_State *L)
+ENTRY_POINT_DEF(NodeMetaRef, l_get_inventory)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -97,7 +96,7 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 }
 
 // mark_as_private(self, <string> or {<string>, <string>, ...})
-int NodeMetaRef::l_mark_as_private(lua_State *L)
+ENTRY_POINT_DEF(NodeMetaRef, l_mark_as_private)
 {
 	MAP_LOCK_REQUIRED;
 

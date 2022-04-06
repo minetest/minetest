@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_itemstackmeta.h"
-#include "lua_api/l_internal.h"
 #include "common/c_content.h"
 
 /*
@@ -52,7 +51,7 @@ void ItemStackMetaRef::reportMetadataChange(const std::string *name)
 }
 
 // Exported functions
-int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
+ENTRY_POINT_DEF(ItemStackMetaRef, l_set_tool_capabilities)
 {
 	ItemStackMetaRef *metaref = checkobject(L, 1);
 	if (lua_isnoneornil(L, 2)) {

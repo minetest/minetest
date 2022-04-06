@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class AsyncEngine;
 
@@ -39,91 +40,91 @@ private:
 	// Writes a line to the logger.
 	// The one-argument version logs to LL_NONE.
 	// The two-argument version accepts a log level.
-	static int l_log(lua_State *L);
+	ENTRY_POINT_DECL(l_log);
 
 	// get us precision time
-	static int l_get_us_time(lua_State *L);
+	ENTRY_POINT_DECL(l_get_us_time);
 
 	// parse_json(str[, nullvalue])
-	static int l_parse_json(lua_State *L);
+	ENTRY_POINT_DECL(l_parse_json);
 
 	// write_json(data[, styled])
-	static int l_write_json(lua_State *L);
+	ENTRY_POINT_DECL(l_write_json);
 
 	// get_dig_params(groups, tool_capabilities[, wear])
-	static int l_get_dig_params(lua_State *L);
+	ENTRY_POINT_DECL(l_get_dig_params);
 
 	// get_hit_params(groups, tool_capabilities[, time_from_last_punch[, wear]])
-	static int l_get_hit_params(lua_State *L);
+	ENTRY_POINT_DECL(l_get_hit_params);
 
 	// check_password_entry(name, entry, password)
-	static int l_check_password_entry(lua_State *L);
+	ENTRY_POINT_DECL(l_check_password_entry);
 
 	// get_password_hash(name, raw_password)
-	static int l_get_password_hash(lua_State *L);
+	ENTRY_POINT_DECL(l_get_password_hash);
 
 	// is_yes(arg)
-	static int l_is_yes(lua_State *L);
+	ENTRY_POINT_DECL(l_is_yes);
 
 	// get_builtin_path()
-	static int l_get_builtin_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_builtin_path);
 
 	// get_user_path()
-	static int l_get_user_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_user_path);
 
 	// compress(data, method, ...)
-	static int l_compress(lua_State *L);
+	ENTRY_POINT_DECL(l_compress);
 
 	// decompress(data, method, ...)
-	static int l_decompress(lua_State *L);
+	ENTRY_POINT_DECL(l_decompress);
 
 	// mkdir(path)
-	static int l_mkdir(lua_State *L);
+	ENTRY_POINT_DECL(l_mkdir);
 
 	// rmdir(path, recursive)
-	static int l_rmdir(lua_State *L);
+	ENTRY_POINT_DECL(l_rmdir);
 
 	// cpdir(source, destination, remove_source)
-	static int l_cpdir(lua_State *L);
+	ENTRY_POINT_DECL(l_cpdir);
 
 	// mvdir(source, destination)
-	static int l_mvdir(lua_State *L);
+	ENTRY_POINT_DECL(l_mvdir);
 
 	// get_dir_list(path, is_dir)
-	static int l_get_dir_list(lua_State *L);
+	ENTRY_POINT_DECL(l_get_dir_list);
 
 	// safe_file_write(path, content)
-	static int l_safe_file_write(lua_State *L);
+	ENTRY_POINT_DECL(l_safe_file_write);
 
 	// request_insecure_environment()
-	static int l_request_insecure_environment(lua_State *L);
+	ENTRY_POINT_DECL(l_request_insecure_environment);
 
 	// encode_base64(string)
-	static int l_encode_base64(lua_State *L);
+	ENTRY_POINT_DECL(l_encode_base64);
 
 	// decode_base64(string)
-	static int l_decode_base64(lua_State *L);
+	ENTRY_POINT_DECL(l_decode_base64);
 
 	// get_version()
-	static int l_get_version(lua_State *L);
+	ENTRY_POINT_DECL(l_get_version);
 
 	// sha1(string, raw)
-	static int l_sha1(lua_State *L);
+	ENTRY_POINT_DECL(l_sha1);
 
 	// colorspec_to_colorstring(colorspec)
-	static int l_colorspec_to_colorstring(lua_State *L);
+	ENTRY_POINT_DECL(l_colorspec_to_colorstring);
 
 	// colorspec_to_bytes(colorspec)
-	static int l_colorspec_to_bytes(lua_State *L);
+	ENTRY_POINT_DECL(l_colorspec_to_bytes);
 
 	// encode_png(w, h, data, level)
-	static int l_encode_png(lua_State *L);
+	ENTRY_POINT_DECL(l_encode_png);
 
 	// get_last_run_mod()
-	static int l_get_last_run_mod(lua_State *L);
+	ENTRY_POINT_DECL(l_get_last_run_mod);
 
 	// set_last_run_mod(modname)
-	static int l_set_last_run_mod(lua_State *L);
+	ENTRY_POINT_DECL(l_set_last_run_mod);
 
 public:
 	static void Initialize(lua_State *L, int top);

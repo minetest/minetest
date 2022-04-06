@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_object.h"
 #include <cmath>
-#include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_playermeta.h"
@@ -95,7 +94,7 @@ int ObjectRef::gc_object(lua_State *L) {
 }
 
 // remove(self)
-int ObjectRef::l_remove(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_remove)
 {
 	GET_ENV_PTR;
 
@@ -115,7 +114,7 @@ int ObjectRef::l_remove(lua_State *L)
 }
 
 // get_pos(self)
-int ObjectRef::l_get_pos(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_pos)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -128,7 +127,7 @@ int ObjectRef::l_get_pos(lua_State *L)
 }
 
 // set_pos(self, pos)
-int ObjectRef::l_set_pos(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_pos)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -143,7 +142,7 @@ int ObjectRef::l_set_pos(lua_State *L)
 }
 
 // move_to(self, pos, continuous)
-int ObjectRef::l_move_to(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_move_to)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -159,7 +158,7 @@ int ObjectRef::l_move_to(lua_State *L)
 }
 
 // punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
-int ObjectRef::l_punch(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_punch)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -181,7 +180,7 @@ int ObjectRef::l_punch(lua_State *L)
 }
 
 // right_click(self, clicker)
-int ObjectRef::l_right_click(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_right_click)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -196,7 +195,7 @@ int ObjectRef::l_right_click(lua_State *L)
 }
 
 // set_hp(self, hp, reason)
-int ObjectRef::l_set_hp(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_hp)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -228,7 +227,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 }
 
 // get_hp(self)
-int ObjectRef::l_get_hp(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_hp)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -246,7 +245,7 @@ int ObjectRef::l_get_hp(lua_State *L)
 }
 
 // get_inventory(self)
-int ObjectRef::l_get_inventory(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_inventory)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -263,7 +262,7 @@ int ObjectRef::l_get_inventory(lua_State *L)
 }
 
 // get_wield_list(self)
-int ObjectRef::l_get_wield_list(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_wield_list)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -276,7 +275,7 @@ int ObjectRef::l_get_wield_list(lua_State *L)
 }
 
 // get_wield_index(self)
-int ObjectRef::l_get_wield_index(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_wield_index)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -289,7 +288,7 @@ int ObjectRef::l_get_wield_index(lua_State *L)
 }
 
 // get_wielded_item(self)
-int ObjectRef::l_get_wielded_item(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_wielded_item)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -307,7 +306,7 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 }
 
 // set_wielded_item(self, item)
-int ObjectRef::l_set_wielded_item(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_wielded_item)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -326,7 +325,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 }
 
 // set_armor_groups(self, groups)
-int ObjectRef::l_set_armor_groups(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_armor_groups)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -351,7 +350,7 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 }
 
 // get_armor_groups(self)
-int ObjectRef::l_get_armor_groups(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_armor_groups)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -364,7 +363,7 @@ int ObjectRef::l_get_armor_groups(lua_State *L)
 }
 
 // set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
-int ObjectRef::l_set_animation(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_animation)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -382,7 +381,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 }
 
 // get_animation(self)
-int ObjectRef::l_get_animation(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_animation)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -404,7 +403,7 @@ int ObjectRef::l_get_animation(lua_State *L)
 }
 
 // set_local_animation(self, idle, walk, dig, walk_while_dig, frame_speed)
-int ObjectRef::l_set_local_animation(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_local_animation)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -425,7 +424,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 }
 
 // get_local_animation(self)
-int ObjectRef::l_get_local_animation(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_local_animation)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -446,7 +445,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 }
 
 // set_eye_offset(self, firstperson, thirdperson)
-int ObjectRef::l_set_eye_offset(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_eye_offset)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -469,7 +468,7 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 }
 
 // get_eye_offset(self)
-int ObjectRef::l_get_eye_offset(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_eye_offset)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -483,7 +482,7 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 }
 
 // send_mapblock(self, pos)
-int ObjectRef::l_send_mapblock(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_send_mapblock)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -501,7 +500,7 @@ int ObjectRef::l_send_mapblock(lua_State *L)
 }
 
 // set_animation_frame_speed(self, frame_speed)
-int ObjectRef::l_set_animation_frame_speed(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_animation_frame_speed)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -520,7 +519,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 }
 
 // set_bone_position(self, bone, position, rotation)
-int ObjectRef::l_set_bone_position(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_bone_position)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -537,7 +536,7 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 }
 
 // get_bone_position(self, bone)
-int ObjectRef::l_get_bone_position(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_bone_position)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -557,7 +556,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 }
 
 // set_attach(self, parent, bone, position, rotation, force_visible)
-int ObjectRef::l_set_attach(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_attach)
 {
 	GET_ENV_PTR;
 	ObjectRef *ref = checkobject(L, 1);
@@ -592,7 +591,7 @@ int ObjectRef::l_set_attach(lua_State *L)
 }
 
 // get_attach(self)
-int ObjectRef::l_get_attach(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_attach)
 {
 	GET_ENV_PTR;
 	ObjectRef *ref = checkobject(L, 1);
@@ -620,7 +619,7 @@ int ObjectRef::l_get_attach(lua_State *L)
 }
 
 // get_children(self)
-int ObjectRef::l_get_children(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_children)
 {
 	GET_ENV_PTR;
 	ObjectRef *ref = checkobject(L, 1);
@@ -641,7 +640,7 @@ int ObjectRef::l_get_children(lua_State *L)
 }
 
 // set_detach(self)
-int ObjectRef::l_set_detach(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_detach)
 {
 	GET_ENV_PTR;
 	ObjectRef *ref = checkobject(L, 1);
@@ -654,7 +653,7 @@ int ObjectRef::l_set_detach(lua_State *L)
 }
 
 // set_properties(self, properties)
-int ObjectRef::l_set_properties(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_properties)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -673,7 +672,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 }
 
 // get_properties(self)
-int ObjectRef::l_get_properties(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_properties)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -690,7 +689,7 @@ int ObjectRef::l_get_properties(lua_State *L)
 }
 
 // is_player(self)
-int ObjectRef::l_is_player(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_is_player)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -700,7 +699,7 @@ int ObjectRef::l_is_player(lua_State *L)
 }
 
 // set_nametag_attributes(self, attributes)
-int ObjectRef::l_set_nametag_attributes(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_nametag_attributes)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -742,7 +741,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 }
 
 // get_nametag_attributes(self)
-int ObjectRef::l_get_nametag_attributes(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_nametag_attributes)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -778,7 +777,7 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 /* LuaEntitySAO-only */
 
 // set_velocity(self, velocity)
-int ObjectRef::l_set_velocity(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_velocity)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -793,7 +792,7 @@ int ObjectRef::l_set_velocity(lua_State *L)
 }
 
 // add_velocity(self, velocity)
-int ObjectRef::l_add_velocity(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_add_velocity)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -816,7 +815,7 @@ int ObjectRef::l_add_velocity(lua_State *L)
 }
 
 // get_velocity(self)
-int ObjectRef::l_get_velocity(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_velocity)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -840,7 +839,7 @@ int ObjectRef::l_get_velocity(lua_State *L)
 }
 
 // set_acceleration(self, acceleration)
-int ObjectRef::l_set_acceleration(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_acceleration)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -855,7 +854,7 @@ int ObjectRef::l_set_acceleration(lua_State *L)
 }
 
 // get_acceleration(self)
-int ObjectRef::l_get_acceleration(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_acceleration)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -869,7 +868,7 @@ int ObjectRef::l_get_acceleration(lua_State *L)
 }
 
 // set_rotation(self, rotation)
-int ObjectRef::l_set_rotation(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_rotation)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -884,7 +883,7 @@ int ObjectRef::l_set_rotation(lua_State *L)
 }
 
 // get_rotation(self)
-int ObjectRef::l_get_rotation(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_rotation)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -900,7 +899,7 @@ int ObjectRef::l_get_rotation(lua_State *L)
 }
 
 // set_yaw(self, yaw)
-int ObjectRef::l_set_yaw(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_yaw)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -915,7 +914,7 @@ int ObjectRef::l_set_yaw(lua_State *L)
 }
 
 // get_yaw(self)
-int ObjectRef::l_get_yaw(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_yaw)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -930,7 +929,7 @@ int ObjectRef::l_get_yaw(lua_State *L)
 }
 
 // set_texture_mod(self, mod)
-int ObjectRef::l_set_texture_mod(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_texture_mod)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -945,7 +944,7 @@ int ObjectRef::l_set_texture_mod(lua_State *L)
 }
 
 // get_texture_mod(self)
-int ObjectRef::l_get_texture_mod(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_texture_mod)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -960,7 +959,7 @@ int ObjectRef::l_get_texture_mod(lua_State *L)
 }
 
 // set_sprite(self, start_frame, num_frames, framelength, select_x_by_camera)
-int ObjectRef::l_set_sprite(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_sprite)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -979,7 +978,7 @@ int ObjectRef::l_set_sprite(lua_State *L)
 
 // DEPRECATED
 // get_entity_name(self)
-int ObjectRef::l_get_entity_name(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_entity_name)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -995,7 +994,7 @@ int ObjectRef::l_get_entity_name(lua_State *L)
 }
 
 // get_luaentity(self)
-int ObjectRef::l_get_luaentity(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_luaentity)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1010,7 +1009,7 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 /* Player-only */
 
 // get_player_name(self)
-int ObjectRef::l_get_player_name(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_player_name)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1025,7 +1024,7 @@ int ObjectRef::l_get_player_name(lua_State *L)
 }
 
 // get_look_dir(self)
-int ObjectRef::l_get_look_dir(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_look_dir)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1044,7 +1043,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 
 // DEPRECATED
 // get_look_pitch(self)
-int ObjectRef::l_get_look_pitch(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_look_pitch)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1062,7 +1061,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 
 // DEPRECATED
 // get_look_yaw(self)
-int ObjectRef::l_get_look_yaw(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_look_yaw)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1079,7 +1078,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 }
 
 // get_look_vertical(self)
-int ObjectRef::l_get_look_vertical(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_look_vertical)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1092,7 +1091,7 @@ int ObjectRef::l_get_look_vertical(lua_State *L)
 }
 
 // get_look_horizontal(self)
-int ObjectRef::l_get_look_horizontal(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_look_horizontal)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1105,7 +1104,7 @@ int ObjectRef::l_get_look_horizontal(lua_State *L)
 }
 
 // set_look_vertical(self, radians)
-int ObjectRef::l_set_look_vertical(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_look_vertical)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1120,7 +1119,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 }
 
 // set_look_horizontal(self, radians)
-int ObjectRef::l_set_look_horizontal(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_look_horizontal)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1136,7 +1135,7 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 
 // DEPRECATED
 // set_look_pitch(self, radians)
-int ObjectRef::l_set_look_pitch(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_look_pitch)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1156,7 +1155,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 
 // DEPRECATED
 // set_look_yaw(self, radians)
-int ObjectRef::l_set_look_yaw(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_look_yaw)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1175,7 +1174,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 }
 
 // set_fov(self, degrees, is_multiplier, transition_time)
-int ObjectRef::l_set_fov(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_fov)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1194,7 +1193,7 @@ int ObjectRef::l_set_fov(lua_State *L)
 }
 
 // get_fov(self)
-int ObjectRef::l_get_fov(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_fov)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1211,7 +1210,7 @@ int ObjectRef::l_get_fov(lua_State *L)
 }
 
 // set_breath(self, breath)
-int ObjectRef::l_set_breath(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_breath)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1226,7 +1225,7 @@ int ObjectRef::l_set_breath(lua_State *L)
 }
 
 // get_breath(self)
-int ObjectRef::l_get_breath(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_breath)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1241,7 +1240,7 @@ int ObjectRef::l_get_breath(lua_State *L)
 }
 
 // set_attribute(self, attribute, value)
-int ObjectRef::l_set_attribute(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_attribute)
 {
 	log_deprecated(L,
 		"Deprecated call to set_attribute, use MetaDataRef methods instead.");
@@ -1262,7 +1261,7 @@ int ObjectRef::l_set_attribute(lua_State *L)
 }
 
 // get_attribute(self, attribute)
-int ObjectRef::l_get_attribute(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_attribute)
 {
 	log_deprecated(L,
 		"Deprecated call to get_attribute, use MetaDataRef methods instead.");
@@ -1285,7 +1284,7 @@ int ObjectRef::l_get_attribute(lua_State *L)
 
 
 // get_meta(self, attribute)
-int ObjectRef::l_get_meta(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_meta)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO *playersao = getplayersao(ref);
@@ -1298,7 +1297,7 @@ int ObjectRef::l_get_meta(lua_State *L)
 
 
 // set_inventory_formspec(self, formspec)
-int ObjectRef::l_set_inventory_formspec(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_inventory_formspec)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1315,7 +1314,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 }
 
 // get_inventory_formspec(self) -> formspec
-int ObjectRef::l_get_inventory_formspec(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_inventory_formspec)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1330,7 +1329,7 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 }
 
 // set_formspec_prepend(self, formspec)
-int ObjectRef::l_set_formspec_prepend(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_formspec_prepend)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1347,7 +1346,7 @@ int ObjectRef::l_set_formspec_prepend(lua_State *L)
 }
 
 // get_formspec_prepend(self)
-int ObjectRef::l_get_formspec_prepend(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_formspec_prepend)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1362,7 +1361,7 @@ int ObjectRef::l_get_formspec_prepend(lua_State *L)
 }
 
 // get_player_control(self)
-int ObjectRef::l_get_player_control(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_player_control)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1402,7 +1401,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 }
 
 // get_player_control_bits(self)
-int ObjectRef::l_get_player_control_bits(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_player_control_bits)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1431,7 +1430,7 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 }
 
 // set_physics_override(self, override_table)
-int ObjectRef::l_set_physics_override(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_physics_override)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1471,7 +1470,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 }
 
 // get_physics_override(self)
-int ObjectRef::l_get_physics_override(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_physics_override)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1496,7 +1495,7 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 }
 
 // hud_add(self, hud)
-int ObjectRef::l_hud_add(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_add)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1518,7 +1517,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 }
 
 // hud_remove(self, id)
-int ObjectRef::l_hud_remove(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_remove)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1536,7 +1535,7 @@ int ObjectRef::l_hud_remove(lua_State *L)
 }
 
 // hud_change(self, id, stat, data)
-int ObjectRef::l_hud_change(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_change)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1562,7 +1561,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 }
 
 // hud_get(self, id)
-int ObjectRef::l_hud_get(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_get)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1581,7 +1580,7 @@ int ObjectRef::l_hud_get(lua_State *L)
 }
 
 // hud_set_flags(self, flags)
-int ObjectRef::l_hud_set_flags(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_set_flags)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1608,7 +1607,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 }
 
 // hud_get_flags(self)
-int ObjectRef::l_hud_get_flags(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_get_flags)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1626,7 +1625,7 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 }
 
 // hud_set_hotbar_itemcount(self, hotbar_itemcount)
-int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_set_hotbar_itemcount)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1644,7 +1643,7 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 }
 
 // hud_get_hotbar_itemcount(self)
-int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_get_hotbar_itemcount)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1657,7 +1656,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 }
 
 // hud_set_hotbar_image(self, name)
-int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_set_hotbar_image)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1672,7 +1671,7 @@ int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 }
 
 // hud_get_hotbar_image(self)
-int ObjectRef::l_hud_get_hotbar_image(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_get_hotbar_image)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1687,7 +1686,7 @@ int ObjectRef::l_hud_get_hotbar_image(lua_State *L)
 }
 
 // hud_set_hotbar_selected_image(self, name)
-int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_set_hotbar_selected_image)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1702,7 +1701,7 @@ int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 }
 
 // hud_get_hotbar_selected_image(self)
-int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_hud_get_hotbar_selected_image)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1717,7 +1716,7 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 }
 
 // set_sky(self, sky_parameters)
-int ObjectRef::l_set_sky(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_sky)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1893,7 +1892,7 @@ static void push_sky_color(lua_State *L, const SkyboxParams &params)
 }
 
 // get_sky(self, as_table)
-int ObjectRef::l_get_sky(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_sky)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1943,7 +1942,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 // DEPRECATED
 // get_sky_color(self)
-int ObjectRef::l_get_sky_color(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_sky_color)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1960,7 +1959,7 @@ int ObjectRef::l_get_sky_color(lua_State *L)
 }
 
 // set_sun(self, sun_parameters)
-int ObjectRef::l_set_sun(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_sun)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1989,7 +1988,7 @@ int ObjectRef::l_set_sun(lua_State *L)
 }
 
 //get_sun(self)
-int ObjectRef::l_get_sun(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_sun)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2016,7 +2015,7 @@ int ObjectRef::l_get_sun(lua_State *L)
 }
 
 // set_moon(self, moon_parameters)
-int ObjectRef::l_set_moon(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_moon)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2043,7 +2042,7 @@ int ObjectRef::l_set_moon(lua_State *L)
 }
 
 // get_moon(self)
-int ObjectRef::l_get_moon(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_moon)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2066,7 +2065,7 @@ int ObjectRef::l_get_moon(lua_State *L)
 }
 
 // set_stars(self, star_parameters)
-int ObjectRef::l_set_stars(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_stars)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2099,7 +2098,7 @@ int ObjectRef::l_set_stars(lua_State *L)
 }
 
 // get_stars(self)
-int ObjectRef::l_get_stars(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_stars)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2122,7 +2121,7 @@ int ObjectRef::l_get_stars(lua_State *L)
 }
 
 // set_clouds(self, cloud_parameters)
-int ObjectRef::l_set_clouds(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_clouds)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2166,7 +2165,7 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	return 1;
 }
 
-int ObjectRef::l_get_clouds(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_clouds)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2198,7 +2197,7 @@ int ObjectRef::l_get_clouds(lua_State *L)
 
 
 // override_day_night_ratio(self, ratio)
-int ObjectRef::l_override_day_night_ratio(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_override_day_night_ratio)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2222,7 +2221,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 }
 
 // get_day_night_ratio(self)
-int ObjectRef::l_get_day_night_ratio(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_day_night_ratio)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2243,7 +2242,7 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 }
 
 // set_minimap_modes(self, modes, selected_mode)
-int ObjectRef::l_set_minimap_modes(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_minimap_modes)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2296,7 +2295,7 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 }
 
 // set_lighting(self, lighting)
-int ObjectRef::l_set_lighting(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_set_lighting)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -2318,7 +2317,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 }
 
 // get_lighting(self)
-int ObjectRef::l_get_lighting(lua_State *L)
+ENTRY_POINT_DEF(ObjectRef, l_get_lighting)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);

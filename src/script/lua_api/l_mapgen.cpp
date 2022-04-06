@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_mapgen.h"
-#include "lua_api/l_internal.h"
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
@@ -478,7 +477,7 @@ size_t get_biome_list(lua_State *L, int index,
 
 // get_biome_id(biomename)
 // returns the biome id as used in biomemap and returned by 'get_biome_data()'
-int ModApiMapgen::l_get_biome_id(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_biome_id)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -500,7 +499,7 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 
 // get_biome_name(biome_id)
 // returns the biome name string
-int ModApiMapgen::l_get_biome_name(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_biome_name)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -519,7 +518,7 @@ int ModApiMapgen::l_get_biome_name(lua_State *L)
 
 // get_heat(pos)
 // returns the heat at the position
-int ModApiMapgen::l_get_heat(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_heat)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -540,7 +539,7 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 
 // get_humidity(pos)
 // returns the humidity at the position
-int ModApiMapgen::l_get_humidity(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_humidity)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -561,7 +560,7 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 
 // get_biome_data(pos)
 // returns a table containing the biome id, heat and humidity at the position
-int ModApiMapgen::l_get_biome_data(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_biome_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -597,7 +596,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 
 // get_mapgen_object(objectname)
 // returns the requested object used during map generation
-int ModApiMapgen::l_get_mapgen_object(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_mapgen_object)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -713,7 +712,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 
 // get_spawn_level(x = num, z = num)
-int ModApiMapgen::l_get_spawn_level(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_spawn_level)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -733,7 +732,7 @@ int ModApiMapgen::l_get_spawn_level(lua_State *L)
 }
 
 
-int ModApiMapgen::l_get_mapgen_params(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_mapgen_params)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -774,7 +773,7 @@ int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 
 // set_mapgen_params(params)
 // set mapgen parameters
-int ModApiMapgen::l_set_mapgen_params(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_set_mapgen_params)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -811,7 +810,7 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 }
 
 // get_mapgen_setting(name)
-int ModApiMapgen::l_get_mapgen_setting(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_mapgen_setting)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -828,7 +827,7 @@ int ModApiMapgen::l_get_mapgen_setting(lua_State *L)
 }
 
 // get_mapgen_setting_noiseparams(name)
-int ModApiMapgen::l_get_mapgen_setting_noiseparams(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_mapgen_setting_noiseparams)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -846,7 +845,7 @@ int ModApiMapgen::l_get_mapgen_setting_noiseparams(lua_State *L)
 
 // set_mapgen_setting(name, value, override_meta)
 // set mapgen config values
-int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_set_mapgen_setting)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -868,7 +867,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 
 // set_mapgen_setting_noiseparams(name, noiseparams, set_default)
 // set mapgen config values for noise parameters
-int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_set_mapgen_setting_noiseparams)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -897,7 +896,7 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 
 // set_noiseparams(name, noiseparams, set_default)
 // set global config values for noise parameters
-int ModApiMapgen::l_set_noiseparams(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_set_noiseparams)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -919,7 +918,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 
 
 // get_noiseparams(name)
-int ModApiMapgen::l_get_noiseparams(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_noiseparams)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -935,7 +934,7 @@ int ModApiMapgen::l_get_noiseparams(lua_State *L)
 
 
 // set_gen_notify(flags, {deco_id_table})
-int ModApiMapgen::l_set_gen_notify(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_set_gen_notify)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -961,7 +960,7 @@ int ModApiMapgen::l_set_gen_notify(lua_State *L)
 
 
 // get_gen_notify()
-int ModApiMapgen::l_get_gen_notify(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_gen_notify)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -981,7 +980,7 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 
 // get_decoration_id(decoration_name)
 // returns the decoration ID as used in gennotify
-int ModApiMapgen::l_get_decoration_id(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_get_decoration_id)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1007,7 +1006,7 @@ int ModApiMapgen::l_get_decoration_id(lua_State *L)
 
 
 // register_biome({lots of stuff})
-int ModApiMapgen::l_register_biome(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_register_biome)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1033,7 +1032,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 
 
 // register_decoration({lots of stuff})
-int ModApiMapgen::l_register_decoration(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_register_decoration)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1191,7 +1190,7 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 
 
 // register_ore({lots of stuff})
-int ModApiMapgen::l_register_ore(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_register_ore)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1342,7 +1341,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 
 
 // register_schematic({schematic}, replacements={})
-int ModApiMapgen::l_register_schematic(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_register_schematic)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1370,7 +1369,7 @@ int ModApiMapgen::l_register_schematic(lua_State *L)
 
 
 // clear_registered_biomes()
-int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_clear_registered_biomes)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1382,7 +1381,7 @@ int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
 
 
 // clear_registered_decorations()
-int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_clear_registered_decorations)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1394,7 +1393,7 @@ int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
 
 
 // clear_registered_ores()
-int ModApiMapgen::l_clear_registered_ores(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_clear_registered_ores)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1406,7 +1405,7 @@ int ModApiMapgen::l_clear_registered_ores(lua_State *L)
 
 
 // clear_registered_schematics()
-int ModApiMapgen::l_clear_registered_schematics(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_clear_registered_schematics)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1418,7 +1417,7 @@ int ModApiMapgen::l_clear_registered_schematics(lua_State *L)
 
 
 // generate_ores(vm, p1, p2, [ore_id])
-int ModApiMapgen::l_generate_ores(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_generate_ores)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1447,7 +1446,7 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 
 
 // generate_decorations(vm, p1, p2, [deco_id])
-int ModApiMapgen::l_generate_decorations(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_generate_decorations)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1476,7 +1475,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 
 
 // create_schematic(p1, p2, probability_list, filename, y_slice_prob_list)
-int ModApiMapgen::l_create_schematic(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_create_schematic)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -1542,7 +1541,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 
 // place_schematic(p, schematic, rotation,
 //     replacements, force_placement, flagstring)
-int ModApiMapgen::l_place_schematic(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_place_schematic)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -1590,7 +1589,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 
 // place_schematic_on_vmanip(vm, p, schematic, rotation,
 //     replacements, force_placement, flagstring)
-int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_place_schematic_on_vmanip)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1638,7 +1637,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 
 
 // serialize_schematic(schematic, format, options={...})
-int ModApiMapgen::l_serialize_schematic(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_serialize_schematic)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1688,7 +1687,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 }
 
 // read_schematic(schematic, options={...})
-int ModApiMapgen::l_read_schematic(lua_State *L)
+ENTRY_POINT_DEF(ModApiMapgen, l_read_schematic)
 {
 	NO_MAP_LOCK_REQUIRED;
 

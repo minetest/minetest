@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "itemdef.h"
 #include "tool.h"
 
@@ -28,82 +29,82 @@ class ModApiClient : public ModApiBase
 {
 private:
 	// get_current_modname()
-	static int l_get_current_modname(lua_State *L);
+	ENTRY_POINT_DECL(l_get_current_modname);
 
 	// get_modpath(modname)
-	static int l_get_modpath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_modpath);
 
 	// print(text)
-	static int l_print(lua_State *L);
+	ENTRY_POINT_DECL(l_print);
 
 	// display_chat_message(message)
-	static int l_display_chat_message(lua_State *L);
+	ENTRY_POINT_DECL(l_display_chat_message);
 
 	// send_chat_message(message)
-	static int l_send_chat_message(lua_State *L);
+	ENTRY_POINT_DECL(l_send_chat_message);
 
 	// clear_out_chat_queue()
-	static int l_clear_out_chat_queue(lua_State *L);
+	ENTRY_POINT_DECL(l_clear_out_chat_queue);
 
 	// get_player_names()
-	static int l_get_player_names(lua_State *L);
+	ENTRY_POINT_DECL(l_get_player_names);
 
 	// show_formspec(name, formspec)
-	static int l_show_formspec(lua_State *L);
+	ENTRY_POINT_DECL(l_show_formspec);
 
 	// send_respawn()
-	static int l_send_respawn(lua_State *L);
+	ENTRY_POINT_DECL(l_send_respawn);
 
 	// disconnect()
-	static int l_disconnect(lua_State *L);
+	ENTRY_POINT_DECL(l_disconnect);
 
 	// gettext(text)
-	static int l_gettext(lua_State *L);
+	ENTRY_POINT_DECL(l_gettext);
 
 	// get_last_run_mod(n)
-	static int l_get_last_run_mod(lua_State *L);
+	ENTRY_POINT_DECL(l_get_last_run_mod);
 
 	// set_last_run_mod(modname)
-	static int l_set_last_run_mod(lua_State *L);
+	ENTRY_POINT_DECL(l_set_last_run_mod);
 
 	// get_node(pos)
-	static int l_get_node_or_nil(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_or_nil);
 
 	// get_language()
-	static int l_get_language(lua_State *L);
+	ENTRY_POINT_DECL(l_get_language);
 
 	// get_wielded_item()
-	static int l_get_wielded_item(lua_State *L);
+	ENTRY_POINT_DECL(l_get_wielded_item);
 
 	// get_meta(pos)
-	static int l_get_meta(lua_State *L);
+	ENTRY_POINT_DECL(l_get_meta);
 
 	// sound_play(spec, parameters)
-	static int l_sound_play(lua_State *L);
+	ENTRY_POINT_DECL(l_sound_play);
 
 	// sound_stop(handle)
-	static int l_sound_stop(lua_State *L);
+	ENTRY_POINT_DECL(l_sound_stop);
 
 	// sound_fade(handle, step, gain)
-	static int l_sound_fade(lua_State *L);
+	ENTRY_POINT_DECL(l_sound_fade);
 
 	// get_server_info()
-	static int l_get_server_info(lua_State *L);
+	ENTRY_POINT_DECL(l_get_server_info);
 
 	// get_item_def(itemstring)
-	static int l_get_item_def(lua_State *L);
+	ENTRY_POINT_DECL(l_get_item_def);
 
 	// get_node_def(nodename)
-	static int l_get_node_def(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_def);
 
 	// get_privilege_list()
-	static int l_get_privilege_list(lua_State *L);
+	ENTRY_POINT_DECL(l_get_privilege_list);
 
 	// get_builtin_path()
-	static int l_get_builtin_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_builtin_path);
 
 	// get_csm_restrictions()
-	static int l_get_csm_restrictions(lua_State *L);
+	ENTRY_POINT_DECL(l_get_csm_restrictions);
 
 public:
 	static void Initialize(lua_State *L, int top);

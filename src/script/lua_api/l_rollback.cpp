@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_rollback.h"
-#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "server.h"
 #include "rollback_interface.h"
@@ -36,7 +35,7 @@ void push_RollbackNode(lua_State *L, RollbackNode &node)
 }
 
 // rollback_get_node_actions(pos, range, seconds, limit) -> {{actor, pos, time, oldnode, newnode}, ...}
-int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
+ENTRY_POINT_DEF(ModApiRollback, l_rollback_get_node_actions)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -79,7 +78,7 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 }
 
 // rollback_revert_actions_by(actor, seconds) -> bool, log messages
-int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
+ENTRY_POINT_DEF(ModApiRollback, l_rollback_revert_actions_by)
 {
 	MAP_LOCK_REQUIRED;
 

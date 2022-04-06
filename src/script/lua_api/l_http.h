@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "config.h"
 
 struct HTTPFetchRequest;
@@ -33,23 +34,23 @@ private:
 	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed = true);
 
 	// http_fetch_sync({url=, timeout=, data=})
-	static int l_http_fetch_sync(lua_State *L);
+	ENTRY_POINT_DECL(l_http_fetch_sync);
 
 	// http_fetch_async({url=, timeout=, data=})
-	static int l_http_fetch_async(lua_State *L);
+	ENTRY_POINT_DECL(l_http_fetch_async);
 
 	// http_fetch_async_get(handle)
-	static int l_http_fetch_async_get(lua_State *L);
+	ENTRY_POINT_DECL(l_http_fetch_async_get);
 
 	// request_http_api()
-	static int l_request_http_api(lua_State *L);
+	ENTRY_POINT_DECL(l_request_http_api);
 
 	// get_http_api()
-	static int l_get_http_api(lua_State *L);
+	ENTRY_POINT_DECL(l_get_http_api);
 #endif
 
 	// set_http_api_lua() [internal]
-	static int l_set_http_api_lua(lua_State *L);
+	ENTRY_POINT_DECL(l_set_http_api_lua);
 
 
 public:

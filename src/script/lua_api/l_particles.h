@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class ModApiParticles : public ModApiBase {
 private:
-	static int l_add_particle(lua_State *L);
-	static int l_add_particlespawner(lua_State *L);
-	static int l_delete_particlespawner(lua_State *L);
+	ENTRY_POINT_DECL(l_add_particle);
+	ENTRY_POINT_DECL(l_add_particlespawner);
+	ENTRY_POINT_DECL(l_delete_particlespawner);
 
 public:
 	static void Initialize(lua_State *L, int top);

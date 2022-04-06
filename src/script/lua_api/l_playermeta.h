@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "lua_api/l_metadata.h"
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
@@ -43,7 +44,7 @@ private:
 	virtual void reportMetadataChange(const std::string *name = nullptr);
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 public:
 	PlayerMetaRef(Metadata *metadata) : metadata(metadata) {}

@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_particles.h"
 #include "lua_api/l_object.h"
-#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
@@ -38,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
 // glow = num
-int ModApiParticles::l_add_particle(lua_State *L)
+ENTRY_POINT_DEF(ModApiParticles, l_add_particle)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -147,7 +146,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
 // glow = num
-int ModApiParticles::l_add_particlespawner(lua_State *L)
+ENTRY_POINT_DEF(ModApiParticles, l_add_particlespawner)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -255,7 +254,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 
 // delete_particlespawner(id, player)
 // player (string) is optional
-int ModApiParticles::l_delete_particlespawner(lua_State *L)
+ENTRY_POINT_DEF(ModApiParticles, l_delete_particlespawner)
 {
 	NO_MAP_LOCK_REQUIRED;
 

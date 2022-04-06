@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_playermeta.h"
-#include "lua_api/l_internal.h"
 #include "common/c_content.h"
 
 /*
@@ -51,7 +50,7 @@ void PlayerMetaRef::reportMetadataChange(const std::string *name)
 }
 
 // garbage collector
-int PlayerMetaRef::gc_object(lua_State *L)
+ENTRY_POINT_DEF(PlayerMetaRef, gc_object)
 {
 	PlayerMetaRef *o = *(PlayerMetaRef **)(lua_touserdata(L, 1));
 	delete o;

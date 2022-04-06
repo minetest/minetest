@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 #include "config.h"
 
 class ModChannel;
@@ -28,7 +29,7 @@ class ModApiChannels : public ModApiBase
 {
 private:
 	// mod_channel_join(name)
-	static int l_mod_channel_join(lua_State *L);
+	ENTRY_POINT_DECL(l_mod_channel_join);
 
 public:
 	static void Initialize(lua_State *L, int top);
@@ -44,17 +45,17 @@ public:
 	static void create(lua_State *L, const std::string &channel);
 
 	// leave()
-	static int l_leave(lua_State *L);
+	ENTRY_POINT_DECL(l_leave);
 
 	// send(message)
-	static int l_send_all(lua_State *L);
+	ENTRY_POINT_DECL(l_send_all);
 
 	// is_writeable()
-	static int l_is_writeable(lua_State *L);
+	ENTRY_POINT_DECL(l_is_writeable);
 
 private:
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	static ModChannelRef *checkobject(lua_State *L, int narg);
 	static ModChannel *getobject(lua_State *L, ModChannelRef *ref);

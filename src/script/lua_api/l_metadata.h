@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class Metadata;
 
@@ -47,35 +48,35 @@ protected:
 	// Exported functions
 
 	// contains(self, name)
-	static int l_contains(lua_State *L);
+	ENTRY_POINT_DECL(l_contains);
 
 	// get(self, name)
-	static int l_get(lua_State *L);
+	ENTRY_POINT_DECL(l_get);
 
 	// get_string(self, name)
-	static int l_get_string(lua_State *L);
+	ENTRY_POINT_DECL(l_get_string);
 
 	// set_string(self, name, var)
-	static int l_set_string(lua_State *L);
+	ENTRY_POINT_DECL(l_set_string);
 
 	// get_int(self, name)
-	static int l_get_int(lua_State *L);
+	ENTRY_POINT_DECL(l_get_int);
 
 	// set_int(self, name, var)
-	static int l_set_int(lua_State *L);
+	ENTRY_POINT_DECL(l_set_int);
 
 	// get_float(self, name)
-	static int l_get_float(lua_State *L);
+	ENTRY_POINT_DECL(l_get_float);
 
 	// set_float(self, name, var)
-	static int l_set_float(lua_State *L);
+	ENTRY_POINT_DECL(l_set_float);
 
 	// to_table(self)
-	static int l_to_table(lua_State *L);
+	ENTRY_POINT_DECL(l_to_table);
 
 	// from_table(self, table)
-	static int l_from_table(lua_State *L);
+	ENTRY_POINT_DECL(l_from_table);
 
 	// equals(self, other)
-	static int l_equals(lua_State *L);
+	ENTRY_POINT_DECL(l_equals);
 };

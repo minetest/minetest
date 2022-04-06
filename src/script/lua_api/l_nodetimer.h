@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class ServerMap;
 
@@ -33,21 +34,21 @@ private:
 	static const char className[];
 	static const luaL_Reg methods[];
 
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	static NodeTimerRef *checkobject(lua_State *L, int narg);
 
-	static int l_set(lua_State *L);
+	ENTRY_POINT_DECL(l_set);
 
-	static int l_start(lua_State *L);
+	ENTRY_POINT_DECL(l_start);
 
-	static int l_stop(lua_State *L);
+	ENTRY_POINT_DECL(l_stop);
 
-	static int l_is_started(lua_State *L);
+	ENTRY_POINT_DECL(l_is_started);
 
-	static int l_get_timeout(lua_State *L);
+	ENTRY_POINT_DECL(l_get_timeout);
 
-	static int l_get_elapsed(lua_State *L);
+	ENTRY_POINT_DECL(l_get_elapsed);
 
 public:
 	NodeTimerRef(v3s16 p, ServerMap *map) : m_p(p), m_map(map) {}

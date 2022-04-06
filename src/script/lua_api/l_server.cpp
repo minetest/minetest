@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_server.h"
-#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_base.h"
@@ -31,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 
 // request_shutdown()
-int ModApiServer::l_request_shutdown(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_request_shutdown)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *msg = lua_tolstring(L, 1, NULL);
@@ -42,7 +41,7 @@ int ModApiServer::l_request_shutdown(lua_State *L)
 }
 
 // get_server_status()
-int ModApiServer::l_get_server_status(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_server_status)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_pushstring(L, getServer(L)->getStatusString().c_str());
@@ -50,7 +49,7 @@ int ModApiServer::l_get_server_status(lua_State *L)
 }
 
 // get_server_uptime()
-int ModApiServer::l_get_server_uptime(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_server_uptime)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_pushnumber(L, getServer(L)->getUptime());
@@ -58,7 +57,7 @@ int ModApiServer::l_get_server_uptime(lua_State *L)
 }
 
 // get_server_max_lag()
-int ModApiServer::l_get_server_max_lag(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_server_max_lag)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
@@ -70,7 +69,7 @@ int ModApiServer::l_get_server_max_lag(lua_State *L)
 }
 
 // print(text)
-int ModApiServer::l_print(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_print)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string text;
@@ -80,7 +79,7 @@ int ModApiServer::l_print(lua_State *L)
 }
 
 // chat_send_all(text)
-int ModApiServer::l_chat_send_all(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_chat_send_all)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *text = luaL_checkstring(L, 1);
@@ -92,7 +91,7 @@ int ModApiServer::l_chat_send_all(lua_State *L)
 }
 
 // chat_send_player(name, text)
-int ModApiServer::l_chat_send_player(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_chat_send_player)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
@@ -106,7 +105,7 @@ int ModApiServer::l_chat_send_player(lua_State *L)
 }
 
 // get_player_privs(name, text)
-int ModApiServer::l_get_player_privs(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_player_privs)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
@@ -125,7 +124,7 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 }
 
 // get_player_ip()
-int ModApiServer::l_get_player_ip(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_player_ip)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -143,7 +142,7 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 }
 
 // get_player_information(name)
-int ModApiServer::l_get_player_information(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_player_information)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -272,7 +271,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 }
 
 // get_ban_list()
-int ModApiServer::l_get_ban_list(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_ban_list)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_pushstring(L, getServer(L)->getBanDescription("").c_str());
@@ -280,7 +279,7 @@ int ModApiServer::l_get_ban_list(lua_State *L)
 }
 
 // get_ban_description()
-int ModApiServer::l_get_ban_description(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_ban_description)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char * ip_or_name = luaL_checkstring(L, 1);
@@ -289,7 +288,7 @@ int ModApiServer::l_get_ban_description(lua_State *L)
 }
 
 // ban_player()
-int ModApiServer::l_ban_player(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_ban_player)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -311,7 +310,7 @@ int ModApiServer::l_ban_player(lua_State *L)
 }
 
 // disconnect_player(name, [reason]) -> success
-int ModApiServer::l_disconnect_player(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_disconnect_player)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -335,7 +334,7 @@ int ModApiServer::l_disconnect_player(lua_State *L)
 	return 1;
 }
 
-int ModApiServer::l_remove_player(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_remove_player)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -353,7 +352,7 @@ int ModApiServer::l_remove_player(lua_State *L)
 }
 
 // unban_player_or_ip()
-int ModApiServer::l_unban_player_or_ip(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_unban_player_or_ip)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char * ip_or_name = luaL_checkstring(L, 1);
@@ -363,7 +362,7 @@ int ModApiServer::l_unban_player_or_ip(lua_State *L)
 }
 
 // show_formspec(playername,formname,formspec)
-int ModApiServer::l_show_formspec(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_show_formspec)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *playername = luaL_checkstring(L, 1);
@@ -380,7 +379,7 @@ int ModApiServer::l_show_formspec(lua_State *L)
 }
 
 // get_current_modname()
-int ModApiServer::l_get_current_modname(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_current_modname)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
@@ -388,7 +387,7 @@ int ModApiServer::l_get_current_modname(lua_State *L)
 }
 
 // get_modpath(modname)
-int ModApiServer::l_get_modpath(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_modpath)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
@@ -403,7 +402,7 @@ int ModApiServer::l_get_modpath(lua_State *L)
 
 // get_modnames()
 // the returned list is sorted alphabetically for you
-int ModApiServer::l_get_modnames(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_modnames)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -424,7 +423,7 @@ int ModApiServer::l_get_modnames(lua_State *L)
 }
 
 // get_worldpath()
-int ModApiServer::l_get_worldpath(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_get_worldpath)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string worldpath = getServer(L)->getWorldPath();
@@ -433,7 +432,7 @@ int ModApiServer::l_get_worldpath(lua_State *L)
 }
 
 // sound_play(spec, parameters, [ephemeral])
-int ModApiServer::l_sound_play(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_sound_play)
 {
 	NO_MAP_LOCK_REQUIRED;
 	SimpleSoundSpec spec;
@@ -452,7 +451,7 @@ int ModApiServer::l_sound_play(lua_State *L)
 }
 
 // sound_stop(handle)
-int ModApiServer::l_sound_stop(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_sound_stop)
 {
 	NO_MAP_LOCK_REQUIRED;
 	s32 handle = luaL_checkinteger(L, 1);
@@ -460,7 +459,7 @@ int ModApiServer::l_sound_stop(lua_State *L)
 	return 0;
 }
 
-int ModApiServer::l_sound_fade(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_sound_fade)
 {
 	NO_MAP_LOCK_REQUIRED;
 	s32 handle = luaL_checkinteger(L, 1);
@@ -471,7 +470,7 @@ int ModApiServer::l_sound_fade(lua_State *L)
 }
 
 // dynamic_add_media(filepath)
-int ModApiServer::l_dynamic_add_media(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_dynamic_add_media)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -507,7 +506,7 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 }
 
 // is_singleplayer()
-int ModApiServer::l_is_singleplayer(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_is_singleplayer)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_pushboolean(L, getServer(L)->isSingleplayer());
@@ -515,7 +514,7 @@ int ModApiServer::l_is_singleplayer(lua_State *L)
 }
 
 // notify_authentication_modified(name)
-int ModApiServer::l_notify_authentication_modified(lua_State *L)
+ENTRY_POINT_DEF(ModApiServer, l_notify_authentication_modified)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name;

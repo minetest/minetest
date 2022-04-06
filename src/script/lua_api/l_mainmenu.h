@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class AsyncEngine;
 
@@ -62,99 +63,99 @@ private:
 
 	//api calls
 
-	static int l_start(lua_State *L);
+	ENTRY_POINT_DECL(l_start);
 
-	static int l_close(lua_State *L);
+	ENTRY_POINT_DECL(l_close);
 
-	static int l_create_world(lua_State *L);
+	ENTRY_POINT_DECL(l_create_world);
 
-	static int l_delete_world(lua_State *L);
+	ENTRY_POINT_DECL(l_delete_world);
 
-	static int l_get_worlds(lua_State *L);
+	ENTRY_POINT_DECL(l_get_worlds);
 
-	static int l_get_mapgen_names(lua_State *L);
+	ENTRY_POINT_DECL(l_get_mapgen_names);
 
-	static int l_gettext(lua_State *L);
+	ENTRY_POINT_DECL(l_gettext);
 
 	//packages
 
-	static int l_get_games(lua_State *L);
+	ENTRY_POINT_DECL(l_get_games);
 
-	static int l_get_content_info(lua_State *L);
+	ENTRY_POINT_DECL(l_get_content_info);
 
 	//gui
 
-	static int l_show_keys_menu(lua_State *L);
+	ENTRY_POINT_DECL(l_show_keys_menu);
 
-	static int l_show_path_select_dialog(lua_State *L);
+	ENTRY_POINT_DECL(l_show_path_select_dialog);
 
-	static int l_set_topleft_text(lua_State *L);
+	ENTRY_POINT_DECL(l_set_topleft_text);
 
-	static int l_set_clouds(lua_State *L);
+	ENTRY_POINT_DECL(l_set_clouds);
 
-	static int l_get_textlist_index(lua_State *L);
+	ENTRY_POINT_DECL(l_get_textlist_index);
 
-	static int l_get_table_index(lua_State *L);
+	ENTRY_POINT_DECL(l_get_table_index);
 
-	static int l_set_background(lua_State *L);
+	ENTRY_POINT_DECL(l_set_background);
 
-	static int l_update_formspec(lua_State *L);
+	ENTRY_POINT_DECL(l_update_formspec);
 
-	static int l_set_formspec_prepend(lua_State *L);
+	ENTRY_POINT_DECL(l_set_formspec_prepend);
 
-	static int l_get_screen_info(lua_State *L);
+	ENTRY_POINT_DECL(l_get_screen_info);
 
 	//filesystem
 
-	static int l_get_mainmenu_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_mainmenu_path);
 
-	static int l_get_user_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_user_path);
 
-	static int l_get_modpath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_modpath);
 
-	static int l_get_modpaths(lua_State *L);
+	ENTRY_POINT_DECL(l_get_modpaths);
 
-	static int l_get_clientmodpath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_clientmodpath);
 
-	static int l_get_gamepath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_gamepath);
 
-	static int l_get_texturepath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_texturepath);
 
-	static int l_get_texturepath_share(lua_State *L);
+	ENTRY_POINT_DECL(l_get_texturepath_share);
 
-	static int l_get_cache_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_cache_path);
 
-	static int l_get_temp_path(lua_State *L);
+	ENTRY_POINT_DECL(l_get_temp_path);
 
-	static int l_create_dir(lua_State *L);
+	ENTRY_POINT_DECL(l_create_dir);
 
-	static int l_delete_dir(lua_State *L);
+	ENTRY_POINT_DECL(l_delete_dir);
 
-	static int l_copy_dir(lua_State *L);
+	ENTRY_POINT_DECL(l_copy_dir);
 
-	static int l_is_dir(lua_State *L);
+	ENTRY_POINT_DECL(l_is_dir);
 
-	static int l_extract_zip(lua_State *L);
+	ENTRY_POINT_DECL(l_extract_zip);
 
-	static int l_may_modify_path(lua_State *L);
+	ENTRY_POINT_DECL(l_may_modify_path);
 
-	static int l_download_file(lua_State *L);
+	ENTRY_POINT_DECL(l_download_file);
 
-	static int l_get_video_drivers(lua_State *L);
+	ENTRY_POINT_DECL(l_get_video_drivers);
 
 	//version compatibility
-	static int l_get_min_supp_proto(lua_State *L);
+	ENTRY_POINT_DECL(l_get_min_supp_proto);
 
-	static int l_get_max_supp_proto(lua_State *L);
+	ENTRY_POINT_DECL(l_get_max_supp_proto);
 
 	// other
-	static int l_open_url(lua_State *L);
+	ENTRY_POINT_DECL(l_open_url);
 
-	static int l_open_dir(lua_State *L);
+	ENTRY_POINT_DECL(l_open_dir);
 
 
 	// async
-	static int l_do_async_callback(lua_State *L);
+	ENTRY_POINT_DECL(l_do_async_callback);
 
 public:
 

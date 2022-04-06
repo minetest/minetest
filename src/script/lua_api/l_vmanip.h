@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class Map;
 class MapBlock;
@@ -39,29 +40,29 @@ private:
 	static const char className[];
 	static const luaL_Reg methods[];
 
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
-	static int l_read_from_map(lua_State *L);
-	static int l_get_data(lua_State *L);
-	static int l_set_data(lua_State *L);
-	static int l_write_to_map(lua_State *L);
+	ENTRY_POINT_DECL(l_read_from_map);
+	ENTRY_POINT_DECL(l_get_data);
+	ENTRY_POINT_DECL(l_set_data);
+	ENTRY_POINT_DECL(l_write_to_map);
 
-	static int l_get_node_at(lua_State *L);
-	static int l_set_node_at(lua_State *L);
+	ENTRY_POINT_DECL(l_get_node_at);
+	ENTRY_POINT_DECL(l_set_node_at);
 
-	static int l_update_map(lua_State *L);
-	static int l_update_liquids(lua_State *L);
+	ENTRY_POINT_DECL(l_update_map);
+	ENTRY_POINT_DECL(l_update_liquids);
 
-	static int l_calc_lighting(lua_State *L);
-	static int l_set_lighting(lua_State *L);
-	static int l_get_light_data(lua_State *L);
-	static int l_set_light_data(lua_State *L);
+	ENTRY_POINT_DECL(l_calc_lighting);
+	ENTRY_POINT_DECL(l_set_lighting);
+	ENTRY_POINT_DECL(l_get_light_data);
+	ENTRY_POINT_DECL(l_set_light_data);
 
-	static int l_get_param2_data(lua_State *L);
-	static int l_set_param2_data(lua_State *L);
+	ENTRY_POINT_DECL(l_get_param2_data);
+	ENTRY_POINT_DECL(l_set_param2_data);
 
-	static int l_was_modified(lua_State *L);
-	static int l_get_emerged_area(lua_State *L);
+	ENTRY_POINT_DECL(l_was_modified);
+	ENTRY_POINT_DECL(l_get_emerged_area);
 
 public:
 	MMVManip *vm = nullptr;
@@ -73,7 +74,7 @@ public:
 
 	// LuaVoxelManip()
 	// Creates a LuaVoxelManip and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaVoxelManip *checkobject(lua_State *L, int narg);
 

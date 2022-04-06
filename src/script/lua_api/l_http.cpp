@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "lua_api/l_http.h"
@@ -104,7 +103,7 @@ void ModApiHttp::push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool
 }
 
 // http_api.fetch_sync(HTTPRequest definition)
-int ModApiHttp::l_http_fetch_sync(lua_State *L)
+ENTRY_POINT_DEF(ModApiHttp, l_http_fetch_sync)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -122,7 +121,7 @@ int ModApiHttp::l_http_fetch_sync(lua_State *L)
 }
 
 // http_api.fetch_async(HTTPRequest definition)
-int ModApiHttp::l_http_fetch_async(lua_State *L)
+ENTRY_POINT_DEF(ModApiHttp, l_http_fetch_async)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -142,7 +141,7 @@ int ModApiHttp::l_http_fetch_async(lua_State *L)
 }
 
 // http_api.fetch_async_get(handle)
-int ModApiHttp::l_http_fetch_async_get(lua_State *L)
+ENTRY_POINT_DEF(ModApiHttp, l_http_fetch_async_get)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -162,7 +161,7 @@ int ModApiHttp::l_http_fetch_async_get(lua_State *L)
 	return 1;
 }
 
-int ModApiHttp::l_request_http_api(lua_State *L)
+ENTRY_POINT_DEF(ModApiHttp, l_request_http_api)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -187,7 +186,7 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 	return 1;
 }
 
-int ModApiHttp::l_get_http_api(lua_State *L)
+ENTRY_POINT_DEF(ModApiHttp, l_get_http_api)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -201,7 +200,7 @@ int ModApiHttp::l_get_http_api(lua_State *L)
 
 #endif
 
-int ModApiHttp::l_set_http_api_lua(lua_State *L)
+ENTRY_POINT_DEF(ModApiHttp, l_set_http_api_lua)
 {
 	NO_MAP_LOCK_REQUIRED;
 

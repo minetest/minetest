@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "lua_api/l_util.h"
-#include "lua_api/l_internal.h"
 #include "lua_api/l_settings.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
@@ -49,7 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The two-argument version accepts a log level.
 // Either the special case "deprecated" for deprecation notices, or any specified in
 // Logger::stringToLevel(name).
-int ModApiUtil::l_log(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_log)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string text;
@@ -75,7 +74,7 @@ int ModApiUtil::l_log(lua_State *L)
 }
 
 // get_us_time()
-int ModApiUtil::l_get_us_time(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_us_time)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_pushnumber(L, porting::getTimeUs());
@@ -83,7 +82,7 @@ int ModApiUtil::l_get_us_time(lua_State *L)
 }
 
 // parse_json(str[, nullvalue])
-int ModApiUtil::l_parse_json(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_parse_json)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -130,7 +129,7 @@ int ModApiUtil::l_parse_json(lua_State *L)
 }
 
 // write_json(data[, styled]) -> string or nil and error message
-int ModApiUtil::l_write_json(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_write_json)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -160,7 +159,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 }
 
 // get_dig_params(groups, tool_capabilities[, wear])
-int ModApiUtil::l_get_dig_params(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_dig_params)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ItemGroupList groups;
@@ -176,7 +175,7 @@ int ModApiUtil::l_get_dig_params(lua_State *L)
 }
 
 // get_hit_params(groups, tool_capabilities[, time_from_last_punch, [, wear]])
-int ModApiUtil::l_get_hit_params(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_hit_params)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::unordered_map<std::string, int> groups;
@@ -190,7 +189,7 @@ int ModApiUtil::l_get_hit_params(lua_State *L)
 }
 
 // check_password_entry(name, entry, password)
-int ModApiUtil::l_check_password_entry(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_check_password_entry)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -219,7 +218,7 @@ int ModApiUtil::l_check_password_entry(lua_State *L)
 }
 
 // get_password_hash(name, raw_password)
-int ModApiUtil::l_get_password_hash(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_password_hash)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -230,7 +229,7 @@ int ModApiUtil::l_get_password_hash(lua_State *L)
 }
 
 // is_yes(arg)
-int ModApiUtil::l_is_yes(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_is_yes)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -246,7 +245,7 @@ int ModApiUtil::l_is_yes(lua_State *L)
 }
 
 // get_builtin_path()
-int ModApiUtil::l_get_builtin_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_builtin_path)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -257,7 +256,7 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 }
 
 // get_user_path()
-int ModApiUtil::l_get_user_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_user_path)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -268,7 +267,7 @@ int ModApiUtil::l_get_user_path(lua_State *L)
 }
 
 // compress(data, method, level)
-int ModApiUtil::l_compress(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_compress)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -289,7 +288,7 @@ int ModApiUtil::l_compress(lua_State *L)
 }
 
 // decompress(data, method)
-int ModApiUtil::l_decompress(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_decompress)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -307,7 +306,7 @@ int ModApiUtil::l_decompress(lua_State *L)
 }
 
 // encode_base64(string)
-int ModApiUtil::l_encode_base64(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_encode_base64)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -321,7 +320,7 @@ int ModApiUtil::l_encode_base64(lua_State *L)
 }
 
 // decode_base64(string)
-int ModApiUtil::l_decode_base64(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_decode_base64)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -339,7 +338,7 @@ int ModApiUtil::l_decode_base64(lua_State *L)
 }
 
 // mkdir(path)
-int ModApiUtil::l_mkdir(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_mkdir)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
@@ -349,7 +348,7 @@ int ModApiUtil::l_mkdir(lua_State *L)
 }
 
 // rmdir(path, recursive)
-int ModApiUtil::l_rmdir(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_rmdir)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
@@ -366,7 +365,7 @@ int ModApiUtil::l_rmdir(lua_State *L)
 }
 
 // cpdir(source, destination)
-int ModApiUtil::l_cpdir(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_cpdir)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *source = luaL_checkstring(L, 1);
@@ -379,7 +378,7 @@ int ModApiUtil::l_cpdir(lua_State *L)
 }
 
 // mpdir(source, destination)
-int ModApiUtil::l_mvdir(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_mvdir)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *source = luaL_checkstring(L, 1);
@@ -392,7 +391,7 @@ int ModApiUtil::l_mvdir(lua_State *L)
 }
 
 // get_dir_list(path, is_dir)
-int ModApiUtil::l_get_dir_list(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_dir_list)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
@@ -417,7 +416,7 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 }
 
 // safe_file_write(path, content)
-int ModApiUtil::l_safe_file_write(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_safe_file_write)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
@@ -433,7 +432,7 @@ int ModApiUtil::l_safe_file_write(lua_State *L)
 }
 
 // request_insecure_environment()
-int ModApiUtil::l_request_insecure_environment(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_request_insecure_environment)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -453,7 +452,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 }
 
 // get_version()
-int ModApiUtil::l_get_version(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_version)
 {
 	lua_createtable(L, 0, 3);
 	int table = lua_gettop(L);
@@ -472,7 +471,7 @@ int ModApiUtil::l_get_version(lua_State *L)
 	return 1;
 }
 
-int ModApiUtil::l_sha1(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_sha1)
 {
 	NO_MAP_LOCK_REQUIRED;
 	size_t size;
@@ -500,7 +499,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 }
 
 // colorspec_to_colorstring(colorspec)
-int ModApiUtil::l_colorspec_to_colorstring(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_colorspec_to_colorstring)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -517,7 +516,7 @@ int ModApiUtil::l_colorspec_to_colorstring(lua_State *L)
 }
 
 // colorspec_to_bytes(colorspec)
-int ModApiUtil::l_colorspec_to_bytes(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_colorspec_to_bytes)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -537,7 +536,7 @@ int ModApiUtil::l_colorspec_to_bytes(lua_State *L)
 }
 
 // encode_png(w, h, data, level)
-int ModApiUtil::l_encode_png(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_encode_png)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -554,7 +553,7 @@ int ModApiUtil::l_encode_png(lua_State *L)
 }
 
 // get_last_run_mod()
-int ModApiUtil::l_get_last_run_mod(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_get_last_run_mod)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -568,7 +567,7 @@ int ModApiUtil::l_get_last_run_mod(lua_State *L)
 }
 
 // set_last_run_mod(modname)
-int ModApiUtil::l_set_last_run_mod(lua_State *L)
+ENTRY_POINT_DEF(ModApiUtil, l_set_last_run_mod)
 {
 	NO_MAP_LOCK_REQUIRED;
 

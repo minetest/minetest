@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_metadata.h"
-#include "lua_api/l_internal.h"
 #include "common/c_content.h"
 #include "serverenvironment.h"
 #include "map.h"
@@ -52,7 +51,7 @@ MetaDataRef* MetaDataRef::checkobject(lua_State *L, int narg)
 // Exported functions
 
 // contains(self, name)
-int MetaDataRef::l_contains(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_contains)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -68,7 +67,7 @@ int MetaDataRef::l_contains(lua_State *L)
 }
 
 // get(self, name)
-int MetaDataRef::l_get(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_get)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -89,7 +88,7 @@ int MetaDataRef::l_get(lua_State *L)
 }
 
 // get_string(self, name)
-int MetaDataRef::l_get_string(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_get_string)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -108,7 +107,7 @@ int MetaDataRef::l_get_string(lua_State *L)
 }
 
 // set_string(self, name, var)
-int MetaDataRef::l_set_string(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_set_string)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -128,7 +127,7 @@ int MetaDataRef::l_set_string(lua_State *L)
 }
 
 // get_int(self, name)
-int MetaDataRef::l_get_int(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_get_int)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -147,7 +146,7 @@ int MetaDataRef::l_get_int(lua_State *L)
 }
 
 // set_int(self, name, var)
-int MetaDataRef::l_set_int(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_set_int)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -166,7 +165,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 }
 
 // get_float(self, name)
-int MetaDataRef::l_get_float(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_get_float)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -185,7 +184,7 @@ int MetaDataRef::l_get_float(lua_State *L)
 }
 
 // set_float(self, name, var)
-int MetaDataRef::l_set_float(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_set_float)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -204,7 +203,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 }
 
 // to_table(self)
-int MetaDataRef::l_to_table(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_to_table)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -223,7 +222,7 @@ int MetaDataRef::l_to_table(lua_State *L)
 }
 
 // from_table(self, table)
-int MetaDataRef::l_from_table(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_from_table)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -289,7 +288,7 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, Metadata *meta)
 }
 
 // equals(self, other)
-int MetaDataRef::l_equals(lua_State *L)
+ENTRY_POINT_DEF(MetaDataRef, l_equals)
 {
 	MetaDataRef *ref1 = checkobject(L, 1);
 	Metadata *data1 = ref1->getmeta(false);

@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "lua_api/l_areastore.h"
-#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "cpp_api/s_security.h"
 #include "irr_v3d.h"
@@ -87,7 +86,7 @@ static int deserialization_helper(lua_State *L, AreaStore *as,
 }
 
 // garbage collector
-int LuaAreaStore::gc_object(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, gc_object)
 {
 	LuaAreaStore *o = *(LuaAreaStore **)(lua_touserdata(L, 1));
 	delete o;
@@ -95,7 +94,7 @@ int LuaAreaStore::gc_object(lua_State *L)
 }
 
 // get_area(id, include_corners, include_data)
-int LuaAreaStore::l_get_area(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_get_area)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -120,7 +119,7 @@ int LuaAreaStore::l_get_area(lua_State *L)
 }
 
 // get_areas_for_pos(pos, include_corners, include_data)
-int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_get_areas_for_pos)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -142,7 +141,7 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 }
 
 // get_areas_in_area(corner1, corner2, accept_overlap, include_corners, include_data)
-int LuaAreaStore::l_get_areas_in_area(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_get_areas_in_area)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -169,7 +168,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 }
 
 // insert_area(corner1, corner2, data, id)
-int LuaAreaStore::l_insert_area(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_insert_area)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -195,7 +194,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 }
 
 // reserve(count)
-int LuaAreaStore::l_reserve(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_reserve)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -208,7 +207,7 @@ int LuaAreaStore::l_reserve(lua_State *L)
 }
 
 // remove_area(id)
-int LuaAreaStore::l_remove_area(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_remove_area)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -223,7 +222,7 @@ int LuaAreaStore::l_remove_area(lua_State *L)
 }
 
 // set_cache_params(params)
-int LuaAreaStore::l_set_cache_params(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_set_cache_params)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -242,7 +241,7 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 }
 
 // to_string()
-int LuaAreaStore::l_to_string(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_to_string)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -257,7 +256,7 @@ int LuaAreaStore::l_to_string(lua_State *L)
 }
 
 // to_file(filename)
-int LuaAreaStore::l_to_file(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_to_file)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -275,7 +274,7 @@ int LuaAreaStore::l_to_file(lua_State *L)
 }
 
 // from_string(str)
-int LuaAreaStore::l_from_string(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_from_string)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -289,7 +288,7 @@ int LuaAreaStore::l_from_string(lua_State *L)
 }
 
 // from_file(filename)
-int LuaAreaStore::l_from_file(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, l_from_file)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -325,7 +324,7 @@ LuaAreaStore::~LuaAreaStore()
 
 // LuaAreaStore()
 // Creates an LuaAreaStore and leaves it on top of stack
-int LuaAreaStore::create_object(lua_State *L)
+ENTRY_POINT_DEF(LuaAreaStore, create_object)
 {
 	NO_MAP_LOCK_REQUIRED;
 

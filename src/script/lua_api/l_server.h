@@ -20,91 +20,92 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class ModApiServer : public ModApiBase
 {
 private:
 	// request_shutdown([message], [reconnect])
-	static int l_request_shutdown(lua_State *L);
+	ENTRY_POINT_DECL(l_request_shutdown);
 
 	// get_server_status()
-	static int l_get_server_status(lua_State *L);
+	ENTRY_POINT_DECL(l_get_server_status);
 
 	// get_server_uptime()
-	static int l_get_server_uptime(lua_State *L);
+	ENTRY_POINT_DECL(l_get_server_uptime);
 
 	// get_server_max_lag()
-	static int l_get_server_max_lag(lua_State *L);
+	ENTRY_POINT_DECL(l_get_server_max_lag);
 
 	// get_worldpath()
-	static int l_get_worldpath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_worldpath);
 
 	// is_singleplayer()
-	static int l_is_singleplayer(lua_State *L);
+	ENTRY_POINT_DECL(l_is_singleplayer);
 
 	// get_current_modname()
-	static int l_get_current_modname(lua_State *L);
+	ENTRY_POINT_DECL(l_get_current_modname);
 
 	// get_modpath(modname)
-	static int l_get_modpath(lua_State *L);
+	ENTRY_POINT_DECL(l_get_modpath);
 
 	// get_modnames()
 	// the returned list is sorted alphabetically for you
-	static int l_get_modnames(lua_State *L);
+	ENTRY_POINT_DECL(l_get_modnames);
 
 	// print(text)
-	static int l_print(lua_State *L);
+	ENTRY_POINT_DECL(l_print);
 
 	// chat_send_all(text)
-	static int l_chat_send_all(lua_State *L);
+	ENTRY_POINT_DECL(l_chat_send_all);
 
 	// chat_send_player(name, text)
-	static int l_chat_send_player(lua_State *L);
+	ENTRY_POINT_DECL(l_chat_send_player);
 
 	// show_formspec(playername,formname,formspec)
-	static int l_show_formspec(lua_State *L);
+	ENTRY_POINT_DECL(l_show_formspec);
 
 	// sound_play(spec, parameters)
-	static int l_sound_play(lua_State *L);
+	ENTRY_POINT_DECL(l_sound_play);
 
 	// sound_stop(handle)
-	static int l_sound_stop(lua_State *L);
+	ENTRY_POINT_DECL(l_sound_stop);
 
 	// sound_fade(handle, step, gain)
-	static int l_sound_fade(lua_State *L);
+	ENTRY_POINT_DECL(l_sound_fade);
 
 	// dynamic_add_media(filepath)
-	static int l_dynamic_add_media(lua_State *L);
+	ENTRY_POINT_DECL(l_dynamic_add_media);
 
 	// get_player_privs(name, text)
-	static int l_get_player_privs(lua_State *L);
+	ENTRY_POINT_DECL(l_get_player_privs);
 
 	// get_player_ip()
-	static int l_get_player_ip(lua_State *L);
+	ENTRY_POINT_DECL(l_get_player_ip);
 
 	// get_player_information(name)
-	static int l_get_player_information(lua_State *L);
+	ENTRY_POINT_DECL(l_get_player_information);
 
 	// get_ban_list()
-	static int l_get_ban_list(lua_State *L);
+	ENTRY_POINT_DECL(l_get_ban_list);
 
 	// get_ban_description()
-	static int l_get_ban_description(lua_State *L);
+	ENTRY_POINT_DECL(l_get_ban_description);
 
 	// ban_player()
-	static int l_ban_player(lua_State *L);
+	ENTRY_POINT_DECL(l_ban_player);
 
 	// unban_player_or_ip()
-	static int l_unban_player_or_ip(lua_State *L);
+	ENTRY_POINT_DECL(l_unban_player_or_ip);
 
 	// disconnect_player(name, [reason]) -> success
-	static int l_disconnect_player(lua_State *L);
+	ENTRY_POINT_DECL(l_disconnect_player);
 
 	// remove_player(name)
-	static int l_remove_player(lua_State *L);
+	ENTRY_POINT_DECL(l_remove_player);
 
 	// notify_authentication_modified(name)
-	static int l_notify_authentication_modified(lua_State *L);
+	ENTRY_POINT_DECL(l_notify_authentication_modified);
 
 public:
 	static void Initialize(lua_State *L, int top);

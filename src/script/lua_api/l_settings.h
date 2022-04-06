@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common/c_content.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class Settings;
 
@@ -31,40 +32,40 @@ private:
 	static const luaL_Reg methods[];
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 	// get(self, key) -> value
-	static int l_get(lua_State *L);
+	ENTRY_POINT_DECL(l_get);
 
 	// get_bool(self, key) -> boolean
-	static int l_get_bool(lua_State *L);
+	ENTRY_POINT_DECL(l_get_bool);
 
 	// get_np_group(self, key) -> noiseparam
-	static int l_get_np_group(lua_State *L);
+	ENTRY_POINT_DECL(l_get_np_group);
 
 	// get_flags(self, key) -> key/value table
-	static int l_get_flags(lua_State *L);
+	ENTRY_POINT_DECL(l_get_flags);
 
 	// set(self, key, value)
-	static int l_set(lua_State *L);
+	ENTRY_POINT_DECL(l_set);
 
 	// set_bool(self, key, value)
-	static int l_set_bool(lua_State *L);
+	ENTRY_POINT_DECL(l_set_bool);
 
 	// set_np_group(self, key, value)
-	static int l_set_np_group(lua_State *L);
+	ENTRY_POINT_DECL(l_set_np_group);
 
 	// remove(self, key) -> success
-	static int l_remove(lua_State *L);
+	ENTRY_POINT_DECL(l_remove);
 
 	// get_names(self) -> {key1, ...}
-	static int l_get_names(lua_State *L);
+	ENTRY_POINT_DECL(l_get_names);
 
 	// write(self) -> success
-	static int l_write(lua_State *L);
+	ENTRY_POINT_DECL(l_write);
 
 	// to_table(self) -> {[key1]=value1,...}
-	static int l_to_table(lua_State *L);
+	ENTRY_POINT_DECL(l_to_table);
 
 	Settings *m_settings = nullptr;
 	std::string m_filename;
@@ -80,7 +81,7 @@ public:
 
 	// LuaSettings(filename)
 	// Creates a LuaSettings and leaves it on top of the stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaSettings *checkobject(lua_State *L, int narg);
 

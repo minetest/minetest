@@ -19,12 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_sound.h"
-#include "l_internal.h"
 #include "common/c_content.h"
 #include "gui/guiEngine.h"
 
 
-int ModApiSound::l_sound_play(lua_State *L)
+ENTRY_POINT_DEF(ModApiSound, l_sound_play)
 {
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
@@ -37,7 +36,7 @@ int ModApiSound::l_sound_play(lua_State *L)
 	return 1;
 }
 
-int ModApiSound::l_sound_stop(lua_State *L)
+ENTRY_POINT_DEF(ModApiSound, l_sound_stop)
 {
 	u32 handle = luaL_checkinteger(L, 1);
 

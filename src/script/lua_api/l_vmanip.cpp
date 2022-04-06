@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "lua_api/l_vmanip.h"
-#include "lua_api/l_internal.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
 #include "emerge.h"
@@ -31,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 
 // garbage collector
-int LuaVoxelManip::gc_object(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, gc_object)
 {
 	LuaVoxelManip *o = *(LuaVoxelManip **)(lua_touserdata(L, 1));
 	delete o;
@@ -39,7 +38,7 @@ int LuaVoxelManip::gc_object(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_read_from_map(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_read_from_map)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -58,7 +57,7 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 	return 2;
 }
 
-int LuaVoxelManip::l_get_data(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_get_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -83,7 +82,7 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 	return 1;
 }
 
-int LuaVoxelManip::l_set_data(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_set_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -106,7 +105,7 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_write_to_map(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_write_to_map)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -132,7 +131,7 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_get_node_at(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_get_node_at)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -145,7 +144,7 @@ int LuaVoxelManip::l_get_node_at(lua_State *L)
 	return 1;
 }
 
-int LuaVoxelManip::l_set_node_at(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_set_node_at)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -160,7 +159,7 @@ int LuaVoxelManip::l_set_node_at(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_update_liquids(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_update_liquids)
 {
 	GET_ENV_PTR;
 
@@ -180,7 +179,7 @@ int LuaVoxelManip::l_update_liquids(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_calc_lighting(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_calc_lighting)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -216,7 +215,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_set_lighting(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_set_lighting)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -252,7 +251,7 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_get_light_data(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_get_light_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -271,7 +270,7 @@ int LuaVoxelManip::l_get_light_data(lua_State *L)
 	return 1;
 }
 
-int LuaVoxelManip::l_set_light_data(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_set_light_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -295,7 +294,7 @@ int LuaVoxelManip::l_set_light_data(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_get_param2_data(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_get_param2_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -320,7 +319,7 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 	return 1;
 }
 
-int LuaVoxelManip::l_set_param2_data(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_set_param2_data)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -344,12 +343,12 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_update_map(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_update_map)
 {
 	return 0;
 }
 
-int LuaVoxelManip::l_was_modified(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_was_modified)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -361,7 +360,7 @@ int LuaVoxelManip::l_was_modified(lua_State *L)
 	return 1;
 }
 
-int LuaVoxelManip::l_get_emerged_area(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, l_get_emerged_area)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -401,7 +400,7 @@ LuaVoxelManip::~LuaVoxelManip()
 
 // LuaVoxelManip()
 // Creates an LuaVoxelManip and leaves it on top of stack
-int LuaVoxelManip::create_object(lua_State *L)
+ENTRY_POINT_DEF(LuaVoxelManip, create_object)
 {
 	GET_ENV_PTR;
 

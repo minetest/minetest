@@ -23,16 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 struct CraftReplacements;
 
 class ModApiCraft : public ModApiBase {
 private:
-	static int l_register_craft(lua_State *L);
-	static int l_get_craft_recipe(lua_State *L);
-	static int l_get_all_craft_recipes(lua_State *L);
-	static int l_get_craft_result(lua_State *L);
-	static int l_clear_craft(lua_State *L);
+	ENTRY_POINT_DECL(l_register_craft);
+	ENTRY_POINT_DECL(l_get_craft_recipe);
+	ENTRY_POINT_DECL(l_get_all_craft_recipes);
+	ENTRY_POINT_DECL(l_get_craft_result);
+	ENTRY_POINT_DECL(l_clear_craft);
 
 	static bool readCraftReplacements(lua_State *L, int index,
 			CraftReplacements &replacements);

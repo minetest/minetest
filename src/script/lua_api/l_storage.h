@@ -22,13 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_metadata.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class ModMetadata;
 
 class ModApiStorage : public ModApiBase
 {
 protected:
-	static int l_get_mod_storage(lua_State *L);
+	ENTRY_POINT_DECL(l_get_mod_storage);
 
 public:
 	static void Initialize(lua_State *L, int top);
@@ -46,7 +47,7 @@ private:
 	virtual void clearMeta();
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
 public:
 	StorageRef(ModMetadata *object);

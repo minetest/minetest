@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_nodetimer.h"
-#include "lua_api/l_internal.h"
 #include "serverenvironment.h"
 #include "map.h"
 
@@ -37,7 +36,7 @@ NodeTimerRef* NodeTimerRef::checkobject(lua_State *L, int narg)
 	return *(NodeTimerRef**)ud;  // unbox pointer
 }
 
-int NodeTimerRef::l_set(lua_State *L)
+ENTRY_POINT_DEF(NodeTimerRef, l_set)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
@@ -47,7 +46,7 @@ int NodeTimerRef::l_set(lua_State *L)
 	return 0;
 }
 
-int NodeTimerRef::l_start(lua_State *L)
+ENTRY_POINT_DEF(NodeTimerRef, l_start)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
@@ -56,7 +55,7 @@ int NodeTimerRef::l_start(lua_State *L)
 	return 0;
 }
 
-int NodeTimerRef::l_stop(lua_State *L)
+ENTRY_POINT_DEF(NodeTimerRef, l_stop)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
@@ -64,7 +63,7 @@ int NodeTimerRef::l_stop(lua_State *L)
 	return 0;
 }
 
-int NodeTimerRef::l_is_started(lua_State *L)
+ENTRY_POINT_DEF(NodeTimerRef, l_is_started)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
@@ -73,7 +72,7 @@ int NodeTimerRef::l_is_started(lua_State *L)
 	return 1;
 }
 
-int NodeTimerRef::l_get_timeout(lua_State *L)
+ENTRY_POINT_DEF(NodeTimerRef, l_get_timeout)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
@@ -82,7 +81,7 @@ int NodeTimerRef::l_get_timeout(lua_State *L)
 	return 1;
 }
 
-int NodeTimerRef::l_get_elapsed(lua_State *L)
+ENTRY_POINT_DEF(NodeTimerRef, l_get_elapsed)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);

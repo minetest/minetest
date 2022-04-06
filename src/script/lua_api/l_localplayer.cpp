@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_localplayer.h"
-#include "l_internal.h"
 #include "lua_api/l_item.h"
 #include "script/common/c_converter.h"
 #include "client/localplayer.h"
@@ -52,7 +51,7 @@ void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)
 	lua_setfield(L, objectstable, "localplayer");
 }
 
-int LuaLocalPlayer::l_get_velocity(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_velocity)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -60,7 +59,7 @@ int LuaLocalPlayer::l_get_velocity(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_hp(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_hp)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -68,7 +67,7 @@ int LuaLocalPlayer::l_get_hp(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_name(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_name)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -77,7 +76,7 @@ int LuaLocalPlayer::l_get_name(lua_State *L)
 }
 
 // get_wield_index(self)
-int LuaLocalPlayer::l_get_wield_index(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_wield_index)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -86,7 +85,7 @@ int LuaLocalPlayer::l_get_wield_index(lua_State *L)
 }
 
 // get_wielded_item(self)
-int LuaLocalPlayer::l_get_wielded_item(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_wielded_item)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -96,7 +95,7 @@ int LuaLocalPlayer::l_get_wielded_item(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_is_attached(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_is_attached)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -104,7 +103,7 @@ int LuaLocalPlayer::l_is_attached(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_is_touching_ground(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_is_touching_ground)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -112,7 +111,7 @@ int LuaLocalPlayer::l_is_touching_ground(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_is_in_liquid(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_is_in_liquid)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -120,7 +119,7 @@ int LuaLocalPlayer::l_is_in_liquid(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_is_in_liquid_stable(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_is_in_liquid_stable)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -128,7 +127,7 @@ int LuaLocalPlayer::l_is_in_liquid_stable(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_move_resistance(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_move_resistance)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -136,7 +135,7 @@ int LuaLocalPlayer::l_get_move_resistance(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_is_climbing(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_is_climbing)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -144,7 +143,7 @@ int LuaLocalPlayer::l_is_climbing(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_swimming_vertical(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_swimming_vertical)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -153,7 +152,7 @@ int LuaLocalPlayer::l_swimming_vertical(lua_State *L)
 }
 
 // get_physics_override(self)
-int LuaLocalPlayer::l_get_physics_override(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_physics_override)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -179,7 +178,7 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_last_pos(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_last_pos)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -187,7 +186,7 @@ int LuaLocalPlayer::l_get_last_pos(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_last_velocity(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_last_velocity)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -195,7 +194,7 @@ int LuaLocalPlayer::l_get_last_velocity(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_last_look_vertical(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_last_look_vertical)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -203,7 +202,7 @@ int LuaLocalPlayer::l_get_last_look_vertical(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_last_look_horizontal(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_last_look_horizontal)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -212,7 +211,7 @@ int LuaLocalPlayer::l_get_last_look_horizontal(lua_State *L)
 }
 
 // get_control(self)
-int LuaLocalPlayer::l_get_control(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_control)
 {
 	LocalPlayer *player = getobject(L, 1);
 	const PlayerControl &c = player->getPlayerControl();
@@ -244,7 +243,7 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 }
 
 // get_breath(self)
-int LuaLocalPlayer::l_get_breath(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_breath)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -253,7 +252,7 @@ int LuaLocalPlayer::l_get_breath(lua_State *L)
 }
 
 // get_pos(self)
-int LuaLocalPlayer::l_get_pos(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_pos)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -262,7 +261,7 @@ int LuaLocalPlayer::l_get_pos(lua_State *L)
 }
 
 // get_movement_acceleration(self)
-int LuaLocalPlayer::l_get_movement_acceleration(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_movement_acceleration)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -280,7 +279,7 @@ int LuaLocalPlayer::l_get_movement_acceleration(lua_State *L)
 }
 
 // get_movement_speed(self)
-int LuaLocalPlayer::l_get_movement_speed(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_movement_speed)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -304,7 +303,7 @@ int LuaLocalPlayer::l_get_movement_speed(lua_State *L)
 }
 
 // get_movement(self)
-int LuaLocalPlayer::l_get_movement(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_movement)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -326,7 +325,7 @@ int LuaLocalPlayer::l_get_movement(lua_State *L)
 }
 
 // get_armor_groups(self)
-int LuaLocalPlayer::l_get_armor_groups(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_get_armor_groups)
 {
 	LocalPlayer *player = getobject(L, 1);
 	push_groups(L, player->getCAO()->getGroups());
@@ -334,7 +333,7 @@ int LuaLocalPlayer::l_get_armor_groups(lua_State *L)
 }
 
 // hud_add(self, form)
-int LuaLocalPlayer::l_hud_add(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_hud_add)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -351,7 +350,7 @@ int LuaLocalPlayer::l_hud_add(lua_State *L)
 }
 
 // hud_remove(self, id)
-int LuaLocalPlayer::l_hud_remove(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_hud_remove)
 {
 	LocalPlayer *player = getobject(L, 1);
 	u32 id = luaL_checkinteger(L, 2);
@@ -365,7 +364,7 @@ int LuaLocalPlayer::l_hud_remove(lua_State *L)
 }
 
 // hud_change(self, id, stat, data)
-int LuaLocalPlayer::l_hud_change(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_hud_change)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -384,7 +383,7 @@ int LuaLocalPlayer::l_hud_change(lua_State *L)
 }
 
 // hud_get(self, id)
-int LuaLocalPlayer::l_hud_get(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, l_hud_get)
 {
 	LocalPlayer *player = getobject(L, 1);
 
@@ -425,7 +424,7 @@ LocalPlayer *LuaLocalPlayer::getobject(lua_State *L, int narg)
 	return player;
 }
 
-int LuaLocalPlayer::gc_object(lua_State *L)
+ENTRY_POINT_DEF(LuaLocalPlayer, gc_object)
 {
 	LuaLocalPlayer *o = *(LuaLocalPlayer **)(lua_touserdata(L, 1));
 	delete o;

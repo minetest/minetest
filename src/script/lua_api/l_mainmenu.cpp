@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_mainmenu.h"
-#include "lua_api/l_internal.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
 #include "scripting_mainmenu.h"
@@ -86,7 +85,7 @@ int ModApiMainMenu::getBoolData(lua_State *L, std::string name,bool& valid)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_update_formspec(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_update_formspec)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -105,7 +104,7 @@ int ModApiMainMenu::l_update_formspec(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_set_formspec_prepend(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_set_formspec_prepend)
 {
 	GUIEngine *engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -120,7 +119,7 @@ int ModApiMainMenu::l_set_formspec_prepend(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_start(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_start)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -149,7 +148,7 @@ int ModApiMainMenu::l_start(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_close(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_close)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -159,7 +158,7 @@ int ModApiMainMenu::l_close(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_set_background(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_set_background)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -204,7 +203,7 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_set_clouds(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_set_clouds)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -217,14 +216,14 @@ int ModApiMainMenu::l_set_clouds(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_textlist_index(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_textlist_index)
 {
 	// get_table_index accepts both tables and textlists
 	return l_get_table_index(L);
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_table_index(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_table_index)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -241,7 +240,7 @@ int ModApiMainMenu::l_get_table_index(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_worlds(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_worlds)
 {
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
 
@@ -274,7 +273,7 @@ int ModApiMainMenu::l_get_worlds(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_games(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_games)
 {
 	std::vector<SubgameSpec> games = getAvailableGames();
 
@@ -337,7 +336,7 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_content_info(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_content_info)
 {
 	std::string path = luaL_checkstring(L, 1);
 
@@ -393,7 +392,7 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_show_keys_menu(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_show_keys_menu)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -409,7 +408,7 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_create_world(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_create_world)
 {
 	const char *name	= luaL_checkstring(L, 1);
 	int gameidx			= luaL_checkinteger(L,2) -1;
@@ -465,7 +464,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_delete_world(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_delete_world)
 {
 	int world_id = luaL_checkinteger(L, 1) - 1;
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
@@ -482,7 +481,7 @@ int ModApiMainMenu::l_delete_world(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_set_topleft_text(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_set_topleft_text)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -497,7 +496,7 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_mapgen_names)
 {
 	std::vector<const char *> names;
 	bool include_hidden = lua_isboolean(L, 1) && readParam<bool>(L, 1);
@@ -514,7 +513,7 @@ int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_user_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_user_path)
 {
 	std::string path = fs::RemoveRelativePathComponents(porting::path_user);
 	lua_pushstring(L, path.c_str());
@@ -522,7 +521,7 @@ int ModApiMainMenu::l_get_user_path(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_modpath(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_modpath)
 {
 	std::string modpath = fs::RemoveRelativePathComponents(
 		porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
@@ -531,7 +530,7 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_modpaths(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_modpaths)
 {
 	lua_newtable(L);
 
@@ -546,7 +545,7 @@ int ModApiMainMenu::l_get_modpaths(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_clientmodpath)
 {
 	std::string modpath = fs::RemoveRelativePathComponents(
 		porting::path_user + DIR_DELIM + "clientmods" + DIR_DELIM);
@@ -555,7 +554,7 @@ int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_gamepath(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_gamepath)
 {
 	std::string gamepath = fs::RemoveRelativePathComponents(
 		porting::path_user + DIR_DELIM + "games" + DIR_DELIM);
@@ -564,7 +563,7 @@ int ModApiMainMenu::l_get_gamepath(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_texturepath(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_texturepath)
 {
 	std::string gamepath = fs::RemoveRelativePathComponents(
 		porting::path_user + DIR_DELIM + "textures");
@@ -573,7 +572,7 @@ int ModApiMainMenu::l_get_texturepath(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_texturepath_share(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_texturepath_share)
 {
 	std::string gamepath = fs::RemoveRelativePathComponents(
 		porting::path_share + DIR_DELIM + "textures");
@@ -582,14 +581,14 @@ int ModApiMainMenu::l_get_texturepath_share(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_cache_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_cache_path)
 {
 	lua_pushstring(L, fs::RemoveRelativePathComponents(porting::path_cache).c_str());
 	return 1;
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_temp_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_temp_path)
 {
 	if (lua_isnoneornil(L, 1) || !lua_toboolean(L, 1))
 		lua_pushstring(L, fs::TempPath().c_str());
@@ -612,7 +611,7 @@ int ModApiMainMenu::l_create_dir(lua_State *L) {
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_delete_dir(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_delete_dir)
 {
 	const char *path = luaL_checkstring(L, 1);
 
@@ -628,7 +627,7 @@ int ModApiMainMenu::l_delete_dir(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_copy_dir(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_copy_dir)
 {
 	const char *source	= luaL_checkstring(L, 1);
 	const char *destination	= luaL_checkstring(L, 2);
@@ -656,7 +655,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_is_dir(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_is_dir)
 {
 	const char *path = luaL_checkstring(L, 1);
 
@@ -665,7 +664,7 @@ int ModApiMainMenu::l_is_dir(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_extract_zip(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_extract_zip)
 {
 	const char *zipfile	= luaL_checkstring(L, 1);
 	const char *destination	= luaL_checkstring(L, 2);
@@ -684,7 +683,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_mainmenu_path)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -722,7 +721,7 @@ bool ModApiMainMenu::mayModifyPath(std::string path)
 
 
 /******************************************************************************/
-int ModApiMainMenu::l_may_modify_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_may_modify_path)
 {
 	const char *target = luaL_checkstring(L, 1);
 	std::string absolute_destination = fs::RemoveRelativePathComponents(target);
@@ -731,7 +730,7 @@ int ModApiMainMenu::l_may_modify_path(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_show_path_select_dialog)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
@@ -754,7 +753,7 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_download_file(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_download_file)
 {
 	const char *url    = luaL_checkstring(L, 1);
 	const char *target = luaL_checkstring(L, 2);
@@ -776,7 +775,7 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_video_drivers(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_video_drivers)
 {
 	std::vector<irr::video::E_DRIVER_TYPE> drivers = RenderingEngine::getSupportedVideoDrivers();
 
@@ -797,7 +796,7 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_gettext(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_gettext)
 {
 	const char *srctext = luaL_checkstring(L, 1);
 	const char *text = *srctext ? gettext(srctext) : "";
@@ -807,7 +806,7 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_screen_info(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_screen_info)
 {
 	lua_newtable(L);
 	int top = lua_gettop(L);
@@ -831,20 +830,20 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_min_supp_proto)
 {
 	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
 	return 1;
 }
 
-int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_get_max_supp_proto)
 {
 	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MAX);
 	return 1;
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_open_url(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_open_url)
 {
 	std::string url = luaL_checkstring(L, 1);
 	lua_pushboolean(L, porting::open_url(url));
@@ -852,7 +851,7 @@ int ModApiMainMenu::l_open_url(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_open_dir(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_open_dir)
 {
 	std::string path = luaL_checkstring(L, 1);
 	lua_pushboolean(L, porting::open_directory(path));
@@ -860,7 +859,7 @@ int ModApiMainMenu::l_open_dir(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_do_async_callback(lua_State *L)
+ENTRY_POINT_DEF(ModApiMainMenu, l_do_async_callback)
 {
 	MainMenuScripting *script = getScriptApi<MainMenuScripting>(L);
 

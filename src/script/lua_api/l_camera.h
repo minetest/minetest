@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "l_base.h"
+#include "l_internal.h"
 
 class Camera;
 
@@ -30,19 +31,19 @@ private:
 	static const luaL_Reg methods[];
 
 	// garbage collector
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
-	static int l_set_camera_mode(lua_State *L);
-	static int l_get_camera_mode(lua_State *L);
+	ENTRY_POINT_DECL(l_set_camera_mode);
+	ENTRY_POINT_DECL(l_get_camera_mode);
 
-	static int l_get_fov(lua_State *L);
+	ENTRY_POINT_DECL(l_get_fov);
 
-	static int l_get_pos(lua_State *L);
-	static int l_get_offset(lua_State *L);
-	static int l_get_look_dir(lua_State *L);
-	static int l_get_look_vertical(lua_State *L);
-	static int l_get_look_horizontal(lua_State *L);
-	static int l_get_aspect_ratio(lua_State *L);
+	ENTRY_POINT_DECL(l_get_pos);
+	ENTRY_POINT_DECL(l_get_offset);
+	ENTRY_POINT_DECL(l_get_look_dir);
+	ENTRY_POINT_DECL(l_get_look_vertical);
+	ENTRY_POINT_DECL(l_get_look_horizontal);
+	ENTRY_POINT_DECL(l_get_aspect_ratio);
 
 	Camera *m_camera = nullptr;
 

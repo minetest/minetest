@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "lua_api/l_internal.h"
 
 class AreaStore;
 
@@ -29,23 +30,23 @@ private:
 	static const char className[];
 	static const luaL_Reg methods[];
 
-	static int gc_object(lua_State *L);
+	ENTRY_POINT_DECL(gc_object);
 
-	static int l_get_area(lua_State *L);
+	ENTRY_POINT_DECL(l_get_area);
 
-	static int l_get_areas_for_pos(lua_State *L);
-	static int l_get_areas_in_area(lua_State *L);
-	static int l_insert_area(lua_State *L);
-	static int l_reserve(lua_State *L);
-	static int l_remove_area(lua_State *L);
+	ENTRY_POINT_DECL(l_get_areas_for_pos);
+	ENTRY_POINT_DECL(l_get_areas_in_area);
+	ENTRY_POINT_DECL(l_insert_area);
+	ENTRY_POINT_DECL(l_reserve);
+	ENTRY_POINT_DECL(l_remove_area);
 
-	static int l_set_cache_params(lua_State *L);
+	ENTRY_POINT_DECL(l_set_cache_params);
 
-	static int l_to_string(lua_State *L);
-	static int l_to_file(lua_State *L);
+	ENTRY_POINT_DECL(l_to_string);
+	ENTRY_POINT_DECL(l_to_file);
 
-	static int l_from_string(lua_State *L);
-	static int l_from_file(lua_State *L);
+	ENTRY_POINT_DECL(l_from_string);
+	ENTRY_POINT_DECL(l_from_file);
 
 public:
 	AreaStore *as = nullptr;
@@ -56,7 +57,7 @@ public:
 
 	// AreaStore()
 	// Creates a AreaStore and leaves it on top of stack
-	static int create_object(lua_State *L);
+	ENTRY_POINT_DECL(create_object);
 
 	static LuaAreaStore *checkobject(lua_State *L, int narg);
 

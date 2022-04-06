@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
 #include "gettext.h"
-#include "l_internal.h"
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
 #include "map.h"
@@ -60,14 +59,14 @@ const static CSMFlagDesc flagdesc_csm_restriction[] = {
 };
 
 // get_current_modname()
-int ModApiClient::l_get_current_modname(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_current_modname)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	return 1;
 }
 
 // get_modpath(modname)
-int ModApiClient::l_get_modpath(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_modpath)
 {
 	std::string modname = readParam<std::string>(L, 1);
 	// Client mods use a virtual filesystem, see Client::scanModSubfolder()
@@ -77,7 +76,7 @@ int ModApiClient::l_get_modpath(lua_State *L)
 }
 
 // get_last_run_mod()
-int ModApiClient::l_get_last_run_mod(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_last_run_mod)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	std::string current_mod = readParam<std::string>(L, -1, "");
@@ -89,7 +88,7 @@ int ModApiClient::l_get_last_run_mod(lua_State *L)
 }
 
 // set_last_run_mod(modname)
-int ModApiClient::l_set_last_run_mod(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_set_last_run_mod)
 {
 	if (!lua_isstring(L, 1))
 		return 0;
@@ -101,7 +100,7 @@ int ModApiClient::l_set_last_run_mod(lua_State *L)
 }
 
 // print(text)
-int ModApiClient::l_print(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_print)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string text = luaL_checkstring(L, 1);
@@ -110,7 +109,7 @@ int ModApiClient::l_print(lua_State *L)
 }
 
 // display_chat_message(message)
-int ModApiClient::l_display_chat_message(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_display_chat_message)
 {
 	if (!lua_isstring(L, 1))
 		return 0;
@@ -122,7 +121,7 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 }
 
 // send_chat_message(message)
-int ModApiClient::l_send_chat_message(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_send_chat_message)
 {
 	if (!lua_isstring(L, 1))
 		return 0;
@@ -138,14 +137,14 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 }
 
 // clear_out_chat_queue()
-int ModApiClient::l_clear_out_chat_queue(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_clear_out_chat_queue)
 {
 	getClient(L)->clearOutChatQueue();
 	return 0;
 }
 
 // get_player_names()
-int ModApiClient::l_get_player_names(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_player_names)
 {
 	if (checkCSMRestrictionFlag(CSM_RF_READ_PLAYERINFO))
 		return 0;
@@ -164,7 +163,7 @@ int ModApiClient::l_get_player_names(lua_State *L)
 }
 
 // show_formspec(formspec)
-int ModApiClient::l_show_formspec(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_show_formspec)
 {
 	if (!lua_isstring(L, 1) || !lua_isstring(L, 2))
 		return 0;
@@ -179,14 +178,14 @@ int ModApiClient::l_show_formspec(lua_State *L)
 }
 
 // send_respawn()
-int ModApiClient::l_send_respawn(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_send_respawn)
 {
 	getClient(L)->sendRespawn();
 	return 0;
 }
 
 // disconnect()
-int ModApiClient::l_disconnect(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_disconnect)
 {
 	// Stops badly written Lua code form causing boot loops
 	if (getClient(L)->isShutdown()) {
@@ -200,7 +199,7 @@ int ModApiClient::l_disconnect(lua_State *L)
 }
 
 // gettext(text)
-int ModApiClient::l_gettext(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_gettext)
 {
 	std::string text = strgettext(std::string(luaL_checkstring(L, 1)));
 	lua_pushstring(L, text.c_str());
@@ -210,7 +209,7 @@ int ModApiClient::l_gettext(lua_State *L)
 
 // get_node_or_nil(pos)
 // pos = {x=num, y=num, z=num}
-int ModApiClient::l_get_node_or_nil(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_node_or_nil)
 {
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
@@ -228,7 +227,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 }
 
 // get_langauge()
-int ModApiClient::l_get_language(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_language)
 {
 #ifdef _WIN32
 	char *locale = setlocale(LC_ALL, NULL);
@@ -245,7 +244,7 @@ int ModApiClient::l_get_language(lua_State *L)
 }
 
 // get_meta(pos)
-int ModApiClient::l_get_meta(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_meta)
 {
 	v3s16 p = read_v3s16(L, 1);
 
@@ -261,7 +260,7 @@ int ModApiClient::l_get_meta(lua_State *L)
 }
 
 // sound_play(spec, parameters)
-int ModApiClient::l_sound_play(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_sound_play)
 {
 	ISoundManager *sound = getClient(L)->getSoundManager();
 
@@ -296,7 +295,7 @@ int ModApiClient::l_sound_play(lua_State *L)
 }
 
 // sound_stop(handle)
-int ModApiClient::l_sound_stop(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_sound_stop)
 {
 	s32 handle = luaL_checkinteger(L, 1);
 
@@ -306,7 +305,7 @@ int ModApiClient::l_sound_stop(lua_State *L)
 }
 
 // sound_fade(handle, step, gain)
-int ModApiClient::l_sound_fade(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_sound_fade)
 {
 	s32 handle = luaL_checkinteger(L, 1);
 	float step = readParam<float>(L, 2);
@@ -316,7 +315,7 @@ int ModApiClient::l_sound_fade(lua_State *L)
 }
 
 // get_server_info()
-int ModApiClient::l_get_server_info(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_server_info)
 {
 	Client *client = getClient(L);
 	Address serverAddress = client->getServerAddress();
@@ -333,7 +332,7 @@ int ModApiClient::l_get_server_info(lua_State *L)
 }
 
 // get_item_def(itemstring)
-int ModApiClient::l_get_item_def(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_item_def)
 {
 	IGameDef *gdef = getGameDef(L);
 	assert(gdef);
@@ -358,7 +357,7 @@ int ModApiClient::l_get_item_def(lua_State *L)
 }
 
 // get_node_def(nodename)
-int ModApiClient::l_get_node_def(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_node_def)
 {
 	IGameDef *gdef = getGameDef(L);
 	assert(gdef);
@@ -383,7 +382,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 }
 
 // get_privilege_list()
-int ModApiClient::l_get_privilege_list(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_privilege_list)
 {
 	const Client *client = getClient(L);
 	lua_newtable(L);
@@ -395,14 +394,14 @@ int ModApiClient::l_get_privilege_list(lua_State *L)
 }
 
 // get_builtin_path()
-int ModApiClient::l_get_builtin_path(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_builtin_path)
 {
 	lua_pushstring(L, BUILTIN_MOD_NAME ":");
 	return 1;
 }
 
 // get_csm_restrictions()
-int ModApiClient::l_get_csm_restrictions(lua_State *L)
+ENTRY_POINT_DEF(ModApiClient, l_get_csm_restrictions)
 {
 	u64 flags = getClient(L)->getCSMRestrictionFlags();
 	const CSMFlagDesc *flagdesc = flagdesc_csm_restriction;

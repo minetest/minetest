@@ -21,13 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_particles_local.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
-#include "lua_api/l_internal.h"
 #include "lua_api/l_object.h"
 #include "client/particles.h"
 #include "client/client.h"
 #include "client/clientevent.h"
 
-int ModApiParticlesLocal::l_add_particle(lua_State *L)
+ENTRY_POINT_DEF(ModApiParticlesLocal, l_add_particle)
 {
 	luaL_checktype(L, 1, LUA_TTABLE);
 
@@ -82,7 +81,7 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	return 0;
 }
 
-int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
+ENTRY_POINT_DEF(ModApiParticlesLocal, l_add_particlespawner)
 {
 	luaL_checktype(L, 1, LUA_TTABLE);
 
@@ -162,7 +161,7 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	return 1;
 }
 
-int ModApiParticlesLocal::l_delete_particlespawner(lua_State *L)
+ENTRY_POINT_DEF(ModApiParticlesLocal, l_delete_particlespawner)
 {
 	// Get parameters
 	u32 id = luaL_checknumber(L, 1);

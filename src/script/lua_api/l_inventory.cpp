@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_inventory.h"
-#include "lua_api/l_internal.h"
 #include "lua_api/l_item.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
@@ -68,7 +67,7 @@ int InvRef::gc_object(lua_State *L) {
 }
 
 // is_empty(self, listname) -> true/false
-int InvRef::l_is_empty(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_is_empty)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -83,7 +82,7 @@ int InvRef::l_is_empty(lua_State *L)
 }
 
 // get_size(self, listname)
-int InvRef::l_get_size(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_get_size)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -98,7 +97,7 @@ int InvRef::l_get_size(lua_State *L)
 }
 
 // get_width(self, listname)
-int InvRef::l_get_width(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_get_width)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -113,7 +112,7 @@ int InvRef::l_get_width(lua_State *L)
 }
 
 // set_size(self, listname, size)
-int InvRef::l_set_size(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_set_size)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -153,7 +152,7 @@ int InvRef::l_set_size(lua_State *L)
 }
 
 // set_width(self, listname, size)
-int InvRef::l_set_width(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_set_width)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -174,7 +173,7 @@ int InvRef::l_set_width(lua_State *L)
 }
 
 // get_stack(self, listname, i) -> itemstack
-int InvRef::l_get_stack(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_get_stack)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -189,7 +188,7 @@ int InvRef::l_get_stack(lua_State *L)
 }
 
 // set_stack(self, listname, i, stack) -> true/false
-int InvRef::l_set_stack(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_set_stack)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -208,7 +207,7 @@ int InvRef::l_set_stack(lua_State *L)
 }
 
 // get_list(self, listname) -> list or nil
-int InvRef::l_get_list(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_get_list)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -228,7 +227,7 @@ int InvRef::l_get_list(lua_State *L)
 }
 
 // set_list(self, listname, list)
-int InvRef::l_set_list(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_set_list)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -248,7 +247,7 @@ int InvRef::l_set_list(lua_State *L)
 }
 
 // get_lists(self) -> table that maps listnames to InventoryLists
-int InvRef::l_get_lists(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_get_lists)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -261,7 +260,7 @@ int InvRef::l_get_lists(lua_State *L)
 }
 
 // set_lists(self, lists)
-int InvRef::l_set_lists(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_set_lists)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -289,7 +288,7 @@ int InvRef::l_set_lists(lua_State *L)
 
 // add_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
 // Returns the leftover stack
-int InvRef::l_add_item(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_add_item)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -309,7 +308,7 @@ int InvRef::l_add_item(lua_State *L)
 
 // room_for_item(self, listname, itemstack or itemstring or table or nil) -> true/false
 // Returns true if the item completely fits into the list
-int InvRef::l_room_for_item(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_room_for_item)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -326,7 +325,7 @@ int InvRef::l_room_for_item(lua_State *L)
 
 // contains_item(self, listname, itemstack or itemstring or table or nil, [match_meta]) -> true/false
 // Returns true if the list contains the given count of the given item
-int InvRef::l_contains_item(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_contains_item)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -346,7 +345,7 @@ int InvRef::l_contains_item(lua_State *L)
 
 // remove_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
 // Returns the items that were actually removed
-int InvRef::l_remove_item(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_remove_item)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -365,7 +364,7 @@ int InvRef::l_remove_item(lua_State *L)
 }
 
 // get_location() -> location (like get_inventory(location))
-int InvRef::l_get_location(lua_State *L)
+ENTRY_POINT_DEF(InvRef, l_get_location)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
@@ -469,7 +468,7 @@ const luaL_Reg InvRef::methods[] = {
 };
 
 // get_inventory(location)
-int ModApiInventory::l_get_inventory(lua_State *L)
+ENTRY_POINT_DEF(ModApiInventory, l_get_inventory)
 {
 	InventoryLocation loc;
 
@@ -511,7 +510,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 }
 
 // create_detached_inventory_raw(name, [player_name])
-int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
+ENTRY_POINT_DEF(ModApiInventory, l_create_detached_inventory_raw)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
@@ -527,7 +526,7 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 }
 
 // remove_detached_inventory_raw(name)
-int ModApiInventory::l_remove_detached_inventory_raw(lua_State *L)
+ENTRY_POINT_DEF(ModApiInventory, l_remove_detached_inventory_raw)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const std::string &name = luaL_checkstring(L, 1);
