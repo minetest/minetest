@@ -313,11 +313,11 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	static void set_sky(lua_State *L, int idx, RemotePlayer* player);
-	static void set_sun(lua_State *L, int idx, RemotePlayer* player);
-	static void set_moon(lua_State *L, int idx, RemotePlayer* player);
-	static void set_stars(lua_State *L, int idx, RemotePlayer* player);
-	static void set_clouds(lua_State *L, int idx, RemotePlayer* player);
+	static void set_sky(lua_State *L, int table_index, RemotePlayer *player);
+	static void set_sun(lua_State *L, int table_index, RemotePlayer *player);
+	static void set_moon(lua_State *L, int table_index, RemotePlayer *player);
+	static void set_stars(lua_State *L, int table_index, RemotePlayer *player);
+	static void set_clouds(lua_State *L, int table_index, RemotePlayer *player);
 
 	// set_celestial_vault(self, vault_parameters)
 	static int l_set_celestial_vault(lua_State *L);

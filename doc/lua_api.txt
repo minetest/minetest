@@ -6874,6 +6874,18 @@ object you are working with still exists.
           nodes square)
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
+* `set_celestial_vault(vault_parameters)`
+    *  Allows to set every celestial vault element in one take.
+    * `vault_parameters` is a table optionally containing the tables `sky`, `sun`,
+      `moon`, `stars` and `clouds`. These tables take in the parameters
+      indicated in their more specific functions (`set_sky()`, `set_sun()` etc).
+   * Passing no arguments resets every element of the vault to its default values.
+     To reset just a single element, its specific function must be used instead.
+* `get_celestial_vault()`
+    * returns a table containing every celestial vault element of the player, in
+      the format `sky`, `sun`, `moon`, `stars` and `clouds` as tables. See their
+      corrispondent specific functions to know what each one of them contains (`get_sky()`, 
+      `get_sun()` etc).
 * `set_sky(sky_parameters)`
     * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
       whether `set_sky` accepts this format. Check the legacy format otherwise.

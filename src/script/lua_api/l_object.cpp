@@ -1716,12 +1716,12 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 	return 1;
 }
 
-void ObjectRef::set_sky(lua_State *L, int idx, RemotePlayer *player)
+void ObjectRef::set_sky(lua_State *L, int table_index, RemotePlayer *player)
 {
 	SkyboxParams sky_params = player->getSkyParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, idx)) {
+	if (lua_isnoneornil(L, table_index)) {
 		sky_params = SkyboxDefaults::getSkyDefaults();
 	} else {
 		lua_getfield(L, -1, "base_color");
@@ -1807,12 +1807,12 @@ void ObjectRef::set_sky(lua_State *L, int idx, RemotePlayer *player)
 	getServer(L)->setSky(player, sky_params);
 }
 
-void ObjectRef::set_sun(lua_State *L, int idx, RemotePlayer *player)
+void ObjectRef::set_sun(lua_State *L, int table_index, RemotePlayer *player)
 {
 	SunParams sun_params = player->getSunParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, idx)) {
+	if (lua_isnoneornil(L, table_index)) {
 		sun_params = SkyboxDefaults::getSunDefaults();
 	} else {
 		luaL_checktype(L, -1, LUA_TTABLE);
@@ -1827,12 +1827,12 @@ void ObjectRef::set_sun(lua_State *L, int idx, RemotePlayer *player)
 	getServer(L)->setSun(player, sun_params);
 }
 
-void ObjectRef::set_moon(lua_State *L, int idx, RemotePlayer *player)
+void ObjectRef::set_moon(lua_State *L, int table_index, RemotePlayer *player)
 {
 	MoonParams moon_params = player->getMoonParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, idx)) {
+	if (lua_isnoneornil(L, table_index)) {
 		moon_params = SkyboxDefaults::getMoonDefaults();
 	} else {
 		luaL_checktype(L, -1, LUA_TTABLE);
@@ -1845,12 +1845,12 @@ void ObjectRef::set_moon(lua_State *L, int idx, RemotePlayer *player)
 	getServer(L)->setMoon(player, moon_params);
 }
 
-void ObjectRef::set_stars(lua_State *L, int idx, RemotePlayer *player)
+void ObjectRef::set_stars(lua_State *L, int table_index, RemotePlayer *player)
 {
 	StarParams star_params = player->getStarParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, idx)) {
+	if (lua_isnoneornil(L, table_index)) {
 		star_params = SkyboxDefaults::getStarDefaults();
 	} else {
 		luaL_checktype(L, -1, LUA_TTABLE);
@@ -1869,12 +1869,12 @@ void ObjectRef::set_stars(lua_State *L, int idx, RemotePlayer *player)
 	getServer(L)->setStars(player, star_params);
 }
 
-void ObjectRef::set_clouds(lua_State *L, int idx, RemotePlayer *player)
+void ObjectRef::set_clouds(lua_State *L, int table_index, RemotePlayer *player)
 {
 	CloudParams cloud_params = player->getCloudParams();
 
 	// reset if empty
-	if (lua_isnoneornil(L, idx)) {
+	if (lua_isnoneornil(L, table_index)) {
 		cloud_params = SkyboxDefaults::getCloudDefaults();
 	} else {
 		luaL_checktype(L, -1, LUA_TTABLE);
