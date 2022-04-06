@@ -25,8 +25,6 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#include "gamedef.h"
-
 class TestLua : public TestBase
 {
 public:
@@ -50,23 +48,20 @@ void TestLua::runTests(IGameDef *gamedef)
 namespace
 {
 
-class DestructorDetector {
-public:
-	DestructorDetector(bool *did_destruct): m_did_destruct(did_destruct)
-	{
-		*m_did_destruct = false;
-	}
+	class DestructorDetector {
+		bool *did_destruct;
+	public:
+		DestructorDetector(bool *did_destruct) : did_destruct(did_destruct)
+		{
+			*did_destruct = false;
+		}
+		~DestructorDetector()
+		{
+			*did_destruct = true;
+		}
+	};
 
-	~DestructorDetector()
-	{
-		*m_did_destruct = true;
-	}
-
-private:
-	bool *m_did_destruct;
-};
-
-} // namespace
+}
 
 void TestLua::testLuaDestructors()
 {
@@ -74,10 +69,10 @@ void TestLua::testLuaDestructors()
 
 	lua_State *L = luaL_newstate();
 	lua_cpcall(L, [](lua_State *L) -> int {
-		DestructorDetector destructor_detector(reinterpret_cast<bool*>(lua_touserdata(L, 1)));
+		DestructorDetector d(reinterpret_cast<bool*>(lua_touserdata(L, 1)));
 		luaL_error(L, "error");
 		return 0;
-	}, (void *)&did_destruct);
+	}, &did_destruct);
 	lua_close(L);
 
 	UASSERT(did_destruct);
