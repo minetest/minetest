@@ -6041,6 +6041,7 @@ Misc.
         2. You can not mix string and integer keys.
            This is due to the fact that JSON has two distinct array and object
            values.
+    * Note: Empty tables are serialized as `"[]"`, not `"{}"`.
     * Example: `write_json({10, {a = false}})`,
       returns `'[10, {"a": false}]'`
 * `minetest.serialize(table)`: returns a string
