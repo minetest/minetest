@@ -111,6 +111,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
+	// Without LuaJIT, the wrapper is added manually in ENTRY_POINT_DEF
 #if USE_LUAJIT
 	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
 	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
