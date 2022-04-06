@@ -1113,7 +1113,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setLookPitchAndSend(pitch);
-	return 1;
+	return 0;
 }
 
 // set_look_horizontal(self, radians)
@@ -1128,7 +1128,7 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setPlayerYawAndSend(yaw);
-	return 1;
+	return 0;
 }
 
 // DEPRECATED
@@ -1148,7 +1148,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setLookPitchAndSend(pitch);
-	return 1;
+	return 0;
 }
 
 // DEPRECATED
@@ -1168,7 +1168,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setPlayerYawAndSend(yaw);
-	return 1;
+	return 0;
 }
 
 // set_fov(self, degrees, is_multiplier, transition_time)
