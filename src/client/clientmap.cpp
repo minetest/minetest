@@ -862,20 +862,14 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 /*
 	Custom update draw list for the pov of shadow light.
 */
-void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range)
+void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length)
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
 
-	const v3f camera_position = shadow_light_pos;
-	const v3f camera_direction = shadow_light_dir;
-	// I "fake" fov just to avoid creating a new function to handle orthographic
-	// projection.
-	const f32 camera_fov = m_camera_fov * 1.9f;
-
-	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
+	v3s16 cam_pos_nodes = floatToInt(shadow_light_pos, BS);
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
-	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, shadow_range);
+	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, radius + length);
 
 	std::vector<v2s16> blocks_in_range;
 
@@ -889,10 +883,10 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 	// they are not inside the light frustum and it creates glitches.
 	// FIXME: This could be removed if we figure out why they are missing
 	// from the light frustum.
-	for (auto &i : m_drawlist) {
-		i.second->refGrab();
-		m_drawlist_shadow[i.first] = i.second;
-	}
+	// for (auto &i : m_drawlist) {
+	// 	i.second->refGrab();
+	// 	m_drawlist_shadow[i.first] = i.second;
+	// }
 
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
@@ -919,22 +913,12 @@ void ClientMap::updateDrawListShadow(const v3f &shadow_light_pos, const v3f &sha
 				continue;
 			}
 
-			float range = shadow_range;
-
-			float d = 0.0;
-			if (!isBlockInSight(block->getPos(), camera_position,
-					    camera_direction, camera_fov, range, &d))
+			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS);
+			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
+			if (projection.getDistanceFrom(block_pos) > radius)
 				continue;
 
 			blocks_in_range_with_mesh++;
-
-			/*
-				Occlusion culling
-			*/
-			if (isBlockOccluded(block, cam_pos_nodes)) {
-				blocks_occlusion_culled++;
-				continue;
-			}
 
 			// This block is in range. Reset usage timer.
 			block->resetUsageTimer();

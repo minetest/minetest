@@ -17,6 +17,7 @@ uniform float animationTimer;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
+	uniform vec4 CameraPos;
 	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float cosLight;
@@ -53,12 +54,13 @@ uniform float zPerspectiveBias;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
 {
-
-	float pDistance = length(shadowPosition.xy);
+	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
+	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
+	float pDistance = length(l);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
-
+	l /= pFactor;
+	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
+	shadowPosition.z *= zPerspectiveBias;
 	return shadowPosition;
 }
 
@@ -171,13 +173,13 @@ float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDis
 
 float getBaseLength(vec2 smTexCoord)
 {
-	float l = length(2.0 * smTexCoord.xy - 1.0);     // length in texture coords
+	float l = length(2.0 * smTexCoord.xy - 1.0 - CameraPos.xy);     // length in texture coords
 	return xyPerspectiveBias1 / (1.0 / l - xyPerspectiveBias0); 				 // return to undistorted coords
 }
 
 float getDeltaPerspectiveFactor(float l)
 {
-	return 0.1 / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
+	return 0.04 * pow(512.0 / f_textureresolution, 0.4) / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
 }
 
 float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDistance, float multiplier)
@@ -185,7 +187,6 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float baseLength = getBaseLength(smTexCoord);
 	float perspectiveFactor;
 
-	if (PCFBOUND == 0.0) return 0.0;
 	// Return fast if sharp shadows are requested
 	if (PCFBOUND == 0.0)
 		return 0.0;
@@ -489,11 +490,13 @@ void main(void)
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
 		vec3 posLightSpace = getLightSpacePosition();
 
-		float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 50.0));
+		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
+		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
+			distance_rate = 0.0;
 		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
-		
+
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
 			if (cosLight > 0.0)
@@ -527,7 +530,7 @@ void main(void)
 		}
 
 		shadow_int *= f_adj_shadow_strength;
-		
+
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light

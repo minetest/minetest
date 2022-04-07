@@ -1,4 +1,5 @@
 uniform mat4 LightMVP; // world matrix
+uniform vec4 CameraPos; // camera position
 varying vec4 tPos;
 
 uniform float xyPerspectiveBias0;
@@ -7,10 +8,13 @@ uniform float zPerspectiveBias;
 
 vec4 getPerspectiveFactor(in vec4 shadowPosition)
 {
-	float pDistance = length(shadowPosition.xy);
+	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
+	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
+	float pDistance = length(l);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
-
+	l /= pFactor;
+	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
+	shadowPosition.z *= zPerspectiveBias;
 	return shadowPosition;
 }
 

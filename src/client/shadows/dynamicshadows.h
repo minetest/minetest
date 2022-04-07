@@ -29,12 +29,14 @@ class Client;
 
 struct shadowFrustum
 {
-	float zNear{0.0f};
-	float zFar{0.0f};
-	float length{0.0f};
+	f32 zNear{0.0f};
+	f32 zFar{0.0f};
+	f32 length{0.0f};
+	f32 radius{0.0f};
 	core::matrix4 ProjOrthMat;
 	core::matrix4 ViewMat;
 	v3f position;
+	v3f player;
 	v3s16 camera_offset;
 };
 
@@ -57,6 +59,8 @@ public:
 		return direction;
 	};
 	v3f getPosition() const;
+	v3f getPlayerPos() const;
+	v3f getFuturePlayerPos() const;
 
 	/// Gets the light's matrices.
 	const core::matrix4 &getViewMatrix() const;
