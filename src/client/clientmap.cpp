@@ -879,15 +879,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	}
 	m_drawlist_shadow.clear();
 
-	// We need to append the blocks from the camera POV because sometimes
-	// they are not inside the light frustum and it creates glitches.
-	// FIXME: This could be removed if we figure out why they are missing
-	// from the light frustum.
-	// for (auto &i : m_drawlist) {
-	// 	i.second->refGrab();
-	// 	m_drawlist_shadow[i.first] = i.second;
-	// }
-
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
 	// Number of blocks with mesh in rendering range
