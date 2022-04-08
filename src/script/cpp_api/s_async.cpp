@@ -77,12 +77,27 @@ void AsyncEngine::initialize(unsigned int numEngines)
 {
 	initDone = true;
 
-	for (unsigned int i = 0; i < numEngines; i++) {
-		AsyncWorkerThread *toAdd = new AsyncWorkerThread(this,
-			std::string("AsyncWorker-") + itos(i));
-		workerThreads.push_back(toAdd);
-		toAdd->start();
+	if (numEngines == 0) {
+		// Leave one core for the main thread and one for whatever else
+		autoscaleMaxWorkers = Thread::getNumberOfProcessors();
+		if (autoscaleMaxWorkers >= 2)
+			autoscaleMaxWorkers -= 2;
+		infostream << "AsyncEngine: using at most " << autoscaleMaxWorkers
+			<< " threads with automatic scaling" << std::endl;
+
+		addWorkerThread();
+	} else {
+		for (unsigned int i = 0; i < numEngines; i++)
+			addWorkerThread();
 	}
+}
+
+void AsyncEngine::addWorkerThread()
+{
+	AsyncWorkerThread *toAdd = new AsyncWorkerThread(this,
+		std::string("AsyncWorker-") + itos(workerThreads.size()));
+	workerThreads.push_back(toAdd);
+	toAdd->start();
 }
 
 /******************************************************************************/
@@ -151,6 +166,12 @@ void AsyncEngine::putJobResult(LuaJobInfo &&result)
 /******************************************************************************/
 void AsyncEngine::step(lua_State *L)
 {
+	stepJobResults(L);
+	stepAutoscale();
+}
+
+void AsyncEngine::stepJobResults(lua_State *L)
+{
 	int error_handler = PUSH_ERROR_HANDLER(L);
 	lua_getglobal(L, "core");
 
@@ -181,6 +202,40 @@ void AsyncEngine::step(lua_State *L)
 	}
 
 	lua_pop(L, 2); // Pop core and error handler
+}
+
+void AsyncEngine::stepAutoscale()
+{
+	if (workerThreads.size() >= autoscaleMaxWorkers)
+		return;
+
+	MutexAutoLock autolock(jobQueueMutex);
+
+	// 2) If the timer elapsed, check again
+	if (autoscaleTimer && autoscaleTimer <= porting::getTimeMs()) {
+		autoscaleTimer = 0;
+		// Determine overlap with previous snapshot
+		unsigned int n = 0;
+		for (const auto &it : jobQueue)
+			n += autoscaleSeenJobs.count(it.id);
+		autoscaleSeenJobs.clear();
+		infostream << "AsyncEngine: " << n << " jobs were still waiting after 1s" << std::endl;
+		// Start this many new threads
+		while (workerThreads.size() < autoscaleMaxWorkers && n > 0) {
+			addWorkerThread();
+			n--;
+		}
+		return;
+	}
+
+	// 1) Check if there's anything in the queue
+	if (!autoscaleTimer && !jobQueue.empty()) {
+		// Take a snapshot of all jobs we have seen
+		for (const auto &it : jobQueue)
+			autoscaleSeenJobs.emplace(it.id);
+		// and set a timer for 1 second
+		autoscaleTimer = porting::getTimeMs() + 1000;
+	}
 }
 
 /******************************************************************************/

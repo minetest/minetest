@@ -95,7 +95,7 @@ void ServerScripting::initAsync()
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 
-	asyncEngine.initialize(2);
+	asyncEngine.initialize(0);
 }
 
 void ServerScripting::stepAsync()

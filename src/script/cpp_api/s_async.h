@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <deque>
+#include <unordered_set>
 #include <memory>
 
 #include <lua.h>
@@ -91,7 +92,7 @@ public:
 
 	/**
 	 * Create async engine tasks and lock function registration
-	 * @param numEngines Number of async threads to be started
+	 * @param numEngines Number of worker threads, 0 for automatic scaling
 	 */
 	void initialize(unsigned int numEngines);
 
@@ -115,7 +116,6 @@ public:
 
 	/**
 	 * Engine step to process finished jobs
-	 *   the engine step is one way to pass events back, PushFinishedJobs another
 	 * @param L The Lua stack
 	 */
 	void step(lua_State *L);
@@ -136,6 +136,21 @@ protected:
 	void putJobResult(LuaJobInfo &&result);
 
 	/**
+	 * Start an additional worker thread
+	 */
+	void addWorkerThread();
+
+	/**
+	 * Process finished jobs callbacks
+	 */
+	void stepJobResults(lua_State *L);
+
+	/**
+	 * Handle automatic scaling of worker threads
+	 */
+	void stepAutoscale();
+
+	/**
 	 * Initialize environment with current registred functions
 	 *  this function adds all functions registred by registerFunction to the
 	 *  passed lua stack
@@ -148,6 +163,12 @@ protected:
 private:
 	// Variable locking the engine against further modification
 	bool initDone = false;
+
+	// Maximum number of worker threads for automatic scaling
+	// 0 if disabled
+	unsigned int autoscaleMaxWorkers = 0;
+	u64 autoscaleTimer = 0;
+	std::unordered_set<u32> autoscaleSeenJobs;
 
 	// Only set for the server async environment (duh)
 	Server *server = nullptr;
