@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <map>
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
 
@@ -33,7 +32,6 @@ class MMVManip;
 class LuaVoxelManip : public ModApiBase
 {
 private:
-	std::map<v3s16, MapBlock *> modified_blocks;
 	bool is_mapgen_vm = false;
 
 	static const char className[];
