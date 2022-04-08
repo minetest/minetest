@@ -94,6 +94,12 @@ void ServerScripting::initAsync()
 	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
+	// TODO ModApiCraft has some
+	// TODO ModApiItemMod has some
+	// ModApiMapgen could be added but is a minefield because thread safety
+	// TODO ModApiServer has some
+	// ModApiHttp can't be added as there is no way to match the callbacks
+	// ModApiStorage is probably not thread safe(?)
 
 	asyncEngine.initialize(0);
 }

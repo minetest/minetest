@@ -292,7 +292,7 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 	int top = lua_gettop(L);
 
 	// Push builtin initialization type
-	lua_pushstring(L, "async");
+	lua_pushstring(L, jobDispatcher->server ? "async_game" : "async");
 	lua_setglobal(L, "INIT");
 
 	if (!jobDispatcher->prepareEnvironment(L, top)) {

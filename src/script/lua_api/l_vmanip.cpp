@@ -451,7 +451,6 @@ void LuaVoxelManip::serializeOut(lua_State *L, void *ptr)
 
 	// Associate vmanip with map if the Lua env has one
 	Environment *env = getEnv(L);
-	printf("LuaVoxelManip::serializeOut(): env = %p\n", env);
 	if (env)
 		vm->reparent(&(env->getMap()));
 

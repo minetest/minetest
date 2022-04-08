@@ -5787,7 +5787,8 @@ This allows you easy interoperability for delegating work to jobs.
 * `minetest.handle_async(func, callback, ...)`:
     * Queue the function `func` to be ran in an async environment.
       Note that there are multiple persistent workers and any of them may
-      end up running a given job.
+      end up running a given job. The engine will scale the amount of
+      worker threads automatically.
     * When `func` returns the callback is called (in the normal environment)
       with all of the return values as arguments.
     * Optional: Variable number of arguments that are passed to `func`
@@ -5795,6 +5796,26 @@ This allows you easy interoperability for delegating work to jobs.
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
+
+### List of APIs available in an async environment
+
+Classes:
+* `ItemStack`
+* `PerlinNoise`
+* `PerlinNoise`
+* `PseudoRandom`
+* `PcgRandom`
+* `SecureRandom`
+* `VoxelArea`
+* `VoxelManip`
+    * only if transferred into environment; can't read/write to map
+* `Settings`
+    * including `minetest.settings`
+
+Functions:
+* Standalone helpers such as logging, filesystem, encoding (JSON)
+  hashing or compression APIs
+* `minetest.request_insecure_environment` (same restrictions apply)
 
 Server
 ------
