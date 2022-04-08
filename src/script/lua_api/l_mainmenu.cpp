@@ -139,6 +139,14 @@ int ModApiMainMenu::l_start(lua_State *L)
 		data->password = getTextData(L,"password");
 		data->address  = getTextData(L,"address");
 		data->port     = getTextData(L,"port");
+
+		const auto val = getTextData(L, "allow_login_or_register");
+		if (val == "login")
+			data->allow_login_or_register = ELoginRegister::Login;
+		else if (val == "register")
+			data->allow_login_or_register = ELoginRegister::Register;
+		else
+			data->allow_login_or_register = ELoginRegister::Any;
 	}
 	data->serverdescription = getTextData(L,"serverdescription");
 	data->servername        = getTextData(L,"servername");
