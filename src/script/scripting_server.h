@@ -51,6 +51,9 @@ public:
 
 	// use ScriptApiBase::loadMod() to load mods
 
+	// Initialize async engine, call this AFTER loading all mods
+	void initAsync();
+
 	// Global step handler to collect async results
 	void stepAsync();
 

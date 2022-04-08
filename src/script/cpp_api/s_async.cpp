@@ -184,11 +184,36 @@ void AsyncEngine::step(lua_State *L)
 }
 
 /******************************************************************************/
-void AsyncEngine::prepareEnvironment(lua_State* L, int top)
+bool AsyncEngine::prepareEnvironment(lua_State* L, int top)
 {
 	for (StateInitializer &stateInitializer : stateInitializers) {
 		stateInitializer(L, top);
 	}
+
+	auto *script = ModApiBase::getScriptApiBase(L);
+	try {
+		script->loadMod(Server::getBuiltinLuaPath() + DIR_DELIM + "init.lua",
+			BUILTIN_MOD_NAME);
+	} catch (const ModError &e) {
+		errorstream << "Execution of async base environment failed: "
+			<< e.what() << std::endl;
+		FATAL_ERROR("Execution of async base environment failed");
+	}
+
+	// Load per mod stuff
+	if (server) {
+		const auto &list = server->m_async_init_files;
+		try {
+			for (auto &it : list)
+				script->loadMod(it.second, it.first);
+		} catch (const ModError &e) {
+			errorstream << "Failed to load mod script inside async environment." << std::endl;
+			server->setAsyncFatalError(e.what());
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /******************************************************************************/
@@ -215,7 +240,10 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 	lua_pushstring(L, "async");
 	lua_setglobal(L, "INIT");
 
-	jobDispatcher->prepareEnvironment(L, top);
+	if (!jobDispatcher->prepareEnvironment(L, top)) {
+		// can't throw from here so we're stuck with this
+		isErrored = true;
+	}
 }
 
 /******************************************************************************/
@@ -227,16 +255,12 @@ AsyncWorkerThread::~AsyncWorkerThread()
 /******************************************************************************/
 void* AsyncWorkerThread::run()
 {
-	lua_State *L = getStack();
-
-	try {
-		loadMod(getServer()->getBuiltinLuaPath() + DIR_DELIM + "init.lua",
-			BUILTIN_MOD_NAME);
-	} catch (const ModError &e) {
-		errorstream << "Execution of async base environment failed: "
-			<< e.what() << std::endl;
-		FATAL_ERROR("Execution of async base environment failed");
+	if (isErrored) {
+		sleep_ms(100); // Thread implementation bug workaround
+		return nullptr;
 	}
+
+	lua_State *L = getStack();
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -274,7 +298,7 @@ void* AsyncWorkerThread::run()
 		if (result) {
 			try {
 				scriptError(result, "<async>");
-			} catch (const ModError &e) {
+			} catch (const LuaError &e) {
 				if (jobDispatcher->server)
 					jobDispatcher->server->setAsyncFatalError(e.what());
 				else

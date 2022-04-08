@@ -527,8 +527,10 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 	return 0;
 }
 
+// do_async_callback(func, params, mod_origin)
 int ModApiServer::l_do_async_callback(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ServerScripting *script = getScriptApi<ServerScripting>(L);
 
 	luaL_checktype(L, 1, LUA_TFUNCTION);
@@ -560,6 +562,25 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 
 	lua_settop(L, 0);
 	lua_pushinteger(L, jobId);
+	return 1;
+}
+
+// register_async_dofile(path)
+int ModApiServer::l_register_async_dofile(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string path = readParam<std::string>(L, 1);
+	CHECK_SECURE_PATH(L, path.c_str(), false);
+
+	// Find currently running mod name (only at init time)
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (!lua_isstring(L, -1))
+		return 0;
+	std::string modname = readParam<std::string>(L, -1);
+
+	getServer(L)->m_async_init_files.emplace_back(modname, path);
+	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -621,5 +642,6 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(notify_authentication_modified);
 
 	API_FCT(do_async_callback);
+	API_FCT(register_async_dofile);
 	API_FCT(serialize_roundtrip);
 }

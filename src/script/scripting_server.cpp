@@ -87,12 +87,15 @@ ServerScripting::ServerScripting(Server* server):
 	lua_setglobal(L, "INIT");
 
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
+}
 
-	// Initialize async environment
+void ServerScripting::initAsync()
+{
+	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 
-	asyncEngine.initialize(2); // TODO
+	asyncEngine.initialize(2);
 }
 
 void ServerScripting::stepAsync()

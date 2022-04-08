@@ -106,8 +106,11 @@ private:
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
 
-	// do_async_callback(func, serialized_params)
+	// do_async_callback(func, params, mod_origin)
 	static int l_do_async_callback(lua_State *L);
+
+	// register_async_dofile(path)
+	static int l_register_async_dofile(lua_State *L);
 
 	// serialize_roundtrip(obj)
 	static int l_serialize_roundtrip(lua_State *L);

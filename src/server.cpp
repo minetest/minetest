@@ -480,6 +480,9 @@ void Server::init()
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
 
+	// Do this after regular script init is done
+	m_script->initAsync();
+
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
 

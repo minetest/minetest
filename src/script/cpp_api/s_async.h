@@ -71,6 +71,7 @@ protected:
 
 private:
 	AsyncEngine *jobDispatcher = nullptr;
+	bool isErrored = false;
 };
 
 // Asynchornous thread and job management
@@ -140,8 +141,9 @@ protected:
 	 *  passed lua stack
 	 * @param L Lua stack to initialize
 	 * @param top Stack position
+	 * @return false if a mod error ocurred
 	 */
-	void prepareEnvironment(lua_State* L, int top);
+	bool prepareEnvironment(lua_State* L, int top);
 
 private:
 	// Variable locking the engine against further modification

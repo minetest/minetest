@@ -1,5 +1,8 @@
 -- helper
 
+core.register_async_dofile(core.get_modpath(core.get_current_modname()) ..
+	DIR_DELIM .. "inside_async_env.lua")
+
 local function deepequal(a, b)
 	if type(a) == "function" then
 		return type(b) == "function"
@@ -93,10 +96,9 @@ unittests.register("test_userdata_passing", test_userdata_passing, {map=true})
 
 local function test_handle_async(cb)
 	local func = function(x)
-		return core.get_last_run_mod(), _VERSION, jit and jit[x] or ("no " .. x)
+		return core.get_last_run_mod(), _VERSION, unittests[x]
 	end
-
-	local expect = {func("arch")}
+	local expect = {core.get_last_run_mod(), _VERSION, true}
 
 	core.handle_async(func, function(...)
 		if not deepequal(expect, {...}) then
@@ -106,10 +108,9 @@ local function test_handle_async(cb)
 			cb("Mod name not tracked correctly")
 		end
 		cb()
-	end, "arch")
+	end, "async_ok")
 end
 unittests.register("test_handle_async", test_handle_async, {async=true})
-
 
 local function test_userdata_passing2(cb, _, pos)
 	-- VManip: check transfer into other env

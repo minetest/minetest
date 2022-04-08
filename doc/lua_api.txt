@@ -5774,22 +5774,15 @@ The engine allows you to submit jobs to be ran in an isolated environment
 concurrently with normal server operation.
 A job consists of a function to be ran in the async environment, any amount of
 arguments (will be serialized) and a callback that will be called with the return
-value(s) of the job function once it finished.
+value of the job function once it is finished.
 
 The async environment does *not* have access to the map, entities, players or any
 globals defined in the 'usual' environment. Consequently, functions like
 `minetest.get_node()` or `minetest.get_player_by_name()` simply do not exist in it.
 
-If you need existing code to run inside the async environment it is recommend to
-load it as needed using this idiom: [TODO this should not be necessary]
-```
-minetest.handle_async(function(arg1, arg2)
-  if not myname then
-    myname = dofile(minetest.get_modpath("myname") .. "/async_code.lua")
-  end
-  return myname.do_some_task(arg1, arg2)
-end, callback, arg1, arg2)
-```
+Arguments and return values passed through this can contain certain userdata
+objects that will be seamlessly copied (not shared) to the async environment.
+This allows you easy interoperability for delegating work to jobs.
 
 * `minetest.handle_async(func, callback, ...)`:
     * Queue the function `func` to be ran in an async environment.
@@ -5798,6 +5791,10 @@ end, callback, arg1, arg2)
     * When `func` returns the callback is called (in the normal environment)
       with all of the return values as arguments.
     * Optional: Variable number of arguments that are passed to `func`
+* `minetest.register_async_dofile(path)`:
+    * Register a path to a Lua file to be imported when an async environment
+      is initialized. You can use this to preload code which you can then call
+      later using `minetest.handle_async()`.
 
 Server
 ------
