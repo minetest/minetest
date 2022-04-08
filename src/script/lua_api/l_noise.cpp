@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   LuaPerlinNoise
 */
 
-LuaPerlinNoise::LuaPerlinNoise(NoiseParams *params) :
+LuaPerlinNoise::LuaPerlinNoise(const NoiseParams *params) :
 	np(*params)
 {
 }
@@ -141,12 +141,10 @@ luaL_Reg LuaPerlinNoise::methods[] = {
   LuaPerlinNoiseMap
 */
 
-LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, s32 seed, v3s16 size)
+LuaPerlinNoiseMap::LuaPerlinNoiseMap(const NoiseParams *np, s32 seed, v3s16 size)
 {
-	m_is3d = size.Z > 1;
-	np = *params;
 	try {
-		noise = new Noise(&np, seed, size.X, size.Y, size.Z);
+		noise = new Noise(np, seed, size.X, size.Y, size.Z);
 	} catch (InvalidNoiseParamsException &e) {
 		throw LuaError(e.what());
 	}
@@ -217,7 +215,7 @@ int LuaPerlinNoiseMap::l_get_3d_map(lua_State *L)
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v3f p = check_v3f(L, 2);
 
-	if (!o->m_is3d)
+	if (!o->is3D())
 		return 0;
 
 	Noise *n = o->noise;
@@ -248,7 +246,7 @@ int LuaPerlinNoiseMap::l_get_3d_map_flat(lua_State *L)
 	v3f p                = check_v3f(L, 2);
 	bool use_buffer      = lua_istable(L, 3);
 
-	if (!o->m_is3d)
+	if (!o->is3D())
 		return 0;
 
 	Noise *n = o->noise;
@@ -289,7 +287,7 @@ int LuaPerlinNoiseMap::l_calc_3d_map(lua_State *L)
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v3f p                = check_v3f(L, 2);
 
-	if (!o->m_is3d)
+	if (!o->is3D())
 		return 0;
 
 	Noise *n = o->noise;

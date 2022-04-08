@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
+#include <map>
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
@@ -112,23 +112,23 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	bool update_light = !lua_isboolean(L, 2) || readParam<bool>(L, 2);
+
 	GET_ENV_PTR;
 	ServerMap *map = &(env->getServerMap());
+
+	std::map<v3s16, MapBlock*> modified_blocks;
 	if (o->is_mapgen_vm || !update_light) {
-		o->vm->blitBackAll(&(o->modified_blocks));
+		o->vm->blitBackAll(&modified_blocks);
 	} else {
-		voxalgo::blit_back_with_light(map, o->vm,
-			&(o->modified_blocks));
+		voxalgo::blit_back_with_light(map, o->vm, &modified_blocks);
 	}
 
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (const auto &modified_block : o->modified_blocks)
-		event.modified_blocks.insert(modified_block.first);
-
+	for (const auto &it : modified_blocks)
+		event.modified_blocks.insert(it.first);
 	map->dispatchEvent(event);
 
-	o->modified_blocks.clear();
 	return 0;
 }
 

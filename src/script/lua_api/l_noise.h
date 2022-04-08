@@ -30,6 +30,7 @@ class LuaPerlinNoise : public ModApiBase
 {
 private:
 	NoiseParams np;
+
 	static const char className[];
 	static luaL_Reg methods[];
 
@@ -42,7 +43,7 @@ private:
 	static int l_get_3d(lua_State *L);
 
 public:
-	LuaPerlinNoise(NoiseParams *params);
+	LuaPerlinNoise(const NoiseParams *params);
 	~LuaPerlinNoise() = default;
 
 	// LuaPerlinNoise(seed, octaves, persistence, scale)
@@ -59,9 +60,8 @@ public:
 */
 class LuaPerlinNoiseMap : public ModApiBase
 {
-	NoiseParams np;
 	Noise *noise;
-	bool m_is3d;
+
 	static const char className[];
 	static luaL_Reg methods[];
 
@@ -80,9 +80,10 @@ class LuaPerlinNoiseMap : public ModApiBase
 	static int l_get_map_slice(lua_State *L);
 
 public:
-	LuaPerlinNoiseMap(NoiseParams *np, s32 seed, v3s16 size);
-
+	LuaPerlinNoiseMap(const NoiseParams *np, s32 seed, v3s16 size);
 	~LuaPerlinNoiseMap();
+
+	inline bool is3D() const { return noise->sz > 1; }
 
 	// LuaPerlinNoiseMap(np, size)
 	// Creates an LuaPerlinNoiseMap and leaves it on top of stack
