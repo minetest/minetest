@@ -2,7 +2,6 @@
 core.async_jobs = {}
 
 function core.async_event_handler(jobid, retval)
-	print("finish j " .. jobid)
 	local callback = core.async_jobs[jobid]
 	assert(type(callback) == "function")
 	callback(unpack(retval))
@@ -16,7 +15,6 @@ function core.handle_async(func, callback, ...)
 	local mod_origin = core.get_last_run_mod()
 
 	local jobid = core.do_async_callback(func, job_params, mod_origin)
-	print("start j " .. jobid)
 	core.async_jobs[jobid] = callback
 
 	return true

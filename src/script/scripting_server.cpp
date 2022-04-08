@@ -150,7 +150,6 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 
 void ServerScripting::InitializeAsync(lua_State *L, int top)
 {
-	actionstream << "ServerScripting::InitializeAsync(" << L << ")" << std::endl;
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);
 	LuaPerlinNoiseMap::Register(L);

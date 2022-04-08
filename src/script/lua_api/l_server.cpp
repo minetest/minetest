@@ -552,8 +552,6 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 
 	PackedValue *param = script_pack(L, 2);
 
-	printf("func_l: %zu param: %p\n", func_length, param);
-
 	std::string mod_origin = readParam<std::string>(L, 3);
 
 	u32 jobId = script->queueAsync(

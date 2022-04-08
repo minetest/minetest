@@ -4,11 +4,8 @@ if core.get_cache_path == nil then -- TODO
 core.log("info", "Initializing Asynchronous environment for game")
 
 function core.job_processor(func, params)
-	print('will call ' .. tostring(func) .. ' with ' .. #params .. ' args')
 
 	local retval = {func(unpack(params))}
-
-	print('returned ' .. #retval .. ' values')
 
 	return retval
 end
