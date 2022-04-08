@@ -446,10 +446,22 @@ public:
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
 		bool overwrite_generated = true);
 
+	/*
+		Creates a copy of this VManip including contents, the copy will not be
+		associated with a Map.
+	*/
+	MMVManip *clone() const;
+	
+	// Reassociates a copied VManip to a map
+	void reparent(Map *map);
+
 	bool m_is_dirty = false;
 
 protected:
-	Map *m_map;
+	MMVManip() {};
+
+	// may be null
+	Map *m_map = nullptr;
 	/*
 		key = blockpos
 		value = flags describing the block

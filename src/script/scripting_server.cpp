@@ -155,5 +155,6 @@ void ServerScripting::InitializeAsync(lua_State *L, int top)
 	LuaPcgRandom::Register(L);
 	LuaRaycast::Register(L);
 	LuaSecureRandom::Register(L);
+	LuaVoxelManip::Register(L);
 	LuaSettings::Register(L);
 }

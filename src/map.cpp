@@ -1896,12 +1896,15 @@ MMVManip::MMVManip(Map *map):
 		VoxelManipulator(),
 		m_map(map)
 {
+	assert(map);
 }
 
 void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 	bool load_if_inexistent)
 {
 	TimeTaker timer1("initialEmerge", &emerge_time);
+
+	assert(m_map);
 
 	// Units of these are MapBlocks
 	v3s16 p_min = blockpos_min;
@@ -1986,6 +1989,7 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 {
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
+	assert(m_map);
 
 	/*
 		Copy data of all blocks
@@ -2004,6 +2008,35 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 		if(modified_blocks)
 			(*modified_blocks)[p] = block;
 	}
+}
+
+MMVManip *MMVManip::clone() const
+{
+	MMVManip *ret = new MMVManip();
+
+	const s32 size = m_area.getVolume();
+	ret->m_area = m_area;
+	if (m_data) {
+		ret->m_data = new MapNode[size];
+		memcpy(ret->m_data, m_data, size * sizeof(MapNode));
+	}
+	if (m_flags) {
+		ret->m_flags = new u8[size];
+		memcpy(ret->m_flags, m_flags, size * sizeof(u8));
+	}
+
+	ret->m_is_dirty = m_is_dirty;
+	// Even if the copy is disconnected from a map object keep the information
+	// needed to write it back to one
+	ret->m_loaded_blocks = m_loaded_blocks;
+
+	return ret;
+}
+
+void MMVManip::reparent(Map *map)
+{
+	assert(map && !m_map);
+	m_map = map;
 }
 
 //END

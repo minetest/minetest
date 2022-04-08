@@ -69,7 +69,7 @@ local function test_object_passing()
 end
 unittests.register("test_object_passing", test_object_passing)
 
-local function test_object_passing2()
+local function test_userdata_passing(_, pos)
 	-- basic userdata passing
 	local obj = table.copy(test_object.tiles[1])
 	obj.test = ItemStack("default:cobble 99")
@@ -78,18 +78,22 @@ local function test_object_passing2()
 	assert(obj.test:to_string() == tmp.test:to_string())
 
 	-- object can't be passed, should error
-	local obj = core.raycast(vector.new(), vector.new())
+	local obj = core.raycast(pos, pos)
 	assert(not pcall(core.serialize_roundtrip, obj))
 
-	-- (add vmanip test here when ready)
+	-- VManip
+	local vm = core.get_voxel_manip(pos, pos)
+	local expect = vm:get_node_at(pos)
+	local vm2 = core.serialize_roundtrip(vm)
+	assert(deepequal(vm2:get_node_at(pos), expect))
 end
-unittests.register("test_object_passing2", test_object_passing2)
+unittests.register("test_userdata_passing", test_userdata_passing, {map=true})
 
 -- Asynchronous jobs
 
 local function test_handle_async(cb)
 	local func = function(x)
-		return _VERSION, type(_G), jit and jit[x] or ("no " .. x)
+		return core.get_last_run_mod(), _VERSION, jit and jit[x] or ("no " .. x)
 	end
 
 	local expect = {func("arch")}
@@ -98,7 +102,36 @@ local function test_handle_async(cb)
 		if not deepequal(expect, {...}) then
 			cb("Values did not equal")
 		end
+		if core.get_last_run_mod() ~= expect[1] then
+			cb("Mod name not tracked correctly")
+		end
 		cb()
 	end, "arch")
 end
 unittests.register("test_handle_async", test_handle_async, {async=true})
+
+
+local function test_userdata_passing2(cb, _, pos)
+	-- VManip: check transfer into other env
+	local vm = core.get_voxel_manip(pos, pos)
+	local expect = vm:get_node_at(pos)
+
+	core.handle_async(function(vm_, pos_)
+		return vm_:get_node_at(pos_)
+	end, function(ret)
+		if not deepequal(expect, ret) then
+			cb("Node data mismatch (one-way)")
+		end
+
+		-- VManip: test a roundtrip
+		core.handle_async(function(vm_)
+			return vm_
+		end, function(vm2)
+			if not deepequal(expect, vm2:get_node_at(pos)) then
+				cb("Node data mismatch (roundtrip)")
+			end
+			cb()
+		end, vm)
+	end, vm, pos)
+end
+unittests.register("test_userdata_passing2", test_userdata_passing2, {map=true, async=true})

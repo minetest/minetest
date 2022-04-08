@@ -294,7 +294,8 @@ void* AsyncWorkerThread::run()
 		lua_pop(L, 1);  // Pop retval
 
 		// Put job result
-		jobDispatcher->putJobResult(std::move(j));
+		if (result == 0)
+			jobDispatcher->putJobResult(std::move(j));
 	}
 
 	lua_pop(L, 2);  // Pop core and error handler

@@ -329,12 +329,12 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		}
 		case LUA_TUSERDATA: {
 			SerializerTuple ser;
-			if (!find_serializer(L, -1, ser))
+			if (!find_serializer(L, idx, ser))
 				throw LuaError("Cannot serialize userdata object");
 			pv.contains_userdata = true;
 			auto r = emplace(pv, LUA_TUSERDATA);
 			r->sdata = ser.first;
-			r->ptrdata = ser.second.fin(L, -1);
+			r->ptrdata = ser.second.fin(L, idx);
 			return r;
 		}
 		default: {
