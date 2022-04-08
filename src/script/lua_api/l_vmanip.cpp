@@ -46,6 +46,8 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
+	if (vm->isOrphan())
+		return 0;
 
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 2));
 	v3s16 bp2 = getNodeBlockPos(check_v3s16(L, 3));

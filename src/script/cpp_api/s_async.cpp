@@ -319,6 +319,13 @@ void* AsyncWorkerThread::run()
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	auto report_error = [this] (const LuaError &e) {
+		if (jobDispatcher->server)
+			jobDispatcher->server->setAsyncFatalError(e.what());
+		else
+			errorstream << e.what() << std::endl;
+	};
+
 	lua_getglobal(L, "core");
 	if (lua_isnil(L, -1)) {
 		FATAL_ERROR("Unable to find core within async environment!");
@@ -354,15 +361,17 @@ void* AsyncWorkerThread::run()
 			try {
 				scriptError(result, "<async>");
 			} catch (const LuaError &e) {
-				if (jobDispatcher->server)
-					jobDispatcher->server->setAsyncFatalError(e.what());
-				else
-					errorstream << e.what() << std::endl;
+				report_error(e);
 			}
 		} else {
 			// Fetch result
 			if (use_ext) {
-				j.result_ext.reset(script_pack(L, -1));
+				try {
+					j.result_ext.reset(script_pack(L, -1));
+				} catch (const LuaError &e) {
+					report_error(e);
+					result = LUA_ERRERR;
+				}
 			} else {
 				size_t length;
 				const char *retval = lua_tolstring(L, -1, &length);

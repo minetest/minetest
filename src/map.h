@@ -455,6 +455,9 @@ public:
 	// Reassociates a copied VManip to a map
 	void reparent(Map *map);
 
+	// Is it impossible to call initialEmerge / blitBackAll?
+	inline bool isOrphan() const { return !m_map; }
+
 	bool m_is_dirty = false;
 
 protected:
