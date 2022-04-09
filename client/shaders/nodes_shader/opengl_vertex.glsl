@@ -217,11 +217,11 @@ void main(void)
 		cosLight = dot(nNormal, -v_LightDirection);
 		f_normal_length = length(vNormal);
 
-		float normalOffsetScale = f_normal_length > 0 ? 5e5 : 0.0;
+		float normalOffsetScale = f_normal_length > 0 ? 1e5 : 0.0;
 		normalOffsetScale *= pow(1 - pow(cosLight, 2.0), 0.5) / f_textureresolution / f_shadowfar;
 		float z_bias_factor = f_normal_length > 0 ? 1e2 : 5e2;
 
-		shadow_position = getPerspectiveFactor(m_ShadowViewProj * mWorld * inVertexPosition).xyz;
+		shadow_position = getPerspectiveFactor(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
 		float z_bias = z_bias_factor / f_textureresolution / f_shadowfar;
 		shadow_position.z -= z_bias;
 
