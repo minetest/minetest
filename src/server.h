@@ -292,11 +292,10 @@ public:
 
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
-	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
 
-	inline bool isSingleplayer()
+	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
 
 	inline void setAsyncFatalError(const std::string &error)
