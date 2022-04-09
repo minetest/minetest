@@ -143,6 +143,8 @@ static inline auto emplace(PackedValue &pv, s16 type)
 	if (type == LUA_TTABLE) {
 		ref->uidata1 = 0;
 		ref->uidata2 = 0;
+	} else if (type == LUA_TUSERDATA) {
+		ref->ptrdata = nullptr;
 	} else if (type == INSTR_POP) {
 		ref->sidata2 = 0;
 	}

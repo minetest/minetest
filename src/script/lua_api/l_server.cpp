@@ -634,3 +634,13 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(register_async_dofile);
 	API_FCT(serialize_roundtrip);
 }
+
+void ModApiServer::InitializeAsync(lua_State *L, int top)
+{
+	API_FCT(get_worldpath);
+	API_FCT(is_singleplayer);
+
+	API_FCT(get_current_modname);
+	API_FCT(get_modpath);
+	API_FCT(get_modnames);
+}

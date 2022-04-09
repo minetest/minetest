@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdlib>
 
 extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 }
 
 #include "server.h"
@@ -319,7 +319,7 @@ void* AsyncWorkerThread::run()
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	auto report_error = [this] (const LuaError &e) {
+	auto report_error = [this] (const ModError &e) {
 		if (jobDispatcher->server)
 			jobDispatcher->server->setAsyncFatalError(e.what());
 		else
@@ -360,7 +360,7 @@ void* AsyncWorkerThread::run()
 		if (result) {
 			try {
 				scriptError(result, "<async>");
-			} catch (const LuaError &e) {
+			} catch (const ModError &e) {
 				report_error(e);
 			}
 		} else {
@@ -368,7 +368,7 @@ void* AsyncWorkerThread::run()
 			if (use_ext) {
 				try {
 					j.result_ext.reset(script_pack(L, -1));
-				} catch (const LuaError &e) {
+				} catch (const ModError &e) {
 					report_error(e);
 					result = LUA_ERRERR;
 				}

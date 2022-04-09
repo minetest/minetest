@@ -5802,7 +5802,7 @@ This allows you easy interoperability for delegating work to jobs.
 Classes:
 * `ItemStack`
 * `PerlinNoise`
-* `PerlinNoise`
+* `PerlinNoiseMap`
 * `PseudoRandom`
 * `PcgRandom`
 * `SecureRandom`
@@ -5810,12 +5810,21 @@ Classes:
 * `VoxelManip`
     * only if transferred into environment; can't read/write to map
 * `Settings`
-    * including `minetest.settings`
+
+Class instances that can be transferred between environments:
+* `ItemStack`
+* `PerlinNoise`
+* `PerlinNoiseMap`
+* `VoxelManip`
 
 Functions:
-* Standalone helpers such as logging, filesystem, encoding (JSON)
+* Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.request_insecure_environment` (same restrictions apply)
+
+Variables:
+* `minetest.settings`
+* ...
 
 Server
 ------

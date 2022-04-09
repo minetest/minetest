@@ -14,6 +14,6 @@ end
 local gamepath = core.get_builtin_path() .. "game" .. DIR_DELIM
 
 dofile(gamepath .. "constants.lua")
--- TODO item.lua has some
--- TODO misc.lua has some
+dofile(gamepath .. "item_s.lua")
+dofile(gamepath .. "misc_s.lua")
 dofile(gamepath .. "voxelarea.lua")

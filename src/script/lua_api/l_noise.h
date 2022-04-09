@@ -52,6 +52,9 @@ public:
 
 	static LuaPerlinNoise *checkobject(lua_State *L, int narg);
 
+	static void *packIn(lua_State *L, int idx);
+	static void packOut(lua_State *L, void *ptr);
+
 	static void Register(lua_State *L);
 };
 
@@ -90,6 +93,9 @@ public:
 	static int create_object(lua_State *L);
 
 	static LuaPerlinNoiseMap *checkobject(lua_State *L, int narg);
+
+	static void *packIn(lua_State *L, int idx);
+	static void packOut(lua_State *L, void *ptr);
 
 	static void Register(lua_State *L);
 };

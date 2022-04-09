@@ -525,3 +525,11 @@ void ModApiCraft::Initialize(lua_State *L, int top)
 	API_FCT(register_craft);
 	API_FCT(clear_craft);
 }
+
+void ModApiCraft::InitializeAsync(lua_State *L, int top)
+{
+	// all read-only functions
+	API_FCT(get_all_craft_recipes);
+	API_FCT(get_craft_recipe);
+	API_FCT(get_craft_result);
+}

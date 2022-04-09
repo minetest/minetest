@@ -47,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_storage.h"
 
 extern "C" {
-#include "lualib.h"
+#include <lualib.h>
 }
 
 ServerScripting::ServerScripting(Server* server):
@@ -94,12 +94,12 @@ void ServerScripting::initAsync()
 	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
-	// TODO ModApiCraft has some
-	// TODO ModApiItemMod has some
-	// ModApiMapgen could be added but is a minefield because thread safety
-	// TODO ModApiServer has some
-	// ModApiHttp can't be added as there is no way to match the callbacks
-	// ModApiStorage is probably not thread safe(?)
+	asyncEngine.registerStateInitializer(ModApiCraft::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiItemMod::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiServer::InitializeAsync);
+	// not added: ModApiMapgen is a minefield for thread safety
+	// not added: ModApiHttp has no way to match the callbacks
+	// not added: ModApiStorage is probably not thread safe(?)
 
 	asyncEngine.initialize(0);
 }

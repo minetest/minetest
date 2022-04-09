@@ -683,7 +683,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 
-	//API_FCT(encode_png); // TODO
+	API_FCT(encode_png);
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
