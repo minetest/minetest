@@ -85,7 +85,7 @@ struct PackedValue
 	ALLOW_CLASS_MOVE(PackedValue)
 };
 
-// TODO reorganize these into a static class
+// TODO straighten out terminology here
 
 /*
  * Packing callback: Turns a Lua value at given index into a void*

@@ -95,6 +95,8 @@ unittests.register("test_userdata_passing", test_userdata_passing, {map=true})
 -- Asynchronous jobs
 
 local function test_handle_async(cb)
+	-- Basic test including mod name tracking and unittests.async_ok which
+	-- should be set by inside_async_env.lua
 	local func = function(x)
 		return core.get_last_run_mod(), _VERSION, unittests[x]
 	end
@@ -107,7 +109,16 @@ local function test_handle_async(cb)
 		if core.get_last_run_mod() ~= expect[1] then
 			cb("Mod name not tracked correctly")
 		end
-		cb()
+
+		-- Test passing of nil arguments and return values
+		core.handle_async(function(a, b)
+			return a, b
+		end, function(a, b)
+			if b ~= 123 then
+				cb("Argument went missing")
+			end
+			cb()
+		end, nil, 123)
 	end, "async_ok")
 end
 unittests.register("test_handle_async", test_handle_async, {async=true})

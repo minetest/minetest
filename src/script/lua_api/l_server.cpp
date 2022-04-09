@@ -537,16 +537,7 @@ int ModApiServer::l_do_async_callback(lua_State *L)
 	luaL_checktype(L, 2, LUA_TTABLE);
 	luaL_checktype(L, 3, LUA_TSTRING);
 
-	// Safely call string.dump on the function
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
-	if (!lua_isnil(L, -1))
-		lua_getfield(L, -1, "string");
-	else
-		lua_getglobal(L, "string");
-	lua_getfield(L, -1, "dump");
-	lua_pushvalue(L, 1);
-	lua_call(L, 1, 1);
-
+	call_string_dump(L, 1);
 	size_t func_length;
 	const char *serialized_func_raw = lua_tolstring(L, -1, &func_length);
 

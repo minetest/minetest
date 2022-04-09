@@ -140,3 +140,7 @@ DeprecatedHandlingMode get_deprecated_handling_mode();
  * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
  */
 void log_deprecated(lua_State *L, std::string message, int stack_depth = 1);
+
+// Safely call string.dump on a function value
+// (does not pop, leaves one value on stack)
+void call_string_dump(lua_State *L, int idx);

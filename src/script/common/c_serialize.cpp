@@ -17,8 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#undef NDEBUG
-
 #include <cstdio>
 #include <cstring>
 #include <cmath>
@@ -90,21 +88,6 @@ static inline bool suitable_key(lua_State *L, int idx)
 		lua_Number n = lua_tonumber(L, idx);
 		return std::floor(n) == n && n >= S32_MIN && n <= S32_MAX;
 	}
-}
-
-static inline void call_string_dump(lua_State *L, int idx)
-{
-	// Safely call string.dump
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
-	if (!lua_isnil(L, -1))
-		lua_getfield(L, -1, "string");
-	else
-		lua_getglobal(L, "string");
-	lua_getfield(L, -1, "dump");
-	lua_remove(L, -2); // remove _G
-	lua_remove(L, -2); // remove 'string' table
-	lua_pushvalue(L, idx);
-	lua_call(L, 1, 1);
 }
 
 namespace {

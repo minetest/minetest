@@ -1,7 +1,11 @@
 core.log("info", "Initializing asynchronous environment (game)")
 
+local function pack2(...)
+	return {n=select('#', ...), ...}
+end
+
 function core.job_processor(func, params)
-	local retval = {func(unpack(params))}
+	local retval = pack2(func(unpack(params, 1, params.n)))
 
 	return retval
 end
