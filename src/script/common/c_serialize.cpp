@@ -33,6 +33,8 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+/**** Helpers ****/
+
 // convert negative index to absolute position on Lua stack
 #define absidx(_L, _idx) (assert((_idx) < 0), lua_gettop(_L) + (_idx) + 1)
 
@@ -78,13 +80,13 @@ static inline bool can_set_into(int ktype, int vtype)
 static inline bool suitable_key(lua_State *L, int idx)
 {
 	if (lua_type(L, idx) == LUA_TSTRING) {
-		// strings may not have a NULL byte
+		// strings may not have a NULL byte (-> lua_setfield)
 		size_t len;
 		const char *str = lua_tolstring(L, idx, &len);
 		return strlen(str) == len;
 	} else {
 		assert(lua_type(L, idx) == LUA_TNUMBER);
-		// numbers must fit into an s32 and be integers
+		// numbers must fit into an s32 and be integers (-> lua_rawseti)
 		lua_Number n = lua_tonumber(L, idx);
 		return std::floor(n) == n && n >= S32_MIN && n <= S32_MAX;
 	}
@@ -108,7 +110,7 @@ namespace {
 	};
 
 	// Since an std::vector may reallocate this is the only safe way to keep
-	// a reference to a particular instruction.
+	// a reference to a particular element.
 	template <typename T>
 	class VectorRef {
 		std::vector<T> *vec;
@@ -125,12 +127,12 @@ namespace {
 		T *operator->() { return &(*vec)[idx]; }
 	};
 
-	struct Serializer {
+	struct Packer {
 		PackInFunc fin;
 		PackOutFunc fout;
 	};
 
-	typedef std::pair<std::string, Serializer> SerializerTuple;
+	typedef std::pair<std::string, Packer> PackerTuple;
 }
 
 static inline auto emplace(PackedValue &pv, s16 type)
@@ -147,25 +149,25 @@ static inline auto emplace(PackedValue &pv, s16 type)
 	return ref;
 }
 
-/**************/
+/**** Management of registered packers ****/
 
-static std::unordered_map<std::string, Serializer> serializers;
-static std::mutex serializers_lock;
+static std::unordered_map<std::string, Packer> g_packers;
+static std::mutex g_packers_lock;
 
-void script_register_serializer(lua_State *L, const char *regname,
+void script_register_packer(lua_State *L, const char *regname,
 	PackInFunc fin, PackOutFunc fout)
 {
-	// Save serialization functions
+	// Store away callbacks
 	{
-		MutexAutoLock autolock(serializers_lock);
-		auto it = serializers.find(regname);
-		if (it == serializers.end()) {
-			auto &ref = serializers[regname];
+		MutexAutoLock autolock(g_packers_lock);
+		auto it = g_packers.find(regname);
+		if (it == g_packers.end()) {
+			auto &ref = g_packers[regname];
 			ref.fin = fin;
 			ref.fout = fout;
 		} else {
 			FATAL_ERROR_IF(it->second.fin != fin || it->second.fout != fout,
-				"Serializer registered twice with inconsistent values");
+				"Packer registered twice with mismatching callbacks");
 		}
 	}
 
@@ -186,7 +188,7 @@ void script_register_serializer(lua_State *L, const char *regname,
 	lua_rawget(L, -3);
 	if (!lua_isnil(L, -1)) {
 		FATAL_ERROR_IF(lua_topointer(L, -1) != lua_topointer(L, -2),
-				"Serializer registered twice with inconsistent metatable");
+				"Packer registered twice with inconsistent metatable");
 	}
 	lua_pop(L, 1);
 	// then set
@@ -196,11 +198,11 @@ void script_register_serializer(lua_State *L, const char *regname,
 	lua_pop(L, 1);
 }
 
-static bool find_serializer(const char *regname, SerializerTuple &out)
+static bool find_packer(const char *regname, PackerTuple &out)
 {
-	MutexAutoLock autolock(serializers_lock);
-	auto it = serializers.find(regname);
-	if (it == serializers.end())
+	MutexAutoLock autolock(g_packers_lock);
+	auto it = g_packers.find(regname);
+	if (it == g_packers.end())
 		return false;
 	// copy data for thread safety
 	out.first = it->first;
@@ -208,7 +210,7 @@ static bool find_serializer(const char *regname, SerializerTuple &out)
 	return true;
 }
 
-static bool find_serializer(lua_State *L, int idx, SerializerTuple &out)
+static bool find_packer(lua_State *L, int idx, PackerTuple &out)
 {
 #ifndef NDEBUG
 	StackChecker checker(L);
@@ -229,13 +231,13 @@ static bool find_serializer(lua_State *L, int idx, SerializerTuple &out)
 	}
 
 	// load the associated data
-	bool found = find_serializer(lua_tostring(L, -1), out);
+	bool found = find_packer(lua_tostring(L, -1), out);
 	FATAL_ERROR_IF(!found, "Inconsistent internal state");
 	lua_pop(L, 3);
 	return true;
 }
 
-/**************/
+/**** Packing implementation ****/
 
 // recursively goes through the structure and ensures there are no circular references
 static void pack_validate(lua_State *L, int idx, std::unordered_set<const void*> &seen)
@@ -252,7 +254,7 @@ static void pack_validate(lua_State *L, int idx, std::unordered_set<const void*>
 	assert(ptr);
 
 	if (seen.find(ptr) != seen.end())
-		throw LuaError("Circular references cannot be serialized (yet)");
+		throw LuaError("Circular references cannot be packed (yet)");
 	seen.insert(ptr);
 
 	lua_checkstack(L, 5);
@@ -311,8 +313,8 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 			return r;
 		}
 		case LUA_TUSERDATA: {
-			SerializerTuple ser;
-			if (!find_serializer(L, idx, ser))
+			PackerTuple ser;
+			if (!find_packer(L, idx, ser))
 				throw LuaError("Cannot serialize userdata object");
 			pv.contains_userdata = true;
 			auto r = emplace(pv, LUA_TUSERDATA);
@@ -396,7 +398,7 @@ PackedValue *script_pack(lua_State *L, int idx)
 	return new PackedValue(std::move(pv));
 }
 
-/**************/
+/**** Unpacking implementation ****/
 
 void script_unpack(lua_State *L, PackedValue *pv)
 {
@@ -455,8 +457,8 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				luaL_loadbuffer(L, i.sdata.data(), i.sdata.size(), nullptr);
 				break;
 			case LUA_TUSERDATA: {
-				SerializerTuple ser;
-				FATAL_ERROR_IF(!find_serializer(i.sdata.c_str(), ser),
+				PackerTuple ser;
+				FATAL_ERROR_IF(!find_packer(i.sdata.c_str(), ser),
 					"Can't find serializer (data corruption?)");
 				ser.second.fout(L, i.ptrdata);
 				i.ptrdata = nullptr; // ownership taken by callback
@@ -494,8 +496,8 @@ PackedValue::~PackedValue()
 		return;
 	for (auto &i : this->i) {
 		if (i.type == LUA_TUSERDATA && i.ptrdata) {
-			SerializerTuple ser;
-			if (find_serializer(i.sdata.c_str(), ser)) {
+			PackerTuple ser;
+			if (find_packer(i.sdata.c_str(), ser)) {
 				// tell it to deallocate object
 				ser.second.fout(nullptr, i.ptrdata);
 			} else {

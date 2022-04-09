@@ -459,13 +459,13 @@ LuaItemStack *LuaItemStack::checkobject(lua_State *L, int narg)
 	return *(LuaItemStack **)luaL_checkudata(L, narg, className);
 }
 
-void *LuaItemStack::serializeIn(lua_State *L, int idx)
+void *LuaItemStack::packIn(lua_State *L, int idx)
 {
 	LuaItemStack *o = checkobject(L, idx);
 	return new ItemStack(o->getItem());
 }
 
-void LuaItemStack::serializeOut(lua_State *L, void *ptr)
+void LuaItemStack::packOut(lua_State *L, void *ptr)
 {
 	ItemStack *stack = reinterpret_cast<ItemStack*>(ptr);
 	if (L)
@@ -505,7 +505,7 @@ void LuaItemStack::Register(lua_State *L)
 	// Can be created from Lua (ItemStack(itemstack or itemstring or table or nil))
 	lua_register(L, className, create_object);
 
-	script_register_serializer(L, className, serializeIn, serializeOut);
+	script_register_packer(L, className, packIn, packOut);
 }
 
 const char LuaItemStack::className[] = "ItemStack";

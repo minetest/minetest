@@ -142,8 +142,8 @@ public:
 	static int create(lua_State *L, const ItemStack &item);
 	static LuaItemStack* checkobject(lua_State *L, int narg);
 
-	static void *serializeIn(lua_State *L, int idx);
-	static void serializeOut(lua_State *L, void *ptr);
+	static void *packIn(lua_State *L, int idx);
+	static void packOut(lua_State *L, void *ptr);
 
 	static void Register(lua_State *L);
 };

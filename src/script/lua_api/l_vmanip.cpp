@@ -432,7 +432,7 @@ LuaVoxelManip *LuaVoxelManip::checkobject(lua_State *L, int narg)
 	return *(LuaVoxelManip **)ud;  // unbox pointer
 }
 
-void *LuaVoxelManip::serializeIn(lua_State *L, int idx)
+void *LuaVoxelManip::packIn(lua_State *L, int idx)
 {
 	LuaVoxelManip *o = checkobject(L, idx);
 
@@ -441,7 +441,7 @@ void *LuaVoxelManip::serializeIn(lua_State *L, int idx)
 	return o->vm->clone();
 }
 
-void LuaVoxelManip::serializeOut(lua_State *L, void *ptr)
+void LuaVoxelManip::packOut(lua_State *L, void *ptr)
 {
 	MMVManip *vm = reinterpret_cast<MMVManip*>(ptr);
 	if (!L) {
@@ -487,7 +487,7 @@ void LuaVoxelManip::Register(lua_State *L)
 	// Can be created from Lua (VoxelManip())
 	lua_register(L, className, create_object);
 
-	script_register_serializer(L, className, serializeIn, serializeOut);
+	script_register_packer(L, className, packIn, packOut);
 }
 
 const char LuaVoxelManip::className[] = "VoxelManip";

@@ -85,8 +85,6 @@ struct PackedValue
 	ALLOW_CLASS_MOVE(PackedValue)
 };
 
-// TODO straighten out terminology here
-
 /*
  * Packing callback: Turns a Lua value at given index into a void*
  */
@@ -94,25 +92,25 @@ typedef void *(*PackInFunc)(lua_State *L, int idx);
 /*
  * Unpacking callback: Turns a void* back into the Lua value (left on top of stack)
  *
- * Note that this function takes ownership of the pointer, so make sure
+ * Note that this function must take ownership of the pointer, so make sure
  * to free or keep the memory.
  * `L` can be nullptr to indicate that data should just be discarded.
  */
 typedef void (*PackOutFunc)(lua_State *L, void *ptr);
 /*
- * Register a serializeable type with the name of its metatable.
+ * Register a packable type with the name of its metatable.
  *
  * Even though the callbacks are global this must be called for every Lua state
  * that supports objects of this type.
  * This function is thread-safe.
  */
-void script_register_serializer(lua_State *L, const char *regname,
+void script_register_packer(lua_State *L, const char *regname,
 		PackInFunc fin, PackOutFunc fout);
 
 // Pack a Lua value
 PackedValue *script_pack(lua_State *L, int idx);
 // Unpack a Lua value (left on top of stack)
-// Note that this may modify the PackedValue, you can't reuse it.
+// Note that this may modify the PackedValue, you can't reuse it!
 void script_unpack(lua_State *L, PackedValue *val);
 
 // Dump contents of PackedValue to stdout for debugging.
