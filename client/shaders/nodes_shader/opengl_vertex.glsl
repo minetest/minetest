@@ -32,10 +32,13 @@ centroid varying vec2 varTexCoord;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
 	uniform float f_timeofday;
+	uniform vec4 CameraPos;
+
 	varying float cosLight;
 	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float f_normal_length;
+	varying vec3 shadow_position;
 #endif
 
 
@@ -47,8 +50,22 @@ const float e = 2.718281828459;
 const float BS = 10.0;
 uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
+uniform float zPerspectiveBias;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
+
+vec4 getPerspectiveFactor(in vec4 shadowPosition)
+{
+	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
+	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
+	float pDistance = length(l);
+	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
+	l /= pFactor;
+	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
+	shadowPosition.z *= zPerspectiveBias;
+	return shadowPosition;
+}
+
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
 float mtsmoothstep(in float edge0, in float edge1, in float x)
@@ -198,19 +215,17 @@ void main(void)
 	if (f_shadow_strength > 0.0) {
 		vec3 nNormal = normalize(vNormal);
 		cosLight = dot(nNormal, -v_LightDirection);
-		
-		// Calculate normal offset scale based on the texel size adjusted for
-		// curvature of the SM texture. This code must be change together with
-		// getPerspectiveFactor or any light-space transformation.
-		vec3 eyeToVertex = worldPosition - eyePosition + cameraOffset;
-		// Distance from the vertex to the player
-		float distanceToPlayer = length(eyeToVertex - v_LightDirection * dot(eyeToVertex, v_LightDirection)) / f_shadowfar;
-		// perspective factor estimation according to the
-		float perspectiveFactor = distanceToPlayer * xyPerspectiveBias0 + xyPerspectiveBias1;
-		float texelSize = f_shadowfar * perspectiveFactor * perspectiveFactor /
-				(f_textureresolution * xyPerspectiveBias1  - perspectiveFactor * xyPerspectiveBias0);
-		float slopeScale = clamp(pow(1.0 - cosLight*cosLight, 0.5), 0.0, 1.0);
-		normalOffsetScale = texelSize * slopeScale;
+
+		normalOffsetScale = 0.0;
+
+#if DRAW_TYPE == NDT_PLANTLIKE
+		float z_bias_factor = 5e2;
+#else
+		float z_bias_factor = 1e2;
+#endif
+		shadow_position = getPerspectiveFactor(m_ShadowViewProj * mWorld * inVertexPosition).xyz;
+		float z_bias = z_bias_factor / f_textureresolution / f_shadowfar;
+		shadow_position.z -= z_bias;
 
 		if (f_timeofday < 0.2) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *

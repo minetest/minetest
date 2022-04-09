@@ -143,7 +143,7 @@ size_t ShadowRenderer::getDirectionalLightCount() const
 f32 ShadowRenderer::getMaxShadowFar() const
 {
 	if (!m_light_list.empty()) {
-		float zMax = m_light_list[0].getMaxFarValue();
+		float zMax = m_light_list[0].getFarValue();
 		return zMax;
 	}
 	return 0.0f;
