@@ -215,14 +215,12 @@ void main(void)
 	if (f_shadow_strength > 0.0) {
 		vec3 nNormal = normalize(vNormal);
 		cosLight = dot(nNormal, -v_LightDirection);
+		f_normal_length = length(vNormal);
 
-		normalOffsetScale = 0.0;
+		float normalOffsetScale = f_normal_length > 0 ? 5e5 : 0.0;
+		normalOffsetScale *= pow(1 - pow(cosLight, 2.0), 0.5) / f_textureresolution / f_shadowfar;
+		float z_bias_factor = f_normal_length > 0 ? 1e2 : 5e2;
 
-#if DRAW_TYPE == NDT_PLANTLIKE
-		float z_bias_factor = 5e2;
-#else
-		float z_bias_factor = 1e2;
-#endif
 		shadow_position = getPerspectiveFactor(m_ShadowViewProj * mWorld * inVertexPosition).xyz;
 		float z_bias = z_bias_factor / f_textureresolution / f_shadowfar;
 		shadow_position.z -= z_bias;
@@ -238,7 +236,6 @@ void main(void)
 				mtsmoothstep(0.20, 0.25, f_timeofday) *
 				(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
 		}
-		f_normal_length = length(vNormal);
 	}
 #endif
 }

@@ -27,7 +27,6 @@ centroid varying vec2 varTexCoord;
 	uniform vec4 CameraPos;
 
 	varying float cosLight;
-	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float f_normal_length;
 	varying vec3 shadow_position;
@@ -128,10 +127,10 @@ void main(void)
 
 		cosLight = dot(nNormal, -v_LightDirection);
 
-		normalOffsetScale = f_normal_length > 0 ? 2e3 : 0.0;
-		normalOffsetScale *= 1.0 / f_textureresolution / f_shadowfar * pow(1 - pow(cosLight, 2.0), 0.5);
+		float normalOffsetScale = f_normal_length > 0 ? 5e5 : 0.0;
+		normalOffsetScale *= pow(1 - pow(cosLight, 2.0), 0.5) / f_textureresolution / f_shadowfar;
+		float z_bias_factor = f_normal_length > 0 ? 2e2 : 5e2;
 
-		float z_bias_factor = 2e2;
 		shadow_position = getPerspectiveFactor(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
 		float z_bias = z_bias_factor / f_textureresolution / f_shadowfar;
 		shadow_position.z -= z_bias;

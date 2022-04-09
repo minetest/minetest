@@ -19,7 +19,6 @@ uniform float animationTimer;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
 	uniform vec4 CameraPos;
-	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
