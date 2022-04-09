@@ -632,8 +632,8 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 
-	const IItemDefManager *idef = getGameDef(L)->getItemDefManager();
-	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
+	const IItemDefManager *idef = getGameDef(L)->idef();
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
 
 	// If this is called at mod load time, NodeDefManager isn't aware of
 	// aliases yet, so we need to handle them manually
@@ -658,7 +658,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	content_t c = luaL_checkint(L, 1);
 
-	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
 	const char *name = ndef->get(c).name.c_str();
 
 	lua_pushstring(L, name);

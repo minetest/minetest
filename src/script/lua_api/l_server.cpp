@@ -61,11 +61,8 @@ int ModApiServer::l_get_server_uptime(lua_State *L)
 int ModApiServer::l_get_server_max_lag(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
-	if (!s_env)
-		lua_pushnil(L);
-	else
-		lua_pushnumber(L, s_env->getMaxLagEstimate());
+	GET_ENV_PTR;
+	lua_pushnumber(L, env->getMaxLagEstimate());
 	return 1;
 }
 
@@ -395,12 +392,11 @@ int ModApiServer::l_get_modpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
-	const ModSpec *mod = getServer(L)->getModSpec(modname);
-	if (!mod) {
+	const ModSpec *mod = getGameDef(L)->getModSpec(modname);
+	if (!mod)
 		lua_pushnil(L);
-		return 1;
-	}
-	lua_pushstring(L, mod->path.c_str());
+	else
+		lua_pushstring(L, mod->path.c_str());
 	return 1;
 }
 
@@ -412,13 +408,14 @@ int ModApiServer::l_get_modnames(lua_State *L)
 
 	// Get a list of mods
 	std::vector<std::string> modlist;
-	getServer(L)->getModNames(modlist);
+	for (auto &it : getGameDef(L)->getMods())
+		modlist.emplace_back(it.name);
 
 	std::sort(modlist.begin(), modlist.end());
 
 	// Package them up for Lua
 	lua_createtable(L, modlist.size(), 0);
-	std::vector<std::string>::iterator iter = modlist.begin();
+	auto iter = modlist.begin();
 	for (u16 i = 0; iter != modlist.end(); ++iter) {
 		lua_pushstring(L, iter->c_str());
 		lua_rawseti(L, -2, ++i);
@@ -430,8 +427,8 @@ int ModApiServer::l_get_modnames(lua_State *L)
 int ModApiServer::l_get_worldpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string worldpath = getServer(L)->getWorldPath();
-	lua_pushstring(L, worldpath.c_str());
+	const Server *srv = getServer(L);
+	lua_pushstring(L, srv->getWorldPath().c_str());
 	return 1;
 }
 
@@ -513,7 +510,8 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 int ModApiServer::l_is_singleplayer(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_pushboolean(L, getServer(L)->isSingleplayer());
+	const Server *srv = getServer(L);
+	lua_pushboolean(L, srv->isSingleplayer());
 	return 1;
 }
 
