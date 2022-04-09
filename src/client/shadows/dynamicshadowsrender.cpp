@@ -431,9 +431,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 			material.BlendOperation = video::EBO_MIN;
 		}
 
-		// FIXME: I don't think this is needed here
-		map_node->OnAnimate(m_device->getTimer()->getTime());
-
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
 
