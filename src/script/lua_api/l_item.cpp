@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "common/c_serialize.h"
+#include "common/c_packer.h"
 #include "itemdef.h"
 #include "nodedef.h"
 #include "server.h"

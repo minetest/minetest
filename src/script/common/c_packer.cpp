@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2022 sfan5
+Copyright (C) 2022 sfan5 <sfan5@live.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include <unordered_set>
 #include <unordered_map>
-#include "c_serialize.h"
+#include "c_packer.h"
 #include "c_internal.h"
 #include "log.h"
 #include "debug.h"

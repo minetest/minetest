@@ -32,7 +32,7 @@ extern "C" {
 #include "filesys.h"
 #include "porting.h"
 #include "common/c_internal.h"
-#include "common/c_serialize.h"
+#include "common/c_packer.h"
 #include "lua_api/l_base.h"
 
 /******************************************************************************/

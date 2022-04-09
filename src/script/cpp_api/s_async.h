@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <lua.h>
 #include "threading/semaphore.h"
 #include "threading/thread.h"
-#include "common/c_serialize.h"
+#include "common/c_packer.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
 
