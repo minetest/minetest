@@ -1109,9 +1109,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 	// Stuff starting with [ are special commands
 	if (part_of_name.empty() || part_of_name[0] != '[') {
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
-#if ENABLE_GLES
-		image = Align2Npot2(image, driver);
-#endif
 		if (image == NULL) {
 			if (!part_of_name.empty()) {
 
