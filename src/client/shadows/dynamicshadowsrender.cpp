@@ -418,10 +418,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 
 		material.BackfaceCulling = false;
 		material.FrontfaceCulling = true;
-		material.PolygonOffsetFactor = 4.0f;
-		material.PolygonOffsetDirection = video::EPO_BACK;
-		//material.PolygonOffsetDepthBias = 1.0f/4.0f;
-		//material.PolygonOffsetSlopeScale = -1.f;
 
 		if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;
@@ -476,10 +472,6 @@ void ShadowRenderer::renderShadowObjects(
 
 			current_mat.BackfaceCulling = true;
 			current_mat.FrontfaceCulling = false;
-			current_mat.PolygonOffsetFactor = 1.0f/2048.0f;
-			current_mat.PolygonOffsetDirection = video::EPO_BACK;
-			//current_mat.PolygonOffsetDepthBias = 1.0 * 2.8e-6;
-			//current_mat.PolygonOffsetSlopeScale = -1.f;
 		}
 
 		m_driver->setTransform(video::ETS_WORLD,
