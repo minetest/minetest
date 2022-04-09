@@ -54,7 +54,7 @@ uniform float zPerspectiveBias;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
-vec4 getPerspectiveFactor(in vec4 shadowPosition)
+vec4 applyPerspectiveDistortion(in vec4 shadowPosition)
 {
 	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
 	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
@@ -221,7 +221,7 @@ void main(void)
 		normalOffsetScale *= pow(1 - pow(cosLight, 2.0), 0.5) / f_textureresolution / f_shadowfar;
 		float z_bias_factor = f_normal_length > 0 ? 1e2 : 5e2;
 
-		shadow_position = getPerspectiveFactor(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
+		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
 		float z_bias = z_bias_factor / f_textureresolution / f_shadowfar;
 		shadow_position.z -= z_bias;
 

@@ -52,7 +52,7 @@ uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
 uniform float zPerspectiveBias;
 
-vec4 getPerspectiveFactor(in vec4 shadowPosition)
+vec4 applyPerspectiveDistortion(in vec4 shadowPosition)
 {
 	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
 	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
