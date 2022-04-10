@@ -54,16 +54,30 @@ uniform float zPerspectiveBias;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
-vec4 applyPerspectiveDistortion(in vec4 shadowPosition)
+vec2 getRelativePosition(in vec4 position)
 {
-	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
-	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
-	float pDistance = length(l);
+	vec2 l = position.xy - CameraPos.xy;
+	vec2 s = l / abs(l);
+	l /= (1 - s * CameraPos.xy);
+	return l;
+}
+
+float getPerspectiveFactor(in vec2 relativePosition)
+{
+	float pDistance = length(relativePosition);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
+	return pFactor;
+}
+
+vec4 applyPerspectiveDistortion(in vec4 position)
+{
+	vec2 l = getRelativePosition(position);
+	float pFactor = getPerspectiveFactor(l);
 	l /= pFactor;
-	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
-	shadowPosition.z *= zPerspectiveBias;
-	return shadowPosition;
+	vec2 s = l / abs(l);
+	position.xy = l * (1.0 - s * CameraPos.xy) + CameraPos.xy;
+	position.z *= zPerspectiveBias;
+	return position;
 }
 
 // custom smoothstep implementation because it's not defined in glsl1.2
@@ -217,12 +231,21 @@ void main(void)
 		cosLight = dot(nNormal, -v_LightDirection);
 		f_normal_length = length(vNormal);
 
-		float normalOffsetScale = f_normal_length > 0 ? 1e5 : 0.0;
-		normalOffsetScale *= pow(1 - pow(cosLight, 2.0), 0.5) / f_textureresolution / f_shadowfar;
-		float z_bias_factor = f_normal_length > 0 ? 1e2 : 5e2;
+		/* normalOffsetScale is in world coordinates (1/10th of a meter)
+		   z_bias is in light space coordinates */
+		float normalOffsetScale, z_bias;
+		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * inVertexPosition));
+		if (f_normal_length > 0.0) {
+			normalOffsetScale = 5.5e2 * pFactor * pFactor * pow(1 - pow(cosLight, 2.0), 0.5) / 
+					xyPerspectiveBias1 / f_textureresolution;
+			z_bias = 3.6e3 / clamp(cosLight, 0.01, 1.0);
+		} else {
+			normalOffsetScale = 0.0;
+			z_bias = 0.0;
+		}
+		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
 		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
-		float z_bias = z_bias_factor / f_textureresolution / f_shadowfar;
 		shadow_position.z -= z_bias;
 
 		if (f_timeofday < 0.2) {
