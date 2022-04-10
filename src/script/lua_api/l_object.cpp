@@ -420,8 +420,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	float frame_speed = readParam<float>(L, 6, 30.0f);
 
 	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_local_animation(self)
@@ -464,8 +463,7 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
 
 	getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_eye_offset(self)
@@ -737,8 +735,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 
 	prop->validate();
 	sao->notifyObjectPropertiesModified();
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_nametag_attributes(self)
@@ -1116,7 +1113,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setLookPitchAndSend(pitch);
-	return 1;
+	return 0;
 }
 
 // set_look_horizontal(self, radians)
@@ -1131,7 +1128,7 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setPlayerYawAndSend(yaw);
-	return 1;
+	return 0;
 }
 
 // DEPRECATED
@@ -1151,7 +1148,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setLookPitchAndSend(pitch);
-	return 1;
+	return 0;
 }
 
 // DEPRECATED
@@ -1171,7 +1168,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setPlayerYawAndSend(yaw);
-	return 1;
+	return 0;
 }
 
 // set_fov(self, degrees, is_multiplier, transition_time)
@@ -1310,8 +1307,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 
 	player->inventory_formspec = formspec;
 	getServer(L)->reportInventoryFormspecModified(player->getName());
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_inventory_formspec(self) -> formspec
@@ -1342,8 +1338,7 @@ int ObjectRef::l_set_formspec_prepend(lua_State *L)
 
 	player->formspec_prepend = formspec;
 	getServer(L)->reportFormspecPrependModified(player->getName());
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_formspec_prepend(self)
@@ -1603,8 +1598,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 	if (!getServer(L)->hudSetFlags(player, flags, mask))
 		return 0;
 
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // hud_get_flags(self)
@@ -1861,8 +1855,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 	}
 
 	getServer(L)->setSky(player, sky_params);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 static void push_sky_color(lua_State *L, const SkyboxParams &params)
@@ -1984,8 +1977,7 @@ int ObjectRef::l_set_sun(lua_State *L)
 	}
 
 	getServer(L)->setSun(player, sun_params);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 //get_sun(self)
@@ -2038,8 +2030,7 @@ int ObjectRef::l_set_moon(lua_State *L)
 	}
 
 	getServer(L)->setMoon(player, moon_params);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_moon(self)
@@ -2094,8 +2085,7 @@ int ObjectRef::l_set_stars(lua_State *L)
 	}
 
 	getServer(L)->setStars(player, star_params);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_stars(self)
@@ -2162,8 +2152,7 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	}
 
 	getServer(L)->setClouds(player, cloud_params);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 int ObjectRef::l_get_clouds(lua_State *L)
@@ -2217,8 +2206,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	}
 
 	getServer(L)->overrideDayNightRatio(player, do_override, ratio);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_day_night_ratio(self)
@@ -2313,8 +2301,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 	lua_pop(L, -1);
 
 	getServer(L)->setLighting(player, lighting);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_lighting(self)
