@@ -16,4 +16,30 @@ local gamepath = core.get_builtin_path() .. "game" .. DIR_DELIM
 dofile(gamepath .. "constants.lua")
 dofile(gamepath .. "item_s.lua")
 dofile(gamepath .. "misc_s.lua")
+dofile(gamepath .. "features.lua")
 dofile(gamepath .. "voxelarea.lua")
+
+-- Transfer of globals
+do
+	assert(core.transferred_globals)
+	local all = core.deserialize(core.transferred_globals, true)
+	core.transferred_globals = nil
+
+	-- reassemble other tables
+	all.registered_nodes = {}
+	all.registered_craftitems = {}
+	all.registered_tools = {}
+	for k, v in pairs(all.registered_items) do
+		if v.type == "node" then
+			all.registered_nodes[k] = v
+		elseif v.type == "craftitem" then
+			all.registered_craftitems[k] = v
+		elseif v.type == "tool" then
+			all.registered_tools[k] = v
+		end
+	end
+
+	for k, v in pairs(all) do
+		core[k] = v
+	end
+end

@@ -98,7 +98,7 @@ local function test_handle_async(cb)
 	-- Basic test including mod name tracking and unittests.async_ok which
 	-- should be set by inside_async_env.lua
 	local func = function(x)
-		return core.get_last_run_mod(), _VERSION, unittests[x]
+		return core.get_last_run_mod(), _VERSION, unittests[x]()
 	end
 	local expect = {core.get_last_run_mod(), _VERSION, true}
 
@@ -119,7 +119,7 @@ local function test_handle_async(cb)
 			end
 			cb()
 		end, nil, 123)
-	end, "async_ok")
+	end, "async_test")
 end
 unittests.register("test_handle_async", test_handle_async, {async=true})
 

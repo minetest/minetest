@@ -388,6 +388,9 @@ public:
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
 
+	// Serialized data transferred into async envs at init time
+	MutexedVariable<std::string> m_async_globals_data;
+
 	// Bind address
 	Address m_bind_addr;
 

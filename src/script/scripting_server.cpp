@@ -91,6 +91,21 @@ ServerScripting::ServerScripting(Server* server):
 
 void ServerScripting::initAsync()
 {
+	// Save globals to transfer
+	{
+		lua_State *L = getStack();
+		lua_getglobal(L, "core");
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "get_globals_to_transfer");
+		lua_call(L, 0, 1);
+		luaL_checktype(L, -1, LUA_TSTRING);
+		getServer()->m_async_globals_data.set(readParam<std::string>(L, -1));
+		lua_pushnil(L);
+		lua_setfield(L, -3, "get_globals_to_transfer"); // unset function too
+		lua_pop(L, 2); // pop 'core', return value
+	}
+	
+
 	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
@@ -156,6 +171,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 
 void ServerScripting::InitializeAsync(lua_State *L, int top)
 {
+	// classes
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);
 	LuaPerlinNoiseMap::Register(L);
@@ -164,4 +180,12 @@ void ServerScripting::InitializeAsync(lua_State *L, int top)
 	LuaSecureRandom::Register(L);
 	LuaVoxelManip::Register(L);
 	LuaSettings::Register(L);
+
+	// globals data
+	lua_getglobal(L, "core");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	std::string s = ModApiBase::getServer(L)->m_async_globals_data.get();
+	lua_pushlstring(L, s.c_str(), s.size());
+	lua_setfield(L, -2, "transferred_globals");
+	lua_pop(L, 1); // pop 'core'
 }

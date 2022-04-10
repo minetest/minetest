@@ -5824,7 +5824,10 @@ Functions:
 
 Variables:
 * `minetest.settings`
-* ...
+* `minetest.registered_items`, `registered_nodes`, `registered_tools`,
+  `registered_craftitems` and `registered_aliases`
+    * with all functions and userdata values replaced by `true`, calling any
+      callbacks here is obviously not possible
 
 Server
 ------

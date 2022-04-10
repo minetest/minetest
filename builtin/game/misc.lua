@@ -235,3 +235,31 @@ end
 
 -- Used for callback handling with dynamic_add_media
 core.dynamic_media_callbacks = {}
+
+
+-- Transfer of certain globals into async environments
+
+local function copy_filtering(t, seen)
+	if type(t) == "userdata" or type(t) == "function" then
+		return true -- don't use nil so presence can still be detected
+	elseif type(t) ~= "table" then
+		return t
+	end
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		local k_ = seen[k] or copy_filtering(k, seen)
+		local v_ = seen[v] or copy_filtering(v, seen)
+		n[k_] = v_
+	end
+	return n
+end
+
+function core.get_globals_to_transfer()
+	local all = {
+		registered_items = copy_filtering(core.registered_items),
+		registered_aliases = core.registered_aliases,
+	}
+	return core.serialize(all)
+end
