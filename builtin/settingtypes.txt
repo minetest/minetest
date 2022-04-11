@@ -1046,6 +1046,10 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500
 
+#    Whether to show technical names for mods, texture packs and settings.
+#    Controlled by the checkbox in the "All settings" menu.
+main_menu_technical_settings (Show technical names) bool false
+
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
 

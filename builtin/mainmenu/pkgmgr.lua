@@ -78,23 +78,24 @@ local function load_texture_packs(txtpath, retval)
 
 	for _, item in ipairs(list) do
 		if item ~= "base" then
-			local name = item
-
 			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
-			if path == current_texture_path then
-				name = fgettext("$1 (Enabled)", name)
-			end
-
 			local conf = Settings(path .. "texture_pack.conf")
+			local enabled = conf == current_texture_path
+
+			local name = item
+			local title = conf:get("title")
+			-- list_* is only used if non-nil, else the regular versions are used.
 
 			retval[#retval + 1] = {
-				name = item,
+				name = name,
+				title = title,
+				list_name = enabled and fgettext("$1 (Enabled)", name) or nil,
+				list_title = enabled and fgettext("$1 (Enabled)", title) or nil,
 				author = conf:get("author"),
 				release = tonumber(conf:get("release")) or 0,
-				list_name = name,
 				type = "txp",
 				path = path,
-				enabled = path == current_texture_path,
+				enabled = enabled,
 			}
 		end
 	end
@@ -135,6 +136,7 @@ function get_mods(path, virtual_path, retval, modpack)
 
 			-- Read from config
 			toadd.name = name
+			toadd.title = mod_conf.title
 			toadd.author = mod_conf.author
 			toadd.release = tonumber(mod_conf.release) or 0
 			toadd.path = mod_path
@@ -336,7 +338,7 @@ function pkgmgr.identify_modname(modpath,filename)
 	return nil
 end
 --------------------------------------------------------------------------------
-function pkgmgr.render_packagelist(render_list)
+function pkgmgr.render_packagelist(render_list, use_technical_names)
 	if not render_list then
 		if not pkgmgr.global_mods then
 			pkgmgr.refresh_globals()
@@ -372,7 +374,12 @@ function pkgmgr.render_packagelist(render_list)
 		else
 			retval[#retval + 1] = "0"
 		end
-		retval[#retval + 1] = core.formspec_escape(v.list_name or v.name)
+
+		if use_technical_names then
+			retval[#retval + 1] = core.formspec_escape(v.list_name or v.name)
+		else
+			retval[#retval + 1] = core.formspec_escape(v.list_title or v.list_name or v.title or v.name)
+		end
 	end
 
 	return table.concat(retval, ",")

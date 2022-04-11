@@ -51,12 +51,14 @@ local function get_formspec(tabview, name, tabdata)
 		tabdata.selected_pkg = 1
 	end
 
+	local use_technical_names = core.settings:get_bool("main_menu_technical_settings")
+
 
 	local retval =
 		"label[0.05,-0.25;".. fgettext("Installed Packages:") .. "]" ..
 		"tablecolumns[color;tree;text]" ..
 		"table[0,0.25;5.1,4.3;pkglist;" ..
-		pkgmgr.render_packagelist(packages) ..
+		pkgmgr.render_packagelist(packages, use_technical_names) ..
 		";" .. tabdata.selected_pkg .. "]" ..
 		"button[0,4.85;5.25,0.5;btn_contentdb;".. fgettext("Browse online content") .. "]"
 
