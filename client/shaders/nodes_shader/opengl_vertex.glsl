@@ -227,8 +227,7 @@ void main(void)
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
-		vec3 nNormal = normalize(vNormal);
-		cosLight = dot(nNormal, -v_LightDirection);
+		vec3 nNormal;
 		f_normal_length = length(vNormal);
 
 		/* normalOffsetScale is in world coordinates (1/10th of a meter)
@@ -236,12 +235,16 @@ void main(void)
 		float normalOffsetScale, z_bias;
 		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * inVertexPosition));
 		if (f_normal_length > 0.0) {
+			nNormal = normalize(vNormal);
+			cosLight = dot(nNormal, -v_LightDirection);
 			normalOffsetScale = 5.5e2 * pFactor * pFactor * pow(1 - pow(cosLight, 2.0), 0.5) / 
 					xyPerspectiveBias1 / f_textureresolution;
-			z_bias = 3.6e3 / clamp(cosLight, 0.01, 1.0);
+			z_bias = 1.5e3 / clamp(cosLight, 0.01, 1.0);
 		} else {
+			nNormal = vec3(0.0);
+			cosLight = dot(v_LightDirection, normalize(vec3(v_LightDirection.x, 0.0, v_LightDirection.z)));
 			normalOffsetScale = 0.0;
-			z_bias = 0.0;
+			z_bias = 3.6e3 / (1.0 - clamp(dot(v_LightDirection, vec3(0.0, -1.0, 0.0)), 0.0, 0.9));
 		}
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
