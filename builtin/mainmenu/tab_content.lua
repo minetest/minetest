@@ -89,9 +89,16 @@ local function get_formspec(tabview, name, tabdata)
 			desc = info.description
 		end
 
+		local title_and_name
+		if selected_pkg.type == "game" then
+			title_and_name = selected_pkg.name
+		else
+			title_and_name = (selected_pkg.title or selected_pkg.name) .. core.colorize("#BFBFBF", "\n(" .. selected_pkg.name .. ")")
+		end
+
 		retval = retval ..
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
-				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
+				"label[8.25,0.6;" .. core.formspec_escape(title_and_name) .. "]" ..
 				"box[5.5,2.2;6.15,2.35;#000]"
 
 		if selected_pkg.type == "mod" then
