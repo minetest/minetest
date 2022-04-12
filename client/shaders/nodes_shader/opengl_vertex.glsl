@@ -237,14 +237,16 @@ void main(void)
 		if (f_normal_length > 0.0) {
 			nNormal = normalize(vNormal);
 			cosLight = dot(nNormal, -v_LightDirection);
-			normalOffsetScale = 5.5e2 * pFactor * pFactor * pow(1 - pow(cosLight, 2.0), 0.5) / 
+			float sinLight = pow(1 - pow(cosLight, 2.0), 0.5);
+			normalOffsetScale = 2.0 * pFactor * pFactor * sinLight * min(f_shadowfar, 500.0) / 
 					xyPerspectiveBias1 / f_textureresolution;
-			z_bias = 1.5e3 / clamp(cosLight, 0.01, 1.0);
+			z_bias = 1.0 * sinLight / cosLight;
 		} else {
 			nNormal = vec3(0.0);
-			cosLight = dot(v_LightDirection, normalize(vec3(v_LightDirection.x, 0.0, v_LightDirection.z)));
+			cosLight = clamp(dot(v_LightDirection, normalize(vec3(v_LightDirection.x, 0.0, v_LightDirection.z))), 1e-2, 1.0);
+			float sinLight = pow(1 - pow(cosLight, 2.0), 0.5);
 			normalOffsetScale = 0.0;
-			z_bias = 3.6e3 / (1.0 - clamp(dot(v_LightDirection, vec3(0.0, -1.0, 0.0)), 0.0, 0.9));
+			z_bias = 3.6e3 * sinLight / cosLight;
 		}
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
