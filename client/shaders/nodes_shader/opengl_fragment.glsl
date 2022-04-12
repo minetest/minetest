@@ -18,6 +18,9 @@ uniform float animationTimer;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
 	uniform vec4 CameraPos;
+	uniform float xyPerspectiveBias0;
+	uniform float xyPerspectiveBias1;
+	
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
@@ -45,24 +48,7 @@ varying float nightRatio;
 const float fogStart = FOG_START;
 const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
-
-
 #ifdef ENABLE_DYNAMIC_SHADOWS
-uniform float xyPerspectiveBias0;
-uniform float xyPerspectiveBias1;
-uniform float zPerspectiveBias;
-
-vec4 applyPerspectiveDistortion(in vec4 shadowPosition)
-{
-	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
-	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
-	float pDistance = length(l);
-	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-	l /= pFactor;
-	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
-	shadowPosition.z *= zPerspectiveBias;
-	return shadowPosition;
-}
 
 // assuming near is always 1.0
 float getLinearDepth()
