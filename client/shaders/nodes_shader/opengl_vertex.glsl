@@ -54,28 +54,28 @@ uniform float zPerspectiveBias;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
-vec2 getRelativePosition(in vec4 position)
+vec4 getRelativePosition(in vec4 position)
 {
 	vec2 l = position.xy - CameraPos.xy;
 	vec2 s = l / abs(l);
-	l /= (1 - s * CameraPos.xy);
-	return l;
+	s = (1.0 - s * CameraPos.xy);
+	l /= s;
+	return vec4(l, s);
 }
 
-float getPerspectiveFactor(in vec2 relativePosition)
+float getPerspectiveFactor(in vec4 relativePosition)
 {
-	float pDistance = length(relativePosition);
+	float pDistance = length(relativePosition.xy);
 	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
 	return pFactor;
 }
 
 vec4 applyPerspectiveDistortion(in vec4 position)
 {
-	vec2 l = getRelativePosition(position);
+	vec4 l = getRelativePosition(position);
 	float pFactor = getPerspectiveFactor(l);
-	l /= pFactor;
-	vec2 s = l / abs(l);
-	position.xy = l * (1.0 - s * CameraPos.xy) + CameraPos.xy;
+	l.xy /= pFactor;
+	position.xy = l.xy * l.zw + CameraPos.xy;
 	position.z *= zPerspectiveBias;
 	return position;
 }

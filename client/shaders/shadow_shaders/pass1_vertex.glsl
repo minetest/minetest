@@ -6,18 +6,31 @@ uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
 uniform float zPerspectiveBias;
 
-vec4 applyPerspectiveDistortion(in vec4 shadowPosition)
+vec4 getRelativePosition(in vec4 position)
 {
-	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
-	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
-	float pDistance = length(l);
-	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-	l /= pFactor;
-	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
-	shadowPosition.z *= zPerspectiveBias;
-	return shadowPosition;
+	vec2 l = position.xy - CameraPos.xy;
+	vec2 s = l / abs(l);
+	s = (1.0 - s * CameraPos.xy);
+	l /= s;
+	return vec4(l, s);
 }
 
+float getPerspectiveFactor(in vec4 relativePosition)
+{
+	float pDistance = length(relativePosition.xy);
+	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
+	return pFactor;
+}
+
+vec4 applyPerspectiveDistortion(in vec4 position)
+{
+	vec4 l = getRelativePosition(position);
+	float pFactor = getPerspectiveFactor(l);
+	l.xy /= pFactor;
+	position.xy = l.xy * l.zw + CameraPos.xy;
+	position.z *= zPerspectiveBias;
+	return position;
+}
 
 void main()
 {
