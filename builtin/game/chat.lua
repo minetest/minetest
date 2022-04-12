@@ -621,7 +621,7 @@ core.register_chatcommand("set", {
 
 		setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
-			if string.match(setname, "^secure.") then
+			if setname:sub(1, 7) == "secure." then
 				return false, S("Failed. Cannot modify secure settings. "
 					.. "Edit the settings file manually.")
 			end
