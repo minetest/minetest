@@ -139,19 +139,23 @@ void main(void)
 		vec3 nNormal = normalize(vNormal);
 		f_normal_length = length(vNormal);
 
-		cosLight = dot(nNormal, -v_LightDirection);
-
 		/* normalOffsetScale is in world coordinates (1/10th of a meter)
 		   z_bias is in light space coordinates */
 		float normalOffsetScale, z_bias;
 		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * inVertexPosition));
 		if (f_normal_length > 0.0) {
-			normalOffsetScale = 5.5e2 * pFactor * pFactor * pow(1 - pow(cosLight, 2.0), 0.5) / 
+			nNormal = normalize(vNormal);
+			cosLight = dot(nNormal, -v_LightDirection);
+			float sinLight = pow(1 - pow(cosLight, 2.0), 0.5);
+			normalOffsetScale = 0.1 * pFactor * pFactor * sinLight * min(f_shadowfar, 500.0) / 
 					xyPerspectiveBias1 / f_textureresolution;
-			z_bias = 3.6e3 / clamp(cosLight, 0.01, 1.0);
+			z_bias = 1e3 * sinLight / cosLight * (0.5 + f_textureresolution / 1024.0);
 		} else {
+			nNormal = vec3(0.0);
+			cosLight = clamp(dot(v_LightDirection, normalize(vec3(v_LightDirection.x, 0.0, v_LightDirection.z))), 1e-2, 1.0);
+			float sinLight = pow(1 - pow(cosLight, 2.0), 0.5);
 			normalOffsetScale = 0.0;
-			z_bias = 5e3;
+			z_bias = 3.6e3 * sinLight / cosLight;
 		}
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
