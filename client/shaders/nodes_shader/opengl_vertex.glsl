@@ -241,7 +241,8 @@ void main(void)
 			normalOffsetScale = 2.0 * pFactor * pFactor * sinLight * min(f_shadowfar, 500.0) / 
 					xyPerspectiveBias1 / f_textureresolution;
 			z_bias = 1.0 * sinLight / cosLight;
-		} else {
+		}
+		else {
 			nNormal = vec3(0.0);
 			cosLight = clamp(dot(v_LightDirection, normalize(vec3(v_LightDirection.x, 0.0, v_LightDirection.z))), 1e-2, 1.0);
 			float sinLight = pow(1 - pow(cosLight, 2.0), 0.5);
