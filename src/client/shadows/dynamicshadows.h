@@ -69,10 +69,16 @@ public:
 	const core::matrix4 &getFutureProjectionMatrix() const;
 	core::matrix4 getViewProjMatrix();
 
-	/// Gets the light's far value.
+	/// Gets the light's maximum far value, i.e. the shadow boundary
 	f32 getMaxFarValue() const
 	{
 		return farPlane * BS;
+	}
+
+	/// Gets the current far value of the light
+	f32 getFarValue() const
+	{
+		return shadow_frustum.zFar;
 	}
 
 

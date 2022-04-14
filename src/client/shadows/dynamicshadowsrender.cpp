@@ -143,7 +143,7 @@ size_t ShadowRenderer::getDirectionalLightCount() const
 f32 ShadowRenderer::getMaxShadowFar() const
 {
 	if (!m_light_list.empty()) {
-		float zMax = m_light_list[0].getMaxFarValue();
+		float zMax = m_light_list[0].getFarValue();
 		return zMax;
 	}
 	return 0.0f;
@@ -418,10 +418,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 
 		material.BackfaceCulling = false;
 		material.FrontfaceCulling = true;
-		material.PolygonOffsetFactor = 4.0f;
-		material.PolygonOffsetDirection = video::EPO_BACK;
-		//material.PolygonOffsetDepthBias = 1.0f/4.0f;
-		//material.PolygonOffsetSlopeScale = -1.f;
 
 		if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;
@@ -430,9 +426,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader;
 			material.BlendOperation = video::EBO_MIN;
 		}
-
-		// FIXME: I don't think this is needed here
-		map_node->OnAnimate(m_device->getTimer()->getTime());
 
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
@@ -479,10 +472,6 @@ void ShadowRenderer::renderShadowObjects(
 
 			current_mat.BackfaceCulling = true;
 			current_mat.FrontfaceCulling = false;
-			current_mat.PolygonOffsetFactor = 1.0f/2048.0f;
-			current_mat.PolygonOffsetDirection = video::EPO_BACK;
-			//current_mat.PolygonOffsetDepthBias = 1.0 * 2.8e-6;
-			//current_mat.PolygonOffsetSlopeScale = -1.f;
 		}
 
 		m_driver->setTransform(video::ETS_WORLD,

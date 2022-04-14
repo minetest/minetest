@@ -18,10 +18,13 @@ uniform float animationTimer;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
 	uniform vec4 CameraPos;
-	varying float normalOffsetScale;
+	uniform float xyPerspectiveBias0;
+	uniform float xyPerspectiveBias1;
+	
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
+	varying vec3 shadow_position;
 #endif
 
 
@@ -45,24 +48,7 @@ varying float nightRatio;
 const float fogStart = FOG_START;
 const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
-
-
 #ifdef ENABLE_DYNAMIC_SHADOWS
-uniform float xyPerspectiveBias0;
-uniform float xyPerspectiveBias1;
-uniform float zPerspectiveBias;
-
-vec4 getPerspectiveFactor(in vec4 shadowPosition)
-{
-	vec2 s = vec2(shadowPosition.x > CameraPos.x ? 1.0 : -1.0, shadowPosition.y > CameraPos.y ? 1.0 : -1.0);
-	vec2 l = s * (shadowPosition.xy - CameraPos.xy) / (1.0 - s * CameraPos.xy);
-	float pDistance = length(l);
-	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-	l /= pFactor;
-	shadowPosition.xy = CameraPos.xy * (1.0 - l) + s * l;
-	shadowPosition.z *= zPerspectiveBias;
-	return shadowPosition;
-}
 
 // assuming near is always 1.0
 float getLinearDepth()
@@ -72,15 +58,7 @@ float getLinearDepth()
 
 vec3 getLightSpacePosition()
 {
-	vec4 pLightSpace;
-	// some drawtypes have zero normals, so we need to handle it :(
-	#if DRAW_TYPE == NDT_PLANTLIKE
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition, 1.0);
-	#else
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalOffsetScale * normalize(vNormal), 1.0);
-	#endif
-	pLightSpace = getPerspectiveFactor(pLightSpace);
-	return pLightSpace.xyz * 0.5 + 0.5;
+	return shadow_position * 0.5 + 0.5;
 }
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
@@ -499,14 +477,14 @@ void main(void)
 
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
-			if (cosLight > 0.0)
+			if (cosLight > 0.0 || f_normal_length < 1e-3)
 				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				visibility = vec4(1.0, 0.0, 0.0, 0.0);
 			shadow_int = visibility.r;
 			shadow_color = visibility.gba;
 #else
-			if (cosLight > 0.0)
+			if (cosLight > 0.0 || f_normal_length < 1e-3)
 				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				shadow_int = 1.0;

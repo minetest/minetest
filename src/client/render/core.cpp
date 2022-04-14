@@ -76,8 +76,11 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	draw_wield_tool = _draw_wield_tool;
 	draw_crosshair = _draw_crosshair;
 
-	if (shadow_renderer)
+	if (shadow_renderer) {
+		// This is necessary to render shadows for animations correctly
+		smgr->getRootSceneNode()->OnAnimate(device->getTimer()->getTime());
 		shadow_renderer->update();
+	}
 
 	beforeDraw();
 	drawAll();
