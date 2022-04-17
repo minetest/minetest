@@ -150,17 +150,29 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	if (PCFBOUND == 0.0 || SOFTSHADOWRADIUS <= 0.0)
 		return 0.0;
 
-	if (SOFTSHADOWRADIUS <= 1.0) {
-		return SOFTSHADOWRADIUS;
-	}
-
 	vec2 clampedpos;
 	float y, x;
-	float depth = 0.0;
+	float depth = getHardShadowDepth(shadowsampler, smTexCoord.xy, realDistance);
+	float scale_factor = 1.0;
+	if (depth > 0.0)
+		scale_factor = clamp(depth / 1e-3, 0.0, 1.0);
+	else
+		depth = 10.0;
+
+	if (scale_factor < 1e-2) {
+		return 0.0;
+	}
+
+	if (SOFTSHADOWRADIUS <= 1.0) {
+		return scale_factor * SOFTSHADOWRADIUS;
+	}
+
+
 	float pointDepth;
-	float maxRadius = SOFTSHADOWRADIUS * f_textureresolution / 512.0;
+	float maxRadius = SOFTSHADOWRADIUS;
 	float bound = PCFBOUND;
-	float scale_factor = maxRadius / bound / f_textureresolution / perspective_factor;
+	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor;
+	scale_factor *= maxRadius / bound / 1024.0 * world_to_texture;
 	int n = 0;
 
 	for (y = -bound; y <= bound; y += 1.0)
@@ -168,16 +180,17 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 		clampedpos = vec2(x, y) * scale_factor + smTexCoord.xy;
 
 		pointDepth = getHardShadowDepth(shadowsampler, clampedpos.xy, realDistance);
-		if (pointDepth > -0.01) {
-			depth += pointDepth;
-			n += 1;
+		if (pointDepth * f_shadowfar * 0.035 > length(vec2(x,y) / bound)) {
+			depth = min(depth, pointDepth);
 		}
 	}
 
-	depth = depth / n;
-	depth = pow(depth, 2.0) * 1000.0;
+	if (depth == 10.0)
+		return 0.0;
 
-	return clamp(depth * maxRadius, 0.7, maxRadius);
+	depth = 5e1 * depth * world_to_texture;
+
+	return clamp(depth * maxRadius, 1.0, maxRadius);
 }
 
 #ifdef POISSON_FILTER
