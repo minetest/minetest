@@ -117,8 +117,8 @@ float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 
 
 #if SHADOW_FILTER == 2
-	#define PCFBOUND 1.5 // 4x4
-	#define PCFSAMPLES 16
+	#define PCFBOUND 2.0 // 5x5
+	#define PCFSAMPLES 25
 #elif SHADOW_FILTER == 1
 	#define PCFBOUND 1.0 // 3x3
 	#define PCFSAMPLES 9
@@ -153,26 +153,28 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	vec2 clampedpos;
 	float y, x;
 	float depth = getHardShadowDepth(shadowsampler, smTexCoord.xy, realDistance);
-	float scale_factor = 1.0;
+	float sharpness_factor = 1.0;
 	if (depth > 0.0)
-		scale_factor = clamp(depth / 1e-3, 0.0, 1.0);
-	else
-		depth = 10.0;
+		sharpness_factor = clamp(depth / 1e-3, 0.0, 1.0);
+	depth = 0.0;
 
-	if (scale_factor < 1e-2) {
+	// if we would be downscaling the filter significantly, just force a sharp shadow
+	// in practice this only happens very close to the caster and avoids peter-panning.
+	if (sharpness_factor < 1e-2) {
 		return 0.0;
 	}
 
+	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor;
+
 	if (SOFTSHADOWRADIUS <= 1.0) {
-		return scale_factor * SOFTSHADOWRADIUS;
+		return sharpness_factor * SOFTSHADOWRADIUS;
 	}
 
 
 	float pointDepth;
-	float maxRadius = SOFTSHADOWRADIUS;
+	float maxRadius = 2e-1 * SOFTSHADOWRADIUS / f_shadowfar * world_to_texture;
 	float bound = PCFBOUND;
-	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor;
-	scale_factor *= maxRadius / bound / 1024.0 * world_to_texture;
+	float scale_factor = maxRadius * sharpness_factor / bound;
 	int n = 0;
 
 	for (y = -bound; y <= bound; y += 1.0)
@@ -180,17 +182,16 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 		clampedpos = vec2(x, y) * scale_factor + smTexCoord.xy;
 
 		pointDepth = getHardShadowDepth(shadowsampler, clampedpos.xy, realDistance);
-		if (pointDepth * f_shadowfar * 0.035 > length(vec2(x,y) / bound)) {
-			depth = min(depth, pointDepth);
+		if (pointDepth >= 0.0) {
+			depth += pointDepth;
+			n += 1;
 		}
 	}
 
-	if (depth == 10.0)
-		return 0.0;
+	depth *= 1e0 * world_to_texture / max(n, 1.0);
 
-	depth = 5e1 * depth * world_to_texture;
 
-	return clamp(depth * maxRadius, 1.0, maxRadius);
+	return sharpness_factor * clamp(depth * maxRadius, 1.0, maxRadius) * f_textureresolution;
 }
 
 #ifdef POISSON_FILTER
