@@ -494,6 +494,7 @@ const static std::unordered_map<std::string, u32> s_named_colors = {
 	{"plum",                 0xdda0dd},
 	{"powderblue",           0xb0e0e6},
 	{"purple",               0x800080},
+	{"rebeccapurple",        0x663399},
 	{"red",                  0xff0000},
 	{"rosybrown",            0xbc8f8f},
 	{"royalblue",            0x4169e1},

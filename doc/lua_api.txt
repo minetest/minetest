@@ -3248,7 +3248,7 @@ Colors
 `#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
 
 Named colors are also supported and are equivalent to
-[CSS Color Module Level 3](https://www.w3.org/TR/css-color-3/).
+[CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/#named-color).
 To specify the value of the alpha channel, append `#A` or `#AA` to the end of
 the color name (e.g. `colorname#08`).
 
