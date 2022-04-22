@@ -82,14 +82,13 @@ local function load_texture_packs(txtpath, retval)
 			local conf = Settings(path .. "texture_pack.conf")
 			local enabled = conf == current_texture_path
 
-			local name = item
 			local title = conf:get("title")
 			-- list_* is only used if non-nil, else the regular versions are used.
 
 			retval[#retval + 1] = {
-				name = name,
+				name = item,
 				title = title,
-				list_name = enabled and fgettext("$1 (Enabled)", name) or nil,
+				list_name = enabled and fgettext("$1 (Enabled)", item) or nil,
 				list_title = enabled and fgettext("$1 (Enabled)", title) or nil,
 				author = conf:get("author"),
 				release = tonumber(conf:get("release")) or 0,
