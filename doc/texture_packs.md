@@ -25,8 +25,12 @@ texture pack. The name must not be “base”.
 ### `texture_pack.conf`
 A key-value config file with the following keys:
 
+* `name`: The texture pack name. Allows Minetest to determine the texture pack name even if the folder is wrongly named.
 * `title` - human readable title
 * `description` - short description, shown in the content tab
+* `author`: The author's ContentDB username.
+* `textdomain`: Textdomain used to translate title and description. Defaults to the texture pack name.
+  See [Translating content meta].
 
 ### `description.txt`
 **Deprecated**, you should use texture_pack.conf instead.

@@ -114,11 +114,12 @@ local function get_formspec(tabview, name, tabdata)
 			modscreenshot = defaulttexturedir .. "no_screenshot.png"
 		end
 
-		local info = core.get_content_info(selected_pkg.path)
 		local desc = fgettext("No package description available")
-		if info.description and info.description:trim() ~= "" then
-			desc = core.formspec_escape(info.description)
+		if selected_pkg.description and selected_pkg.description:trim() ~= "" then
+			desc = core.formspec_escape(selected_pkg.description)
 		end
+
+		local info = core.get_content_info(selected_pkg.path)
 
 		local title_and_name
 		if selected_pkg.type == "game" then
