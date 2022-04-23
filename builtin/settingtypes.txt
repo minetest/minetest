@@ -1050,7 +1050,7 @@ client_mapblock_limit (Mapblock limit) int 7500
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
 #    setting names in All Settings.
 #    Controlled by the checkbox in the "All settings" menu.
-main_menu_technical_settings (Show technical names) bool false
+show_technical_names (Show technical names) bool false
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false

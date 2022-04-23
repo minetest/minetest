@@ -164,7 +164,7 @@ local function get_formspec(data)
 			fgettext("Enable all") .. "]"
 	end
 
-	local use_technical_names = core.settings:get_bool("main_menu_technical_settings")
+	local use_technical_names = core.settings:get_bool("show_technical_names")
 
 	return retval ..
 		"tablecolumns[color;tree;text]" ..

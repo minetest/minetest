@@ -51,7 +51,7 @@ local function get_formspec(tabview, name, tabdata)
 		tabdata.selected_pkg = 1
 	end
 
-	local use_technical_names = core.settings:get_bool("main_menu_technical_settings")
+	local use_technical_names = core.settings:get_bool("show_technical_names")
 
 
 	local retval =
