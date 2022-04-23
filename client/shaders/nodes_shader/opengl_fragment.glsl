@@ -127,7 +127,6 @@ float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	#define PCFSAMPLES 1
 #endif
 
-float debug;
 #ifdef COLORED_SHADOWS
 float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
@@ -143,6 +142,8 @@ float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDis
 	return depth;
 }
 #endif
+
+#define BASEFILTERRADIUS 2.0
 
 float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
@@ -167,12 +168,12 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor;
 
 	if (SOFTSHADOWRADIUS <= 1.0) {
-		return sharpness_factor * SOFTSHADOWRADIUS;
+		return sharpness_factor * BASEFILTERRADIUS * SOFTSHADOWRADIUS;
 	}
 
 
 	float pointDepth;
-	float maxRadius = 2e-1 * SOFTSHADOWRADIUS / f_shadowfar * world_to_texture;
+	float maxRadius = max(BASEFILTERRADIUS / f_textureresolution, 73e-5 * BASEFILTERRADIUS * SOFTSHADOWRADIUS * world_to_texture); // as portion of the SM texture	float bound = PCFBOUND;
 	float bound = PCFBOUND;
 	float scale_factor = maxRadius * sharpness_factor / bound;
 	int n = 0;
@@ -188,10 +189,9 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 		}
 	}
 
-	depth *= 1e0 * world_to_texture / max(n, 1.0);
+	depth *= world_to_texture / max(n, 1);
 
-
-	return sharpness_factor * clamp(depth * maxRadius, 1.0, maxRadius) * f_textureresolution;
+	return sharpness_factor * max(BASEFILTERRADIUS * SOFTSHADOWRADIUS, min(depth * maxRadius, maxRadius) * f_textureresolution);
 }
 
 #ifdef POISSON_FILTER
