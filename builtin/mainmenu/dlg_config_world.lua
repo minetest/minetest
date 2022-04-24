@@ -163,10 +163,13 @@ local function get_formspec(data)
 			"button[8.95,0.125;2.5,0.5;btn_enable_all_mods;" ..
 			fgettext("Enable all") .. "]"
 	end
+
+	local use_technical_names = core.settings:get_bool("show_technical_names")
+
 	return retval ..
 		"tablecolumns[color;tree;text]" ..
 		"table[5.5,0.75;5.75,6;world_config_modlist;" ..
-		pkgmgr.render_packagelist(data.list) .. ";" .. data.selected_mod .."]"
+		pkgmgr.render_packagelist(data.list, use_technical_names) .. ";" .. data.selected_mod .."]"
 end
 
 local function handle_buttons(this, fields)
