@@ -239,7 +239,7 @@ public:
 	Client *m_client;
 };
 
-class NodeDugEvent: public MtEvent
+class NodeDugEvent : public MtEvent
 {
 public:
 	v3s16 p;
@@ -249,16 +249,14 @@ public:
 		p(p),
 		n(n)
 	{}
-	MtEvent::Type getType() const
-	{
-		return MtEvent::NODE_DUG;
-	}
+	Type getType() const { return NODE_DUG; }
 };
 
 class SoundMaker
 {
 	ISoundManager *m_sound;
 	const NodeDefManager *m_ndef;
+
 public:
 	bool makes_footstep_sound;
 	float m_player_step_timer;
@@ -3704,18 +3702,19 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// See also: serverpackethandle.cpp, action == 2
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
-	MapNode n = client->getEnv().getClientMap().getNode(nodepos);
+	MapNode n = map.getNode(nodepos);
+	const auto &features = nodedef_manager->get(n);
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
 	// Get digging parameters
-	DigParams params = getDigParams(nodedef_manager->get(n).groups,
+	DigParams params = getDigParams(features.groups,
 			&selected_item.getToolCapabilities(itemdef_manager),
 			selected_item.wear);
 
 	// If can't dig, try hand
 	if (!params.diggable) {
-		params = getDigParams(nodedef_manager->get(n).groups,
+		params = getDigParams(features.groups,
 				&hand_item.getToolCapabilities(itemdef_manager));
 	}
 
@@ -3726,7 +3725,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_time_complete = params.time;
 
 		if (m_cache_enable_particles) {
-			const ContentFeatures &features = client->getNodeDefManager()->get(n);
 			client->getParticleManager()->addNodeParticle(client,
 					player, nodepos, n, features);
 		}
@@ -3737,6 +3735,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_instantly = runData.dig_time_complete == 0;
 		if (client->modsLoaded() && client->getScript()->on_punchnode(nodepos, n))
 			return;
+
 		client->interact(INTERACT_START_DIGGING, pointed);
 		runData.digging = true;
 		runData.btn_down_for_dig = true;
@@ -3751,7 +3750,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_index = crack_animation_length;
 	}
 
-	SimpleSoundSpec sound_dig = nodedef_manager->get(n).sound_dig;
+	const auto &sound_dig = features.sound_dig;
 
 	if (sound_dig.exists() && params.diggable) {
 		if (sound_dig.name == "__group") {
@@ -3769,8 +3768,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// Don't show cracks if not diggable
 	if (runData.dig_time_complete >= 100000.0) {
 	} else if (runData.dig_index < crack_animation_length) {
-		//TimeTaker timer("client.setTempMod");
-		//infostream<<"dig_index="<<dig_index<<std::endl;
 		client->setCrack(runData.dig_index, nodepos);
 	} else {
 		infostream << "Digging completed" << std::endl;
@@ -3792,38 +3789,31 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		else if (runData.dig_instantly)
 			runData.nodig_delay_timer = 0.15;
 
-		bool is_valid_position;
-		MapNode wasnode = map.getNode(nodepos, &is_valid_position);
-		if (is_valid_position) {
-			if (client->modsLoaded() &&
-					client->getScript()->on_dignode(nodepos, wasnode)) {
-				return;
-			}
-
-			const ContentFeatures &f = client->ndef()->get(wasnode);
-			if (f.node_dig_prediction == "air") {
-				client->removeNode(nodepos);
-			} else if (!f.node_dig_prediction.empty()) {
-				content_t id;
-				bool found = client->ndef()->getId(f.node_dig_prediction, id);
-				if (found)
-					client->addNode(nodepos, id, true);
-			}
-			// implicit else: no prediction
+		if (client->modsLoaded() &&
+				client->getScript()->on_dignode(nodepos, n)) {
+			return;
 		}
+
+		if (features.node_dig_prediction == "air") {
+			client->removeNode(nodepos);
+		} else if (!features.node_dig_prediction.empty()) {
+			content_t id;
+			bool found = nodedef_manager->getId(features.node_dig_prediction, id);
+			if (found)
+				client->addNode(nodepos, id, true);
+		}
+		// implicit else: no prediction
 
 		client->interact(INTERACT_DIGGING_COMPLETED, pointed);
 
 		if (m_cache_enable_particles) {
-			const ContentFeatures &features =
-				client->getNodeDefManager()->get(wasnode);
 			client->getParticleManager()->addDiggingParticles(client,
-				player, nodepos, wasnode, features);
+				player, nodepos, n, features);
 		}
 
 
 		// Send event to trigger sound
-		client->getEventManager()->put(new NodeDugEvent(nodepos, wasnode));
+		client->getEventManager()->put(new NodeDugEvent(nodepos, n));
 	}
 
 	if (runData.dig_time_complete < 100000.0) {
