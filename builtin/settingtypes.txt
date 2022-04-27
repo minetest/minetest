@@ -1123,7 +1123,7 @@ enable_mod_channels (Mod channels) bool false
 #    If this is set, players will always (re)spawn at the given position.
 static_spawnpoint (Static spawnpoint) string
 
-#    If enabled, new players cannot join with an empty password.
+#    If enabled, players cannot join without a password or change theirs to an empty password.
 disallow_empty_password (Disallow empty passwords) bool false
 
 #    If enabled, disable cheat prevention in multiplayer.
