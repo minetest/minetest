@@ -596,6 +596,15 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 	}
 }
 
+void RemoteClient::resetChosenMech()
+{
+	if (chosen_mech == AUTH_MECHANISM_SRP) {
+		srp_verifier_delete((SRPVerifier *) auth_data);
+		auth_data = nullptr;
+	}
+	chosen_mech = AUTH_MECHANISM_NONE;
+}
+
 u64 RemoteClient::uptime() const
 {
 	return porting::getTimeS() - m_connection_time;
