@@ -472,20 +472,14 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		{
 		case CSE_AuthAccept:
 			m_state = CS_AwaitingInit2;
-			if (chosen_mech == AUTH_MECHANISM_SRP ||
-					chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD)
-				srp_verifier_delete((SRPVerifier *) auth_data);
-			chosen_mech = AUTH_MECHANISM_NONE;
+			resetChosenMech();
 			break;
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
 			break;
 		case CSE_SetDenied:
 			m_state = CS_Denied;
-			if (chosen_mech == AUTH_MECHANISM_SRP ||
-					chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD)
-				srp_verifier_delete((SRPVerifier *) auth_data);
-			chosen_mech = AUTH_MECHANISM_NONE;
+			resetChosenMech();
 			break;
 		default:
 			myerror << "HelloSent: Invalid client state transition! " << event;
@@ -561,9 +555,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		case CSE_SudoSuccess:
 			m_state = CS_SudoMode;
-			if (chosen_mech == AUTH_MECHANISM_SRP)
-				srp_verifier_delete((SRPVerifier *) auth_data);
-			chosen_mech = AUTH_MECHANISM_NONE;
+			resetChosenMech();
 			break;
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
 		default:
@@ -598,7 +590,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 void RemoteClient::resetChosenMech()
 {
-	if (chosen_mech == AUTH_MECHANISM_SRP) {
+	if (auth_data) {
 		srp_verifier_delete((SRPVerifier *) auth_data);
 		auth_data = nullptr;
 	}
