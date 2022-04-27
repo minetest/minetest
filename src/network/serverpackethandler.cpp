@@ -1475,6 +1475,9 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	verbosestream << "Server: Got TOSERVER_FIRST_SRP from " << addr_s
 		<< ", with is_empty=" << (is_empty == 1) << std::endl;
 
+	const bool empty_disallowed = !isSingleplayer() && is_empty == 1 &&
+		g_settings->getBool("disallow_empty_password");
+
 	// Either this packet is sent because the user is new or to change the password
 	if (cstate == CS_HelloSent) {
 		if (!client->isMechAllowed(AUTH_MECHANISM_FIRST_SRP)) {
@@ -1485,9 +1488,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 
-		if (!isSingleplayer() &&
-				g_settings->getBool("disallow_empty_password") &&
-				is_empty == 1) {
+		if (empty_disallowed) {
 			actionstream << "Server: " << playername
 					<< " supplied empty password from " << addr_s << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_EMPTY_PASSWORD);
@@ -1520,6 +1521,15 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 		m_clients.event(peer_id, CSE_SudoLeave);
+
+		if (empty_disallowed) {
+			actionstream << "Server: " << playername
+					<< " supplied empty password" << std::endl;
+			SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Changing to an empty password is not allowed."));
+			return;
+		}
+
 		std::string pw_db_field = encode_srp_verifier(verification_key, salt);
 		bool success = m_script->setPassword(playername, pw_db_field);
 		if (success) {
