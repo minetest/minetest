@@ -76,10 +76,10 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 		err_type = "Unknown";
 	}
 
-	if (!mod || !*mod)
+	if (!mod)
 		mod = "??";
 
-	if (!fxn || !*fxn)
+	if (!fxn)
 		fxn = "??";
 
 	const char *err_descr = lua_tostring(L, -1);
