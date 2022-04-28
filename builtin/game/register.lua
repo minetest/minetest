@@ -404,7 +404,6 @@ function core.override_item(name, redefinition)
 end
 
 
-
 core.callback_origins = setmetatable({}, {
 	__index = function()
 		return {mod = "", name = ""}
