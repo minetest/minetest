@@ -1198,12 +1198,14 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 MapBlockMesh::~MapBlockMesh()
 {
 	for (scene::IMesh *m : m_mesh) {
+#if IRRLICHT_VERSION_MT_REVISION < 5
 		if (m_enable_vbo) {
 			for (u32 i = 0; i < m->getMeshBufferCount(); i++) {
 				scene::IMeshBuffer *buf = m->getMeshBuffer(i);
 				RenderingEngine::get_video_driver()->removeHardwareBuffer(buf);
 			}
 		}
+#endif
 		m->drop();
 	}
 	delete m_minimap_mapblock;
