@@ -172,7 +172,7 @@ public:
 
 	inline const v3f &getRotation() const { return m_rotation; }
 
-	const bool isImmortal();
+	bool isImmortal() const;
 
 	inline const ObjectProperties &getProperties() const { return m_prop; }
 

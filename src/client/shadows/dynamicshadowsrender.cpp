@@ -31,10 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
-		m_device(device), m_smgr(device->getSceneManager()),
-		m_driver(device->getVideoDriver()), m_client(client), m_current_frame(0),
+		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
+		m_client(client), m_current_frame(0),
 		m_perspective_bias_xy(0.8), m_perspective_bias_z(0.5)
 {
+	(void) m_client;
+
 	m_shadows_supported = true; // assume shadows supported. We will check actual support in initialize
 	m_shadows_enabled = true;
 
