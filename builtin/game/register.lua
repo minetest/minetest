@@ -419,9 +419,7 @@ function core.run_callbacks(callbacks, mode, ...)
 	local ret = nil
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
-		if origin then
-			core.set_last_run_mod(origin.mod)
-		end
+		core.set_last_run_mod(origin.mod or "??")
 		local cb_ret = callbacks[i](...)
 
 		if mode == 0 and i == 1 then
