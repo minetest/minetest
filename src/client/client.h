@@ -407,7 +407,7 @@ public:
 	}
 
 	ClientScripting *getScript() { return m_script; }
-	const bool modsLoaded() const { return m_mods_loaded; }
+	bool modsLoaded() const { return m_mods_loaded; }
 
 	void pushToEventQueue(ClientEvent *event);
 

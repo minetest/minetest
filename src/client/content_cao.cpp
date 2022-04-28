@@ -435,7 +435,7 @@ const v3f GenericCAO::getPosition() const
 	return m_position;
 }
 
-const bool GenericCAO::isImmortal()
+bool GenericCAO::isImmortal() const
 {
 	return itemgroup_get(getGroups(), "immortal");
 }
