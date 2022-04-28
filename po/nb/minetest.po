@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
-"Last-Translator: Imre Kristoffer Eilertsen <imreeil42@gmail.com>\n"
+"PO-Revision-Date: 2022-04-29 20:12+0000\n"
+"Last-Translator: Petter Reinholdtsen <pere-weblate@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,43 +12,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.12.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Nullstill meldingskøen"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
 msgstr "Tom kommando."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Avslutt til meny"
+msgstr "Avslutt til hovedmeny"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Lokal kommando"
+msgstr "Ugyldig kommando: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
 msgstr "Avgitt kommando: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Enkeltspiller"
+msgstr "List opp påkoblede spillere"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Enkeltspiller"
+msgstr "Påkoblede spillere: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Utgående meldingskø er nå tømt."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -63,14 +59,12 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Lokal kommando"
+msgstr "Tilgjengelige kommandoer:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Lokal kommando"
+msgstr "Tilgjengelige kommandoer: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -78,25 +72,26 @@ msgstr "Ikke tilgjengelig kommando: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Få hjelp med kommandoer"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Bruk «.help <kommando>» for å få mer informasjon, eller «.help all» for å "
+"liste opp alt."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <kommando>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
 msgstr "OK"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Ikke tilgjengelig kommando: "
+msgstr "<ingen tilgjengelig>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -225,7 +220,7 @@ msgstr "aktivert"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "«$1» eksisterer allerede. Ønsker du å skrive over den?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -268,9 +263,8 @@ msgid "Back to Main Menu"
 msgstr "Tilbake til hovedmeny"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Vær vert for spill"
+msgstr "Basisspill:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -299,9 +293,8 @@ msgid "Install $1"
 msgstr "Installer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Valgfrie avhengigheter:"
+msgstr "Installer manglende avhengigheter"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -793,7 +786,7 @@ msgstr "Aktive bidragsytere"
 #: builtin/mainmenu/tab_about.lua
 #, fuzzy
 msgid "Active renderer:"
-msgstr "Område for sending av aktive objekt"
+msgstr "Aktiv grafisk tegner:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -911,9 +904,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Velg verden:"
+msgstr "Velg endringer"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1182,9 +1174,8 @@ msgid "Connection error (timed out?)"
 msgstr "Tilkoblingsfeil (tidsavbrudd?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Klarte ikke finne eller laste inn spill «"
+msgstr "Klarte ikke finne eller laste inn spill: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1557,9 +1548,8 @@ msgid "Sound muted"
 msgstr "Lyd av"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound system is disabled"
-msgstr "Lydsystem avskrudd"
+msgstr "Lydsystem er skrudd av"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
@@ -2130,9 +2120,9 @@ msgid "Muted"
 msgstr "Av"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Lydstyrke: "
+msgstr "Lydstyrke: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2945,13 +2935,12 @@ msgid "Crosshair alpha"
 msgstr "Trådkors-alpha"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Trådkors-alpha (ugjennomsiktighet, mellom 0 og 255).\n"
-"Kontrollerer også objektets trådkorsfarge"
+"Kontrollerer også objektets trådkorsfarge."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -6087,9 +6076,8 @@ msgstr ""
 "Krever omstart etter endring."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Set the maximum character length of a chat message sent by clients."
-msgstr "Angi maksimalt antall tegn i chatmelding sendt av klienter."
+msgstr "Angi maksimalt antall tegn i tekstmelding sendt av klienter."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6977,6 +6965,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
+"Bredde-delen av vindusstørrelsen ved oppstart. Ignoreres i fullskjerm-modus."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
