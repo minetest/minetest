@@ -403,12 +403,14 @@ function core.override_item(name, redefinition)
 	register_item_raw(item)
 end
 
-
-core.callback_origins = setmetatable({}, {
-	__index = function()
-		return {mod = "??", name = "??"}
-	end
-})
+do
+	local default = {mod = "??", name = "??"}
+	core.callback_origins = setmetatable({}, {
+		__index = function()
+			return default
+		end
+	})
+end
 
 function core.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
