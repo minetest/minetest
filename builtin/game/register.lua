@@ -404,7 +404,12 @@ function core.override_item(name, redefinition)
 end
 
 
-core.callback_origins = {}
+
+core.callback_origins = setmetatable({}, {
+	__index = function()
+		return {mod = "", name = ""}
+	end
+})
 
 function core.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
@@ -419,7 +424,7 @@ function core.run_callbacks(callbacks, mode, ...)
 	local ret = nil
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
-		core.set_last_run_mod(origin.mod or "")
+		core.set_last_run_mod(origin.mod)
 		local cb_ret = callbacks[i](...)
 
 		if mode == 0 and i == 1 then
