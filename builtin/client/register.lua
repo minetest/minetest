@@ -1,6 +1,6 @@
 core.callback_origins = setmetatable({}, {
 	__index = function()
-		return {mod = "", name = ""}
+		return {mod = "??", name = "??"}
 	end
 })
 
