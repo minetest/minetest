@@ -26,7 +26,7 @@ minetest.register_entity("testentities:armorball", {
 		visual = "sprite",
 		visual_size = {x=1, y=1},
 		textures = {"testentities_armorball.png"},
-		spritediv = {x=1, y=5},
+		spritediv = {x=1, y=max_phase+1},
 		initial_sprite_basepos = {x=0, y=0},
 	},
 
