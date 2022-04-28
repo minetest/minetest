@@ -1,8 +1,4 @@
-core.callback_origins = setmetatable({}, {
-	__index = function()
-		return {mod = "??", name = "??"}
-	end
-})
+core.callback_origins = {}
 
 local getinfo = debug.getinfo
 debug.getinfo = nil
