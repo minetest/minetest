@@ -1,5 +1,8 @@
-
-core.callback_origins = {}
+core.callback_origins = setmetatable({}, {
+	__index = function()
+		return {mod = "", name = ""}
+	end
+})
 
 local getinfo = debug.getinfo
 debug.getinfo = nil
