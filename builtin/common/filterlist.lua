@@ -284,8 +284,29 @@ end
 
 --------------------------------------------------------------------------------
 function sort_mod_list(self)
+	-- Cache of lineages, each "lineage" being a list whose first item is
+	-- a mod's highest parent and whose last item is the mod itself.
+	local mod_lineages = {}
+	for _, mod in ipairs(self.m_processed_list) do
+		local lineage = {}
+		mod_lineages[mod] = lineage
+		repeat
+			table.insert(lineage, 1, mod)
+			mod = mod.modpack
+		until mod == nil
+	end
+
+	-- Stabilize the sort to avoid issues with identically-named modpacks.
+	local original_order = {}
+	for i, mod in ipairs(self.m_processed_list) do
+		original_order[mod] = i
+	end
 
 	table.sort(self.m_processed_list, function(a, b)
+		if a == b then
+			return false
+		end
+
 		-- Show game mods at bottom
 		if a.type ~= b.type or a.loc ~= b.loc then
 			if b.type == "game" then
@@ -293,27 +314,35 @@ function sort_mod_list(self)
 			end
 			return b.loc == "game"
 		end
-		-- If in same or no modpack, sort by name
-		if a.modpack == b.modpack then
-			if a.name:lower() == b.name:lower() then
-				return a.name < b.name
-			end
-			return a.name:lower() < b.name:lower()
-		-- Else compare name to modpack name
-		else
-			-- Always show modpack pseudo-mod on top of modpack mod list
-			if a.name == b.modpack then
-				return true
-			elseif b.name == a.modpack then
-				return false
-			end
 
-			local name_a = a.modpack or a.name
-			local name_b = b.modpack or b.name
-			if name_a:lower() == name_b:lower() then
-				return  name_a < name_b
-			end
-			return name_a:lower() < name_b:lower()
+		-- Find where the lineages diverge
+		local a_lineage = mod_lineages[a]
+		local b_lineage = mod_lineages[b]
+		local a_divergence, b_divergence
+		local i = 1
+		repeat
+			a_divergence = a_lineage[i]
+			b_divergence = b_lineage[i]
+			i = i + 1
+		until a_divergence ~= b_divergence
+
+		-- Compare the two where they diverge
+		if not a_divergence then
+			-- b is inside a
+			return true
+		elseif not b_divergence then
+			-- a is inside b
+			return false
 		end
+		if a_divergence.name:lower() < b_divergence.name:lower() then
+			return true
+		end
+		if a_divergence.name < b_divergence.name then
+			return true
+		end
+		if a_divergence.name > b_divergence.name then
+			return false
+		end
+		return original_order[a_divergence] < original_order[b_divergence]
 	end)
 end

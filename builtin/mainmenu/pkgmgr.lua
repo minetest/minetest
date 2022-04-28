@@ -107,7 +107,7 @@ pkgmgr = {}
 -- @param path         Absolute directory path to scan recursively
 -- @param virtual_path Prettified unique path (e.g. "mods", "mods/mt_modpack")
 -- @param listing      Input. Flat array to insert located mods and modpacks
--- @param modpack      Currently processing modpack or nil/"" if none (recursion)
+-- @param modpack      Currently processing modpack or nil if none (recursion)
 function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 	local mods = core.get_dir_list(path, true)
 
@@ -150,6 +150,12 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 			toadd.virtual_path = mod_virtual_path
 			toadd.type = "mod"
 
+			-- Mark mod as part of modpack
+			if modpack then
+				toadd.modpack = modpack
+				table.insert(modpack.mods, toadd)
+			end
+
 			-- Check modpack.txt
 			-- Note: modpack.conf is already checked above
 			local modpackfile = io.open(mod_path .. DIR_DELIM .. "modpack.txt")
@@ -159,12 +165,11 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 			end
 
 			-- Deal with modpack contents
-			if modpack and modpack ~= "" then
-				toadd.modpack = modpack
-			elseif toadd.is_modpack then
+			if toadd.is_modpack then
 				toadd.type = "modpack"
 				toadd.is_modpack = true
-				pkgmgr.get_mods(mod_path, mod_virtual_path, listing, name)
+				toadd.mods = {}
+				pkgmgr.get_mods(mod_path, mod_virtual_path, listing, toadd)
 			end
 		end
 	end
@@ -281,16 +286,14 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 		end
 
 		if v.is_modpack then
-			local rawlist = render_list:get_raw_list()
-			color = mt_color_dark_green
-
-			for j = 1, #rawlist do
-				if rawlist[j].modpack == list[i].name then
-					if with_error then
-						update_error(with_error[rawlist[j].virtual_path])
-					end
-
-					if rawlist[j].enabled then
+			local function traverse_modpack(modpack)
+				for _, mod in ipairs(modpack.mods) do
+					if mod.is_modpack then
+						traverse_modpack(mod)
+					elseif mod.enabled then
+						if with_error then
+							update_error(with_error[mod.virtual_path])
+						end
 						icon = 1
 					else
 						-- Modpack not entirely enabled so showing as grey
@@ -298,6 +301,8 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 					end
 				end
 			end
+			color = mt_color_dark_green
+			traverse_modpack(v)
 		elseif v.is_game_content or v.type == "game" then
 			icon = 1
 			color = mt_color_blue
@@ -326,11 +331,16 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 		end
 
 		retval[#retval + 1] = color
-		if v.modpack ~= nil or v.loc == "game" then
-			retval[#retval + 1] = "1"
-		else
-			retval[#retval + 1] = "0"
+
+		local indent = v.loc == "game" and 1 or 0
+		do
+			local m = v.modpack
+			while m do
+				indent = indent + 1
+				m = m.modpack
+			end
 		end
+		retval[#retval + 1] = indent
 
 		if with_error then
 			retval[#retval + 1] = icon
@@ -356,11 +366,13 @@ function pkgmgr.get_dependencies(path)
 	return info.depends or {}, info.optional_depends or {}
 end
 
------------ tests whether all of the mods in the modpack are enabled -----------
-function pkgmgr.is_modpack_entirely_enabled(data, name)
-	local rawlist = data.list:get_raw_list()
-	for j = 1, #rawlist do
-		if rawlist[j].modpack == name and not rawlist[j].enabled then
+-------------- tests whether all of the relevant mods are enabled --------------
+function pkgmgr.is_mod_or_modpack_enabled(mod)
+	if not mod.is_modpack then
+		return mod.enabled
+	end
+	for _, mod2 in ipairs(mod.mods) do
+		if not pkgmgr.is_mod_or_modpack_enabled(mod2) then
 			return false
 		end
 	end
@@ -396,10 +408,8 @@ local function toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mo
 	else
 		-- Toggle or en/disable every mod in the modpack,
 		-- interleaved unsupported
-		for i = 1, #list do
-			if list[i].modpack == mod.name then
-				toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, list[i])
-			end
+		for _, mod2 in ipairs(mod.mods) do
+			toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod2)
 		end
 	end
 end
