@@ -35,43 +35,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <cstring>
 
-const int BUFFER_LENGTH = 256;
-
-class StringBuffer : public std::streambuf {
+class ChangableTarget : public LogTarget {
 public:
-	StringBuffer() {
-		buffer_index = 0;
+	ChangableTarget(LogTarget *dest) : m_dest(dest) { }
+
+        virtual bool hasOutput() override {
+		LogTarget *dest = getTarget();
+		return dest ? dest->hasOutput() : false;
 	}
 
-	int overflow(int c);
-	virtual void flush(const std::string &buf) = 0;
-	std::streamsize xsputn(const char *s, std::streamsize n);
-	void push_back(char c);
+        virtual void log(const std::string &buf) override {
+		LogTarget *dest = getTarget();
+		if (dest)
+			dest->log(buf);
+	}
+
+	LogTarget *getTarget() {
+		return m_dest.load(std::memory_order_relaxed);
+	}
+
+	void setTarget(LogTarget *newTarget) {
+		m_dest = newTarget;
+	}
 
 private:
-	char buffer[BUFFER_LENGTH];
-	int buffer_index;
+	std::atomic<LogTarget*> m_dest;
 };
 
 
-class LogBuffer : public StringBuffer {
+class LevelTarget : public LogTarget {
 public:
-	LogBuffer(Logger &logger, LogLevel lev) :
-		logger(logger),
-		level(lev)
+	LevelTarget(Logger &logger, LogLevel level, bool raw = false) :
+		m_logger(logger),
+		m_level(level),
+		m_raw(raw)
 	{}
 
-	void flush(const std::string &buffer);
+        virtual bool hasOutput() override {
+		return m_logger.hasOutput(m_level);
+	}
+
+        virtual void log(const std::string &buf) override {
+		if (!m_raw) {
+			m_logger.log(m_level, buf);
+		} else {
+			m_logger.logRaw(m_level, buf);
+		}
+	}
 
 private:
-	Logger &logger;
-	LogLevel level;
-};
-
-
-class RawLogBuffer : public StringBuffer {
-public:
-	void flush(const std::string &buffer);
+	Logger &m_logger;
+	LogLevel m_level;
+	bool m_raw;
 };
 
 ////
@@ -82,29 +97,34 @@ Logger g_logger;
 
 StreamLogOutput stdout_output(std::cout);
 StreamLogOutput stderr_output(std::cerr);
-std::ostream null_stream(NULL);
 
-RawLogBuffer raw_buf;
+ChangableTarget null_target(nullptr);
+LevelTarget none_target_raw(g_logger, LL_NONE, true);
+LevelTarget none_target(g_logger, LL_NONE);
+LevelTarget error_target(g_logger, LL_ERROR);
+LevelTarget warning_target(g_logger, LL_WARNING);
+LevelTarget action_target(g_logger, LL_ACTION);
+LevelTarget info_target(g_logger, LL_INFO);
+LevelTarget verbose_target(g_logger, LL_VERBOSE);
+LevelTarget trace_target(g_logger, LL_TRACE);
 
-LogBuffer none_buf(g_logger, LL_NONE);
-LogBuffer error_buf(g_logger, LL_ERROR);
-LogBuffer warning_buf(g_logger, LL_WARNING);
-LogBuffer action_buf(g_logger, LL_ACTION);
-LogBuffer info_buf(g_logger, LL_INFO);
-LogBuffer verbose_buf(g_logger, LL_VERBOSE);
+/* Each thread has distinct LogStream instances with separate StringBuffers.
+   When they flush at the end of a line, the text is sent to a LogTarget,
+   which is a global (not thread-local) object, and from there relayed to
+   the Logger.
+ */
 
-// Connection
-std::ostream *dout_con_ptr = &null_stream;
-std::ostream *derr_con_ptr = &verbosestream;
-
-// Common streams
-std::ostream rawstream(&raw_buf);
-std::ostream dstream(&none_buf);
-std::ostream errorstream(&error_buf);
-std::ostream warningstream(&warning_buf);
-std::ostream actionstream(&action_buf);
-std::ostream infostream(&info_buf);
-std::ostream verbosestream(&verbose_buf);
+thread_local LogStream null_stream(null_target);
+thread_local LogStream dstream(none_target);
+thread_local LogStream rawstream(none_target_raw);
+thread_local LogStream errorstream(error_target);
+thread_local LogStream warningstream(warning_target);
+thread_local LogStream actionstream(action_target);
+thread_local LogStream infostream(info_target);
+thread_local LogStream verbosestream(verbose_target);
+thread_local LogStream tracestream(trace_target);
+thread_local LogStream derr_con(verbose_target);
+thread_local LogStream dout_con(trace_target);
 
 // Android
 #ifdef __ANDROID__
@@ -164,6 +184,8 @@ LogLevel Logger::stringToLevel(const std::string &name)
 		return LL_INFO;
 	else if (name == "verbose")
 		return LL_VERBOSE;
+	else if (name == "trace")
+		return LL_TRACE;
 	else
 		return LL_MAX;
 }
@@ -176,21 +198,26 @@ void Logger::addOutput(ILogOutput *out)
 void Logger::addOutput(ILogOutput *out, LogLevel lev)
 {
 	m_outputs[lev].push_back(out);
+	m_has_outputs[lev] = true;
 }
 
 void Logger::addOutputMasked(ILogOutput *out, LogLevelMask mask)
 {
 	for (size_t i = 0; i < LL_MAX; i++) {
-		if (mask & LOGLEVEL_TO_MASKLEVEL(i))
+		if (mask & LOGLEVEL_TO_MASKLEVEL(i)) {
 			m_outputs[i].push_back(out);
+			m_has_outputs[i] = true;
+		}
 	}
 }
 
 void Logger::addOutputMaxLevel(ILogOutput *out, LogLevel lev)
 {
 	assert(lev < LL_MAX);
-	for (size_t i = 0; i <= lev; i++)
+	for (size_t i = 0; i <= lev; i++) {
 		m_outputs[i].push_back(out);
+		m_has_outputs[i] = true;
+	}
 }
 
 LogLevelMask Logger::removeOutput(ILogOutput *out)
@@ -203,6 +230,7 @@ LogLevelMask Logger::removeOutput(ILogOutput *out)
 		if (it != m_outputs[i].end()) {
 			ret_mask |= LOGLEVEL_TO_MASKLEVEL(i);
 			m_outputs[i].erase(it);
+			m_has_outputs[i] = !m_outputs[i].empty();
 		}
 	}
 	return ret_mask;
@@ -236,6 +264,7 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 		"ACTION",
 		"INFO",
 		"VERBOSE",
+		"TRACE",
 	};
 	assert(lev < LL_MAX && lev >= 0);
 	STATIC_ASSERT(ARRLEN(names) == LL_MAX,
@@ -297,7 +326,6 @@ void Logger::logToOutputs(LogLevel lev, const std::string &combined,
 		m_outputs[lev][i]->log(lev, combined, time, thread_name, payload_text);
 }
 
-
 ////
 //// *LogOutput methods
 ////
@@ -349,6 +377,7 @@ void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)
 			m_stream << "\033[37m";
 			break;
 		case LL_VERBOSE:
+		case LL_TRACE:
 			// verbose is darker than info
 			m_stream << "\033[2m";
 			break;
@@ -396,6 +425,7 @@ void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
 			color = "\x1b(c@#BBB)";
 			break;
 		case LL_VERBOSE: // dark grey
+		case LL_TRACE:
 			color = "\x1b(c@#888)";
 			break;
 		default: break;
@@ -403,48 +433,4 @@ void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
 	}
 
 	m_buffer.push(color.append(line));
-}
-
-////
-//// *Buffer methods
-////
-
-int StringBuffer::overflow(int c)
-{
-	push_back(c);
-	return c;
-}
-
-
-std::streamsize StringBuffer::xsputn(const char *s, std::streamsize n)
-{
-	for (int i = 0; i < n; ++i)
-		push_back(s[i]);
-	return n;
-}
-
-void StringBuffer::push_back(char c)
-{
-	if (c == '\n' || c == '\r') {
-		if (buffer_index)
-			flush(std::string(buffer, buffer_index));
-		buffer_index = 0;
-	} else {
-		buffer[buffer_index++] = c;
-		if (buffer_index >= BUFFER_LENGTH) {
-			flush(std::string(buffer, buffer_index));
-			buffer_index = 0;
-		}
-	}
-}
-
-
-void LogBuffer::flush(const std::string &buffer)
-{
-	logger.log(level, buffer);
-}
-
-void RawLogBuffer::flush(const std::string &buffer)
-{
-	g_logger.logRaw(LL_NONE, buffer);
 }

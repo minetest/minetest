@@ -198,7 +198,7 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 	if (socket_enable_debug_output) {
 		// Print packet destination and size
 		dstream << (int)m_handle << " -> ";
-		destination.print(&dstream);
+		destination.print(dstream);
 		dstream << ", size=" << size;
 
 		// Print packet contents
@@ -295,7 +295,7 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 	if (socket_enable_debug_output) {
 		// Print packet sender and size
 		dstream << (int)m_handle << " <- ";
-		sender.print(&dstream);
+		sender.print(dstream);
 		dstream << ", size=" << received;
 
 		// Print packet contents
