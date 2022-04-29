@@ -515,8 +515,9 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 			material.EmissiveColor = color;
 		}
 	}
-
-	setColor(color);
+	else {
+		setColor(color);
+	}
 }
 
 void WieldMeshSceneNode::render()
@@ -541,9 +542,14 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
 	m_meshnode->setVisible(true);
 
-	// Add mesh to shadow caster
-	if (m_shadow)
+	if (m_shadow) {
+		// Add mesh to shadow caster
 		m_shadow->addNodeToShadowList(m_meshnode);
+
+		// Set shadow texture
+		for (u32 i = 0; i < m_meshnode->getMaterialCount(); i++)
+			m_meshnode->setMaterialTexture(3, m_shadow->get_texture());
+	}
 }
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)

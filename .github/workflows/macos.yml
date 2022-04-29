@@ -45,8 +45,8 @@ jobs:
           git clone -b $MINETEST_GAME_BRANCH $MINETEST_GAME_REPO games/$MINETEST_GAME_NAME
           rm -rvf games/$MINETEST_GAME_NAME/.git
           git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
-          mkdir cmakebuild
-          cd cmakebuild
+          mkdir build
+          cd build
           cmake .. \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
             -DCMAKE_FIND_FRAMEWORK=LAST \

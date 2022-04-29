@@ -608,7 +608,7 @@ void initializePaths()
 	// First try $XDG_CACHE_HOME/PROJECT_NAME
 	const char *cache_dir = getenv("XDG_CACHE_HOME");
 	const char *home_dir = getenv("HOME");
-	if (cache_dir) {
+	if (cache_dir && cache_dir[0] != '\0') {
 		path_cache = std::string(cache_dir) + DIR_DELIM + PROJECT_NAME;
 	} else if (home_dir) {
 		// Then try $HOME/.cache/PROJECT_NAME

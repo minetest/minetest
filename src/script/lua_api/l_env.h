@@ -114,7 +114,7 @@ private:
 
 	// get_objects_inside_radius(pos, radius)
 	static int l_get_objects_inside_radius(lua_State *L);
-	
+
 	// get_objects_in_area(pos, minp, maxp)
 	static int l_get_objects_in_area(lua_State *L);
 

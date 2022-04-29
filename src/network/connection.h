@@ -752,8 +752,8 @@ protected:
 	void putEvent(ConnectionEventPtr e);
 
 	void TriggerSend();
-	
-	bool ConnectedToServer() 
+
+	bool ConnectedToServer()
 	{
 		return getPeerNoEx(PEER_ID_SERVER) != nullptr;
 	}

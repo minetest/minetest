@@ -165,22 +165,30 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 	return node;
 }
 
+static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
+{
+	// Never allow placing CONTENT_IGNORE, it causes problems
+	if(n.getContent() == CONTENT_IGNORE){
+		const NodeDefManager *nodedef = block->getParent()->getNodeDefManager();
+		v3s16 blockpos = block->getPos();
+		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
+		bool temp_bool;
+		errorstream<<"Not allowing to place CONTENT_IGNORE"
+				<<" while trying to replace \""
+				<<nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
+				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+		return;
+	}
+	block->setNodeNoCheck(relpos, n);
+}
+
 // throws InvalidPositionException if not found
 void Map::setNode(v3s16 p, MapNode & n)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	// Never allow placing CONTENT_IGNORE, it causes problems
-	if(n.getContent() == CONTENT_IGNORE){
-		bool temp_bool;
-		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
-				<<" while trying to replace \""
-				<<m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
-				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
-		return;
-	}
-	block->setNodeNoCheck(relpos, n);
+	set_node_in_block(block, relpos, n);
 }
 
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
@@ -190,8 +198,14 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	// Collect old node for rollback
 	RollbackNode rollback_oldnode(this, p, m_gamedef);
 
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	if (block->isDummy())
+		throw InvalidPositionException();
+	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
+
 	// This is needed for updating the lighting
-	MapNode oldnode = getNode(p);
+	MapNode oldnode = block->getNodeUnsafe(relpos);
 
 	// Remove node metadata
 	if (remove_metadata) {
@@ -199,18 +213,29 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 
 	// Set the node on the map
-	// Ignore light (because calling voxalgo::update_lighting_nodes)
-	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-	setNode(p, n);
+	const ContentFeatures &cf = m_nodedef->get(n);
+	const ContentFeatures &oldcf = m_nodedef->get(oldnode);
+	if (cf.lightingEquivalent(oldcf)) {
+		// No light update needed, just copy over the old light.
+		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldcf), cf);
+		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldcf), cf);
+		set_node_in_block(block, relpos, n);
 
-	// Update lighting
-	std::vector<std::pair<v3s16, MapNode> > oldnodes;
-	oldnodes.emplace_back(p, oldnode);
-	voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
+		modified_blocks[blockpos] = block;
+	} else {
+		// Ignore light (because calling voxalgo::update_lighting_nodes)
+		n.setLight(LIGHTBANK_DAY, 0, cf);
+		n.setLight(LIGHTBANK_NIGHT, 0, cf);
+		set_node_in_block(block, relpos, n);
 
-	for (auto &modified_block : modified_blocks) {
-		modified_block.second->expireDayNightDiff();
+		// Update lighting
+		std::vector<std::pair<v3s16, MapNode> > oldnodes;
+		oldnodes.emplace_back(p, oldnode);
+		voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
+
+		for (auto &modified_block : modified_blocks) {
+			modified_block.second->expireDayNightDiff();
+		}
 	}
 
 	// Report for rollback
@@ -220,22 +245,6 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		RollbackAction action;
 		action.setSetNode(p, rollback_oldnode, rollback_newnode);
 		m_gamedef->rollback()->reportAction(action);
-	}
-
-	/*
-		Add neighboring liquid nodes and this node to transform queue.
-		(it's vital for the node itself to get updated last, if it was removed.)
-	 */
-
-	for (const v3s16 &dir : g_7dirs) {
-		v3s16 p2 = p + dir;
-
-		bool is_valid_position;
-		MapNode n2 = getNode(p2, &is_valid_position);
-		if(is_valid_position &&
-				(m_nodedef->get(n2).isLiquid() ||
-				n2.getContent() == CONTENT_AIR))
-			m_transforming_liquid.push_back(p2);
 	}
 }
 
@@ -317,7 +326,7 @@ struct TimeOrderedMapBlock {
 void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 		std::vector<v3s16> *unloaded_blocks)
 {
-	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
+	bool save_before_unloading = maySaveBlocks();
 
 	// Profile modified reasons
 	Profiler modprofiler;
@@ -502,11 +511,11 @@ struct NodeNeighbor {
 	{ }
 };
 
-void Map::transforming_liquid_add(v3s16 p) {
+void ServerMap::transforming_liquid_add(v3s16 p) {
         m_transforming_liquid.push_back(p);
 }
 
-void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
+void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		ServerEnvironment *env)
 {
 	u32 loopcount = 0;
@@ -1538,6 +1547,29 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 bool ServerMap::isBlockInQueue(v3s16 pos)
 {
 	return m_emerge && m_emerge->isBlockInQueue(pos);
+}
+
+void ServerMap::addNodeAndUpdate(v3s16 p, MapNode n,
+		std::map<v3s16, MapBlock*> &modified_blocks,
+		bool remove_metadata)
+{
+	Map::addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+
+	/*
+		Add neighboring liquid nodes and this node to transform queue.
+		(it's vital for the node itself to get updated last, if it was removed.)
+	 */
+
+	for (const v3s16 &dir : g_7dirs) {
+		v3s16 p2 = p + dir;
+
+		bool is_valid_position;
+		MapNode n2 = getNode(p2, &is_valid_position);
+		if(is_valid_position &&
+				(m_nodedef->get(n2).isLiquid() ||
+				n2.getContent() == CONTENT_AIR))
+			m_transforming_liquid.push_back(p2);
+	}
 }
 
 // N.B.  This requires no synchronization, since data will not be modified unless

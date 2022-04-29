@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nameidmapping.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
+#include "util/string.h"
 #include "exceptions.h"
 #include "debug.h"
 #include "gamedef.h"
@@ -213,10 +214,21 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 		// Before f018737, TextureSource::getTextureAverageColor did not handle
 		// missing textures. "[png" can be used as base texture, but is not known
 		// on older clients. Hence use "blank.png" to avoid this problem.
-		if (!name.empty() && name[0] == '[')
-			os << serializeString16("blank.png^" + name);
-		else
+		// To be forward-compatible with future base textures/modifiers,
+		// we apply the same prefix to any texture beginning with [,
+		// except for the ones that are supported on older clients.
+		bool pass_through = true;
+
+		if (!name.empty() && name[0] == '[') {
+			pass_through = str_starts_with(name, "[combine:") ||
+				str_starts_with(name, "[inventorycube{") ||
+				str_starts_with(name, "[lowpart:");
+		}
+
+		if (pass_through)
 			os << serializeString16(name);
+		else
+			os << serializeString16("blank.png^" + name);
 	}
 	animation.serialize(os, version);
 	bool has_scale = scale > 0;

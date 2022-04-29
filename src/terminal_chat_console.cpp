@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <inttypes.h>
 #include "config.h"
 #if USE_CURSES
 #include "version.h"
@@ -398,7 +399,7 @@ void TerminalChatConsole::step(int ch)
 	minutes = (float)minutes / 1000 * 60;
 
 	if (m_game_time)
-		printw(" | Game %d Time of day %02d:%02d ",
+		printw(" | Game %" PRIu64 " Time of day %02d:%02d ",
 			m_game_time, hours, minutes);
 
 	// draw text

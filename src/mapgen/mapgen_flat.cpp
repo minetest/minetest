@@ -177,7 +177,7 @@ void MapgenFlatParams::setDefaultSettings(Settings *settings)
 int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 {
 	s16 stone_level = ground_level;
-	float n_terrain = 
+	float n_terrain =
 		((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS)) ?
 		NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed) :
 		0.0f;

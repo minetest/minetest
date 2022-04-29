@@ -108,7 +108,6 @@ void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
 	char output_buffer[bufsize];
 	int status = 0;
 	int ret;
-	int bytes_read = 0;
 	int bytes_written = 0;
 	int input_buffer_len = 0;
 
@@ -121,8 +120,6 @@ void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
 		throw SerializationError("dcompressZlib: inflateInit failed");
 
 	z.avail_in = 0;
-
-	//dstream<<"initial fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 
 	for(;;)
 	{
@@ -147,19 +144,13 @@ void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
 			is.read(input_buffer, bufsize);
 			input_buffer_len = is.gcount();
 			z.avail_in = input_buffer_len;
-			//dstream<<"read fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 		}
 		if(z.avail_in == 0)
 		{
-			//dstream<<"z.avail_in == 0"<<std::endl;
 			break;
 		}
 
-		//dstream<<"1 z.avail_in="<<z.avail_in<<std::endl;
 		status = inflate(&z, Z_NO_FLUSH);
-		//dstream<<"2 z.avail_in="<<z.avail_in<<std::endl;
-		bytes_read += is.gcount() - z.avail_in;
-		//dstream<<"bytes_read="<<bytes_read<<std::endl;
 
 		if(status == Z_NEED_DICT || status == Z_DATA_ERROR
 				|| status == Z_MEM_ERROR)
@@ -168,16 +159,11 @@ void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
 			throw SerializationError("decompressZlib: inflate failed");
 		}
 		int count = output_size - z.avail_out;
-		//dstream<<"count="<<count<<std::endl;
 		if(count)
 			os.write(output_buffer, count);
 		bytes_written += count;
 		if(status == Z_STREAM_END)
 		{
-			//dstream<<"Z_STREAM_END"<<std::endl;
-
-			//dstream<<"z.avail_in="<<z.avail_in<<std::endl;
-			//dstream<<"fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 			// Unget all the data that inflate didn't take
 			is.clear(); // Just in case EOF is set
 			for(u32 i=0; i < z.avail_in; i++)

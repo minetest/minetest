@@ -592,9 +592,10 @@ enable_waving_plants (Waving plants) bool false
 #    Requires shaders to be enabled.
 enable_dynamic_shadows (Dynamic shadows) bool false
 
-#    Set the shadow strength.
+#    Set the shadow strength gamma.
+#    Adjusts the intensity of in-game dynamic shadows.
 #    Lower value means lighter shadows, higher value means darker shadows.
-shadow_strength (Shadow strength) float 0.2 0.05 1.0
+shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 
 #    Maximum distance to render shadows.
 shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 120.0 10.0 1000.0
@@ -857,6 +858,10 @@ autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 #    A restart is required after changing this.
 show_entity_selectionbox (Show entity selection boxes) bool false
 
+#    Distance in nodes at which transparency depth sorting is enabled
+#    Use this to limit the performance impact of transparency depth sorting
+transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
+
 [*Menus]
 
 #    Use a cloud animation for the main menu background.
@@ -1041,6 +1046,12 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500
 
+#    Whether to show technical names.
+#    Affects mods and texture packs in the Content and Select Mods menus, as well as
+#    setting names in All Settings.
+#    Controlled by the checkbox in the "All settings" menu.
+show_technical_names (Show technical names) bool false
+
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
 
@@ -1175,7 +1186,7 @@ enable_mod_channels (Mod channels) bool false
 #    If this is set, players will always (re)spawn at the given position.
 static_spawnpoint (Static spawnpoint) string
 
-#    If enabled, new players cannot join with an empty password.
+#    If enabled, players cannot join without a password or change theirs to an empty password.
 disallow_empty_password (Disallow empty passwords) bool false
 
 #    If enabled, disable cheat prevention in multiplayer.

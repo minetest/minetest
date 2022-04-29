@@ -665,7 +665,7 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
 		std::map<v3s16, MapBlock*> modified_blocks;
-		m_env->getMap().transformLiquids(modified_blocks, m_env);
+		m_env->getServerMap().transformLiquids(modified_blocks, m_env);
 
 		/*
 			Set the modified blocks unsent for all the clients
@@ -1038,8 +1038,7 @@ void Server::Receive()
 		} catch (const ClientStateError &e) {
 			errorstream << "ProcessData: peer=" << peer_id << " what()="
 					 << e.what() << std::endl;
-			DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
-					L"Try reconnecting or updating your client");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		} catch (const con::PeerNotFoundException &e) {
 			// Do nothing
 		} catch (const con::NoIncomingDataException &e) {
@@ -1068,15 +1067,13 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to an another client)" << std::endl;
-			DenyAccess_Legacy(peer_id, L"Another client is connected with this "
-					L"name. If your client closed unexpectedly, try again in "
-					L"a minute.");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
 		} else {
 			errorstream << "Server: " << playername << ": Failed to emerge player"
 					<< std::endl;
-			DenyAccess_Legacy(peer_id, L"Could not allocate player.");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	/*
@@ -1141,18 +1138,16 @@ void Server::ProcessData(NetworkPacket *pkt)
 		Address address = getPeerAddress(peer_id);
 		std::string addr_s = address.serializeString();
 
-		if(m_banmanager->isIpBanned(addr_s)) {
+		// FIXME: Isn't it a bit excessive to check this for every packet?
+		if (m_banmanager->isIpBanned(addr_s)) {
 			std::string ban_name = m_banmanager->getBanName(addr_s);
 			infostream << "Server: A banned client tried to connect from "
-					<< addr_s << "; banned name was "
-					<< ban_name << std::endl;
-			// This actually doesn't seem to transfer to the client
-			DenyAccess_Legacy(peer_id, L"Your ip is banned. Banned name was "
-					+ utf8_to_wide(ban_name));
+					<< addr_s << "; banned name was " << ban_name << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+				"Your IP is banned. Banned name was " + ban_name);
 			return;
 		}
-	}
-	catch(con::PeerNotFoundException &e) {
+	} catch (con::PeerNotFoundException &e) {
 		/*
 		 * no peer for this packet found
 		 * most common reason is peer timeout, e.g. peer didn't
@@ -1403,13 +1398,6 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
 			reason == SERVER_ACCESSDENIED_CRASH)
 		pkt << custom_reason << (u8)reconnect;
-	Send(&pkt);
-}
-
-void Server::SendAccessDenied_Legacy(session_t peer_id,const std::wstring &reason)
-{
-	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED_LEGACY, 0, peer_id);
-	pkt << reason;
 	Send(&pkt);
 }
 
@@ -1791,6 +1779,16 @@ void Server::SendOverrideDayNightRatio(session_t peer_id, bool do_override,
 			1 + 2, peer_id);
 
 	pkt << do_override << (u16) (ratio * 65535);
+
+	Send(&pkt);
+}
+
+void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
+{
+	NetworkPacket pkt(TOCLIENT_SET_LIGHTING,
+			4, peer_id);
+	
+	pkt << lighting.shadow_intensity;
 
 	Send(&pkt);
 }
@@ -2767,29 +2765,10 @@ void Server::DenySudoAccess(session_t peer_id)
 }
 
 
-void Server::DenyAccessVerCompliant(session_t peer_id, u16 proto_ver, AccessDeniedCode reason,
-		const std::string &str_reason, bool reconnect)
-{
-	SendAccessDenied(peer_id, reason, str_reason, reconnect);
-
-	m_clients.event(peer_id, CSE_SetDenied);
-	DisconnectPeer(peer_id);
-}
-
-
 void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason)
+		const std::string &custom_reason, bool reconnect)
 {
-	SendAccessDenied(peer_id, reason, custom_reason);
-	m_clients.event(peer_id, CSE_SetDenied);
-	DisconnectPeer(peer_id);
-}
-
-// 13/03/15: remove this function when protocol version 25 will become
-// the minimum version for MT users, maybe in 1 year
-void Server::DenyAccess_Legacy(session_t peer_id, const std::wstring &reason)
-{
-	SendAccessDenied_Legacy(peer_id, reason);
+	SendAccessDenied(peer_id, reason, custom_reason, reconnect);
 	m_clients.event(peer_id, CSE_SetDenied);
 	DisconnectPeer(peer_id);
 }
@@ -2975,8 +2954,8 @@ std::wstring Server::handleChat(const std::string &name,
 			return ws.str();
 		}
 		case RPLAYER_CHATRESULT_KICK:
-			DenyAccess_Legacy(player->getPeerId(),
-					L"You have been kicked due to message flooding.");
+			DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING,
+				"You have been kicked due to message flooding.");
 			return L"";
 		case RPLAYER_CHATRESULT_OK:
 			break;
@@ -3384,6 +3363,13 @@ void Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 	sanity_check(player);
 	player->overrideDayNightRatio(do_override, ratio);
 	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
+}
+
+void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
+{
+	sanity_check(player);
+	player->setLighting(lighting);
+	SendSetLighting(player->getPeerId(), lighting);
 }
 
 void Server::notifyPlayers(const std::wstring &msg)

@@ -69,6 +69,7 @@ struct SkyboxParams;
 struct SunParams;
 struct MoonParams;
 struct StarParams;
+struct Lighting;
 class ServerThread;
 class ServerModManager;
 class ServerInventoryManager;
@@ -333,17 +334,16 @@ public:
 
 	void overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
+	void setLighting(RemotePlayer *player, const Lighting &lighting);
+
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 
 	void DenySudoAccess(session_t peer_id);
-	void DenyAccessVerCompliant(session_t peer_id, u16 proto_ver, AccessDeniedCode reason,
-		const std::string &str_reason = "", bool reconnect = false);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason = "");
+		const std::string &custom_reason = "", bool reconnect = false);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
-	void DenyAccess_Legacy(session_t peer_id, const std::wstring &reason);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientInfo &ret);
@@ -459,6 +459,7 @@ private:
 	void SendSetStars(session_t peer_id, const StarParams &params);
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
+	void SendSetLighting(session_t peer_id, const Lighting &lighting);
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
 
