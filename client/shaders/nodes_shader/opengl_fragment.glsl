@@ -156,7 +156,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float depth = getHardShadowDepth(shadowsampler, smTexCoord.xy, realDistance);
 	float sharpness_factor = 1.0;
 	if (depth > 0.0)
-		sharpness_factor = clamp(depth / 1e-3, 0.0, 1.0);
+		sharpness_factor = clamp(depth * 0.4 * f_shadowfar, 0.5, 1.0);
 	depth = 0.0;
 
 	// if we would be downscaling the filter significantly, just force a sharp shadow
