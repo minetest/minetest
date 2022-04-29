@@ -35,34 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <cstring>
 
-class ChangableTarget : public LogTarget {
-public:
-	ChangableTarget(LogTarget *dest) : m_dest(dest) { }
-
-	virtual bool hasOutput() override {
-		LogTarget *dest = getTarget();
-		return dest ? dest->hasOutput() : false;
-	}
-
-	virtual void log(const std::string &buf) override {
-		LogTarget *dest = getTarget();
-		if (dest)
-			dest->log(buf);
-	}
-
-	LogTarget *getTarget() {
-		return m_dest.load(std::memory_order_relaxed);
-	}
-
-	void setTarget(LogTarget *newTarget) {
-		m_dest = newTarget;
-	}
-
-private:
-	std::atomic<LogTarget*> m_dest;
-};
-
-
 class LevelTarget : public LogTarget {
 public:
 	LevelTarget(Logger &logger, LogLevel level, bool raw = false) :
@@ -103,7 +75,6 @@ StreamLogOutput stdout_output(std::cout);
 StreamLogOutput stderr_output(std::cerr);
 #endif
 
-ChangableTarget null_target(nullptr);
 LevelTarget none_target_raw(g_logger, LL_NONE, true);
 LevelTarget none_target(g_logger, LL_NONE);
 LevelTarget error_target(g_logger, LL_ERROR);
@@ -120,7 +91,6 @@ which is a global (not thread-local) object, and from there relayed to
 the Logger.
 */
 
-thread_local LogStream null_stream(null_target);
 thread_local LogStream dstream(none_target);
 thread_local LogStream rawstream(none_target_raw);
 thread_local LogStream errorstream(error_target);
@@ -147,6 +117,12 @@ static unsigned int g_level_to_android[] = {
 	ANDROID_LOG_VERBOSE,  // LL_TRACE
 };
 
+void AndroidLogOutput::logRaw(LogLevel lev, const std::string &line) {
+	STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
+		mismatch_between_android_and_internal_loglevels);
+	__android_log_print(g_level_to_android[lev],
+		PROJECT_NAME_C, "%s", line.c_str());
+}
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

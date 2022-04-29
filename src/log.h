@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if !defined(_WIN32)  // POSIX
 	#include <unistd.h>
 #endif
+#include "util/basic_macros.h"
 #include "irrlichttypes.h"
 
 class ILogOutput;
@@ -191,13 +192,7 @@ private:
 #ifdef __ANDROID__
 class AndroidLogOutput : public ICombinedLogOutput {
 	public:
-		void logRaw(LogLevel lev, const std::string &line)
-		{
-			STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
-				mismatch_between_android_and_internal_loglevels);
-			__android_log_print(g_level_to_android[lev],
-				PROJECT_NAME_C, "%s", line.c_str());
-		}
+		void logRaw(LogLevel lev, const std::string &line);
 };
 #endif
 
@@ -236,7 +231,7 @@ private:
 class LogStream {
 public:
 	LogStream() = delete;
-	LogStream(const LogStream &) = delete;
+	DISABLE_CLASS_COPY(LogStream);
 
 	LogStream(LogTarget &target) :
 		m_target(target),
@@ -340,7 +335,6 @@ extern StreamLogOutput stderr_output;
 
 extern Logger g_logger;
 
-extern thread_local LogStream null_stream;
 extern thread_local LogStream dstream;
 extern thread_local LogStream rawstream;  // Writes directly to all LL_NONE log outputs with no prefix.
 extern thread_local LogStream errorstream;
