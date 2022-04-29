@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <unistd.h>
 #endif
 #include "util/basic_macros.h"
+#include "util/stream.h"
 #include "irrlichttypes.h"
 
 class ILogOutput;
@@ -227,7 +228,6 @@ private:
 	std::ostream *m_os;
 };
 
-
 class LogStream {
 public:
 	LogStream() = delete;
@@ -235,7 +235,7 @@ public:
 
 	LogStream(LogTarget &target) :
 		m_target(target),
-		m_buffer(*this),
+		m_buffer(std::bind(&LogStream::internalFlush, this, std::placeholders::_1)),
 		m_dummy_buffer(),
 		m_stream(&m_buffer),
 		m_dummy_stream(&m_dummy_buffer),
@@ -268,56 +268,11 @@ public:
 	}
 
 private:
-	class StringBuffer : public std::streambuf {
-	public:
-		StringBuffer(LogStream &p) : parent(p) {
-			buffer_index = 0;
-		}
-
-		int overflow(int c) {
-			push_back(c);
-			return c;
-		}
-
-		void push_back(char c) {
-			if (c == '\n' || c == '\r') {
-				if (buffer_index)
-					parent.internalFlush(std::string(buffer, buffer_index));
-				buffer_index = 0;
-			} else {
-				buffer[buffer_index++] = c;
-				if (buffer_index >= BUFFER_LENGTH) {
-					parent.internalFlush(std::string(buffer, buffer_index));
-					buffer_index = 0;
-				}
-			}
-		}
-
-	        std::streamsize xsputn(const char *s, std::streamsize n) {
-			for (int i = 0; i < n; ++i)
-				push_back(s[i]);
-			return n;
-		}
-
-	private:
-		// 10 streams per thread x (256 + overhead) ~ 3K per thread
-		static const int BUFFER_LENGTH = 256;
-		LogStream &parent;
-		char buffer[BUFFER_LENGTH];
-	        int buffer_index;
-	};
-
-	class DummyBuffer : public std::streambuf {
-		int overflow(int c) {
-			return c;
-		}
-	        std::streamsize xsputn(const char *s, std::streamsize n) {
-			return n;
-		}
-	};
+	// 10 streams per thread x (256 + overhead) ~ 3K per thread
+	static const int BUFFER_LENGTH = 256;
 	LogTarget &m_target;
-	StringBuffer m_buffer;
-	DummyBuffer m_dummy_buffer;
+	StringStreamBuffer<BUFFER_LENGTH> m_buffer;
+	DummyStreamBuffer m_dummy_buffer;
 	std::ostream m_stream;
 	std::ostream m_dummy_stream;
 	StreamProxy m_proxy;
