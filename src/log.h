@@ -283,7 +283,7 @@ private:
 					buffer_index = 0;
 				}
 			}
-                }
+		}
 
 	        std::streamsize xsputn(const char *s, std::streamsize n) {
 			for (int i = 0; i < n; ++i)

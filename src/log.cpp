@@ -39,12 +39,12 @@ class ChangableTarget : public LogTarget {
 public:
 	ChangableTarget(LogTarget *dest) : m_dest(dest) { }
 
-        virtual bool hasOutput() override {
+	virtual bool hasOutput() override {
 		LogTarget *dest = getTarget();
 		return dest ? dest->hasOutput() : false;
 	}
 
-        virtual void log(const std::string &buf) override {
+	virtual void log(const std::string &buf) override {
 		LogTarget *dest = getTarget();
 		if (dest)
 			dest->log(buf);
@@ -71,11 +71,11 @@ public:
 		m_raw(raw)
 	{}
 
-        virtual bool hasOutput() override {
+	virtual bool hasOutput() override {
 		return m_logger.hasOutput(m_level);
 	}
 
-        virtual void log(const std::string &buf) override {
+	virtual void log(const std::string &buf) override {
 		if (!m_raw) {
 			m_logger.log(m_level, buf);
 		} else {
@@ -108,11 +108,12 @@ LevelTarget info_target(g_logger, LL_INFO);
 LevelTarget verbose_target(g_logger, LL_VERBOSE);
 LevelTarget trace_target(g_logger, LL_TRACE);
 
-/* Each thread has distinct LogStream instances with separate StringBuffers.
-   When they flush at the end of a line, the text is sent to a LogTarget,
-   which is a global (not thread-local) object, and from there relayed to
-   the Logger.
- */
+/*
+Each thread has distinct LogStream instances with separate StringBuffers.
+When they flush at the end of a line, the text is sent to a LogTarget,
+which is a global (not thread-local) object, and from there relayed to
+the Logger.
+*/
 
 thread_local LogStream null_stream(null_target);
 thread_local LogStream dstream(none_target);
