@@ -57,4 +57,4 @@ jobs:
 
     - name: Run checks (devtest)
       run: |
-        $HOME/.luarocks/bin/luacheck games/devtest
+        $HOME/.luarocks/bin/luacheck --config=games/devtest/.luacheckrc games/devtest
