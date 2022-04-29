@@ -147,8 +147,6 @@ static unsigned int g_level_to_android[] = {
 	ANDROID_LOG_VERBOSE,  // LL_TRACE
 };
 
-AndroidSystemLogOutput g_android_log_output;
-
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
