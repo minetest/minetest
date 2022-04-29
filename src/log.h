@@ -188,6 +188,19 @@ private:
 	Logger &m_logger;
 };
 
+#ifdef __ANDROID__
+class AndroidLogOutput : public ICombinedLogOutput {
+	public:
+		void logRaw(LogLevel lev, const std::string &line)
+		{
+			STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
+				mismatch_between_android_and_internal_loglevels);
+			__android_log_print(g_level_to_android[lev],
+				PROJECT_NAME_C, "%s", line.c_str());
+		}
+};
+#endif
+
 class LogTarget {
 public:
 	// Must be thread-safe. These can be called from any thread.
@@ -317,8 +330,13 @@ private:
 
 };
 
+#ifdef __ANDROID__
+extern AndroidLogOutput stdout_output;
+extern AndroidLogOutput stderr_output;
+#else
 extern StreamLogOutput stdout_output;
 extern StreamLogOutput stderr_output;
+#endif
 
 extern Logger g_logger;
 

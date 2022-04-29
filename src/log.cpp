@@ -95,8 +95,13 @@ private:
 
 Logger g_logger;
 
+#ifdef __ANDROID__
+AndroidLogOutput stdout_output;
+AndroidLogOutput stderr_output;
+#else
 StreamLogOutput stdout_output(std::cout);
 StreamLogOutput stderr_output(std::cerr);
+#endif
 
 ChangableTarget null_target(nullptr);
 LevelTarget none_target_raw(g_logger, LL_NONE, true);
@@ -139,25 +144,7 @@ static unsigned int g_level_to_android[] = {
 	//ANDROID_LOG_INFO,
 	ANDROID_LOG_DEBUG,    // LL_INFO
 	ANDROID_LOG_VERBOSE,  // LL_VERBOSE
-};
-
-class AndroidSystemLogOutput : public ICombinedLogOutput {
-	public:
-		AndroidSystemLogOutput()
-		{
-			g_logger.addOutput(this);
-		}
-		~AndroidSystemLogOutput()
-		{
-			g_logger.removeOutput(this);
-		}
-		void logRaw(LogLevel lev, const std::string &line)
-		{
-			STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
-				mismatch_between_android_and_internal_loglevels);
-			__android_log_print(g_level_to_android[lev],
-				PROJECT_NAME_C, "%s", line.c_str());
-		}
+	ANDROID_LOG_VERBOSE,  // LL_TRACE
 };
 
 AndroidSystemLogOutput g_android_log_output;
