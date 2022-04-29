@@ -30,7 +30,6 @@ public:
 		buffer_index = 0;
 	}
 
-private:
 	int overflow(int c) {
 		push_back(c);
 		return c;
@@ -50,23 +49,22 @@ private:
 		}
 	}
 
-        std::streamsize xsputn(const char *s, std::streamsize n) {
+	std::streamsize xsputn(const char *s, std::streamsize n) {
 		for (int i = 0; i < n; ++i)
 			push_back(s[i]);
 		return n;
 	}
-
-	private:
+private:
 	Emitter m_emitter;
 	char buffer[BufferLength];
-        int buffer_index;
+	int buffer_index;
 };
 
 class DummyStreamBuffer : public std::streambuf {
 	int overflow(int c) {
 		return c;
 	}
-        std::streamsize xsputn(const char *s, std::streamsize n) {
+	std::streamsize xsputn(const char *s, std::streamsize n) {
 		return n;
 	}
 };
