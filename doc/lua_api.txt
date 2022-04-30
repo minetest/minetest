@@ -9943,3 +9943,10 @@ Bit Library
 Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift, bit.rol, bit.ror, bit.bswap
 
 See http://bitop.luajit.org/ for advanced information.
+
+Error Object Conversion
+-----------------------
+
+If an error object is not caught by a mod, it is converted to a string with
+`tostring` before being displayed. This means that you can use tables as error
+objects so long as you give them `__tostring` metamethods.
