@@ -26,6 +26,10 @@ void ShadowDepthShaderCB::OnSetConstants(
 
 	core::matrix4 lightMVP = driver->getTransform(video::ETS_PROJECTION);
 	lightMVP *= driver->getTransform(video::ETS_VIEW);
+
+	f32 cam_pos[4];
+	lightMVP.transformVect(cam_pos, CameraPos);
+
 	lightMVP *= driver->getTransform(video::ETS_WORLD);
 
 	m_light_mvp_setting.set(lightMVP.pointer(), services);
@@ -39,4 +43,6 @@ void ShadowDepthShaderCB::OnSetConstants(
 	m_perspective_bias1.set(&bias1, services);
 	f32 zbias = PerspectiveBiasZ;
 	m_perspective_zbias.set(&zbias, services);
+
+	m_cam_pos_setting.set(cam_pos, services);
 }

@@ -69,7 +69,7 @@ if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 	find_package(IrrlichtMt QUIET
 		PATHS "${IRRLICHTMT_BUILD_DIR}"
 		NO_DEFAULT_PATH
-)
+	)
 
 	if(NOT TARGET IrrlichtMt::IrrlichtMt)
 		# find_package() searches certain subdirectories. ${PATH}/cmake is not

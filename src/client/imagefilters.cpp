@@ -124,7 +124,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 			// Ignore pixels we haven't processed
 			if (!bitmap.get(sx, sy))
 				continue;
-	
+
 			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
 			// use full weight since we want to propagate colors.
 			video::SColor d = src->getPixel(sx, sy);

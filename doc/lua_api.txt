@@ -3248,7 +3248,7 @@ Colors
 `#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
 
 Named colors are also supported and are equivalent to
-[CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
+[CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/#named-color).
 To specify the value of the alpha channel, append `#A` or `#AA` to the end of
 the color name (e.g. `colorname#08`).
 
@@ -3421,7 +3421,7 @@ vectors are written like this: `(x, y, z)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.offset(v, x, y, z)`:
     * Returns the sum of the vectors `v` and `(x, y, z)`.
-* `vector.check()`:
+* `vector.check(v)`:
     * Returns a boolean value indicating whether `v` is a real vector, eg. created
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
@@ -7035,7 +7035,6 @@ object you are working with still exists.
     * `light_definition` is a table with the following optional fields:
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
-    * Returns true on success.
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 

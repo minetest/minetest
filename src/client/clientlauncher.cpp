@@ -564,6 +564,8 @@ void ClientLauncher::speed_tests()
 	// volatile to avoid some potential compiler optimisations
 	volatile static s16 temp16;
 	volatile static f32 tempf;
+	// Silence compiler warning
+	(void)temp16;
 	static v3f tempv3f1;
 	static v3f tempv3f2;
 	static std::string tempstring;

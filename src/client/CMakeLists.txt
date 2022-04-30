@@ -60,7 +60,7 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/wieldmesh.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shadows/dynamicshadows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shadows/dynamicshadowsrender.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/shadows/shadowsshadercallbacks.cpp	
-	${CMAKE_CURRENT_SOURCE_DIR}/shadows/shadowsScreenQuad.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/shadows/shadowsshadercallbacks.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/shadows/shadowsScreenQuad.cpp
 	PARENT_SCOPE
 )

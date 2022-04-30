@@ -6,26 +6,9 @@ uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
 
-varying vec3 vNormal;
-varying vec3 vPosition;
-varying vec3 worldPosition;
-varying lowp vec4 varColor;
-#ifdef GL_ES
-varying mediump vec2 varTexCoord;
-#else
-centroid varying vec2 varTexCoord;
-#endif
-
-varying vec3 eyeVec;
-varying float nightRatio;
-
-varying float vIDiff;
-
-const float e = 2.718281828459;
-const float BS = 10.0;
-const float fogStart = FOG_START;
-const float fogShadingParameter = 1.0 / (1.0 - fogStart);
-
+// The cameraOffset is the current center of the visible world.
+uniform vec3 cameraOffset;
+uniform float animationTimer;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
 	uniform sampler2D ShadowMapSampler;
@@ -34,41 +17,51 @@ const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 	uniform float f_textureresolution;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
-	uniform float f_timeofday;
 	uniform float f_shadow_strength;
-	varying float normalOffsetScale;
+	uniform vec4 CameraPos;
+	uniform float xyPerspectiveBias0;
+	uniform float xyPerspectiveBias1;
+	
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
+	varying vec3 shadow_position;
 #endif
 
+
+varying vec3 vNormal;
+varying vec3 vPosition;
+// World position in the visible world (i.e. relative to the cameraOffset.)
+// This can be used for many shader effects without loss of precision.
+// If the absolute position is required it can be calculated with
+// cameraOffset + worldPosition (for large coordinates the limits of float
+// precision must be considered).
+varying vec3 worldPosition;
+varying lowp vec4 varColor;
+#ifdef GL_ES
+varying mediump vec2 varTexCoord;
+#else
+centroid varying vec2 varTexCoord;
+#endif
+varying vec3 eyeVec;
+varying float nightRatio;
+
+varying float vIDiff;
+
+const float fogStart = FOG_START;
+const float fogShadingParameter = 1.0 / (1.0 - fogStart);
+
 #ifdef ENABLE_DYNAMIC_SHADOWS
-uniform float xyPerspectiveBias0;
-uniform float xyPerspectiveBias1;
-uniform float zPerspectiveBias;
 
-vec4 getPerspectiveFactor(in vec4 shadowPosition)
+// assuming near is always 1.0
+float getLinearDepth()
 {
-
-	float pDistance = length(shadowPosition.xy);
-	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-
-	shadowPosition.xyz *= vec3(vec2(1.0 / pFactor), zPerspectiveBias);
-
-	return shadowPosition;
+	return 2.0 * f_shadowfar / (f_shadowfar + 1.0 - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - 1.0));
 }
 
 vec3 getLightSpacePosition()
 {
-	vec4 pLightSpace;
-	// some drawtypes have zero normals, so we need to handle it :(
-	#if DRAW_TYPE == NDT_PLANTLIKE
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition, 1.0);
-	#else
-	pLightSpace = m_ShadowViewProj * vec4(worldPosition + normalOffsetScale * normalize(vNormal), 1.0);
-	#endif
-	pLightSpace = getPerspectiveFactor(pLightSpace);
-	return pLightSpace.xyz * 0.5 + 0.5;
+	return shadow_position * 0.5 + 0.5;
 }
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
@@ -161,13 +154,13 @@ float getHardShadowDepth(sampler2D shadowsampler, vec2 smTexCoord, float realDis
 
 float getBaseLength(vec2 smTexCoord)
 {
-	float l = length(2.0 * smTexCoord.xy - 1.0);     // length in texture coords
+	float l = length(2.0 * smTexCoord.xy - 1.0 - CameraPos.xy);     // length in texture coords
 	return xyPerspectiveBias1 / (1.0 / l - xyPerspectiveBias0); 				 // return to undistorted coords
 }
 
 float getDeltaPerspectiveFactor(float l)
 {
-	return 0.1 / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
+	return 0.04 * pow(512.0 / f_textureresolution, 0.4) / (xyPerspectiveBias0 * l + xyPerspectiveBias1);                      // original distortion factor, divided by 10
 }
 
 float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDistance, float multiplier)
@@ -178,7 +171,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	// Return fast if sharp shadows are requested
 	if (PCFBOUND == 0.0)
 		return 0.0;
-		
+
 	if (SOFTSHADOWRADIUS <= 1.0) {
 		perspectiveFactor = getDeltaPerspectiveFactor(baseLength);
 		return max(2 * length(smTexCoord.xy) * 2048 / f_textureresolution / pow(perspectiveFactor, 3), SOFTSHADOWRADIUS);
@@ -418,6 +411,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 #endif
 
 #if ENABLE_TONE_MAPPING
+
 /* Hable's UC2 Tone mapping parameters
 	A = 0.22;
 	B = 0.30;
@@ -448,12 +442,14 @@ vec4 applyToneMapping(vec4 color)
 }
 #endif
 
+
+
 void main(void)
 {
 	vec3 color;
 	vec2 uv = varTexCoord.st;
-	vec4 base = texture2D(baseTexture, uv).rgba;
 
+	vec4 base = texture2D(baseTexture, uv).rgba;
 	// If alpha is zero, we can just discard the pixel. This fixes transparency
 	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa,
 	// and also on GLES 2, where GL_ALPHA_TEST is missing entirely.
@@ -467,8 +463,7 @@ void main(void)
 #endif
 
 	color = base.rgb;
-	vec4 col = vec4(color.rgb, base.a);
-	col.rgb *= varColor.rgb;
+	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
 	col.rgb *= vIDiff;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
@@ -477,20 +472,23 @@ void main(void)
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
 		vec3 posLightSpace = getLightSpacePosition();
 
-		float distance_rate = (1 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 50.0));
+		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
+		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
+			distance_rate = 0.0;
 		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
-	
+
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
-			if (cosLight > 0.0)
+			if (cosLight > 0.0 || f_normal_length < 1e-3)
 				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				visibility = vec4(1.0, 0.0, 0.0, 0.0);
 			shadow_int = visibility.r;
 			shadow_color = visibility.gba;
 #else
+			if (cosLight > 0.0 || f_normal_length < 1e-3)
 			if (cosLight > 0.0)
 				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
@@ -506,8 +504,8 @@ void main(void)
 		// Power ratio was measured on torches in MTG (brightness = 14).
 		float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
 
-		// cosine of the normal-to-light angle when
-		// we start to apply self-shadowing
+		// Apply self-shadowing when light falls at a narrow angle to the surface
+		// Cosine of the cut-off angle.
 		const float self_shadow_cutoff_cosine = 0.14;
 		if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
 			shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
@@ -541,5 +539,7 @@ void main(void)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
-	gl_FragColor = vec4(col.rgb, base.a);
+	col = vec4(col.rgb, base.a);
+	
+	gl_FragColor = col;
 }

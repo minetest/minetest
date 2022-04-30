@@ -470,6 +470,9 @@ endif()
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
+	${PROJECT_SOURCE_DIR}/script
+)
+include_directories(SYSTEM
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
@@ -477,7 +480,6 @@ include_directories(
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	${PROJECT_SOURCE_DIR}/script
 )
 
 if(USE_GETTEXT)
@@ -485,7 +487,7 @@ if(USE_GETTEXT)
 endif()
 
 if(BUILD_CLIENT)
-	include_directories(
+	include_directories(SYSTEM
 		${FREETYPE_INCLUDE_DIRS}
 		${SOUND_INCLUDE_DIRS}
 		${X11_INCLUDE_DIR}
@@ -691,13 +693,12 @@ if(MSVC)
 	endif()
 else()
 	# GCC or compatible compilers such as Clang
+	set(WARNING_FLAGS "-Wall -Wextra")
+	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter -Wno-implicit-fallthrough")
 	if(WARN_ALL)
-		set(RELEASE_WARNING_FLAGS "-Wall")
+		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
-	endif()
-	if(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
-		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
 	endif()
 
 	if(APPLE AND USE_LUAJIT)
@@ -709,7 +710,7 @@ else()
 			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
 			if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 				# FreeBSD uses lld, and lld does not support -Ttext-segment, suggesting
-				# --image-base instead. Not sure if it's equivalent change for the purpose 
+				# --image-base instead. Not sure if it's equivalent change for the purpose
 				# but at least if fixes build on FreeBSD/aarch64
 				# XXX: the condition should also be changed to check for lld regardless of
 				# os, bit CMake doesn't have anything like CMAKE_LINKER_IS_LLD yet
@@ -740,7 +741,7 @@ else()
 		endif()
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${OTHER_FLAGS} -pipe -funroll-loops")
 	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
@@ -753,8 +754,9 @@ else()
 			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${MATH_FLAGS}")
 		endif()
 	endif()
-	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g")
+	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")

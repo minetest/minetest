@@ -435,7 +435,7 @@ const v3f GenericCAO::getPosition() const
 	return m_position;
 }
 
-const bool GenericCAO::isImmortal()
+bool GenericCAO::isImmortal() const
 {
 	return itemgroup_get(getGroups(), "immortal");
 }
@@ -1974,19 +1974,16 @@ void GenericCAO::updateMeshCulling()
 
 	const bool hidden = m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST;
 
-	if (m_meshnode && m_prop.visual == "upright_sprite") {
-		u32 buffers = m_meshnode->getMesh()->getMeshBufferCount();
-		for (u32 i = 0; i < buffers; i++) {
-			video::SMaterial &mat = m_meshnode->getMesh()->getMeshBuffer(i)->getMaterial();
-			// upright sprite has no backface culling
-			mat.setFlag(video::EMF_FRONT_FACE_CULLING, hidden);
-		}
-		return;
-	}
-
 	scene::ISceneNode *node = getSceneNode();
+
 	if (!node)
 		return;
+
+	if (m_prop.visual == "upright_sprite") {
+		// upright sprite has no backface culling
+		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING, hidden);
+		return;
+	}
 
 	if (hidden) {
 		// Hide the mesh by culling both front and

@@ -1,0 +1,60 @@
+name: lua_lint
+
+# Lint on lua changes on builtin or if workflow changed
+on:
+  push:
+    paths:
+      - 'builtin/**.lua'
+      - 'games/devtest/**.lua'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - 'builtin/**.lua'
+      - 'games/devtest/**.lua'
+      - '.github/workflows/**.yml'
+
+jobs:
+  # Note that the integration tests are also run build.yml, but only when C++ code is changed.
+  integration_tests:
+    name: "Compile and run multiplayer tests"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps clang-10 gdb
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-10
+          CXX: clang++-10
+
+      - name: Integration test + devtest
+        run: |
+          ./util/test_multiplayer.sh
+
+  luacheck:
+    name: "Builtin Luacheck and Unit Tests"
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install luarocks
+      run: |
+        sudo apt-get install luarocks -qyy
+
+    - name: Install luarocks tools
+      run: |
+        luarocks install --local luacheck
+        luarocks install --local busted
+
+    - name: Run checks (builtin)
+      run: |
+        $HOME/.luarocks/bin/luacheck builtin
+        $HOME/.luarocks/bin/busted builtin
+
+    - name: Run checks (devtest)
+      run: |
+        $HOME/.luarocks/bin/luacheck --config=games/devtest/.luacheckrc games/devtest

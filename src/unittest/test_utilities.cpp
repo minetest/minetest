@@ -43,7 +43,6 @@ public:
 	void testPadString();
 	void testStartsWith();
 	void testStrEqual();
-	void testStringTrim();
 	void testStrToIntConversion();
 	void testStringReplace();
 	void testStringAllowed();
@@ -58,6 +57,7 @@ public:
 	void testStringJoin();
 	void testEulerConversion();
 	void testBase64();
+	void testSanitizeDirName();
 };
 
 static TestUtilities g_test_instance;
@@ -75,7 +75,6 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testPadString);
 	TEST(testStartsWith);
 	TEST(testStrEqual);
-	TEST(testStringTrim);
 	TEST(testStrToIntConversion);
 	TEST(testStringReplace);
 	TEST(testStringAllowed);
@@ -90,6 +89,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
 	TEST(testBase64);
+	TEST(testSanitizeDirName);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -190,6 +190,8 @@ void TestUtilities::testTrim()
 	UASSERT(trim("dirt_with_grass") == "dirt_with_grass");
 	UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 	UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
+	UASSERT(trim("  a") == "a");
+	UASSERT(trim("a   ") == "a");
 }
 
 
@@ -252,15 +254,6 @@ void TestUtilities::testStrEqual()
 {
 	UASSERT(str_equal(utf8_to_wide("abc"), utf8_to_wide("abc")));
 	UASSERT(str_equal(utf8_to_wide("ABC"), utf8_to_wide("abc"), true));
-}
-
-
-void TestUtilities::testStringTrim()
-{
-	UASSERT(trim("  a") == "a");
-	UASSERT(trim("   a  ") == "a");
-	UASSERT(trim("a   ") == "a");
-	UASSERT(trim("") == "");
 }
 
 
@@ -629,4 +622,17 @@ void TestUtilities::testBase64()
 	UASSERT(base64_is_valid("AAA=A") == false);
 	UASSERT(base64_is_valid("AAAA=A") == false);
 	UASSERT(base64_is_valid("AAAAA=A") == false);
+}
+
+
+void TestUtilities::testSanitizeDirName()
+{
+	UASSERT(sanitizeDirName("a", "~") == "a");
+	UASSERT(sanitizeDirName("  ", "~") == "__");
+	UASSERT(sanitizeDirName(" a ", "~") == "_a_");
+	UASSERT(sanitizeDirName("COM1", "~") == "~COM1");
+	UASSERT(sanitizeDirName("COM1", ":") == "_COM1");
+	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
+	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
+	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
 }

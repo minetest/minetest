@@ -11,17 +11,13 @@
 
 #if defined USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
-#elif defined (__ANDROID__)
-	#define PROJECT_NAME "minetest"
-	#define PROJECT_NAME_C "Minetest"
-	#define STATIC_SHAREDIR ""
-	#define VERSION_STRING STR(VERSION_MAJOR) "." STR(VERSION_MINOR) "." STR(VERSION_PATCH) STR(VERSION_EXTRA)
-#ifdef NDEBUG
-		#define BUILD_TYPE "Release"
-	#else
-		#define BUILD_TYPE "Debug"
-	#endif
 #else
+	#if defined (__ANDROID__)
+		#define PROJECT_NAME "minetest"
+		#define PROJECT_NAME_C "Minetest"
+		#define STATIC_SHAREDIR ""
+		#define VERSION_STRING STR(VERSION_MAJOR) "." STR(VERSION_MINOR) "." STR(VERSION_PATCH) STR(VERSION_EXTRA)
+	#endif
 	#ifdef NDEBUG
 		#define BUILD_TYPE "Release"
 	#else

@@ -31,10 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
-		m_device(device), m_smgr(device->getSceneManager()),
-		m_driver(device->getVideoDriver()), m_client(client), m_current_frame(0),
+		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
+		m_client(client), m_current_frame(0),
 		m_perspective_bias_xy(0.8), m_perspective_bias_z(0.5)
 {
+	(void) m_client;
+
 	m_shadows_supported = true; // assume shadows supported. We will check actual support in initialize
 	m_shadows_enabled = true;
 
@@ -143,7 +145,7 @@ size_t ShadowRenderer::getDirectionalLightCount() const
 f32 ShadowRenderer::getMaxShadowFar() const
 {
 	if (!m_light_list.empty()) {
-		float zMax = m_light_list[0].getMaxFarValue();
+		float zMax = m_light_list[0].getFarValue();
 		return zMax;
 	}
 	return 0.0f;
@@ -157,7 +159,6 @@ void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 	else
 		disable();
 }
-
 
 void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
@@ -261,8 +262,9 @@ void ShadowRenderer::updateSMTextures()
 					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
+					cb->CameraPos = light.getFuturePlayerPos();
 				}
-
+			
 			// set the Render Target
 			// right now we can only render in usual RTT, not
 			// Depth texture is available in irrlicth maybe we
@@ -322,9 +324,10 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
-			// Static shader values.
-			m_shadow_depth_cb->MapRes = (f32)m_shadow_map_texture_size;
-			m_shadow_depth_cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
+			// Static shader values for entities are set in updateSMTextures
+			// SM texture for entities is not updated incrementally and 
+			// must by updated using current player position.
+			m_shadow_depth_entity_cb->CameraPos = light.getPlayerPos();
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
@@ -417,10 +420,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 
 		material.BackfaceCulling = false;
 		material.FrontfaceCulling = true;
-		material.PolygonOffsetFactor = 4.0f;
-		material.PolygonOffsetDirection = video::EPO_BACK;
-		//material.PolygonOffsetDepthBias = 1.0f/4.0f;
-		//material.PolygonOffsetSlopeScale = -1.f;
 
 		if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;
@@ -429,9 +428,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader;
 			material.BlendOperation = video::EBO_MIN;
 		}
-
-		// FIXME: I don't think this is needed here
-		map_node->OnAnimate(m_device->getTimer()->getTime());
 
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
@@ -478,10 +474,6 @@ void ShadowRenderer::renderShadowObjects(
 
 			current_mat.BackfaceCulling = true;
 			current_mat.FrontfaceCulling = false;
-			current_mat.PolygonOffsetFactor = 1.0f/2048.0f;
-			current_mat.PolygonOffsetDirection = video::EPO_BACK;
-			//current_mat.PolygonOffsetDepthBias = 1.0 * 2.8e-6;
-			//current_mat.PolygonOffsetSlopeScale = -1.f;
 		}
 
 		m_driver->setTransform(video::ETS_WORLD,

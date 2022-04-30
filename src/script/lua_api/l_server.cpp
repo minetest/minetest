@@ -325,12 +325,15 @@ int ModApiServer::l_disconnect_player(lua_State *L)
 	else
 		message.append("Disconnected.");
 
-	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if (player == NULL) {
+	Server *server = getServer(L);
+
+	RemotePlayer *player = server->getEnv().getPlayer(name);
+	if (!player) {
 		lua_pushboolean(L, false); // No such player
 		return 1;
 	}
-	getServer(L)->DenyAccess_Legacy(player->getPeerId(), utf8_to_wide(message));
+
+	server->DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING, message);
 	lua_pushboolean(L, true);
 	return 1;
 }

@@ -246,22 +246,6 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		action.setSetNode(p, rollback_oldnode, rollback_newnode);
 		m_gamedef->rollback()->reportAction(action);
 	}
-
-	/*
-		Add neighboring liquid nodes and this node to transform queue.
-		(it's vital for the node itself to get updated last, if it was removed.)
-	 */
-
-	for (const v3s16 &dir : g_7dirs) {
-		v3s16 p2 = p + dir;
-
-		bool is_valid_position;
-		MapNode n2 = getNode(p2, &is_valid_position);
-		if(is_valid_position &&
-				(m_nodedef->get(n2).isLiquid() ||
-				n2.getContent() == CONTENT_AIR))
-			m_transforming_liquid.push_back(p2);
-	}
 }
 
 void Map::removeNodeAndUpdate(v3s16 p,
@@ -342,7 +326,7 @@ struct TimeOrderedMapBlock {
 void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 		std::vector<v3s16> *unloaded_blocks)
 {
-	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
+	bool save_before_unloading = maySaveBlocks();
 
 	// Profile modified reasons
 	Profiler modprofiler;
@@ -527,11 +511,11 @@ struct NodeNeighbor {
 	{ }
 };
 
-void Map::transforming_liquid_add(v3s16 p) {
+void ServerMap::transforming_liquid_add(v3s16 p) {
         m_transforming_liquid.push_back(p);
 }
 
-void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
+void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		ServerEnvironment *env)
 {
 	u32 loopcount = 0;
@@ -1563,6 +1547,29 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 bool ServerMap::isBlockInQueue(v3s16 pos)
 {
 	return m_emerge && m_emerge->isBlockInQueue(pos);
+}
+
+void ServerMap::addNodeAndUpdate(v3s16 p, MapNode n,
+		std::map<v3s16, MapBlock*> &modified_blocks,
+		bool remove_metadata)
+{
+	Map::addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+
+	/*
+		Add neighboring liquid nodes and this node to transform queue.
+		(it's vital for the node itself to get updated last, if it was removed.)
+	 */
+
+	for (const v3s16 &dir : g_7dirs) {
+		v3s16 p2 = p + dir;
+
+		bool is_valid_position;
+		MapNode n2 = getNode(p2, &is_valid_position);
+		if(is_valid_position &&
+				(m_nodedef->get(n2).isLiquid() ||
+				n2.getContent() == CONTENT_AIR))
+			m_transforming_liquid.push_back(p2);
+	}
 }
 
 // N.B.  This requires no synchronization, since data will not be modified unless

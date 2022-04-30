@@ -341,12 +341,9 @@ public:
 	void deletingPeer(con::Peer *peer, bool timeout);
 
 	void DenySudoAccess(session_t peer_id);
-	void DenyAccessVerCompliant(session_t peer_id, u16 proto_ver, AccessDeniedCode reason,
-		const std::string &str_reason = "", bool reconnect = false);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason = "");
+		const std::string &custom_reason = "", bool reconnect = false);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
-	void DenyAccess_Legacy(session_t peer_id, const std::wstring &reason);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientInfo &ret);

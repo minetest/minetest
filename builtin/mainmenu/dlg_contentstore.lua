@@ -862,8 +862,7 @@ function store.get_formspec(dlgdata)
 			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
 		elseif package.queued then
 			formspec[#formspec + 1] = left_base
-			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
-			formspec[#formspec + 1] = "cdb_queued.png;queued]"
+			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
 		elseif not package.path then
 			local elem_name = "install_" .. i .. ";"
 			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"

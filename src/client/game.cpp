@@ -907,7 +907,10 @@ private:
 
 	bool m_does_lost_focus_pause_game = false;
 
+#if IRRLICHT_VERSION_MT_REVISION < 5
 	int m_reset_HW_buffer_counter = 0;
+#endif
+
 #ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
 #endif
@@ -1060,9 +1063,9 @@ bool Game::startup(bool *kill,
 void Game::run()
 {
 	ProfilerGraph graph;
-	RunStats stats              = { 0 };
-	CameraOrientation cam_view_target  = { 0 };
-	CameraOrientation cam_view  = { 0 };
+	RunStats stats;
+	CameraOrientation cam_view_target = {};
+	CameraOrientation cam_view = {};
 	FpsControl draw_times;
 	f32 dtime; // in seconds
 
@@ -3157,8 +3160,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
+		bool basic_debug_allowed = client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 		handlePointingAtObject(pointed, tool_item, player_position,
-				client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG));
+				m_game_ui->m_flags.show_basic_debug && basic_debug_allowed);
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
 		runData.punching = true;
@@ -3989,6 +3993,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== End scene ====================
 	*/
+#if IRRLICHT_VERSION_MT_REVISION < 5
 	if (++m_reset_HW_buffer_counter > 500) {
 		/*
 		  Periodically remove all mesh HW buffers.
@@ -4010,6 +4015,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		driver->removeAllHardwareBuffers();
 		m_reset_HW_buffer_counter = 0;
 	}
+#endif
 
 	driver->endScene();
 

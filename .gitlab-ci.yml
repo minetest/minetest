@@ -20,11 +20,9 @@ variables:
    - DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
   script:
     - git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
-    - mkdir cmakebuild
-    - cd cmakebuild
-    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
-    - make -j2
-    - make install
+    - cmake -B build -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
+    - cmake --build build --parallel $(($(nproc) + 1))
+    - cmake --install build
   artifacts:
     when: on_success
     expire_in: 1h

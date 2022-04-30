@@ -76,14 +76,14 @@ public:
 
 	virtual ~ClientMap() = default;
 
-	s32 mapType() const
+	bool maySaveBlocks() override
 	{
-		return MAPTYPE_CLIENT;
+		return false;
 	}
 
-	void drop()
+	void drop() override
 	{
-		ISceneNode::drop();
+		ISceneNode::drop(); // calls destructor
 	}
 
 	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset);
@@ -91,24 +91,22 @@ public:
 	/*
 		Forcefully get a sector from somewhere
 	*/
-	MapSector * emergeSector(v2s16 p);
-
-	//void deSerializeSector(v2s16 p2d, std::istream &is);
+	MapSector * emergeSector(v2s16 p) override;
 
 	/*
 		ISceneNode methods
 	*/
 
-	virtual void OnRegisterSceneNode();
+	virtual void OnRegisterSceneNode() override;
 
-	virtual void render()
+	virtual void render() override
 	{
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
 
-	virtual const aabb3f &getBoundingBox() const
+	virtual const aabb3f &getBoundingBox() const override
 	{
 		return m_box;
 	}
@@ -116,7 +114,7 @@ public:
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
 	void updateDrawList();
-	void updateDrawListShadow(const v3f &shadow_light_pos, const v3f &shadow_light_dir, float shadow_range);
+	void updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
 	// Returns true if draw list needs updating before drawing the next frame.
 	bool needsUpdateDrawList() { return m_needs_update_drawlist; }
 	void renderMap(video::IVideoDriver* driver, s32 pass);
@@ -130,7 +128,7 @@ public:
 	void renderPostFx(CameraMode cam_mode);
 
 	// For debug printing
-	virtual void PrintInfo(std::ostream &out);
+	void PrintInfo(std::ostream &out) override;
 
 	const MapDrawControl & getControl() const { return m_control; }
 	f32 getWantedRange() const { return m_control.wanted_range; }

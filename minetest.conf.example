@@ -666,6 +666,70 @@
 #    type: bool
 # enable_waving_plants = false
 
+#### Dynamic shadows
+
+#    Set to true to enable Shadow Mapping.
+#    Requires shaders to be enabled.
+#    type: bool
+# enable_dynamic_shadows = false
+
+#    Set the shadow strength gamma.
+#    Adjusts the intensity of in-game dynamic shadows.
+#    Lower value means lighter shadows, higher value means darker shadows.
+#    type: float min: 0.1 max: 10
+# shadow_strength_gamma = 1.0
+
+#    Maximum distance to render shadows.
+#    type: float min: 10 max: 1000
+# shadow_map_max_distance = 120.0
+
+#    Texture size to render the shadow map on.
+#    This must be a power of two.
+#    Bigger numbers create better shadows but it is also more expensive.
+#    type: int min: 128 max: 8192
+# shadow_map_texture_size = 1024
+
+#    Sets shadow texture quality to 32 bits.
+#    On false, 16 bits texture will be used.
+#    This can cause much more artifacts in the shadow.
+#    type: bool
+# shadow_map_texture_32bit = true
+
+#    Enable Poisson disk filtering.
+#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+#    type: bool
+# shadow_poisson_filter = true
+
+#    Define shadow filtering quality.
+#    This simulates the soft shadows effect by applying a PCF or Poisson disk
+#    but also uses more resources.
+#    type: enum values: 0, 1, 2
+# shadow_filters = 1
+
+#    Enable colored shadows.
+#    On true translucent nodes cast colored shadows. This is expensive.
+#    type: bool
+# shadow_map_color = false
+
+#    Spread a complete update of shadow map over given amount of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+#    type: int min: 1 max: 16
+# shadow_update_frames = 8
+
+#    Set the soft shadow radius size.
+#    Lower values mean sharper shadows, bigger values mean softer shadows.
+#    Minimum value: 1.0; maximum value: 10.0
+#    type: float min: 1 max: 10
+# shadow_soft_radius = 1.0
+
+#    Set the tilt of Sun/Moon orbit in degrees.
+#    Value of 0 means no tilt / vertical orbit.
+#    Minimum value: 0.0; maximum value: 60.0
+#    type: float min: 0 max: 60
+# shadow_sky_body_orbit_tilt = 0.0
+
 ### Advanced
 
 #    Arm inertia, gives a more realistic movement of
@@ -938,6 +1002,11 @@
 #    A restart is required after changing this.
 #    type: bool
 # show_entity_selectionbox = false
+
+#    Distance in nodes at which transparency depth sorting is enabled
+#    Use this to limit the performance impact of transparency depth sorting
+#    type: int min: 0 max: 128
+# transparency_sorting_distance = 16
 
 ## Menus
 
@@ -1385,7 +1454,7 @@
 # ask_reconnect_on_crash = false
 
 #    From how far clients know about objects, stated in mapblocks (16 nodes).
-#    
+#
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
@@ -1938,7 +2007,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -1951,7 +2020,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining giant caverns.
@@ -1964,7 +2033,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining terrain.
@@ -1990,7 +2059,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 ## Mapgen V6
@@ -2377,7 +2446,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining structure of river canyon walls.
@@ -2390,7 +2459,7 @@
 #    octaves     = 4,
 #    persistence = 0.75,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining structure of floatlands.
@@ -2406,7 +2475,7 @@
 #    octaves     = 4,
 #    persistence = 0.75,
 #    lacunarity  = 1.618,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining giant caverns.
@@ -2419,7 +2488,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    First of two 3D noises that together define tunnels.
@@ -2432,7 +2501,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2445,7 +2514,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2458,7 +2527,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 ## Mapgen Carpathian
@@ -2701,7 +2770,7 @@
 #    octaves     = 5,
 #    persistence = 0.55,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    First of two 3D noises that together define tunnels.
@@ -2714,7 +2783,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2727,7 +2796,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining giant caverns.
@@ -2740,7 +2809,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2753,7 +2822,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 ## Mapgen Flat
@@ -2875,7 +2944,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2888,7 +2957,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise defining giant caverns.
@@ -2901,7 +2970,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2914,7 +2983,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 ## Mapgen Fractal
@@ -3088,7 +3157,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -3101,7 +3170,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -3114,7 +3183,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 ## Mapgen Valleys
@@ -3204,7 +3273,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -3217,7 +3286,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    The depth of dirt or other biome filler node.
@@ -3243,7 +3312,7 @@
 #    octaves     = 6,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Defines large-scale river channel structure.
@@ -3295,7 +3364,7 @@
 #    octaves     = 6,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 #    Amplifies the valleys.
@@ -3334,7 +3403,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = 
+#    flags       =
 # }
 
 ## Advanced

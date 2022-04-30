@@ -1046,6 +1046,12 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500
 
+#    Whether to show technical names.
+#    Affects mods and texture packs in the Content and Select Mods menus, as well as
+#    setting names in All Settings.
+#    Controlled by the checkbox in the "All settings" menu.
+show_technical_names (Show technical names) bool false
+
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
 
@@ -1180,7 +1186,7 @@ enable_mod_channels (Mod channels) bool false
 #    If this is set, players will always (re)spawn at the given position.
 static_spawnpoint (Static spawnpoint) string
 
-#    If enabled, new players cannot join with an empty password.
+#    If enabled, players cannot join without a password or change theirs to an empty password.
 disallow_empty_password (Disallow empty passwords) bool false
 
 #    If enabled, disable cheat prevention in multiplayer.
