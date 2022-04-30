@@ -84,13 +84,6 @@ LevelTarget info_target(g_logger, LL_INFO);
 LevelTarget verbose_target(g_logger, LL_VERBOSE);
 LevelTarget trace_target(g_logger, LL_TRACE);
 
-/*
-Each thread has distinct LogStream instances with separate StringBuffers.
-When they flush at the end of a line, the text is sent to a LogTarget,
-which is a global (not thread-local) object, and from there relayed to
-the Logger.
-*/
-
 thread_local LogStream dstream(none_target);
 thread_local LogStream rawstream(none_target_raw);
 thread_local LogStream errorstream(error_target);

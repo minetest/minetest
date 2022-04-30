@@ -297,8 +297,6 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Print even more information to console"))));
 	allowed_options->insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
 			_("Print enormous amounts of information to log and console"))));
-	allowed_options->insert(std::make_pair("socketdebug", ValueSpec(VALUETYPE_FLAG,
-			_("Enable socket debug output"))));
 	allowed_options->insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
 			_("Set logfile path ('' = no logging)"))));
 	allowed_options->insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
@@ -467,10 +465,6 @@ static bool setup_log_params(const Settings &cmd_args)
 	if (cmd_args.getFlag("trace")) {
 		dstream << _("Enabling trace level debug output") << std::endl;
 		g_logger.addOutput(&stderr_output, LL_TRACE);
-	}
-
-	if (cmd_args.getFlag("socketdebug")) {
-		dstream << _("Enabling socket debug output") << std::endl;
 		socket_enable_debug_output = true;
 	}
 

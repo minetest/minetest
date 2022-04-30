@@ -192,11 +192,19 @@ private:
 
 #ifdef __ANDROID__
 class AndroidLogOutput : public ICombinedLogOutput {
-	public:
-		void logRaw(LogLevel lev, const std::string &line);
+public:
+	void logRaw(LogLevel lev, const std::string &line);
 };
 #endif
 
+/*
+ * LogTarget
+ *
+ * This is the interface that sits between the LogStreams and the global logger.
+ * Primarily used to route streams to log levels, but could also enable other
+ * custom behavior.
+ *
+ */
 class LogTarget {
 public:
 	// Must be thread-safe. These can be called from any thread.
@@ -205,6 +213,13 @@ public:
 };
 
 
+/*
+ * StreamProxy
+ *
+ * An ostream-like object that can proxy to a real ostream or do nothing,
+ * depending on how it is configured. See LogStream below.
+ *
+ */
 class StreamProxy {
 public:
 	StreamProxy(std::ostream *os) : m_os(os) { }
@@ -227,6 +242,39 @@ public:
 private:
 	std::ostream *m_os;
 };
+
+
+/*
+ * LogStream
+ *
+ * The public interface for log streams (infostream, verbosestream, etc).
+ *
+ * LogStream minimizes the work done when a given stream is off. (meaning
+ * it has no output targets, so it goes to /dev/null)
+ *
+ * For example, consider:
+ *
+ *     verbosestream << "hello world" << 123 << std::endl;
+ *
+ * The compiler evaluates this as:
+ *
+ *   (((verbosestream << "hello world") << 123) << std::endl)
+ *      ^                            ^
+ *
+ * If `verbosestream` is on, the innermost expression (marked by ^) will return
+ * a StreamProxy that forwards to a real ostream, that feeds into the logger.
+ * However, if `verbosestream` is off, it will return a StreamProxy that does
+ * nothing on all later operations. Specifically, CPU time won't be wasted
+ * writing "hello world" and 123 into a buffer, or formatting the log entry.
+ *
+ * It is also possible to directly check if the stream is on/off:
+ *
+ *   if (verbosestream) {
+ *       auto data = ComputeExpensiveDataForTheLog();
+ *       verbosestream << data << endl;
+ *   }
+ *
+*/
 
 class LogStream {
 public:
@@ -289,6 +337,16 @@ extern StreamLogOutput stderr_output;
 #endif
 
 extern Logger g_logger;
+
+/*
+ * By making the streams thread_local, each thread has its own
+ * private buffer. Two or more threads can write to the same stream
+ * simultaneously (lock-free), and there won't be any interference.
+ *
+ * The finished lines are sent to a LogTarget which is a global (not thread-local)
+ * object, and from there relayed to g_logger. The final writes are serialized
+ * by the mutex in g_logger.
+*/
 
 extern thread_local LogStream dstream;
 extern thread_local LogStream rawstream;  // Writes directly to all LL_NONE log outputs with no prefix.
