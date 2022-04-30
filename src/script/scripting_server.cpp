@@ -113,7 +113,7 @@ void ServerScripting::initAsync()
 	asyncEngine.registerStateInitializer(ModApiItemMod::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiServer::InitializeAsync);
 	// not added: ModApiMapgen is a minefield for thread safety
-	// not added: ModApiHttp has no way to match the callbacks
+	// not added: ModApiHttp async api can't really work together with our jobs
 	// not added: ModApiStorage is probably not thread safe(?)
 
 	asyncEngine.initialize(0);

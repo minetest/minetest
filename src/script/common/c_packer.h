@@ -37,6 +37,9 @@ extern "C" {
 #define INSTR_SETTABLE (-10)
 #define INSTR_POP      (-11)
 
+/**
+ * Represents a single instruction that pushes a new value or works with existing ones.
+ */
 struct PackedInstr
 {
 	s16 type; // LUA_T* or INSTR_*
@@ -69,12 +72,15 @@ struct PackedInstr
 	PackedInstr() : type(0), set_into(0), pop(false) {}
 };
 
+/**
+ * A packed value can be a primitive like a string or number but also a table
+ * including all of its contents. It is made up of a linear stream of
+ * 'instructions' that build the final value when executed.
+ */
 struct PackedValue
 {
-	// A packed value can be a primitive like a string or number but also a table
-	// including all of its contents. It is made up of a linear stream of
-	// 'instructions' that build the final value when executed.
 	std::vector<PackedInstr> i;
+	// Indicates whether there are any userdata pointers that need to be deallocated
 	bool contains_userdata = false;
 
 	PackedValue() = default;
@@ -113,5 +119,5 @@ PackedValue *script_pack(lua_State *L, int idx);
 // Note that this may modify the PackedValue, you can't reuse it!
 void script_unpack(lua_State *L, PackedValue *val);
 
-// Dump contents of PackedValue to stdout for debugging.
+// Dump contents of PackedValue to stdout for debugging
 void script_dump_packed(const PackedValue *val);

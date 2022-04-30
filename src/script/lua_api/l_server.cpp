@@ -573,7 +573,8 @@ int ModApiServer::l_register_async_dofile(lua_State *L)
 	return 1;
 }
 
-// meant exclusively for unittests
+// serialize_roundtrip(value)
+// Meant for unit testing the packer from Lua
 int ModApiServer::l_serialize_roundtrip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

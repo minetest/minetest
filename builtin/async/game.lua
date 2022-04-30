@@ -4,6 +4,7 @@ local function pack2(...)
 	return {n=select('#', ...), ...}
 end
 
+-- Entrypoint to run async jobs, called by C++
 function core.job_processor(func, params)
 	local retval = pack2(func(unpack(params, 1, params.n)))
 

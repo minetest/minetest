@@ -61,12 +61,12 @@ local function test_object_passing()
 	assert(deepequal(test_object, tmp))
 
 	-- Circular key, should error
-	local tmp = {"foo", "bar"}
+	tmp = {"foo", "bar"}
 	tmp[tmp] = true
 	assert(not pcall(core.serialize_roundtrip, tmp))
 
 	-- Circular value, should error
-	local tmp = {"foo"}
+	tmp = {"foo"}
 	tmp[2] = tmp
 	assert(not pcall(core.serialize_roundtrip, tmp))
 end
@@ -81,7 +81,7 @@ local function test_userdata_passing(_, pos)
 	assert(obj.test:to_string() == tmp.test:to_string())
 
 	-- object can't be passed, should error
-	local obj = core.raycast(pos, pos)
+	obj = core.raycast(pos, pos)
 	assert(not pcall(core.serialize_roundtrip, obj))
 
 	-- VManip
@@ -95,8 +95,8 @@ unittests.register("test_userdata_passing", test_userdata_passing, {map=true})
 -- Asynchronous jobs
 
 local function test_handle_async(cb)
-	-- Basic test including mod name tracking and unittests.async_ok which
-	-- should be set by inside_async_env.lua
+	-- Basic test including mod name tracking and unittests.async_test()
+	-- which is defined inside_async_env.lua
 	local func = function(x)
 		return core.get_last_run_mod(), _VERSION, unittests[x]()
 	end

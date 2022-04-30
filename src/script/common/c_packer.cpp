@@ -36,7 +36,11 @@ extern "C" {
 /**** Helpers ****/
 
 // convert negative index to absolute position on Lua stack
-#define absidx(_L, _idx) (assert((_idx) < 0), lua_gettop(_L) + (_idx) + 1)
+static inline int absidx(lua_State *L, int idx)
+{
+	assert(idx < 0);
+	return lua_gettop(L) + idx + 1;
+}
 
 // does the type put anything into PackedInstr::sdata?
 static inline bool uses_sdata(int type)
@@ -109,7 +113,7 @@ namespace {
 		}
 	};
 
-	// Since an std::vector may reallocate this is the only safe way to keep
+	// Since an std::vector may reallocate, this is the only safe way to keep
 	// a reference to a particular element.
 	template <typename T>
 	class VectorRef {
@@ -140,6 +144,7 @@ static inline auto emplace(PackedValue &pv, s16 type)
 	pv.i.emplace_back();
 	auto ref = VectorRef<PackedInstr>::back(pv.i);
 	ref->type = type;
+	// Initialize fields that may be left untouched
 	if (type == LUA_TTABLE) {
 		ref->uidata1 = 0;
 		ref->uidata2 = 0;
@@ -317,7 +322,7 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		case LUA_TUSERDATA: {
 			PackerTuple ser;
 			if (!find_packer(L, idx, ser))
-				throw LuaError("Cannot serialize userdata object");
+				throw LuaError("Cannot serialize unsupported userdata");
 			pv.contains_userdata = true;
 			auto r = emplace(pv, LUA_TUSERDATA);
 			r->sdata = ser.first;
@@ -364,9 +369,9 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 			}
 		} else {
 			// push the key and value
-			auto rkey = pack_inner(L, absidx(L, -2), vidx, pv);
+			pack_inner(L, absidx(L, -2), vidx, pv);
 			vidx++;
-			auto rval = pack_inner(L, absidx(L, -1), vidx, pv);
+			pack_inner(L, absidx(L, -1), vidx, pv);
 			vidx++;
 			// push an instruction to set them
 			auto ri1 = emplace(pv, INSTR_SETTABLE);
@@ -408,8 +413,9 @@ void script_unpack(lua_State *L, PackedValue *pv)
 	int ctr = 0;
 
 	for (auto &i : pv->i) {
+		// If leaving values on stack make sure there's space (every 5th iteration)
 		if (!i.pop && (ctr++) >= 5) {
-			lua_checkstack(L, 10);
+			lua_checkstack(L, 5);
 			ctr = 0;
 		}
 
@@ -460,8 +466,7 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				break;
 			case LUA_TUSERDATA: {
 				PackerTuple ser;
-				FATAL_ERROR_IF(!find_packer(i.sdata.c_str(), ser),
-					"Can't find serializer (data corruption?)");
+				sanity_check(find_packer(i.sdata.c_str(), ser));
 				ser.second.fout(L, i.ptrdata);
 				i.ptrdata = nullptr; // ownership taken by callback
 				break;

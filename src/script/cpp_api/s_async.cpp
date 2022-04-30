@@ -104,7 +104,7 @@ void AsyncEngine::addWorkerThread()
 u32 AsyncEngine::queueAsyncJob(std::string &&func, std::string &&params,
 		const std::string &mod_origin)
 {
-	jobQueueMutex.lock();
+	MutexAutoLock autolock(jobQueueMutex);
 	u32 jobId = jobIdCounter++;
 
 	jobQueue.emplace_back();
@@ -115,14 +115,13 @@ u32 AsyncEngine::queueAsyncJob(std::string &&func, std::string &&params,
 	to_add.mod_origin = mod_origin;
 
 	jobQueueCounter.post();
-	jobQueueMutex.unlock();
 	return jobId;
 }
 
 u32 AsyncEngine::queueAsyncJob(std::string &&func, PackedValue *params,
 		const std::string &mod_origin)
 {
-	jobQueueMutex.lock();
+	MutexAutoLock autolock(jobQueueMutex);
 	u32 jobId = jobIdCounter++;
 
 	jobQueue.emplace_back();
@@ -133,7 +132,6 @@ u32 AsyncEngine::queueAsyncJob(std::string &&func, PackedValue *params,
 	to_add.mod_origin = mod_origin;
 
 	jobQueueCounter.post();
-	jobQueueMutex.unlock();
 	return jobId;
 }
 
@@ -212,7 +210,7 @@ void AsyncEngine::stepAutoscale()
 	MutexAutoLock autolock(jobQueueMutex);
 
 	// 2) If the timer elapsed, check again
-	if (autoscaleTimer && autoscaleTimer <= porting::getTimeMs()) {
+	if (autoscaleTimer && porting::getTimeMs() >= autoscaleTimer) {
 		autoscaleTimer = 0;
 		// Determine overlap with previous snapshot
 		unsigned int n = 0;
@@ -310,10 +308,8 @@ AsyncWorkerThread::~AsyncWorkerThread()
 /******************************************************************************/
 void* AsyncWorkerThread::run()
 {
-	if (isErrored) {
-		sleep_ms(100); // Thread implementation bug workaround
+	if (isErrored)
 		return nullptr;
-	}
 
 	lua_State *L = getStack();
 

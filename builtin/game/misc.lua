@@ -237,7 +237,8 @@ end
 core.dynamic_media_callbacks = {}
 
 
--- Transfer of certain globals into async environments
+-- Transfer of certain globals into async environment
+-- see builtin/async/game.lua for the other side
 
 local function copy_filtering(t, seen)
 	if type(t) == "userdata" or type(t) == "function" then
