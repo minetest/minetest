@@ -466,11 +466,16 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Enable mods' depends after activation
 
-	-- Make a list of mod ids indexed by their names
+	-- Make a list of mod ids indexed by their names. Among mods with the
+	-- same name, enabled mods take precedence, after which game mods take
+	-- precedence, being last in the mod list.
 	local mod_ids = {}
 	for id, mod2 in pairs(list) do
 		if mod2.type == "mod" and not mod2.is_modpack then
-			mod_ids[mod2.name] = id
+			local prev_id = mod_ids[mod2.name]
+			if not prev_id or not list[prev_id].enabled then
+				mod_ids[mod2.name] = id
+			end
 		end
 	end
 
