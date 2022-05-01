@@ -305,7 +305,6 @@ Library specific options:
     VORBIS_DLL                      - Only if building with sound on Windows; paths to vorbis DLLs
     VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
     VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
-    XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
     ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib

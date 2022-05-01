@@ -31,7 +31,7 @@ jobs:
   build:
     runs-on: macos-10.15
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd)
@@ -60,7 +60,7 @@ jobs:
         run: |
           ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: minetest-macos
           path: ./build/macos/
