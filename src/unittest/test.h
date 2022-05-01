@@ -80,7 +80,7 @@ class TestFailedException : public std::exception {
 			<< #expected << std::endl                                     \
 			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"      \
 			<< __LINE__ << std::endl                                      \
-			<< "    actual:   " << a << std::endl << "    expected: "     \
+			<< "    actual  : " << a << std::endl << "    expected: "     \
 			<< e << std::endl;                                            \
 		throw TestFailedException();                                      \
 	}                                                                     \
