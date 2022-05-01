@@ -93,7 +93,7 @@ private:
 	// get_item_def(itemstring)
 	static int l_get_item_def(lua_State *L);
 
-	// get_item_defs(itemstring)
+	// get_item_defs()
 	static int l_get_item_defs(lua_State *L);
 
 	// get_node_def(nodename)
