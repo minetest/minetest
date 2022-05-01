@@ -136,9 +136,6 @@ std::string serializeJsonString(const std::string &plain)
 			case '\\':
 				os << "\\\\";
 				break;
-			case '/':
-				os << "\\/";
-				break;
 			case '\b':
 				os << "\\b";
 				break;
