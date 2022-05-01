@@ -334,6 +334,8 @@ Client::~Client()
 	// cleanup 3d model meshes on client shutdown
 	m_rendering_engine->cleanupMeshCache();
 
+	guiScalingCacheClear();
+
 	delete m_minimap;
 	m_minimap = nullptr;
 
