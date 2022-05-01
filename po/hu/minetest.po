@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-02-14 19:57+0000\n"
-"Last-Translator: Balázs Kovács <kovacs.balazs.ktk@gmail.com>\n"
+"PO-Revision-Date: 2022-06-05 13:19+0000\n"
+"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -44,7 +44,7 @@ msgstr "Online játékosok: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "A kiemenő üzenetek sora jelenleg üres."
+msgstr "A kimenő üzenetek sora jelenleg üres."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -87,7 +87,7 @@ msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr "OKÉ"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -111,7 +111,7 @@ msgstr "Újrakapcsolódás"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "A kiszolgáló újrakapcsolódást kért:"
+msgstr "A szerver újrakapcsolódást kért:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -123,11 +123,11 @@ msgstr "A szerver által megkövetelt protokollverzió: $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "A kiszolgáló $1 és $2 protokollverzió közötti verziókat támogat. "
+msgstr "A szerver $1 és $2 protokollverzió közötti verziókat támogat. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Csak $1 protokollverziót támogjuk."
+msgstr "Csak $1 protokollverziót támogatjuk."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -314,15 +314,15 @@ msgstr "Nincs találat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr "nincs Frissiteni való"
+msgstr "Nincsenek frissítések"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr "nem található"
+msgstr "Nem található"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr "Felülír"
+msgstr "Felülírás"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -350,7 +350,7 @@ msgstr "Összes frissítése [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr "További információ megnyitása a böngészőben"
+msgstr "További információ megtekintése böngészőben"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -464,7 +464,7 @@ msgstr "Hegyek"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr "Iszap áramlás"
+msgstr "Iszapáramlás"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
@@ -767,12 +767,12 @@ msgstr "Betöltés…"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr "A nyilvános kiszolgálólista le van tiltva"
+msgstr "A nyilvános szerverlista le van tiltva"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Próbáld újra engedélyezni a nyilvános kiszolgálólistát, és ellenőrizd az "
+"Próbáld újra engedélyezni a nyilvános szerverlistát, és ellenőrizd az "
 "internetkapcsolatot."
 
 #: builtin/mainmenu/tab_about.lua
@@ -870,7 +870,7 @@ msgstr "Sérülés engedélyezése"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr "Játék létrehozása"
+msgstr "Játék megosztása"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
@@ -951,7 +951,7 @@ msgstr "Kedvencek"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr "Inkompatibilis szerverek"
+msgstr "Nem kompatibilis szerverek"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -1011,7 +1011,7 @@ msgstr "Gombok megváltoztatása"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr "Tagolatlan üveg"
+msgstr "Csatlakoztatott üveg"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
@@ -1043,7 +1043,7 @@ msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Mipmap + Anizotróp szűrés"
+msgstr "Mipmap + anizotróp szűrés"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -1051,7 +1051,7 @@ msgstr "Nincs szűrés"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr "Nincs Mipmap"
+msgstr "Nincs mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
@@ -1187,7 +1187,7 @@ msgstr "Nincs világ kiválasztva és nincs cím megadva. Nincs mit tenni."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "A játékos neve túl hosszú."
+msgstr "A játékosnév túl hosszú."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1195,7 +1195,7 @@ msgstr "Válassz egy nevet!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr "jelszófájl megnyitás hiba: "
+msgstr "A megadott jelszófájlt nem sikerült megnyitni: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -1207,7 +1207,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Részletekért tekintsd meg a debug.txt fájlt."
+"A részletekért tekintsd meg a debug.txt fájlt."
 
 #: src/client/game.cpp
 msgid "- Address: "
@@ -1232,7 +1232,7 @@ msgstr "- PvP: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr "- Kiszolgáló neve: "
+msgstr "- Szerver neve: "
 
 #: src/client/game.cpp
 msgid "A serialization error occurred:"
@@ -1265,7 +1265,7 @@ msgstr "Blokkhatárok mutatása az aktuális blokk esetén"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr "Blokkhatárok mutatása a közeli blokkok esetén"
+msgstr "Közeli blokkok blokkhatárainak megjelenítése"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1282,7 +1282,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Jelszó Módosítása"
+msgstr "Jelszó módosítása"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1356,7 +1356,7 @@ msgstr "Kliens létrehozása…"
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr "Kiszolgáló létrehozása…"
+msgstr "Szerver létrehozása…"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
@@ -1520,7 +1520,7 @@ msgstr "Profilergrafika megjelenítése"
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr "Távoli kiszolgáló"
+msgstr "Távoli szerver"
 
 #: src/client/game.cpp
 msgid "Resolving address..."
@@ -1680,11 +1680,11 @@ msgstr "IME Kilépés"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
-msgstr "IME Mód váltás"
+msgstr "IME módváltás"
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
-msgstr "IME Nem átalakított"
+msgstr "IME nem átalakított"
 
 #: src/client/keycode.cpp
 msgid "Insert"
@@ -1897,11 +1897,11 @@ msgstr "Minimap radar módban, Nagyítás x%d"
 #: src/client/minimap.cpp
 #, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr "kistérkép terület módban x%d"
+msgstr "Kistérkép terület módban x%d"
 
 #: src/client/minimap.cpp
 msgid "Minimap in texture mode"
-msgstr "Minimap textúra módban"
+msgstr "Kistérkép textúra módban"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2170,7 +2170,7 @@ msgstr ""
 "Az alapérték úgy lett meghatározva, hogy megfelelő játékoskezdőpontot adjon\n"
 "az alapparaméterekkel generált Mandelbrot-halmazokhoz, de egyéb esetben\n"
 "lehet, hogy meg kell változtatni.\n"
-"Nagyjából -2 és 2 közötti értékek. Kockákban mért pozícióhoz szorzzunk az "
+"Nagyjából -2 és 2 közötti értékek. Kockákban mért pozícióhoz szorzunk az "
 "egységgel."
 
 #: src/settings_translation_file.cpp
@@ -4283,13 +4283,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr "Az Aktív blokk módosítók akciófüggvényének behangolása regisztrációkor."
+msgstr "Az aktív blokk módosítók akciófüggvényének behangolása regisztrációkor."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
-"A Betöltendő blokk módosítók akciófüggvényének behangolása regisztrációkor."
+"A betöltendő blokk módosítók akciófüggvényének behangolása regisztrációkor."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
@@ -4318,7 +4318,7 @@ msgstr "Felszerelés gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr "Fordított egér"
+msgstr "Egér megfordítása"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4326,11 +4326,11 @@ msgstr "Függőleges egérmozgás megfordítása."
 
 #: src/settings_translation_file.cpp
 msgid "Italic font path"
-msgstr "Dőlt betűtípus útvonal"
+msgstr "Dőlt betűtípus útvonala"
 
 #: src/settings_translation_file.cpp
 msgid "Italic monospace font path"
-msgstr "Dőlt monspace betűtípus útvonal"
+msgstr "Dőlt monospace betűtípus útvonala"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
