@@ -140,20 +140,31 @@ private:
 	s32 root = -1; // index of the root node
 };
 
+/*
+ * PartialMeshBuffer
+ *
+ * Attach alternate `Indices` to an existing mesh buffer, to make it possible to use different
+ * indices with the same vertex buffer.
+ *
+ * Irrlicht does not currently support this: `CMeshBuffer` ties together a single vertex buffer
+ * and a single index buffer. There's no way to share these between mesh buffers.
+ *
+ */
 class PartialMeshBuffer
 {
 public:
-	PartialMeshBuffer(scene::SMeshBuffer *buffer, const std::vector<u16> &vertex_indexes) :
-			m_buffer(buffer), m_vertex_indexes(vertex_indexes)
+	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indexes) :
+			m_buffer(buffer), m_vertex_indexes(std::move(vertex_indexes))
 	{}
 
 	scene::IMeshBuffer *getBuffer() const { return m_buffer; }
 	const std::vector<u16> &getVertexIndexes() const { return m_vertex_indexes; }
 
 	void beforeDraw() const;
+	void afterDraw() const;
 private:
 	scene::SMeshBuffer *m_buffer;
-	std::vector<u16> m_vertex_indexes;
+	mutable std::vector<u16> m_vertex_indexes;
 };
 
 /*

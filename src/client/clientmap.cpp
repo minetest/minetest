@@ -449,15 +449,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	drawcall_count += draw_order.size();
 
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf;
-		
-		if (descriptor.m_use_partial_buffer) {
-			descriptor.m_partial_buffer->beforeDraw();
-			buf = descriptor.m_partial_buffer->getBuffer();
-		}
-		else {
-			buf = descriptor.m_buffer;
-		}
+		scene::IMeshBuffer *buf = descriptor.getBuffer();
 
 		// Check and abort if the machine is swapping a lot
 		if (draw.getTimerTime() > 2000) {
@@ -499,7 +491,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
-		driver->drawMeshBuffer(buf);
+		descriptor.draw(driver);
 		vertex_count += buf->getIndexCount();
 	}
 
@@ -810,15 +802,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	drawcall_count += draw_order.size();
 
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf;
-		
-		if (descriptor.m_use_partial_buffer) {
-			descriptor.m_partial_buffer->beforeDraw();
-			buf = descriptor.m_partial_buffer->getBuffer();
-		}
-		else {
-			buf = descriptor.m_buffer;
-		}
+		scene::IMeshBuffer *buf = descriptor.getBuffer();
 
 		// Check and abort if the machine is swapping a lot
 		if (draw.getTimerTime() > 1000) {
@@ -843,7 +827,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
-		driver->drawMeshBuffer(buf);
+		descriptor.draw(driver);
 		vertex_count += buf->getIndexCount();
 	}
 
@@ -964,3 +948,16 @@ void ClientMap::updateTransparentMeshBuffers()
 	m_needs_update_transparent_meshes = false;
 }
 
+scene::IMeshBuffer* ClientMap::DrawDescriptor::getBuffer() {
+	return m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer;
+}
+
+void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver) {
+	if (m_use_partial_buffer) {
+		m_partial_buffer->beforeDraw();
+		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
+		m_partial_buffer->afterDraw();
+	} else {
+		driver->drawMeshBuffer(m_buffer);
+	}
+}

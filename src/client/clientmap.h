@@ -174,6 +174,9 @@ private:
 		DrawDescriptor(v3s16 pos, const PartialMeshBuffer *buffer) :
 			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
+
+		scene::IMeshBuffer* getBuffer();
+		void draw(video::IVideoDriver* driver);
 	};
 
 	Client *m_client;
