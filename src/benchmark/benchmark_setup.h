@@ -18,4 +18,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
+#define CATCH_CONFIG_CONSOLE_WIDTH 160
 #include <catch.hpp>

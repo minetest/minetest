@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "benchmark_setup.h"
 
 int run_benchmarks() {
-	int errCount = Catch::Session().run();
+	int argc = 1;
+	const char *argv[] = { "MinetestBenchmark", NULL };
+	int errCount = Catch::Session().run(argc, argv);
 	return errCount ? 1 : 0;
 }
