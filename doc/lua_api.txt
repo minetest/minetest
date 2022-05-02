@@ -3514,8 +3514,8 @@ Helper functions
     * returns the exact position on the surface of a pointed node
 * `minetest.get_tool_wear_after_use(uses [, initial_wear])`
     * Simulates a tool being used once and returns the added wear,
-    * such that, if only this function is used to calculate wear,
-    * the tool will break exactly after `uses` times of uses
+      such that, if only this function is used to calculate wear,
+      the tool will break exactly after `uses` times of uses
     * `uses`: Number of times the tool can be used
     * `initial_wear`: The initial wear the tool starts with (default: 0)
 * `minetest.get_dig_params(groups, tool_capabilities [, wear])`:
