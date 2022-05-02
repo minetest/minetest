@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <ios>
 
-static std::string makeRepeatTo(const std::string &s, size_t length) {
+// Builds a string of exactly `length` characters by repeating `s` (rest cut off)
+static std::string makeRepeatTo(const std::string &s, size_t length)
+{
 	std::string v;
 	v.reserve(length + s.size());
 	for (size_t i = 0; i < length; i += s.size()) {
