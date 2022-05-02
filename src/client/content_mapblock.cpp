@@ -150,8 +150,10 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 //              should be (2+2)*6=24 values in the list. The order of
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures).
+//  mask      - a bit mask that suppresses drawing of tiles.
+//              tile i will not be drawn if mask & (1 << i) is 1
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc)
+	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -274,6 +276,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	// Add to mesh collector
 	for (int k = 0; k < 6; ++k) {
+		if (mask & (1 << k))
+			continue;
 		int tileindex = MYMIN(k, tilecount - 1);
 		collector->append(tiles[tileindex], vertices + 4 * k, 4, quad_indices, 6);
 	}
@@ -363,7 +367,7 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 }
 
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
-	TileSpec *tiles, int tile_count)
+	TileSpec *tiles, int tile_count, u8 mask)
 {
 	bool scale = std::fabs(f->visual_scale - 1.0f) > 1e-3f;
 	f32 texture_coord_buf[24];
@@ -403,11 +407,18 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboid(box, tiles, tile_count, lights, txc);
+		drawCuboid(box, tiles, tile_count, lights, txc, mask);
 	} else {
-		drawCuboid(box, tiles, tile_count, nullptr, txc);
+		drawCuboid(box, tiles, tile_count, nullptr, txc, mask);
 	}
 }
+
+u8 MapblockMeshGenerator::getNodeBoxMask(const aabb3f &box, const std::vector<aabb3f> &boxes,
+	u8 solid_set, u8 sametype_set) const
+{
+	return solid_set | sametype_set;
+}
+
 
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 {
@@ -1368,11 +1379,20 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	// locate possible neighboring nodes to connect to
 	u8 neighbors_set = 0;
-	if (f->node_box.type == NODEBOX_CONNECTED) {
-		for (int dir = 0; dir != 6; dir++) {
-			u8 flag = 1 << dir;
-			v3s16 p2 = blockpos_nodes + p + nodebox_connection_dirs[dir];
-			MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
+	u8 solid_set = 0;
+	u8 sametype_set = 0;
+	for (int dir = 0; dir != 6; dir++) {
+		u8 flag = 1 << dir;
+		v3s16 p2 = blockpos_nodes + p + nodebox_tile_dirs[dir];
+		MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
+		if (n2.param0 == n.param0)
+			sametype_set |= flag;
+		if (nodedef->get(n2).drawtype == NDT_NORMAL)
+			solid_set |= flag;
+
+		if (f->node_box.type == NODEBOX_CONNECTED) {
+			p2 = blockpos_nodes + p + nodebox_connection_dirs[dir];
+			n2 = data->m_vmanip.getNodeNoEx(p2);
 			if (nodedef->nodeboxConnects(n, n2, flag))
 				neighbors_set |= flag;
 		}
@@ -1433,8 +1453,10 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		}
 	}
 
-	for (auto &box : boxes)
-		drawAutoLightedCuboid(box, nullptr, tiles, 6);
+	for (auto &box : boxes) {
+		u8 mask = getNodeBoxMask(box, boxes, solid_set, sametype_set);
+		drawAutoLightedCuboid(box, nullptr, tiles, 6, mask);
+	}
 }
 
 void MapblockMeshGenerator::drawMeshNode()
