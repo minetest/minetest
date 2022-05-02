@@ -41,6 +41,9 @@ jobs:
         env:
           CC: gcc-10
           CXX: g++-10
+          CMAKE_BUILD_TYPE: "Release"
+          CMAKE_BUILD_SERVER: FALSE
+          CMAKE_ENABLE_GETTEXT: FALSE
           CMAKE_FLAGS: "-DBUILD_BENCHMARKS=TRUE"
 
       - name: Run Benchmarks
