@@ -52,6 +52,7 @@ set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
+set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
 
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 
@@ -279,6 +280,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
 	endif()
 endif()
+
+set(CATCH2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/catch2)
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

@@ -1,0 +1,69 @@
+name: perf
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
+# IMPORTANT: Do not run this workflow on pull request since this workflow
+# has permission to modify contents.
+
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
+jobs:
+  # Current gcc version
+  perf_gcc_10:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps g++-10
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: gcc-10
+          CXX: g++-10
+          CMAKE_FLAGS: "-DBUILD_BENCHMARKS=TRUE"
+
+      - name: Run Benchmarks
+        run: |
+          ./bin/minetest --run-benchmarks | tee output.txt
+
+      # gh-pages branch is updated and pushed automatically with extracted benchmark data
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Minetest Performance Benchmarks
+          tool: 'catch2'
+          output-file-path: output.txt
+          # Access token to deploy GitHub Pages branch
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Push and deploy GitHub pages branch automatically
+          auto-push: true
+          # If there's a regression, comment on the commit.
+          comment-on-alert: true
+          # The amount that is considered a regression
+          alert-threshold: "150%"
+          # Branch and path where benchmark is stored and updated.
+          # This corresponds to:
+          #     https://minetest.github.io/minetest/dev/bench
+          gh-pages-branch: "gh-pages"
+          benchmark-data-dir-path: "dev/bench"

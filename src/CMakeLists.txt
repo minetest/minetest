@@ -330,6 +330,7 @@ add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
+add_subdirectory(benchmark)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
@@ -412,6 +413,9 @@ if(BUILD_UNITTESTS)
 	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
 endif()
 
+if(BUILD_BENCHMARKS)
+	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
+endif()
 
 # This gives us the icon and file version information
 if(WIN32)
@@ -452,6 +456,10 @@ if(BUILD_UNITTESTS)
 	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
 endif()
 
+if(BUILD_BENCHMARKS)
+	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
+endif()
+
 list(SORT client_SRCS)
 
 # Server sources
@@ -480,6 +488,7 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
+	${CATCH2_INCLUDE_DIR}
 )
 
 if(USE_GETTEXT)
