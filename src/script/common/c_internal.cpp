@@ -166,3 +166,17 @@ void log_deprecated(lua_State *L, std::string message, int stack_depth)
 		infostream << script_get_backtrace(L) << std::endl;
 }
 
+void call_string_dump(lua_State *L, int idx)
+{
+	// Retrieve string.dump from insecure env to avoid it being tampered with
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+	if (!lua_isnil(L, -1))
+		lua_getfield(L, -1, "string");
+	else
+		lua_getglobal(L, "string");
+	lua_getfield(L, -1, "dump");
+	lua_remove(L, -2); // remove _G
+	lua_remove(L, -2); // remove 'string' table
+	lua_pushvalue(L, idx);
+	lua_call(L, 1, 1);
+}

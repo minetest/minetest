@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
+#include "common/c_packer.h"
 #include "emerge.h"
 #include "environment.h"
 #include "map.h"
@@ -45,6 +46,8 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
+	if (vm->isOrphan())
+		return 0;
 
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 2));
 	v3s16 bp2 = getNodeBlockPos(check_v3s16(L, 3));
@@ -429,6 +432,34 @@ LuaVoxelManip *LuaVoxelManip::checkobject(lua_State *L, int narg)
 	return *(LuaVoxelManip **)ud;  // unbox pointer
 }
 
+void *LuaVoxelManip::packIn(lua_State *L, int idx)
+{
+	LuaVoxelManip *o = checkobject(L, idx);
+
+	if (o->is_mapgen_vm)
+		throw LuaError("nope");
+	return o->vm->clone();
+}
+
+void LuaVoxelManip::packOut(lua_State *L, void *ptr)
+{
+	MMVManip *vm = reinterpret_cast<MMVManip*>(ptr);
+	if (!L) {
+		delete vm;
+		return;
+	}
+
+	// Associate vmanip with map if the Lua env has one
+	Environment *env = getEnv(L);
+	if (env)
+		vm->reparent(&(env->getMap()));
+
+	LuaVoxelManip *o = new LuaVoxelManip(vm, false);
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+}
+
 void LuaVoxelManip::Register(lua_State *L)
 {
 	lua_newtable(L);
@@ -455,6 +486,8 @@ void LuaVoxelManip::Register(lua_State *L)
 
 	// Can be created from Lua (VoxelManip())
 	lua_register(L, className, create_object);
+
+	script_register_packer(L, className, packIn, packOut);
 }
 
 const char LuaVoxelManip::className[] = "VoxelManip";

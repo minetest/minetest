@@ -243,6 +243,7 @@ Server::Server(
 	m_clients(m_con),
 	m_admin_chat(iface),
 	m_on_shutdown_errmsg(on_shutdown_errmsg),
+	m_async_globals_data(""),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -479,6 +480,9 @@ void Server::init()
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
+
+	// Do this after regular script init is done
+	m_script->initAsync();
 
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);

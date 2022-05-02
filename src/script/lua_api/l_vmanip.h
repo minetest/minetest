@@ -75,5 +75,8 @@ public:
 
 	static LuaVoxelManip *checkobject(lua_State *L, int narg);
 
+	static void *packIn(lua_State *L, int idx);
+	static void packOut(lua_State *L, void *ptr);
+
 	static void Register(lua_State *L);
 };

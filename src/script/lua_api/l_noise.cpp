@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "common/c_packer.h"
 #include "log.h"
 #include "porting.h"
 #include "util/numeric.h"
@@ -101,6 +102,25 @@ LuaPerlinNoise *LuaPerlinNoise::checkobject(lua_State *L, int narg)
 }
 
 
+void *LuaPerlinNoise::packIn(lua_State *L, int idx)
+{
+	LuaPerlinNoise *o = checkobject(L, idx);
+	return new NoiseParams(o->np);
+}
+
+void LuaPerlinNoise::packOut(lua_State *L, void *ptr)
+{
+	NoiseParams *np = reinterpret_cast<NoiseParams*>(ptr);
+	if (L) {
+		LuaPerlinNoise *o = new LuaPerlinNoise(np);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+	}
+	delete np;
+}
+
+
 void LuaPerlinNoise::Register(lua_State *L)
 {
 	lua_newtable(L);
@@ -126,6 +146,8 @@ void LuaPerlinNoise::Register(lua_State *L)
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
+
+	script_register_packer(L, className, packIn, packOut);
 }
 
 
@@ -357,6 +379,35 @@ LuaPerlinNoiseMap *LuaPerlinNoiseMap::checkobject(lua_State *L, int narg)
 }
 
 
+struct NoiseMapParams {
+	NoiseParams np;
+	s32 seed;
+	v3s16 size;
+};
+
+void *LuaPerlinNoiseMap::packIn(lua_State *L, int idx)
+{
+	LuaPerlinNoiseMap *o = checkobject(L, idx);
+	NoiseMapParams *ret = new NoiseMapParams();
+	ret->np = o->noise->np;
+	ret->seed = o->noise->seed;
+	ret->size = v3s16(o->noise->sx, o->noise->sy, o->noise->sz);
+	return ret;
+}
+
+void LuaPerlinNoiseMap::packOut(lua_State *L, void *ptr)
+{
+	NoiseMapParams *p = reinterpret_cast<NoiseMapParams*>(ptr);
+	if (L) {
+		LuaPerlinNoiseMap *o = new LuaPerlinNoiseMap(&p->np, p->seed, p->size);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+	}
+	delete p;
+}
+
+
 void LuaPerlinNoiseMap::Register(lua_State *L)
 {
 	lua_newtable(L);
@@ -382,6 +433,8 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
+
+	script_register_packer(L, className, packIn, packOut);
 }
 
 
