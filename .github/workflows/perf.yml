@@ -62,9 +62,8 @@ jobs:
           # Push and deploy GitHub pages branch automatically
           auto-push: true
           # If there's a regression, comment on the commit.
-          comment-on-alert: true
-          # The amount that is considered a regression
-          alert-threshold: "150%"
+          # Temporarily disabled due to a bug in github-action-benchmark
+          comment-on-alert: false
           # Branch and path where benchmark is stored and updated.
           # This corresponds to:
           #     https://minetest.github.io/minetest/dev/bench
