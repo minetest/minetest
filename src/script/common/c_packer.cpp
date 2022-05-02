@@ -33,7 +33,9 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-/**** Helpers ****/
+//
+// Helpers
+//
 
 // convert negative index to absolute position on Lua stack
 static inline int absidx(lua_State *L, int idx)
@@ -156,7 +158,9 @@ static inline auto emplace(PackedValue &pv, s16 type)
 	return ref;
 }
 
-/**** Management of registered packers ****/
+//
+// Management of registered packers
+//
 
 static std::unordered_map<std::string, Packer> g_packers;
 static std::mutex g_packers_lock;
@@ -244,7 +248,9 @@ static bool find_packer(lua_State *L, int idx, PackerTuple &out)
 	return true;
 }
 
-/**** Packing implementation ****/
+//
+// Packing implementation
+//
 
 // recursively goes through the structure and ensures there are no circular references
 static void pack_validate(lua_State *L, int idx, std::unordered_set<const void*> &seen)
@@ -405,7 +411,9 @@ PackedValue *script_pack(lua_State *L, int idx)
 	return new PackedValue(std::move(pv));
 }
 
-/**** Unpacking implementation ****/
+//
+// Unpacking implementation
+//
 
 void script_unpack(lua_State *L, PackedValue *pv)
 {
@@ -495,7 +503,9 @@ void script_unpack(lua_State *L, PackedValue *pv)
 	lua_settop(L, top+1);
 }
 
-/**************/
+//
+// PackedValue
+//
 
 PackedValue::~PackedValue()
 {
@@ -514,7 +524,9 @@ PackedValue::~PackedValue()
 	}
 }
 
-/**************/
+//
+// script_dump_packed
+//
 
 #ifndef NDEBUG
 void script_dump_packed(const PackedValue *val)
