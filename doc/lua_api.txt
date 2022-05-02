@@ -6383,11 +6383,11 @@ an itemstring, a table or `nil`.
     * Increases wear by `amount` if the item is a tool, otherwise does nothing
     * Valid `amount` range is [0,65536]
     * `amount`: number, integer
-* `add_wear_by_uses(uses)`
+* `add_wear_by_uses(max_uses)`
     * Increases wear in such a way that, if only this function is called,
-      the item breaks after `uses` times
-    * Valid `uses` range is [0,65536]
-    * Does nothing if item is not a tool or if `uses` is 0
+      the item breaks after `max_uses` times
+    * Valid `max_uses` range is [0,65536]
+    * Does nothing if item is not a tool or if `max_uses` is 0
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
 * `item_fits(item)`: returns `true` if item or stack can be fully added to
