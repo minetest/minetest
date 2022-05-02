@@ -281,7 +281,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 	endif()
 endif()
 
-set(CATCH2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/catch2)
+if(BUILD_BENCHMARKS)
+	set(CATCH2_LIBRARY catch2)
+	add_subdirectory(lib/catch2)
+endif()
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

@@ -488,7 +488,6 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	${CATCH2_INCLUDE_DIR}
 )
 
 if(USE_GETTEXT)
@@ -576,6 +575,9 @@ if(BUILD_CLIENT)
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
+	if(BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME} ${CATCH2_LIBRARY})
+	endif()
 endif(BUILD_CLIENT)
 
 
@@ -634,6 +636,9 @@ if(BUILD_SERVER)
 			${PROJECT_NAME}server
 			${CURL_LIBRARY}
 		)
+	endif()
+	if(BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME}server ${CATCH2_LIBRARY})
 	endif()
 endif(BUILD_SERVER)
 
