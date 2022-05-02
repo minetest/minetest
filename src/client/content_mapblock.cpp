@@ -416,7 +416,33 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 u8 MapblockMeshGenerator::getNodeBoxMask(const aabb3f &box, const std::vector<aabb3f> &boxes,
 	u8 solid_set, u8 sametype_set) const
 {
-	return solid_set | sametype_set;
+	const f32 NODE_BOUNDARY = 0.5 * BS;
+
+	// for oversized nodebox, return immediately
+	if (box.MaxEdge.X > NODE_BOUNDARY ||
+			box.MinEdge.X < -NODE_BOUNDARY ||
+			box.MaxEdge.Y >  NODE_BOUNDARY ||
+			box.MinEdge.Y < -NODE_BOUNDARY ||
+			box.MaxEdge.Z >  NODE_BOUNDARY ||
+			box.MinEdge.Z < -NODE_BOUNDARY)
+		return 0;
+
+	// only skip rendering of faces at the node boundary
+	u8 solid_mask =
+			(box.MaxEdge.Y == NODE_BOUNDARY  ?  1 : 0) |
+			(box.MinEdge.Y == -NODE_BOUNDARY ?  2 : 0) |
+			(box.MaxEdge.X == NODE_BOUNDARY  ?  4 : 0) |
+			(box.MinEdge.X == -NODE_BOUNDARY ?  8 : 0) |
+			(box.MaxEdge.Z == NODE_BOUNDARY  ? 16 : 0) |
+			(box.MinEdge.Z == -NODE_BOUNDARY ? 32 : 0);
+
+	// for sametype culling, both faces must be at the node boundary
+	u8 sametype_mask =
+			((solid_mask & 3) == 3 ? 3 : 0) |
+			((solid_mask & 12) == 12 ? 12 : 0) |
+			((solid_mask & 48) == 48 ? 48 : 0);
+
+	return (solid_set & solid_mask) | (sametype_set & sametype_mask);
 }
 
 
@@ -1385,7 +1411,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		u8 flag = 1 << dir;
 		v3s16 p2 = blockpos_nodes + p + nodebox_tile_dirs[dir];
 		MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
-		if (n2.param0 == n.param0)
+		if (n2.param0 == n.param0 && n2.param2 == n.param2)
 			sametype_set |= flag;
 		if (nodedef->get(n2).drawtype == NDT_NORMAL)
 			solid_set |= flag;
