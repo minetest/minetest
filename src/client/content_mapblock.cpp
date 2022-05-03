@@ -413,12 +413,11 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	}
 }
 
-u8 MapblockMeshGenerator::getNodeBoxMask(const aabb3f &box, const std::vector<aabb3f> &boxes,
-	u8 solid_set, u8 sametype_set) const
+u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const
 {
 	const f32 NODE_BOUNDARY = 0.5 * BS;
 
-	// for oversized nodebox, return immediately
+	// For an oversized nodebox, return immediately
 	if (box.MaxEdge.X > NODE_BOUNDARY ||
 			box.MinEdge.X < -NODE_BOUNDARY ||
 			box.MaxEdge.Y >  NODE_BOUNDARY ||
@@ -427,7 +426,7 @@ u8 MapblockMeshGenerator::getNodeBoxMask(const aabb3f &box, const std::vector<aa
 			box.MinEdge.Z < -NODE_BOUNDARY)
 		return 0;
 
-	// only skip rendering of faces at the node boundary
+	// We can skip faces at node boundary if the matching neighbor is solid
 	u8 solid_mask =
 			(box.MaxEdge.Y == NODE_BOUNDARY  ?  1 : 0) |
 			(box.MinEdge.Y == -NODE_BOUNDARY ?  2 : 0) |
@@ -436,13 +435,15 @@ u8 MapblockMeshGenerator::getNodeBoxMask(const aabb3f &box, const std::vector<aa
 			(box.MaxEdge.Z == NODE_BOUNDARY  ? 16 : 0) |
 			(box.MinEdge.Z == -NODE_BOUNDARY ? 32 : 0);
 
-	// for sametype culling, both faces must be at the node boundary
+	// Faces on opposite sides can cancel each other out if there is 
+	// a matching neighbor of the same type
 	u8 sametype_mask =
 			((solid_mask & 3) == 3 ? 3 : 0) |
 			((solid_mask & 12) == 12 ? 12 : 0) |
 			((solid_mask & 48) == 48 ? 48 : 0);
 
-	return (solid_set & solid_mask) | (sametype_set & sametype_mask);
+	// Combine masks with actual neighbors to get the faces to be skipped
+	return (solid_mask & solid_neighbors) | (sametype_mask & sametype_neighbors);
 }
 
 
@@ -1405,16 +1406,16 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	// locate possible neighboring nodes to connect to
 	u8 neighbors_set = 0;
-	u8 solid_set = 0;
-	u8 sametype_set = 0;
+	u8 solid_neighbors = 0;
+	u8 sametype_neighbors = 0;
 	for (int dir = 0; dir != 6; dir++) {
 		u8 flag = 1 << dir;
 		v3s16 p2 = blockpos_nodes + p + nodebox_tile_dirs[dir];
 		MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
 		if (n2.param0 == n.param0 && n2.param2 == n.param2)
-			sametype_set |= flag;
+			sametype_neighbors |= flag;
 		if (nodedef->get(n2).drawtype == NDT_NORMAL)
-			solid_set |= flag;
+			solid_neighbors |= flag;
 
 		if (f->node_box.type == NODEBOX_CONNECTED) {
 			p2 = blockpos_nodes + p + nodebox_connection_dirs[dir];
@@ -1480,7 +1481,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	}
 
 	for (auto &box : boxes) {
-		u8 mask = getNodeBoxMask(box, boxes, solid_set, sametype_set);
+		u8 mask = getNodeBoxMask(box, solid_neighbors, sametype_neighbors);
 		drawAutoLightedCuboid(box, nullptr, tiles, 6, mask);
 	}
 }

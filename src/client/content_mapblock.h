@@ -104,8 +104,7 @@ public:
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
 		TileSpec *tiles = NULL, int tile_count = 0, u8 mask = 0);
-	u8 getNodeBoxMask(const aabb3f &box, const std::vector<aabb3f> &boxes,
-		u8 solid_set, u8 sametype_set) const;
+	u8 getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const;
 
 // liquid-specific
 	bool top_is_same_liquid;
