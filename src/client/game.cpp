@@ -1063,7 +1063,7 @@ bool Game::startup(bool *kill,
 void Game::run()
 {
 	ProfilerGraph graph;
-	RunStats stats;
+	RunStats stats = {};
 	CameraOrientation cam_view_target = {};
 	CameraOrientation cam_view = {};
 	FpsControl draw_times;
