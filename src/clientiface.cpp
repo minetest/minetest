@@ -472,20 +472,14 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		{
 		case CSE_AuthAccept:
 			m_state = CS_AwaitingInit2;
-			if (chosen_mech == AUTH_MECHANISM_SRP ||
-					chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD)
-				srp_verifier_delete((SRPVerifier *) auth_data);
-			chosen_mech = AUTH_MECHANISM_NONE;
+			resetChosenMech();
 			break;
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
 			break;
 		case CSE_SetDenied:
 			m_state = CS_Denied;
-			if (chosen_mech == AUTH_MECHANISM_SRP ||
-					chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD)
-				srp_verifier_delete((SRPVerifier *) auth_data);
-			chosen_mech = AUTH_MECHANISM_NONE;
+			resetChosenMech();
 			break;
 		default:
 			myerror << "HelloSent: Invalid client state transition! " << event;
@@ -561,9 +555,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		case CSE_SudoSuccess:
 			m_state = CS_SudoMode;
-			if (chosen_mech == AUTH_MECHANISM_SRP)
-				srp_verifier_delete((SRPVerifier *) auth_data);
-			chosen_mech = AUTH_MECHANISM_NONE;
+			resetChosenMech();
 			break;
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
 		default:
@@ -594,6 +586,15 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		/* we are already disconnecting */
 		break;
 	}
+}
+
+void RemoteClient::resetChosenMech()
+{
+	if (auth_data) {
+		srp_verifier_delete((SRPVerifier *) auth_data);
+		auth_data = nullptr;
+	}
+	chosen_mech = AUTH_MECHANISM_NONE;
 }
 
 u64 RemoteClient::uptime() const
@@ -671,7 +672,6 @@ void ClientInterface::UpdatePlayerList()
 		std::vector<session_t> clients = getClientIDs();
 		m_clients_names.clear();
 
-
 		if (!clients.empty())
 			infostream<<"Players:"<<std::endl;
 
@@ -716,31 +716,6 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
 					clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
-	}
-}
-
-void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt,
-		u16 min_proto_ver)
-{
-	RecursiveMutexAutoLock clientslock(m_clients_mutex);
-	for (auto &client_it : m_clients) {
-		RemoteClient *client = client_it.second;
-		NetworkPacket *pkt_to_send = nullptr;
-
-		if (client->net_proto_version >= min_proto_ver) {
-			pkt_to_send = pkt;
-		} else if (client->net_proto_version != 0) {
-			pkt_to_send = legacypkt;
-		} else {
-			warningstream << "Client with unhandled version to handle: '"
-				<< client->net_proto_version << "'";
-			continue;
-		}
-
-		m_con->Send(client->peer_id,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].channel,
-			pkt_to_send,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].reliable);
 	}
 }
 

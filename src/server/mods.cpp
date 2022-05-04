@@ -41,8 +41,10 @@ ServerModManager::ServerModManager(const std::string &worldpath) :
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
 	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
+	std::string game_virtual_path;
+	game_virtual_path.append("games/").append(gamespec.id).append("/mods");
+	addModsInPath(gamespec.gamemods_path, game_virtual_path);
+	addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
 
 	// Load normal mods
 	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
@@ -61,12 +63,8 @@ void ServerModManager::loadMods(ServerScripting *script)
 	infostream << std::endl;
 	// Load and run "mod" scripts
 	for (const ModSpec &mod : m_sorted_mods) {
-		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			throw ModError("Error loading mod \"" + mod.name +
-					"\": Mod name does not follow naming "
-					"conventions: "
-					"Only characters [a-z0-9_] are allowed.");
-		}
+		mod.checkAndLog();
+
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		auto t = porting::getTimeMs();
 		script->loadMod(script_path, mod.name);

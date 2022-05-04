@@ -49,26 +49,18 @@ struct PlayerControl
 	PlayerControl() = default;
 
 	PlayerControl(
-		bool a_up,
-		bool a_down,
-		bool a_left,
-		bool a_right,
-		bool a_jump,
-		bool a_aux1,
-		bool a_sneak,
+		bool a_up, bool a_down, bool a_left, bool a_right,
+		bool a_jump, bool a_aux1, bool a_sneak,
 		bool a_zoom,
-		bool a_dig,
-		bool a_place,
-		float a_pitch,
-		float a_yaw,
-		float a_sidew_move_joystick_axis,
-		float a_forw_move_joystick_axis
+		bool a_dig, bool a_place,
+		float a_pitch, float a_yaw,
+		float a_movement_speed, float a_movement_direction
 	)
 	{
-		up = a_up;
-		down = a_down;
-		left = a_left;
-		right = a_right;
+		// Encode direction keys into a single value so nobody uses it accidentally
+		// as movement_{speed,direction} is supposed to be the source of truth.
+		direction_keys = (a_up&1) | ((a_down&1) << 1) |
+			((a_left&1) << 2) | ((a_right&1) << 3);
 		jump = a_jump;
 		aux1 = a_aux1;
 		sneak = a_sneak;
@@ -77,23 +69,31 @@ struct PlayerControl
 		place = a_place;
 		pitch = a_pitch;
 		yaw = a_yaw;
-		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
-		forw_move_joystick_axis = a_forw_move_joystick_axis;
+		movement_speed = a_movement_speed;
+		movement_direction = a_movement_direction;
 	}
-	bool up = false;
-	bool down = false;
-	bool left = false;
-	bool right = false;
+
+#ifndef SERVER
+	// For client use
+	u32 getKeysPressed() const;
+	inline bool isMoving() const { return movement_speed > 0.001f; }
+#endif
+
+	// For server use
+	void unpackKeysPressed(u32 keypress_bits);
+
+	u8 direction_keys = 0;
 	bool jump = false;
 	bool aux1 = false;
 	bool sneak = false;
 	bool zoom = false;
 	bool dig = false;
 	bool place = false;
+	// Note: These four are NOT available on the server
 	float pitch = 0.0f;
 	float yaw = 0.0f;
-	float sidew_move_joystick_axis = 0.0f;
-	float forw_move_joystick_axis = 0.0f;
+	float movement_speed = 0.0f;
+	float movement_direction = 0.0f;
 };
 
 struct PlayerSettings
@@ -199,8 +199,6 @@ public:
 	{
 		return m_fov_override_spec;
 	}
-
-	u32 keyPressed = 0;
 
 	HudElement* getHud(u32 id);
 	u32         addHud(HudElement* hud);

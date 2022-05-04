@@ -209,14 +209,7 @@ end
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
-	local t
-	x = math.abs(x)
-	y = math.abs(y)
-	t = math.min(x, y)
-	x = math.max(x, y)
-	if x == 0 then return 0 end
-	t = t / x
-	return x * math.sqrt(1 + t * t)
+	return math.sqrt(x * x + y * y)
 end
 
 --------------------------------------------------------------------------------
@@ -243,6 +236,15 @@ function math.factorial(x)
 	end
 	return v
 end
+
+
+function math.round(x)
+	if x >= 0 then
+		return math.floor(x + 0.5)
+	end
+	return math.ceil(x - 0.5)
+end
+
 
 function core.formspec_escape(text)
 	if text ~= nil then
@@ -423,21 +425,19 @@ function core.string_to_pos(value)
 		return nil
 	end
 
-	local p = {}
-	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-	if p.x and p.y and p.z then
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		return p
+	local x, y, z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	if x and y and z then
+		x = tonumber(x)
+		y = tonumber(y)
+		z = tonumber(z)
+		return vector.new(x, y, z)
 	end
-	p = {}
-	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
-	if p.x and p.y and p.z then
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		return p
+	x, y, z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
+	if x and y and z then
+		x = tonumber(x)
+		y = tonumber(y)
+		z = tonumber(z)
+		return vector.new(x, y, z)
 	end
 	return nil
 end
@@ -532,7 +532,7 @@ if INIT == "mainmenu" then
 	end
 end
 
-if INIT == "client" or INIT == "mainmenu" then
+if core.gettext then -- for client and mainmenu
 	function fgettext_ne(text, ...)
 		text = core.gettext(text)
 		local arg = {n=select('#', ...), ...}

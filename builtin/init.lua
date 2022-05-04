@@ -30,6 +30,7 @@ local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
 
+dofile(commonpath .. "vector.lua")
 dofile(commonpath .. "strict.lua")
 dofile(commonpath .. "serialize.lua")
 dofile(commonpath .. "misc_helpers.lua")
@@ -55,8 +56,10 @@ elseif INIT == "mainmenu" then
 	if not custom_loaded then
 		dofile(core.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
 	end
-elseif INIT == "async" then
-	dofile(asyncpath .. "init.lua")
+elseif INIT == "async"  then
+	dofile(asyncpath .. "mainmenu.lua")
+elseif INIT == "async_game" then
+	dofile(asyncpath .. "game.lua")
 elseif INIT == "client" then
 	dofile(clientpath .. "init.lua")
 else

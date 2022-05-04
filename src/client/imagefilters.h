@@ -23,13 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
  * like to discard RGB values of transparent pixels, but when blending then
- * with non-transparent neighbors, their RGB values will shpw up nonetheless.
+ * with non-transparent neighbors, their RGB values will show up nonetheless.
  *
  * This function modifies the original image in-place.
  *
  * Parameter "threshold" is the alpha level below which pixels are considered
- * transparent.  Should be 127 for 3d where alpha is threshold, but 0 for
- * 2d where alpha is blended.
+ * transparent. Should be 127 when the texture is used with ALPHA_CHANNEL_REF,
+ * 0 when alpha blending is used.
  */
 void imageCleanTransparent(video::IImage *src, u32 threshold);
 

@@ -48,6 +48,10 @@ private:
 	static int l_get_http_api(lua_State *L);
 #endif
 
+	// set_http_api_lua() [internal]
+	static int l_set_http_api_lua(lua_State *L);
+
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);

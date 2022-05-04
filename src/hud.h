@@ -33,6 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
 
+#define HUD_STYLE_BOLD   1
+#define HUD_STYLE_ITALIC 2
+#define HUD_STYLE_MONO   4
+
 // Note that these visibility flags do not determine if the hud items are
 // actually drawn, but rather, whether to draw the item should the rest
 // of the game state permit it.
@@ -43,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_FLAG_BREATHBAR_VISIBLE     (1 << 4)
 #define HUD_FLAG_MINIMAP_VISIBLE       (1 << 5)
 #define HUD_FLAG_MINIMAP_RADAR_VISIBLE (1 << 6)
+#define HUD_FLAG_BASIC_DEBUG           (1 << 7)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
@@ -78,6 +83,7 @@ enum HudElementStat {
 	HUD_STAT_SIZE,
 	HUD_STAT_Z_INDEX,
 	HUD_STAT_TEXT2,
+	HUD_STAT_STYLE,
 };
 
 enum HudCompassDir {
@@ -102,6 +108,7 @@ struct HudElement {
 	v2s32 size;
 	s16 z_index = 0;
 	std::string text2;
+	u32 style;
 };
 
 extern const EnumString es_HudElementType[];

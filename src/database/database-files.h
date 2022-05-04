@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "database.h"
 #include <unordered_map>
+#include <unordered_set>
+#include <json/json.h>
 
 class PlayerDatabaseFiles : public PlayerDatabase
 {
@@ -68,4 +70,28 @@ private:
 	std::string m_savedir;
 	bool readAuthFile();
 	bool writeAuthFile();
+};
+
+class ModMetadataDatabaseFiles : public ModMetadataDatabase
+{
+public:
+	ModMetadataDatabaseFiles(const std::string &savedir);
+	virtual ~ModMetadataDatabaseFiles() = default;
+
+	virtual bool getModEntries(const std::string &modname, StringMap *storage);
+	virtual bool setModEntry(const std::string &modname,
+		const std::string &key, const std::string &value);
+	virtual bool removeModEntry(const std::string &modname, const std::string &key);
+	virtual void listMods(std::vector<std::string> *res);
+
+	virtual void beginSave();
+	virtual void endSave();
+
+private:
+	Json::Value *getOrCreateJson(const std::string &modname);
+	bool writeJson(const std::string &modname, const Json::Value &json);
+
+	std::string m_storage_dir;
+	std::unordered_map<std::string, Json::Value> m_mod_meta;
+	std::unordered_set<std::string> m_modified;
 };

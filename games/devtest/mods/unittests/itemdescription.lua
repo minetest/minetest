@@ -1,17 +1,7 @@
-local full_description = "Colorful Pickaxe\nThe best pick."
-minetest.register_tool("unittests:colorful_pick", {
+local full_description = "Description Test Item\nFor testing item decription"
+minetest.register_tool("unittests:description_test", {
 	description = full_description,
-	inventory_image = "basetools_mesepick.png",
-	tool_capabilities = {
-		full_punch_interval = 1.0,
-		max_drop_level=3,
-		groupcaps={
-			cracky={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
-			crumbly={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
-			snappy={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3}
-		},
-		damage_groups = {fleshy=4},
-	},
+	inventory_image = "unittests_description_test.png",
 })
 
 minetest.register_chatcommand("item_description", {
@@ -25,23 +15,23 @@ minetest.register_chatcommand("item_description", {
 	end
 })
 
-function unittests.test_short_desc()
+local function test_short_desc()
 	local function get_short_description(item)
 		return ItemStack(item):get_short_description()
 	end
 
-	local stack = ItemStack("unittests:colorful_pick")
-	assert(stack:get_short_description() == "Colorful Pickaxe")
-	assert(get_short_description("unittests:colorful_pick") == "Colorful Pickaxe")
-	assert(minetest.registered_items["unittests:colorful_pick"].short_description == nil)
+	local stack = ItemStack("unittests:description_test")
+	assert(stack:get_short_description() == "Description Test Item")
+	assert(get_short_description("unittests:description_test") == "Description Test Item")
+	assert(minetest.registered_items["unittests:description_test"].short_description == nil)
 	assert(stack:get_description() == full_description)
-	assert(stack:get_description() == minetest.registered_items["unittests:colorful_pick"].description)
+	assert(stack:get_description() == minetest.registered_items["unittests:description_test"].description)
 
 	stack:get_meta():set_string("description", "Hello World")
 	assert(stack:get_short_description() == "Hello World")
 	assert(stack:get_description() == "Hello World")
 	assert(get_short_description(stack) == "Hello World")
-	assert(get_short_description("unittests:colorful_pick") == "Colorful Pickaxe")
+	assert(get_short_description("unittests:description_test") == "Description Test Item")
 
 	stack:get_meta():set_string("short_description", "Foo Bar")
 	assert(stack:get_short_description() == "Foo Bar")
@@ -49,3 +39,4 @@ function unittests.test_short_desc()
 
 	return true
 end
+unittests.register("test_short_desc", test_short_desc)

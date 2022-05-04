@@ -37,7 +37,6 @@ const char *g_build_info =
 #ifndef SERVER
 	"USE_GETTEXT=" STR(USE_GETTEXT) "\n"
 	"USE_SOUND=" STR(USE_SOUND) "\n"
-	"USE_FREETYPE=" STR(USE_FREETYPE) "\n"
 #endif
 	"STATIC_SHAREDIR=" STR(STATIC_SHAREDIR)
 #if USE_GETTEXT && defined(STATIC_LOCALEDIR)

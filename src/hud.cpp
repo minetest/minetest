@@ -50,6 +50,7 @@ const struct EnumString es_HudElementStat[] =
 	{HUD_STAT_SIZE,    "size"},
 	{HUD_STAT_Z_INDEX, "z_index"},
 	{HUD_STAT_TEXT2,   "text2"},
+	{HUD_STAT_STYLE,   "style"},
 	{0, NULL},
 };
 
@@ -62,5 +63,6 @@ const struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_BREATHBAR_VISIBLE,     "breathbar"},
 	{HUD_FLAG_MINIMAP_VISIBLE,       "minimap"},
 	{HUD_FLAG_MINIMAP_RADAR_VISIBLE, "minimap_radar"},
+	{HUD_FLAG_BASIC_DEBUG,           "basic_debug"},
 	{0, NULL},
 };

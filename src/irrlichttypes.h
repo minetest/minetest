@@ -19,35 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-/* Ensure that <stdint.h> is included before <irrTypes.h>, unless building on
- * MSVC, to address an irrlicht issue: https://sourceforge.net/p/irrlicht/bugs/433/
- *
- * TODO: Decide whether or not we support non-compliant C++ compilers like old
- *       versions of MSCV.  If we do not then <stdint.h> can always be included
- *       regardless of the compiler.
+/*
+ * IrrlichtMt already includes stdint.h in irrTypes.h. This works everywhere
+ * we need it to (including recent MSVC), so should be fine here too.
  */
-#ifndef _MSC_VER
-#	include <cstdint>
-#endif
+#include <cstdint>
 
 #include <irrTypes.h>
 
 using namespace irr;
 
 namespace irr {
-
-// Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-#ifdef _MSC_VER
-	// Windows
-	typedef long long s64;
-	typedef unsigned long long u64;
-#else
-	// Posix
-	typedef int64_t s64;
-	typedef uint64_t u64;
-#endif
-#endif
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)
 namespace core {

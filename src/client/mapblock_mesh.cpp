@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include <array>
+#include <algorithm>
 
 /*
 	MeshMakeData
@@ -407,20 +408,20 @@ static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, f
 	if (dir.X > 0 || dir.Y != 0 || dir.Z < 0)
 		base -= scale;
 	if (dir == v3s16(0,0,1)) {
-		*u = -base.X - 1;
-		*v = -base.Y - 1;
+		*u = -base.X;
+		*v = -base.Y;
 	} else if (dir == v3s16(0,0,-1)) {
 		*u = base.X + 1;
-		*v = -base.Y - 2;
+		*v = -base.Y - 1;
 	} else if (dir == v3s16(1,0,0)) {
 		*u = base.Z + 1;
-		*v = -base.Y - 2;
-	} else if (dir == v3s16(-1,0,0)) {
-		*u = -base.Z - 1;
 		*v = -base.Y - 1;
+	} else if (dir == v3s16(-1,0,0)) {
+		*u = -base.Z;
+		*v = -base.Y;
 	} else if (dir == v3s16(0,1,0)) {
 		*u = base.X + 1;
-		*v = -base.Z - 2;
+		*v = -base.Z - 1;
 	} else if (dir == v3s16(0,-1,0)) {
 		*u = base.X + 1;
 		*v = base.Z + 1;
@@ -860,6 +861,9 @@ static void updateFastFaceRow(
 		g_settings->getBool("enable_shaders") &&
 		g_settings->getBool("enable_waving_water");
 
+	static thread_local const bool force_not_tiling =
+			g_settings->getBool("enable_dynamic_shadows");
+
 	v3s16 p = startpos;
 
 	u16 continuous_tiles_count = 1;
@@ -898,7 +902,8 @@ static void updateFastFaceRow(
 					waving,
 					next_tile);
 
-			if (next_makes_face == makes_face
+			if (!force_not_tiling
+					&& next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, sizeof(lights)) == 0
@@ -1000,6 +1005,173 @@ static void applyTileColor(PreMeshBuffer &pmb)
 }
 
 /*
+	MapBlockBspTree
+*/
+
+void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
+{
+	this->triangles = triangles;
+
+	nodes.clear();
+
+	// assert that triangle index can fit into s32
+	assert(triangles->size() <= 0x7FFFFFFFL);
+	std::vector<s32> indexes;
+	indexes.reserve(triangles->size());
+	for (u32 i = 0; i < triangles->size(); i++)
+		indexes.push_back(i);
+
+	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes, 0);
+}
+
+/**
+ * @brief Find a candidate plane to split a set of triangles in two
+ * 
+ * The candidate plane is represented by one of the triangles from the set.
+ * 
+ * @param list Vector of indexes of the triangles in the set
+ * @param triangles Vector of all triangles in the BSP tree
+ * @return Address of the triangle that represents the proposed split plane
+ */
+static const MeshTriangle *findSplitCandidate(const std::vector<s32> &list, const std::vector<MeshTriangle> &triangles)
+{
+	// find the center of the cluster.
+	v3f center(0, 0, 0);
+	size_t n = list.size();
+	for (s32 i : list) {
+		center += triangles[i].centroid / n;
+	}
+
+	// find the triangle with the largest area and closest to the center
+	const MeshTriangle *candidate_triangle = &triangles[list[0]];
+	const MeshTriangle *ith_triangle;
+	for (s32 i : list) {
+		ith_triangle = &triangles[i];
+		if (ith_triangle->areaSQ > candidate_triangle->areaSQ ||
+				(ith_triangle->areaSQ == candidate_triangle->areaSQ &&
+				ith_triangle->centroid.getDistanceFromSQ(center) < candidate_triangle->centroid.getDistanceFromSQ(center))) {
+			candidate_triangle = ith_triangle;
+		}
+	}
+	return candidate_triangle;
+}
+
+s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list, u32 depth)
+{
+	// if the list is empty, don't bother
+	if (list.empty())
+		return -1;
+
+	// if there is only one triangle, or the delta is insanely small, this is a leaf node
+	if (list.size() == 1 || delta < 0.01) {
+		nodes.emplace_back(normal, origin, list, -1, -1);
+		return nodes.size() - 1;
+	}
+
+	std::vector<s32> front_list;
+	std::vector<s32> back_list;
+	std::vector<s32> node_list;
+
+	// split the list
+	for (s32 i : list) {
+		const MeshTriangle &triangle = (*triangles)[i];
+		float factor = normal.dotProduct(triangle.centroid - origin);
+		if (factor == 0)
+			node_list.push_back(i);
+		else if (factor > 0)
+			front_list.push_back(i);
+		else
+			back_list.push_back(i);
+	}
+
+	// define the new split-plane
+	v3f candidate_normal(normal.Z, normal.X, normal.Y);
+	float candidate_delta = delta;
+	if (depth % 3 == 2)
+		candidate_delta /= 2;
+
+	s32 front_index = -1;
+	s32 back_index = -1;
+
+	if (!front_list.empty()) {
+		v3f next_normal = candidate_normal;
+		v3f next_origin = origin + delta * normal;
+		float next_delta = candidate_delta;
+		if (next_delta < 10) {
+			const MeshTriangle *candidate = findSplitCandidate(front_list, *triangles);
+			next_normal = candidate->getNormal();
+			next_origin = candidate->centroid;
+		}
+		front_index = buildTree(next_normal, next_origin, next_delta, front_list, depth + 1);
+
+		// if there are no other triangles, don't create a new node
+		if (back_list.empty() && node_list.empty())
+			return front_index;
+	}
+
+	if (!back_list.empty()) {
+		v3f next_normal = candidate_normal;
+		v3f next_origin = origin - delta * normal;
+		float next_delta = candidate_delta;
+		if (next_delta < 10) {
+			const MeshTriangle *candidate = findSplitCandidate(back_list, *triangles);
+			next_normal = candidate->getNormal();
+			next_origin = candidate->centroid;
+		}
+
+		back_index = buildTree(next_normal, next_origin, next_delta, back_list, depth + 1);
+
+		// if there are no other triangles, don't create a new node
+		if (front_list.empty() && node_list.empty())
+			return back_index;
+	}
+
+	nodes.emplace_back(normal, origin, node_list, front_index, back_index);
+
+	return nodes.size() - 1;
+}
+
+void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output) const
+{
+	if (node < 0) return; // recursion break;
+
+	const TreeNode &n = nodes[node];
+	float factor = n.normal.dotProduct(viewpoint - n.origin);
+
+	if (factor > 0)
+		traverse(n.back_ref, viewpoint, output);
+	else
+		traverse(n.front_ref, viewpoint, output);
+
+	if (factor != 0)
+		for (s32 i : n.triangle_refs)
+			output.push_back(i);
+
+	if (factor > 0)
+		traverse(n.front_ref, viewpoint, output);
+	else
+		traverse(n.back_ref, viewpoint, output);
+}
+
+
+
+/*
+	PartialMeshBuffer
+*/
+
+void PartialMeshBuffer::beforeDraw() const
+{
+	// Patch the indexes in the mesh buffer before draw
+
+	m_buffer->Indices.clear();
+	if (!m_vertex_indexes.empty()) {
+		for (auto index : m_vertex_indexes)
+			m_buffer->Indices.push_back(index);
+	}
+	m_buffer->setDirty(scene::EBT_INDEX);
+}
+
+/*
 	MapBlockMesh
 */
 
@@ -1072,8 +1244,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	*/
 
 	{
-		MapblockMeshGenerator generator(data, &collector);
-		generator.generate();
+		MapblockMeshGenerator(data, &collector,
+			data->m_client->getSceneManager()->getMeshManipulator()).generate();
 	}
 
 	/*
@@ -1169,8 +1341,31 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material = material;
-			buf->append(&p.vertices[0], p.vertices.size(),
-				&p.indices[0], p.indices.size());
+			switch (p.layer.material_type) {
+			// list of transparent materials taken from tile.h
+			case TILE_MATERIAL_ALPHA:
+			case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+				{
+					buf->append(&p.vertices[0], p.vertices.size(),
+						&p.indices[0], 0);
+
+					MeshTriangle t;
+					t.buffer = buf;
+					for (u32 i = 0; i < p.indices.size(); i += 3) {
+						t.p1 = p.indices[i];
+						t.p2 = p.indices[i + 1];
+						t.p3 = p.indices[i + 2];
+						t.updateAttributes();
+						m_transparent_triangles.push_back(t);
+					}
+				}
+				break;
+			default:
+				buf->append(&p.vertices[0], p.vertices.size(),
+					&p.indices[0], p.indices.size());
+				break;
+			}
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
@@ -1183,6 +1378,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	}
 
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+	m_bsp_tree.buildTree(&m_transparent_triangles);
 
 	// Check if animation is required for this mesh
 	m_has_animation =
@@ -1194,12 +1390,14 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 MapBlockMesh::~MapBlockMesh()
 {
 	for (scene::IMesh *m : m_mesh) {
+#if IRRLICHT_VERSION_MT_REVISION < 5
 		if (m_enable_vbo) {
 			for (u32 i = 0; i < m->getMeshBufferCount(); i++) {
 				scene::IMeshBuffer *buf = m->getMeshBuffer(i);
 				RenderingEngine::get_video_driver()->removeHardwareBuffer(buf);
 			}
 		}
+#endif
 		m->drop();
 	}
 	delete m_minimap_mapblock;
@@ -1292,6 +1490,67 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	}
 
 	return true;
+}
+
+void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
+{
+	// nothing to do if the entire block is opaque
+	if (m_transparent_triangles.empty())
+		return;
+
+	v3f block_posf = intToFloat(block_pos * MAP_BLOCKSIZE, BS);
+	v3f rel_camera_pos = camera_pos - block_posf;
+
+	std::vector<s32> triangle_refs;
+	m_bsp_tree.traverse(rel_camera_pos, triangle_refs);
+
+	// arrange index sequences into partial buffers
+	m_transparent_buffers.clear();
+
+	scene::SMeshBuffer *current_buffer = nullptr;
+	std::vector<u16> current_strain;
+	for (auto i : triangle_refs) {
+		const auto &t = m_transparent_triangles[i];
+		if (current_buffer != t.buffer) {
+			if (current_buffer) {
+				m_transparent_buffers.emplace_back(current_buffer, current_strain);
+				current_strain.clear();
+			}
+			current_buffer = t.buffer;
+		}
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (!current_strain.empty())
+		m_transparent_buffers.emplace_back(current_buffer, current_strain);
+}
+
+void MapBlockMesh::consolidateTransparentBuffers()
+{
+	m_transparent_buffers.clear();
+
+	scene::SMeshBuffer *current_buffer = nullptr;
+	std::vector<u16> current_strain;
+
+	// use the fact that m_transparent_triangles is already arranged by buffer
+	for (const auto &t : m_transparent_triangles) {
+		if (current_buffer != t.buffer) {
+			if (current_buffer != nullptr) {
+				this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+				current_strain.clear();
+			}
+			current_buffer = t.buffer;
+		}
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (!current_strain.empty()) {
+		this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+	}
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)

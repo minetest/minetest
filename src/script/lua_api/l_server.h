@@ -33,6 +33,9 @@ private:
 	// get_server_uptime()
 	static int l_get_server_uptime(lua_State *L);
 
+	// get_server_max_lag()
+	static int l_get_server_max_lag(lua_State *L);
+
 	// get_worldpath()
 	static int l_get_worldpath(lua_State *L);
 
@@ -71,7 +74,7 @@ private:
 	static int l_sound_fade(lua_State *L);
 
 	// dynamic_add_media(filepath)
-	static int l_dynamic_add_media_raw(lua_State *L);
+	static int l_dynamic_add_media(lua_State *L);
 
 	// get_player_privs(name, text)
 	static int l_get_player_privs(lua_State *L);
@@ -94,8 +97,8 @@ private:
 	// unban_player_or_ip()
 	static int l_unban_player_or_ip(lua_State *L);
 
-	// kick_player(name, [message]) -> success
-	static int l_kick_player(lua_State *L);
+	// disconnect_player(name, [reason]) -> success
+	static int l_disconnect_player(lua_State *L);
 
 	// remove_player(name)
 	static int l_remove_player(lua_State *L);
@@ -103,12 +106,16 @@ private:
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
 
-	// get_last_run_mod()
-	static int l_get_last_run_mod(lua_State *L);
+	// do_async_callback(func, params, mod_origin)
+	static int l_do_async_callback(lua_State *L);
 
-	// set_last_run_mod(modname)
-	static int l_set_last_run_mod(lua_State *L);
+	// register_async_dofile(path)
+	static int l_register_async_dofile(lua_State *L);
+
+	// serialize_roundtrip(obj)
+	static int l_serialize_roundtrip(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
+	static void InitializeAsync(lua_State *L, int top);
 };

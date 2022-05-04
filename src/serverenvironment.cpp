@@ -552,10 +552,8 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	const std::string &str_reason, bool reconnect)
 {
-	for (RemotePlayer *player : m_players) {
-		m_server->DenyAccessVerCompliant(player->getPeerId(),
-			player->protocol_version, reason, str_reason, reconnect);
-	}
+	for (RemotePlayer *player : m_players)
+		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
 }
 
 void ServerEnvironment::saveLoadedPlayers(bool force)
@@ -729,6 +727,8 @@ struct ActiveABM
 	int chance;
 	std::vector<content_t> required_neighbors;
 	bool check_required_neighbors; // false if required_neighbors is known to be empty
+	s16 min_y;
+	s16 max_y;
 };
 
 class ABMHandler
@@ -773,6 +773,9 @@ public:
 			} else {
 				aabm.chance = chance;
 			}
+			// y limits
+			aabm.min_y = abm->getMinY();
+			aabm.max_y = abm->getMaxY();
 
 			// Trigger neighbors
 			const std::vector<std::string> &required_neighbors_s =
@@ -885,6 +888,9 @@ public:
 
 			v3s16 p = p0 + block->getPosRelative();
 			for (ActiveABM &aabm : *m_aabms[c]) {
+				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
+					continue;
+
 				if (myrand() % aabm.chance != 0)
 					continue;
 
@@ -1475,6 +1481,8 @@ void ServerEnvironment::step(float dtime)
 	*/
 	m_script->environment_Step(dtime);
 
+	m_script->stepAsync();
+
 	/*
 		Step active objects
 	*/
@@ -1540,6 +1548,21 @@ void ServerEnvironment::step(float dtime)
 
 	// Send outdated detached inventories
 	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
+}
+
+ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
+{
+	if (m_active_blocks.contains(blockpos))
+		return BS_ACTIVE;
+
+	const MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	if (block && !block->isDummy())
+		return BS_LOADED;
+
+	if (m_map->isBlockInQueue(blockpos))
+		return BS_EMERGING;
+
+	return BS_UNKNOWN;
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime)

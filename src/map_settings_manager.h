@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
+#include "settings.h"
 
-class Settings;
 struct NoiseParams;
 struct MapgenParams;
 
@@ -70,6 +70,8 @@ public:
 
 private:
 	std::string m_map_meta_path;
-	// TODO: Rename to "m_settings"
+
+	SettingsHierarchy m_hierarchy;
+	Settings *m_defaults;
 	Settings *m_map_settings;
 };

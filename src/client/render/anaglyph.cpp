@@ -30,6 +30,7 @@ void RenderingCoreAnaglyph::drawAll()
 void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 {
 	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
+	mat.reset();
 	mat.Material.ColorMask = color_mask;
 	mat.EnableFlags = video::EMF_COLOR_MASK;
 	mat.EnablePasses = scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |
@@ -40,7 +41,7 @@ void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 void RenderingCoreAnaglyph::useEye(bool right)
 {
 	RenderingCoreStereo::useEye(right);
-	driver->clearZBuffer();
+	driver->clearBuffers(video::ECBF_DEPTH);
 	setupMaterial(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
 }
 

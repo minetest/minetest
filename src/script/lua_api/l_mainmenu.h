@@ -58,7 +58,7 @@ private:
 	 * @param path path to check
 	 * @return true if the path may be modified
 	 */
-	static bool mayModifyPath(const std::string &path);
+	static bool mayModifyPath(std::string path);
 
 	//api calls
 
@@ -112,6 +112,8 @@ private:
 
 	static int l_get_modpath(lua_State *L);
 
+	static int l_get_modpaths(lua_State *L);
+
 	static int l_get_clientmodpath(lua_State *L);
 
 	static int l_get_gamepath(lua_State *L);
@@ -139,8 +141,6 @@ private:
 	static int l_download_file(lua_State *L);
 
 	static int l_get_video_drivers(lua_State *L);
-
-	static int l_get_video_modes(lua_State *L);
 
 	//version compatibility
 	static int l_get_min_supp_proto(lua_State *L);

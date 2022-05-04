@@ -22,15 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <iostream>
 #include "constants.h"
-#include "cloudparams.h"
+#include "skyparams.h"
 
 // Menu clouds
 class Clouds;
 extern Clouds *g_menuclouds;
 
 // Scene manager used for menu clouds
-namespace irr{namespace scene{class ISceneManager;}}
-extern irr::scene::ISceneManager *g_menucloudsmgr;
+extern scene::ISceneManager *g_menucloudsmgr;
 
 class Clouds : public scene::ISceneNode
 {

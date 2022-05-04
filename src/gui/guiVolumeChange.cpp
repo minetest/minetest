@@ -93,11 +93,12 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 70 * s);
 
-		const wchar_t *text = wgettext("Sound Volume: ");
+		wchar_t text[100];
+		const wchar_t *str = wgettext("Sound Volume: %d%%");
+		swprintf(text, sizeof(text) / sizeof(wchar_t), str, volume);
+		delete[] str;
 		core::stringw volume_text = text;
-		delete [] text;
 
-		volume_text += core::stringw(volume) + core::stringw("%");
 		Environment->addStaticText(volume_text.c_str(), rect, false,
 				true, this, ID_soundText);
 	}
@@ -183,11 +184,13 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 				g_settings->setFloat("sound_volume", (float) pos / 100);
 
 				gui::IGUIElement *e = getElementFromId(ID_soundText);
-				const wchar_t *text = wgettext("Sound Volume: ");
-				core::stringw volume_text = text;
-				delete [] text;
+				wchar_t text[100];
+				const wchar_t *str = wgettext("Sound Volume: %d%%");
+				swprintf(text, sizeof(text) / sizeof(wchar_t), str, pos);
+				delete[] str;
 
-				volume_text += core::stringw(pos) + core::stringw("%");
+				core::stringw volume_text = text;
+
 				e->setText(volume_text.c_str());
 				return true;
 			}

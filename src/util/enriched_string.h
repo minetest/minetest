@@ -23,18 +23,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <SColor.h>
 
+using namespace irr;
+
 class EnrichedString {
 public:
 	EnrichedString();
 	EnrichedString(const std::wstring &s,
-		const irr::video::SColor &color = irr::video::SColor(255, 255, 255, 255));
+		const video::SColor &color = video::SColor(255, 255, 255, 255));
 	EnrichedString(const wchar_t *str,
-		const irr::video::SColor &color = irr::video::SColor(255, 255, 255, 255));
+		const video::SColor &color = video::SColor(255, 255, 255, 255));
 	EnrichedString(const std::wstring &string,
-		const std::vector<irr::video::SColor> &colors);
-	void clear();
+		const std::vector<video::SColor> &colors);
 	void operator=(const wchar_t *str);
-	void addAtEnd(const std::wstring &s, const irr::video::SColor &color);
+
+	void clear();
+
+	void addAtEnd(const std::wstring &s, video::SColor color);
 
 	// Adds the character source[i] at the end.
 	// An EnrichedString should always be able to be copied
@@ -49,12 +53,16 @@ public:
 	EnrichedString operator+(const EnrichedString &other) const;
 	void operator+=(const EnrichedString &other);
 	const wchar_t *c_str() const;
-	const std::vector<irr::video::SColor> &getColors() const;
+	const std::vector<video::SColor> &getColors() const;
 	const std::wstring &getString() const;
 
-	void setDefaultColor(const irr::video::SColor &color);
+	inline void setDefaultColor(video::SColor color)
+	{
+		m_default_color = color;
+		updateDefaultColor();
+	}
 	void updateDefaultColor();
-	inline const irr::video::SColor &getDefaultColor() const
+	inline const video::SColor &getDefaultColor() const
 	{
 		return m_default_color;
 	}
@@ -80,11 +88,11 @@ public:
 	{
 		return m_has_background;
 	}
-	inline irr::video::SColor getBackground() const
+	inline video::SColor getBackground() const
 	{
 		return m_background;
 	}
-	inline void setBackground(const irr::video::SColor &color)
+	inline void setBackground(video::SColor color)
 	{
 		m_background = color;
 		m_has_background = true;
@@ -92,10 +100,10 @@ public:
 
 private:
 	std::wstring m_string;
-	std::vector<irr::video::SColor> m_colors;
+	std::vector<video::SColor> m_colors;
 	bool m_has_background;
-	irr::video::SColor m_default_color;
-	irr::video::SColor m_background;
+	video::SColor m_default_color;
+	video::SColor m_background;
 	// This variable defines the length of the default-colored text.
 	// Change this to a std::vector if an "end coloring" tag is wanted.
 	size_t m_default_length = 0;

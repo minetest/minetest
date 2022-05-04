@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="label">Minetest</string>
+	<string name="loading">Loading&#8230;</string>
+	<string name="migrating">Migrating save data from old install&#8230; (this may take a while)</string>
+	<string name="not_granted">Required permission wasn\'t granted, Minetest can\'t run without it</string>
+	<string name="notification_title">Loading Minetest</string>
+	<string name="notification_description">Less than 1 minute&#8230;</string>
+	<string name="ime_dialog_done">Done</string>
+	<string name="no_external_storage">External storage isn\'t available. If you use an SDCard, please reinsert it. Otherwise, try restarting your phone or contacting the Minetest developers</string>
+
+</resources>

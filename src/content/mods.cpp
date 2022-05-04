@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <json/json.h>
 #include <algorithm>
 #include "content/mods.h"
+#include "database/database.h"
 #include "filesys.h"
 #include "log.h"
 #include "content/subgames.h"
@@ -29,6 +30,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "convert_json.h"
 #include "script/common/c_internal.h"
+
+void ModSpec::checkAndLog() const
+{
+	if (!string_allowed(name, MODNAME_ALLOWED_CHARS)) {
+		throw ModError("Error loading mod \"" + name +
+			"\": Mod name does not follow naming conventions: "
+				"Only characters [a-z0-9_] are allowed.");
+	}
+
+	// Log deprecation messages
+	auto handling_mode = get_deprecated_handling_mode();
+	if (!deprecation_msgs.empty() && handling_mode != DeprecatedHandlingMode::Ignore) {
+		std::ostringstream os;
+		os << "Mod " << name << " at " << path << ":" << std::endl;
+		for (auto msg : deprecation_msgs)
+			os << "\t" << msg << std::endl;
+
+		if (handling_mode == DeprecatedHandlingMode::Error)
+			throw ModError(os.str());
+		else
+			warningstream << os.str();
+	}
+}
 
 bool parseDependsString(std::string &dep, std::unordered_set<char> &symbols)
 {
@@ -43,21 +67,6 @@ bool parseDependsString(std::string &dep, std::unordered_set<char> &symbols)
 	}
 	dep = trim(dep.substr(0, pos));
 	return !dep.empty();
-}
-
-static void log_mod_deprecation(const ModSpec &spec, const std::string &warning)
-{
-	auto handling_mode = get_deprecated_handling_mode();
-	if (handling_mode != DeprecatedHandlingMode::Ignore) {
-		std::ostringstream os;
-		os << warning << " (" << spec.name << " at " << spec.path << ")" << std::endl;
-
-		if (handling_mode == DeprecatedHandlingMode::Error) {
-			throw ModError(os.str());
-		} else {
-			warningstream << os.str();
-		}
-	}
 }
 
 void parseModContents(ModSpec &spec)
@@ -80,7 +89,7 @@ void parseModContents(ModSpec &spec)
 			modpack2_is.close();
 
 		spec.is_modpack = true;
-		spec.modpack_content = getModsInPath(spec.path, true);
+		spec.modpack_content = getModsInPath(spec.path, spec.virtual_path, true);
 
 	} else {
 		Settings info;
@@ -89,7 +98,7 @@ void parseModContents(ModSpec &spec)
 		if (info.exists("name"))
 			spec.name = info.get("name");
 		else
-			log_mod_deprecation(spec, "Mods not having a mod.conf file with the name is deprecated.");
+			spec.deprecation_msgs.push_back("Mods not having a mod.conf file with the name is deprecated.");
 
 		if (info.exists("author"))
 			spec.author = info.get("author");
@@ -130,7 +139,7 @@ void parseModContents(ModSpec &spec)
 			std::ifstream is((spec.path + DIR_DELIM + "depends.txt").c_str());
 
 			if (is.good())
-				log_mod_deprecation(spec, "depends.txt is deprecated, please use mod.conf instead.");
+				spec.deprecation_msgs.push_back("depends.txt is deprecated, please use mod.conf instead.");
 
 			while (is.good()) {
 				std::string dep;
@@ -153,18 +162,19 @@ void parseModContents(ModSpec &spec)
 		if (info.exists("description"))
 			spec.desc = info.get("description");
 		else if (fs::ReadFile(spec.path + DIR_DELIM + "description.txt", spec.desc))
-			log_mod_deprecation(spec, "description.txt is deprecated, please use mod.conf instead.");
+			spec.deprecation_msgs.push_back("description.txt is deprecated, please use mod.conf instead.");
 	}
 }
 
 std::map<std::string, ModSpec> getModsInPath(
-		const std::string &path, bool part_of_modpack)
+		const std::string &path, const std::string &virtual_path, bool part_of_modpack)
 {
 	// NOTE: this function works in mutual recursion with parseModContents
 
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
-	std::string modpath;
+	std::string mod_path;
+	std::string mod_virtual_path;
 
 	for (const fs::DirListNode &dln : dirlist) {
 		if (!dln.dir)
@@ -176,10 +186,14 @@ std::map<std::string, ModSpec> getModsInPath(
 		if (modname[0] == '.')
 			continue;
 
-		modpath.clear();
-		modpath.append(path).append(DIR_DELIM).append(modname);
+		mod_path.clear();
+		mod_path.append(path).append(DIR_DELIM).append(modname);
 
-		ModSpec spec(modname, modpath, part_of_modpack);
+		mod_virtual_path.clear();
+		// Intentionally uses / to keep paths same on different platforms
+		mod_virtual_path.append(virtual_path).append("/").append(modname);
+
+		ModSpec spec(modname, mod_path, part_of_modpack, mod_virtual_path);
 		parseModContents(spec);
 		result.insert(std::make_pair(modname, spec));
 	}
@@ -219,9 +233,9 @@ void ModConfiguration::printUnsatisfiedModsError() const
 	}
 }
 
-void ModConfiguration::addModsInPath(const std::string &path)
+void ModConfiguration::addModsInPath(const std::string &path, const std::string &virtual_path)
 {
-	addMods(flattenMods(getModsInPath(path)));
+	addMods(flattenMods(getModsInPath(path, virtual_path)));
 }
 
 void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
@@ -285,29 +299,39 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 }
 
 void ModConfiguration::addModsFromConfig(
-		const std::string &settings_path, const std::set<std::string> &mods)
+		const std::string &settings_path,
+		const std::unordered_map<std::string, std::string> &modPaths)
 {
 	Settings conf;
-	std::set<std::string> load_mod_names;
+	std::unordered_map<std::string, std::string> load_mod_names;
 
 	conf.readConfigFile(settings_path.c_str());
 	std::vector<std::string> names = conf.getNames();
 	for (const std::string &name : names) {
-		if (name.compare(0, 9, "load_mod_") == 0 && conf.get(name) != "false" &&
-				conf.get(name) != "nil")
-			load_mod_names.insert(name.substr(9));
+		const auto &value = conf.get(name);
+		if (name.compare(0, 9, "load_mod_") == 0 && value != "false" &&
+				value != "nil")
+			load_mod_names[name.substr(9)] = value;
 	}
 
 	std::vector<ModSpec> addon_mods;
-	for (const std::string &i : mods) {
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(i));
+	std::unordered_map<std::string, std::vector<std::string>> candidates;
+
+	for (const auto &modPath : modPaths) {
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(modPath.second, modPath.first));
 		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
 				it != addon_mods_in_path.end(); ++it) {
 			const ModSpec &mod = *it;
-			if (load_mod_names.count(mod.name) != 0)
-				addon_mods.push_back(mod);
-			else
+			const auto &pair = load_mod_names.find(mod.name);
+			if (pair != load_mod_names.end()) {
+				if (is_yes(pair->second) || pair->second == mod.virtual_path) {
+					addon_mods.push_back(mod);
+				} else {
+					candidates[pair->first].emplace_back(mod.virtual_path);
+				}
+			} else {
 				conf.setBool("load_mod_" + mod.name, false);
+			}
 		}
 	}
 	conf.updateConfigFile(settings_path.c_str());
@@ -326,9 +350,22 @@ void ModConfiguration::addModsFromConfig(
 
 	if (!load_mod_names.empty()) {
 		errorstream << "The following mods could not be found:";
-		for (const std::string &mod : load_mod_names)
-			errorstream << " \"" << mod << "\"";
+		for (const auto &pair : load_mod_names)
+			errorstream << " \"" << pair.first << "\"";
 		errorstream << std::endl;
+
+		for (const auto &pair : load_mod_names) {
+			const auto &candidate = candidates.find(pair.first);
+			if (candidate != candidates.end()) {
+				errorstream << "Unable to load " << pair.first << " as the specified path "
+					<< pair.second << " could not be found. "
+					<< "However, it is available in the following locations:"
+					<< std::endl;
+				for (const auto &path : candidate->second) {
+					errorstream << " - " << path << std::endl;
+				}
+			}
+		}
 	}
 }
 
@@ -404,93 +441,41 @@ void ModConfiguration::resolveDependencies()
 ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 		ModConfiguration(path)
 {
-	std::set<std::string> paths;
+	std::unordered_map<std::string, std::string> paths;
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
-	paths.insert(path);
-	paths.insert(path_user);
+	if (path != path_user) {
+		paths["share"] = path;
+	}
+	paths["mods"] = path_user;
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
 	addModsFromConfig(settings_path, paths);
 }
 #endif
 
-ModMetadata::ModMetadata(const std::string &mod_name) : m_mod_name(mod_name)
+ModMetadata::ModMetadata(const std::string &mod_name, ModMetadataDatabase *database):
+	m_mod_name(mod_name), m_database(database)
 {
+	m_database->getModEntries(m_mod_name, &m_stringvars);
 }
 
 void ModMetadata::clear()
 {
+	for (const auto &pair : m_stringvars) {
+		m_database->removeModEntry(m_mod_name, pair.first);
+	}
 	Metadata::clear();
-	m_modified = true;
-}
-
-bool ModMetadata::save(const std::string &root_path)
-{
-	Json::Value json;
-	for (StringMap::const_iterator it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
-		json[it->first] = it->second;
-	}
-
-	if (!fs::PathExists(root_path)) {
-		if (!fs::CreateAllDirs(root_path)) {
-			errorstream << "ModMetadata[" << m_mod_name
-				    << "]: Unable to save. '" << root_path
-				    << "' tree cannot be created." << std::endl;
-			return false;
-		}
-	} else if (!fs::IsDir(root_path)) {
-		errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '"
-			    << root_path << "' is not a directory." << std::endl;
-		return false;
-	}
-
-	bool w_ok = fs::safeWriteToFile(
-			root_path + DIR_DELIM + m_mod_name, fastWriteJson(json));
-
-	if (w_ok) {
-		m_modified = false;
-	} else {
-		errorstream << "ModMetadata[" << m_mod_name << "]: failed write file."
-			    << std::endl;
-	}
-	return w_ok;
-}
-
-bool ModMetadata::load(const std::string &root_path)
-{
-	m_stringvars.clear();
-
-	std::ifstream is((root_path + DIR_DELIM + m_mod_name).c_str(),
-			std::ios_base::binary);
-	if (!is.good()) {
-		return false;
-	}
-
-	Json::Value root;
-	Json::CharReaderBuilder builder;
-	builder.settings_["collectComments"] = false;
-	std::string errs;
-
-	if (!Json::parseFromStream(builder, is, &root, &errs)) {
-		errorstream << "ModMetadata[" << m_mod_name
-			    << "]: failed read data "
-			       "(Json decoding failure). Message: "
-			    << errs << std::endl;
-		return false;
-	}
-
-	const Json::Value::Members attr_list = root.getMemberNames();
-	for (const auto &it : attr_list) {
-		Json::Value attr_value = root[it];
-		m_stringvars[it] = attr_value.asString();
-	}
-
-	return true;
 }
 
 bool ModMetadata::setString(const std::string &name, const std::string &var)
 {
-	m_modified = Metadata::setString(name, var);
-	return m_modified;
+	if (Metadata::setString(name, var)) {
+		if (var.empty()) {
+			m_database->removeModEntry(m_mod_name, name);
+		} else {
+			m_database->setModEntry(m_mod_name, name, var);
+		}
+		return true;
+	}
+	return false;
 }

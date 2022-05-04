@@ -248,7 +248,7 @@ std::string serializeJsonStringIfNeeded(const std::string &s)
 
 std::string deSerializeJsonStringIfNeeded(std::istream &is)
 {
-	std::ostringstream tmp_os;
+	std::stringstream tmp_os(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
 	bool expect_initial_quote = true;
 	bool is_json = false;
 	bool was_backslash = false;
@@ -280,8 +280,7 @@ std::string deSerializeJsonStringIfNeeded(std::istream &is)
 		expect_initial_quote = false;
 	}
 	if (is_json) {
-		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
-		return deSerializeJsonString(tmp_is);
+		return deSerializeJsonString(tmp_os);
 	}
 
 	return tmp_os.str();

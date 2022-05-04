@@ -27,10 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "network/address.h"
 #include "porting.h"
+#include "threading/mutex_auto_lock.h"
 
 #include <list>
 #include <vector>
 #include <set>
+#include <memory>
 #include <mutex>
 
 class MapBlock;
@@ -241,6 +243,8 @@ public:
 	u32 allowed_auth_mechs = 0;
 	u32 allowed_sudo_mechs = 0;
 
+	void resetChosenMech();
+
 	bool isSudoMechAllowed(AuthMechanism mech)
 	{ return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech)
@@ -339,7 +343,7 @@ public:
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
 	const std::string &getFullVer() const { return m_full_version; }
-	
+
 	void setLangCode(const std::string &code) { m_lang_code = code; }
 	const std::string &getLangCode() const { return m_lang_code; }
 
@@ -464,7 +468,6 @@ public:
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);
-	void sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt, u16 min_proto_ver);
 
 	/* delete a client */
 	void DeleteClient(session_t peer_id);
@@ -505,9 +508,13 @@ public:
 
 	static std::string state2Name(ClientState state);
 protected:
-	//TODO find way to avoid this functions
-	void lock() { m_clients_mutex.lock(); }
-	void unlock() { m_clients_mutex.unlock(); }
+	class AutoLock {
+	public:
+		AutoLock(ClientInterface &iface): m_lock(iface.m_clients_mutex) {}
+
+	private:
+		RecursiveMutexAutoLock m_lock;
+	};
 
 	RemoteClientMap& getClientList() { return m_clients; }
 

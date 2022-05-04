@@ -58,11 +58,12 @@ core.register_entity(":__builtin:item", {
 		local glow = def and def.light_source and
 			math.floor(def.light_source / 2 + 0.5)
 
+		local size_bias = 1e-3 * math.random() -- small random bias to counter Z-fighting
 		self.object:set_properties({
 			is_visible = true,
 			visual = "wielditem",
 			textures = {itemname},
-			visual_size = {x = size, y = size},
+			visual_size = {x = size + size_bias, y = size + size_bias},
 			collisionbox = {-size, -size, -size, size, size, size},
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,

@@ -89,7 +89,10 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 
 	NodeMetaRef *ref = checkobject(L, 1);
 	ref->getmeta(true);  // try to ensure the metadata exists
-	InvRef::createNodeMeta(L, ref->m_p);
+
+	InventoryLocation loc;
+	loc.setNodeMeta(ref->m_p);
+	InvRef::create(L, loc);
 	return 1;
 }
 
@@ -124,18 +127,14 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 	// fields
 	MetaDataRef::handleToTable(L, _meta);
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *) _meta;
 
 	// inventory
-	lua_newtable(L);
 	Inventory *inv = meta->getInventory();
 	if (inv) {
-		std::vector<const InventoryList *> lists = inv->getLists();
-		for(std::vector<const InventoryList *>::const_iterator
-				i = lists.begin(); i != lists.end(); ++i) {
-			push_inventory_list(L, inv, (*i)->getName().c_str());
-			lua_setfield(L, -2, (*i)->getName().c_str());
-		}
+		push_inventory_lists(L, *inv);
+	} else {
+		lua_newtable(L);
 	}
 	lua_setfield(L, -2, "inventory");
 }
@@ -234,7 +233,7 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 void NodeMetaRef::Register(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsServer, 0);  // fill methodtable
+	luaL_register(L, nullptr, methodsServer);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 
@@ -260,7 +259,7 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 void NodeMetaRef::RegisterClient(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsClient, 0);  // fill methodtable
+	luaL_register(L, nullptr, methodsClient);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
 

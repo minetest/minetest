@@ -24,25 +24,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientmap.h"
 #include "client/hud.h"
 #include "client/minimap.h"
+#include "client/shadows/dynamicshadowsrender.h"
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
 	guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
-	mapper(client->getMinimap()), hud(_hud)
+	mapper(client->getMinimap()), hud(_hud),
+	shadow_renderer(nullptr)
 {
 	screensize = driver->getScreenSize();
 	virtual_size = screensize;
+
+	if (g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		shadow_renderer = new ShadowRenderer(device, client);
+	}
 }
 
 RenderingCore::~RenderingCore()
 {
 	clearTextures();
+	delete shadow_renderer;
 }
 
 void RenderingCore::initialize()
 {
 	// have to be called late as the VMT is not ready in the constructor:
 	initTextures();
+	if (shadow_renderer)
+		shadow_renderer->initialize();
 }
 
 void RenderingCore::updateScreenSize()
@@ -66,6 +76,12 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	draw_wield_tool = _draw_wield_tool;
 	draw_crosshair = _draw_crosshair;
 
+	if (shadow_renderer) {
+		// This is necessary to render shadows for animations correctly
+		smgr->getRootSceneNode()->OnAnimate(device->getTimer()->getTime());
+		shadow_renderer->update();
+	}
+
 	beforeDraw();
 	drawAll();
 }
@@ -73,9 +89,13 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 void RenderingCore::draw3D()
 {
 	smgr->drawAll();
+	if (shadow_renderer)
+		shadow_renderer->drawDebug();
+
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (!show_hud)
 		return;
+	hud->drawBlockBounds();
 	hud->drawSelectionMesh();
 	if (draw_wield_tool)
 		camera->drawWieldedTool();
@@ -86,7 +106,7 @@ void RenderingCore::drawHUD()
 	if (show_hud) {
 		if (draw_crosshair)
 			hud->drawCrosshair();
-	
+
 		hud->drawHotbar(client->getEnv().getLocalPlayer()->getWieldIndex());
 		hud->drawLuaElements(camera->getOffset());
 		camera->drawNametags();

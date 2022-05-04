@@ -67,6 +67,10 @@ public:
 	virtual u32 getTriggerChance() = 0;
 	// Whether to modify chance to simulate time lost by an unnattended block
 	virtual bool getSimpleCatchUp() = 0;
+	// get min Y for apply abm
+	virtual s16 getMinY() = 0;
+	// get max Y for apply abm
+	virtual s16 getMaxY() = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
@@ -342,7 +346,16 @@ public:
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
 
-	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; };
+	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; }
+
+	// Sorted by how ready a mapblock is
+	enum BlockStatus {
+		BS_UNKNOWN,
+		BS_EMERGING,
+		BS_LOADED,
+		BS_ACTIVE // always highest value
+	};
+	BlockStatus getBlockStatus(v3s16 blockpos);
 
 	// Sets the static object status all the active objects in the specified block
 	// This is only really needed for deleting blocks from the map

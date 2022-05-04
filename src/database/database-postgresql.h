@@ -29,7 +29,7 @@ class Settings;
 class Database_PostgreSQL: public Database
 {
 public:
-	Database_PostgreSQL(const std::string &connect_string);
+	Database_PostgreSQL(const std::string &connect_string, const char *type);
 	~Database_PostgreSQL();
 
 	void beginSave();
@@ -94,7 +94,8 @@ protected:
 		checkResults(PQprepare(m_conn, name.c_str(), sql.c_str(), 0, NULL));
 	}
 
-	const int getPGVersion() const { return m_pgversion; }
+	int getPGVersion() const { return m_pgversion; }
+
 private:
 	// Database connectivity checks
 	void ping();

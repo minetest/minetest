@@ -153,7 +153,7 @@ CollisionAxis axisAlignedCollision(
 						(std::max(movingbox.MaxEdge.Z + speed.Z * time, staticbox.MaxEdge.Z)
 							- std::min(movingbox.MinEdge.Z + speed.Z * time, staticbox.MinEdge.Z)
 							- relbox.MinEdge.Z < 0)
-					) 
+					)
 					return COLLISION_AXIS_X;
 			}
 		} else {
@@ -180,7 +180,7 @@ CollisionAxis axisAlignedCollision(
 						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
 							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
 							- relbox.MinEdge.Y < 0)
-					) 
+					)
 					return COLLISION_AXIS_Z;
 			}
 		}
@@ -303,7 +303,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (!f.walkable)
 				continue;
 
-			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
+			// Negative bouncy may have a meaning, but we need +value here.
+			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
 
 			int neighbors = 0;
 			if (f.drawtype == NDT_NODEBOX &&

@@ -1,18 +1,24 @@
 cmake_minimum_required(VERSION 3.5)
 
-cmake_policy(SET CMP0025 OLD)
+# Set policies up to 3.9 since we want to enable the IPO option
+if(${CMAKE_VERSION} VERSION_LESS 3.9)
+	cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+else()
+	cmake_policy(VERSION 3.9)
+endif()
 
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
-set(CMAKE_CXX_STANDARD 11)
-set(GCC_MINIMUM_VERSION "4.8")
-set(CLANG_MINIMUM_VERSION "3.4")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(GCC_MINIMUM_VERSION "5.1")
+set(CLANG_MINIMUM_VERSION "3.5")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 5)
+set(VERSION_MINOR 6)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -21,7 +27,7 @@ set(DEVELOPMENT_BUILD TRUE)
 
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
-	set(VERSION_STRING ${VERSION_STRING}-${VERSION_EXTRA})
+	set(VERSION_STRING "${VERSION_STRING}-${VERSION_EXTRA}")
 elseif(DEVELOPMENT_BUILD)
 	set(VERSION_STRING "${VERSION_STRING}-dev")
 endif()
@@ -47,7 +53,6 @@ set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 
-
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -59,8 +64,62 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
+set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
+if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
+	find_package(IrrlichtMt QUIET
+		PATHS "${IRRLICHTMT_BUILD_DIR}"
+		NO_DEFAULT_PATH
+	)
+
+	if(NOT TARGET IrrlichtMt::IrrlichtMt)
+		# find_package() searches certain subdirectories. ${PATH}/cmake is not
+		# the only one, but it is the one where IrrlichtMt is supposed to export
+		# IrrlichtMtConfig.cmake
+		message(FATAL_ERROR "Could not find IrrlichtMtConfig.cmake in ${IRRLICHTMT_BUILD_DIR}/cmake.")
+	endif()
 # This is done here so that relative search paths are more reasonable
-find_package(Irrlicht)
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
+	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
+	if(BUILD_CLIENT)
+		# tell IrrlichtMt to create a static library
+		set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
+		add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
+		unset(BUILD_SHARED_LIBS CACHE)
+
+		if(NOT TARGET IrrlichtMt)
+			message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		endif()
+	else()
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
+	endif()
+else()
+	find_package(IrrlichtMt QUIET)
+	if(NOT TARGET IrrlichtMt::IrrlichtMt)
+		string(CONCAT explanation_msg
+			"The Minetest team has forked Irrlicht to make their own customizations. "
+			"It can be found here: https://github.com/minetest/irrlicht\n"
+			"For example use: git clone --depth=1 https://github.com/minetest/irrlicht lib/irrlichtmt\n")
+		if(BUILD_CLIENT)
+			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.\n${explanation_msg}")
+		endif()
+
+		include(MinetestFindIrrlichtHeaders)
+		if(NOT IRRLICHT_INCLUDE_DIR)
+			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.\n${explanation_msg}")
+		endif()
+		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${IRRLICHT_INCLUDE_DIR}")
+	endif()
+endif()
+
+if(TARGET IrrlichtMt::IrrlichtMt)
+	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
+endif()
 
 
 # Installation
@@ -91,15 +150,16 @@ elseif(UNIX) # Linux, BSD etc
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
-		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}")
-		set(BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
-		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}")
-		set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
+		include(GNUInstallDirs)
+		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+		set(BINDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
+		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}")
+		set(MANDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
-		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
-		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/metainfo")
-		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/locale")
+		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/applications")
+		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/metainfo")
+		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/icons")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LOCALEDIR}")
 	endif()
 endif()
 
@@ -169,7 +229,6 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHA
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 	if(RUN_IN_PLACE)
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/clientmods" DESTINATION "${SHAREDIR}")
 		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/serverlist" DESTINATION "${SHAREDIR}/client")
@@ -203,10 +262,10 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
-
-# JsonCPP doesn't compile well on GCC 4.8
-if(NOT ENABLE_SYSTEM_JSONCPP)
-	set(GCC_MINIMUM_VERSION "4.9")
+if(NOT USE_LUAJIT)
+	set(LUA_BIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/bitop)
+	set(LUA_BIT_LIBRARY bitop)
+	add_subdirectory(lib/bitop)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -214,7 +273,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
 	endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
 		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
@@ -223,7 +282,6 @@ endif()
 
 # Subdirectories
 # Be sure to add all relevant definitions above this
-
 add_subdirectory(src)
 
 

@@ -90,9 +90,10 @@ by texture packs. All existing fallback textures can be found in the directory
 * `minimap_mask_square.png`: mask used for the square minimap
 * `minimap_overlay_round.png`: overlay texture for the round minimap
 * `minimap_overlay_square.png`: overlay texture for the square minimap
-* `no_texture_airlike.png`: fallback inventory image for airlike nodes
 * `object_marker_red.png`: texture for players on the minimap
 * `player_marker.png`: texture for the own player on the square minimap
+* `no_texture_airlike.png`: fallback inventory image for airlike nodes
+* `no_texture.png`: fallback image for unspecified textures
 
 * `player.png`: front texture of the 2D upright sprite player
 * `player_back.png`: back texture of the 2D upright sprite player

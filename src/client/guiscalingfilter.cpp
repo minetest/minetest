@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <cstdio>
 #include "client/renderingengine.h"
-#include "client/tile.h" // hasNPotSupport()
 
 /* Maintain a static cache to store the images that correspond to textures
  * in a format that's manipulable by code.  Some platforms exhibit issues
@@ -44,6 +43,10 @@ void guiScalingCache(const io::path &key, video::IVideoDriver *driver, video::II
 {
 	if (!g_settings->getBool("gui_scaling_filter"))
 		return;
+
+	if (g_imgCache.find(key) != g_imgCache.end())
+		return; // Already cached.
+
 	video::IImage *copied = driver->createImage(value->getColorFormat(),
 			value->getDimension());
 	value->copyTo(copied);
@@ -91,18 +94,20 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 	io::path scalename = origname + "@guiScalingFilter:" + rectstr;
 
 	// Search for existing scaled texture.
-	video::ITexture *scaled = g_txrCache[scalename];
+	auto it_txr = g_txrCache.find(scalename);
+	video::ITexture *scaled = (it_txr != g_txrCache.end()) ? it_txr->second : nullptr;
 	if (scaled)
 		return scaled;
 
 	// Try to find the texture converted to an image in the cache.
 	// If the image was not found, try to extract it from the texture.
-	video::IImage* srcimg = g_imgCache[origname];
-	if (srcimg == NULL) {
+	auto it_img = g_imgCache.find(origname);
+	video::IImage *srcimg = (it_img != g_imgCache.end()) ? it_img->second : nullptr;
+	if (!srcimg) {
 		if (!g_settings->getBool("gui_scaling_filter_txr2img"))
 			return src;
 		srcimg = driver->createImageFromData(src->getColorFormat(),
-			src->getSize(), src->lock(), false);
+			src->getSize(), src->lock(video::ETLM_READ_ONLY), false);
 		src->unlock();
 		g_imgCache[origname] = srcimg;
 	}
@@ -117,7 +122,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 #if ENABLE_GLES
 	// Some platforms are picky about textures being powers of 2, so expand
 	// the image dimensions to the next power of 2, if necessary.
-	if (!hasNPotSupport()) {
+	if (!driver->queryFeature(video::EVDF_TEXTURE_NPOT)) {
 		video::IImage *po2img = driver->createImage(src->getColorFormat(),
 				core::dimension2d<u32>(npot2((u32)destrect.getWidth()),
 				npot2((u32)destrect.getHeight())));
@@ -129,7 +134,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 #endif
 
 	// Convert the scaled image back into a texture.
-	scaled = driver->addTexture(scalename, destimg, NULL);
+	scaled = driver->addTexture(scalename, destimg);
 	destimg->drop();
 	g_txrCache[scalename] = scaled;
 

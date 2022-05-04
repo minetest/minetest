@@ -152,6 +152,66 @@ minetest.register_node("testnodes:liquidflowing_nojump", {
 	post_effect_color = {a = 70, r = 255, g = 0, b = 200},
 })
 
+-- A liquid which doesn't have liquid movement physics (source variant)
+minetest.register_node("testnodes:liquid_noswim", {
+	description = S("No-swim Liquid Source Node"),
+	liquidtype = "source",
+	liquid_range = 1,
+	liquid_viscosity = 0,
+	liquid_alternative_flowing = "testnodes:liquidflowing_noswim",
+	liquid_alternative_source = "testnodes:liquid_noswim",
+	liquid_renewable = false,
+	liquid_move_physics = false,
+	groups = {dig_immediate=3},
+	walkable = false,
+
+	drawtype = "liquid",
+	tiles = {"testnodes_liquidsource.png^[colorize:#FF00FF:127"},
+	special_tiles = {
+		{name = "testnodes_liquidsource.png^[colorize:#FF00FF:127", backface_culling = false},
+		{name = "testnodes_liquidsource.png^[colorize:#FF00FF:127", backface_culling = true},
+	},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	pointable = false,
+	liquids_pointable = true,
+	buildable_to = true,
+	is_ground_content = false,
+	post_effect_color = {a = 70, r = 255, g = 200, b = 200},
+})
+
+-- A liquid which doen't have liquid movement physics (flowing variant)
+minetest.register_node("testnodes:liquidflowing_noswim", {
+	description = S("No-swim Flowing Liquid Node"),
+	liquidtype = "flowing",
+	liquid_range = 1,
+	liquid_viscosity = 0,
+	liquid_alternative_flowing = "testnodes:liquidflowing_noswim",
+	liquid_alternative_source = "testnodes:liquid_noswim",
+	liquid_renewable = false,
+	liquid_move_physics = false,
+	groups = {dig_immediate=3},
+	walkable = false,
+
+
+	drawtype = "flowingliquid",
+	tiles = {"testnodes_liquidflowing.png^[colorize:#FF00FF:127"},
+	special_tiles = {
+		{name = "testnodes_liquidflowing.png^[colorize:#FF00FF:127", backface_culling = false},
+		{name = "testnodes_liquidflowing.png^[colorize:#FF00FF:127", backface_culling = false},
+	},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	paramtype2 = "flowingliquid",
+	pointable = false,
+	liquids_pointable = true,
+	buildable_to = true,
+	is_ground_content = false,
+	post_effect_color = {a = 70, r = 255, g = 200, b = 200},
+})
+
+
+
 -- Nodes that modify fall damage (various damage modifiers)
 for i=-100, 100, 25 do
 	if i ~= 0 then
@@ -192,9 +252,9 @@ for i=-100, 100, 25 do
 end
 
 -- Bouncy nodes (various bounce levels)
-for i=20, 180, 20 do
+for i=-140, 180, 20 do
 	local val = math.floor(((i-20)/200)*255)
-	minetest.register_node("testnodes:bouncy"..i, {
+	minetest.register_node(("testnodes:bouncy"..i):gsub("-","NEG"), {
 		description = S("Bouncy Node (@1%)", i),
 		groups = {bouncy=i, dig_immediate=3},
 
@@ -215,6 +275,54 @@ for i=1, 5 do
 		color = { r=0, g=255, b=math.floor((i/5)*255), a=255 },
 	})
 end
+
+-- Move resistance nodes (various resistance levels)
+for r=0, 7 do
+	if r > 0 then
+		minetest.register_node("testnodes:move_resistance"..r, {
+			description = S("Move-resistant Node (@1)", r),
+			walkable = false,
+			move_resistance = r,
+
+			drawtype = "glasslike",
+			paramtype = "light",
+			sunlight_propagates = true,
+			tiles = { "testnodes_move_resistance.png" },
+			is_ground_content = false,
+			groups = { dig_immediate = 3 },
+			color = { b = 0, g = 255, r = math.floor((r/7)*255), a = 255 },
+		})
+	end
+
+	minetest.register_node("testnodes:move_resistance_liquidlike"..r, {
+		description = S("Move-resistant Node, liquidlike (@1)", r),
+		walkable = false,
+		move_resistance = r,
+		liquid_move_physics = true,
+
+		drawtype = "glasslike",
+		paramtype = "light",
+		sunlight_propagates = true,
+		tiles = { "testnodes_move_resistance.png" },
+		is_ground_content = false,
+		groups = { dig_immediate = 3 },
+		color = { b = 255, g = 0, r = math.floor((r/7)*255), a = 255 },
+	})
+end
+
+minetest.register_node("testnodes:climbable_move_resistance_4", {
+	description = S("Climbable Move-resistant Node (4)"),
+	walkable = false,
+	climbable = true,
+	move_resistance = 4,
+
+	drawtype = "glasslike",
+	paramtype = "light",
+	sunlight_propagates = true,
+	tiles = {"testnodes_climbable_resistance_side.png"},
+	is_ground_content = false,
+	groups = { dig_immediate = 3 },
+})
 
 -- By placing something on the node, the node itself will be replaced
 minetest.register_node("testnodes:buildable_to", {

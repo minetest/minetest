@@ -1,0 +1,68 @@
+apply plugin: 'com.android.library'
+apply plugin: 'de.undercouch.download'
+
+android {
+	compileSdkVersion 30
+	buildToolsVersion '30.0.3'
+	ndkVersion "$ndk_version"
+	defaultConfig {
+		minSdkVersion 16
+		targetSdkVersion 30
+		externalNativeBuild {
+			ndkBuild {
+				arguments '-j' + Runtime.getRuntime().availableProcessors(),
+						"versionMajor=${versionMajor}",
+						"versionMinor=${versionMinor}",
+						"versionPatch=${versionPatch}",
+						"versionExtra=${versionExtra}"
+			}
+		}
+	}
+
+	externalNativeBuild {
+		ndkBuild {
+			path file('jni/Android.mk')
+		}
+	}
+
+	// supported architectures
+	splits {
+		abi {
+			enable true
+			reset()
+			include 'armeabi-v7a', 'arm64-v8a'//, 'x86'
+		}
+	}
+
+	buildTypes {
+		release {
+			externalNativeBuild {
+				ndkBuild {
+					arguments 'NDEBUG=1'
+				}
+			}
+
+			ndk {
+				debugSymbolLevel 'SYMBOL_TABLE'
+			}
+		}
+	}
+}
+
+// get precompiled deps
+task downloadDeps(type: Download) {
+	src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
+	dest new File(buildDir, 'deps.zip')
+	overwrite false
+}
+
+task getDeps(dependsOn: downloadDeps, type: Copy) {
+	def deps = new File(buildDir.parent, 'deps')
+	if (!deps.exists()) {
+		deps.mkdir()
+		from zipTree(downloadDeps.dest)
+		into deps
+	}
+}
+
+preBuild.dependsOn getDeps

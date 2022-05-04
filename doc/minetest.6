@@ -112,6 +112,10 @@ leveldb, and files.
 Migrate from current players backend to another. Possible values are sqlite3,
 leveldb, postgresql, dummy, and files.
 .TP
+.B \-\-migrate-mod-storage <value>
+Migrate from current mod storage backend to another. Possible values are
+sqlite3, dummy, and files.
+.TP
 .B \-\-terminal
 Display an interactive terminal over ncurses during execution.
 
@@ -119,6 +123,9 @@ Display an interactive terminal over ncurses during execution.
 .TP
 .B MINETEST_SUBGAME_PATH
 Colon delimited list of directories to search for games.
+.TP
+.B MINETEST_MOD_PATH
+Colon delimited list of directories to search for mods.
 
 .SH BUGS
 Please report all bugs at https://github.com/minetest/minetest/issues.

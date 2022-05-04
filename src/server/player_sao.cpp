@@ -167,7 +167,6 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			if (m_breath == 0) {
 				PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
 				setHP(m_hp - c.drowning, reason);
-				m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 			}
 		}
 	}
@@ -216,7 +215,6 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			s32 newhp = (s32)m_hp - (s32)damage_per_second;
 			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename);
 			setHP(newhp, reason);
-			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 		}
 	}
 
@@ -411,10 +409,11 @@ void PlayerSAO::setLookPitchAndSend(const float pitch)
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-u16 PlayerSAO::punch(v3f dir,
+u32 PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,
-	float time_from_last_punch)
+	float time_from_last_punch,
+	u16 initial_wear)
 {
 	if (!toolcap)
 		return 0;
@@ -432,7 +431,7 @@ u16 PlayerSAO::punch(v3f dir,
 
 	s32 old_hp = getHP();
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
-			time_from_last_punch);
+			time_from_last_punch, initial_wear);
 
 	PlayerSAO *playersao = m_player->getPlayerSAO();
 
@@ -464,33 +463,33 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
 }
 
-void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
+void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	if (hp == (s32)m_hp)
+	target_hp = rangelim(target_hp, 0, U16_MAX);
+
+	if (target_hp == m_hp)
 		return; // Nothing to do
 
-	if (m_hp <= 0 && hp < (s32)m_hp)
-		return; // Cannot take more damage
+	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
 
-	{
-		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - m_hp, reason);
-		if (hp_change == 0)
-			return;
+	s32 hp = (s32)m_hp + std::min(hp_change, U16_MAX); // Protection against s32 overflow
+	hp = rangelim(hp, 0, U16_MAX);
 
-		hp = m_hp + hp_change;
-	}
+	if (hp > m_prop.hp_max)
+		hp = m_prop.hp_max;
 
-	s32 oldhp = m_hp;
-	hp = rangelim(hp, 0, m_prop.hp_max);
-
-	if (hp < oldhp && isImmortal())
-		return; // Do not allow immortal players to be damaged
-
-	m_hp = hp;
+	if (hp < m_hp && isImmortal())
+		hp = m_hp; // Do not allow immortal players to be damaged
 
 	// Update properties on death
-	if ((hp == 0) != (oldhp == 0))
+	if ((hp == 0) != (m_hp == 0))
 		m_properties_sent = false;
+
+	if (hp != m_hp) {
+		m_hp = hp;
+		m_env->getGameDef()->HandlePlayerHPChange(this, reason);
+	} else if (from_client)
+		m_env->getGameDef()->SendPlayerHP(this);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <map>
 #include <IMeshManipulator.h>
+#include "client/renderingengine.h"
 
 #define WIELD_SCALE_FACTOR 30.0
 #define WIELD_SCALE_FACTOR_EXTRUDED 40.0
@@ -220,11 +221,18 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 	m_meshnode->setReadOnlyMaterials(false);
 	m_meshnode->setVisible(false);
 	dummymesh->drop(); // m_meshnode grabbed it
+
+	m_shadow = RenderingEngine::get_shadow_renderer();
 }
 
 WieldMeshSceneNode::~WieldMeshSceneNode()
 {
 	sanity_check(g_extrusion_mesh_cache);
+
+	// Remove node from shadow casters. m_shadow might be an invalid pointer!
+	if (auto shadow = RenderingEngine::get_shadow_renderer())
+		shadow->removeNodeFromShadowList(m_meshnode);
+
 	if (g_extrusion_mesh_cache->drop())
 		g_extrusion_mesh_cache = nullptr;
 }
@@ -294,32 +302,36 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		}
 		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		// mipmaps cause "thin black line" artifacts
-#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 		material.setFlag(video::EMF_USE_MIP_MAPS, false);
-#endif
 		if (m_enable_shaders) {
 			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
 		}
 	}
 }
 
-scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors, const ContentFeatures &f)
+static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
+	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client, false);
 	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
-	MapblockMeshGenerator gen(&mesh_make_data, &collector);
-	u8 param2 = 0;
-	if (f.param_type_2 == CPT2_WALLMOUNTED ||
+	MapblockMeshGenerator gen(&mesh_make_data, &collector,
+		client->getSceneManager()->getMeshManipulator());
+
+	if (n.getParam2()) {
+		// keep it
+	} else if (f.param_type_2 == CPT2_WALLMOUNTED ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		if (f.drawtype == NDT_TORCHLIKE)
-			param2 = 1;
-		else if (f.drawtype == NDT_SIGNLIKE ||
+		if (f.drawtype == NDT_TORCHLIKE ||
+				f.drawtype == NDT_SIGNLIKE ||
 				f.drawtype == NDT_NODEBOX ||
-				f.drawtype == NDT_MESH)
-			param2 = 4;
+				f.drawtype == NDT_MESH) {
+			n.setParam2(4);
+		}
+	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE) {
+		n.setParam2(1);
 	}
-	gen.renderSingle(id, param2);
+	gen.renderSingle(n.getContent(), n.getParam2());
 
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
@@ -392,7 +404,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_TORCHLIKE:
 		case NDT_RAILLIKE:
 		case NDT_PLANTLIKE:
-		case NDT_PLANTLIKE_ROOTED:
 		case NDT_FLOWINGLIQUID: {
 			v3f wscale = def.wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
@@ -408,20 +419,33 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			m_colors.emplace_back(l1.has_color, l1.color);
 			break;
 		}
+		case NDT_PLANTLIKE_ROOTED: {
+			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
+				"", def.wield_scale, tsrc,
+				f.special_tiles[0].layers[0].animation_frame_count);
+			// Add color
+			const TileLayer &l0 = f.special_tiles[0].layers[0];
+			m_colors.emplace_back(l0.has_color, l0.color);
+			break;
+		}
 		case NDT_NORMAL:
 		case NDT_ALLFACES:
 		case NDT_LIQUID:
 			setCube(f, def.wield_scale);
 			break;
-		default:
+		default: {
 			// Render non-trivial drawtypes like the actual node
-			mesh = createSpecialNodeMesh(client, id, &m_colors, f);
+			MapNode n(id);
+			n.setParam2(def.place_param2);
+
+			mesh = createSpecialNodeMesh(client, n, &m_colors, f);
 			changeToMesh(mesh);
 			mesh->drop();
 			m_meshnode->setScale(
 				def.wield_scale * WIELD_SCALE_FACTOR
 				/ (BS * f.visual_scale));
 			break;
+		}
 		}
 
 		u32 material_count = m_meshnode->getMaterialCount();
@@ -433,13 +457,26 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
+
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
-	} else if (!def.inventory_image.empty()) {
-		setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
-			tsrc, 1);
+	} else {
+		if (!def.inventory_image.empty()) {
+			setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
+				tsrc, 1);
+		} else {
+			setExtruded("no_texture.png", "", def.wield_scale, tsrc, 1);
+		}
+
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -486,8 +523,9 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 			material.EmissiveColor = color;
 		}
 	}
-
-	setColor(color);
+	else {
+		setColor(color);
+	}
 }
 
 void WieldMeshSceneNode::render()
@@ -511,6 +549,15 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	// need to normalize normals when lighting is enabled (because of setScale())
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
 	m_meshnode->setVisible(true);
+
+	if (m_shadow) {
+		// Add mesh to shadow caster
+		m_shadow->addNodeToShadowList(m_meshnode);
+
+		// Set shadow texture
+		for (u32 i = 0; i < m_meshnode->getMaterialCount(); i++)
+			m_meshnode->setMaterialTexture(3, m_shadow->get_texture());
+	}
 }
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
@@ -523,7 +570,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	content_t id = ndef->getId(def.name);
 
 	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
-	
+
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default
@@ -585,11 +632,15 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			result->buffer_colors.emplace_back(l0.has_color, l0.color);
 			break;
 		}
-		default:
+		default: {
 			// Render non-trivial drawtypes like the actual node
-			mesh = createSpecialNodeMesh(client, id, &result->buffer_colors, f);
+			MapNode n(id);
+			n.setParam2(def.place_param2);
+
+			mesh = createSpecialNodeMesh(client, n, &result->buffer_colors, f);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 			break;
+		}
 		}
 
 		u32 mc = mesh->getMeshBufferCount();

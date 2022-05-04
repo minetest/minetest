@@ -227,8 +227,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		pp = floatToInt(position + v3f(0.0f, BS * 0.1f, 0.0f), BS);
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
-			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			const ContentFeatures &cf = nodemgr->get(node.getContent());
+			in_liquid = cf.liquid_move_physics;
+			move_resistance = cf.move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -238,8 +239,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		pp = floatToInt(position + v3f(0.0f, BS * 0.5f, 0.0f), BS);
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
-			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			const ContentFeatures &cf = nodemgr->get(node.getContent());
+			in_liquid = cf.liquid_move_physics;
+			move_resistance = cf.move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -252,7 +254,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	pp = floatToInt(position + v3f(0.0f), BS);
 	node = map->getNode(pp, &is_valid_position);
 	if (is_valid_position) {
-		in_liquid_stable = nodemgr->get(node.getContent()).isLiquid();
+		in_liquid_stable = nodemgr->get(node.getContent()).liquid_move_physics;
 	} else {
 		in_liquid_stable = false;
 	}
@@ -566,23 +568,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	if (control.up)
-		speedH += v3f(0.0f, 0.0f, 1.0f);
-
-	if (control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f);
-
-	if (!control.up && !control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis / 32767.f);
-
-	if (control.left)
-		speedH += v3f(-1.0f, 0.0f, 0.0f);
-
-	if (control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f);
-
-	if (!control.left && !control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis / 32767.f);
+	speedH = v3f(sin(control.movement_direction), 0.0f, cos(control.movement_direction));
 
 	if (m_autojump) {
 		// release autojump after a given time
@@ -639,6 +625,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	else
 		speedH = speedH.normalize() * movement_speed_walk;
 
+	speedH *= control.movement_speed; /* Apply analog input */
+
 	// Acceleration increase
 	f32 incH = 0.0f; // Horizontal (X, Z)
 	f32 incV = 0.0f; // Vertical (Y)
@@ -684,19 +672,21 @@ v3s16 LocalPlayer::getStandingNodePos()
 
 v3s16 LocalPlayer::getFootstepNodePos()
 {
+	v3f feet_pos = getPosition() + v3f(0.0f, m_collisionbox.MinEdge.Y, 0.0f);
+
 	// Emit swimming sound if the player is in liquid
 	if (in_liquid_stable)
-		return floatToInt(getPosition(), BS);
+		return floatToInt(feet_pos, BS);
 
 	// BS * 0.05 below the player's feet ensures a 1/16th height
 	// nodebox is detected instead of the node below it.
 	if (touching_ground)
-		return floatToInt(getPosition() - v3f(0.0f, BS * 0.05f, 0.0f), BS);
+		return floatToInt(feet_pos - v3f(0.0f, BS * 0.05f, 0.0f), BS);
 
 	// A larger distance below is necessary for a footstep sound
 	// when landing after a jump or fall. BS * 0.5 ensures water
 	// sounds when swimming in 1 node deep water.
-	return floatToInt(getPosition() - v3f(0.0f, BS * 0.5f, 0.0f), BS);
+	return floatToInt(feet_pos - v3f(0.0f, BS * 0.5f, 0.0f), BS);
 }
 
 v3s16 LocalPlayer::getLightPosition() const
@@ -814,8 +804,9 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		pp = floatToInt(position + v3f(0.0f, BS * 0.1f, 0.0f), BS);
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
-			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			const ContentFeatures &cf = nodemgr->get(node.getContent());
+			in_liquid = cf.liquid_move_physics;
+			move_resistance = cf.move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -824,8 +815,9 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		pp = floatToInt(position + v3f(0.0f, BS * 0.5f, 0.0f), BS);
 		node = map->getNode(pp, &is_valid_position);
 		if (is_valid_position) {
-			in_liquid = nodemgr->get(node.getContent()).isLiquid();
-			liquid_viscosity = nodemgr->get(node.getContent()).liquid_viscosity;
+			const ContentFeatures &cf = nodemgr->get(node.getContent());
+			in_liquid = cf.liquid_move_physics;
+			move_resistance = cf.move_resistance;
 		} else {
 			in_liquid = false;
 		}
@@ -837,7 +829,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	pp = floatToInt(position + v3f(0.0f), BS);
 	node = map->getNode(pp, &is_valid_position);
 	if (is_valid_position)
-		in_liquid_stable = nodemgr->get(node.getContent()).isLiquid();
+		in_liquid_stable = nodemgr->get(node.getContent()).liquid_move_physics;
 	else
 		in_liquid_stable = false;
 
@@ -1106,12 +1098,8 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (m_autojump)
 		return;
 
-	bool control_forward = control.up ||
-		(!control.up && !control.down &&
-		control.forw_move_joystick_axis < -0.05f);
-
 	bool could_autojump =
-		m_can_jump && !control.jump && !control.sneak && control_forward;
+		m_can_jump && !control.jump && !control.sneak && control.isMoving();
 
 	if (!could_autojump)
 		return;

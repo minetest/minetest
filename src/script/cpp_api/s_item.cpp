@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "inventorymanager.h"
 
+#define WRAP_LUAERROR(e, detail) \
+	LuaError(std::string(__FUNCTION__) + ": " + (e).what() + ". " detail)
+
 bool ScriptApiItem::item_OnDrop(ItemStack &item,
 		ServerActiveObject *dropper, v3f pos)
 {
@@ -49,20 +52,21 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 		try {
 			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
-			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnPlace(ItemStack &item,
+bool ScriptApiItem::item_OnPlace(Optional<ItemStack> &ret_item,
 		ServerActiveObject *placer, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	const ItemStack &item = *ret_item;
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_place"))
 		return false;
@@ -79,22 +83,25 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer()->idef());
+			ret_item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
-			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
+	} else {
+		ret_item = nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnUse(ItemStack &item,
+bool ScriptApiItem::item_OnUse(Optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	const ItemStack &item = *ret_item;
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_use"))
 		return false;
@@ -106,22 +113,25 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if(!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer()->idef());
+			ret_item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
-			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
+	} else {
+		ret_item = nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item,
+bool ScriptApiItem::item_OnSecondaryUse(Optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
+	const ItemStack &item = *ret_item;
 	if (!getItemCallback(item.name.c_str(), "on_secondary_use"))
 		return false;
 
@@ -131,10 +141,12 @@ bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer()->idef());
+			ret_item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
-			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
+	} else {
+		ret_item = nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
@@ -165,7 +177,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 		try {
 			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
-			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	}
 	lua_pop(L, 2);  // Pop item and error handler
@@ -197,7 +209,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 		try {
 			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
-			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	}
 	lua_pop(L, 2);  // Pop item and error handler

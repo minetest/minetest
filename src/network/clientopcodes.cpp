@@ -123,6 +123,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SRP_BYTES_S_B",            TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_SrpBytesSandB }, // 0x60
 	{ "TOCLIENT_FORMSPEC_PREPEND",         TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FormspecPrepend }, // 0x61,
 	{ "TOCLIENT_MINIMAP_MODES",            TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MinimapModes }, // 0x62,
+	{ "TOCLIENT_SET_LIGHTING",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SetLighting }, // 0x63,
 };
 
 const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
@@ -204,7 +205,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x3e
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
-	null_command_factory, // 0x41
+	{ "TOSERVER_HAVE_MEDIA",         2, true }, // 0x41
 	null_command_factory, // 0x42
 	{ "TOSERVER_CLIENT_READY",       1, true }, // 0x43
 	null_command_factory, // 0x44

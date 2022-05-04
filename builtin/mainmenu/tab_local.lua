@@ -18,8 +18,14 @@
 
 local enable_gamebar = PLATFORM ~= "Android"
 local current_game, singleplayer_refresh_gamebar
+local valid_disabled_settings = {
+	["enable_damage"]=true,
+	["creative_mode"]=true,
+	["enable_server"]=true,
+}
 
 if enable_gamebar then
+	-- Currently chosen game in gamebar for theming and filtering
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
 		local game = pkgmgr.find_by_gameid(last_game_id)
@@ -27,10 +33,30 @@ if enable_gamebar then
 		return game
 	end
 
+	-- Apply menu changes from given game
+	function apply_game(game)
+		core.set_topleft_text(game.name)
+		core.settings:set("menu_last_game", game.id)
+		menudata.worldlist:set_filtercriteria(game.id)
+
+		mm_game_theme.update("singleplayer", game) -- this refreshes the formspec
+
+		local index = filterlist.get_current_index(menudata.worldlist,
+			tonumber(core.settings:get("mainmenu_last_selected_world")))
+		if not index or index < 1 then
+			local selected = core.get_textlist_index("sp_worlds")
+			if selected ~= nil and selected < #menudata.worldlist:get_list() then
+				index = selected
+			else
+				index = #menudata.worldlist:get_list()
+			end
+		end
+		menu_worldmt_legacy(index)
+	end
+
 	function singleplayer_refresh_gamebar()
 
 		local old_bar = ui.find_by_name("game_button_bar")
-
 		if old_bar ~= nil then
 			old_bar:delete()
 		end
@@ -45,26 +71,10 @@ if enable_gamebar then
 				return true
 			end
 
-			for key,value in pairs(fields) do
-				for j=1,#pkgmgr.games,1 do
-					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
-						mm_texture.update("singleplayer", pkgmgr.games[j])
-						core.set_topleft_text(pkgmgr.games[j].name)
-						core.settings:set("menu_last_game",pkgmgr.games[j].id)
-						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
-						local index = filterlist.get_current_index(menudata.worldlist,
-							tonumber(core.settings:get("mainmenu_last_selected_world")))
-						if not index or index < 1 then
-							local selected = core.get_textlist_index("sp_worlds")
-							if selected ~= nil and selected < #menudata.worldlist:get_list() then
-								index = selected
-							else
-								index = #menudata.worldlist:get_list()
-							end
-						end
-						menu_worldmt_legacy(index)
-						return true
-					end
+			for _, game in ipairs(pkgmgr.games) do
+				if fields["game_btnbar_" .. game.id] then
+					apply_game(game)
+					return true
 				end
 			end
 		end
@@ -73,25 +83,22 @@ if enable_gamebar then
 			game_buttonbar_button_handler,
 			{x=-0.3,y=5.9}, "horizontal", {x=12.4,y=1.15})
 
-		for i=1,#pkgmgr.games,1 do
-			local btn_name = "game_btnbar_" .. pkgmgr.games[i].id
+		for _, game in ipairs(pkgmgr.games) do
+			local btn_name = "game_btnbar_" .. game.id
 
 			local image = nil
 			local text = nil
-			local tooltip = core.formspec_escape(pkgmgr.games[i].name)
+			local tooltip = core.formspec_escape(game.name)
 
-			if pkgmgr.games[i].menuicon_path ~= nil and
-				pkgmgr.games[i].menuicon_path ~= "" then
-				image = core.formspec_escape(pkgmgr.games[i].menuicon_path)
+			if (game.menuicon_path or "") ~= "" then
+				image = core.formspec_escape(game.menuicon_path)
 			else
-
-				local part1 = pkgmgr.games[i].id:sub(1,5)
-				local part2 = pkgmgr.games[i].id:sub(6,10)
-				local part3 = pkgmgr.games[i].id:sub(11)
+				local part1 = game.id:sub(1,5)
+				local part2 = game.id:sub(6,10)
+				local part3 = game.id:sub(11)
 
 				text = part1 .. "\n" .. part2
-				if part3 ~= nil and
-					part3 ~= "" then
+				if part3 ~= "" then
 					text = text .. "\n" .. part3
 				end
 			end
@@ -102,37 +109,91 @@ if enable_gamebar then
 		btnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))
 	end
 else
+	-- Currently chosen game in gamebar: no gamebar -> no "current" game
 	function current_game()
 		return nil
 	end
+end
+
+local function get_disabled_settings(game)
+	if not game then
+		return {}
+	end
+
+	local gameconfig = Settings(game.path .. "/game.conf")
+	local disabled_settings = {}
+	if gameconfig then
+		local disabled_settings_str = (gameconfig:get("disabled_settings") or ""):split()
+		for _, value in pairs(disabled_settings_str) do
+			local state = false
+			value = value:trim()
+			if string.sub(value, 1, 1) == "!" then
+				state = true
+				value = string.sub(value, 2)
+			end
+			if valid_disabled_settings[value] then
+				disabled_settings[value] = state
+			else
+				core.log("error", "Invalid disabled setting in game.conf: "..tostring(value))
+			end
+		end
+	end
+	return disabled_settings
 end
 
 local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 
 	local index = filterlist.get_current_index(menudata.worldlist,
-				tonumber(core.settings:get("mainmenu_last_selected_world"))
-				)
+				tonumber(core.settings:get("mainmenu_last_selected_world")))
+	local list = menudata.worldlist:get_list()
+	local world = list and index and list[index]
+	local game
+	if world then
+		game = pkgmgr.find_by_gameid(world.gameid)
+	else
+		game = current_game()
+	end
+	local disabled_settings = get_disabled_settings(game)
+
+	local creative, damage, host = "", "", ""
+
+	-- Y offsets for game settings checkboxes
+	local y = -0.2
+	local yo = 0.45
+
+	if disabled_settings["creative_mode"] == nil then
+		creative = "checkbox[0,"..y..";cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
+			dump(core.settings:get_bool("creative_mode")) .. "]"
+		y = y + yo
+	end
+	if disabled_settings["enable_damage"] == nil then
+		damage = "checkbox[0,"..y..";cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
+			dump(core.settings:get_bool("enable_damage")) .. "]"
+		y = y + yo
+	end
+	if disabled_settings["enable_server"] == nil then
+		host = "checkbox[0,"..y..";cb_server;".. fgettext("Host Server") ..";" ..
+			dump(core.settings:get_bool("enable_server")) .. "]"
+		y = y + yo
+	end
 
 	retval = retval ..
 			"button[3.9,3.8;2.8,1;world_delete;".. fgettext("Delete") .. "]" ..
 			"button[6.55,3.8;2.8,1;world_configure;".. fgettext("Select Mods") .. "]" ..
 			"button[9.2,3.8;2.8,1;world_create;".. fgettext("New") .. "]" ..
 			"label[3.9,-0.05;".. fgettext("Select World:") .. "]"..
-			"checkbox[0,-0.20;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
-			"checkbox[0,0.25;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"..
-			"checkbox[0,0.7;cb_server;".. fgettext("Host Server") ..";" ..
-			dump(core.settings:get_bool("enable_server")) .. "]" ..
+			creative ..
+			damage ..
+			host ..
 			"textlist[3.9,0.4;7.9,3.45;sp_worlds;" ..
-			menu_render_worldlist() ..
+			menu_render_worldlist(not enable_gamebar) ..
 			";" .. index .. "]"
 
-	if core.settings:get_bool("enable_server") then
+	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
 		retval = retval ..
 				"button[7.9,4.75;4.1,1;play;".. fgettext("Host Game") .. "]" ..
-				"checkbox[0,1.15;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
+				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]" ..
 				"field[0.3,2.85;3.8,0.5;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(core.settings:get("name")) .. "]" ..
@@ -227,9 +288,21 @@ local function main_button_handler(this, fields, name, tabdata)
 
 		-- Update last game
 		local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
+		local game_obj
 		if world then
-			local game = pkgmgr.find_by_gameid(world.gameid)
-			core.settings:set("menu_last_game", game.id)
+			game_obj = pkgmgr.find_by_gameid(world.gameid)
+			core.settings:set("menu_last_game", game_obj.id)
+		end
+
+		local disabled_settings = get_disabled_settings(game_obj)
+		for k, _ in pairs(valid_disabled_settings) do
+			local v = disabled_settings[k]
+			if v ~= nil then
+				if k == "enable_server" and v == true then
+					error("Setting 'enable_server' cannot be force-enabled! The game.conf needs to be fixed.")
+				end
+				core.settings:set_bool(k, disabled_settings[k])
+			end
 		end
 
 		if core.settings:get_bool("enable_server") then
@@ -251,11 +324,11 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_create"] ~= nil then
-		local create_world_dlg = create_create_world_dlg(true)
+		local create_world_dlg = create_create_world_dlg(enable_gamebar)
 		create_world_dlg:set_parent(this)
 		this:hide()
 		create_world_dlg:show()
-		mm_texture.update("singleplayer", current_game())
+		mm_game_theme.update("singleplayer", current_game())
 		return true
 	end
 
@@ -272,7 +345,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				delete_world_dlg:set_parent(this)
 				this:hide()
 				delete_world_dlg:show()
-				mm_texture.update("singleplayer",current_game())
+				mm_game_theme.update("singleplayer",current_game())
 			end
 		end
 
@@ -290,7 +363,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				configdialog:set_parent(this)
 				this:hide()
 				configdialog:show()
-				mm_texture.update("singleplayer",current_game())
+				mm_game_theme.update("singleplayer",current_game())
 			end
 		end
 
@@ -303,11 +376,8 @@ if enable_gamebar then
 	function on_change(type, old_tab, new_tab)
 		if (type == "ENTER") then
 			local game = current_game()
-
 			if game then
-				menudata.worldlist:set_filtercriteria(game.id)
-				core.set_topleft_text(game.name)
-				mm_texture.update("singleplayer",game)
+				apply_game(game)
 			end
 
 			singleplayer_refresh_gamebar()
@@ -319,7 +389,7 @@ if enable_gamebar then
 				gamebar:hide()
 			end
 			core.set_topleft_text("")
-			mm_texture.update(new_tab,nil)
+			mm_game_theme.update(new_tab,nil)
 		end
 	end
 end

@@ -33,6 +33,7 @@ class EmergeManager;
 class Camera;
 class ModChannel;
 class ModMetadata;
+class ModMetadataDatabase;
 
 namespace irr { namespace scene {
 	class IAnimatedMesh;
@@ -62,6 +63,8 @@ public:
 	virtual IRollbackManager* getRollbackManager() { return NULL; }
 
 	// Shorthands
+	// TODO: these should be made const-safe so that a const IGameDef* is
+	//       actually usable
 	IItemDefManager  *idef()     { return getItemDefManager(); }
 	const NodeDefManager  *ndef() { return getNodeDefManager(); }
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }
@@ -70,9 +73,9 @@ public:
 	virtual const std::vector<ModSpec> &getMods() const = 0;
 	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
 	virtual std::string getWorldPath() const { return ""; }
-	virtual std::string getModStoragePath() const = 0;
 	virtual bool registerModStorage(ModMetadata *storage) = 0;
 	virtual void unregisterModStorage(const std::string &name) = 0;
+	virtual ModMetadataDatabase *getModStorageDatabase() = 0;
 
 	virtual bool joinModChannel(const std::string &channel) = 0;
 	virtual bool leaveModChannel(const std::string &channel) = 0;

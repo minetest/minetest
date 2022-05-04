@@ -25,8 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include "intlGUIEditBox.h"
+#include "guiEditBoxWithScrollbar.h"
 #include "porting.h"
+
+#ifdef HAVE_TOUCHSCREENGUI
+	#include "client/renderingengine.h"
+#endif
 
 #include "gettext.h"
 
@@ -45,7 +49,7 @@ GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		m_client(client), m_playername(playername), m_password(password),
 		m_aborted(aborted), m_tsrc(tsrc)
 {
-#ifdef __ANDROID__
+#ifdef HAVE_TOUCHSCREENGUI
 	m_touchscreen_visible = false;
 #endif
 }
@@ -73,8 +77,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-#ifdef __ANDROID__
-	const float s = m_gui_scale * porting::getDisplayDensity() / 2;
+#ifdef HAVE_TOUCHSCREENGUI
+	const float s = m_gui_scale * RenderingEngine::getDisplayDensity() / 2;
 #else
 	const float s = m_gui_scale;
 #endif
@@ -109,10 +113,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		porting::mt_snprintf(info_text_buf, sizeof(info_text_buf),
 				info_text_template.c_str(), m_playername.c_str());
 
-		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
-		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,
-				Environment, this, ID_intotext, rect2, false, true);
-		delete[] info_text_buf_wide;
+		std::wstring info_text_w = utf8_to_wide(info_text_buf);
+		gui::IGUIEditBox *e = new GUIEditBoxWithScrollBar(info_text_w.c_str(),
+				true, Environment, this, ID_intotext, rect2, false, true);
 		e->drop();
 		e->setMultiLine(true);
 		e->setWordWrap(true);

@@ -270,6 +270,16 @@ local scroll_fs =
 --style_type[label;border=;bgcolor=]
 --label[0.75,2;Reset]
 
+local window = {
+	sizex = 12,
+	sizey = 13,
+	positionx = 0.5,
+	positiony = 0.5,
+	anchorx = 0.5,
+	anchory = 0.5,
+	paddingx = 0.05,
+	paddingy = 0.05
+}
 
 local pages = {
 	-- Real Coordinates
@@ -341,8 +351,27 @@ local pages = {
 		"size[12,13]real_coordinates[true]" ..
 		"container[0.5,1.5]" .. tabheaders_fs .. "container_end[]",
 
-		-- Inv
+	-- Inv
 		"size[12,13]real_coordinates[true]" .. inv_style_fs,
+
+	-- Window
+		function()
+			return "formspec_version[3]" ..
+				string.format("size[%s,%s]position[%s,%s]anchor[%s,%s]padding[%s,%s]",
+					window.sizex, window.sizey, window.positionx, window.positiony,
+					window.anchorx, window.anchory, window.paddingx, window.paddingy) ..
+				string.format("field[0.5,0.5;2.5,0.5;sizex;X Size;%s]field[3.5,0.5;2.5,0.5;sizey;Y Size;%s]" ..
+					"field[0.5,1.5;2.5,0.5;positionx;X Position;%s]field[3.5,1.5;2.5,0.5;positiony;Y Position;%s]" ..
+					"field[0.5,2.5;2.5,0.5;anchorx;X Anchor;%s]field[3.5,2.5;2.5,0.5;anchory;Y Anchor;%s]" ..
+					"field[0.5,3.5;2.5,0.5;paddingx;X Padding;%s]field[3.5,3.5;2.5,0.5;paddingy;Y Padding;%s]" ..
+					"button[2,4.5;2.5,0.5;submit_window;Submit]",
+					window.sizex, window.sizey, window.positionx, window.positiony,
+					window.anchorx, window.anchory, window.paddingx, window.paddingy) ..
+				"field_close_on_enter[sizex;false]field_close_on_enter[sizey;false]" ..
+				"field_close_on_enter[positionx;false]field_close_on_enter[positiony;false]" ..
+				"field_close_on_enter[anchorx;false]field_close_on_enter[anchory;false]" ..
+				"field_close_on_enter[paddingx;false]field_close_on_enter[paddingy;false]"
+		end,
 
 	-- Animation
 		[[
@@ -362,20 +391,82 @@ Number]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
 
+		]],
+
+	-- Model
+		[[
+			formspec_version[3]
+			size[12,13]
 			style[m1;bgcolor=black]
-			model[0.5,6;4,4;m1;testformspec_character.b3d;testformspec_character.png]
-			model[5,6;4,4;m2;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;true]
+			style[m2;bgcolor=black]
+			label[5,1;all defaults]
+			label[5,5.1;angle = 0, 180
+continuous = false
+mouse control = false
+frame loop range = 0,30]
+			label[5,9.2;continuous = true
+mouse control = true]
+			model[0.5,0.1;4,4;m1;testformspec_character.b3d;testformspec_character.png]
+			model[0.5,4.2;4,4;m2;testformspec_character.b3d;testformspec_character.png;0,180;false;false;0,30]
+			model[0.5,8.3;4,4;m3;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;true]
 		]],
 
 	-- Scroll containers
 		"formspec_version[3]size[12,13]" ..
 		scroll_fs,
+
+	-- Sound
+		[[
+			formspec_version[3]
+			size[12,13]
+			style[snd_btn;sound=soundstuff_mono]
+			style[snd_ibtn;sound=soundstuff_mono]
+			style[snd_drp;sound=soundstuff_mono]
+			style[snd_chk;sound=soundstuff_mono]
+			style[snd_tab;sound=soundstuff_mono]
+			button[0.5,0.5;2,1;snd_btn;Sound]
+			image_button[0.5,2;2,1;testformspec_item.png;snd_ibtn;Sound]
+			dropdown[0.5,4;4;snd_drp;Sound,Two,Three;]
+			checkbox[0.5,5.5.5;snd_chk;Sound;]
+			tabheader[0.5,7;8,0.65;snd_tab;Soundtab1,Soundtab2,Soundtab3;1;false;false]
+		]],
+
+	-- Background
+		[[
+			formspec_version[3]
+			size[12,13]
+			box[0,0;12,13;#f0f1]
+			background[0,0;0,0;testformspec_bg.png;true]
+			box[3.9,2.9;6.2,4.2;#d00f]
+			scroll_container[4,3;6,4;scrbar;vertical]
+				background9[1,0.5;0,0;testformspec_bg_9slice.png;true;4,6]
+				label[0,0.2;Backgrounds are not be applied to scroll containers,]
+				label[0,0.5;but to the whole form.]
+			scroll_container_end[]
+			scrollbar[3.5,3;0.3,4;vertical;scrbar;0]
+			container[2,11]
+				box[-0.1,0.5;3.2,1;#fff5]
+				background[0,0;2,3;testformspec_bg.png;false]
+				background9[1,0;2,3;testformspec_bg_9slice.png;false;4,6]
+			container_end[]
+		]],
+
+	-- Unsized
+		[[
+			formspec_version[3]
+			background9[0,0;0,0;testformspec_bg_9slice.png;true;4,6]
+			background[1,1;0,0;testformspec_bg.png;true]
+		]],
 }
 
-local function show_test_formspec(pname, page_id)
-	page_id = page_id or 2
+local page_id = 2
+local function show_test_formspec(pname)
+	local page = pages[page_id]
+	if type(page) == "function" then
+		page = page()
+	end
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Anim,ScrollC;" .. page_id .. ";false;false]"
+	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
@@ -385,9 +476,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return false
 	end
 
-
 	if fields.maintabs then
-		show_test_formspec(player:get_player_name(), tonumber(fields.maintabs))
+		page_id = tonumber(fields.maintabs)
+		show_test_formspec(player:get_player_name())
 		return true
 	end
 
@@ -402,6 +493,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.hypertext then
 		minetest.chat_send_player(player:get_player_name(), "Hypertext action received: " .. tostring(fields.hypertext))
 		return true
+	end
+
+	for name, value in pairs(fields) do
+		if window[name] then
+			print(name, window[name])
+			local num_val = tonumber(value) or 0
+
+			if name == "sizex" and num_val < 4 then
+				num_val = 6.5
+			elseif name == "sizey" and num_val < 5 then
+				num_val = 5.5
+			end
+
+			window[name] = num_val
+			print(name, window[name])
+		end
+	end
+
+	if fields.submit_window then
+		show_test_formspec(player:get_player_name())
 	end
 end)
 

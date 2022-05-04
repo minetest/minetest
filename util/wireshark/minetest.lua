@@ -422,8 +422,8 @@ do
 					t:add(f_pointed_under_y, buffer(13,2))
 					t:add(f_pointed_under_z, buffer(15,2))
 					t:add(f_pointed_above_x, buffer(17,2))
-					t:add(f_pointed_above_x, buffer(19,2))
-					t:add(f_pointed_above_x, buffer(21,2))
+					t:add(f_pointed_above_y, buffer(19,2))
+					t:add(f_pointed_above_z, buffer(21,2))
 				elseif ptype == 2 then -- Object
 					t:add(f_pointed_object_id, buffer(11,2))
 				end

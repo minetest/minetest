@@ -44,6 +44,9 @@ class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
+#if BUILD_UNITTESTS
+class TestSchematic;
+#endif
 
 enum ContentParamType
 {
@@ -64,7 +67,7 @@ enum ContentParamType2
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
 	CPT2_LEVELED,
-	// 2D rotation for things like plants
+	// 2D rotation
 	CPT2_DEGROTATE,
 	// Mesh options for plants
 	CPT2_MESHOPTIONS,
@@ -76,6 +79,8 @@ enum ContentParamType2
 	CPT2_COLORED_WALLMOUNTED,
 	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
+	// 3 bits of palette index, then degrotate
+	CPT2_COLORED_DEGROTATE,
 };
 
 enum LiquidType
@@ -371,11 +376,15 @@ struct ContentFeatures
 	u32 damage_per_second;
 	// client dig prediction
 	std::string node_dig_prediction;
+	// how slow players move through
+	u8 move_resistance = 0;
 
 	// --- LIQUID PROPERTIES ---
 
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
+	// If true, movement (e.g. of players) inside this node is liquid-like.
+	bool liquid_move_physics;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
 	content_t liquid_alternative_flowing_id;
@@ -467,6 +476,12 @@ struct ContentFeatures
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
 		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
+	}
+
+	bool lightingEquivalent(const ContentFeatures &other) const {
+		return light_propagates == other.light_propagates
+				&& sunlight_propagates == other.sunlight_propagates
+				&& light_source == other.light_source;
 	}
 
 	int getGroup(const std::string &group) const
@@ -655,9 +670,7 @@ public:
 	 * total ContentFeatures.
 	 * @param progress_cbk_args passed to the callback function
 	 */
-	void updateTextures(IGameDef *gamedef,
-		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args);
+	void updateTextures(IGameDef *gamedef, void *progress_cbk_args);
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
@@ -720,7 +733,7 @@ private:
 	 * @param i a content ID
 	 * @param name a node name
 	 */
-	void addNameIdMapping(content_t i, std::string name);
+	void addNameIdMapping(content_t i, const std::string &name);
 
 	/*!
 	 * Removes a content ID from all groups.
@@ -789,10 +802,13 @@ private:
 
 NodeDefManager *createNodeDefManager();
 
+// NodeResolver: Queue for node names which are then translated
+// to content_t after the NodeDefManager was initialized
 class NodeResolver {
 public:
 	NodeResolver();
 	virtual ~NodeResolver();
+	// Callback which is run as soon NodeDefManager is ready
 	virtual void resolveNodeNames() = 0;
 
 	// required because this class is used as mixin for ObjDef
@@ -804,12 +820,31 @@ public:
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
 		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
+	inline bool isResolveDone() const { return m_resolve_done; }
+	void reset(bool resolve_done = false);
+
+	// Vector containing all node names in the resolve "queue"
+	std::vector<std::string> m_nodenames;
+	// Specifies the "set size" of node names which are to be processed
+	// this is used for getIdsFromNrBacklog
+	// TODO: replace or remove
+	std::vector<size_t> m_nnlistsizes;
+
+protected:
+	friend class NodeDefManager; // m_ndef
+
+	const NodeDefManager *m_ndef = nullptr;
+	// Index of the next "m_nodenames" entry to resolve
+	u32 m_nodenames_idx = 0;
+
+private:
+#if BUILD_UNITTESTS
+	// Unittest requires access to m_resolve_done
+	friend class TestSchematic;
+#endif
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx = 0;
+	// Index of the next "m_nnlistsizes" entry to process
 	u32 m_nnlistsizes_idx = 0;
-	std::vector<std::string> m_nodenames;
-	std::vector<size_t> m_nnlistsizes;
-	const NodeDefManager *m_ndef = nullptr;
 	bool m_resolve_done = false;
 };

@@ -295,11 +295,11 @@ inline std::string lowercase(const std::string &str)
 inline std::string trim(const std::string &str)
 {
 	size_t front = 0;
+	size_t back = str.size();
 
-	while (std::isspace(str[front]))
+	while (front < back && std::isspace(str[front]))
 		++front;
 
-	size_t back = str.size();
 	while (back > front && std::isspace(str[back - 1]))
 		--back;
 
@@ -410,7 +410,7 @@ DEFINE_STD_TOSTRING_FLOATINGPOINT(long double)
 template <typename T>
 inline wstring to_wstring(T val)
 {
-      return utf8_to_wide(to_string(val));
+	return utf8_to_wide(to_string(val));
 }
 }
 #endif
@@ -661,24 +661,49 @@ inline const char *bool_to_cstr(bool val)
 	return val ? "true" : "false";
 }
 
+/**
+ * Converts a duration in seconds to a pretty-printed duration in
+ * days, hours, minutes and seconds.
+ *
+ * @param sec duration in seconds
+ * @return pretty-printed duration
+ */
 inline const std::string duration_to_string(int sec)
 {
+	std::ostringstream ss;
+	const char *neg = "";
+	if (sec < 0) {
+		sec = -sec;
+		neg = "-";
+	}
+	int total_sec = sec;
 	int min = sec / 60;
 	sec %= 60;
 	int hour = min / 60;
 	min %= 60;
+	int day = hour / 24;
+	hour %= 24;
 
-	std::stringstream ss;
+	if (day > 0) {
+		ss << neg << day << "d";
+		if (hour > 0 || min > 0 || sec > 0)
+			ss << " ";
+	}
+
 	if (hour > 0) {
-		ss << hour << "h ";
+		ss << neg << hour << "h";
+		if (min > 0 || sec > 0)
+			ss << " ";
 	}
 
 	if (min > 0) {
-		ss << min << "m ";
+		ss << neg << min << "min";
+		if (sec > 0)
+			ss << " ";
 	}
 
-	if (sec > 0) {
-		ss << sec << "s ";
+	if (sec > 0 || total_sec == 0) {
+		ss << neg << sec << "s";
 	}
 
 	return ss.str();
@@ -724,7 +749,15 @@ inline irr::core::stringw utf8_to_stringw(const std::string &input)
 /**
  * Sanitize the name of a new directory. This consists of two stages:
  * 1. Check for 'reserved filenames' that can't be used on some filesystems
- *    and prefix them
+ *    and add a prefix to them
  * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
 std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix);
+
+/**
+ * Prints a sanitized version of a string without control characters.
+ * '\t' and '\n' are allowed, as are UTF-8 control characters (e.g. RTL).
+ * ASCII control characters are replaced with their hex encoding in angle
+ * brackets (e.g. "a\x1eb" -> "a<1e>b").
+ */
+void safe_print_string(std::ostream &os, const std::string &str);

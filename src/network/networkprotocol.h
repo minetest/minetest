@@ -205,9 +205,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Updated set_sky packet
 		Adds new sun, moon and stars packets
 		Minimap modes
+	PROTOCOL VERSION 40:
+		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 */
 
-#define LATEST_PROTOCOL_VERSION 39
+#define LATEST_PROTOCOL_VERSION 40
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -227,7 +229,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                                // base64-encoded SHA-1 (27+\0).
 
 // See also: Formspec Version History in doc/lua_api.txt
-#define FORMSPEC_API_VERSION 4
+#define FORMSPEC_API_VERSION 5
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -315,9 +317,8 @@ enum ToClientCommand
 	/*
 		std::string raw_hash
 		std::string filename
+		u32 callback_token
 		bool should_be_cached
-		u32 len
-		char filedata[len]
 	*/
 
 	// (oops, there is some gap here)
@@ -761,7 +762,12 @@ enum ToClientCommand
 			std::string extra
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x63,
+	TOCLIENT_SET_LIGHTING = 0x63,
+	/*
+		f32 shadow_intensity
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x64,
 };
 
 enum ToServerCommand
@@ -936,7 +942,13 @@ enum ToServerCommand
 		}
 	*/
 
-	TOSERVER_RECEIVED_MEDIA = 0x41, // Obsolete
+	TOSERVER_HAVE_MEDIA = 0x41,
+	/*
+		u8 number of callback tokens
+		for each:
+			u32 token
+	*/
+
 	TOSERVER_BREATH = 0x42, // Obsolete
 
 	TOSERVER_CLIENT_READY = 0x43,
@@ -994,7 +1006,7 @@ enum AuthMechanism
 	AUTH_MECHANISM_FIRST_SRP = 1 << 2,
 };
 
-enum AccessDeniedCode {
+enum AccessDeniedCode : u8 {
 	SERVER_ACCESSDENIED_WRONG_PASSWORD,
 	SERVER_ACCESSDENIED_UNEXPECTED_DATA,
 	SERVER_ACCESSDENIED_SINGLEPLAYER,
@@ -1017,18 +1029,18 @@ enum NetProtoCompressionMode {
 
 const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"Invalid password",
-	"Your client sent something the server didn't expect.  Try reconnecting or updating your client",
+	"Your client sent something the server didn't expect.  Try reconnecting or updating your client.",
 	"The server is running in simple singleplayer mode.  You cannot connect.",
-	"Your client's version is not supported.\nPlease contact server administrator.",
-	"Player name contains disallowed characters.",
-	"Player name not allowed.",
-	"Too many users.",
+	"Your client's version is not supported.\nPlease contact the server administrator.",
+	"Player name contains disallowed characters",
+	"Player name not allowed",
+	"Too many users",
 	"Empty passwords are disallowed.  Set a password and try again.",
 	"Another client is connected with this name.  If your client closed unexpectedly, try again in a minute.",
-	"Server authentication failed.  This is likely a server error.",
+	"Internal server error",
 	"",
-	"Server shutting down.",
-	"This server has experienced an internal error. You will now be disconnected."
+	"Server shutting down",
+	"The server has experienced an internal error.  You will now be disconnected."
 };
 
 enum PlayerListModifer : u8

@@ -33,35 +33,89 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <algorithm>
 
-Settings *g_settings = nullptr; // Populated in main()
+Settings *g_settings = nullptr;
+static SettingsHierarchy g_hierarchy;
 std::string g_settings_path;
 
-Settings *Settings::s_layers[SL_TOTAL_COUNT] = {0}; // Zeroed by compiler
 std::unordered_map<std::string, const FlagDesc *> Settings::s_flags;
 
+/* Settings hierarchy implementation */
+
+SettingsHierarchy::SettingsHierarchy(Settings *fallback)
+{
+	layers.push_back(fallback);
+}
+
+
+Settings *SettingsHierarchy::getLayer(int layer) const
+{
+	if (layer < 0 || layer >= (int)layers.size())
+		throw BaseException("Invalid settings layer");
+	return layers[layer];
+}
+
+
+Settings *SettingsHierarchy::getParent(int layer) const
+{
+	assert(layer >= 0 && layer < (int)layers.size());
+	// iterate towards the origin (0) to find the next fallback layer
+	for (int i = layer - 1; i >= 0; --i) {
+		if (layers[i])
+			return layers[i];
+	}
+
+	return nullptr;
+}
+
+
+void SettingsHierarchy::onLayerCreated(int layer, Settings *obj)
+{
+	if (layer < 0)
+		throw BaseException("Invalid settings layer");
+	if ((int)layers.size() < layer + 1)
+		layers.resize(layer + 1);
+
+	Settings *&pos = layers[layer];
+	if (pos)
+		throw BaseException("Setting layer " + itos(layer) + " already exists");
+
+	pos = obj;
+	// This feels bad
+	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
+		g_settings = obj;
+}
+
+
+void SettingsHierarchy::onLayerRemoved(int layer)
+{
+	assert(layer >= 0 && layer < (int)layers.size());
+	layers[layer] = nullptr;
+	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
+		g_settings = nullptr;
+}
+
+/* Settings implementation */
 
 Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
 {
-	if ((int)sl < 0 || sl >= SL_TOTAL_COUNT)
-		throw new BaseException("Invalid settings layer");
-
-	Settings *&pos = s_layers[(size_t)sl];
-	if (pos)
-		throw new BaseException("Setting layer " + std::to_string(sl) + " already exists");
-
-	pos = new Settings(end_tag);
-	pos->m_settingslayer = sl;
-
-	if (sl == SL_GLOBAL)
-		g_settings = pos;
-	return pos;
+	return new Settings(end_tag, &g_hierarchy, (int)sl);
 }
 
 
 Settings *Settings::getLayer(SettingsLayer sl)
 {
-	sanity_check((int)sl >= 0 && sl < SL_TOTAL_COUNT);
-	return s_layers[(size_t)sl];
+	return g_hierarchy.getLayer(sl);
+}
+
+
+Settings::Settings(const std::string &end_tag, SettingsHierarchy *h,
+		int settings_layer) :
+	m_end_tag(end_tag),
+	m_hierarchy(h),
+	m_settingslayer(settings_layer)
+{
+	if (m_hierarchy)
+		m_hierarchy->onLayerCreated(m_settingslayer, this);
 }
 
 
@@ -69,12 +123,8 @@ Settings::~Settings()
 {
 	MutexAutoLock lock(m_mutex);
 
-	if (m_settingslayer < SL_TOTAL_COUNT)
-		s_layers[(size_t)m_settingslayer] = nullptr;
-
-	// Compatibility
-	if (m_settingslayer == SL_GLOBAL)
-		g_settings = nullptr;
+	if (m_hierarchy)
+		m_hierarchy->onLayerRemoved(m_settingslayer);
 
 	clearNoLock();
 }
@@ -86,8 +136,8 @@ Settings & Settings::operator = (const Settings &other)
 		return *this;
 
 	// TODO: Avoid copying Settings objects. Make this private.
-	FATAL_ERROR_IF(m_settingslayer != SL_TOTAL_COUNT && other.m_settingslayer != SL_TOTAL_COUNT,
-		("Tried to copy unique Setting layer " + std::to_string(m_settingslayer)).c_str());
+	FATAL_ERROR_IF(m_hierarchy || other.m_hierarchy,
+		"Cannot copy or overwrite Settings object that belongs to a hierarchy");
 
 	MutexAutoLock lock(m_mutex);
 	MutexAutoLock lock2(other.m_mutex);
@@ -410,18 +460,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 
 Settings *Settings::getParent() const
 {
-	// If the Settings object is within the hierarchy structure,
-	// iterate towards the origin (0) to find the next fallback layer
-	if (m_settingslayer >= SL_TOTAL_COUNT)
-		return nullptr;
-
-	for (int i = (int)m_settingslayer - 1; i >= 0; --i) {
-		if (s_layers[i])
-			return s_layers[i];
-	}
-
-	// No parent
-	return nullptr;
+	return m_hierarchy ? m_hierarchy->getParent(m_settingslayer) : nullptr;
 }
 
 
@@ -497,11 +536,8 @@ float Settings::getFloat(const std::string &name) const
 
 u64 Settings::getU64(const std::string &name) const
 {
-	u64 value = 0;
 	std::string s = get(name);
-	std::istringstream ss(s);
-	ss >> value;
-	return value;
+	return from_string<u64>(s);
 }
 
 
@@ -623,13 +659,19 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 
 bool Settings::exists(const std::string &name) const
 {
-	MutexAutoLock lock(m_mutex);
-
-	if (m_settings.find(name) != m_settings.end())
+	if (existsLocal(name))
 		return true;
 	if (auto parent = getParent())
 		return parent->exists(name);
 	return false;
+}
+
+
+bool Settings::existsLocal(const std::string &name) const
+{
+	MutexAutoLock lock(m_mutex);
+
+	return m_settings.find(name) != m_settings.end();
 }
 
 
@@ -638,6 +680,7 @@ std::vector<std::string> Settings::getNames() const
 	MutexAutoLock lock(m_mutex);
 
 	std::vector<std::string> names;
+	names.reserve(m_settings.size());
 	for (const auto &settings_it : m_settings) {
 		names.push_back(settings_it.first);
 	}
@@ -714,6 +757,15 @@ bool Settings::getS16NoEx(const std::string &name, s16 &val) const
 	}
 }
 
+bool Settings::getU32NoEx(const std::string &name, u32 &val) const
+{
+	try {
+		val = getU32(name);
+		return true;
+	} catch (SettingNotFoundException &e) {
+		return false;
+	}
+}
 
 bool Settings::getS32NoEx(const std::string &name, s32 &val) const
 {
@@ -822,6 +874,8 @@ bool Settings::set(const std::string &name, const std::string &value)
 // TODO: Remove this function
 bool Settings::setDefault(const std::string &name, const std::string &value)
 {
+	FATAL_ERROR_IF(m_hierarchy != &g_hierarchy, "setDefault is only valid on "
+		"global settings");
 	return getLayer(SL_DEFAULTS)->set(name, value);
 }
 

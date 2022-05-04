@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "player.h"
-#include "cloudparams.h"
 #include "skyparams.h"
+#include "lighting.h"
 
 class PlayerSAO;
 
@@ -47,7 +47,7 @@ public:
 	PlayerSAO *getPlayerSAO() { return m_sao; }
 	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
 
-	const RemotePlayerChatResult canSendChatMessage();
+	RemotePlayerChatResult canSendChatMessage();
 
 	void setHotbarItemcount(s32 hotbar_itemcount)
 	{
@@ -126,12 +126,14 @@ public:
 		*frame_speed = local_animation_speed;
 	}
 
+	void setLighting(const Lighting &lighting) { m_lighting = lighting; }
+
+	const Lighting& getLighting() const { return m_lighting; }
+
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version = 0;
-
-	// v1 for clients older than 5.1.0-dev
-	u16 formspec_version = 1;
+	u16 formspec_version = 0;
 
 	session_t getPeerId() const { return m_peer_id; }
 
@@ -162,6 +164,8 @@ private:
 	SunParams m_sun_params;
 	MoonParams m_moon_params;
 	StarParams m_star_params;
+
+	Lighting m_lighting;
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

@@ -21,21 +21,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <cerrno>
 #include <fstream>
 #include "log.h"
 #include "config.h"
 #include "porting.h"
+#ifndef SERVER
+#include "irr_ptr.h"
+#endif
 
 namespace fs
 {
 
-#ifdef _WIN32 // WINDOWS
+#ifdef _WIN32
 
+/***********
+ * Windows *
+ ***********/
+
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
+#endif
 #include <windows.h>
 #include <shlwapi.h>
+#include <io.h>
+#include <direct.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
@@ -176,16 +188,34 @@ std::string TempPath()
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
 	}
-	std::vector<char> buf(bufsize);
+	std::string buf;
+	buf.resize(bufsize);
 	DWORD len = GetTempPath(bufsize, &buf[0]);
 	if(len == 0 || len > bufsize){
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
 	}
-	return std::string(buf.begin(), buf.begin() + len);
+	buf.resize(len);
+	return buf;
 }
 
-#else // POSIX
+std::string CreateTempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	_mktemp_s(&path[0], path.size() + 1); // modifies path
+	HANDLE file = CreateFile(path.c_str(), GENERIC_WRITE, 0, nullptr,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (file == INVALID_HANDLE_VALUE)
+		return "";
+	CloseHandle(file);
+	return path;
+}
+
+#else
+
+/*********
+ * POSIX *
+ *********/
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -364,7 +394,21 @@ std::string TempPath()
 #endif
 }
 
+std::string CreateTempFile()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	int fd = mkstemp(&path[0]); // modifies path
+	if (fd == -1)
+		return "";
+	close(fd);
+	return path;
+}
+
 #endif
+
+/****************************
+ * portable implementations *
+ ****************************/
 
 void GetRecursiveDirs(std::vector<std::string> &dirs, const std::string &dir)
 {
@@ -515,6 +559,30 @@ bool CopyDir(const std::string &source, const std::string &target)
 	}
 
 	return false;
+}
+
+bool MoveDir(const std::string &source, const std::string &target)
+{
+	infostream << "Moving \"" << source << "\" to \"" << target << "\"" << std::endl;
+
+	// If target exists as empty folder delete, otherwise error
+	if (fs::PathExists(target)) {
+		if (rmdir(target.c_str()) != 0) {
+			errorstream << "MoveDir: target \"" << target
+				<< "\" exists as file or non-empty folder" << std::endl;
+			return false;
+		}
+	}
+
+	// Try renaming first which is instant
+	if (fs::Rename(source, target))
+		return true;
+
+	infostream << "MoveDir: rename not possible, will copy instead" << std::endl;
+	bool retval = fs::CopyDir(source, target);
+	if (retval)
+		retval &= fs::RecursiveDelete(source);
+	return retval;
 }
 
 bool PathStartsWith(const std::string &path, const std::string &prefix)
@@ -727,6 +795,67 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	return true;
 }
 
+#ifndef SERVER
+bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string &destination)
+{
+	// Be careful here not to touch the global file hierarchy in Irrlicht
+	// since this function needs to be thread-safe!
+
+	io::IArchiveLoader *zip_loader = nullptr;
+	for (u32 i = 0; i < fs->getArchiveLoaderCount(); i++) {
+		if (fs->getArchiveLoader(i)->isALoadableFileFormat(io::EFAT_ZIP)) {
+			zip_loader = fs->getArchiveLoader(i);
+			break;
+		}
+	}
+	if (!zip_loader) {
+		warningstream << "fs::extractZipFile(): Irrlicht said it doesn't support ZIPs." << std::endl;
+		return false;
+	}
+
+	irr_ptr<io::IFileArchive> opened_zip(zip_loader->createArchive(filename, false, false));
+	const io::IFileList* files_in_zip = opened_zip->getFileList();
+
+	for (u32 i = 0; i < files_in_zip->getFileCount(); i++) {
+		std::string fullpath = destination + DIR_DELIM;
+		fullpath += files_in_zip->getFullFileName(i).c_str();
+		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
+
+		if (files_in_zip->isDirectory(i))
+			continue; // ignore, we create dirs as necessary
+
+		if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir))
+			return false;
+
+		irr_ptr<io::IReadFile> toread(opened_zip->createAndOpenFile(i));
+
+		std::ofstream os(fullpath.c_str(), std::ios::binary);
+		if (!os.good())
+			return false;
+
+		char buffer[4096];
+		long total_read = 0;
+
+		while (total_read < toread->getSize()) {
+			long bytes_read = toread->read(buffer, sizeof(buffer));
+			bool error = true;
+			if (bytes_read != 0) {
+				os.write(buffer, bytes_read);
+				error = os.fail();
+			}
+			if (error) {
+				os.close();
+				remove(fullpath.c_str());
+				return false;
+			}
+			total_read += bytes_read;
+		}
+	}
+
+	return true;
+}
+#endif
+
 bool ReadFile(const std::string &path, std::string &out)
 {
 	std::ifstream is(path, std::ios::binary | std::ios::ate);
@@ -739,7 +868,7 @@ bool ReadFile(const std::string &path, std::string &out)
 	is.seekg(0);
 	is.read(&out[0], size);
 
-	return true;
+	return !is.fail();
 }
 
 bool Rename(const std::string &from, const std::string &to)

@@ -39,20 +39,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/player_sao.h"
 
-Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
+Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string,
+	const char *type) :
 	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
-		throw SettingNotFoundException(
-			"Set pgsql_connection string in world.mt to "
+		// Use given type to reference the exact setting in the error message
+		std::string s = type;
+		std::string msg =
+			"Set pgsql" + s + "_connection string in world.mt to "
 			"use the postgresql backend\n"
 			"Notes:\n"
-			"pgsql_connection has the following form: \n"
-			"\tpgsql_connection = host=127.0.0.1 port=5432 user=mt_user "
-			"password=mt_password dbname=minetest_world\n"
+			"pgsql" + s + "_connection has the following form: \n"
+			"\tpgsql" + s + "_connection = host=127.0.0.1 port=5432 "
+			"user=mt_user password=mt_password dbname=minetest" + s + "\n"
 			"mt_user should have CREATE TABLE, INSERT, SELECT, UPDATE and "
-			"DELETE rights on the database.\n"
-			"Don't create mt_user as a SUPERUSER!");
+			"DELETE rights on the database. "
+			"Don't create mt_user as a SUPERUSER!";
+		throw SettingNotFoundException(msg);
 	}
 }
 
@@ -166,7 +170,7 @@ void Database_PostgreSQL::rollback()
 }
 
 MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string):
-	Database_PostgreSQL(connect_string),
+	Database_PostgreSQL(connect_string, ""),
 	MapDatabase()
 {
 	connectToDatabase();
@@ -270,10 +274,10 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 	PGresult *results = execPrepared("read_block", ARRLEN(args), args,
 		argLen, argFmt, false);
 
-	*block = "";
-
 	if (PQntuples(results))
-		*block = std::string(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+		block->assign(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+	else
+		block->clear();
 
 	PQclear(results);
 }
@@ -315,7 +319,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
  * Player Database
  */
 PlayerDatabasePostgreSQL::PlayerDatabasePostgreSQL(const std::string &connect_string):
-	Database_PostgreSQL(connect_string),
+	Database_PostgreSQL(connect_string, "_player"),
 	PlayerDatabase()
 {
 	connectToDatabase();
@@ -491,7 +495,8 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	execPrepared("remove_player_inventories", 1, rmvalues);
 	execPrepared("remove_player_inventory_items", 1, rmvalues);
 
-	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
+	const auto &inventory_lists = sao->getInventory()->getLists();
+	std::ostringstream oss;
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList* list = inventory_lists[i];
 		const std::string &name = list->getName();
@@ -508,9 +513,10 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 		execPrepared("add_player_inventory", 5, inv_values);
 
 		for (u32 j = 0; j < list->getSize(); j++) {
-			std::ostringstream os;
-			list->getItem(j).serialize(os);
-			std::string itemStr = os.str(), slotId = itos(j);
+			oss.str("");
+			oss.clear();
+			list->getItem(j).serialize(oss);
+			std::string itemStr = oss.str(), slotId = itos(j);
 
 			const char* invitem_values[] = {
 				player->getName(),
@@ -637,7 +643,8 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 }
 
 AuthDatabasePostgreSQL::AuthDatabasePostgreSQL(const std::string &connect_string) :
-		Database_PostgreSQL(connect_string), AuthDatabase()
+	Database_PostgreSQL(connect_string, "_auth"),
+	AuthDatabase()
 {
 	connectToDatabase();
 }

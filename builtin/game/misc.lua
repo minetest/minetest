@@ -1,8 +1,20 @@
 -- Minetest: builtin/misc.lua
 
+local S = core.get_translator("__builtin")
+
 --
 -- Misc. API functions
 --
+
+-- @spec core.kick_player(String, String) :: Boolean
+function core.kick_player(player_name, reason)
+	if type(reason) == "string" then
+		reason = "Kicked: " .. reason
+	else
+		reason = "Kicked."
+	end
+	return core.disconnect_player(player_name, reason)
+end
 
 function core.check_player_privs(name, ...)
 	if core.is_player(name) then
@@ -42,15 +54,15 @@ end
 
 function core.send_join_message(player_name)
 	if not core.is_singleplayer() then
-		core.chat_send_all("*** " .. player_name .. " joined the game.")
+		core.chat_send_all("*** " .. S("@1 joined the game.", player_name))
 	end
 end
 
 
 function core.send_leave_message(player_name, timed_out)
-	local announcement = "*** " ..  player_name .. " left the game."
+	local announcement = "*** " .. S("@1 left the game.", player_name)
 	if timed_out then
-		announcement = announcement .. " (timed out)"
+		announcement = "*** " .. S("@1 left the game (timed out).", player_name)
 	end
 	core.chat_send_all(announcement)
 end
@@ -106,54 +118,6 @@ function core.get_player_radius_area(player_name, radius)
 	end
 
 	return p1, p2
-end
-
-
-function core.hash_node_position(pos)
-	return (pos.z + 32768) * 65536 * 65536
-		 + (pos.y + 32768) * 65536
-		 +  pos.x + 32768
-end
-
-
-function core.get_position_from_hash(hash)
-	local pos = {}
-	pos.x = (hash % 65536) - 32768
-	hash  = math.floor(hash / 65536)
-	pos.y = (hash % 65536) - 32768
-	hash  = math.floor(hash / 65536)
-	pos.z = (hash % 65536) - 32768
-	return pos
-end
-
-
-function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
-		return 0
-	end
-	return core.registered_items[name].groups[group]
-end
-
-
-function core.get_node_group(name, group)
-	core.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
-	return core.get_item_group(name, group)
-end
-
-
-function core.setting_get_pos(name)
-	local value = core.settings:get(name)
-	if not value then
-		return nil
-	end
-	return core.string_to_pos(value)
-end
-
-
--- See l_env.cpp for the other functions
-function core.get_artificial_light(param1)
-	return math.floor(param1 / 16)
 end
 
 
@@ -213,7 +177,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			local y = math.floor(yf + 0.5)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
-				local pos = {x = x, y = y, z = z}
+				local pos = vector.new(x, y, z)
 				if core.is_protected(pos, player_name) then
 					return pos
 				end
@@ -239,7 +203,7 @@ end
 
 -- HTTP callback interface
 
-function core.http_add_fetch(httpenv)
+core.set_http_api_lua(function(httpenv)
 	httpenv.fetch = function(req, callback)
 		local handle = httpenv.fetch_async(req)
 
@@ -255,7 +219,8 @@ function core.http_add_fetch(httpenv)
 	end
 
 	return httpenv
-end
+end)
+core.set_http_api_lua = nil
 
 
 function core.close_formspec(player_name, formname)
@@ -268,24 +233,34 @@ function core.cancel_shutdown_requests()
 end
 
 
--- Callback handling for dynamic_add_media
+-- Used for callback handling with dynamic_add_media
+core.dynamic_media_callbacks = {}
 
-local dynamic_add_media_raw = core.dynamic_add_media_raw
-core.dynamic_add_media_raw = nil
-function core.dynamic_add_media(filepath, callback)
-	local ret = dynamic_add_media_raw(filepath)
-	if ret == false then
-		return ret
+
+-- Transfer of certain globals into async environment
+-- see builtin/async/game.lua for the other side
+
+local function copy_filtering(t, seen)
+	if type(t) == "userdata" or type(t) == "function" then
+		return true -- don't use nil so presence can still be detected
+	elseif type(t) ~= "table" then
+		return t
 	end
-	if callback == nil then
-		core.log("deprecated", "Calling minetest.dynamic_add_media without "..
-			"a callback is deprecated and will stop working in future versions.")
-	else
-		-- At the moment async loading is not actually implemented, so we
-		-- immediately call the callback ourselves
-		for _, name in ipairs(ret) do
-			callback(name)
-		end
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		local k_ = seen[k] or copy_filtering(k, seen)
+		local v_ = seen[v] or copy_filtering(v, seen)
+		n[k_] = v_
 	end
-	return true
+	return n
+end
+
+function core.get_globals_to_transfer()
+	local all = {
+		registered_items = copy_filtering(core.registered_items),
+		registered_aliases = core.registered_aliases,
+	}
+	return core.serialize(all)
 end

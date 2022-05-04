@@ -99,13 +99,15 @@ public:
 	u32 gen_notify_on;
 	const std::set<u32> *gen_notify_on_deco_ids; // shared
 
+	BiomeGen *biomegen;
 	BiomeManager *biomemgr;
 	OreManager *oremgr;
 	DecorationManager *decomgr;
 	SchematicManager *schemmgr;
 
 private:
-	EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
+	EmergeParams(EmergeManager *parent, const BiomeGen *biomegen,
+		const BiomeManager *biomemgr,
 		const OreManager *oremgr, const DecorationManager *decomgr,
 		const SchematicManager *schemmgr);
 };
@@ -140,6 +142,8 @@ public:
 	~EmergeManager();
 	DISABLE_CLASS_COPY(EmergeManager);
 
+	const BiomeGen *getBiomeGen() const { return biomegen; }
+
 	// no usage restrictions
 	const BiomeManager *getBiomeManager() const { return biomemgr; }
 	const OreManager *getOreManager() const { return oremgr; }
@@ -170,13 +174,12 @@ public:
 		EmergeCompletionCallback callback,
 		void *callback_param);
 
-	v3s16 getContainingChunk(v3s16 blockpos);
+	bool isBlockInQueue(v3s16 pos);
 
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
 	int getSpawnLevelAtPoint(v2s16 p);
-	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
 
 	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
@@ -188,14 +191,15 @@ private:
 
 	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	std::unordered_map<u16, u16> m_peer_queue_count;
+	std::unordered_map<u16, u32> m_peer_queue_count;
 
-	u16 m_qlimit_total;
-	u16 m_qlimit_diskonly;
-	u16 m_qlimit_generate;
+	u32 m_qlimit_total;
+	u32 m_qlimit_diskonly;
+	u32 m_qlimit_generate;
 
 	// Managers of various map generation-related components
 	// Note that each Mapgen gets a copy(!) of these to work with
+	BiomeGen *biomegen;
 	BiomeManager *biomemgr;
 	OreManager *oremgr;
 	DecorationManager *decomgr;

@@ -1,7 +1,9 @@
 _G.core = {}
+_G.vector = {metatable = {}}
 _G.unpack = table.unpack
 _G.serverlistmgr = {}
 
+dofile("builtin/common/vector.lua")
 dofile("builtin/common/misc_helpers.lua")
 dofile("builtin/mainmenu/serverlistmgr.lua")
 

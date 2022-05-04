@@ -140,7 +140,7 @@ public:
 	//// Flags
 	////
 
-	inline bool isDummy()
+	inline bool isDummy() const
 	{
 		return !data;
 	}
@@ -364,20 +364,6 @@ public:
 	}
 
 	////
-	//// Miscellaneous stuff
-	////
-
-	/*
-		Tries to measure ground level.
-		Return value:
-			-1 = only air
-			-2 = only ground
-			-3 = random fail
-			0...MAP_BLOCKSIZE-1 = ground level
-	*/
-	s16 getGroundLevel(v2s16 p2d);
-
-	////
 	//// Timestamp (see m_timestamp)
 	////
 
@@ -473,7 +459,7 @@ public:
 	// These don't write or read version by itself
 	// Set disk to true for on-disk format, false for over-the-network format
 	// Precondition: version >= SER_FMT_VER_LOWEST_WRITE
-	void serialize(std::ostream &os, u8 version, bool disk, int compression_level);
+	void serialize(std::ostream &result, u8 version, bool disk, int compression_level);
 	// If disk == true: In addition to doing other things, will add
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
@@ -615,7 +601,7 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	const float max_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;
+	const float max_limit_bs = (MAX_MAP_GENERATION_LIMIT + 0.5f) * BS;
 	return p.X < -max_limit_bs ||
 		p.X >  max_limit_bs ||
 		p.Y < -max_limit_bs ||

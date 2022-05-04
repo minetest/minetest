@@ -89,7 +89,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
-	null_command_handler, // 0x41
+	{ "TOSERVER_HAVE_MEDIA",               TOSERVER_STATE_INGAME, &Server::handleCommand_HaveMedia }, // 0x41
 	null_command_handler, // 0x42
 	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
 	null_command_handler, // 0x44
@@ -167,7 +167,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_TIME_OF_DAY",              0, true }, // 0x29
 	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    0, true }, // 0x2A
 	{ "TOCLIENT_PLAYER_SPEED",             0, true }, // 0x2B
-	{ "TOCLIENT_MEDIA_PUSH",               0, true }, // 0x2C (sent over channel 1 too)
+	{ "TOCLIENT_MEDIA_PUSH",               0, true }, // 0x2C (sent over channel 1 too if legacy)
 	null_command_factory, // 0x2D
 	null_command_factory, // 0x2E
 	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x2F
@@ -176,7 +176,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 (may be sent as unrel over channel 1 too)
 	{ "TOCLIENT_HP",                       0, true }, // 0x33
 	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
-	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     0, true }, // 0x35
+	null_command_factory, // 0x35
 	{ "TOCLIENT_FOV",                      0, true }, // 0x36
 	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
 	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38

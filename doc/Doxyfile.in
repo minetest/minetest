@@ -16,7 +16,6 @@ PREDEFINED             = "USE_SPATIAL=1" \
 		"USE_REDIS=1" \
 		"USE_SOUND=1" \
 		"USE_CURL=1" \
-		"USE_FREETYPE=1" \
 		"USE_GETTEXT=1"
 
 # Input

@@ -60,6 +60,7 @@ void KeyCache::populate()
 	key[KeyType::DEC_VOLUME] = getKeySetting("keymap_decrease_volume");
 	key[KeyType::CINEMATIC] = getKeySetting("keymap_cinematic");
 	key[KeyType::SCREENSHOT] = getKeySetting("keymap_screenshot");
+	key[KeyType::TOGGLE_BLOCK_BOUNDS] = getKeySetting("keymap_toggle_block_bounds");
 	key[KeyType::TOGGLE_HUD] = getKeySetting("keymap_toggle_hud");
 	key[KeyType::TOGGLE_CHAT] = getKeySetting("keymap_toggle_chat");
 	key[KeyType::TOGGLE_FOG] = getKeySetting("keymap_toggle_fog");
@@ -137,11 +138,8 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 #endif
 
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-		/* TODO add a check like:
-		if (event.JoystickEvent != joystick_we_listen_for)
-			return false;
-		*/
-		return joystick->handleEvent(event.JoystickEvent);
+		// joystick may be nullptr if game is launched with '--random-input' parameter
+		return joystick && joystick->handleEvent(event.JoystickEvent);
 	} else if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		// Handle mouse events
 		KeyPress key;
@@ -242,4 +240,39 @@ void RandomInputHandler::step(float dtime)
 		}
 	}
 	mousepos += mousespeed;
+	static bool useJoystick = false;
+	{
+		static float counterUseJoystick = 0;
+		counterUseJoystick -= dtime;
+		if (counterUseJoystick < 0.0) {
+			counterUseJoystick = 5.0; // switch between joystick and keyboard direction input
+			useJoystick = !useJoystick;
+		}
+	}
+	if (useJoystick) {
+		static float counterMovement = 0;
+		counterMovement -= dtime;
+		if (counterMovement < 0.0) {
+			counterMovement = 0.1 * Rand(1, 40);
+			movementSpeed = Rand(0,100)*0.01;
+			movementDirection = Rand(-100, 100)*0.01 * M_PI;
+		}
+	} else {
+		bool f = keydown[keycache.key[KeyType::FORWARD]],
+			l = keydown[keycache.key[KeyType::LEFT]];
+		if (f || l) {
+			movementSpeed = 1.0f;
+			if (f && !l)
+				movementDirection = 0.0;
+			else if (!f && l)
+				movementDirection = -M_PI_2;
+			else if (f && l)
+				movementDirection = -M_PI_4;
+			else
+				movementDirection = 0.0;
+		} else {
+			movementSpeed = 0.0;
+			movementDirection = 0.0;
+		}
+	}
 }

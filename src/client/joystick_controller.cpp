@@ -154,12 +154,61 @@ JoystickLayout create_xbox_layout()
 	return jlo;
 }
 
+JoystickLayout create_dragonrise_gamecube_layout()
+{
+	JoystickLayout jlo;
+
+	jlo.axes_deadzone = 7000;
+
+	const JoystickAxisLayout axes[JA_COUNT] = {
+		// Control Stick
+		{0, 1}, // JA_SIDEWARD_MOVE
+		{1, 1}, // JA_FORWARD_MOVE
+
+		// C-Stick
+		{3, 1}, // JA_FRUSTUM_HORIZONTAL
+		{4, 1}, // JA_FRUSTUM_VERTICAL
+	};
+	memcpy(jlo.axes, axes, sizeof(jlo.axes));
+
+	// The center button
+	JLO_B_PB(KeyType::ESC, 1 << 9, 1 << 9); // Start/Pause Button
+
+	// Front right buttons
+	JLO_B_PB(KeyType::JUMP,  1 << 2, 1 << 2); // A Button
+	JLO_B_PB(KeyType::SNEAK, 1 << 3, 1 << 3); // B Button
+	JLO_B_PB(KeyType::DROP,  1 << 0, 1 << 0); // Y Button
+	JLO_B_PB(KeyType::AUX1,  1 << 1, 1 << 1); // X Button
+
+	// Triggers
+	JLO_B_PB(KeyType::DIG,       1 << 4, 1 << 4); // L Trigger
+	JLO_B_PB(KeyType::PLACE,     1 << 5, 1 << 5); // R Trigger
+	JLO_B_PB(KeyType::INVENTORY, 1 << 6, 1 << 6); // Z Button
+
+	// D-Pad
+	JLO_A_PB(KeyType::HOTBAR_PREV, 5,  1, jlo.axes_deadzone); // left
+	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_deadzone); // right
+	// Axis are hard to actuate independantly, best to leave up and down unused.
+	//JLO_A_PB(0, 6,  1, jlo.axes_deadzone); // up
+	//JLO_A_PB(0, 6, -1, jlo.axes_deadzone); // down
+
+	// Movements tied to Control Stick, important for vessels
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_deadzone);
+
+	return jlo;
+}
+
+
 JoystickController::JoystickController() :
 		doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
 {
 	for (float &i : m_past_pressed_time) {
 		i = 0;
 	}
+	m_layout.axes_deadzone = 0;
 	clear();
 }
 
@@ -187,6 +236,8 @@ void JoystickController::setLayoutFromControllerName(const std::string &name)
 {
 	if (lowercase(name).find("xbox") != std::string::npos) {
 		m_layout = create_xbox_layout();
+	} else if (lowercase(name).find("dragonrise_gamecube") != std::string::npos) {
+		m_layout = create_dragonrise_gamecube_layout();
 	} else {
 		m_layout = create_default_layout();
 	}
@@ -251,10 +302,27 @@ void JoystickController::clear()
 	memset(m_axes_vals, 0, sizeof(m_axes_vals));
 }
 
-s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
+float JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
+
 	if (abs(v) < m_layout.axes_deadzone)
-		return 0;
-	return v;
+		return 0.0f;
+
+	v += (v < 0 ? m_layout.axes_deadzone : -m_layout.axes_deadzone);
+
+	return (float)v / ((float)(INT16_MAX - m_layout.axes_deadzone));
+}
+
+float JoystickController::getMovementDirection()
+{
+	return atan2(getAxisWithoutDead(JA_SIDEWARD_MOVE), -getAxisWithoutDead(JA_FORWARD_MOVE));
+}
+
+float JoystickController::getMovementSpeed()
+{
+	float speed = sqrt(pow(getAxisWithoutDead(JA_FORWARD_MOVE), 2) + pow(getAxisWithoutDead(JA_SIDEWARD_MOVE), 2));
+	if (speed > 1.0f)
+		speed = 1.0f;
+	return speed;
 }

@@ -97,7 +97,7 @@ void PlayerMetaRef::Register(lua_State *L)
 
 	lua_pop(L, 1); // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);
+	luaL_register(L, nullptr, methods);
 	lua_pop(L, 1);
 
 	// Cannot be created from Lua

@@ -240,7 +240,7 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
 //                       tool_capabilities, direction, damage)
 bool ScriptApiEntity::luaentity_Punch(u16 id,
 		ServerActiveObject *puncher, float time_from_last_punch,
-		const ToolCapabilities *toolcap, v3f dir, s16 damage)
+		const ToolCapabilities *toolcap, v3f dir, s32 damage)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

@@ -40,20 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "config.h"
 
-#if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-#include <GLES/gl.h>
-#else
-#include <GLES2/gl2.h>
-#endif
-#else
-#ifndef __APPLE__
-#include <GL/gl.h>
-#else
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl.h>
-#endif
-#endif
+#include <mt_opengl.h>
 
 /*
 	A cache from shader name to shader path
@@ -223,8 +210,25 @@ public:
 
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
-	CachedVertexShaderSetting<float, 16> m_world_view_proj;
-	CachedVertexShaderSetting<float, 16> m_world;
+	CachedVertexShaderSetting<f32, 16> m_world_view_proj;
+	CachedVertexShaderSetting<f32, 16> m_world;
+
+	// Shadow-related
+	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
+	CachedPixelShaderSetting<f32, 3> m_light_direction;
+	CachedPixelShaderSetting<f32> m_texture_res;
+	CachedPixelShaderSetting<f32> m_shadow_strength;
+	CachedPixelShaderSetting<f32> m_time_of_day;
+	CachedPixelShaderSetting<f32> m_shadowfar;
+	CachedPixelShaderSetting<f32, 4> m_camera_pos;
+	CachedPixelShaderSetting<s32> m_shadow_texture;
+	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
+	CachedVertexShaderSetting<f32> m_perspective_bias1_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
+	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
+
 #if ENABLE_GLES
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view;
@@ -238,6 +242,20 @@ public:
 	MainShaderConstantSetter() :
 		  m_world_view_proj("mWorldViewProj")
 		, m_world("mWorld")
+		, m_shadow_view_proj("m_ShadowViewProj")
+		, m_light_direction("v_LightDirection")
+		, m_texture_res("f_textureresolution")
+		, m_shadow_strength("f_shadow_strength")
+		, m_time_of_day("f_timeofday")
+		, m_shadowfar("f_shadowfar")
+		, m_camera_pos("CameraPos")
+		, m_shadow_texture("ShadowMapSampler")
+		, m_perspective_bias0_vertex("xyPerspectiveBias0")
+		, m_perspective_bias0_pixel("xyPerspectiveBias0")
+		, m_perspective_bias1_vertex("xyPerspectiveBias1")
+		, m_perspective_bias1_pixel("xyPerspectiveBias1")
+		, m_perspective_zbias_vertex("zPerspectiveBias")
+		, m_perspective_zbias_pixel("zPerspectiveBias")
 #if ENABLE_GLES
 		, m_world_view("mWorldView")
 		, m_texture("mTexture")
@@ -280,6 +298,50 @@ public:
 		};
 		m_normal.set(m, services);
 #endif
+
+		// Set uniforms for Shadow shader
+		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
+			const auto &light = shadow->getDirectionalLight();
+
+			core::matrix4 shadowViewProj = light.getProjectionMatrix();
+			shadowViewProj *= light.getViewMatrix();
+			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
+
+			f32 v_LightDirection[3];
+			light.getDirection().getAs3Values(v_LightDirection);
+			m_light_direction.set(v_LightDirection, services);
+
+			f32 TextureResolution = light.getMapResolution();
+			m_texture_res.set(&TextureResolution, services);
+
+			f32 ShadowStrength = shadow->getShadowStrength();
+			m_shadow_strength.set(&ShadowStrength, services);
+
+			f32 timeOfDay = shadow->getTimeOfDay();
+			m_time_of_day.set(&timeOfDay, services);
+
+			f32 shadowFar = shadow->getMaxShadowFar();
+			m_shadowfar.set(&shadowFar, services);
+
+			f32 cam_pos[4];
+			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
+			m_camera_pos.set(cam_pos, services);
+
+			// I dont like using this hardcoded value. maybe something like
+			// MAX_TEXTURE - 1 or somthing like that??
+			s32 TextureLayerID = 3;
+			m_shadow_texture.set(&TextureLayerID, services);
+
+			f32 bias0 = shadow->getPerspectiveBiasXY();
+			m_perspective_bias0_vertex.set(&bias0, services);
+			m_perspective_bias0_pixel.set(&bias0, services);
+			f32 bias1 = 1.0f - bias0 + 1e-5f;
+			m_perspective_bias1_vertex.set(&bias1, services);
+			m_perspective_bias1_pixel.set(&bias1, services);
+			f32 zbias = shadow->getPerspectiveBiasZ();
+			m_perspective_zbias_vertex.set(&zbias, services);
+			m_perspective_zbias_pixel.set(&zbias, services);
+		}
 	}
 };
 
@@ -579,8 +641,10 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	if (use_gles) {
 		shaders_header << R"(
 			#version 100
-			)";
+		)";
 		vertex_header = R"(
+			precision mediump float;
+
 			uniform highp mat4 mWorldView;
 			uniform highp mat4 mWorldViewProj;
 			uniform mediump mat4 mTexture;
@@ -592,17 +656,17 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			attribute mediump vec3 inVertexNormal;
 			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;
-			)";
+		)";
 		fragment_header = R"(
 			precision mediump float;
-			)";
+		)";
 	} else {
 		shaders_header << R"(
 			#version 120
 			#define lowp
 			#define mediump
 			#define highp
-			)";
+		)";
 		vertex_header = R"(
 			#define mWorldView gl_ModelViewMatrix
 			#define mWorldViewProj gl_ModelViewProjectionMatrix
@@ -615,18 +679,28 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			#define inVertexNormal gl_Normal
 			#define inVertexTangent gl_MultiTexCoord1
 			#define inVertexBinormal gl_MultiTexCoord2
-			)";
+		)";
+	}
+
+	// Since this is the first time we're using the GL bindings be extra careful.
+	// This should be removed before 5.6.0 or similar.
+	if (!GL.GetString) {
+		errorstream << "OpenGL procedures were not loaded correctly, "
+			"please open a bug report with details about your platform/OS." << std::endl;
+		abort();
 	}
 
 	bool use_discard = use_gles;
-#ifdef __unix__
 	// For renderers that should use discard instead of GL_ALPHA_TEST
-	const char* gl_renderer = (const char*)glGetString(GL_RENDERER);
-	if (strstr(gl_renderer, "GC7000"))
+	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
+	if (strstr(renderer, "GC7000"))
 		use_discard = true;
-#endif
-	if (use_discard && shaderinfo.base_material != video::EMT_SOLID)
-		shaders_header << "#define USE_DISCARD 1\n";
+	if (use_discard) {
+		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
+			shaders_header << "#define USE_DISCARD 1\n";
+		else if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+			shaders_header << "#define USE_DISCARD_REF 1\n";
+	}
 
 #define PROVIDE(constant) shaders_header << "#define " #constant " " << (int)constant << "\n"
 
@@ -679,6 +753,23 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	shaders_header << "#define ENABLE_TONE_MAPPING " << g_settings->getBool("tone_mapping") << "\n";
 
 	shaders_header << "#define FOG_START " << core::clamp(g_settings->getFloat("fog_start"), 0.0f, 0.99f) << "\n";
+
+	if (g_settings->getBool("enable_dynamic_shadows")) {
+		shaders_header << "#define ENABLE_DYNAMIC_SHADOWS 1\n";
+		if (g_settings->getBool("shadow_map_color"))
+			shaders_header << "#define COLORED_SHADOWS 1\n";
+
+		if (g_settings->getBool("shadow_poisson_filter"))
+			shaders_header << "#define POISSON_FILTER 1\n";
+
+		s32 shadow_filter = g_settings->getS32("shadow_filters");
+		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";
+
+		float shadow_soft_radius = g_settings->getFloat("shadow_soft_radius");
+		if (shadow_soft_radius < 1.0f)
+			shadow_soft_radius = 1.0f;
+		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
+	}
 
 	std::string common_header = shaders_header.str();
 

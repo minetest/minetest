@@ -19,6 +19,10 @@ core.features = {
 	object_step_has_moveresult = true,
 	direct_velocity_on_players = true,
 	use_texture_alpha_string_modes = true,
+	degrotate_240_steps = true,
+	abm_min_max_y = true,
+	dynamic_add_media_table = true,
+	get_sky_as_table = true,
 }
 
 function core.has_feature(arg)

@@ -119,6 +119,8 @@ void read_item_definition(lua_State* L, int index,
 	// "" = no prediction
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
+
+	getintfield(L, index, "place_param2", def.place_param2);
 }
 
 /******************************************************************************/
@@ -198,8 +200,6 @@ void read_object_properties(lua_State *L, int index,
 		if (prop->hp_max < sao->getHP()) {
 			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 			sao->setHP(prop->hp_max, reason);
-			if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-				sao->getEnv()->getGameDef()->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
 		}
 	}
 
@@ -683,7 +683,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	if (!f.palette_name.empty() &&
 			!(f.param_type_2 == CPT2_COLOR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR ||
-			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_DEGROTATE))
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
@@ -718,6 +719,9 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// the slowest possible
 	f.liquid_viscosity = getintfield_default(L, index,
 			"liquid_viscosity", f.liquid_viscosity);
+	// If move_resistance is not set explicitly,
+	// move_resistance is equal to liquid_viscosity
+	f.move_resistance = f.liquid_viscosity;
 	f.liquid_range = getintfield_default(L, index,
 			"liquid_range", f.liquid_range);
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
@@ -821,6 +825,21 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	getstringfield(L, index, "node_dig_prediction",
 		f.node_dig_prediction);
 
+	// How much the node slows down players, ranging from 1 to 7,
+	// the higher, the slower.
+	f.move_resistance = getintfield_default(L, index,
+			"move_resistance", f.move_resistance);
+
+	// Whether e.g. players in this node will have liquid movement physics
+	lua_getfield(L, index, "liquid_move_physics");
+	if(lua_isboolean(L, -1)) {
+		f.liquid_move_physics = lua_toboolean(L, -1);
+	} else if(lua_isnil(L, -1)) {
+		f.liquid_move_physics = f.liquid_type != LIQUID_NONE;
+	} else {
+		errorstream << "Field \"liquid_move_physics\": Invalid type!" << std::endl;
+	}
+	lua_pop(L, 1);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)
@@ -948,6 +967,10 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "legacy_wallmounted");
 	lua_pushstring(L, c.node_dig_prediction.c_str());
 	lua_setfield(L, -2, "node_dig_prediction");
+	lua_pushnumber(L, c.move_resistance);
+	lua_setfield(L, -2, "move_resistance");
+	lua_pushboolean(L, c.liquid_move_physics);
+	lua_setfield(L, -2, "liquid_move_physics");
 }
 
 /******************************************************************************/
@@ -1328,45 +1351,52 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
-void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
+void push_inventory_list(lua_State *L, const InventoryList &invlist)
 {
-	InventoryList *invlist = inv->getList(name);
-	if(invlist == NULL){
-		lua_pushnil(L);
-		return;
+	push_items(L, invlist.getItems());
+}
+
+/******************************************************************************/
+void push_inventory_lists(lua_State *L, const Inventory &inv)
+{
+	const auto &lists = inv.getLists();
+	lua_createtable(L, 0, lists.size());
+	for(const InventoryList *list : lists) {
+		const std::string &name = list->getName();
+		lua_pushlstring(L, name.c_str(), name.size());
+		push_inventory_list(L, *list);
+		lua_rawset(L, -3);
 	}
-	std::vector<ItemStack> items;
-	for(u32 i=0; i<invlist->getSize(); i++)
-		items.push_back(invlist->getItem(i));
-	push_items(L, items);
 }
 
 /******************************************************************************/
 void read_inventory_list(lua_State *L, int tableindex,
-		Inventory *inv, const char *name, Server* srv, int forcesize)
+		Inventory *inv, const char *name, IGameDef *gdef, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
+
 	// If nil, delete list
 	if(lua_isnil(L, tableindex)){
 		inv->deleteList(name);
 		return;
 	}
-	// Otherwise set list
-	std::vector<ItemStack> items = read_items(L, tableindex,srv);
-	int listsize = (forcesize != -1) ? forcesize : items.size();
+
+	// Get Lua-specified items to insert into the list
+	std::vector<ItemStack> items = read_items(L, tableindex, gdef);
+	size_t listsize = (forcesize >= 0) ? forcesize : items.size();
+
+	// Create or resize/clear list
 	InventoryList *invlist = inv->addList(name, listsize);
-	int index = 0;
-	for(std::vector<ItemStack>::const_iterator
-			i = items.begin(); i != items.end(); ++i){
-		if(forcesize != -1 && index == forcesize)
-			break;
-		invlist->changeItem(index, *i);
-		index++;
+	if (!invlist) {
+		luaL_error(L, "inventory list: cannot create list named '%s'", name);
+		return;
 	}
-	while(forcesize != -1 && index < forcesize){
-		invlist->deleteItem(index);
-		index++;
+
+	for (size_t i = 0; i < items.size(); ++i) {
+		if (i == listsize)
+			break; // Truncate provided list of items
+		invlist->changeItem(i, items[i]);
 	}
 }
 
@@ -1605,7 +1635,7 @@ void push_items(lua_State *L, const std::vector<ItemStack> &items)
 }
 
 /******************************************************************************/
-std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
+std::vector<ItemStack> read_items(lua_State *L, int index, IGameDef *gdef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -1621,7 +1651,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 		if (items.size() < (u32) key) {
 			items.resize(key);
 		}
-		items[key - 1] = read_item(L, -1, srv->idef());
+		items[key - 1] = read_item(L, -1, gdef->idef());
 		lua_pop(L, 1);
 	}
 	return items;
@@ -1672,24 +1702,19 @@ bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 void push_noiseparams(lua_State *L, NoiseParams *np)
 {
 	lua_newtable(L);
-	push_float_string(L, np->offset);
-	lua_setfield(L, -2, "offset");
-	push_float_string(L, np->scale);
-	lua_setfield(L, -2, "scale");
-	push_float_string(L, np->persist);
-	lua_setfield(L, -2, "persistence");
-	push_float_string(L, np->lacunarity);
-	lua_setfield(L, -2, "lacunarity");
-	lua_pushnumber(L, np->seed);
-	lua_setfield(L, -2, "seed");
-	lua_pushnumber(L, np->octaves);
-	lua_setfield(L, -2, "octaves");
+	setfloatfield(L, -1, "offset",      np->offset);
+	setfloatfield(L, -1, "scale",       np->scale);
+	setfloatfield(L, -1, "persist",     np->persist);
+	setfloatfield(L, -1, "persistence", np->persist);
+	setfloatfield(L, -1, "lacunarity",  np->lacunarity);
+	setintfield(  L, -1, "seed",        np->seed);
+	setintfield(  L, -1, "octaves",     np->octaves);
 
 	push_flags_string(L, flagdesc_noiseparams, np->flags,
 		np->flags);
 	lua_setfield(L, -2, "flags");
 
-	push_v3_float_string(L, np->spread);
+	push_v3f(L, np->spread);
 	lua_setfield(L, -2, "spread");
 }
 
@@ -1923,6 +1948,8 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
 	lua_pop(L, 1);
 
+	elem->style = getintfield_default(L, 2, "style", 0);
+
 	/* check for known deprecated element usage */
 	if ((elem->type  == HUD_ELEM_STATBAR) && (elem->size == v2s32()))
 		log_deprecated(L,"Deprecated usage of statbar without size!");
@@ -1950,6 +1977,12 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_pushnumber(L, elem->number);
 	lua_setfield(L, -2, "number");
 
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		// waypoints reuse the item field to store precision, precision = item - 1
+		lua_pushnumber(L, elem->item - 1);
+		lua_setfield(L, -2, "precision");
+	}
+	// push the item field for waypoints as well for backwards compatibility
 	lua_pushnumber(L, elem->item);
 	lua_setfield(L, -2, "item");
 
@@ -1977,17 +2010,22 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	lua_pushstring(L, elem->text2.c_str());
 	lua_setfield(L, -2, "text2");
+
+	lua_pushinteger(L, elem->style);
+	lua_setfield(L, -2, "style");
 }
 
-HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
+bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void **value)
 {
-	HudElementStat stat = HUD_STAT_NUMBER;
-	std::string statstr;
-	if (lua_isstring(L, 3)) {
+	std::string statstr = lua_tostring(L, 3);
+	{
 		int statint;
-		statstr = lua_tostring(L, 3);
-		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
-				(HudElementStat)statint : stat;
+		if (!string_to_enum(es_HudElementStat, statint, statstr)) {
+			script_log_unique(L, "Unknown HUD stat type: " + statstr, warningstream);
+			return false;
+		}
+
+		stat = (HudElementStat)statint;
 	}
 
 	switch (stat) {
@@ -2045,8 +2083,13 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			elem->text2 = luaL_checkstring(L, 4);
 			*value = &elem->text2;
 			break;
+		case HUD_STAT_STYLE:
+			elem->style = luaL_checknumber(L, 4);
+			*value = &elem->style;
+			break;
 	}
-	return stat;
+
+	return true;
 }
 
 /******************************************************************************/

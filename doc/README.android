@@ -74,7 +74,7 @@ automatically. Or you can create a `local.properties` file and specify
   are different tutorials on the web explaining how to do it
   - choose one yourself.
 
-* Once your keystore is setup, enter build/android subdirectory and create a new
+* Once your keystore is setup, enter the android subdirectory and create a new
   file "ant.properties" there. Add following lines to that file:
 
   > key.store=<path to your keystore>

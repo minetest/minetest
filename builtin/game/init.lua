@@ -7,9 +7,8 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 -- not exposed to outer context
 local builtin_shared = {}
 
-dofile(commonpath .. "vector.lua")
-
 dofile(gamepath .. "constants.lua")
+dofile(gamepath .. "item_s.lua")
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)
 dofile(gamepath .. "register.lua")
 
@@ -20,6 +19,7 @@ end
 dofile(commonpath .. "after.lua")
 dofile(gamepath .. "item_entity.lua")
 dofile(gamepath .. "deprecated.lua")
+dofile(gamepath .. "misc_s.lua")
 dofile(gamepath .. "misc.lua")
 dofile(gamepath .. "privileges.lua")
 dofile(gamepath .. "auth.lua")
@@ -34,5 +34,6 @@ dofile(gamepath .. "voxelarea.lua")
 dofile(gamepath .. "forceloading.lua")
 dofile(gamepath .. "statbars.lua")
 dofile(gamepath .. "knockback.lua")
+dofile(gamepath .. "async.lua")
 
 profiler = nil

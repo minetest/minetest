@@ -50,10 +50,10 @@ private:
 	// write_json(data[, styled])
 	static int l_write_json(lua_State *L);
 
-	// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
+	// get_dig_params(groups, tool_capabilities[, wear])
 	static int l_get_dig_params(lua_State *L);
 
-	// get_hit_params(groups, tool_capabilities[, time_from_last_punch])
+	// get_hit_params(groups, tool_capabilities[, time_from_last_punch[, wear]])
 	static int l_get_hit_params(lua_State *L);
 
 	// check_password_entry(name, entry, password)
@@ -80,6 +80,15 @@ private:
 	// mkdir(path)
 	static int l_mkdir(lua_State *L);
 
+	// rmdir(path, recursive)
+	static int l_rmdir(lua_State *L);
+
+	// cpdir(source, destination, remove_source)
+	static int l_cpdir(lua_State *L);
+
+	// mvdir(source, destination)
+	static int l_mvdir(lua_State *L);
+
 	// get_dir_list(path, is_dir)
 	static int l_get_dir_list(lua_State *L);
 
@@ -101,10 +110,23 @@ private:
 	// sha1(string, raw)
 	static int l_sha1(lua_State *L);
 
+	// colorspec_to_colorstring(colorspec)
+	static int l_colorspec_to_colorstring(lua_State *L);
+
+	// colorspec_to_bytes(colorspec)
+	static int l_colorspec_to_bytes(lua_State *L);
+
+	// encode_png(w, h, data, level)
+	static int l_encode_png(lua_State *L);
+
+	// get_last_run_mod()
+	static int l_get_last_run_mod(lua_State *L);
+
+	// set_last_run_mod(modname)
+	static int l_set_last_run_mod(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);
-
-	static void InitializeAsync(AsyncEngine &engine);
 };

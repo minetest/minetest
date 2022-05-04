@@ -39,7 +39,9 @@ extern "C" {
 #include "itemgroup.h"
 #include "itemdef.h"
 #include "c_types.h"
-#include "hud.h"
+// We do a explicit path include because by default c_content.h include src/client/hud.h
+// prior to the src/hud.h, which is not good on server only build
+#include "../../hud.h"
 
 namespace Json { class Value; }
 
@@ -53,10 +55,11 @@ struct ObjectProperties;
 struct SimpleSoundSpec;
 struct ServerSoundParams;
 class Inventory;
+class InventoryList;
 struct NodeBox;
 struct ContentFeatures;
 struct TileDef;
-class Server;
+class IGameDef;
 struct DigParams;
 struct HitParams;
 struct EnumString;
@@ -118,11 +121,12 @@ void               push_object_properties    (lua_State *L,
                                               ObjectProperties *prop);
 
 void               push_inventory_list       (lua_State *L,
-                                              Inventory *inv,
-                                              const char *name);
+                                              const InventoryList &invlist);
+void               push_inventory_lists      (lua_State *L,
+                                              const Inventory &inv);
 void               read_inventory_list       (lua_State *L, int tableindex,
                                               Inventory *inv, const char *name,
-                                              Server *srv, int forcesize=-1);
+                                              IGameDef *gdef, int forcesize=-1);
 
 MapNode            readnode                  (lua_State *L, int index,
                                               const NodeDefManager *ndef);
@@ -162,7 +166,7 @@ void               push_items                (lua_State *L,
 
 std::vector<ItemStack> read_items            (lua_State *L,
                                               int index,
-                                              Server* srv);
+                                              IGameDef* gdef);
 
 void               push_soundspec            (lua_State *L,
                                               const SimpleSoundSpec &spec);
@@ -191,12 +195,12 @@ void               read_json_value           (lua_State *L, Json::Value &root,
 void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm =
 	false, bool hitpoint = false);
 
-void               push_objectRef            (lua_State *L, const u16 id);
+void push_objectRef            (lua_State *L, const u16 id);
 
-void               read_hud_element          (lua_State *L, HudElement *elem);
+void read_hud_element          (lua_State *L, HudElement *elem);
 
-void               push_hud_element          (lua_State *L, HudElement *elem);
+void push_hud_element          (lua_State *L, HudElement *elem);
 
-HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
+bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *elem, void **value);
 
-void               push_collision_move_result(lua_State *L, const collisionMoveResult &res);
+void push_collision_move_result(lua_State *L, const collisionMoveResult &res);

@@ -25,7 +25,7 @@ end
 
 -- Unordered preserves the original order of the ContentDB API,
 -- before the package list is ordered based on installed state.
-local store = { packages = {}, packages_full = {}, packages_full_unordered = {} }
+local store = { packages = {}, packages_full = {}, packages_full_unordered = {}, aliases = {} }
 
 local http = core.get_http_api()
 
@@ -57,34 +57,77 @@ local filter_types_type = {
 	"txp",
 }
 
+local REASON_NEW = "new"
+local REASON_UPDATE = "update"
+local REASON_DEPENDENCY = "dependency"
 
-local function download_package(param)
-	if core.download_file(param.package.url, param.filename) then
-		return {
-			filename = param.filename,
-			successful = true,
-		}
-	else
-		core.log("error", "downloading " .. dump(param.package.url) .. " failed")
-		return {
-			successful = false,
-		}
+
+-- encodes for use as URL parameter or path component
+local function urlencode(str)
+	return str:gsub("[^%a%d()._~-]", function(char)
+		return string.format("%%%02X", string.byte(char))
+	end)
+end
+assert(urlencode("sample text?") == "sample%20text%3F")
+
+
+local function get_download_url(package, reason)
+	local base_url = core.settings:get("contentdb_url")
+	local ret = base_url .. ("/packages/%s/releases/%d/download/"):format(
+		package.url_part, package.release)
+	if reason then
+		ret = ret .. "?reason=" .. reason
 	end
+	return ret
 end
 
-local function start_install(package)
+
+local function download_and_extract(param)
+	local package = param.package
+
+	local filename = core.get_temp_path(true)
+	if filename == "" or not core.download_file(param.url, filename) then
+		core.log("error", "Downloading " .. dump(param.url) .. " failed")
+		return {
+			msg = fgettext("Failed to download $1", package.name)
+		}
+	end
+
+	local tempfolder = core.get_temp_path()
+	if tempfolder ~= "" then
+		tempfolder = tempfolder .. DIR_DELIM .. "MT_" .. math.random(1, 1024000)
+		if not core.extract_zip(filename, tempfolder) then
+			tempfolder = nil
+		end
+	else
+		tempfolder = nil
+	end
+	os.remove(filename)
+	if not tempfolder then
+		return {
+			msg = fgettext("Install: Unsupported file type or broken archive"),
+		}
+	end
+
+	return {
+		path = tempfolder
+	}
+end
+
+local function start_install(package, reason)
 	local params = {
 		package = package,
-		filename = os.tempfolder() .. "_MODNAME_" .. package.name .. ".zip",
+		url = get_download_url(package, reason),
 	}
 
 	number_downloading = number_downloading + 1
 
 	local function callback(result)
-		if result.successful then
-			local path, msg = pkgmgr.install(package.type,
-					result.filename, package.name,
-					package.path)
+		if result.msg then
+			gamedata.errormessage = result.msg
+		else
+			local path, msg = pkgmgr.install_dir(package.type, result.path, package.name, package.path)
+			core.delete_dir(result.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -122,9 +165,6 @@ local function start_install(package)
 					conf:write()
 				end
 			end
-			os.remove(result.filename)
-		else
-			gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		end
 
 		package.downloading = false
@@ -135,7 +175,7 @@ local function start_install(package)
 		if next then
 			table.remove(download_queue, 1)
 
-			start_install(next)
+			start_install(next.package, next.reason)
 		end
 
 		ui.update()
@@ -144,19 +184,19 @@ local function start_install(package)
 	package.queued = false
 	package.downloading = true
 
-	if not core.handle_async(download_package, params, callback) then
+	if not core.handle_async(download_and_extract, params, callback) then
 		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		return
 	end
 end
 
-local function queue_download(package)
+local function queue_download(package, reason)
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
 	if number_downloading < max_concurrent_downloads then
-		start_install(package)
+		start_install(package, reason)
 	else
-		table.insert(download_queue, package)
+		table.insert(download_queue, { package = package, reason = reason })
 		package.queued = true
 	end
 end
@@ -169,7 +209,7 @@ local function get_raw_dependencies(package)
 	local url_fmt = "/api/packages/%s/dependencies/?only_hard=1&protocol_version=%s&engine_version=%s"
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
-	local url = base_url .. url_fmt:format(package.id, core.get_max_supp_proto(), version.string)
+	local url = base_url .. url_fmt:format(package.url_part, core.get_max_supp_proto(), urlencode(version.string))
 
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
@@ -407,12 +447,12 @@ function install_dialog.handle_submit(this, fields)
 	end
 
 	if fields.install_all then
-		queue_download(install_dialog.package)
+		queue_download(install_dialog.package, REASON_NEW)
 
 		if install_dialog.will_install_deps then
 			for _, dep in pairs(install_dialog.dependencies) do
 				if not dep.is_optional and not dep.installed and dep.package then
-					queue_download(dep.package)
+					queue_download(dep.package, REASON_DEPENDENCY)
 				end
 			end
 		end
@@ -544,33 +584,43 @@ function store.load()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. version.string
+		core.get_max_supp_proto() .. "&engine_version=" .. urlencode(version.string)
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. item
+			url = url .. "&hide=" .. urlencode(item)
 		end
 	end
 
-	local timeout = tonumber(core.settings:get("curl_file_download_timeout"))
-	local response = http.fetch_sync({ url = url, timeout = timeout })
+	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
 		return
 	end
 
 	store.packages_full = core.parse_json(response.data) or {}
+	store.aliases = {}
 
 	for _, package in pairs(store.packages_full) do
-		package.url = base_url .. "/packages/" ..
-				package.author .. "/" .. package.name ..
-				"/releases/" .. package.release .. "/download/"
-
 		local name_len = #package.name
+		-- This must match what store.update_paths() does!
+		package.id = package.author:lower() .. "/"
 		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
+			package.id = package.id .. package.name:sub(1, name_len - 5)
 		else
-			package.id = package.author:lower() .. "/" .. package.name
+			package.id = package.id .. package.name
+		end
+
+		package.url_part = urlencode(package.author) .. "/" .. urlencode(package.name)
+
+		if package.aliases then
+			for _, alias in ipairs(package.aliases) do
+				-- We currently don't support name changing
+				local suffix = "/" .. package.name
+				if alias:sub(-#suffix) == suffix then
+					store.aliases[alias:lower()] = package.id
+				end
+			end
 		end
 	end
 
@@ -584,7 +634,8 @@ function store.update_paths()
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		if mod.author and mod.release > 0 then
-			mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
+			local id = mod.author:lower() .. "/" .. mod.name
+			mod_hash[store.aliases[id] or id] = mod
 		end
 	end
 
@@ -592,14 +643,16 @@ function store.update_paths()
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
 		if game.author ~= "" and game.release > 0 then
-			game_hash[game.author:lower() .. "/" .. game.id] = game
+			local id = game.author:lower() .. "/" .. game.id
+			game_hash[store.aliases[id] or id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
 		if txp.author and txp.release > 0 then
-			txp_hash[txp.author:lower() .. "/" .. txp.name] = txp
+			local id = txp.author:lower() .. "/" .. txp.name
+			txp_hash[store.aliases[id] or id] = txp
 		end
 	end
 
@@ -809,8 +862,7 @@ function store.get_formspec(dlgdata)
 			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
 		elseif package.queued then
 			formspec[#formspec + 1] = left_base
-			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
-			formspec[#formspec + 1] = "cdb_queued.png;queued]"
+			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
 		elseif not package.path then
 			local elem_name = "install_" .. i .. ";"
 			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"
@@ -915,7 +967,7 @@ function store.handle_submit(this, fields)
 			local package = store.packages_full[i]
 			if package.path and package.installed_release < package.release and
 					not (package.downloading or package.queued) then
-				queue_download(package)
+				queue_download(package, REASON_UPDATE)
 			end
 		end
 		return true
@@ -948,7 +1000,7 @@ function store.handle_submit(this, fields)
 					this:hide()
 					dlg:show()
 				else
-					queue_download(package)
+					queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
 				end
 			end
 
@@ -973,9 +1025,9 @@ function store.handle_submit(this, fields)
 		end
 
 		if fields["view_" .. i] then
-			local url = ("%s/packages/%s/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"),
-					package.author, package.name, core.get_max_supp_proto())
+			local url = ("%s/packages/%s?protocol_version=%d"):format(
+					core.settings:get("contentdb_url"), package.url_part,
+					core.get_max_supp_proto())
 			core.open_url(url)
 			return true
 		end

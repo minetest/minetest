@@ -60,18 +60,16 @@ static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
-MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output)
+MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
+	scene::IMeshManipulator *mm):
+	data(input),
+	collector(output),
+	nodedef(data->m_client->ndef()),
+	meshmanip(mm),
+	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE)
 {
-	data      = input;
-	collector = output;
-
-	nodedef   = data->m_client->ndef();
-	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
-
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
-
-	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
 
 void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, bool special)
@@ -375,6 +373,10 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	f32 dx2 = box.MaxEdge.X;
 	f32 dy2 = box.MaxEdge.Y;
 	f32 dz2 = box.MaxEdge.Z;
+
+	box.MinEdge += origin;
+	box.MaxEdge += origin;
+
 	if (scale) {
 		if (!txc) { // generate texture coords before scaling
 			generateCuboidTextureCoords(box, texture_coord_buf);
@@ -383,12 +385,11 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		box.MinEdge *= f->visual_scale;
 		box.MaxEdge *= f->visual_scale;
 	}
-	box.MinEdge += origin;
-	box.MaxEdge += origin;
 	if (!txc) {
 		generateCuboidTextureCoords(box, texture_coord_buf);
 		txc = texture_coord_buf;
 	}
+
 	if (!tiles) {
 		tiles = &tile;
 		tile_count = 1;
@@ -960,15 +961,43 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		vertex.rotateXZBy(rotation + rotate_degree);
 		vertex += offset;
 	}
+
+	u8 wall = n.getWallMounted(nodedef);
+	if (wall != DWM_YN) {
+		for (v3f &vertex : vertices) {
+			switch (wall) {
+				case DWM_YP:
+					vertex.rotateYZBy(180);
+					vertex.rotateXZBy(180);
+					break;
+				case DWM_XP:
+					vertex.rotateXYBy(90);
+					break;
+				case DWM_XN:
+					vertex.rotateXYBy(-90);
+					vertex.rotateYZBy(180);
+					break;
+				case DWM_ZP:
+					vertex.rotateYZBy(-90);
+					vertex.rotateXYBy(90);
+					break;
+				case DWM_ZN:
+					vertex.rotateYZBy(90);
+					vertex.rotateXYBy(90);
+					break;
+			}
+		}
+	}
+
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 
-void MapblockMeshGenerator::drawPlantlike()
+void MapblockMeshGenerator::drawPlantlike(bool is_rooted)
 {
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
 	offset = v3f(0, 0, 0);
-	rotate_degree = 0;
+	rotate_degree = 0.0f;
 	random_offset_Y = false;
 	face_num = 0;
 	plant_height = 1.0;
@@ -988,7 +1017,8 @@ void MapblockMeshGenerator::drawPlantlike()
 		break;
 
 	case CPT2_DEGROTATE:
-		rotate_degree = n.param2 * 2;
+	case CPT2_COLORED_DEGROTATE:
+		rotate_degree = 1.5f * n.getDegRotate(nodedef);
 		break;
 
 	case CPT2_LEVELED:
@@ -997,6 +1027,22 @@ void MapblockMeshGenerator::drawPlantlike()
 
 	default:
 		break;
+	}
+
+	if (is_rooted) {
+		u8 wall = n.getWallMounted(nodedef);
+		switch (wall) {
+			case DWM_YP:
+				offset.Y += BS*2;
+				break;
+			case DWM_XN:
+			case DWM_XP:
+			case DWM_ZN:
+			case DWM_ZP:
+				offset.X += -BS;
+				offset.Y +=  BS;
+				break;
+		}
 	}
 
 	switch (draw_style) {
@@ -1049,7 +1095,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		light = LightPair(getInteriorLight(ntop, 1, nodedef));
 	}
-	drawPlantlike();
+	drawPlantlike(true);
 	p.Y--;
 }
 
@@ -1334,6 +1380,59 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
+
+	bool isTransparent = false;
+
+	for (const TileSpec &tile : tiles) {
+		if (tile.layers[0].isTransparent()) {
+			isTransparent = true;
+			break;
+		}
+	}
+
+	if (isTransparent) {
+		std::vector<float> sections;
+		// Preallocate 8 default splits + Min&Max for each nodebox
+		sections.reserve(8 + 2 * boxes.size());
+
+		for (int axis = 0; axis < 3; axis++) {
+			// identify sections
+
+			if (axis == 0) {
+				// Default split at node bounds, up to 3 nodes in each direction
+				for (float s = -3.5f * BS; s < 4.0f * BS; s += 1.0f * BS)
+					sections.push_back(s);
+			}
+			else {
+				// Avoid readding the same 8 default splits for Y and Z
+				sections.resize(8);
+			}
+
+			// Add edges of existing node boxes, rounded to 1E-3
+			for (size_t i = 0; i < boxes.size(); i++) {
+				sections.push_back(std::floor(boxes[i].MinEdge[axis] * 1E3) * 1E-3);
+				sections.push_back(std::floor(boxes[i].MaxEdge[axis] * 1E3) * 1E-3);
+			}
+
+			// split the boxes at recorded sections
+			// limit splits to avoid runaway crash if inner loop adds infinite splits
+			// due to e.g. precision problems.
+			// 100 is just an arbitrary, reasonably high number.
+			for (size_t i = 0; i < boxes.size() && i < 100; i++) {
+				aabb3f *box = &boxes[i];
+				for (float section : sections) {
+					if (box->MinEdge[axis] < section && box->MaxEdge[axis] > section) {
+						aabb3f copy(*box);
+						copy.MinEdge[axis] = section;
+						box->MaxEdge[axis] = section;
+						boxes.push_back(copy);
+						box = &boxes[i]; // find new address of the box in case of reallocation
+					}
+				}
+			}
+		}
+	}
+
 	for (auto &box : boxes)
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
@@ -1343,6 +1442,7 @@ void MapblockMeshGenerator::drawMeshNode()
 	u8 facedir = 0;
 	scene::IMesh* mesh;
 	bool private_mesh; // as a grab/drop pair is not thread-safe
+	int degrotate = 0;
 
 	if (f->param_type_2 == CPT2_FACEDIR ||
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
@@ -1354,9 +1454,12 @@ void MapblockMeshGenerator::drawMeshNode()
 		facedir = n.getWallMounted(nodedef);
 		if (!enable_mesh_cache)
 			facedir = wallmounted_to_facedir[facedir];
+	} else if (f->param_type_2 == CPT2_DEGROTATE ||
+			f->param_type_2 == CPT2_COLORED_DEGROTATE) {
+		degrotate = n.getDegRotate(nodedef);
 	}
 
-	if (!data->m_smooth_lighting && f->mesh_ptr[facedir]) {
+	if (!data->m_smooth_lighting && f->mesh_ptr[facedir] && !degrotate) {
 		// use cached meshes
 		private_mesh = false;
 		mesh = f->mesh_ptr[facedir];
@@ -1364,7 +1467,10 @@ void MapblockMeshGenerator::drawMeshNode()
 		// no cache, clone and rotate mesh
 		private_mesh = true;
 		mesh = cloneMesh(f->mesh_ptr[0]);
-		rotateMeshBy6dFacedir(mesh, facedir);
+		if (facedir)
+			rotateMeshBy6dFacedir(mesh, facedir);
+		else if (degrotate)
+			rotateMeshXZby(mesh, 1.5f * degrotate);
 		recalculateBoundingBox(mesh);
 		meshmanip->recalculateNormals(mesh, true, false);
 	} else

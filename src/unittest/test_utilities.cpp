@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include "util/base64.h"
 
 class TestUtilities : public TestBase {
 public:
@@ -42,7 +43,6 @@ public:
 	void testPadString();
 	void testStartsWith();
 	void testStrEqual();
-	void testStringTrim();
 	void testStrToIntConversion();
 	void testStringReplace();
 	void testStringAllowed();
@@ -56,6 +56,8 @@ public:
 	void testMyround();
 	void testStringJoin();
 	void testEulerConversion();
+	void testBase64();
+	void testSanitizeDirName();
 };
 
 static TestUtilities g_test_instance;
@@ -73,7 +75,6 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testPadString);
 	TEST(testStartsWith);
 	TEST(testStrEqual);
-	TEST(testStringTrim);
 	TEST(testStrToIntConversion);
 	TEST(testStringReplace);
 	TEST(testStringAllowed);
@@ -87,6 +88,8 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testMyround);
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
+	TEST(testBase64);
+	TEST(testSanitizeDirName);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -187,6 +190,8 @@ void TestUtilities::testTrim()
 	UASSERT(trim("dirt_with_grass") == "dirt_with_grass");
 	UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 	UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
+	UASSERT(trim("  a") == "a");
+	UASSERT(trim("a   ") == "a");
 }
 
 
@@ -249,15 +254,6 @@ void TestUtilities::testStrEqual()
 {
 	UASSERT(str_equal(utf8_to_wide("abc"), utf8_to_wide("abc")));
 	UASSERT(str_equal(utf8_to_wide("ABC"), utf8_to_wide("abc"), true));
-}
-
-
-void TestUtilities::testStringTrim()
-{
-	UASSERT(trim("  a") == "a");
-	UASSERT(trim("   a  ") == "a");
-	UASSERT(trim("a   ") == "a");
-	UASSERT(trim("") == "");
 }
 
 
@@ -389,9 +385,9 @@ void TestUtilities::testIsPowerOfTwo()
 	UASSERT(is_power_of_two(2) == true);
 	UASSERT(is_power_of_two(3) == false);
 	for (int exponent = 2; exponent <= 31; ++exponent) {
-		UASSERT(is_power_of_two((1 << exponent) - 1) == false);
-		UASSERT(is_power_of_two((1 << exponent)) == true);
-		UASSERT(is_power_of_two((1 << exponent) + 1) == false);
+		UASSERT(is_power_of_two((1U << exponent) - 1) == false);
+		UASSERT(is_power_of_two((1U << exponent)) == true);
+		UASSERT(is_power_of_two((1U << exponent) + 1) == false);
 	}
 	UASSERT(is_power_of_two(U32_MAX) == false);
 }
@@ -536,4 +532,107 @@ void TestUtilities::testEulerConversion()
 	// ... however the rotation matrix is the same for both
 	setPitchYawRoll(m2, v2);
 	UASSERT(within(m1, m2, tolL));
+}
+
+void TestUtilities::testBase64()
+{
+	// Test character set
+	UASSERT(base64_is_valid("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+/") == true);
+	UASSERT(base64_is_valid("/+9876543210"
+		"zyxwvutsrqponmlkjihgfedcba"
+		"ZYXWVUTSRQPONMLKJIHGFEDCBA") == true);
+	UASSERT(base64_is_valid("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+.") == false);
+	UASSERT(base64_is_valid("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789 /") == false);
+
+	// Test empty string
+	UASSERT(base64_is_valid("") == true);
+
+	// Test different lengths, with and without padding,
+	// with correct and incorrect padding
+	UASSERT(base64_is_valid("A") == false);
+	UASSERT(base64_is_valid("AA") == true);
+	UASSERT(base64_is_valid("AAA") == true);
+	UASSERT(base64_is_valid("AAAA") == true);
+	UASSERT(base64_is_valid("AAAAA") == false);
+	UASSERT(base64_is_valid("AAAAAA") == true);
+	UASSERT(base64_is_valid("AAAAAAA") == true);
+	UASSERT(base64_is_valid("AAAAAAAA") == true);
+	UASSERT(base64_is_valid("A===") == false);
+	UASSERT(base64_is_valid("AA==") == true);
+	UASSERT(base64_is_valid("AAA=") == true);
+	UASSERT(base64_is_valid("AAAA") == true);
+	UASSERT(base64_is_valid("AAAA====") == false);
+	UASSERT(base64_is_valid("AAAAA===") == false);
+	UASSERT(base64_is_valid("AAAAAA==") == true);
+	UASSERT(base64_is_valid("AAAAAAA=") == true);
+	UASSERT(base64_is_valid("AAAAAAA==") == false);
+	UASSERT(base64_is_valid("AAAAAAA===") == false);
+	UASSERT(base64_is_valid("AAAAAAA====") == false);
+	UASSERT(base64_is_valid("AAAAAAAA") == true);
+	UASSERT(base64_is_valid("AAAAAAAA=") == false);
+	UASSERT(base64_is_valid("AAAAAAAA==") == false);
+	UASSERT(base64_is_valid("AAAAAAAA===") == false);
+	UASSERT(base64_is_valid("AAAAAAAA====") == false);
+
+	// Test if canonical encoding
+	// Last character limitations, length % 4 == 3
+	UASSERT(base64_is_valid("AAB") == false);
+	UASSERT(base64_is_valid("AAE") == true);
+	UASSERT(base64_is_valid("AAQ") == true);
+	UASSERT(base64_is_valid("AAB=") == false);
+	UASSERT(base64_is_valid("AAE=") == true);
+	UASSERT(base64_is_valid("AAQ=") == true);
+	UASSERT(base64_is_valid("AAAAAAB=") == false);
+	UASSERT(base64_is_valid("AAAAAAE=") == true);
+	UASSERT(base64_is_valid("AAAAAAQ=") == true);
+	// Last character limitations, length % 4 == 2
+	UASSERT(base64_is_valid("AB") == false);
+	UASSERT(base64_is_valid("AE") == false);
+	UASSERT(base64_is_valid("AQ") == true);
+	UASSERT(base64_is_valid("AB==") == false);
+	UASSERT(base64_is_valid("AE==") == false);
+	UASSERT(base64_is_valid("AQ==") == true);
+	UASSERT(base64_is_valid("AAAAAB==") == false);
+	UASSERT(base64_is_valid("AAAAAE==") == false);
+	UASSERT(base64_is_valid("AAAAAQ==") == true);
+
+	// Extraneous character present
+	UASSERT(base64_is_valid(".") == false);
+	UASSERT(base64_is_valid("A.") == false);
+	UASSERT(base64_is_valid("AA.") == false);
+	UASSERT(base64_is_valid("AAA.") == false);
+	UASSERT(base64_is_valid("AAAA.") == false);
+	UASSERT(base64_is_valid("AAAAA.") == false);
+	UASSERT(base64_is_valid("A.A") == false);
+	UASSERT(base64_is_valid("AA.A") == false);
+	UASSERT(base64_is_valid("AAA.A") == false);
+	UASSERT(base64_is_valid("AAAA.A") == false);
+	UASSERT(base64_is_valid("AAAAA.A") == false);
+	UASSERT(base64_is_valid("\xE1""AAA") == false);
+
+	// Padding in wrong position
+	UASSERT(base64_is_valid("A=A") == false);
+	UASSERT(base64_is_valid("AA=A") == false);
+	UASSERT(base64_is_valid("AAA=A") == false);
+	UASSERT(base64_is_valid("AAAA=A") == false);
+	UASSERT(base64_is_valid("AAAAA=A") == false);
+}
+
+
+void TestUtilities::testSanitizeDirName()
+{
+	UASSERT(sanitizeDirName("a", "~") == "a");
+	UASSERT(sanitizeDirName("  ", "~") == "__");
+	UASSERT(sanitizeDirName(" a ", "~") == "_a_");
+	UASSERT(sanitizeDirName("COM1", "~") == "~COM1");
+	UASSERT(sanitizeDirName("COM1", ":") == "_COM1");
+	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
+	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
+	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
 }

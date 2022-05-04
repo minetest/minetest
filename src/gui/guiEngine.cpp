@@ -104,16 +104,22 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 	if(m_fetched.count(name))
 		return;
 	m_fetched.insert(name);
-	std::string base;
-	base = porting::path_share + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	int i;
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
-	base = porting::path_user + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+	std::vector<fs::DirListNode> list;
+	// Reusable local function
+	auto add_paths = [&dst_paths](const std::string name, const std::string base = "") {
+		dst_paths.insert(base + name + ".ogg");
+		for (int i = 0; i < 10; i++)
+			dst_paths.insert(base + name + "." + itos(i) + ".ogg");
+	};
+	// Allow full paths
+	if (name.find(DIR_DELIM_CHAR) != std::string::npos) {
+		add_paths(name);
+	} else {
+		std::string share_prefix = porting::path_share + DIR_DELIM;
+		add_paths(name, share_prefix + "sounds" + DIR_DELIM);
+		std::string user_prefix = porting::path_user + DIR_DELIM;
+		add_paths(name, user_prefix + "sounds" + DIR_DELIM);
+	}
 }
 
 /******************************************************************************/
@@ -121,12 +127,14 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /******************************************************************************/
 GUIEngine::GUIEngine(JoystickController *joystick,
 		gui::IGUIElement *parent,
+		RenderingEngine *rendering_engine,
 		IMenuManager *menumgr,
 		MainMenuData *data,
 		bool &kill) :
+	m_rendering_engine(rendering_engine),
 	m_parent(parent),
 	m_menumanager(menumgr),
-	m_smgr(RenderingEngine::get_scene_manager()),
+	m_smgr(rendering_engine->get_scene_manager()),
 	m_data(data),
 	m_kill(kill)
 {
@@ -138,7 +146,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_buttonhandler = new TextDestGuiEngine(this);
 
 	//create texture source
-	m_texture_source = new MenuTextureSource(RenderingEngine::get_video_driver());
+	m_texture_source = new MenuTextureSource(rendering_engine->get_video_driver());
 
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
@@ -156,7 +164,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 		g_fontengine->getTextHeight());
 	rect += v2s32(4, 0);
 
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = gui::StaticText::add(rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 
 	//create formspecsource
@@ -168,6 +176,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			-1,
 			m_menumanager,
 			NULL /* &client */,
+			m_rendering_engine->get_gui_env(),
 			m_texture_source,
 			m_sound_manager,
 			m_formspecgui,
@@ -232,7 +241,7 @@ void GUIEngine::run()
 {
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	cloudInit();
 
@@ -259,10 +268,10 @@ void GUIEngine::run()
 				fog_pixelfog, fog_rangefog);
 	}
 
-	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
+	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
-			RenderingEngine::get_video_driver()->getScreenSize();
+			m_rendering_engine->get_video_driver()->getScreenSize();
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
@@ -293,11 +302,11 @@ void GUIEngine::run()
 		drawHeader(driver);
 		drawFooter(driver);
 
-		RenderingEngine::get_gui_env()->drawAll();
+		m_rendering_engine->get_gui_env()->drawAll();
 
 		driver->endScene();
 
-		IrrlichtDevice *device = RenderingEngine::get_raw_device();
+		IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 		u32 frametime_min = 1000 / (device->isWindowFocused()
 			? g_settings->getFloat("fps_max")
 			: g_settings->getFloat("fps_max_unfocused"));
@@ -330,7 +339,7 @@ GUIEngine::~GUIEngine()
 	//clean up texture pointers
 	for (image_definition &texture : m_textures) {
 		if (texture.texture)
-			RenderingEngine::get_video_driver()->removeTexture(texture.texture);
+			m_rendering_engine->get_video_driver()->removeTexture(texture.texture);
 	}
 
 	delete m_texture_source;
@@ -350,13 +359,13 @@ void GUIEngine::cloudInit()
 				v3f(0,0,0), v3f(0, 60, 100));
 	m_cloud.camera->setFarValue(10000);
 
-	m_cloud.lasttime = RenderingEngine::get_timer_time();
+	m_cloud.lasttime = m_rendering_engine->get_timer_time();
 }
 
 /******************************************************************************/
 void GUIEngine::cloudPreProcess()
 {
-	u32 time = RenderingEngine::get_timer_time();
+	u32 time = m_rendering_engine->get_timer_time();
 
 	if(time > m_cloud.lasttime)
 		m_cloud.dtime = (time - m_cloud.lasttime) / 1000.0;
@@ -377,7 +386,7 @@ void GUIEngine::cloudPostProcess(u32 frametime_min, IrrlichtDevice *device)
 	u32 busytime_u32;
 
 	// not using getRealTime is necessary for wine
-	u32 time = RenderingEngine::get_timer_time();
+	u32 time = m_rendering_engine->get_timer_time();
 	if(time > m_cloud.lasttime)
 		busytime_u32 = time - m_cloud.lasttime;
 	else
@@ -434,9 +443,22 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 		return;
 	}
 
+	// Chop background image to the smaller screen dimension
+	v2u32 bg_size = screensize;
+	v2f32 scale(
+			(f32) bg_size.X / sourcesize.X,
+			(f32) bg_size.Y / sourcesize.Y);
+	if (scale.X < scale.Y)
+		bg_size.X = (int) (scale.Y * sourcesize.X);
+	else
+		bg_size.Y = (int) (scale.X * sourcesize.Y);
+	v2s32 offset = v2s32(
+		(s32) screensize.X - (s32) bg_size.X,
+		(s32) screensize.Y - (s32) bg_size.Y
+	) / 2;
 	/* Draw background texture */
 	draw2DImageFilterScaled(driver, texture,
-		core::rect<s32>(0, 0, screensize.X, screensize.Y),
+		core::rect<s32>(offset.X, offset.Y, bg_size.X + offset.X, bg_size.Y + offset.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
 }
@@ -528,7 +550,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 		bool tile_image, unsigned int minsize)
 {
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	if (m_textures[layer].texture) {
 		driver->removeTexture(m_textures[layer].texture);
@@ -595,7 +617,7 @@ void GUIEngine::updateTopLeftTextSize()
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext->remove();
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = gui::StaticText::add(m_rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 }
 
@@ -610,11 +632,4 @@ s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 void GUIEngine::stopSound(s32 handle)
 {
 	m_sound_manager->stopSound(handle);
-}
-
-/******************************************************************************/
-unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
-		const std::string &serialized_params)
-{
-	return m_script->queueAsync(serialized_func, serialized_params);
 }

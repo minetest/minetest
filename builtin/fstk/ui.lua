@@ -63,7 +63,7 @@ function ui.update()
 	-- handle errors
 	if gamedata ~= nil and gamedata.reconnect_requested then
 		local error_message = core.formspec_escape(
-				gamedata.errormessage or "<none available>")
+				gamedata.errormessage or fgettext("<none available>"))
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",

@@ -135,7 +135,7 @@ void TestAreaStore::testSerialization()
 	b.data = "Area BB";
 	store.insertArea(&b);
 
-	std::ostringstream os;
+	std::ostringstream os(std::ios_base::binary);
 	store.serialize(os);
 	std::string str = os.str();
 
@@ -157,7 +157,7 @@ void TestAreaStore::testSerialization()
 
 	UASSERTEQ(const std::string &, str, str_wanted);
 
-	std::istringstream is(str);
+	std::istringstream is(str, std::ios_base::binary);
 	store.deserialize(is);
 
 	// deserialize() doesn't clear the store

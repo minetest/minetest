@@ -1,6 +1,5 @@
 -- Minetest: builtin/client/chatcommands.lua
 
-
 core.register_on_sending_chat_message(function(message)
 	if message:sub(1,2) == ".." then
 		return false
@@ -8,7 +7,7 @@ core.register_on_sending_chat_message(function(message)
 
 	local first_char = message:sub(1,1)
 	if first_char == "/" or first_char == "." then
-		core.display_chat_message(core.gettext("issued command: ") .. message)
+		core.display_chat_message(core.gettext("Issued command: ") .. message)
 	end
 
 	if first_char ~= "." then
@@ -19,7 +18,7 @@ core.register_on_sending_chat_message(function(message)
 	param = param or ""
 
 	if not cmd then
-		core.display_chat_message(core.gettext("-!- Empty command"))
+		core.display_chat_message("-!- " .. core.gettext("Empty command."))
 		return true
 	end
 
@@ -36,7 +35,7 @@ core.register_on_sending_chat_message(function(message)
 			core.display_chat_message(result)
 		end
 	else
-		core.display_chat_message(core.gettext("-!- Invalid command: ") .. cmd)
+		core.display_chat_message("-!- " .. core.gettext("Invalid command: ") .. cmd)
 	end
 
 	return true
@@ -66,7 +65,7 @@ core.register_chatcommand("clear_chat_queue", {
 	description = core.gettext("Clear the out chat queue"),
 	func = function(param)
 		core.clear_out_chat_queue()
-		return true, core.gettext("The out chat queue is now empty")
+		return true, core.gettext("The out chat queue is now empty.")
 	end,
 })
 

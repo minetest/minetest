@@ -1,5 +1,5 @@
 =============================
-Minetest World Format 22...27
+Minetest World Format 22...29
 =============================
 
 This applies to a world format carrying the block serialization version
@@ -8,6 +8,7 @@ This applies to a world format carrying the block serialization version
 - 0.4.0 (23)
 - 24 was never released as stable and existed for ~2 days
 - 27 was added in 0.4.15-dev
+- 29 was added in 5.5.0-dev
 
 The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
@@ -128,9 +129,34 @@ Example content (added indentation and - explanations):
   backend = sqlite3             - which DB backend to use for blocks (sqlite3, dummy, leveldb, redis, postgresql)
   player_backend = sqlite3      - which DB backend to use for player data
   readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
+  auth_backend = files          - which DB backend to use for authentication data
   server_announce = false       - whether the server is publicly announced or not
   load_mod_<mod> = false        - whether <mod> is to be loaded in this world
-  auth_backend = files          - which DB backend to use for authentication data
+
+For load_mod_<mod>, the possible values are:
+
+* `false` - Do not load the mod.
+* `true` - Load the mod from wherever it is found (may cause conflicts if the same mod appears also in some other place).
+* `mods/modpack/moddir` - Relative path to the mod
+    * Must be one of the following:
+        * `mods/`: mods in the user path's mods folder (ex `/home/user/.minetest/mods`)
+        * `share/`: mods in the share's mods folder (ex: `/usr/share/minetest/mods`)
+        * `/path/to/env`: you can use absolute paths to mods inside folders specified with the `MINETEST_MOD_PATH` env variable.
+    * Other locations and absolute paths are not supported
+    * Note that `moddir` is the directory name, not the mod name specified in mod.conf.
+
+PostgreSQL backend specific settings:
+  pgsql_connection = host=127.0.0.1 port=5432 user=mt_user password=mt_password dbname=minetest
+  pgsql_player_connection = (same parameters as above)
+  pgsql_readonly_connection = (same parameters as above)
+  pgsql_auth_connection = (same parameters as above)
+
+Redis backend specific settings:
+  redis_address = 127.0.0.1  - Redis server address
+  redis_hash = foo           - Database hash
+  redis_port = 6379          - (optional) connection port
+  redis_password = hunter2   - (optional) server password
+
 
 Player File Format
 ===================
@@ -281,6 +307,8 @@ MapBlock serialization format
 NOTE: Byte order is MSB first (big-endian).
 NOTE: Zlib data is in such a format that Python's zlib at least can
       directly decompress.
+NOTE: Since version 29 zstd is used instead of zlib. In addition the entire
+      block is first serialized and then compressed (except the version byte).
 
 u8 version
 - map format version number, see serialisation.h for the latest number
@@ -324,6 +352,23 @@ u16 lighting_complete
   then Minetest will correct lighting in the day light bank when
   the block at (1, 0, 0) is also loaded.
 
+if map format version >= 29:
+  u32 timestamp
+  - Timestamp when last saved, as seconds from starting the game.
+  - 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
+                 difference when loaded
+
+  u8 name_id_mapping_version
+  - Should be zero for map format version 29.
+  
+  u16 num_name_id_mappings
+  foreach num_name_id_mappings
+    u16 id
+    u16 name_len
+    u8[name_len] name
+if map format version < 29:
+  -- Nothing right here, timpstamp and node id mappings are serialized later
+
 u8 content_width
 - Number of bytes in the content (param0) fields of nodes
 if map format version <= 23:
@@ -335,7 +380,7 @@ u8 params_width
 - Number of bytes used for parameters per node
 - Always 2
 
-zlib-compressed node data:
+node data (zlib-compressed if version < 29):
 if content_width == 1:
     - content:
       u8[4096]: param0 fields
@@ -348,31 +393,31 @@ if content_width == 2:
       u8[4096]: param2 fields
 - The location of a node in each of those arrays is (z*16*16 + y*16 + x).
 
-zlib-compressed node metadata list
+node metadata list (zlib-compressed if version < 29):
 - content:
-if map format version <= 22:
-  u16 version (=1)
-  u16 count of metadata
-  foreach count:
-    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
-    u16 type_id
-    u16 content_size
-    u8[content_size] content of metadata. Format depends on type_id, see below.
-if map format version >= 23:
-  u8 version -- Note: type was u16 for map format version <= 22
-    -- = 1 for map format version < 28
-    -- = 2 since map format version 28
-  u16 count of metadata
-  foreach count:
-    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
-    u32 num_vars
-    foreach num_vars:
-      u16 key_len
-      u8[key_len] key
-      u32 val_len
-      u8[val_len] value
-      u8 is_private -- only for version >= 2. 0 = not private, 1 = private
-    serialized inventory
+  if map format version <= 22:
+    u16 version (=1)
+    u16 count of metadata
+    foreach count:
+      u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+      u16 type_id
+      u16 content_size
+      u8[content_size] content of metadata. Format depends on type_id, see below.
+  if map format version >= 23:
+    u8 version -- Note: type was u16 for map format version <= 22
+      -- = 1 for map format version < 28
+      -- = 2 since map format version 28
+    u16 count of metadata
+    foreach count:
+      u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+      u32 num_vars
+      foreach num_vars:
+        u16 key_len
+        u8[key_len] key
+        u32 val_len
+        u8[val_len] value
+        u8 is_private -- only for version >= 2. 0 = not private, 1 = private
+      serialized inventory
 
 - Node timers
 if map format version == 23:
@@ -403,23 +448,21 @@ foreach static_object_count:
   u16 data_size
   u8[data_size] data
 
-u32 timestamp
-- Timestamp when last saved, as seconds from starting the game.
-- 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
-               difference when loaded
+if map format version < 29:
+  u32 timestamp
+  - Same meaning as the timestamp further up
 
-u8 name-id-mapping version
-- Always 0
+  u8 name-id-mapping version
+  - Always 0
 
-u16 num_name_id_mappings
-
-foreach num_name_id_mappings
-  u16 id
-  u16 name_len
-  u8[name_len] name
+  u16 num_name_id_mappings
+  foreach num_name_id_mappings
+    u16 id
+    u16 name_len
+    u8[name_len] name
 
 - Node timers
-if map format version == 25:
+if map format version >= 25:
   u8 length of the data of a single timer (always 2+4+4=10)
   u16 num_of_timers
   foreach num_of_timers:

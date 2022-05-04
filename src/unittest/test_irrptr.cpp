@@ -91,6 +91,14 @@ void TestIrrPtr::testRefCounting()
 			obj->getReferenceCount());
 }
 
+#if defined(__clang__)
+	#pragma GCC diagnostic push
+	#if __clang_major__ >= 7
+		#pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+	#endif
+	#pragma GCC diagnostic ignored "-Wself-move"
+#endif
+
 void TestIrrPtr::testSelfAssignment()
 {
 	irr_ptr<IReferenceCounted> p1{new IReferenceCounted()};
@@ -129,3 +137,7 @@ void TestIrrPtr::testNullHandling()
 	UASSERT(!p2);
 	UASSERT(!p3);
 }
+
+#if defined(__clang__)
+	#pragma GCC diagnostic pop
+#endif

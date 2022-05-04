@@ -1428,7 +1428,7 @@ std::string Pathfinder::dirToName(PathDirections dir)
 }
 
 /******************************************************************************/
-void Pathfinder::printPath(std::vector<v3s16> path)
+void Pathfinder::printPath(const std::vector<v3s16> &path)
 {
 	unsigned int current = 0;
 	for (std::vector<v3s16>::iterator i = path.begin();

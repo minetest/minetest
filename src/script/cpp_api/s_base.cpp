@@ -37,6 +37,8 @@ extern "C" {
 #include "lualib.h"
 #if USE_LUAJIT
 	#include "luajit.h"
+#else
+	#include "bit.h"
 #endif
 }
 
@@ -88,6 +90,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	else
 		luaL_openlibs(m_luastack);
 
+	// Load bit library
+	lua_pushcfunction(m_luastack, luaopen_bit);
+	lua_pushstring(m_luastack, LUA_BITLIBNAME);
+	lua_call(m_luastack, 1, 0);
+
 	// Make the ScriptApiBase* accessible to ModApiBase
 #if INDIRECT_SCRIPTAPI_RIDX
 	*(void **)(lua_newuserdata(m_luastack, sizeof(void *))) = this;
@@ -113,6 +120,14 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	// Add basic globals
 	lua_newtable(m_luastack);
 	lua_setglobal(m_luastack, "core");
+
+	// vector.metatable is stored in the registry for quick access from C++.
+	lua_newtable(m_luastack);
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_newtable(m_luastack);
+	lua_rawgeti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_setfield(m_luastack, -2, "metatable");
+	lua_setglobal(m_luastack, "vector");
 
 	if (m_type == ScriptingType::Client)
 		lua_pushstring(m_luastack, "/");
@@ -331,13 +346,9 @@ void ScriptApiBase::setOriginDirect(const char *origin)
 
 void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 {
-#ifdef SCRIPTAPI_DEBUG
 	lua_State *L = getStack();
-
 	m_last_run_mod = lua_istable(L, index) ?
 		getstringfield_default(L, index, "mod_origin", "") : "";
-	//printf(">>>> running %s for mod: %s\n", fxn, m_last_run_mod.c_str());
-#endif
 }
 
 /*
