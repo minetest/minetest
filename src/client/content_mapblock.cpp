@@ -437,10 +437,12 @@ u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 same
 
 	// Faces on opposite sides can cancel each other out if there is 
 	// a matching neighbor of the same type
-	u8 sametype_mask =
-			((solid_mask & 3) == 3 ? 3 : 0) |
+	// Only cancel out faces in opaque nodeboxes.
+	u8 sametype_mask = (f->alpha == AlphaMode::ALPHAMODE_OPAQUE) ?
+			(((solid_mask & 3) == 3 ? 3 : 0) |
 			((solid_mask & 12) == 12 ? 12 : 0) |
-			((solid_mask & 48) == 48 ? 48 : 0);
+			((solid_mask & 48) == 48 ? 48 : 0)) :
+			0;
 
 	// Combine masks with actual neighbors to get the faces to be skipped
 	return (solid_mask & solid_neighbors) | (sametype_mask & sametype_neighbors);
