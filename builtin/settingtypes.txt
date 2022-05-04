@@ -1468,7 +1468,8 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    -    action
 #    -    info
 #    -    verbose
-debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
+#    -    trace
+debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose,trace
 
 #    If the file size of debug.txt exceeds the number of megabytes specified in
 #    this setting when it is opened, the file is moved to debug.txt.1,
@@ -1477,7 +1478,7 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 debug_log_size_max (Debug log file size threshold) int 50
 
 #    Minimal level of logging to be written to chat.
-chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose,trace
 
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.

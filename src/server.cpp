@@ -243,6 +243,7 @@ Server::Server(
 	m_clients(m_con),
 	m_admin_chat(iface),
 	m_on_shutdown_errmsg(on_shutdown_errmsg),
+	m_async_globals_data(""),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -480,6 +481,9 @@ void Server::init()
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
 
+	// Do this after regular script init is done
+	m_script->initAsync();
+
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
 
@@ -521,7 +525,7 @@ void Server::start()
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
-	m_bind_addr.print(&actionstream);
+	m_bind_addr.print(actionstream);
 	actionstream << "." << std::endl;
 }
 
@@ -3656,11 +3660,6 @@ const std::vector<ModSpec> & Server::getMods() const
 const ModSpec *Server::getModSpec(const std::string &modname) const
 {
 	return m_modmgr->getModSpec(modname);
-}
-
-void Server::getModNames(std::vector<std::string> &modlist)
-{
-	m_modmgr->getModNames(modlist);
 }
 
 std::string Server::getBuiltinLuaPath()

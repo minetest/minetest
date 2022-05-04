@@ -109,7 +109,6 @@ private:
 	void enable() { m_shadows_enabled = m_shadows_supported; }
 
 	// a bunch of variables
-	IrrlichtDevice *m_device{nullptr};
 	scene::ISceneManager *m_smgr{nullptr};
 	video::IVideoDriver *m_driver{nullptr};
 	Client *m_client{nullptr};

@@ -327,7 +327,7 @@ public:
 		- Create blank filled with CONTENT_IGNORE
 
 	*/
-	MapBlock *emergeBlock(v3s16 p, bool create_blank=true);
+	MapBlock *emergeBlock(v3s16 p, bool create_blank=true) override;
 
 	/*
 		Try to get a block.
@@ -349,27 +349,27 @@ public:
 	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
 
 	// Call these before and after saving of blocks
-	void beginSave();
-	void endSave();
+	void beginSave() override;
+	void endSave() override;
 
-	void save(ModifiedState save_level);
+	void save(ModifiedState save_level) override;
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 	void listAllLoadedBlocks(std::vector<v3s16> &dst);
 
 	MapgenParams *getMapgenParams();
 
-	bool saveBlock(MapBlock *block);
+	bool saveBlock(MapBlock *block) override;
 	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
 
-	bool deleteBlock(v3s16 blockpos);
+	bool deleteBlock(v3s16 blockpos) override;
 
 	void updateVManip(v3s16 pos);
 
 	// For debug printing
-	virtual void PrintInfo(std::ostream &out);
+	void PrintInfo(std::ostream &out) override;
 
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
 
@@ -446,10 +446,25 @@ public:
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
 		bool overwrite_generated = true);
 
+	/*
+		Creates a copy of this VManip including contents, the copy will not be
+		associated with a Map.
+	*/
+	MMVManip *clone() const;
+
+	// Reassociates a copied VManip to a map
+	void reparent(Map *map);
+
+	// Is it impossible to call initialEmerge / blitBackAll?
+	inline bool isOrphan() const { return !m_map; }
+
 	bool m_is_dirty = false;
 
 protected:
-	Map *m_map;
+	MMVManip() {};
+
+	// may be null
+	Map *m_map = nullptr;
 	/*
 		key = blockpos
 		value = flags describing the block

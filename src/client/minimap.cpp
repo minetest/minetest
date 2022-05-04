@@ -304,7 +304,7 @@ void Minimap::setModeIndex(size_t index)
 		data->mode = m_modes[index];
 		m_current_mode_index = index;
 	} else {
-		data->mode = MinimapModeDef{MINIMAP_TYPE_OFF, gettext("Minimap hidden"), 0, 0, ""};
+		data->mode = {MINIMAP_TYPE_OFF, gettext("Minimap hidden"), 0, 0, "", 0};
 		m_current_mode_index = 0;
 	}
 

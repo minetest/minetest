@@ -194,7 +194,7 @@ struct BufferedPacket {
 
 	u16 getSeqnum() const;
 
-	inline const size_t size() const { return m_data.size(); }
+	inline size_t size() const { return m_data.size(); }
 
 	u8 *data; // Direct memory access
 	float time = 0.0f; // Seconds from buffering the packet or re-sending

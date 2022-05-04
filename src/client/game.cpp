@@ -1063,9 +1063,9 @@ bool Game::startup(bool *kill,
 void Game::run()
 {
 	ProfilerGraph graph;
-	RunStats stats              = { 0 };
-	CameraOrientation cam_view_target  = { 0 };
-	CameraOrientation cam_view  = { 0 };
+	RunStats stats = {};
+	CameraOrientation cam_view_target = {};
+	CameraOrientation cam_view = {};
 	FpsControl draw_times;
 	f32 dtime; // in seconds
 
@@ -1491,7 +1491,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
 
 	infostream << "Connecting to server at ";
-	connect_address.print(&infostream);
+	connect_address.print(infostream);
 	infostream << std::endl;
 
 	client->connect(connect_address,

@@ -671,6 +671,9 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(cpdir);
 	API_FCT(mvdir);
 	API_FCT(get_dir_list);
+	API_FCT(safe_file_write);
+
+	API_FCT(request_insecure_environment);
 
 	API_FCT(encode_base64);
 	API_FCT(decode_base64);
@@ -679,6 +682,8 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+
+	API_FCT(encode_png);
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
