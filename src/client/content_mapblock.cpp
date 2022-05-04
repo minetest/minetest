@@ -150,8 +150,10 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 //              should be (2+2)*6=24 values in the list. The order of
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures).
+//  mask      - a bit mask that suppresses drawing of tiles.
+//              tile i will not be drawn if mask & (1 << i) is 1
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc)
+	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -274,6 +276,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	// Add to mesh collector
 	for (int k = 0; k < 6; ++k) {
+		if (mask & (1 << k))
+			continue;
 		int tileindex = MYMIN(k, tilecount - 1);
 		collector->append(tiles[tileindex], vertices + 4 * k, 4, quad_indices, 6);
 	}
@@ -363,7 +367,7 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 }
 
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
-	TileSpec *tiles, int tile_count)
+	TileSpec *tiles, int tile_count, u8 mask)
 {
 	bool scale = std::fabs(f->visual_scale - 1.0f) > 1e-3f;
 	f32 texture_coord_buf[24];
@@ -403,11 +407,48 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboid(box, tiles, tile_count, lights, txc);
+		drawCuboid(box, tiles, tile_count, lights, txc, mask);
 	} else {
-		drawCuboid(box, tiles, tile_count, nullptr, txc);
+		drawCuboid(box, tiles, tile_count, nullptr, txc, mask);
 	}
 }
+
+u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const
+{
+	const f32 NODE_BOUNDARY = 0.5 * BS;
+
+	// For an oversized nodebox, return immediately
+	if (box.MaxEdge.X > NODE_BOUNDARY ||
+			box.MinEdge.X < -NODE_BOUNDARY ||
+			box.MaxEdge.Y >  NODE_BOUNDARY ||
+			box.MinEdge.Y < -NODE_BOUNDARY ||
+			box.MaxEdge.Z >  NODE_BOUNDARY ||
+			box.MinEdge.Z < -NODE_BOUNDARY)
+		return 0;
+
+	// We can skip faces at node boundary if the matching neighbor is solid
+	u8 solid_mask =
+			(box.MaxEdge.Y == NODE_BOUNDARY  ?  1 : 0) |
+			(box.MinEdge.Y == -NODE_BOUNDARY ?  2 : 0) |
+			(box.MaxEdge.X == NODE_BOUNDARY  ?  4 : 0) |
+			(box.MinEdge.X == -NODE_BOUNDARY ?  8 : 0) |
+			(box.MaxEdge.Z == NODE_BOUNDARY  ? 16 : 0) |
+			(box.MinEdge.Z == -NODE_BOUNDARY ? 32 : 0);
+
+	u8 sametype_mask = 0;
+	if (f->alpha == AlphaMode::ALPHAMODE_OPAQUE) {
+		// In opaque nodeboxes, faces on opposite sides can cancel
+		// each other out if there is a matching neighbor of the same type
+		sametype_mask =
+				((solid_mask & 3) == 3 ? 3 : 0) |
+				((solid_mask & 12) == 12 ? 12 : 0) |
+				((solid_mask & 48) == 48 ? 48 : 0);
+	}
+
+	// Combine masks with actual neighbors to get the faces to be skipped
+	return (solid_mask & solid_neighbors) | (sametype_mask & sametype_neighbors);
+}
+
 
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 {
@@ -1366,13 +1407,38 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		getTile(nodebox_tile_dirs[face], &tiles[face]);
 	}
 
+	bool param2_is_rotation =
+			f->param_type_2 == CPT2_COLORED_FACEDIR ||
+			f->param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			f->param_type_2 == CPT2_FACEDIR ||
+			f->param_type_2 == CPT2_WALLMOUNTED;
+
+	bool param2_is_level =
+			f->param_type_2 == CPT2_LEVELED;
+
 	// locate possible neighboring nodes to connect to
 	u8 neighbors_set = 0;
-	if (f->node_box.type == NODEBOX_CONNECTED) {
-		for (int dir = 0; dir != 6; dir++) {
-			u8 flag = 1 << dir;
-			v3s16 p2 = blockpos_nodes + p + nodebox_connection_dirs[dir];
-			MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
+	u8 solid_neighbors = 0;
+	u8 sametype_neighbors = 0;
+	for (int dir = 0; dir != 6; dir++) {
+		u8 flag = 1 << dir;
+		v3s16 p2 = blockpos_nodes + p + nodebox_tile_dirs[dir];
+		MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
+
+		// mark neighbors that are the same node type
+		// and have the same rotation or higher level stored as param2
+		if (n2.param0 == n.param0 &&
+				(!param2_is_rotation || n.param2 == n2.param2) &&
+				(!param2_is_level || n.param2 <= n2.param2))
+			sametype_neighbors |= flag;
+
+		// mark neighbors that are simple solid blocks
+		if (nodedef->get(n2).drawtype == NDT_NORMAL)
+			solid_neighbors |= flag;
+
+		if (f->node_box.type == NODEBOX_CONNECTED) {
+			p2 = blockpos_nodes + p + nodebox_connection_dirs[dir];
+			n2 = data->m_vmanip.getNodeNoEx(p2);
 			if (nodedef->nodeboxConnects(n, n2, flag))
 				neighbors_set |= flag;
 		}
@@ -1433,8 +1499,10 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		}
 	}
 
-	for (auto &box : boxes)
-		drawAutoLightedCuboid(box, nullptr, tiles, 6);
+	for (auto &box : boxes) {
+		u8 mask = getNodeBoxMask(box, solid_neighbors, sametype_neighbors);
+		drawAutoLightedCuboid(box, nullptr, tiles, 6, mask);
+	}
 }
 
 void MapblockMeshGenerator::drawMeshNode()
