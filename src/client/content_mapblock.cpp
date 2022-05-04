@@ -435,14 +435,15 @@ u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 same
 			(box.MaxEdge.Z == NODE_BOUNDARY  ? 16 : 0) |
 			(box.MinEdge.Z == -NODE_BOUNDARY ? 32 : 0);
 
-	// Faces on opposite sides can cancel each other out if there is 
-	// a matching neighbor of the same type
-	// Only cancel out faces in opaque nodeboxes.
-	u8 sametype_mask = (f->alpha == AlphaMode::ALPHAMODE_OPAQUE) ?
-			(((solid_mask & 3) == 3 ? 3 : 0) |
-			((solid_mask & 12) == 12 ? 12 : 0) |
-			((solid_mask & 48) == 48 ? 48 : 0)) :
-			0;
+	u8 sametype_mask = 0;
+	if (f->alpha == AlphaMode::ALPHAMODE_OPAQUE) {
+		// In opaque nodeboxes, faces on opposite sides can cancel
+		// each other out if there is a matching neighbor of the same type
+		sametype_mask =
+				((solid_mask & 3) == 3 ? 3 : 0) |
+				((solid_mask & 12) == 12 ? 12 : 0) |
+				((solid_mask & 48) == 48 ? 48 : 0);
+	}
 
 	// Combine masks with actual neighbors to get the faces to be skipped
 	return (solid_mask & solid_neighbors) | (sametype_mask & sametype_neighbors);
@@ -1406,6 +1407,15 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		getTile(nodebox_tile_dirs[face], &tiles[face]);
 	}
 
+	bool param2_is_rotation =
+			f->param_type_2 == ContentParamType2::CPT2_COLORED_FACEDIR ||
+			f->param_type_2 == ContentParamType2::CPT2_COLORED_WALLMOUNTED ||
+			f->param_type_2 == ContentParamType2::CPT2_FACEDIR ||
+			f->param_type_2 == ContentParamType2::CPT2_WALLMOUNTED;
+
+	bool param2_is_level =
+			f->param_type_2 == ContentParamType2::CPT2_LEVELED;
+
 	// locate possible neighboring nodes to connect to
 	u8 neighbors_set = 0;
 	u8 solid_neighbors = 0;
@@ -1414,8 +1424,15 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		u8 flag = 1 << dir;
 		v3s16 p2 = blockpos_nodes + p + nodebox_tile_dirs[dir];
 		MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
-		if (n2.param0 == n.param0 && n2.param2 == n.param2)
+
+		// mark neighbors that are the same node type
+		// and have the same rotation or higher level stored as param2
+		if (n2.param0 == n.param0 &&
+				(!param2_is_rotation || n.param2 == n2.param2) &&
+				(!param2_is_level || n.param2 <= n2.param2))
 			sametype_neighbors |= flag;
+
+		// mark neighbors that are simple solid blocks
 		if (nodedef->get(n2).drawtype == NDT_NORMAL)
 			solid_neighbors |= flag;
 
