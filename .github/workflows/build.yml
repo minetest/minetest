@@ -224,10 +224,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: Checkout IrrlichtMT
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
         with:
           repository: minetest/irrlicht
           path: lib/irrlichtmt/
