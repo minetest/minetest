@@ -1977,6 +1977,12 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_pushnumber(L, elem->number);
 	lua_setfield(L, -2, "number");
 
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		// waypoints reuse the item field to store precision, precision = item - 1
+		lua_pushnumber(L, elem->item - 1);
+		lua_setfield(L, -2, "precision");
+	}
+	// push the item field for waypoints as well for backwards compatibility
 	lua_pushnumber(L, elem->item);
 	lua_setfield(L, -2, "item");
 
