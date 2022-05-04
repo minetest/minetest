@@ -65,7 +65,7 @@ void set_default_settings()
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("enable_register_confirmation", "true");
-	settings->setDefault("clickable_chat_weblinks", "true");
+	// settings->setDefault("clickable_chat_weblinks", "true"); // Moved below
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Keymap
@@ -465,6 +465,9 @@ void set_default_settings()
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
+	settings->setDefault("clickable_chat_weblinks", "false");
+#else
+	settings->setDefault("clickable_chat_weblinks", "true");
 #endif
 	// Altered settings for Android
 #ifdef __ANDROID__
