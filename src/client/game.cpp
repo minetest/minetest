@@ -3093,10 +3093,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 			!runData.btn_down_for_dig,
 			camera_offset);
 
-	if (pointed != runData.pointed_old) {
+	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
-		hud->updateSelectionMesh(camera_offset);
-	}
+
+	hud->updateSelectionMesh(camera_offset);
 
 	// Allow digging again if button is not pressed
 	if (runData.digging_blocked && !isKeyDown(KeyType::DIG))
