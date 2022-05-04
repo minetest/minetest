@@ -1408,13 +1408,13 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	}
 
 	bool param2_is_rotation =
-			f->param_type_2 == ContentParamType2::CPT2_COLORED_FACEDIR ||
-			f->param_type_2 == ContentParamType2::CPT2_COLORED_WALLMOUNTED ||
-			f->param_type_2 == ContentParamType2::CPT2_FACEDIR ||
-			f->param_type_2 == ContentParamType2::CPT2_WALLMOUNTED;
+			f->param_type_2 == CPT2_COLORED_FACEDIR ||
+			f->param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			f->param_type_2 == CPT2_FACEDIR ||
+			f->param_type_2 == CPT2_WALLMOUNTED;
 
 	bool param2_is_level =
-			f->param_type_2 == ContentParamType2::CPT2_LEVELED;
+			f->param_type_2 == CPT2_LEVELED;
 
 	// locate possible neighboring nodes to connect to
 	u8 neighbors_set = 0;
