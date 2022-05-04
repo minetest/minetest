@@ -1491,7 +1491,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
 
 	infostream << "Connecting to server at ";
-	connect_address.print(&infostream);
+	connect_address.print(infostream);
 	infostream << std::endl;
 
 	client->connect(connect_address,

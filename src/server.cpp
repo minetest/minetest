@@ -525,7 +525,7 @@ void Server::start()
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
-	m_bind_addr.print(&actionstream);
+	m_bind_addr.print(actionstream);
 	actionstream << "." << std::endl;
 }
 

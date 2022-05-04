@@ -32,21 +32,17 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-#define LOG(a) a
 #define PROFILE(a)
 #undef DEBUG_CONNECTION_KBPS
 #else
 /* this mutex is used to achieve log message consistency */
-std::mutex log_conthread_mutex;
-#define LOG(a)                                                                \
-	{                                                                         \
-	MutexAutoLock loglock(log_conthread_mutex);                                 \
-	a;                                                                        \
-	}
 #define PROFILE(a) a
 //#define DEBUG_CONNECTION_KBPS
 #undef DEBUG_CONNECTION_KBPS
 #endif
+
+// TODO: Clean this up.
+#define LOG(a) a
 
 #define WINDOW_SIZE 5
 
