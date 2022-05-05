@@ -16364,7 +16364,7 @@ public:
 
     }
     friend auto operator << (std::ostream& os, Duration const& duration) -> std::ostream& {
-        return os << duration.value() << ' ' << duration.unitsAsString();
+        return os << std::fixed << duration.value() << ' ' << duration.unitsAsString();
     }
 };
 } // end anon namespace
