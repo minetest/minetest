@@ -16314,7 +16314,7 @@ class Duration {
     Unit m_units;
 
 public:
-    explicit Duration(double inNanoseconds, Unit units = Unit::Auto)
+    explicit Duration(double inNanoseconds, Unit units = Unit::Microseconds)
         : m_inNanoseconds(inNanoseconds),
         m_units(units) {
         if (m_units == Unit::Auto) {
