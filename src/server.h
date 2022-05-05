@@ -424,6 +424,16 @@ private:
 		std::unordered_set<session_t> waiting_players;
 	};
 
+	// the standard library does not implement std::hash for pairs so we have this:
+	struct SBCHash {
+		size_t operator() (const std::pair<v3s16, u16> &p) const {
+			return (((size_t) p.first.X) << 48) | (((size_t) p.first.Y) << 32) |
+				(((size_t) p.first.Z) << 16) | ((size_t) p.second);
+		}
+	};
+
+	typedef std::unordered_map<std::pair<v3s16, u16>, std::string, SBCHash> SerializedBlockCache;
+
 	void init();
 
 	void SendMovement(session_t peer_id);
@@ -484,7 +494,9 @@ private:
 			float far_d_nodes = 100);
 
 	// Environment and Connection must be locked when called
-	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
+	// `cache` may only be very short lived! (invalidation not handeled)
+	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
+		u16 net_proto_version, SerializedBlockCache *cache = nullptr);
 
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
