@@ -281,6 +281,10 @@ Server::Server(
 			"minetest_core_server_packet_recv_processed",
 			"Valid received packets processed");
 
+	m_map_edit_event_counter = m_metrics_backend->addCounter(
+			"minetest_core_map_edit_events",
+			"Number of map edit events");
+
 	m_lag_gauge->set(g_settings->getFloat("dedicated_server_step"));
 }
 
@@ -462,7 +466,8 @@ void Server::init()
 
 	// Initialize Environment
 	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
-	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
+	m_env = new ServerEnvironment(servermap, m_script, this,
+		m_path_world, m_metrics_backend.get());
 
 	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
@@ -623,6 +628,7 @@ void Server::AsyncRunStep(bool initial_step)
 			max_lag = dtime;
 		}
 		m_env->reportMaxLagEstimate(max_lag);
+
 		// Step environment
 		m_env->step(dtime);
 	}
@@ -864,15 +870,13 @@ void Server::AsyncRunStep(bool initial_step)
 		// We will be accessing the environment
 		MutexAutoLock lock(m_env_mutex);
 
-		// Don't send too many at a time
-		//u32 count = 0;
-
-		// Single change sending is disabled if queue size is not small
+		// Single change sending is disabled if queue size is big
 		bool disable_single_change_sending = false;
 		if(m_unsent_map_edit_queue.size() >= 4)
 			disable_single_change_sending = true;
 
-		int event_count = m_unsent_map_edit_queue.size();
+		const auto event_count = m_unsent_map_edit_queue.size();
+		m_map_edit_event_counter->increment(event_count);
 
 		// We'll log the amount of each
 		Profiler prof;
