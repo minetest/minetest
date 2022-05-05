@@ -2326,22 +2326,34 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 }
 
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
-		u16 net_proto_version)
+		u16 net_proto_version, SerializedBlockCache *cache)
 {
-	/*
-		Create a packet with the block in the right format
-	*/
 	thread_local const int net_compression_level = rangelim(g_settings->getS16("map_compression_level_net"), -1, 9);
-	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false, net_compression_level);
-	block->serializeNetworkSpecific(os);
-	std::string s = os.str();
+	std::string s, *sptr = nullptr;
 
-	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + s.size(), peer_id);
+	if (cache) {
+		auto it = cache->find({block->getPos(), ver});
+		if (it != cache->end())
+			sptr = &it->second;
+	}
 
+	// Serialize the block in the right format
+	if (!sptr) {
+		std::ostringstream os(std::ios_base::binary);
+		block->serialize(os, ver, false, net_compression_level);
+		block->serializeNetworkSpecific(os);
+		s = os.str();
+		sptr = &s;
+	}
+
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + sptr->size(), peer_id);
 	pkt << block->getPos();
-	pkt.putRawString(s.c_str(), s.size());
+	pkt.putRawString(*sptr);
 	Send(&pkt);
+
+	// Store away in cache
+	if (cache && sptr == &s)
+		(*cache)[{block->getPos(), ver}] = std::move(s);
 }
 
 void Server::SendBlocks(float dtime)
@@ -2351,7 +2363,7 @@ void Server::SendBlocks(float dtime)
 
 	std::vector<PrioritySortedBlockTransfer> queue;
 
-	u32 total_sending = 0;
+	u32 total_sending = 0, unique_clients = 0;
 
 	{
 		ScopeProfiler sp2(g_profiler, "Server::SendBlocks(): Collect list");
@@ -2366,7 +2378,9 @@ void Server::SendBlocks(float dtime)
 				continue;
 
 			total_sending += client->getSendingCount();
+			const auto old_count = queue.size();
 			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
+			unique_clients += queue.size() > old_count ? 1 : 0;
 		}
 	}
 
@@ -2385,6 +2399,12 @@ void Server::SendBlocks(float dtime)
 	ScopeProfiler sp(g_profiler, "Server::SendBlocks(): Send to clients");
 	Map &map = m_env->getMap();
 
+	SerializedBlockCache cache, *cache_ptr = nullptr;
+	if (unique_clients > 1) {
+		// caching is pointless with a single client
+		cache_ptr = &cache;
+	}
+
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		if (total_sending >= max_blocks_to_send)
 			break;
@@ -2399,7 +2419,7 @@ void Server::SendBlocks(float dtime)
 			continue;
 
 		SendBlockNoLock(block_to_send.peer_id, block, client->serialization_version,
-				client->net_proto_version);
+				client->net_proto_version, cache_ptr);
 
 		client->SentBlock(block_to_send.pos);
 		total_sending++;
