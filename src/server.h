@@ -713,7 +713,7 @@ private:
 	MetricGaugePtr m_player_gauge;
 	MetricGaugePtr m_timeofday_gauge;
 	MetricGaugePtr m_lag_gauge;
-	MetricCounterPtr m_aom_buffer_counter;
+	MetricCounterPtr m_aom_buffer_counter[2]; // [0] = rel, [1] = unrel
 	MetricCounterPtr m_packet_recv_counter;
 	MetricCounterPtr m_packet_recv_processed_counter;
 	MetricCounterPtr m_map_edit_event_counter;

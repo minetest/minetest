@@ -269,9 +269,15 @@ Server::Server(
 			"minetest_core_latency",
 			"Latency value (in seconds)");
 
-	m_aom_buffer_counter = m_metrics_backend->addCounter(
-			"minetest_core_aom_generated_count",
-			"Number of active object messages generated");
+
+	const std::string aom_types[] = {"reliable", "unreliable"};
+	for (u32 i = 0; i < ARRLEN(aom_types); i++) {
+		std::string help_str("Number of active object messages generated (");
+		help_str.append(aom_types[i]).append(")");
+		m_aom_buffer_counter[i] = m_metrics_backend->addCounter(
+				"minetest_core_aom_generated_count", help_str,
+				{{"type", aom_types[i]}});
+	}
 
 	m_packet_recv_counter = m_metrics_backend->addCounter(
 			"minetest_core_server_packet_recv",
@@ -401,7 +407,7 @@ void Server::init()
 	}
 
 	// Create emerge manager
-	m_emerge = new EmergeManager(this);
+	m_emerge = new EmergeManager(this, m_metrics_backend.get());
 
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
@@ -779,10 +785,14 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Get active object messages from environment
 		ActiveObjectMessage aom(0);
-		u32 aom_count = 0;
+		u32 count_reliable = 0, count_unreliable = 0;
 		for(;;) {
 			if (!m_env->getActiveObjectMessage(&aom))
 				break;
+			if (aom.reliable)
+				count_reliable++;
+			else
+				count_unreliable++;
 
 			std::vector<ActiveObjectMessage>* message_list = nullptr;
 			auto n = buffered_messages.find(aom.id);
@@ -793,10 +803,10 @@ void Server::AsyncRunStep(bool initial_step)
 				message_list = n->second;
 			}
 			message_list->push_back(std::move(aom));
-			aom_count++;
 		}
 
-		m_aom_buffer_counter->increment(aom_count);
+		m_aom_buffer_counter[0]->increment(count_reliable);
+		m_aom_buffer_counter[1]->increment(count_unreliable);
 
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
