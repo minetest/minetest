@@ -282,7 +282,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 endif()
 
 if(BUILD_BENCHMARKS)
-	set(CATCH2_LIBRARY catch2)
 	add_subdirectory(lib/catch2)
 endif()
 
