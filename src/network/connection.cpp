@@ -1040,7 +1040,15 @@ bool UDPPeer::processReliableSendCommand(
 							- BASE_HEADER_SIZE
 							- RELIABLE_HEADER_SIZE;
 
-	sanity_check(c.data.getSize() < MAX_RELIABLE_WINDOW_SIZE*512);
+	if (c.data.getSize() >= MAX_RELIABLE_WINDOW_SIZE*512) {
+		// This should never happen, complain loudly
+		LOG(errorstream << m_connection->getDesc()
+				<< " Cannot deliver reliable sized "
+				<< c.data.getSize() << " bytes for peer_id="
+				<< c.peer_id << std::endl;)
+		m_connection->DisconnectPeer(c.peer_id);
+		return false;
+	}
 
 	std::list<SharedBuffer<u8>> originals;
 	u16 split_sequence_number = chan.readNextSplitSeqNum();
