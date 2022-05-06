@@ -45,7 +45,7 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=1.9.0mt4
+irrlicht_version=1.9.0mt5
 ogg_version=1.3.5
 openal_version=1.21.1
 vorbis_version=1.3.7
