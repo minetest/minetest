@@ -7,7 +7,7 @@ install_linux_deps() {
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
 		gettext libpq-dev libleveldb-dev libcurl4-openssl-dev libzstd-dev)
 
-        if [[ "$1" == "--no-irr" ]]; then
+	if [[ "$1" == "--no-irr" ]]; then
 		shift
 	elif [[ "$1" == "--old-irr" ]]; then
 		shift
