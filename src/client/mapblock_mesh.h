@@ -219,7 +219,14 @@ public:
 	{
 		return this->m_transparent_buffers;
 	}
+
 private:
+	struct AnimationInfo {
+		int frame; // last animation frame
+		int frame_offset;
+		TileLayer tile;
+	};
+
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
 	ITextureSource *m_tsrc;
@@ -238,12 +245,10 @@ private:
 	// Maps mesh and mesh buffer (i.e. material) indices to base texture names
 	std::map<std::pair<u8, u32>, std::string> m_crack_materials;
 
-	// Animation info: texture animationi
+	// Animation info: texture animation
 	// Maps mesh and mesh buffer indices to TileSpecs
 	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, TileLayer> m_animation_tiles;
-	std::map<std::pair<u8, u32>, int> m_animation_frames; // last animation frame
-	std::map<std::pair<u8, u32>, int> m_animation_frame_offsets;
+	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
 
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
