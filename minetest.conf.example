@@ -1176,7 +1176,7 @@
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 #    type: bool
-# clickable_chat_weblinks = false
+# clickable_chat_weblinks = true
 
 #    Optional override for chat weblink color.
 #    type: string
