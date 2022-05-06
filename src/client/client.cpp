@@ -786,16 +786,18 @@ void Client::peerAdded(con::Peer *peer)
 	infostream << "Client::peerAdded(): peer->id="
 			<< peer->id << std::endl;
 }
+
 void Client::deletingPeer(con::Peer *peer, bool timeout)
 {
 	infostream << "Client::deletingPeer(): "
 			"Server Peer is getting deleted "
 			<< "(timeout=" << timeout << ")" << std::endl;
 
-	if (timeout) {
-		m_access_denied = true;
+	m_access_denied = true;
+	if (timeout)
 		m_access_denied_reason = gettext("Connection timed out.");
-	}
+	else
+		m_access_denied_reason = gettext("Connection aborted (protocol error?).");
 }
 
 /*
