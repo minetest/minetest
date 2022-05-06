@@ -52,6 +52,7 @@ set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
+set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
 
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 
@@ -278,6 +279,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
 	endif()
+endif()
+
+if(BUILD_BENCHMARKS)
+	add_subdirectory(lib/catch2)
 endif()
 
 # Subdirectories

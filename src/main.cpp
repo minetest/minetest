@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
+#include "benchmark/benchmark.h"
 #include "chat_interface.h"
 #include "debug.h"
 #include "unittest/test.h"
@@ -212,7 +213,19 @@ int main(int argc, char *argv[])
 		return 1;
 #endif
 	}
+
+	// Run benchmarks
+	if (cmd_args.getFlag("run-benchmarks")) {
+#if BUILD_BENCHMARKS
+		return run_benchmarks();
+#else
+		errorstream << "Benchmark support is not enabled in this binary. "
+			<< "If you want to enable it, compile project with BUILD_BENCHMARKS=1 flag."
+			<< std::endl;
+		return 1;
 #endif
+	}
+#endif // __ANDROID__
 
 	GameStartData game_params;
 #ifdef SERVER
@@ -277,6 +290,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set network port (UDP)"))));
 	allowed_options->insert(std::make_pair("run-unittests", ValueSpec(VALUETYPE_FLAG,
 			_("Run the unit tests and exit"))));
+	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
+			_("Run the benchmarks and exit"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,

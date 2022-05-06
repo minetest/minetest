@@ -240,6 +240,7 @@ General options and their default values:
     BUILD_CLIENT=TRUE          - Build Minetest client
     BUILD_SERVER=FALSE         - Build Minetest server
     BUILD_UNITTESTS=TRUE       - Build unittest sources
+    BUILD_BENCHMARKS=FALSE     - Build benchmark sources
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build
