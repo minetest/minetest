@@ -948,7 +948,8 @@ void ClientMap::updateTransparentMeshBuffers()
 	m_needs_update_transparent_meshes = false;
 }
 
-scene::IMeshBuffer* ClientMap::DrawDescriptor::getBuffer() {
+scene::IMeshBuffer* ClientMap::DrawDescriptor::getBuffer()
+{
 	return m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer;
 }
 
