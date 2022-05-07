@@ -1166,7 +1166,8 @@ void PartialMeshBuffer::beforeDraw() const
 	m_buffer->setDirty(scene::EBT_INDEX);
 }
 
-void PartialMeshBuffer::afterDraw() const {
+void PartialMeshBuffer::afterDraw() const
+{
 	// Take the data back
 	m_vertex_indexes = std::move(m_buffer->Indices.steal());
 }

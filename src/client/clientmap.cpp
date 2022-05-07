@@ -953,7 +953,8 @@ scene::IMeshBuffer* ClientMap::DrawDescriptor::getBuffer()
 	return m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer;
 }
 
-void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver) {
+void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
+{
 	if (m_use_partial_buffer) {
 		m_partial_buffer->beforeDraw();
 		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
