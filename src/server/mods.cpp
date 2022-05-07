@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "content/subgames.h"
 #include "porting.h"
-#include "util/metricsbackend.h"
 
 /**
  * Manage server mods
@@ -35,20 +34,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * Creates a ServerModManager which targets worldpath
  * @param worldpath
  */
-ServerModManager::ServerModManager(const std::string &worldpath) :
-		ModConfiguration(worldpath)
+ServerModManager::ServerModManager(const std::string &worldpath):
+	configuration()
 {
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
 	// Add all game mods and all world mods
-	std::string game_virtual_path;
-	game_virtual_path.append("games/").append(gamespec.id).append("/mods");
-	addModsInPath(gamespec.gamemods_path, game_virtual_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
+	configuration.addGameMods(gamespec);
+	configuration.addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
 
 	// Load normal mods
 	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
+	configuration.addModsFromConfig(worldmt, gamespec.addon_mods_paths);
+	configuration.checkConflictsAndDeps();
 }
 
 // clang-format off
@@ -57,12 +55,13 @@ void ServerModManager::loadMods(ServerScripting *script)
 {
 	// Print mods
 	infostream << "Server: Loading mods: ";
-	for (const ModSpec &mod : m_sorted_mods) {
+	for (const ModSpec &mod : configuration.getMods()) {
 		infostream << mod.name << " ";
 	}
+
 	infostream << std::endl;
 	// Load and run "mod" scripts
-	for (const ModSpec &mod : m_sorted_mods) {
+	for (const ModSpec &mod : configuration.getMods()) {
 		mod.checkAndLog();
 
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
@@ -79,25 +78,23 @@ void ServerModManager::loadMods(ServerScripting *script)
 // clang-format on
 const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
 {
-	std::vector<ModSpec>::const_iterator it;
-	for (it = m_sorted_mods.begin(); it != m_sorted_mods.end(); ++it) {
-		const ModSpec &mod = *it;
+	for (const auto &mod : configuration.getMods()) {
 		if (mod.name == modname)
 			return &mod;
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 void ServerModManager::getModNames(std::vector<std::string> &modlist) const
 {
-	for (const ModSpec &spec : m_sorted_mods)
+	for (const ModSpec &spec : configuration.getMods())
 		modlist.push_back(spec.name);
 }
 
 void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 {
-	for (auto it = m_sorted_mods.crbegin(); it != m_sorted_mods.crend(); it++) {
-		const ModSpec &spec = *it;
+	for (const auto &spec : configuration.getMods()) {
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "textures");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "sounds");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "media");
