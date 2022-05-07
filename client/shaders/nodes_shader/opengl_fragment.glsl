@@ -155,13 +155,14 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float y, x;
 	float depth = getHardShadowDepth(shadowsampler, smTexCoord.xy, realDistance);
 	float sharpness_factor = 1.0;
+	float depth_to_blur = 0.6 * f_shadowfar / SOFTSHADOWRADIUS;
 	if (depth > 0.0)
-		sharpness_factor = clamp(depth * 0.4 * f_shadowfar, 0.5, 1.0);
+		sharpness_factor = clamp(depth * depth_to_blur, 0.1, 1.0);
 	depth = 0.0;
 
 	// if we would be downscaling the filter significantly, just force a sharp shadow
 	// in practice this only happens very close to the caster and avoids peter-panning.
-	if (sharpness_factor < 1e-2) {
+	if (sharpness_factor == 0.1) {
 		return 0.0;
 	}
 
@@ -184,13 +185,14 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 		pointDepth = getHardShadowDepth(shadowsampler, clampedpos.xy, realDistance);
 		if (pointDepth >= 0.0) {
 			depth += pointDepth;
+			sharpness_factor = min(sharpness_factor, clamp(depth * depth_to_blur, 0.1, 1.0));
 			n += 1.0;
 		}
 	}
 
 	depth *= world_to_texture / max(n, 1.0);
 
-	return sharpness_factor * max(BASEFILTERRADIUS * SOFTSHADOWRADIUS, min(depth * maxRadius, maxRadius) * f_textureresolution);
+	return max(0.05, sharpness_factor) * max(BASEFILTERRADIUS * SOFTSHADOWRADIUS, min(depth * maxRadius, maxRadius) * f_textureresolution);
 }
 
 #ifdef POISSON_FILTER
@@ -276,7 +278,7 @@ vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	float scale_factor = radius / f_textureresolution;
 
 	int samples = (1 + 1 * int(SOFTSHADOWRADIUS > 1.0)) * PCFSAMPLES; // scale max samples for the soft shadows
-	samples = int(clamp(pow(2 * radius + 1, 2.0), 1.0, float(samples)));
+	samples = int(clamp(pow(4.0 * radius + 1.0, 2.0), 1.0, float(samples)));
 	int init_offset = int(floor(mod(((smTexCoord.x * 34.0) + 1.0) * smTexCoord.y, 64.0-samples)));
 	int end_offset = int(samples) + init_offset;
 
@@ -303,7 +305,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 	float scale_factor = radius / f_textureresolution;
 
 	int samples = (1 + 1 * int(SOFTSHADOWRADIUS > 1.0)) * PCFSAMPLES; // scale max samples for the soft shadows
-	samples = int(clamp(pow(2 * radius + 1, 2.0), 1.0, float(samples)));
+	samples = int(clamp(pow(4.0 * radius + 1.0, 2.0), 1.0, float(samples)));
 	int init_offset = int(floor(mod(((smTexCoord.x * 34.0) + 1.0) * smTexCoord.y, 64.0-samples)));
 	int end_offset = int(samples) + init_offset;
 
@@ -334,7 +336,7 @@ vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	vec4 visibility = vec4(0.0);
 	float x, y;
 	float bound = (1 + 0.5 * int(SOFTSHADOWRADIUS > 1.0)) * PCFBOUND; // scale max bound for soft shadows
-	bound = clamp(0.5 * (2 * radius - 1), 1e-3, bound);
+	bound = clamp(0.5 * (4.0 * radius - 1.0), 0.5, bound);
 	float scale_factor = radius / bound / f_textureresolution;
 	float n = 0.0;
 
@@ -362,7 +364,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 	float visibility = 0.0;
 	float x, y;
 	float bound = (1 + 0.5 * int(SOFTSHADOWRADIUS > 1.0)) * PCFBOUND; // scale max bound for soft shadows
-	bound = clamp(0.5 * (2 * radius - 1), 1e-3, bound);
+	bound = clamp(0.5 * (4.0 * radius - 1.0), 0.5, bound);
 	float scale_factor = radius / bound / f_textureresolution;
 	float n = 0.0;
 
