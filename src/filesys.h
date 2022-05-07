@@ -60,6 +60,11 @@ bool IsPathAbsolute(const std::string &path);
 
 bool IsDir(const std::string &path);
 
+inline bool IsFile(const std::string &path)
+{
+	return PathExists(path) && !IsDir(path);
+}
+
 bool IsDirDelimiter(char c);
 
 // Only pass full paths to this one. True on success.

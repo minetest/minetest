@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
+#include "content/mod_configuration.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -196,7 +197,21 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
-	ClientModConfiguration modconf(getClientModsLuaPath());
+	ModConfiguration modconf;
+	{
+		std::unordered_map<std::string, std::string> paths;
+		std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
+		const auto modsPath = getClientModsLuaPath();
+		if (modsPath != path_user) {
+			paths["share"] = modsPath;
+		}
+		paths["mods"] = path_user;
+
+		std::string settings_path = path_user + DIR_DELIM + "mods.conf";
+		modconf.addModsFromConfig(settings_path, paths);
+		modconf.checkConflictsAndDeps();
+	}
+
 	m_mods = modconf.getMods();
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
