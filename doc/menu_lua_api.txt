@@ -276,7 +276,18 @@ Package - content which is downloadable from the content db, may or may not be i
             depends          = {"mod", "names"}, -- mods only
             optional_depends = {"mod", "names"}, -- mods only
         }
+* core.check_mod_configuration(world_path, mod_paths)
+    * Checks whether configuration is valid.
+    * `world_path`: path to the world
+    * `mod_paths`: list of enabled mod paths
+    * returns:
 
+        {
+            is_consistent = true,  -- true is consistent, false otherwise
+            unsatisfied_mods = {},  -- list of mod specs
+            satisfied_mods = {}, -- list of mod specs
+            error_message = "",  -- message or nil
+        }
 
 Logging
 -------

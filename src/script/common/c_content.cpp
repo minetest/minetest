@@ -2143,3 +2143,35 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 	lua_setfield(L, -2, "collisions");
 	/**/
 }
+
+
+void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied)
+{
+	lua_newtable(L);
+
+	lua_pushstring(L, spec.name.c_str());
+	lua_setfield(L, -2, "name");
+
+	lua_pushstring(L, spec.author.c_str());
+	lua_setfield(L, -2, "author");
+
+	lua_pushinteger(L, spec.release);
+	lua_setfield(L, -2, "release");
+
+	lua_pushstring(L, spec.desc.c_str());
+	lua_setfield(L, -2, "description");
+
+	lua_pushstring(L, spec.path.c_str());
+	lua_setfield(L, -2, "path");
+
+	lua_pushstring(L, spec.virtual_path.c_str());
+	lua_setfield(L, -2, "virtual_path");
+
+	lua_newtable(L);
+	int i = 1;
+	for (const auto &dep : spec.unsatisfied_depends) {
+		lua_pushstring(L, dep.c_str());
+		lua_rawseti(L, -2, i++);
+	}
+	lua_setfield(L, -2, "unsatisfied_depends");
+}
