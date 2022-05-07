@@ -16,19 +16,17 @@ if minetest.settings:get_bool("secure.enable_security", true) then
 
 	debug.getmetatable = function(obj)
 		local mt = debug_getmetatable_orig(obj)
-		if mt.__metatable_debug ~= nil then
-			return mt.__metatable_debug
-		else
+		if mt.__metatable_debug == nil then
 			return mt
 		end
+		return mt.__metatable_debug
 	end
 
 	debug.setmetatable = function(obj, mt)
 		local current_mt = debug_getmetatable_orig(obj)
-		if current_mt.__metatable_debug ~= nil then
-			error("Overwriting a metatable with __metatable_debug is not allowed for debug.setmetatable.")
-		else
+		if current_mt.__metatable_debug == nil then
 			return debug_setmetatable_orig(obj, mt)
 		end
+		error("Overwriting a metatable with __metatable_debug is not allowed for debug.setmetatable.")
 	end
 end

@@ -36,7 +36,8 @@ Due to security reasons, mods are executed in a sandboxed environment (see also
 `minetest.request_insecure_environment()`). Mods therefore do not have access to
 all functions in the std library. To see what is available, iterate over `_G`.
 
-There are also functions that are available, but were changed in their functionality:
+There are also functions that are available, but were changed in their functionality
+(list is non-exhaustive):
 
 * `debug.getmetatable`: The metatable's `"__metatable_debug"` field is returned
   instead of the metatable, if it is not `nil`.
