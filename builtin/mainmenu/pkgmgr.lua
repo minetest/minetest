@@ -82,9 +82,9 @@ local function load_texture_packs(txtpath, retval)
 			local conf = Settings(path .. "texture_pack.conf")
 			local enabled = path == current_texture_path
 
-			local title = conf:get("title")
-			-- list_* is only used if non-nil, else the regular versions are used.
+			local title = conf:get("title") or item
 
+			-- list_* is only used if non-nil, else the regular versions are used.
 			retval[#retval + 1] = {
 				name = item,
 				title = title,
