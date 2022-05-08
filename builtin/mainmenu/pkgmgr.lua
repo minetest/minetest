@@ -507,7 +507,7 @@ function pkgmgr.enable_mod(this, toset)
 				-- Push the dependencies of the dependency onto the stack
 				local depends = pkgmgr.get_dependencies(mod_to_enable.path)
 				for i = 1, #depends do
-					if not enabled_mods[name] then
+					if not enabled_mods[depends[i]] then
 						sp = sp+1
 						to_enable[sp] = depends[i]
 					end
