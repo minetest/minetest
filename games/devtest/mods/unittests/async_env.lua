@@ -67,12 +67,27 @@ local function test_object_passing()
 	assert(tmp[2] == "bar")
 	assert(tmp[tmp] == true)
 
-	-- Circular value, should error
 	local circular_value = {"foo"}
 	circular_value[2] = circular_value
 	tmp = core.serialize_roundtrip(circular_value)
 	assert(tmp[1] == "foo")
 	assert(tmp[2] == tmp)
+
+	-- Two-segment cycle
+	local cycle_seg_1, cycle_seg_2 = {}, {}
+	cycle_seg_1[1] = cycle_seg_2
+	cycle_seg_2[1] = cycle_seg_1
+	tmp = core.serialize_roundtrip(cycle_seg_1)
+	assert(tmp[1][1] == tmp)
+
+	-- Duplicated value without a cycle
+	local acyclic_dup_holder = {}
+	tmp = ItemStack("")
+	acyclic_dup_holder[tmp] = tmp
+	tmp = core.serialize_roundtrip(acyclic_dup_holder)
+	for k, v in pairs(tmp) do
+		assert(rawequal(k, v))
+	end
 end
 unittests.register("test_object_passing", test_object_passing)
 
