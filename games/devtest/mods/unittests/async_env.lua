@@ -60,15 +60,19 @@ local function test_object_passing()
 	local tmp = core.serialize_roundtrip(test_object)
 	assert(deepequal(test_object, tmp))
 
-	-- Circular key, should error
-	tmp = {"foo", "bar"}
-	tmp[tmp] = true
-	assert(not pcall(core.serialize_roundtrip, tmp))
+	local circular_key = {"foo", "bar"}
+	circular_key[circular_key] = true
+	tmp = core.serialize_roundtrip(circular_key)
+	assert(tmp[1] == "foo")
+	assert(tmp[2] == "bar")
+	assert(tmp[tmp] == true)
 
 	-- Circular value, should error
-	tmp = {"foo"}
-	tmp[2] = tmp
-	assert(not pcall(core.serialize_roundtrip, tmp))
+	local circular_value = {"foo"}
+	circular_value[2] = circular_value
+	tmp = core.serialize_roundtrip(circular_value)
+	assert(tmp[1] == "foo")
+	assert(tmp[2] == tmp)
 end
 unittests.register("test_object_passing", test_object_passing)
 
