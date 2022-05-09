@@ -1349,30 +1349,22 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material = material;
-			switch (p.layer.material_type) {
-			// list of transparent materials taken from tile.h
-			case TILE_MATERIAL_ALPHA:
-			case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
-				{
-					buf->append(&p.vertices[0], p.vertices.size(),
-						&p.indices[0], 0);
+			if (p.layer.isTransparent()) {
+				buf->append(&p.vertices[0], p.vertices.size(), nullptr, 0);
 
-					MeshTriangle t;
-					t.buffer = buf;
-					for (u32 i = 0; i < p.indices.size(); i += 3) {
-						t.p1 = p.indices[i];
-						t.p2 = p.indices[i + 1];
-						t.p3 = p.indices[i + 2];
-						t.updateAttributes();
-						m_transparent_triangles.push_back(t);
-					}
+				MeshTriangle t;
+				t.buffer = buf;
+				m_transparent_triangles.reserve(p.indices.size() / 3);
+				for (u32 i = 0; i < p.indices.size(); i += 3) {
+					t.p1 = p.indices[i];
+					t.p2 = p.indices[i + 1];
+					t.p3 = p.indices[i + 2];
+					t.updateAttributes();
+					m_transparent_triangles.push_back(t);
 				}
-				break;
-			default:
+			} else {
 				buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
-				break;
 			}
 			mesh->addMeshBuffer(buf);
 			buf->drop();
