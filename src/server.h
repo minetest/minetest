@@ -73,6 +73,7 @@ struct Lighting;
 class ServerThread;
 class ServerModManager;
 class ServerInventoryManager;
+struct PackedValue;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -388,8 +389,8 @@ public:
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
 
-	// Serialized data transferred into async envs at init time
-	MutexedVariable<std::string> m_async_globals_data;
+	// Data transferred into async envs at init time
+	std::unique_ptr<PackedValue> m_async_globals_data;
 
 	// Bind address
 	Address m_bind_addr;

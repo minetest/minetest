@@ -98,8 +98,9 @@ void ServerScripting::initAsync()
 		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "get_globals_to_transfer");
 		lua_call(L, 0, 1);
-		luaL_checktype(L, -1, LUA_TSTRING);
-		getServer()->m_async_globals_data.set(readParam<std::string>(L, -1));
+		auto *data = script_pack(L, -1);
+		assert(!data->contains_userdata);
+		getServer()->m_async_globals_data.reset(data);
 		lua_pushnil(L);
 		lua_setfield(L, -3, "get_globals_to_transfer"); // unset function too
 		lua_pop(L, 2); // pop 'core', return value
@@ -183,8 +184,8 @@ void ServerScripting::InitializeAsync(lua_State *L, int top)
 	// globals data
 	lua_getglobal(L, "core");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	std::string s = ModApiBase::getServer(L)->m_async_globals_data.get();
-	lua_pushlstring(L, s.c_str(), s.size());
+	auto *data = ModApiBase::getServer(L)->m_async_globals_data.get();
+	script_unpack(L, data);
 	lua_setfield(L, -2, "transferred_globals");
 	lua_pop(L, 1); // pop 'core'
 }

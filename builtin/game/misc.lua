@@ -262,5 +262,5 @@ function core.get_globals_to_transfer()
 		registered_items = copy_filtering(core.registered_items),
 		registered_aliases = core.registered_aliases,
 	}
-	return core.serialize(all)
+	return all
 end
