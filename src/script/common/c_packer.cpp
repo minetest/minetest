@@ -132,7 +132,7 @@ namespace {
 		}
 		T &operator*() { return (*vec)[idx]; }
 		T *operator->() { return &(*vec)[idx]; }
-		operator bool() { return vec != nullptr; }
+		operator bool() const { return vec != nullptr; }
 	};
 
 	struct Packer {
@@ -255,7 +255,7 @@ static bool find_packer(lua_State *L, int idx, PackerTuple &out)
 //
 
 static VectorRef<PackedInstr> record_object(lua_State *L, int idx, PackedValue &pv,
-		std::unordered_map<const void *, s64> &seen)
+		std::unordered_map<const void *, s32> &seen)
 {
 	const void *ptr = lua_topointer(L, idx);
 	assert(ptr);
@@ -264,18 +264,16 @@ static VectorRef<PackedInstr> record_object(lua_State *L, int idx, PackedValue &
 		seen[ptr] = pv.i.size();
 		return VectorRef<PackedInstr>();
 	}
-	else {
-		s64 ref = found->second;
-		assert(ref < (s64)pv.i.size());
-		auto r = emplace(pv, INSTR_REF);
-		r->ref = ref;
-		pv.i[ref].has_refs = true;
-		return r;
-	}
+	s32 ref = found->second;
+	assert(ref < (s32)pv.i.size());
+	auto r = emplace(pv, INSTR_PUSHREF);
+	r->ref = ref;
+	pv.i[ref].keep_ref = true;
+	return r;
 }
 
 static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, PackedValue &pv,
-		std::unordered_map<const void *, s64> &seen)
+		std::unordered_map<const void *, s32> &seen)
 {
 #ifndef NDEBUG
 	StackChecker checker(L);
@@ -403,7 +401,7 @@ PackedValue *script_pack(lua_State *L, int idx)
 		idx = absidx(L, idx);
 
 	PackedValue pv;
-	std::unordered_map<const void *, s64> seen;
+	std::unordered_map<const void *, s32> seen;
 	pack_inner(L, idx, 1, pv, seen);
 
 	return new PackedValue(std::move(pv));
@@ -428,8 +426,8 @@ void script_unpack(lua_State *L, PackedValue *pv)
 			ctr = 0;
 		}
 
-		/* Instructions */
 		switch (i.type) {
+			/* Instructions */
 			case INSTR_SETTABLE:
 				lua_pushvalue(L, top + i.sidata1); // key
 				lua_pushvalue(L, top + i.sidata2); // value
@@ -449,12 +447,12 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				if (i.sidata2 > 0)
 					lua_remove(L, top + i.sidata2);
 				continue;
-			default:
+			case INSTR_PUSHREF:
+				lua_pushinteger(L, i.ref);
+				lua_rawget(L, top);
 				break;
-		}
 
-		/* Lua types (and references) */
-		switch (i.type) {
+			/* Lua types */
 			case LUA_TNIL:
 				lua_pushnil(L);
 				break;
@@ -480,16 +478,13 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				i.ptrdata = nullptr; // ownership taken by callback
 				break;
 			}
-			case INSTR_REF:
-				lua_pushinteger(L, i.ref);
-				lua_rawget(L, top);
-				break;
+
 			default:
 				assert(0);
 				break;
 		}
 
-		if (i.has_refs) {
+		if (i.keep_ref) {
 			lua_pushinteger(L, packed_idx);
 			lua_pushvalue(L, -2);
 			lua_rawset(L, top);
@@ -553,7 +548,7 @@ void script_dump_packed(const PackedValue *val)
 			case INSTR_POP:
 				printf(i.sidata2 ? "POP(%d, %d)" : "POP(%d)", i.sidata1, i.sidata2);
 				break;
-			case INSTR_REF:
+			case INSTR_PUSHREF:
 				printf("REF(%ld)", (long) i.ref);
 				break;
 			case LUA_TNIL:
@@ -589,8 +584,8 @@ void script_dump_packed(const PackedValue *val)
 			else
 				printf(", into=%d", i.set_into);
 		}
-		if (i.has_refs)
-			printf(", has_refs");
+		if (i.keep_ref)
+			printf(", keep_ref");
 		if (i.pop)
 			printf(", pop");
 		printf(")\n");

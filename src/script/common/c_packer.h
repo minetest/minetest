@@ -36,7 +36,7 @@ extern "C" {
 
 #define INSTR_SETTABLE (-10)
 #define INSTR_POP      (-11)
-#define INSTR_REF      (-12)
+#define INSTR_PUSHREF  (-12)
 
 /**
  * Represents a single instruction that pushes a new value or works with existing ones.
@@ -45,7 +45,7 @@ struct PackedInstr
 {
 	s16 type; // LUA_T* or INSTR_*
 	u16 set_into; // set into table on stack
-	bool has_refs; // is referenced later by INSTR_REF?
+	bool keep_ref; // is referenced later by INSTR_PUSHREF?
 	bool pop; // remove from stack?
 	union {
 		bool bdata; // boolean: value
@@ -62,7 +62,7 @@ struct PackedInstr
 			s32 sidata1, sidata2;
 		};
 		void *ptrdata; // userdata: implementation defined
-		s64 ref; // reference index
+		s32 ref; // PUSHREF: index of referenced instr
 	};
 	/*
 		- string: value
@@ -72,7 +72,7 @@ struct PackedInstr
 	*/
 	std::string sdata;
 
-	PackedInstr() : type(0), set_into(0), has_refs(false), pop(false) {}
+	PackedInstr() : type(0), set_into(0), keep_ref(false), pop(false) {}
 };
 
 /**
