@@ -6782,7 +6782,7 @@ object you are working with still exists.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version)
+* `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
 * `get_luaentity()`
 
 #### Player only (no-op for other objects)
