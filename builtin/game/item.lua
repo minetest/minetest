@@ -529,9 +529,7 @@ function core.node_dig(pos, node, digger)
 	-- Run script hook
 	for _, callback in ipairs(core.registered_on_dignodes) do
 		local origin = core.callback_origins[callback]
-		if origin then
-			core.set_last_run_mod(origin.mod)
-		end
+		core.set_last_run_mod(origin.mod)
 
 		-- Copy pos and node because callback can modify them
 		local pos_copy = vector.new(pos)
