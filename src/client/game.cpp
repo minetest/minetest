@@ -3096,10 +3096,12 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 			!runData.btn_down_for_dig,
 			camera_offset);
 
-	if (pointed != runData.pointed_old) {
+	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
-		hud->updateSelectionMesh(camera_offset);
-	}
+
+	// Note that updating the selection mesh every frame is not particularly efficient,
+	// but the halo rendering code is already inefficient so there's no point in optimizing it here
+	hud->updateSelectionMesh(camera_offset);
 
 	// Allow digging again if button is not pressed
 	if (runData.digging_blocked && !isKeyDown(KeyType::DIG))
