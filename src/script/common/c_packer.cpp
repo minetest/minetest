@@ -266,6 +266,7 @@ static VectorRef<PackedInstr> record_object(lua_State *L, int idx, PackedValue &
 	}
 	s32 ref = found->second;
 	assert(ref < (s32)pv.i.size());
+	// reuse the value from first time
 	auto r = emplace(pv, INSTR_PUSHREF);
 	r->ref = ref;
 	pv.i[ref].keep_ref = true;
@@ -549,7 +550,7 @@ void script_dump_packed(const PackedValue *val)
 				printf(i.sidata2 ? "POP(%d, %d)" : "POP(%d)", i.sidata1, i.sidata2);
 				break;
 			case INSTR_PUSHREF:
-				printf("REF(%ld)", (long) i.ref);
+				printf("PUSHREF(%d)", i.ref);
 				break;
 			case LUA_TNIL:
 				printf("nil");
