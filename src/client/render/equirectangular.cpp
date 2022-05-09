@@ -44,7 +44,7 @@ RenderingCoreEquirectangular::RenderingCoreEquirectangular(
 	IWritableShaderSource *s = client->getShaderSource();
 	mat.UseMipMaps = false;
 	mat.ZBuffer = false;
-	mat.ZWriteEnable = false;
+	mat.ZWriteEnable = video::EZW_OFF;
 	u32 shader = s->getShader("equirectangular_merge", TILE_MATERIAL_BASIC);
 	mat.MaterialType = s->getShaderInfo(shader).material;
 	mat.TextureLayer[0].AnisotropicFilter = false;
