@@ -269,9 +269,15 @@ Server::Server(
 			"minetest_core_latency",
 			"Latency value (in seconds)");
 
-	m_aom_buffer_counter = m_metrics_backend->addCounter(
-			"minetest_core_aom_generated_count",
-			"Number of active object messages generated");
+
+	const std::string aom_types[] = {"reliable", "unreliable"};
+	for (u32 i = 0; i < ARRLEN(aom_types); i++) {
+		std::string help_str("Number of active object messages generated (");
+		help_str.append(aom_types[i]).append(")");
+		m_aom_buffer_counter[i] = m_metrics_backend->addCounter(
+				"minetest_core_aom_generated_count", help_str,
+				{{"type", aom_types[i]}});
+	}
 
 	m_packet_recv_counter = m_metrics_backend->addCounter(
 			"minetest_core_server_packet_recv",
@@ -280,6 +286,10 @@ Server::Server(
 	m_packet_recv_processed_counter = m_metrics_backend->addCounter(
 			"minetest_core_server_packet_recv_processed",
 			"Valid received packets processed");
+
+	m_map_edit_event_counter = m_metrics_backend->addCounter(
+			"minetest_core_map_edit_events",
+			"Number of map edit events");
 
 	m_lag_gauge->set(g_settings->getFloat("dedicated_server_step"));
 }
@@ -397,7 +407,7 @@ void Server::init()
 	}
 
 	// Create emerge manager
-	m_emerge = new EmergeManager(this);
+	m_emerge = new EmergeManager(this, m_metrics_backend.get());
 
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
@@ -462,7 +472,8 @@ void Server::init()
 
 	// Initialize Environment
 	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
-	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
+	m_env = new ServerEnvironment(servermap, m_script, this,
+		m_path_world, m_metrics_backend.get());
 
 	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
@@ -623,6 +634,7 @@ void Server::AsyncRunStep(bool initial_step)
 			max_lag = dtime;
 		}
 		m_env->reportMaxLagEstimate(max_lag);
+
 		// Step environment
 		m_env->step(dtime);
 	}
@@ -773,10 +785,14 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Get active object messages from environment
 		ActiveObjectMessage aom(0);
-		u32 aom_count = 0;
+		u32 count_reliable = 0, count_unreliable = 0;
 		for(;;) {
 			if (!m_env->getActiveObjectMessage(&aom))
 				break;
+			if (aom.reliable)
+				count_reliable++;
+			else
+				count_unreliable++;
 
 			std::vector<ActiveObjectMessage>* message_list = nullptr;
 			auto n = buffered_messages.find(aom.id);
@@ -787,10 +803,10 @@ void Server::AsyncRunStep(bool initial_step)
 				message_list = n->second;
 			}
 			message_list->push_back(std::move(aom));
-			aom_count++;
 		}
 
-		m_aom_buffer_counter->increment(aom_count);
+		m_aom_buffer_counter[0]->increment(count_reliable);
+		m_aom_buffer_counter[1]->increment(count_unreliable);
 
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
@@ -864,15 +880,13 @@ void Server::AsyncRunStep(bool initial_step)
 		// We will be accessing the environment
 		MutexAutoLock lock(m_env_mutex);
 
-		// Don't send too many at a time
-		//u32 count = 0;
-
-		// Single change sending is disabled if queue size is not small
+		// Single change sending is disabled if queue size is big
 		bool disable_single_change_sending = false;
 		if(m_unsent_map_edit_queue.size() >= 4)
 			disable_single_change_sending = true;
 
-		int event_count = m_unsent_map_edit_queue.size();
+		const auto event_count = m_unsent_map_edit_queue.size();
+		m_map_edit_event_counter->increment(event_count);
 
 		// We'll log the amount of each
 		Profiler prof;
