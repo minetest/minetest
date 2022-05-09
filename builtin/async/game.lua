@@ -22,8 +22,7 @@ dofile(gamepath .. "voxelarea.lua")
 
 -- Transfer of globals
 do
-	assert(core.transferred_globals)
-	local all = core.deserialize(core.transferred_globals, true)
+	local all = assert(core.transferred_globals)
 	core.transferred_globals = nil
 
 	-- reassemble other tables

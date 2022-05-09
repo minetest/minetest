@@ -243,7 +243,6 @@ Server::Server(
 	m_clients(m_con),
 	m_admin_chat(iface),
 	m_on_shutdown_errmsg(on_shutdown_errmsg),
-	m_async_globals_data(""),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
