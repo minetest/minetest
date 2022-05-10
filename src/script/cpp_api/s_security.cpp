@@ -573,6 +573,13 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 			if (mod) {
 				str = fs::AbsolutePath(mod->path);
 				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+					if (write_required) {
+						const char *message =
+								"Writing to mod directories is deprecated, as any changes"
+								" will be overwritten when updating content.";
+						log_deprecated(L, message, 1);
+					}
+
 					if (write_allowed) *write_allowed = true;
 					return true;
 				}
