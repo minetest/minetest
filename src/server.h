@@ -306,6 +306,7 @@ public:
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
+	virtual std::string getModDataPath() const { return m_path_mod_data; }
 
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
@@ -609,6 +610,7 @@ private:
 	*/
 	// World directory
 	std::string m_path_world;
+	std::string m_path_mod_data;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 	// If true, do not allow multiple players and hide some multiplayer

@@ -600,6 +600,13 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		}
 	}
 
+	// Allow read/write access to all mod common dirs
+	str = fs::AbsolutePath(gamedef->getModDataPath());
+	if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+		if (write_allowed) *write_allowed = true;
+		return true;
+	}
+
 	str = fs::AbsolutePath(gamedef->getWorldPath());
 	if (!str.empty()) {
 		// Don't allow access to other paths in the world mod/game path.

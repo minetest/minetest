@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "remoteplayer.h"
 #include "log.h"
+#include "filesys.h"
 #include <algorithm>
 
 // request_shutdown()
@@ -507,6 +508,24 @@ int ModApiServer::l_get_worldpath(lua_State *L)
 	return 1;
 }
 
+// get_mod_data_path()
+int ModApiServer::l_get_mod_data_path(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string modname = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (modname.empty())
+		return 0;
+
+	const Server *srv = getServer(L);
+	std::string path = srv->getModDataPath() + DIR_DELIM + modname;
+	if (!fs::CreateAllDirs(path))
+		throw LuaError("Failed to create dir");
+
+	lua_pushstring(L, path.c_str());
+	return 1;
+}
+
 // sound_play(spec, parameters, [ephemeral])
 int ModApiServer::l_sound_play(lua_State *L)
 {
@@ -716,6 +735,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_server_status);
 	API_FCT(get_server_uptime);
 	API_FCT(get_server_max_lag);
+	API_FCT(get_mod_data_path);
 	API_FCT(get_worldpath);
 	API_FCT(is_singleplayer);
 
