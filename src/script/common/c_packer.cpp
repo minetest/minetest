@@ -123,6 +123,7 @@ namespace {
 		size_t idx;
 		VectorRef(std::vector<T> *vec, size_t idx) : vec(vec), idx(idx) {}
 	public:
+		constexpr VectorRef() : vec(nullptr), idx(0) {}
 		static VectorRef<T> front(std::vector<T> &vec) {
 			return VectorRef(&vec, 0);
 		}
@@ -131,6 +132,7 @@ namespace {
 		}
 		T &operator*() { return (*vec)[idx]; }
 		T *operator->() { return &(*vec)[idx]; }
+		operator bool() const { return vec != nullptr; }
 	};
 
 	struct Packer {
@@ -252,38 +254,27 @@ static bool find_packer(lua_State *L, int idx, PackerTuple &out)
 // Packing implementation
 //
 
-// recursively goes through the structure and ensures there are no circular references
-static void pack_validate(lua_State *L, int idx, std::unordered_set<const void*> &seen)
+static VectorRef<PackedInstr> record_object(lua_State *L, int idx, PackedValue &pv,
+		std::unordered_map<const void *, s32> &seen)
 {
-#ifndef NDEBUG
-	StackChecker checker(L);
-	assert(idx > 0);
-#endif
-
-	if (lua_type(L, idx) != LUA_TTABLE)
-		return;
-
 	const void *ptr = lua_topointer(L, idx);
 	assert(ptr);
-
-	if (seen.find(ptr) != seen.end())
-		throw LuaError("Circular references cannot be packed (yet)");
-	seen.insert(ptr);
-
-	lua_checkstack(L, 5);
-	lua_pushnil(L);
-	while (lua_next(L, idx) != 0) {
-		// key at -2, value at -1
-		pack_validate(L, absidx(L, -2), seen);
-		pack_validate(L, absidx(L, -1), seen);
-
-		lua_pop(L, 1);
+	auto found = seen.find(ptr);
+	if (found == seen.end()) {
+		seen[ptr] = pv.i.size();
+		return VectorRef<PackedInstr>();
 	}
-
-	seen.erase(ptr);
+	s32 ref = found->second;
+	assert(ref < (s32)pv.i.size());
+	// reuse the value from first time
+	auto r = emplace(pv, INSTR_PUSHREF);
+	r->ref = ref;
+	pv.i[ref].keep_ref = true;
+	return r;
 }
 
-static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, PackedValue &pv)
+static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, PackedValue &pv,
+		std::unordered_map<const void *, s32> &seen)
 {
 #ifndef NDEBUG
 	StackChecker checker(L);
@@ -313,10 +304,17 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 			r->sdata.assign(str, len);
 			return r;
 		}
-		case LUA_TTABLE:
+		case LUA_TTABLE: {
+			auto r = record_object(L, idx, pv, seen);
+			if (r)
+				return r;
 			break; // execution continues
+		}
 		case LUA_TFUNCTION: {
-			auto r = emplace(pv, LUA_TFUNCTION);
+			auto r = record_object(L, idx, pv, seen);
+			if (r)
+				return r;
+			r = emplace(pv, LUA_TFUNCTION);
 			call_string_dump(L, idx);
 			size_t len;
 			const char *str = lua_tolstring(L, -1, &len);
@@ -326,11 +324,14 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 			return r;
 		}
 		case LUA_TUSERDATA: {
+			auto r = record_object(L, idx, pv, seen);
+			if (r)
+				return r;
 			PackerTuple ser;
 			if (!find_packer(L, idx, ser))
 				throw LuaError("Cannot serialize unsupported userdata");
 			pv.contains_userdata = true;
-			auto r = emplace(pv, LUA_TUSERDATA);
+			r = emplace(pv, LUA_TUSERDATA);
 			r->sdata = ser.first;
 			r->ptrdata = ser.second.fin(L, idx);
 			return r;
@@ -360,8 +361,8 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		// check if we can use a shortcut
 		if (can_set_into(ktype, vtype) && suitable_key(L, -2)) {
 			// push only the value
-			auto rval = pack_inner(L, absidx(L, -1), vidx, pv);
-			rval->pop = vtype != LUA_TTABLE;
+			auto rval = pack_inner(L, absidx(L, -1), vidx, pv, seen);
+			rval->pop = rval->type != LUA_TTABLE;
 			// and where to put it:
 			rval->set_into = vi_table;
 			if (ktype == LUA_TSTRING)
@@ -375,9 +376,9 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 			}
 		} else {
 			// push the key and value
-			pack_inner(L, absidx(L, -2), vidx, pv);
+			pack_inner(L, absidx(L, -2), vidx, pv, seen);
 			vidx++;
-			pack_inner(L, absidx(L, -1), vidx, pv);
+			pack_inner(L, absidx(L, -1), vidx, pv, seen);
 			vidx++;
 			// push an instruction to set them
 			auto ri1 = emplace(pv, INSTR_SETTABLE);
@@ -400,13 +401,9 @@ PackedValue *script_pack(lua_State *L, int idx)
 	if (idx < 0)
 		idx = absidx(L, idx);
 
-	std::unordered_set<const void*> seen;
-	pack_validate(L, idx, seen);
-	assert(seen.size() == 0);
-
-	// Actual serialization
 	PackedValue pv;
-	pack_inner(L, idx, 1, pv);
+	std::unordered_map<const void *, s32> seen;
+	pack_inner(L, idx, 1, pv, seen);
 
 	return new PackedValue(std::move(pv));
 }
@@ -417,18 +414,21 @@ PackedValue *script_pack(lua_State *L, int idx)
 
 void script_unpack(lua_State *L, PackedValue *pv)
 {
+	lua_newtable(L); // table at index top to track ref indices -> objects
 	const int top = lua_gettop(L);
 	int ctr = 0;
 
-	for (auto &i : pv->i) {
+	for (size_t packed_idx = 0; packed_idx < pv->i.size(); packed_idx++) {
+		auto &i = pv->i[packed_idx];
+
 		// If leaving values on stack make sure there's space (every 5th iteration)
 		if (!i.pop && (ctr++) >= 5) {
 			lua_checkstack(L, 5);
 			ctr = 0;
 		}
 
-		/* Instructions */
 		switch (i.type) {
+			/* Instructions */
 			case INSTR_SETTABLE:
 				lua_pushvalue(L, top + i.sidata1); // key
 				lua_pushvalue(L, top + i.sidata2); // value
@@ -448,12 +448,12 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				if (i.sidata2 > 0)
 					lua_remove(L, top + i.sidata2);
 				continue;
-			default:
+			case INSTR_PUSHREF:
+				lua_pushinteger(L, i.ref);
+				lua_rawget(L, top);
 				break;
-		}
 
-		/* Lua types */
-		switch (i.type) {
+			/* Lua types */
 			case LUA_TNIL:
 				lua_pushnil(L);
 				break;
@@ -479,9 +479,16 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				i.ptrdata = nullptr; // ownership taken by callback
 				break;
 			}
+
 			default:
 				assert(0);
 				break;
+		}
+
+		if (i.keep_ref) {
+			lua_pushinteger(L, packed_idx);
+			lua_pushvalue(L, -2);
+			lua_rawset(L, top);
 		}
 
 		if (i.set_into) {
@@ -501,6 +508,7 @@ void script_unpack(lua_State *L, PackedValue *pv)
 	pv->contains_userdata = false;
 	// leave exactly one value on the stack
 	lua_settop(L, top+1);
+	lua_remove(L, top);
 }
 
 //
@@ -541,6 +549,9 @@ void script_dump_packed(const PackedValue *val)
 			case INSTR_POP:
 				printf(i.sidata2 ? "POP(%d, %d)" : "POP(%d)", i.sidata1, i.sidata2);
 				break;
+			case INSTR_PUSHREF:
+				printf("PUSHREF(%d)", i.ref);
+				break;
 			case LUA_TNIL:
 				printf("nil");
 				break;
@@ -574,6 +585,8 @@ void script_dump_packed(const PackedValue *val)
 			else
 				printf(", into=%d", i.set_into);
 		}
+		if (i.keep_ref)
+			printf(", keep_ref");
 		if (i.pop)
 			printf(", pop");
 		printf(")\n");
