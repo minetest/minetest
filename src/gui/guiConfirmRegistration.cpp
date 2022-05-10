@@ -54,25 +54,10 @@ GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 #endif
 }
 
-GUIConfirmRegistration::~GUIConfirmRegistration()
-{
-	removeChildren();
-}
-
-void GUIConfirmRegistration::removeChildren()
-{
-	const core::list<gui::IGUIElement *> &children = getChildren();
-	core::list<gui::IGUIElement *> children_copy;
-	for (gui::IGUIElement *i : children)
-		children_copy.push_back(i);
-	for (gui::IGUIElement *i : children_copy)
-		i->remove();
-}
-
 void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 {
 	acceptInput();
-	removeChildren();
+	removeAllChildren();
 
 	/*
 		Calculate new sizes and positions
