@@ -175,13 +175,13 @@ public:
 
 	bool empty() const
 	{
-	        MutexAutoLock lock(m_buffer_mutex);
+		MutexAutoLock lock(m_buffer_mutex);
 		return m_buffer.empty();
 	}
 
 	std::string get()
 	{
-	        MutexAutoLock lock(m_buffer_mutex);
+		MutexAutoLock lock(m_buffer_mutex);
 		if (m_buffer.empty())
 			return "";
 		std::string s = std::move(m_buffer.front());
