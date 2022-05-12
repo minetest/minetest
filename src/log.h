@@ -169,7 +169,7 @@ public:
 
 	void clear()
 	{
-	        MutexAutoLock lock(m_buffer_mutex);
+		MutexAutoLock lock(m_buffer_mutex);
 		m_buffer = std::queue<std::string>();
 	}
 
