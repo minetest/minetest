@@ -5969,6 +5969,10 @@ Schematics
     * `rotation` can equal `"0"`, `"90"`, `"180"`, `"270"`, or `"random"`.
     * If the `rotation` parameter is omitted, the schematic is not rotated.
     * `replacements` = `{["old_name"] = "convert_to", ...}`
+      Optional. This allows you to replace nodes from the schematic with
+      some other node. It is a table in which each key (`old_name`) is the
+      original node name read from the schematic and each value
+      (`convert_to`) is the name of the node that will actually be placed.
     * `force_placement` is a boolean indicating whether nodes other than `air`
       and `ignore` are replaced by the schematic.
     * Returns nil if the schematic could not be loaded.
@@ -8637,6 +8641,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
         -- See 'Schematic specifier' for details.
 
         replacements = {["oldname"] = "convert_to", ...},
+        -- See `minetest.place_schematic`.
 
         flags = "place_center_x, place_center_y, place_center_z",
         -- Flags for schematic decorations. See 'Schematic attributes'.
