@@ -45,6 +45,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
+#define HANDS (int i = 0, s = +1; i <= 1; i++, s *= -1) // i is index, s is sign
+
 Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
 	m_client(client),
@@ -62,9 +64,12 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
-	m_wieldnode->setItem(ItemStack(), m_client);
-	m_wieldnode->drop(); // m_wieldmgr grabbed it
+
+	for HANDS {
+		m_wieldnode[i] = new WieldMeshSceneNode(m_wieldmgr, -1, false);
+		m_wieldnode[i]->setItem(ItemStack(), m_client);
+		m_wieldnode[i]->drop(); // m_wieldmgr grabbed it
+	}
 
 	/* TODO: Add a callback function so these can be updated when a setting
 	 *       changes.  At this point in time it doesn't matter (e.g. /set
@@ -151,12 +156,16 @@ void Camera::step(f32 dtime)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
 	}
 
-	bool was_under_zero = m_wield_change_timer < 0;
-	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
+	for HANDS {
+		bool was_under_zero = m_wield_change_timer[i];
+		m_wield_change_timer[i] = MYMIN(m_wield_change_timer[i] + dtime, 0.125);
 
-	if (m_wield_change_timer >= 0 && was_under_zero) {
-		m_wieldnode->setItem(m_wield_item_next, m_client);
-		m_wieldnode->setNodeLightColor(m_player_light_color);
+		if (m_wield_change_timer[i] >= 0 && was_under_zero) {
+			m_wieldnode[i]->setItem(m_wield_item_next[i], m_client);
+
+			if (i == 0)
+				m_wieldnode[i]->setNodeLightColor(m_player_light_color);
+		}
 	}
 
 	if (m_view_bobbing_state != 0)
@@ -197,24 +206,27 @@ void Camera::step(f32 dtime)
 		}
 	}
 
-	if (m_digging_button != -1) {
-		f32 offset = dtime * 3.5f;
-		float m_digging_anim_was = m_digging_anim;
-		m_digging_anim += offset;
-		if (m_digging_anim >= 1)
-		{
-			m_digging_anim = 0;
-			m_digging_button = -1;
-		}
-		float lim = 0.15;
-		if(m_digging_anim_was < lim && m_digging_anim >= lim)
-		{
-			if (m_digging_button == 0) {
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
-			} else if(m_digging_button == 1) {
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
+	for HANDS {
+		if (m_digging_button[i] != -1) {
+			f32 offset = dtime * 3.5f;
+			float m_digging_anim_was = m_digging_anim[i];
+			m_digging_anim[i] += offset;
+			if (m_digging_anim[i] >= 1)
+			{
+				m_digging_anim[i] = 0;
+				m_digging_button[i] = -1;
+			}
+			float lim = 0.15;
+			if(m_digging_anim_was < lim && m_digging_anim[i] >= lim)
+			{
+				if (m_digging_button[i] == 0) {
+					m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
+				} else if(m_digging_button[i] == 1) {
+					m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
+				}
 			}
 		}
+
 	}
 }
 
@@ -514,52 +526,68 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	if (m_arm_inertia)
 		addArmInertia(player->getYaw());
 
-	// Position the wielded item
-	//v3f wield_position = v3f(45, -35, 65);
-	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
-	//v3f wield_rotation = v3f(-100, 120, -100);
-	v3f wield_rotation = v3f(-100, 120, -100);
-	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
-	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
-	{
-		f32 frac = 1.0;
-		if(m_digging_anim > 0.5)
-			frac = 2.0 * (m_digging_anim - 0.5);
-		// This value starts from 1 and settles to 0
-		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
-		//f32 ratiothing2 = pow(ratiothing, 0.5f);
-		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
-		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
-		//wield_position.Z += frac * 5.0 * ratiothing2;
-		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
-		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
-	}
-	if (m_digging_button != -1)
-	{
-		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
-		wield_position.Z += 25 * 0.5;
-
-		// Euler angles are PURE EVIL, so why not use quaternions?
-		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
-		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
-		quat_slerp.toEuler(wield_rotation);
-		wield_rotation *= core::RADTODEG;
-	} else {
-		f32 bobfrac = my_modf(m_view_bobbing_anim);
-		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
-		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
-	}
-	m_wieldnode->setPosition(wield_position);
-	m_wieldnode->setRotation(wield_rotation);
-
 	m_player_light_color = player->light_color;
-	m_wieldnode->setNodeLightColor(m_player_light_color);
+
+	for HANDS {
+		// Position the wielded item
+		//v3f wield_position = v3f(45, -35, 65);
+		v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
+		//v3f wield_rotation = v3f(-100, 120, -100);
+		v3f wield_rotation = v3f(-100, 120, -100);
+
+		wield_position.Y += fabs(m_wield_change_timer[i])*320 - 40;
+		if(m_digging_anim[i] < 0.05 || m_digging_anim[i] > 0.5)
+		{
+			f32 frac = 1.0;
+			if(m_digging_anim[i] > 0.5)
+				frac = 2.0 * (m_digging_anim[i] - 0.5);
+			// This value starts from 1 and settles to 0
+			f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
+			//f32 ratiothing2 = pow(ratiothing, 0.5f);
+			f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
+			wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
+			//wield_position.Z += frac * 5.0 * ratiothing2;
+			wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
+			wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
+			//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
+			//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
+		}
+		if (m_digging_button[i] != -1)
+		{
+			f32 digfrac = m_digging_anim[i];
+			wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
+			wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
+			wield_position.Z += 25 * 0.5;
+
+			// Euler angles are PURE EVIL, so why not use quaternions?
+			core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
+			//core::quaternion quat_end(v3f(s * 80, 30, s * 100) * core::DEGTORAD);
+			core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
+			core::quaternion quat_slerp;
+			quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
+			quat_slerp.W *= s;
+			quat_slerp.X *= s;
+			quat_slerp.toEuler(wield_rotation);
+			wield_rotation *= core::RADTODEG;
+			wield_position.X *= s;
+		} else {
+			f32 bobfrac = my_modf(m_view_bobbing_anim);
+			wield_position.X *= s;
+			wield_position.X -= sin(bobfrac*M_PI*2.0+M_PI*i) * 3.0 * s;
+			wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI+M_PI*i) * 3.0;
+		}
+
+		m_wieldnode[i]->setPosition(wield_position);
+		m_wieldnode[i]->setRotation(wield_rotation);
+
+		m_wieldnode[i]->setNodeLightColor(m_player_light_color);
+
+		if (i == 1) {
+			m_wieldnode[i]->setVisible(
+				(m_wield_item_next[i].name != "" && m_wield_change_timer[i] > 0)
+				|| (m_offhand_wield_item_old && m_wield_change_timer[i] < 0));
+		}
+	}
 
 	// Set render distance
 	updateViewingRange();
@@ -607,21 +635,23 @@ void Camera::updateViewingRange()
 	m_cameranode->setFarValue((viewing_range < 2000) ? 2000 * BS : viewing_range * BS);
 }
 
-void Camera::setDigging(s32 button)
+void Camera::setDigging(s32 button, int hand)
 {
-	if (m_digging_button == -1)
-		m_digging_button = button;
+	if (m_digging_button[hand] == -1)
+		m_digging_button[hand] = button;
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(const ItemStack &item, int hand)
 {
-	if (item.name != m_wield_item_next.name ||
-			item.metadata != m_wield_item_next.metadata) {
-		m_wield_item_next = item;
-		if (m_wield_change_timer > 0)
-			m_wield_change_timer = -m_wield_change_timer;
-		else if (m_wield_change_timer == 0)
-			m_wield_change_timer = -0.001;
+	if (item.name != m_wield_item_next[hand].name ||
+			item.metadata != m_wield_item_next[hand].metadata) {
+		if (hand == 1)
+			m_offhand_wield_item_old = m_wield_item_next[hand].name != "";
+		m_wield_item_next[hand] = item;
+		if (m_wield_change_timer[hand] > 0)
+			m_wield_change_timer[hand] = -m_wield_change_timer[hand];
+		else if (m_wield_change_timer[hand] == 0)
+			m_wield_change_timer[hand] = -0.001;
 	}
 }
 

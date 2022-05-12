@@ -146,11 +146,12 @@ public:
 	void updateViewingRange();
 
 	// Start digging animation
-	// Pass 0 for left click, 1 for right click
-	void setDigging(s32 button);
+	// button: Pass 0 for left click, 1 for right click
+	// hand: 0 for main hand, 1 for offhand
+	void setDigging(s32 button, int hand);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, int hand);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -196,7 +197,7 @@ private:
 	scene::ICameraSceneNode *m_cameranode = nullptr;
 
 	scene::ISceneManager *m_wieldmgr = nullptr;
-	WieldMeshSceneNode *m_wieldnode = nullptr;
+	WieldMeshSceneNode *m_wieldnode[2] = {nullptr, nullptr};
 
 	// draw control
 	MapDrawControl& m_draw_control;
@@ -246,15 +247,17 @@ private:
 	f32 m_view_bobbing_fall = 0.0f;
 
 	// Digging animation frame (0 <= m_digging_anim < 1)
-	f32 m_digging_anim = 0.0f;
+	f32 m_digging_anim[2] = {0.0f, 0.0f};
+
 	// If -1, no digging animation
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
-	s32 m_digging_button = -1;
+	s32 m_digging_button[2] = {-1, -1};
 
 	// Animation when changing wielded item
-	f32 m_wield_change_timer = 0.125f;
-	ItemStack m_wield_item_next;
+	f32 m_wield_change_timer[2] = {0.125f, 0.125f};
+	ItemStack m_wield_item_next[2];
+	bool m_offhand_wield_item_old;
 
 	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
 

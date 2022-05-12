@@ -3261,6 +3261,13 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+* `offhand`: list containing the offhand wielded item.
+    * Will be used for placements and secondary uses if the
+        main hand does not have any node_place_prediction, on_place
+        or on_secondary_use callbacks.
+    * Is passed to on_place and on_secondary_use callbacks; make sure
+        mods are aware of the itemstack not neccessarily being
+        located in the main hand.
 
 Colors
 ======
@@ -4707,13 +4714,13 @@ Privileges
 
 Privileges provide a means for server administrators to give certain players
 access to special abilities in the engine, games or mods.
-For example, game moderators may need to travel instantly to any place in the world, 
+For example, game moderators may need to travel instantly to any place in the world,
 this ability is implemented in `/teleport` command which requires `teleport` privilege.
 
 Registering privileges
 ----------------------
 
-A mod can register a custom privilege using `minetest.register_privilege` function 
+A mod can register a custom privilege using `minetest.register_privilege` function
 to give server administrators fine-grained access control over mod functionality.
 
 For consistency and practical reasons, privileges should strictly increase the abilities of the user.
@@ -4722,7 +4729,7 @@ Do not register custom privileges that e.g. restrict the player from certain in-
 Checking privileges
 -------------------
 
-A mod can call `minetest.check_player_privs` to test whether a player has privileges 
+A mod can call `minetest.check_player_privs` to test whether a player has privileges
 to perform an operation.
 Also, when registering a chat command with `minetest.register_chatcommand` a mod can
 declare privileges that the command requires using the `privs` field of the command
@@ -4786,7 +4793,7 @@ Minetest includes the following settings to control behavior of privileges:
 
    * `default_privs`: defines privileges granted to new players.
    * `basic_privs`: defines privileges that can be granted/revoked by players having
-    the `basic_privs` privilege. This can be used, for example, to give 
+    the `basic_privs` privilege. This can be used, for example, to give
     limited moderation powers to selected users.
 
 'minetest' namespace reference
@@ -7948,8 +7955,10 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         },
 
         on_place = function(itemstack, placer, pointed_thing),
-        -- When the 'place' key was pressed with the item in hand
+        -- When the 'place' key was pressed with the item one of the hands
         -- and a node was pointed at.
+        -- 'itemstack' may be the offhand item iff the main hand has
+        -- no on_place handler and no node_placement_prediction.
         -- Shall place item and return the leftover itemstack
         -- or nil to not modify the inventory.
         -- The placer may be any ObjectRef or nil.
@@ -7957,6 +7966,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         on_secondary_use = function(itemstack, user, pointed_thing),
         -- Same as on_place but called when not pointing at a node.
+        -- 'itemstack' may be the offhand item iff the main hand has
+        -- no on_secondary_use handler.
         -- Function must return either nil if inventory shall not be modified,
         -- or an itemstack to replace the original itemstack.
         -- The user may be any ObjectRef or nil.

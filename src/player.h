@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "network/networkprotocol.h"
 #include "util/basic_macros.h"
+#include "util/pointedthing.h"
 #include <list>
 #include <mutex>
 
@@ -187,6 +188,10 @@ public:
 
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
+
+	// item currently in secondary hand is returned in `offhand`
+	// item to use for place / secondary_use (either main or offhand) is (optionally) returned in `place`
+	bool getOffhandWieldedItem(ItemStack *offhand, ItemStack *place, IItemDefManager *idef, const PointedThing &pointed) const;
 	void setWieldIndex(u16 index);
 	u16 getWieldIndex() const { return m_wield_index; }
 

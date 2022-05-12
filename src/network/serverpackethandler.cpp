@@ -911,6 +911,13 @@ static inline void getWieldedItem(const PlayerSAO *playersao, Optional<ItemStack
 	playersao->getWieldedItem(&(*ret));
 }
 
+static inline bool getOffhandWieldedItem(const PlayerSAO *playersao, Optional<ItemStack> &offhand, Optional<ItemStack> &place, IItemDefManager *idef, const PointedThing &pointed)
+{
+	offhand = ItemStack();
+	place = ItemStack();
+	return playersao->getOffhandWieldedItem(&(*offhand), &(*place), idef, pointed);
+}
+
 void Server::handleCommand_Interact(NetworkPacket *pkt)
 {
 	/*
@@ -1219,15 +1226,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Place block or right-click object
 	case INTERACT_PLACE: {
-		Optional<ItemStack> selected_item;
-		getWieldedItem(playersao, selected_item);
+		Optional<ItemStack> main_item, offhand_item, place_item;
+		getWieldedItem(playersao, main_item);
+		bool use_offhand = getOffhandWieldedItem(playersao, offhand_item, place_item, m_itemdef, pointed);
 
 		// Reset build time counter
 		if (pointed.type == POINTEDTHING_NODE &&
-				selected_item->getDefinition(m_itemdef).type == ITEM_NODE)
+				place_item->getDefinition(m_itemdef).type == ITEM_NODE)
 			getClient(peer_id)->m_time_from_building = 0.0;
 
-		const bool had_prediction = !selected_item->getDefinition(m_itemdef).
+		const bool had_prediction = !place_item->getDefinition(m_itemdef).
 			node_placement_prediction.empty();
 
 		if (pointed.type == POINTEDTHING_OBJECT) {
@@ -1242,17 +1250,21 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					<< pointed_object->getDescription() << std::endl;
 
 			// Do stuff
-			if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
-				if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
+			if (m_script->item_OnSecondaryUse(use_offhand ? offhand_item : main_item, playersao, pointed)) {
+				if (use_offhand
+						? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
+						: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
 					SendInventory(playersao, true);
 			}
 
 			pointed_object->rightClick(playersao);
-		} else if (m_script->item_OnPlace(selected_item, playersao, pointed)) {
+		} else if (m_script->item_OnPlace(use_offhand ? offhand_item : main_item, playersao, pointed)) {
 			// Placement was handled in lua
 
 			// Apply returned ItemStack
-			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
+			if (use_offhand
+					? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
+					: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
 				SendInventory(playersao, true);
 		}
 
@@ -1295,17 +1307,20 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Rightclick air
 	case INTERACT_ACTIVATE: {
-		Optional<ItemStack> selected_item;
-		getWieldedItem(playersao, selected_item);
+		Optional<ItemStack> main_item, offhand_item, place_item;
+		getWieldedItem(playersao, main_item);
+		bool use_offhand = getOffhandWieldedItem(playersao, offhand_item, place_item, m_itemdef, pointed);
 
 		actionstream << player->getName() << " activates "
-				<< selected_item->name << std::endl;
+				<< place_item->name << std::endl;
 
 		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
 
-		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
+		if (m_script->item_OnSecondaryUse(use_offhand ? offhand_item : main_item, playersao, pointed)) {
 			// Apply returned ItemStack
-			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
+			if (use_offhand
+					? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
+					: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
 				SendInventory(playersao, true);
 		}
 
