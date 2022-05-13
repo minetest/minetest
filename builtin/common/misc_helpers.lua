@@ -448,7 +448,7 @@ end
 local function parse_area_string(pos, sub1, sub2, relative_to)
 	local newpos = string.sub(pos, sub1, sub2)
 	local pp = {}
-	pp.x, pp.y, pp.z = string.match(newpos, "([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)")
+	pp.x, pp.y, pp.z = string.match(newpos, "([^(),]+)[, ] *([^(),]+)[, ] *([^(),]+)")
 	return core.parse_coordinates(pp.x, pp.y, pp.z, relative_to)
 end
 
@@ -492,6 +492,52 @@ local function test_string_to_area()
 	assert(type(p1) == "table" and type(p2) == "table")
 	assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
 	assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
+
+	-- Invalid inputs
+	p1, p2 = core.string_to_area("(1,1,1) (1,1,nan)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(1,1,1) (1,1,~nan)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(1,1,1) (1,~nan,1)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(1,1,1) (1,1,inf)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(1,1,1) (1,1,~inf)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(1,1,1) (1,~inf,1)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(nan,nan,nan) (nan,nan,nan)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(nan,nan,nan) (nan,nan,nan)")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(inf,inf,inf) (-inf,-inf,-inf)", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(inf,inf,inf) (-inf,-inf,-inf)")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("bananas", {x=1,y=1,z=1})
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("bananas", "foobar")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("bananas")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(bananas,bananas,bananas)")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(bananas,bananas,bananas) (bananas,bananas,bananas)")
+	assert(p1 == nil and p2 == nil)
 end
 
 --------------------------------------------------------------------------------
@@ -752,9 +798,16 @@ function core.parse_relative_number(arg, relative_to)
 		if not number then
 			return nil
 		end
+		if core.is_nan(number) or number == math.huge or number == -math.huge then
+			return nil
+		end
 		return relative_to + number
 	else
-		return tonumber(arg)
+		local number = tonumber(arg)
+		if core.is_nan(number) or number == math.huge or number == -math.huge then
+			return nil
+		end
+		return number
 	end
 end
 
