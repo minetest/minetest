@@ -484,7 +484,7 @@ function pkgmgr.enable_mod(this, toset)
 				core.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
-				if mod_to_enable.enabled == false then
+				if not mod_to_enable.enabled  then
 					mod_to_enable.enabled = true
 					toggled_mods[#toggled_mods+1] = mod_to_enable.name
 				end
