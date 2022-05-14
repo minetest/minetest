@@ -162,16 +162,9 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 		sharpness_factor = clamp(depth * depth_to_blur, 0.1, 1.0);
 	depth = 0.0;
 
-	// if we would be downscaling the filter significantly, just force a sharp shadow
-	// in practice this only happens very close to the caster and avoids peter-panning.
-	if (sharpness_factor == 0.1) {
-		return 0.0;
-	}
-
 	if (SOFTSHADOWRADIUS <= 1.0) {
 		return sharpness_factor * BASEFILTERRADIUS * SOFTSHADOWRADIUS;
 	}
-
 
 	float pointDepth;
 	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor;
