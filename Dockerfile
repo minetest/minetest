@@ -26,7 +26,7 @@ RUN apk add --no-cache git build-base cmake sqlite-dev curl-dev zlib-dev zstd-de
 	rm -fr ./games/minetest_game/.git
 
 WORKDIR /usr/src/
-RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
+RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ -b v1.0.0 && \
 	mkdir prometheus-cpp/build && \
 	cd prometheus-cpp/build && \
 	cmake .. \
