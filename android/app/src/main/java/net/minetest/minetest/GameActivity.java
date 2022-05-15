@@ -34,10 +34,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Keep;
 import androidx.appcompat.app.AlertDialog;
 
 import java.util.Objects;
 
+// Native code finds these methods by name (see porting_android.cpp).
+// This annotation prevents the minifier/Proguard from mangling them.
+@Keep
 public class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
