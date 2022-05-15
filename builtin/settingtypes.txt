@@ -666,10 +666,10 @@ viewing_range (Viewing range) int 190 20 4000
 near_plane (Near plane) float 0.1 0 0.25
 
 #    Width component of the initial window size. Ignored in fullscreen mode.
-screen_w (Screen width) int 1024 1
+screen_w (Screen width) int 1280 1
 
 #    Height component of the initial window size. Ignored in fullscreen mode.
-screen_h (Screen height) int 600 1
+screen_h (Screen height) int 720 1
 
 #    Save window size automatically when modified.
 autosave_screensize (Autosave screen size) bool true

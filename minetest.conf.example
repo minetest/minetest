@@ -764,11 +764,11 @@
 
 #    Width component of the initial window size. Ignored in fullscreen mode.
 #    type: int min: 1
-# screen_w = 1024
+# screen_w = 1280
 
 #    Height component of the initial window size. Ignored in fullscreen mode.
 #    type: int min: 1
-# screen_h = 600
+# screen_h = 720
 
 #    Save window size automatically when modified.
 #    type: bool
