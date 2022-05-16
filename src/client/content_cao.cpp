@@ -905,12 +905,8 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 		if (m_prop.visual == "upright_sprite") {
 			if (!m_meshnode)
 				return;
-
-			scene::IMesh *mesh = m_meshnode->getMesh();
-			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-				buf->getMaterial().EmissiveColor = light_color;
-			}
+			for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i)
+				m_meshnode->getMaterial(i).EmissiveColor = light_color;
 		} else {
 			scene::ISceneNode *node = getSceneNode();
 			if (!node)
