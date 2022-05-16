@@ -582,7 +582,6 @@ core.register_chatcommand("teleport", {
 		local p = {}
 		p.x, p.y, p.z = string.match(param, "^([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)$")
 		p = core.parse_coordinates(p.x, p.y, p.z, relpos)
-		local teleportee = core.get_player_by_name(name)
 		if p and p.x and p.y and p.z then
 			return teleport_to_pos(name, p)
 		end
