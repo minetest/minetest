@@ -441,99 +441,32 @@ end
 
 --------------------------------------------------------------------------------
 
-local function parse_area_string(pos, sub1, sub2, relative_to)
-	local newpos = string.sub(pos, sub1, sub2)
-	local pp = {}
-	pp.x, pp.y, pp.z = string.match(newpos, "([^(),]+)[, ] *([^(),]+)[, ] *([^(),]+)")
-	return core.parse_coordinates(pp.x, pp.y, pp.z, relative_to)
-end
+do
+	local rel_num_cap = "(~?-?%d*%.?%d*)" -- may be overly permissive as this will be tonumber'ed anyways
+	local num_delim = "[,%s]%s*"
+	local pattern = "^" .. table.concat({rel_num_cap, rel_num_cap, rel_num_cap}, num_delim) .. "$"
 
-function core.string_to_area(value, relative_to)
-	local p1, p2 = unpack(value:split(") ("))
-	if p1 == nil or p2 == nil then
-		return nil
+	local function parse_area_string(pos, relative_to)
+		local pp = {}
+		pp.x, pp.y, pp.z = pos:trim():match(pattern)
+		return core.parse_coordinates(pp.x, pp.y, pp.z, relative_to)
 	end
 
-	if relative_to then
-		p1 = parse_area_string(p1, 2, nil, relative_to)
-		p2 = parse_area_string(p2, 1, -2, relative_to)
-	else
-		p1 = core.string_to_pos(p1 .. ")")
-		p2 = core.string_to_pos("(" .. p2)
+	function core.string_to_area(value, relative_to)
+		local p1, p2 = value:match("^%((.-)%)%s*%((.-)%)$")
+		if not p1 then
+			return
+		end
+
+		p1 = parse_area_string(p1, relative_to)
+		p2 = parse_area_string(p2, relative_to)
+
+		if p1 == nil or p2 == nil then
+			return
+		end
+
+		return p1, p2
 	end
-	if p1 == nil or p2 == nil then
-		return nil
-	end
-
-	return p1, p2
-end
-
-local function test_string_to_area()
-	local p1, p2 = core.string_to_area("(10.0, 5, -2) (  30.2,   4, -12.53)")
-	assert(p1.x == 10.0 and p1.y == 5 and p1.z == -2)
-	assert(p2.x == 30.2 and p2.y == 4 and p2.z == -12.53)
-
-	p1, p2 = core.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})
-	assert(type(p1) == "table" and type(p2) == "table")
-	assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
-	assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
-
-	p1, p2 = core.string_to_area("(1 2 3) (~5 ~-5 ~)", {x=10,y=10,z=10})
-	assert(type(p1) == "table" and type(p2) == "table")
-	assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
-	assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
-
-	-- Invalid inputs
-	p1, p2 = core.string_to_area("(1,1,1) (1,1,nan)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(1,1,1) (1,1,~nan)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(1,1,1) (1,~nan,1)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(1,1,1) (1,1,inf)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(1,1,1) (1,1,~inf)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(1,1,1) (1,~inf,1)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(nan,nan,nan) (nan,nan,nan)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(nan,nan,nan) (nan,nan,nan)")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(inf,inf,inf) (-inf,-inf,-inf)", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(inf,inf,inf) (-inf,-inf,-inf)")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("bananas", {x=1,y=1,z=1})
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("bananas", "foobar")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("bananas")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(bananas,bananas,bananas)")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(bananas,bananas,bananas) (bananas,bananas,bananas)")
-	assert(p1 == nil and p2 == nil)
 end
 
 --------------------------------------------------------------------------------
@@ -824,17 +757,11 @@ Returns: a vector or nil for invalid input or if player does not exist
 ]]
 function core.parse_coordinates(x, y, z, relative_to)
 	if not relative_to then
-		return nil
+		x, y, z = tonumber(x), tonumber(y), tonumber(z)
+		return x and y and z and { x = x, y = y, z = z }
 	end
 	local rx = core.parse_relative_number(x, relative_to.x)
 	local ry = core.parse_relative_number(y, relative_to.y)
 	local rz = core.parse_relative_number(z, relative_to.z)
-	if not rx or not ry or not rz then
-		return nil
-	end
-	return { x = rx, y = ry, z = rz }
+	return rx and ry and rz and { x = rx, y = ry, z = rz }
 end
-
--- Run tests
------------------------------------------------------------------------------
-test_string_to_area()
