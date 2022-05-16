@@ -425,20 +425,16 @@ function core.string_to_pos(value)
 		return nil
 	end
 
-	local x, y, z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	value = value:match("^%((.-)%)$") or value -- strip parentheses
+
+	local x, y, z = value:trim():match("^([%d.-]+)[,%s]%s*([%d.-]+)[,%s]%s*([%d.-]+)$")
 	if x and y and z then
 		x = tonumber(x)
 		y = tonumber(y)
 		z = tonumber(z)
 		return vector.new(x, y, z)
 	end
-	x, y, z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
-	if x and y and z then
-		x = tonumber(x)
-		y = tonumber(y)
-		z = tonumber(z)
-		return vector.new(x, y, z)
-	end
+
 	return nil
 end
 
