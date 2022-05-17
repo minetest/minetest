@@ -530,6 +530,7 @@ void Client::step(float dtime)
 	{
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
+		bool force_update_shadow_map = false;
 		while (!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
@@ -556,13 +557,18 @@ void Client::step(float dtime)
 
 					if (is_empty)
 						delete r.mesh;
-					else
+					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
+						force_update_shadow_map = true;
+					}
 				}
 			} else {
 				delete r.mesh;
 			}
+
+			if (force_update_shadow_map)
+				RenderingEngine::get_shadow_renderer()->forceUpdateShadowMap();
 
 			if (m_minimap && do_mapper_update)
 				m_minimap->addBlock(r.p, minimap_mapblock);
