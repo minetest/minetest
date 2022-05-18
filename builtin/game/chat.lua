@@ -1063,8 +1063,8 @@ core.register_chatcommand("time", {
 			return false, S("You don't have permission to run "
 				.. "this command (missing privilege: @1).", "settime")
 		end
-		local hour, minute = param:match("^(~?[-]?%d+):([-]?%d+)$")
-		if not hour or not minute then
+		local relative, negative, hour, minute = param:match("^(~?)(%-?)(%d+):(%d+)$")
+		if not relative then -- checking the first capture against nil suffices
 			local new_time = core.parse_relative_number(param, core.get_timeofday() * 24000)
 			if not new_time then
 				new_time = tonumber(param) or -1
@@ -1078,18 +1078,10 @@ core.register_chatcommand("time", {
 			core.log("action", name .. " sets time to " .. new_time)
 			return true, S("Time of day changed.")
 		end
-		local relative = false
-		if string.sub(hour, 1,1) == "~" then
-			relative = true
-			hour = string.sub(hour, 2)
-		end
 		local new_time
 		hour = tonumber(hour)
 		minute = tonumber(minute)
-		if not hour or not minute then
-			return false
-		end
-		if not relative then
+		if relative == "" then
 			if hour < 0 or hour > 23 then
 				return false, S("Invalid hour (must be between 0 and 23 inclusive).")
 			elseif minute < 0 or minute > 59 then
@@ -1101,14 +1093,11 @@ core.register_chatcommand("time", {
 				return false, S("Invalid minute (must be between 0 and 59 inclusive).")
 			end
 			local current_time = core.get_timeofday()
-			local time_diff = (math.abs(hour) * 60 + minute) / 1440
-			-- negative time
-			if hour < 0 then
-				time_diff = -time_diff
+			if negative == "-" then -- negative time
+				hour, minute = -hour, -minute
 			end
-			new_time = current_time + time_diff
+			new_time = (current_time + (hour * 60 + minute) / 1440) % 1
 			local _
-			new_time = new_time % 1.0
 			_, hour, minute = get_time(new_time)
 		end
 		core.set_timeofday(new_time)
