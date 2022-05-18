@@ -64,10 +64,6 @@ public:
 		// Remove all entries if there are duplicates
 		m_stack.remove(menu);
 
-		/*std::list<GUIModalMenu*>::iterator i = std::prev(m_stack.end());
-		assert(*i == menu);
-		m_stack.erase(i);*/
-
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(true);
 	}
