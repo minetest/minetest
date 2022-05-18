@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-10 23:53+0000\n"
-"Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
-"Yasuyoshi <translation@mnh48.moe>\n"
+"PO-Revision-Date: 2022-05-19 18:13+0000\n"
+"Last-Translator: Niskala Airaha <niskala5570@gmail.com>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
 "minetest/ms_Arab/>\n"
 "Language: ms_Arab\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -153,7 +152,7 @@ msgstr "کامي مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2."
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "باتل"
+msgstr "بطل"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
