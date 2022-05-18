@@ -34,6 +34,7 @@
 #include <irrlicht.h>
 #include <ft2build.h>
 #include <vector>
+#include <map>
 #include <irrUString.h>
 #include "util/enriched_string.h"
 #include FT_FREETYPE_H
@@ -345,7 +346,7 @@ namespace gui
 		private:
 			// Manages the FreeType library.
 			static FT_Library c_library;
-			static core::map<io::path, SGUITTFace*> c_faces;
+			static std::map<io::path, SGUITTFace*> c_faces;
 			static bool c_libraryLoaded;
 			static scene::IMesh* shared_plane_ptr_;
 			static scene::SMesh  shared_plane_;

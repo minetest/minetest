@@ -59,7 +59,7 @@ struct SGUITTFace : public virtual irr::IReferenceCounted
 
 // Static variables.
 FT_Library CGUITTFont::c_library;
-core::map<io::path, SGUITTFace*> CGUITTFont::c_faces;
+std::map<io::path, SGUITTFace*> CGUITTFont::c_faces;
 bool CGUITTFont::c_libraryLoaded = false;
 scene::IMesh* CGUITTFont::shared_plane_ptr_ = 0;
 scene::SMesh CGUITTFont::shared_plane_;
@@ -320,11 +320,11 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 
 	// Grab the face.
 	SGUITTFace* face = 0;
-	core::map<io::path, SGUITTFace*>::Node* node = c_faces.find(filename);
-	if (node == 0)
+	auto node = c_faces.find(filename);
+	if (node == c_faces.end())
 	{
 		face = new SGUITTFace();
-		c_faces.set(filename, face);
+		c_faces.emplace(filename, face);
 
 		if (filesystem)
 		{
@@ -334,7 +334,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			{
 				if (logger) logger->log(L"CGUITTFont", L"Failed to open the file.", irr::ELL_INFORMATION);
 
-				c_faces.remove(filename);
+				c_faces.erase(filename);
 				delete face;
 				face = 0;
 				return false;
@@ -349,7 +349,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			{
 				if (logger) logger->log(L"CGUITTFont", L"FT_New_Memory_Face failed.", irr::ELL_INFORMATION);
 
-				c_faces.remove(filename);
+				c_faces.erase(filename);
 				delete face;
 				face = 0;
 				return false;
@@ -362,7 +362,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			{
 				if (logger) logger->log(L"CGUITTFont", L"FT_New_Face failed.", irr::ELL_INFORMATION);
 
-				c_faces.remove(filename);
+				c_faces.erase(filename);
 				delete face;
 				face = 0;
 				return false;
@@ -372,7 +372,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 	else
 	{
 		// Using another instance of this face.
-		face = node->getValue();
+		face = node->second;
 		face->grab();
 	}
 
@@ -415,17 +415,17 @@ CGUITTFont::~CGUITTFont()
 	//Glyphs.clear();
 
 	// We aren't using this face anymore.
-	core::map<io::path, SGUITTFace*>::Node* n = c_faces.find(filename);
-	if (n)
+	auto n = c_faces.find(filename);
+	if (n != c_faces.end())
 	{
-		SGUITTFace* f = n->getValue();
+		SGUITTFace* f = n->second;
 
 		// Drop our face.  If this was the last face, the destructor will clean up.
 		if (f->drop())
-			c_faces.remove(filename);
+			c_faces.erase(filename);
 
 		// If there are no more faces referenced by FreeType, clean up.
-		if (c_faces.size() == 0)
+		if (c_faces.empty())
 		{
 			FT_Done_FreeType(c_library);
 			c_libraryLoaded = false;
@@ -585,7 +585,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	core::ustring utext = text.getString();
 
 	// Set up our render map.
-	core::map<u32, CGUITTGlyphPage*> Render_Map;
+	std::map<u32, CGUITTGlyphPage*> Render_Map;
 
 	// Start parsing characters.
 	u32 n;
@@ -640,7 +640,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				page->render_colors.push_back(colors[iter.getPos()]);
 			else
 				page->render_colors.push_back(video::SColor(255,255,255,255));
-			Render_Map.set(glyph.glyph_page, page);
+			Render_Map[glyph.glyph_page] = page;
 		}
 		if (n > 0)
 		{
@@ -673,14 +673,12 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 
 	// Draw now.
 	update_glyph_pages();
-	core::map<u32, CGUITTGlyphPage*>::Iterator j = Render_Map.getIterator();
-	while (!j.atEnd())
+	auto it = Render_Map.begin();
+	auto ie = Render_Map.end();
+	while (it != ie)
 	{
-		core::map<u32, CGUITTGlyphPage*>::Node* n = j.getNode();
-		j++;
-		if (n == 0) continue;
-
-		CGUITTGlyphPage* page = n->getValue();
+		CGUITTGlyphPage* page = it->second;
+		++it;
 
 		if (shadow_offset) {
 			for (size_t i = 0; i < page->render_positions.size(); ++i)
