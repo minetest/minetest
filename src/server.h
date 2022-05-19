@@ -425,15 +425,7 @@ private:
 		std::unordered_set<session_t> waiting_players;
 	};
 
-	// the standard library does not implement std::hash for pairs so we have this:
-	struct SBCHash {
-		size_t operator() (const std::pair<v3s16, u16> &p) const {
-			return (((size_t) p.first.X) << 48) | (((size_t) p.first.Y) << 32) |
-				(((size_t) p.first.Z) << 16) | ((size_t) p.second);
-		}
-	};
-
-	typedef std::unordered_map<std::pair<v3s16, u16>, std::string, SBCHash> SerializedBlockCache;
+	typedef std::unordered_map<std::pair<v3s16, u16>, std::string> SerializedBlockCache;
 
 	void init();
 

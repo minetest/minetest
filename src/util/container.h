@@ -305,3 +305,23 @@ private:
 	// we can't use std::deque here, because its iterators get invalidated
 	std::list<K> m_queue;
 };
+
+inline size_t scrambleBits(size_t h, size_t randPrime1, size_t randPrime2) {
+	// Multiplication is very good at scrambling upper bits, less so lower bits.
+	// So move one set of upper bits lower.
+	size_t halfSizeT = sizeof(size_t) * 4;
+	size_t s1 = h * randPrime1;
+	size_t s2 = h * randPrime2;
+	return s1 ^ (s2 >> halfSizeT);
+}
+
+// Make std::pair hashable
+template<typename T, typename S>
+struct std::hash<std::pair<T, S> > {
+	size_t operator()(const std::pair<T, S> &pair) const
+	{
+		size_t h1 = std::hash<T>()(pair.first);
+		size_t h2 = std::hash<S>()(pair.second);
+		return h1 ^ scrambleBits(h2, 879788123, 1546275799);
+        }
+};
