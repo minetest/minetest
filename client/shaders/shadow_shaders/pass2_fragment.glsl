@@ -1,3 +1,5 @@
+#line 1
+
 uniform sampler2D ShadowMapClientMap;
 #ifdef COLORED_SHADOWS
 uniform sampler2D ShadowMapClientMapTraslucent;

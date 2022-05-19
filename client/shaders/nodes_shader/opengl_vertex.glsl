@@ -1,3 +1,5 @@
+#line 1
+
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;

@@ -1,3 +1,5 @@
+#line 1
+
 uniform mat4 mWorld;
 
 varying lowp vec4 varColor;

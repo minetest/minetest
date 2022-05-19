@@ -1,3 +1,5 @@
+#line 1
+
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform vec3 yawVec;

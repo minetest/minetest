@@ -1,3 +1,5 @@
+#line 1
+
 uniform mat4 mWorld;
 uniform vec3 dayLight;
 uniform vec3 eyePosition;

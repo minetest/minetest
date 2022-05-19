@@ -1,3 +1,5 @@
+#line 1
+
 varying lowp vec4 varColor;
 varying mediump vec2 varTexCoord;
 
