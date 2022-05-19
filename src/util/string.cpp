@@ -922,7 +922,8 @@ void safe_print_string(std::ostream &os, const std::string &str)
 	os.setf(flags);
 }
 
-std::string StringPrintf(const char *format, ...)  {
+std::string StringPrintf(const char *format, ...)
+{
 	va_list ap;
 	va_start(ap, format);
 	std::string tmp = VStringPrintf(format, ap);
@@ -930,7 +931,8 @@ std::string StringPrintf(const char *format, ...)  {
 	return tmp;
 }
 
-std::string VStringPrintf(const char *format, va_list args) {
+std::string VStringPrintf(const char *format, va_list args)
+{
 	// Need to iterate through the arguments twice.
 	va_list args1;
 	va_list args2;
