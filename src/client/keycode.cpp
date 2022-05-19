@@ -26,12 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/basic_macros.h"
 
-class UnknownKeycode : public BaseException
-{
-public:
-	UnknownKeycode(const char *s) :
-		BaseException(s) {};
-};
+DEFINE_EXCEPTION(UnknownKeycode);
 
 struct table_key {
 	const char *Name;
@@ -252,7 +247,7 @@ struct table_key lookup_keyname(const char *name)
 			return table_key;
 	}
 
-	throw UnknownKeycode(name);
+	throw UnknownKeycode("%s", name);
 }
 
 struct table_key lookup_keykey(irr::EKEY_CODE key)
@@ -262,9 +257,7 @@ struct table_key lookup_keykey(irr::EKEY_CODE key)
 			return table_key;
 	}
 
-	std::ostringstream os;
-	os << "<Keycode " << (int) key << ">";
-	throw UnknownKeycode(os.str().c_str());
+	throw UnknownKeycode("<Keycode %d>", key);
 }
 
 struct table_key lookup_keychar(wchar_t Char)
@@ -274,9 +267,8 @@ struct table_key lookup_keychar(wchar_t Char)
 			return table_key;
 	}
 
-	std::ostringstream os;
-	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
-	throw UnknownKeycode(os.str().c_str());
+	throw UnknownKeycode("<Char %s>",
+		hex_encode((char*) &Char, sizeof(wchar_t)).c_str());
 }
 
 KeyPress::KeyPress(const char *name)

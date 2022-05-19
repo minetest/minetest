@@ -154,7 +154,7 @@ void UDPSocket::Bind(Address addr)
 		const char *errmsg =
 				"Socket and bind address families do not match";
 		errorstream << "Bind failed: " << errmsg << std::endl;
-		throw SocketException(errmsg);
+		throw SocketException("%s", errmsg);
 	}
 
 	int ret = 0;

@@ -129,7 +129,7 @@ void Address::Resolve(const char *name)
 	// Do getaddrinfo()
 	int e = getaddrinfo(name, NULL, &hints, &resolved);
 	if (e != 0)
-		throw ResolveError(gai_strerror(e));
+		throw ResolveError("%s", gai_strerror(e));
 
 	// Copy data
 	if (resolved->ai_family == AF_INET) {

@@ -761,3 +761,16 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
  * brackets (e.g. "a\x1eb" -> "a<1e>b").
  */
 void safe_print_string(std::ostream &os, const std::string &str);
+
+/**
+ *
+ * StringPrintf
+ *
+ * Create a std::string using a format string like printf.
+ *
+ */
+#define PRINTF_ATTR(index_of_format, index_of_first_vararg) \
+	__attribute__ ((format (printf, index_of_format, index_of_first_vararg)))
+
+std::string StringPrintf(const char *format, ...) PRINTF_ATTR(1, 2);
+std::string VStringPrintf(const char *format, va_list args);

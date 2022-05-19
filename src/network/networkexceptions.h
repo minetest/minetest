@@ -26,75 +26,17 @@ namespace con
 /*
 	Exceptions
 */
-class NotFoundException : public BaseException
-{
-public:
-	NotFoundException(const char *s) : BaseException(s) {}
-};
+DEFINE_EXCEPTION(NotFoundException);
+DEFINE_EXCEPTION(PeerNotFoundException);
+DEFINE_EXCEPTION(ConnectionException);
+DEFINE_EXCEPTION(ConnectionBindFailed);
+DEFINE_EXCEPTION(InvalidIncomingDataException);
+DEFINE_EXCEPTION(NoIncomingDataException);
+DEFINE_EXCEPTION(ProcessedSilentlyException);
+DEFINE_EXCEPTION(ProcessedQueued);
+DEFINE_EXCEPTION(IncomingDataCorruption);
+} // namespace con
 
-class PeerNotFoundException : public BaseException
-{
-public:
-	PeerNotFoundException(const char *s) : BaseException(s) {}
-};
-
-class ConnectionException : public BaseException
-{
-public:
-	ConnectionException(const char *s) : BaseException(s) {}
-};
-
-class ConnectionBindFailed : public BaseException
-{
-public:
-	ConnectionBindFailed(const char *s) : BaseException(s) {}
-};
-
-class InvalidIncomingDataException : public BaseException
-{
-public:
-	InvalidIncomingDataException(const char *s) : BaseException(s) {}
-};
-
-class NoIncomingDataException : public BaseException
-{
-public:
-	NoIncomingDataException(const char *s) : BaseException(s) {}
-};
-
-class ProcessedSilentlyException : public BaseException
-{
-public:
-	ProcessedSilentlyException(const char *s) : BaseException(s) {}
-};
-
-class ProcessedQueued : public BaseException
-{
-public:
-	ProcessedQueued(const char *s) : BaseException(s) {}
-};
-
-class IncomingDataCorruption : public BaseException
-{
-public:
-	IncomingDataCorruption(const char *s) : BaseException(s) {}
-};
-}
-
-class SocketException : public BaseException
-{
-public:
-	SocketException(const std::string &s) : BaseException(s) {}
-};
-
-class ResolveError : public BaseException
-{
-public:
-	ResolveError(const std::string &s) : BaseException(s) {}
-};
-
-class SendFailedException : public BaseException
-{
-public:
-	SendFailedException(const std::string &s) : BaseException(s) {}
-};
+DEFINE_EXCEPTION(SocketException);
+DEFINE_EXCEPTION(ResolveError);
+DEFINE_EXCEPTION(SendFailedException);
