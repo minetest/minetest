@@ -1080,7 +1080,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	if (MAX_UDP_PEERS <= 65535 && peer_id >= MAX_UDP_PEERS) {
 		std::string errmsg = "Invalid peer_id=" + itos(peer_id);
 		errorstream << errmsg << std::endl;
-		throw InvalidIncomingDataException(errmsg.c_str());
+		throw InvalidIncomingDataException(errmsg);
 	}
 
 	if (type >= PACKET_TYPE_MAX) {
