@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using m4f = core::matrix4;
 
-static v3f quantize_direction(v3f direction, float step)
+static v3f quantizeDirection(v3f direction, float step)
 {
 
 	float yaw = std::atan2(direction.Z, direction.X);
@@ -44,7 +44,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	const float DISTANCE_STEP = BS * 2.0; // 2 meters
 	v3f newCenter;
 	v3f look = cam->getDirection();
-	look = quantize_direction(look, M_PI / 12.0); // 15 degrees
+	look = quantizeDirection(look, M_PI / 12.0); // 15 degrees
 
 	// camera view tangents
 	float tanFovY = tanf(cam->getFovY() * 0.5f);
@@ -79,7 +79,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	v3f boundVec = (cam_pos_scene + farCorner * sfFar) - center_scene;
 	float radius = boundVec.getLength();
 	float length = radius * 3.0f;
-	v3f eye_displacement = quantize_direction(direction, M_PI / 2880 /*15 seconds*/) * length;
+	v3f eye_displacement = quantizeDirection(direction, M_PI / 2880 /*15 seconds*/) * length;
 
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
