@@ -654,22 +654,22 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 		u8 tmp = readU8(is);
 		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
-			throw SerializationError("");
+			throw SerializationError("EOF");
 		leveled_max = tmp;
 
 		tmp = readU8(is);
 		if (is.eof())
-			throw SerializationError("");
+			throw SerializationError("EOF");
 		alpha = static_cast<enum AlphaMode>(tmp);
 
 		tmp = readU8(is);
 		if (is.eof())
-			throw SerializationError("");
+			throw SerializationError("EOF");
 		move_resistance = tmp;
 
 		tmp = readU8(is);
 		if (is.eof())
-			throw SerializationError("");
+			throw SerializationError("EOF");
 		liquid_move_physics = tmp;
 	} catch(SerializationError &e) {};
 }

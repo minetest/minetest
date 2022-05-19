@@ -33,7 +33,7 @@ public:
 	// Supports printf-like exception creation, example:
 	//   throw MyException("Invalid value: %d", value);
 	PRINTF_ATTR(2, 3)
-	explicit BaseException(const char *format, ...) noexcept
+	explicit BaseException(PRINTF_FORMAT_PREFIX const char *format, ...) noexcept
 	{
 		va_list ap;
 		va_start(ap, format);
@@ -59,7 +59,7 @@ protected:
 		ClassName(const std::string &s) noexcept : BaseException(s) { } \
 		ClassName(std::string &&s) noexcept : BaseException(std::move(s)) { } \
 		PRINTF_ATTR(2, 3) \
-		explicit ClassName(const char *format, ...) noexcept : \
+		explicit ClassName(PRINTF_FORMAT_PREFIX const char *format, ...) noexcept : \
 			BaseException(std::string()) \
 		{ \
 			va_list ap; \

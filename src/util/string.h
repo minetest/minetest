@@ -762,6 +762,18 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
  */
 void safe_print_string(std::ostream &os, const std::string &str);
 
+
+// Tell the compiler that a function has printf-style arguments,
+// so that it can catch safety errors at compile-time.
+#ifdef _MSC_VER
+#define PRINTF_ATTR(index_of_format, index_of_first_vararg)
+#define PRINTF_FORMAT_PREFIX _Printf_format_string_
+#else
+#define PRINTF_ATTR(index_of_format, index_of_first_vararg) \
+	__attribute__ ((format (printf, index_of_format, index_of_first_vararg)))
+#define PRINTF_FORMAT_PREFIX
+#endif
+
 /**
  *
  * StringPrintf
@@ -769,8 +781,6 @@ void safe_print_string(std::ostream &os, const std::string &str);
  * Create a std::string using a format string like printf.
  *
  */
-#define PRINTF_ATTR(index_of_format, index_of_first_vararg) \
-	__attribute__ ((format (printf, index_of_format, index_of_first_vararg)))
 
-std::string StringPrintf(const char *format, ...) PRINTF_ATTR(1, 2);
+std::string StringPrintf(PRINTF_FORMAT_PREFIX const char *format, ...) PRINTF_ATTR(1, 2);
 std::string VStringPrintf(const char *format, va_list args);
