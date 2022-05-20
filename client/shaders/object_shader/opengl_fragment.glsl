@@ -1,5 +1,3 @@
-#line 1
-
 uniform sampler2D baseTexture;
 
 uniform vec3 dayLight;

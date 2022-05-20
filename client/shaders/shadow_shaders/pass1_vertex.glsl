@@ -1,5 +1,3 @@
-#line 1
-
 uniform mat4 LightMVP; // world matrix
 uniform vec4 CameraPos; // camera position
 varying vec4 tPos;

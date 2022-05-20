@@ -1,5 +1,3 @@
-#line 1
-
 varying mediump vec4 varTexCoord;
 
 void main(void)

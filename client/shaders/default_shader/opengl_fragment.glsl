@@ -1,5 +1,3 @@
-#line 1
-
 varying lowp vec4 varColor;
 
 void main(void)

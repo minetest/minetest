@@ -1,5 +1,3 @@
-#line 1
-
 uniform sampler2D ColorMapSampler;
 varying vec4 tPos;
 
