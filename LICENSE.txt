@@ -65,7 +65,7 @@ appgurueu:
   textures/base/pack/server_incompatible.png
   
 erlehmann, rollerozxa, Warr1024:
-textures/base/pack/no_screenshot.png
+  textures/base/pack/no_screenshot.png
 
 License of Minetest source code
 -------------------------------
