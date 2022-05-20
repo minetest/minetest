@@ -365,11 +365,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.settings:set("enable_dynamic_shadows", "false")
 	else
 		local shadow_presets = {
-			[2] = { 55,  512,  "true", 0, "false" },
-			[3] = { 82,  1024, "true", 1, "false" },
-			[4] = { 240, 2048, "true", 1, "false" },
-			[5] = { 240, 2048, "true", 2,  "true" },
-			[6] = { 300, 4096, "true", 2,  "true" },
+			[2] = { 62,  512,  "true", 0, "false" },
+			[3] = { 93,  1024, "true", 1, "false" },
+			[4] = { 140, 2048, "true", 1, "false" },
+			[5] = { 210, 4096, "true", 2,  "true" },
+			[6] = { 300, 8192, "true", 2,  "true" },
 		}
 		local s = shadow_presets[table.indexof(labels.shadow_levels, fields["dd_shadows"])]
 		if s then
