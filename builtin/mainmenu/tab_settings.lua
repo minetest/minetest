@@ -219,8 +219,9 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"..
-			"label[8.25,3.0;" .. fgettext("Dynamic shadows: ") .. "]" ..
-			"dropdown[8.25,3.5;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
+			"label[8.25,2.8;" .. fgettext("Dynamic shadows:") .. "]" ..
+			"label[8.25,3.2;" .. fgettext("(game support required)") .. "]" ..
+					"dropdown[8.25,3.7;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
 					.. getSettingIndex.ShadowMapping() .. "]"
 	else
 		tab_string = tab_string ..
