@@ -240,6 +240,30 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L, info.lang_code.c_str());
 	lua_settable(L, table);
 
+	if (info.dynamic && info.dynamic->screen_size != v2u32()) {
+		lua_pushstring(L, "display");
+		lua_newtable(L);
+		int dyn_table = lua_gettop(L);
+
+		lua_pushstring(L, "screen_size");
+		push_v2u32(L, info.dynamic->screen_size);
+		lua_settable(L, dyn_table);
+
+		lua_pushstring(L, "dpi");
+		lua_pushnumber(L, info.dynamic->dpi);
+		lua_settable(L, dyn_table);
+
+		lua_pushstring(L, "gui_scaling");
+		lua_pushnumber(L, info.dynamic->gui_scaling);
+		lua_settable(L, dyn_table);
+
+		lua_pushstring(L, "hud_scaling");
+		lua_pushnumber(L, info.dynamic->hud_scaling);
+		lua_settable(L, dyn_table);
+
+		lua_settable(L, table);
+	}
+
 #ifndef NDEBUG
 	lua_pushstring(L,"serialization_version");
 	lua_pushnumber(L, info.ser_vers);

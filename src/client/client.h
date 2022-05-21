@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include "gameparams.h"
+#include "clientdynamicinfo.h"
 #include <fstream>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
@@ -250,6 +251,7 @@ public:
 	void sendRespawn();
 	void sendReady();
 	void sendHaveMedia(const std::vector<u32> &tokens);
+	void sendUpdateClientInfo(const ClientDynamicInfo &info);
 
 	ClientEnvironment& getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }

@@ -1297,6 +1297,8 @@ bool Server::getClientInfo(session_t peer_id, ClientInfo &ret)
 
 	ret.lang_code = client->getLangCode();
 
+	ret.dynamic = &client->getDynamicInfo();
+
 	return true;
 }
 

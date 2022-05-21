@@ -71,6 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "script/scripting_client.h"
 #include "hud.h"
+#include "clientdynamicinfo.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -917,11 +918,14 @@ private:
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	f32 getSensitivityScaleFactor() const;
+	ClientDynamicInfo getCurrentDisplayInfo() const;
 
 	InputHandler *input = nullptr;
 
 	Client *client = nullptr;
 	Server *server = nullptr;
+
+	ClientDynamicInfo client_display_info{};
 
 	IWritableTextureSource *texture_src = nullptr;
 	IWritableShaderSource *shader_src = nullptr;
@@ -1191,23 +1195,29 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
+	v2u32 previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
 
-		const irr::core::dimension2d<u32> &current_screen_size =
-			m_rendering_engine->get_video_driver()->getScreenSize();
+		const auto current_display_info = getCurrentDisplayInfo();
+		if (!current_display_info.equal(client_display_info)) {
+			client_display_info = current_display_info;
+			client->sendUpdateClientInfo(current_display_info);
+		}
+
+		const auto &current_screen_size = current_display_info.screen_size;
+
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
 				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
 				g_settings->getBool("autosave_screensize")) {
-			g_settings->setU16("screen_w", current_screen_size.Width);
-			g_settings->setU16("screen_h", current_screen_size.Height);
+			g_settings->setU16("screen_w", current_screen_size.X);
+			g_settings->setU16("screen_h", current_screen_size.Y);
 			previous_screen_size = current_screen_size;
 		}
 
@@ -2585,6 +2595,16 @@ f32 Game::getSensitivityScaleFactor() const
 	// 16:9 aspect ratio to minimize disruption of existing sensitivity
 	// settings.
 	return tan(fov_y / 2.0f) * 1.3763818698f;
+}
+
+ClientDynamicInfo Game::getCurrentDisplayInfo() const
+{
+	v2u32 screen_size = RenderingEngine::getWindowSize();
+	f32 dpi = RenderingEngine::getDisplayDensity() * 96.0f;
+	f32 gui_scaling = g_settings->getFloat("gui_scaling");
+	f32 hud_scaling = g_settings->getFloat("hud_scaling");;
+
+	return { screen_size, dpi, gui_scaling, hud_scaling };
 }
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)

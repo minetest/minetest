@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "clientdynamicinfo.h"
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1840,4 +1841,18 @@ void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 				getScriptIface()->on_dynamic_media_added(token, player->getName());
 		}
 	}
+}
+
+void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
+{
+	ClientDynamicInfo info;
+	*pkt >> info.screen_size.X;
+	*pkt >> info.screen_size.Y;
+	*pkt >> info.dpi;
+	*pkt >> info.gui_scaling;
+	*pkt >> info.hud_scaling;
+
+	session_t peer_id = pkt->getPeerId();
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
+	client->setDynamicInfo(info);
 }

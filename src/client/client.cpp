@@ -1381,6 +1381,17 @@ void Client::sendHaveMedia(const std::vector<u32> &tokens)
 	Send(&pkt);
 }
 
+void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
+{
+	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 2 + 4 + 4);
+	pkt << (u32)info.screen_size.X << (u32)info.screen_size.Y;
+	pkt << info.dpi;
+	pkt << info.gui_scaling;
+	pkt << info.hud_scaling;
+
+	Send(&pkt);
+}
+
 void Client::removeNode(v3s16 p)
 {
 	std::map<v3s16, MapBlock*> modified_blocks;

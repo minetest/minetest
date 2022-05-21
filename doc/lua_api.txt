@@ -4972,6 +4972,21 @@ Utilities
           protocol_version = 32,     -- protocol version used by client
           formspec_version = 2,      -- supported formspec version
           lang_code = "fr"           -- Language code used for translation
+
+          -- Will only be present if the client sent this information (requires v5.6+)
+          --
+          -- Note that none of these things are constant, they are likely to change during a client
+          -- connection as the player resizes the window and moves it between monitors
+          display = {
+              screen_size = { -- Current window size, not including any decorations (window bar, etc)
+                  x = 1308,
+                  y = 577,
+              },
+              dpi = 96, -- Dots per inch
+              gui_scaling = 1, -- gui_scaling setting
+              hud_scaling = 1, -- hud_scaling setting
+          },
+
           -- the following keys can be missing if no stats have been collected yet
           min_rtt = 0.01,            -- minimum round trip time
           max_rtt = 0.2,             -- maximum round trip time
