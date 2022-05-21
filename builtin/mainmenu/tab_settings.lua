@@ -50,7 +50,7 @@ local labels = {
 		fgettext("Low"),
 		fgettext("Medium"),
 		fgettext("High"),
-		fgettext("Ultra High")
+		fgettext("Very High")
 	}
 }
 
