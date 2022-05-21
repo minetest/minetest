@@ -1,6 +1,7 @@
 LOCAL_PATH := $(call my-dir)/..
 
 #LOCAL_ADDRESS_SANITIZER:=true
+#USE_BUILTIN_LUA:=true
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := Curl
@@ -42,10 +43,14 @@ LOCAL_MODULE := Irrlicht
 LOCAL_SRC_FILES := deps/$(APP_ABI)/Irrlicht/libIrrlichtMt.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+ifndef USE_BUILTIN_LUA
+
 include $(CLEAR_VARS)
 LOCAL_MODULE := LuaJIT
 LOCAL_SRC_FILES := deps/$(APP_ABI)/LuaJIT/libluajit.a
 include $(PREBUILT_STATIC_LIBRARY)
+
+endif
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := OpenAL
@@ -92,13 +97,18 @@ LOCAL_CFLAGS += \
 	-DUSE_CURL=1                    \
 	-DUSE_SOUND=1                   \
 	-DUSE_LEVELDB=0                 \
-	-DUSE_LUAJIT=1                  \
 	-DUSE_GETTEXT=1                 \
 	-DVERSION_MAJOR=${versionMajor} \
 	-DVERSION_MINOR=${versionMinor} \
 	-DVERSION_PATCH=${versionPatch} \
 	-DVERSION_EXTRA=${versionExtra} \
 	$(GPROF_DEF)
+
+ifdef USE_BUILTIN_LUA
+	LOCAL_CFLAGS += -DUSE_LUAJIT=0
+else
+	LOCAL_CFLAGS += -DUSE_LUAJIT=1
+endif
 
 ifdef NDEBUG
 	LOCAL_CFLAGS += -DNDEBUG=1
@@ -120,11 +130,18 @@ LOCAL_C_INCLUDES := \
 	deps/$(APP_ABI)/Irrlicht/include                   \
 	deps/$(APP_ABI)/Gettext/include                    \
 	deps/$(APP_ABI)/Iconv/include                      \
-	deps/$(APP_ABI)/LuaJIT/include                     \
 	deps/$(APP_ABI)/OpenAL-Soft/include                \
 	deps/$(APP_ABI)/SQLite/include                     \
 	deps/$(APP_ABI)/Vorbis/include                     \
 	deps/$(APP_ABI)/Zstd/include
+
+ifdef USE_BUILTIN_LUA
+	LOCAL_C_INCLUDES += \
+		../../lib/lua/src                    \
+		../../lib/bitop
+else
+	LOCAL_C_INCLUDES += deps/$(APP_ABI)/LuaJIT/include
+endif
 
 LOCAL_SRC_FILES := \
 	$(wildcard ../../src/client/*.cpp)           \
@@ -207,6 +224,41 @@ LOCAL_SRC_FILES := \
 	../../src/voxel.cpp                          \
 	../../src/voxelalgorithms.cpp
 
+# Built-in Lua
+ifdef USE_BUILTIN_LUA
+	LOCAL_SRC_FILES += \
+		../../lib/lua/src/lapi.c \
+		../../lib/lua/src/lauxlib.c \
+		../../lib/lua/src/lbaselib.c \
+		../../lib/lua/src/lcode.c \
+		../../lib/lua/src/ldblib.c \
+		../../lib/lua/src/ldebug.c \
+		../../lib/lua/src/ldo.c \
+		../../lib/lua/src/ldump.c \
+		../../lib/lua/src/lfunc.c \
+		../../lib/lua/src/lgc.c \
+		../../lib/lua/src/linit.c \
+		../../lib/lua/src/liolib.c \
+		../../lib/lua/src/llex.c \
+		../../lib/lua/src/lmathlib.c \
+		../../lib/lua/src/lmem.c \
+		../../lib/lua/src/loadlib.c \
+		../../lib/lua/src/lobject.c \
+		../../lib/lua/src/lopcodes.c \
+		../../lib/lua/src/loslib.c \
+		../../lib/lua/src/lparser.c \
+		../../lib/lua/src/lstate.c \
+		../../lib/lua/src/lstring.c \
+		../../lib/lua/src/lstrlib.c \
+		../../lib/lua/src/ltable.c \
+		../../lib/lua/src/ltablib.c \
+		../../lib/lua/src/ltm.c \
+		../../lib/lua/src/lundump.c \
+		../../lib/lua/src/lvm.c \
+		../../lib/lua/src/lzio.c \
+		../../lib/bitop/bit.c
+endif
+
 # GMP
 LOCAL_SRC_FILES += ../../lib/gmp/mini-gmp.c
 
@@ -218,12 +270,14 @@ LOCAL_STATIC_LIBRARIES += \
 	Freetype \
 	Iconv libcharset \
 	Irrlicht \
-	LuaJIT \
 	OpenAL \
 	Gettext \
 	SQLite3 \
 	Vorbis libvorbisfile libogg \
 	Zstd
+ifndef USE_BUILTIN_LUA
+	LOCAL_STATIC_LIBRARIES += LuaJIT
+endif
 LOCAL_STATIC_LIBRARIES += android_native_app_glue $(PROFILER_LIBS)
 
 LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES
