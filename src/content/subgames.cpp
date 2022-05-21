@@ -167,7 +167,7 @@ SubgameSpec findSubgame(const std::string &id)
 			menuicon_path, game_author, game_release);
 
 	if (conf.exists("name") && !conf.exists("title"))
-		spec.deprecation_msgs.push_back("name in game.conf is deprecated, please use title instead");
+		spec.deprecation_msgs.push_back("\"name\" setting in game.conf is deprecated, please use \"title\" instead");
 
 	return spec;
 }
