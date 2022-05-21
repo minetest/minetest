@@ -292,9 +292,6 @@ shadow_offset(0), shadow_alpha(0), fallback(0)
 		Driver->grab();
 
 	setInvisibleCharacters(L" ");
-
-	// Glyphs aren't reference counted, so don't try to delete them when we free the array.
-	Glyphs.set_free_when_destroyed(false);
 }
 
 bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antialias, const bool transparency)
@@ -411,8 +408,7 @@ CGUITTFont::~CGUITTFont()
 {
 	// Delete the glyphs and glyph pages.
 	reset_images();
-	CGUITTAssistDelete::Delete(Glyphs);
-	//Glyphs.clear();
+	Glyphs.clear();
 
 	// We aren't using this face anymore.
 	auto n = c_faces.find(filename);
@@ -675,6 +671,8 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	update_glyph_pages();
 	auto it = Render_Map.begin();
 	auto ie = Render_Map.end();
+	core::array<core::vector2di> tmp_positions;
+	core::array<core::recti> tmp_source_rects;
 	while (it != ie)
 	{
 		CGUITTGlyphPage* page = it->second;
@@ -696,10 +694,8 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			do
 				++i;
 			while (i < page->render_positions.size() && page->render_colors[i] == colprev);
-			core::array<core::vector2di> tmp_positions;
-			core::array<core::recti> tmp_source_rects;
-			tmp_positions.set_pointer(&page->render_positions[ibegin], i - ibegin, false, false); // no copy
-			tmp_source_rects.set_pointer(&page->render_source_rects[ibegin], i - ibegin, false, false);
+			tmp_positions.set_data(&page->render_positions[ibegin], i - ibegin);
+			tmp_source_rects.set_data(&page->render_source_rects[ibegin], i - ibegin);
 			--i;
 
 			if (!use_transparency)
