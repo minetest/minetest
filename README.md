@@ -223,8 +223,8 @@ Run it:
 - You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
   - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
-  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
+- If you build a bare server you don't need to compile IrrlichtMt, just the headers suffice.
+  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlichtmt/include`.
 
 - Minetest will use the IrrlichtMt package that is found first, given by the following order:
   1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
