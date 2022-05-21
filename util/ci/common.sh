@@ -7,19 +7,18 @@ install_linux_deps() {
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
 		gettext libpq-dev libleveldb-dev libcurl4-openssl-dev libzstd-dev)
 
-	if [[ "$1" == "--old-irr" ]]; then
+	if [[ "$1" == "--no-irr" ]]; then
+		shift
+	elif [[ "$1" == "--old-irr" ]]; then
 		shift
 		pkgs+=(libirrlicht-dev)
 	else
-		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt4/ubuntu-bionic.tar.gz"
+		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt5/ubuntu-bionic.tar.gz"
 		sudo tar -xaf ubuntu-bionic.tar.gz -C /usr/local
 	fi
 
 	sudo apt-get update
 	sudo apt-get install -y --no-install-recommends ${pkgs[@]} "$@"
-
-	# workaround for bug with Github Actions' ubuntu-18.04 image
-	sudo apt-get remove -y libgcc-11-dev gcc-11 || :
 }
 
 # Mac OSX build only

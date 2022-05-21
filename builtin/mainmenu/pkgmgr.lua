@@ -82,9 +82,9 @@ local function load_texture_packs(txtpath, retval)
 			local conf = Settings(path .. "texture_pack.conf")
 			local enabled = path == current_texture_path
 
-			local title = conf:get("title")
-			-- list_* is only used if non-nil, else the regular versions are used.
+			local title = conf:get("title") or item
 
+			-- list_* is only used if non-nil, else the regular versions are used.
 			retval[#retval + 1] = {
 				name = item,
 				title = title,
@@ -454,9 +454,8 @@ function pkgmgr.enable_mod(this, toset)
 	local toggled_mods = {}
 	local enabled_mods = {}
 	toggle_mod_or_modpack(list, toggled_mods, enabled_mods, toset, mod)
-	toset = mod.enabled -- Update if toggled
 
-	if not toset then
+	if next(enabled_mods) == nil then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
 		core.log("info", "Following mods were disabled: " ..
@@ -466,11 +465,16 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Enable mods' depends after activation
 
-	-- Make a list of mod ids indexed by their names
+	-- Make a list of mod ids indexed by their names. Among mods with the
+	-- same name, enabled mods take precedence, after which game mods take
+	-- precedence, being last in the mod list.
 	local mod_ids = {}
 	for id, mod2 in pairs(list) do
 		if mod2.type == "mod" and not mod2.is_modpack then
-			mod_ids[mod2.name] = id
+			local prev_id = mod_ids[mod2.name]
+			if not prev_id or not list[prev_id].enabled then
+				mod_ids[mod2.name] = id
+			end
 		end
 	end
 
@@ -507,7 +511,7 @@ function pkgmgr.enable_mod(this, toset)
 				-- Push the dependencies of the dependency onto the stack
 				local depends = pkgmgr.get_dependencies(mod_to_enable.path)
 				for i = 1, #depends do
-					if not enabled_mods[name] then
+					if not enabled_mods[depends[i]] then
 						sp = sp+1
 						to_enable[sp] = depends[i]
 					end
@@ -642,6 +646,8 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		else
 			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
 		end
+	else
+		error("basefolder didn't return a recognised type, this shouldn't happen")
 	end
 
 	-- Copy it
@@ -688,7 +694,7 @@ function pkgmgr.preparemodlist(data)
 		retval[#retval + 1] = {
 			type = "game",
 			is_game_content = true,
-			name = fgettext("$1 mods", gamespec.name),
+			name = fgettext("$1 mods", gamespec.title),
 			path = gamespec.path
 		}
 	end
@@ -869,10 +875,10 @@ end
 function pkgmgr.gamelist()
 	local retval = ""
 	if #pkgmgr.games > 0 then
-		retval = retval .. core.formspec_escape(pkgmgr.games[1].name)
+		retval = retval .. core.formspec_escape(pkgmgr.games[1].title)
 
 		for i=2,#pkgmgr.games,1 do
-			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].name)
+			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].title)
 		end
 	end
 	return retval

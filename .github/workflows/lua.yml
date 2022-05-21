@@ -19,11 +19,11 @@ jobs:
     name: "Compile and run multiplayer tests"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-10 gdb
+          install_linux_deps clang-10 gdb libluajit-5.1-dev
 
       - name: Build
         run: |
@@ -31,6 +31,7 @@ jobs:
         env:
           CC: clang-10
           CXX: clang++-10
+          CMAKE_FLAGS: "-DENABLE_GETTEXT=0 -DBUILD_SERVER=0"
 
       - name: Integration test + devtest
         run: |
@@ -38,12 +39,12 @@ jobs:
 
   luacheck:
     name: "Builtin Luacheck and Unit Tests"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install luarocks
       run: |
-        sudo apt-get install luarocks -qyy
+        sudo apt-get update && sudo apt-get install -y luarocks
 
     - name: Install luarocks tools
       run: |

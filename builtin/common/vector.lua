@@ -110,6 +110,14 @@ function vector.apply(v, func)
 	)
 end
 
+function vector.combine(a, b, func)
+	return fast_new(
+		func(a.x, b.x),
+		func(a.y, b.y),
+		func(a.z, b.z)
+	)
+end
+
 function vector.distance(a, b)
 	local x = a.x - b.x
 	local y = a.y - b.y

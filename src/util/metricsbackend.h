@@ -19,8 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include <memory>
+#include <string>
+#include <utility>
 #include "config.h"
-#include "util/thread.h"
 
 class MetricCounter
 {
@@ -34,38 +35,6 @@ public:
 };
 
 typedef std::shared_ptr<MetricCounter> MetricCounterPtr;
-
-class SimpleMetricCounter : public MetricCounter
-{
-public:
-	SimpleMetricCounter() = delete;
-
-	virtual ~SimpleMetricCounter() {}
-
-	SimpleMetricCounter(const std::string &name, const std::string &help_str) :
-			MetricCounter(), m_name(name), m_help_str(help_str),
-			m_counter(0.0)
-	{
-	}
-
-	virtual void increment(double number)
-	{
-		MutexAutoLock lock(m_mutex);
-		m_counter += number;
-	}
-	virtual double get() const
-	{
-		MutexAutoLock lock(m_mutex);
-		return m_counter;
-	}
-
-private:
-	std::string m_name;
-	std::string m_help_str;
-
-	mutable std::mutex m_mutex;
-	double m_counter;
-};
 
 class MetricGauge
 {
@@ -81,47 +50,6 @@ public:
 
 typedef std::shared_ptr<MetricGauge> MetricGaugePtr;
 
-class SimpleMetricGauge : public MetricGauge
-{
-public:
-	SimpleMetricGauge() = delete;
-
-	SimpleMetricGauge(const std::string &name, const std::string &help_str) :
-			MetricGauge(), m_name(name), m_help_str(help_str), m_gauge(0.0)
-	{
-	}
-
-	virtual ~SimpleMetricGauge() {}
-
-	virtual void increment(double number)
-	{
-		MutexAutoLock lock(m_mutex);
-		m_gauge += number;
-	}
-	virtual void decrement(double number)
-	{
-		MutexAutoLock lock(m_mutex);
-		m_gauge -= number;
-	}
-	virtual void set(double number)
-	{
-		MutexAutoLock lock(m_mutex);
-		m_gauge = number;
-	}
-	virtual double get() const
-	{
-		MutexAutoLock lock(m_mutex);
-		return m_gauge;
-	}
-
-private:
-	std::string m_name;
-	std::string m_help_str;
-
-	mutable std::mutex m_mutex;
-	double m_gauge;
-};
-
 class MetricsBackend
 {
 public:
@@ -129,10 +57,14 @@ public:
 
 	virtual ~MetricsBackend() {}
 
+	typedef std::initializer_list<std::pair<const std::string, std::string>> Labels;
+
 	virtual MetricCounterPtr addCounter(
-			const std::string &name, const std::string &help_str);
+			const std::string &name, const std::string &help_str,
+			Labels labels = {});
 	virtual MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str);
+			const std::string &name, const std::string &help_str,
+			Labels labels = {});
 };
 
 #if USE_PROMETHEUS

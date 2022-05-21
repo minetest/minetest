@@ -34,7 +34,7 @@ jobs:
   gcc_5:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -55,7 +55,7 @@ jobs:
   gcc_10:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -76,7 +76,7 @@ jobs:
   clang_3_9:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -101,7 +101,7 @@ jobs:
   clang_10:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -126,9 +126,9 @@ jobs:
   # Build with prometheus-cpp (server-only)
   clang_9_prometheus:
     name: "clang_9 (PROMETHEUS=1)"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -152,9 +152,9 @@ jobs:
 
   docker:
     name: "Docker image"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build docker image
         run: |
           docker build . -t minetest:latest
@@ -164,10 +164,10 @@ jobs:
     name: "MinGW cross-compiler (32-bit)"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install compiler
         run: |
-          sudo apt-get update -q && sudo apt-get install gettext -qyy
+          sudo apt-get update && sudo apt-get install -y gettext
           wget http://minetest.kitsunemimi.pw/mingw-w64-i686_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
@@ -182,10 +182,10 @@ jobs:
     name: "MinGW cross-compiler (64-bit)"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install compiler
         run: |
-          sudo apt-get update -q && sudo apt-get install gettext -qyy
+          sudo apt-get update && sudo apt-get install -y gettext
           wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
@@ -199,13 +199,10 @@ jobs:
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
-    #### Disabled due to Irrlicht switch
-    if: false
-    #### Disabled due to Irrlicht switch
     env:
-      VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
-#                    2020.11
-      vcpkg_packages: irrlicht zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      VCPKG_VERSION: 5cf60186a241e84e8232641ee973395d4fde90e1
+      # 2022.02
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false
       matrix:
@@ -226,11 +223,17 @@ jobs:
 # Enable it, when working on the installer.
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Checkout IrrlichtMt
+        uses: actions/checkout@v3
+        with:
+          repository: minetest/irrlicht
+          path: lib/irrlichtmt/
+          ref: "1.9.0mt5"
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v5
+        uses: lukka/run-vcpkg@v7
         with:
           vcpkgArguments: ${{env.vcpkg_packages}}
           vcpkgDirectory: '${{ github.workspace }}\vcpkg'
@@ -238,7 +241,7 @@ jobs:
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
           vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
 
-      - name: CMake
+      - name: Minetest CMake
         run: |
           cmake ${{matrix.config.generator}}  `
           -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
@@ -246,7 +249,7 @@ jobs:
           -DENABLE_POSTGRESQL=OFF  `
           -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
 
-      - name: Build
+      - name: Build Minetest
         run: cmake --build . --config Release
 
       - name: CPack
@@ -265,7 +268,7 @@ jobs:
       - name: Package Clean
         run: rm -r $env:GITHUB_WORKSPACE\Package\_CPack_Packages
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: msvc-${{ matrix.config.arch }}-${{ matrix.type }}
           path: .\Package\

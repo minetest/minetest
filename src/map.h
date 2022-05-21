@@ -275,6 +275,9 @@ protected:
 	// This stores the properties of the nodes on the map.
 	const NodeDefManager *m_nodedef;
 
+	// Can be implemented by child class
+	virtual void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) {}
+
 	bool determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 		const core::aabbox3d<s16> &block_bounds, v3s16 &check);
 	bool isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
@@ -392,6 +395,10 @@ public:
 
 	MapSettingsManager settings_mgr;
 
+protected:
+
+	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
+
 private:
 	friend class LuaVoxelManip;
 
@@ -420,7 +427,10 @@ private:
 	MapDatabase *dbase = nullptr;
 	MapDatabase *dbase_ro = nullptr;
 
+	// Map metrics
+	MetricGaugePtr m_loaded_blocks_gauge;
 	MetricCounterPtr m_save_time_counter;
+	MetricCounterPtr m_save_count_counter;
 };
 
 
@@ -446,10 +456,25 @@ public:
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
 		bool overwrite_generated = true);
 
+	/*
+		Creates a copy of this VManip including contents, the copy will not be
+		associated with a Map.
+	*/
+	MMVManip *clone() const;
+
+	// Reassociates a copied VManip to a map
+	void reparent(Map *map);
+
+	// Is it impossible to call initialEmerge / blitBackAll?
+	inline bool isOrphan() const { return !m_map; }
+
 	bool m_is_dirty = false;
 
 protected:
-	Map *m_map;
+	MMVManip() {};
+
+	// may be null
+	Map *m_map = nullptr;
 	/*
 		key = blockpos
 		value = flags describing the block

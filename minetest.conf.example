@@ -1176,7 +1176,7 @@
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 #    type: bool
-# clickable_chat_weblinks = false
+# clickable_chat_weblinks = true
 
 #    Optional override for chat weblink color.
 #    type: string
@@ -1768,7 +1768,8 @@
 #    -    action
 #    -    info
 #    -    verbose
-#    type: enum values: , none, error, warning, action, info, verbose
+#    -    trace
+#    type: enum values: , none, error, warning, action, info, verbose, trace
 # debug_log_level = action
 
 #    If the file size of debug.txt exceeds the number of megabytes specified in
@@ -1779,7 +1780,7 @@
 # debug_log_size_max = 50
 
 #    Minimal level of logging to be written to chat.
-#    type: enum values: , none, error, warning, action, info, verbose
+#    type: enum values: , none, error, warning, action, info, verbose, trace
 # chat_log_level = error
 
 #    Enable IPv6 support (for both client and server).

@@ -31,25 +31,31 @@ minetest.register_craftitem("unittests:steel_ingot", {
 	groups = { dummy = 1 },
 })
 
+-- Use aliases in recipes for more complete testing
+
+minetest.register_alias("unittests:steel_ingot_alias", "unittests:steel_ingot")
+minetest.register_alias("unittests:coal_lump_alias", "unittests:coal_lump")
+minetest.register_alias("unittests:iron_lump_alias", "unittests:iron_lump")
+
 -- Recipes for tests: Normal crafting, cooking and fuel
 
 minetest.register_craft({
 	output = 'unittests:torch 4',
 	recipe = {
-		{'unittests:coal_lump'},
+		{'unittests:coal_lump_alias'},
 		{'unittests:stick'},
 	}
 })
 
 minetest.register_craft({
 	type = "cooking",
-	output = "unittests:steel_ingot",
-	recipe = "unittests:iron_lump",
+	output = "unittests:steel_ingot_alias",
+	recipe = "unittests:iron_lump_alias",
 })
 
 minetest.register_craft({
 	type = "fuel",
-	recipe = "unittests:coal_lump",
+	recipe = "unittests:coal_lump_alias",
 	burntime = 40,
 })
 

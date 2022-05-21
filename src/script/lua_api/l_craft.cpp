@@ -371,8 +371,9 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 int ModApiCraft::l_get_craft_result(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+	IGameDef *gdef = getGameDef(L);
 
-	int input_i = 1;
+	const int input_i = 1;
 	std::string method_s = getstringfield_default(L, input_i, "method", "normal");
 	enum CraftMethod method = (CraftMethod)getenumfield(L, input_i, "method",
 				es_CraftMethod, CRAFT_METHOD_NORMAL);
@@ -382,10 +383,9 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 		width = luaL_checkinteger(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, input_i, "items");
-	std::vector<ItemStack> items = read_items(L, -1,getServer(L));
+	std::vector<ItemStack> items = read_items(L, -1, gdef);
 	lua_pop(L, 1); // items
 
-	IGameDef *gdef = getServer(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input(method, width, items);
 	CraftOutput output;
@@ -465,12 +465,12 @@ static void push_craft_recipes(lua_State *L, IGameDef *gdef,
 		const std::vector<CraftDefinition*> &recipes,
 		const CraftOutput &output)
 {
-	lua_createtable(L, recipes.size(), 0);
-
 	if (recipes.empty()) {
 		lua_pushnil(L);
 		return;
 	}
+
+	lua_createtable(L, recipes.size(), 0);
 
 	std::vector<CraftDefinition*>::const_iterator it = recipes.begin();
 	for (unsigned i = 0; it != recipes.end(); ++it) {
@@ -487,10 +487,9 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	std::string item = luaL_checkstring(L, 1);
-	Server *server = getServer(L);
+	IGameDef *gdef = getGameDef(L);
 	CraftOutput output(item, 0);
-	std::vector<CraftDefinition*> recipes = server->cdef()
-			->getCraftRecipes(output, server, 1);
+	auto recipes = gdef->cdef()->getCraftRecipes(output, gdef, 1);
 
 	lua_createtable(L, 1, 0);
 
@@ -500,7 +499,7 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 		setintfield(L, -1, "width", 0);
 		return 1;
 	}
-	push_craft_recipe(L, server, recipes[0], output);
+	push_craft_recipe(L, gdef, recipes[0], output);
 	return 1;
 }
 
@@ -510,12 +509,11 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	std::string item = luaL_checkstring(L, 1);
-	Server *server = getServer(L);
+	IGameDef *gdef = getGameDef(L);
 	CraftOutput output(item, 0);
-	std::vector<CraftDefinition*> recipes = server->cdef()
-			->getCraftRecipes(output, server);
+	auto recipes = gdef->cdef()->getCraftRecipes(output, gdef);
 
-	push_craft_recipes(L, server, recipes, output);
+	push_craft_recipes(L, gdef, recipes, output);
 	return 1;
 }
 
@@ -526,4 +524,12 @@ void ModApiCraft::Initialize(lua_State *L, int top)
 	API_FCT(get_craft_result);
 	API_FCT(register_craft);
 	API_FCT(clear_craft);
+}
+
+void ModApiCraft::InitializeAsync(lua_State *L, int top)
+{
+	// all read-only functions
+	API_FCT(get_all_craft_recipes);
+	API_FCT(get_craft_recipe);
+	API_FCT(get_craft_result);
 }

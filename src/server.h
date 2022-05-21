@@ -73,6 +73,7 @@ struct Lighting;
 class ServerThread;
 class ServerModManager;
 class ServerInventoryManager;
+struct PackedValue;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -292,11 +293,10 @@ public:
 
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
-	void getModNames(std::vector<std::string> &modlist);
-	std::string getBuiltinLuaPath();
+	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
 
-	inline bool isSingleplayer()
+	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
 
 	inline void setAsyncFatalError(const std::string &error)
@@ -386,6 +386,12 @@ public:
 	static bool migrateModStorageDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 
+	// Lua files registered for init of async env, pair of modname + path
+	std::vector<std::pair<std::string, std::string>> m_async_init_files;
+
+	// Data transferred into async envs at init time
+	std::unique_ptr<PackedValue> m_async_globals_data;
+
 	// Bind address
 	Address m_bind_addr;
 
@@ -418,6 +424,16 @@ private:
 		float expiry_timer;
 		std::unordered_set<session_t> waiting_players;
 	};
+
+	// the standard library does not implement std::hash for pairs so we have this:
+	struct SBCHash {
+		size_t operator() (const std::pair<v3s16, u16> &p) const {
+			return (((size_t) p.first.X) << 48) | (((size_t) p.first.Y) << 32) |
+				(((size_t) p.first.Z) << 16) | ((size_t) p.second);
+		}
+	};
+
+	typedef std::unordered_map<std::pair<v3s16, u16>, std::string, SBCHash> SerializedBlockCache;
 
 	void init();
 
@@ -479,7 +495,9 @@ private:
 			float far_d_nodes = 100);
 
 	// Environment and Connection must be locked when called
-	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
+	// `cache` may only be very short lived! (invalidation not handeled)
+	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
+		u16 net_proto_version, SerializedBlockCache *cache = nullptr);
 
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
@@ -707,11 +725,11 @@ private:
 	MetricCounterPtr m_uptime_counter;
 	MetricGaugePtr m_player_gauge;
 	MetricGaugePtr m_timeofday_gauge;
-	// current server step lag
 	MetricGaugePtr m_lag_gauge;
-	MetricCounterPtr m_aom_buffer_counter;
+	MetricCounterPtr m_aom_buffer_counter[2]; // [0] = rel, [1] = unrel
 	MetricCounterPtr m_packet_recv_counter;
 	MetricCounterPtr m_packet_recv_processed_counter;
+	MetricCounterPtr m_map_edit_event_counter;
 };
 
 /*

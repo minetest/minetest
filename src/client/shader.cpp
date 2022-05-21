@@ -771,6 +771,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
 	}
 
+	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
+
 	std::string common_header = shaders_header.str();
 
 	std::string vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");

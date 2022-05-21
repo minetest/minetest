@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "common/c_packer.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
 #include "scripting_server.h"
@@ -61,11 +62,8 @@ int ModApiServer::l_get_server_uptime(lua_State *L)
 int ModApiServer::l_get_server_max_lag(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
-	if (!s_env)
-		lua_pushnil(L);
-	else
-		lua_pushnumber(L, s_env->getMaxLagEstimate());
+	GET_ENV_PTR;
+	lua_pushnumber(L, env->getMaxLagEstimate());
 	return 1;
 }
 
@@ -395,12 +393,11 @@ int ModApiServer::l_get_modpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
-	const ModSpec *mod = getServer(L)->getModSpec(modname);
-	if (!mod) {
+	const ModSpec *mod = getGameDef(L)->getModSpec(modname);
+	if (!mod)
 		lua_pushnil(L);
-		return 1;
-	}
-	lua_pushstring(L, mod->path.c_str());
+	else
+		lua_pushstring(L, mod->path.c_str());
 	return 1;
 }
 
@@ -412,13 +409,14 @@ int ModApiServer::l_get_modnames(lua_State *L)
 
 	// Get a list of mods
 	std::vector<std::string> modlist;
-	getServer(L)->getModNames(modlist);
+	for (auto &it : getGameDef(L)->getMods())
+		modlist.emplace_back(it.name);
 
 	std::sort(modlist.begin(), modlist.end());
 
 	// Package them up for Lua
 	lua_createtable(L, modlist.size(), 0);
-	std::vector<std::string>::iterator iter = modlist.begin();
+	auto iter = modlist.begin();
 	for (u16 i = 0; iter != modlist.end(); ++iter) {
 		lua_pushstring(L, iter->c_str());
 		lua_rawseti(L, -2, ++i);
@@ -430,8 +428,8 @@ int ModApiServer::l_get_modnames(lua_State *L)
 int ModApiServer::l_get_worldpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string worldpath = getServer(L)->getWorldPath();
-	lua_pushstring(L, worldpath.c_str());
+	const Server *srv = getServer(L);
+	lua_pushstring(L, srv->getWorldPath().c_str());
 	return 1;
 }
 
@@ -513,7 +511,8 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 int ModApiServer::l_is_singleplayer(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_pushboolean(L, getServer(L)->isSingleplayer());
+	const Server *srv = getServer(L);
+	lua_pushboolean(L, srv->isSingleplayer());
 	return 1;
 }
 
@@ -526,6 +525,76 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 		name = readParam<std::string>(L, 1);
 	getServer(L)->reportPrivsModified(name);
 	return 0;
+}
+
+// do_async_callback(func, params, mod_origin)
+int ModApiServer::l_do_async_callback(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ServerScripting *script = getScriptApi<ServerScripting>(L);
+
+	luaL_checktype(L, 1, LUA_TFUNCTION);
+	luaL_checktype(L, 2, LUA_TTABLE);
+	luaL_checktype(L, 3, LUA_TSTRING);
+
+	call_string_dump(L, 1);
+	size_t func_length;
+	const char *serialized_func_raw = lua_tolstring(L, -1, &func_length);
+
+	PackedValue *param = script_pack(L, 2);
+
+	std::string mod_origin = readParam<std::string>(L, 3);
+
+	u32 jobId = script->queueAsync(
+		std::string(serialized_func_raw, func_length),
+		param, mod_origin);
+
+	lua_settop(L, 0);
+	lua_pushinteger(L, jobId);
+	return 1;
+}
+
+// register_async_dofile(path)
+int ModApiServer::l_register_async_dofile(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string path = readParam<std::string>(L, 1);
+	CHECK_SECURE_PATH(L, path.c_str(), false);
+
+	// Find currently running mod name (only at init time)
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (!lua_isstring(L, -1))
+		return 0;
+	std::string modname = readParam<std::string>(L, -1);
+
+	getServer(L)->m_async_init_files.emplace_back(modname, path);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// serialize_roundtrip(value)
+// Meant for unit testing the packer from Lua
+int ModApiServer::l_serialize_roundtrip(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	int top = lua_gettop(L);
+	auto *pv = script_pack(L, 1);
+	if (top != lua_gettop(L))
+		throw LuaError("stack values leaked");
+
+#ifndef NDEBUG
+	script_dump_packed(pv);
+#endif
+
+	top = lua_gettop(L);
+	script_unpack(L, pv);
+	delete pv;
+	if (top + 1 != lua_gettop(L))
+		throw LuaError("stack values leaked");
+
+	return 1;
 }
 
 void ModApiServer::Initialize(lua_State *L, int top)
@@ -561,4 +630,18 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(remove_player);
 	API_FCT(unban_player_or_ip);
 	API_FCT(notify_authentication_modified);
+
+	API_FCT(do_async_callback);
+	API_FCT(register_async_dofile);
+	API_FCT(serialize_roundtrip);
+}
+
+void ModApiServer::InitializeAsync(lua_State *L, int top)
+{
+	API_FCT(get_worldpath);
+	API_FCT(is_singleplayer);
+
+	API_FCT(get_current_modname);
+	API_FCT(get_modpath);
+	API_FCT(get_modnames);
 }

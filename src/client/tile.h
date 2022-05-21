@@ -263,7 +263,6 @@ struct TileLayer
 	bool isTransparent() const
 	{
 		switch (material_type) {
-		case TILE_MATERIAL_BASIC:
 		case TILE_MATERIAL_ALPHA:
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:

@@ -61,7 +61,9 @@ public:
 
 	void cancelPendingItems();
 
-	static void runCompletionCallbacks(
+protected:
+
+	void runCompletionCallbacks(
 		const v3s16 &pos, EmergeAction action,
 		const EmergeCallbackList &callbacks);
 
@@ -138,7 +140,7 @@ EmergeParams::EmergeParams(EmergeManager *parent, const BiomeGen *biomegen,
 //// EmergeManager
 ////
 
-EmergeManager::EmergeManager(Server *server)
+EmergeManager::EmergeManager(Server *server, MetricsBackend *mb)
 {
 	this->ndef      = server->getNodeDefManager();
 	this->biomemgr  = new BiomeManager(server);
@@ -155,6 +157,17 @@ EmergeManager::EmergeManager(Server *server)
 	// EmergeThreads should be the ServerThread.
 
 	enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+
+	STATIC_ASSERT(ARRLEN(emergeActionStrs) == ARRLEN(m_completed_emerge_counter),
+		enum_size_mismatches);
+	for (u32 i = 0; i < ARRLEN(m_completed_emerge_counter); i++) {
+		std::string help_str("Number of completed emerges with status ");
+		help_str.append(emergeActionStrs[i]);
+		m_completed_emerge_counter[i] = mb->addCounter(
+			"minetest_emerge_completed", help_str,
+			{{"status", emergeActionStrs[i]}}
+		);
+	}
 
 	s16 nthreads = 1;
 	g_settings->getS16NoEx("num_emerge_threads", nthreads);
@@ -489,6 +502,12 @@ EmergeThread *EmergeManager::getOptimalThread()
 	return m_threads[index];
 }
 
+void EmergeManager::reportCompletedEmerge(EmergeAction action)
+{
+	assert((int)action < ARRLEN(m_completed_emerge_counter));
+	m_completed_emerge_counter[(int)action]->increment();
+}
+
 
 ////
 //// EmergeThread
@@ -540,6 +559,8 @@ void EmergeThread::cancelPendingItems()
 void EmergeThread::runCompletionCallbacks(const v3s16 &pos, EmergeAction action,
 	const EmergeCallbackList &callbacks)
 {
+	m_emerge->reportCompletedEmerge(action);
+
 	for (size_t i = 0; i != callbacks.size(); i++) {
 		EmergeCompletionCallback callback;
 		void *param;

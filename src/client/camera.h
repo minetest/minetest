@@ -264,4 +264,7 @@ private:
 
 	std::list<Nametag *> m_nametags;
 	bool m_show_nametag_backgrounds;
+
+	// Last known light color of the player
+	video::SColor m_player_light_color;
 };
