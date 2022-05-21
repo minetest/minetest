@@ -27,10 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapDrawControl
 {
-	// Overrides limits by drawing everything
-	bool range_all = false;
 	// Wanted drawing range
 	float wanted_range = 0.0f;
+	// Overrides limits by drawing everything
+	bool range_all = false;
+	// Allow rendering out of bounds
+	bool allow_noclip = false;
 	// show a wire frame for debugging
 	bool show_wireframe = false;
 };

@@ -1743,6 +1743,8 @@ void Game::processQueues()
 void Game::updateDebugState()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// debug UI and wireframe
 	bool has_debug = client->checkPrivilege("debug");
 	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 
@@ -1757,6 +1759,9 @@ void Game::updateDebugState()
 		hud->disableBlockBounds();
 	if (!has_debug)
 		draw_control->show_wireframe = false;
+
+	// noclip
+	draw_control->allow_noclip = m_cache_enable_noclip && client->checkPrivilege("noclip");
 }
 
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
@@ -3762,7 +3767,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	float direct_brightness;
 	bool sunlight_seen;
 
-	if (m_cache_enable_noclip && m_cache_enable_free_move) {
+	// When in noclip mode force same sky brightness as above ground so you
+	// can see properly
+	if (draw_control->allow_noclip && m_cache_enable_free_move &&
+		client->checkPrivilege("fly")) {
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {
