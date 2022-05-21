@@ -230,7 +230,7 @@ jobs:
         with:
           repository: minetest/irrlicht
           path: lib/irrlichtmt/
-          ref: "1.9.0mt5"
+          ref: "1.9.0mt6"
 
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v7
