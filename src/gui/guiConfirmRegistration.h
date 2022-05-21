@@ -34,9 +34,6 @@ public:
 			s32 id, IMenuManager *menumgr, Client *client,
 			const std::string &playername, const std::string &password,
 			bool *aborted, ISimpleTextureSource *tsrc);
-	~GUIConfirmRegistration();
-
-	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/

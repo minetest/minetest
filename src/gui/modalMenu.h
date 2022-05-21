@@ -47,7 +47,6 @@ public:
 	bool canTakeFocus(gui::IGUIElement *e);
 	void draw();
 	void quitMenu();
-	void removeChildren();
 
 	virtual void regenerateGui(v2u32 screensize) = 0;
 	virtual void drawMenu() = 0;
