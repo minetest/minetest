@@ -631,8 +631,8 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
-#    Minimum value: 1.0; maximum value: 10.0
-shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
+#    Minimum value: 1.0; maximum value: 15.0
+shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 
 #    Set the tilt of Sun/Moon orbit in degrees.
 #    Value of 0 means no tilt / vertical orbit.
