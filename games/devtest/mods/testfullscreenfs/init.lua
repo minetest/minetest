@@ -14,7 +14,7 @@ local function show_fullscreen_fs(name)
 	local size = calculate_max_fs_size(window)
 	local fs = {
 		"formspec_version[4]",
-		("size[%f,%f]"):format(size.x, size.y),
+		("size[%f,%f;true]"):format(size.x, size.y),
 		"padding[-0.01,-0.01]",
 		("button[%f,%f;1,1;%s;%s]"):format(0, 0, "tl", "TL"),
 		("button[%f,%f;1,1;%s;%s]"):format(size.x - 1, 0, "tr", "TR"),
