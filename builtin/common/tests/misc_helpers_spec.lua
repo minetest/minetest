@@ -67,6 +67,96 @@ describe("pos", function()
 	end)
 end)
 
+describe("area parsing", function()
+	describe("valid inputs", function()
+		it("accepts absolute numbers", function()
+			local p1, p2 = core.string_to_area("(10.0, 5, -2) (  30.2 4 -12.53)")
+			assert(p1.x == 10 and p1.y == 5 and p1.z == -2)
+			assert(p2.x == 30.2 and p2.y == 4 and p2.z == -12.53)
+		end)
+
+		it("accepts relative numbers", function()
+			local p1, p2 = core.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})
+			assert(type(p1) == "table" and type(p2) == "table")
+			assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
+			assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
+
+			p1, p2 = core.string_to_area("(1 2 3) (~5 ~-5 ~)", {x=10,y=10,z=10})
+			assert(type(p1) == "table" and type(p2) == "table")
+			assert(p1.x == 1 and p1.y == 2 and p1.z == 3)
+			assert(p2.x == 15 and p2.y == 5 and p2.z == 10)
+		end)
+	end)
+	describe("invalid inputs", function()
+		it("rejects too few numbers", function()
+			local p1, p2 = core.string_to_area("(1,1) (1,1,1,1)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+		end)
+
+		it("rejects too many numbers", function()
+			local p1, p2 = core.string_to_area("(1,1,1,1) (1,1,1,1)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+		end)
+
+		it("rejects nan & inf", function()
+			local p1, p2 = core.string_to_area("(1,1,1) (1,1,nan)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(1,1,1) (1,1,~nan)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(1,1,1) (1,~nan,1)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(1,1,1) (1,1,inf)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(1,1,1) (1,1,~inf)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(1,1,1) (1,~inf,1)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(nan,nan,nan) (nan,nan,nan)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(nan,nan,nan) (nan,nan,nan)")
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(inf,inf,inf) (-inf,-inf,-inf)", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(inf,inf,inf) (-inf,-inf,-inf)")
+			assert(p1 == nil and p2 == nil)
+		end)
+
+		it("rejects words", function()
+			local p1, p2 = core.string_to_area("bananas", {x=1,y=1,z=1})
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("bananas", "foobar")
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("bananas")
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(bananas,bananas,bananas)")
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(bananas,bananas,bananas) (bananas,bananas,bananas)")
+			assert(p1 == nil and p2 == nil)
+		end)
+
+		it("requires parenthesis & valid numbers", function()
+			local p1, p2 = core.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
+			assert(p1 == nil and p2 == nil)
+
+			p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
+			assert(p1 == nil and p2 == nil)
+		end)
+	end)
+end)
+
 describe("table", function()
 	it("indexof()", function()
 		assert.equal(1, table.indexof({"foo", "bar"}, "foo"))
