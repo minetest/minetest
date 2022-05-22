@@ -926,6 +926,7 @@ private:
 	Server *server = nullptr;
 
 	ClientDynamicInfo client_display_info{};
+	float dynamic_info_send_timer = 0;
 
 	IWritableTextureSource *texture_src = nullptr;
 	IWritableShaderSource *shader_src = nullptr;
@@ -1202,13 +1203,25 @@ void Game::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
 
-		const auto current_display_info = getCurrentDynamicInfo();
-		if (!current_display_info.equal(client_display_info)) {
-			client_display_info = current_display_info;
-			client->sendUpdateClientInfo(current_display_info);
+		// Calculate dtime =
+		//    m_rendering_engine->run() from this iteration
+		//  + Sleep time until the wanted FPS are reached
+		draw_times.limit(device, &dtime);
+
+		const auto current_dynamic_info = getCurrentDynamicInfo();
+		if (!current_dynamic_info.equal(client_display_info)) {
+			client_display_info = current_dynamic_info;
+			dynamic_info_send_timer = 0.2f;
 		}
 
-		const auto &current_screen_size = current_display_info.render_target_size;
+		if (dynamic_info_send_timer > 0) {
+			dynamic_info_send_timer -= dtime;
+			if (dynamic_info_send_timer <= 0) {
+				client->sendUpdateClientInfo(current_dynamic_info);
+			}
+		}
+
+		const auto &current_screen_size = current_dynamic_info.render_target_size;
 
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
@@ -1220,11 +1233,6 @@ void Game::run()
 			g_settings->setU16("screen_h", current_screen_size.Y);
 			previous_screen_size = current_screen_size;
 		}
-
-		// Calculate dtime =
-		//    m_rendering_engine->run() from this iteration
-		//  + Sleep time until the wanted FPS are reached
-		draw_times.limit(device, &dtime);
 
 		// Prepare render data for next iteration
 
