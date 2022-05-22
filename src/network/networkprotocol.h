@@ -1063,8 +1063,7 @@ enum ToServerCommand
 
 	TOSERVER_UPDATE_CLIENT_INFO = 0x53,
 	/*
-		v2s16 screen_size
-		f32 dpi
+		v2s16 render_target_size
 		f32 gui_scaling
 		f32 hud_scaling
  	*/

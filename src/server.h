@@ -132,8 +132,6 @@ struct ClientInfo {
 	u16 prot_vers;
 	u8 major, minor, patch;
 	std::string vers_string, lang_code;
-
-	const ClientDynamicInfo *dynamic = nullptr;
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -344,6 +342,7 @@ public:
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientInfo &ret);
+	const ClientDynamicInfo *getClientDynamicInfo(session_t peer_id);
 
 	void printToConsoleOnly(const std::string &text);
 

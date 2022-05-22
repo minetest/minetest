@@ -918,7 +918,7 @@ private:
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	f32 getSensitivityScaleFactor() const;
-	ClientDynamicInfo getCurrentDisplayInfo() const;
+	ClientDynamicInfo getCurrentDynamicInfo() const;
 
 	InputHandler *input = nullptr;
 
@@ -1202,13 +1202,13 @@ void Game::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
 
-		const auto current_display_info = getCurrentDisplayInfo();
+		const auto current_display_info = getCurrentDynamicInfo();
 		if (!current_display_info.equal(client_display_info)) {
 			client_display_info = current_display_info;
 			client->sendUpdateClientInfo(current_display_info);
 		}
 
-		const auto &current_screen_size = current_display_info.screen_size;
+		const auto &current_screen_size = current_display_info.render_target_size;
 
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
@@ -2597,14 +2597,14 @@ f32 Game::getSensitivityScaleFactor() const
 	return tan(fov_y / 2.0f) * 1.3763818698f;
 }
 
-ClientDynamicInfo Game::getCurrentDisplayInfo() const
+ClientDynamicInfo Game::getCurrentDynamicInfo() const
 {
 	v2u32 screen_size = RenderingEngine::getWindowSize();
-	f32 dpi = RenderingEngine::getDisplayDensity() * 96.0f;
-	f32 gui_scaling = g_settings->getFloat("gui_scaling");
-	f32 hud_scaling = g_settings->getFloat("hud_scaling");;
+	f32 density = RenderingEngine::getDisplayDensity();
+	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
+	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
 
-	return { screen_size, dpi, gui_scaling, hud_scaling };
+	return { screen_size, gui_scaling, hud_scaling };
 }
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)

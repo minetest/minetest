@@ -88,6 +88,9 @@ private:
 	// get_player_information(name)
 	static int l_get_player_information(lua_State *L);
 
+	// get_player_window_information(name)
+	static int l_get_player_window_information(lua_State *L);
+
 	// get_ban_list()
 	static int l_get_ban_list(lua_State *L);
 

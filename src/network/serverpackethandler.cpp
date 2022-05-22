@@ -1846,9 +1846,8 @@ void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 {
 	ClientDynamicInfo info;
-	*pkt >> info.screen_size.X;
-	*pkt >> info.screen_size.Y;
-	*pkt >> info.dpi;
+	*pkt >> info.render_target_size.X;
+	*pkt >> info.render_target_size.Y;
 	*pkt >> info.gui_scaling;
 	*pkt >> info.hud_scaling;
 

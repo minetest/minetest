@@ -1297,9 +1297,18 @@ bool Server::getClientInfo(session_t peer_id, ClientInfo &ret)
 
 	ret.lang_code = client->getLangCode();
 
-	ret.dynamic = &client->getDynamicInfo();
-
 	return true;
+}
+
+const ClientDynamicInfo *Server::getClientDynamicInfo(session_t peer_id)
+{
+	ClientInterface::AutoLock clientlock(m_clients);
+	RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
+
+	if (!client)
+		return nullptr;
+
+	return &client->getDynamicInfo();
 }
 
 void Server::handlePeerChanges()

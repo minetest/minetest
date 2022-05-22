@@ -240,30 +240,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L, info.lang_code.c_str());
 	lua_settable(L, table);
 
-	if (info.dynamic && info.dynamic->screen_size != v2u32()) {
-		lua_pushstring(L, "display");
-		lua_newtable(L);
-		int dyn_table = lua_gettop(L);
-
-		lua_pushstring(L, "screen_size");
-		push_v2u32(L, info.dynamic->screen_size);
-		lua_settable(L, dyn_table);
-
-		lua_pushstring(L, "dpi");
-		lua_pushnumber(L, info.dynamic->dpi);
-		lua_settable(L, dyn_table);
-
-		lua_pushstring(L, "gui_scaling");
-		lua_pushnumber(L, info.dynamic->gui_scaling);
-		lua_settable(L, dyn_table);
-
-		lua_pushstring(L, "hud_scaling");
-		lua_pushnumber(L, info.dynamic->hud_scaling);
-		lua_settable(L, dyn_table);
-
-		lua_settable(L, table);
-	}
-
 #ifndef NDEBUG
 	lua_pushstring(L,"serialization_version");
 	lua_pushnumber(L, info.ser_vers);
@@ -289,6 +265,40 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L, ClientInterface::state2Name(info.state).c_str());
 	lua_settable(L, table);
 #endif
+
+	return 1;
+}
+
+// get_player_window_information(name)
+int ModApiServer::l_get_player_window_information(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	Server *server = getServer(L);
+
+	const char *name = luaL_checkstring(L, 1);
+	RemotePlayer *player = server->getEnv().getPlayer(name);
+	if (!player)
+		return 0;
+
+	auto dynamic = server->getClientDynamicInfo(player->getPeerId());
+
+	if (dynamic && dynamic->render_target_size != v2u32()) {
+		lua_newtable(L);
+		int dyn_table = lua_gettop(L);
+
+		lua_pushstring(L, "size");
+		push_v2u32(L, dynamic->render_target_size);
+		lua_settable(L, dyn_table);
+
+		lua_pushstring(L, "gui_scaling");
+		lua_pushnumber(L, dynamic->gui_scaling);
+		lua_settable(L, dyn_table);
+
+		lua_pushstring(L, "hud_scaling");
+		lua_pushnumber(L, dynamic->hud_scaling);
+		lua_settable(L, dyn_table);
+	}
 
 	return 1;
 }
@@ -659,6 +669,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(dynamic_add_media);
 
 	API_FCT(get_player_information);
+	API_FCT(get_player_window_information);
 	API_FCT(get_player_privs);
 	API_FCT(get_player_ip);
 	API_FCT(get_ban_list);
