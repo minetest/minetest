@@ -1385,8 +1385,8 @@ void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
 {
 	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4);
 	pkt << (u32)info.render_target_size.X << (u32)info.render_target_size.Y;
-	pkt << info.gui_scaling;
-	pkt << info.hud_scaling;
+	pkt << info.real_gui_scaling;
+	pkt << info.real_hud_scaling;
 
 	Send(&pkt);
 }

@@ -1,7 +1,7 @@
 local function calculate_max_fs_size(window)
 	return {
-		x = window.size.x / (0.5555 * 96 * window.gui_scaling),
-		y = window.size.y / (0.5555 * 96 * window.gui_scaling),
+		x = window.size.x / (0.5555 * 96 * window.real_gui_scaling),
+		y = window.size.y / (0.5555 * 96 * window.real_gui_scaling),
 	}
 end
 

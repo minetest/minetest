@@ -5007,11 +5007,11 @@ Utilities
 
           -- GUI Scaling multiplier
           -- Equal to the setting `gui_scaling` multiplied by `dpi / 96`
-          gui_scaling = 1,
+          real_gui_scaling = 1,
 
           -- HUD Scaling multiplier
           -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
-          hud_scaling = 1,
+          real_hud_scaling = 1,
       }
 
 * `minetest.mkdir(path)`: returns success.

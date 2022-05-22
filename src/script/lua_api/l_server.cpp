@@ -291,12 +291,12 @@ int ModApiServer::l_get_player_window_information(lua_State *L)
 		push_v2u32(L, dynamic->render_target_size);
 		lua_settable(L, dyn_table);
 
-		lua_pushstring(L, "gui_scaling");
-		lua_pushnumber(L, dynamic->gui_scaling);
+		lua_pushstring(L, "real_gui_scaling");
+		lua_pushnumber(L, dynamic->real_gui_scaling);
 		lua_settable(L, dyn_table);
 
-		lua_pushstring(L, "hud_scaling");
-		lua_pushnumber(L, dynamic->hud_scaling);
+		lua_pushstring(L, "real_hud_scaling");
+		lua_pushnumber(L, dynamic->real_hud_scaling);
 		lua_settable(L, dyn_table);
 	}
 
