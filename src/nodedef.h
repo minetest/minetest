@@ -539,7 +539,7 @@ public:
 	 */
 	inline const ContentFeatures& get(content_t c) const {
 		return
-			c < m_content_features.size() ?
+			(c < m_content_features.size() && !m_content_features[c].name.empty()) ?
 				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 	}
 
