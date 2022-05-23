@@ -128,7 +128,9 @@ return {
 			fgettext("Active renderer:") .. "\n" ..
 			core.formspec_escape(core.get_screen_info().render_info) .. "]"
 
-		if PLATFORM ~= "Android" then
+		if PLATFORM == "Android" then
+			fs = fs .. "button[0,4;3.5,1;share_debug;" .. fgettext("Share debug log") .. "]"
+		else
 			fs = fs .. "tooltip[userdata;" ..
 					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
 							"and texture packs in a file manager / explorer.") .. "]"
@@ -140,6 +142,11 @@ return {
 	cbf_button_handler = function(this, fields, name, tabdata)
 		if fields.homepage then
 			core.open_url("https://www.minetest.net")
+		end
+
+		if fields.share_debug then
+			local path = core.get_user_path() .. DIR_DELIM .. "debug.txt"
+			core.share_file(path)
 		end
 
 		if fields.userdata then
