@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if !defined(_WIN32)  // POSIX
 	#include <unistd.h>
 #endif
+#include "threading/mutex_auto_lock.h"
 #include "util/basic_macros.h"
 #include "util/stream.h"
 #include "irrlichttypes.h"
@@ -168,24 +169,31 @@ public:
 
 	void clear()
 	{
+		MutexAutoLock lock(m_buffer_mutex);
 		m_buffer = std::queue<std::string>();
 	}
 
 	bool empty() const
 	{
+		MutexAutoLock lock(m_buffer_mutex);
 		return m_buffer.empty();
 	}
 
 	std::string get()
 	{
-		if (empty())
+		MutexAutoLock lock(m_buffer_mutex);
+		if (m_buffer.empty())
 			return "";
-		std::string s = m_buffer.front();
+		std::string s = std::move(m_buffer.front());
 		m_buffer.pop();
 		return s;
 	}
 
 private:
+	// g_logger serializes calls to logRaw() with a mutex, but that
+	// doesn't prevent get() / clear() from being called on top of it.
+	// This mutex prevents that.
+	mutable std::mutex m_buffer_mutex;
 	std::queue<std::string> m_buffer;
 	Logger &m_logger;
 };
