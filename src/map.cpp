@@ -102,7 +102,7 @@ MapSector * Map::getSectorNoGenerateNoLock(v2s16 p)
 		return sector;
 	}
 
-	std::map<v2s16, MapSector*>::iterator n = m_sectors.find(p);
+	auto n = m_sectors.find(p);
 
 	if (n == m_sectors.end())
 		return NULL;
