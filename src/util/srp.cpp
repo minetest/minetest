@@ -354,7 +354,7 @@ static size_t hash_length(SRP_HashAlgorithm alg)
 		case SRP_SHA384: return SHA384_DIGEST_LENGTH;
 		case SRP_SHA512: return SHA512_DIGEST_LENGTH;
 		*/
-		default: return -1;
+		default: return 0;
 	};
 }
 // clang-format on
@@ -422,7 +422,7 @@ static SRP_Result H_nn(
 }
 
 static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *n,
-	size_t len_n, const unsigned char *bytes, uint32_t len_bytes)
+	size_t len_n, const unsigned char *bytes, size_t len_bytes)
 {
 	unsigned char buff[SHA512_DIGEST_LENGTH];
 	size_t nbytes = len_n + len_bytes;

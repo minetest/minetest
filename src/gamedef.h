@@ -63,6 +63,8 @@ public:
 	virtual IRollbackManager* getRollbackManager() { return NULL; }
 
 	// Shorthands
+	// TODO: these should be made const-safe so that a const IGameDef* is
+	//       actually usable
 	IItemDefManager  *idef()     { return getItemDefManager(); }
 	const NodeDefManager  *ndef() { return getNodeDefManager(); }
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }

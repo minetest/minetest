@@ -907,7 +907,10 @@ private:
 
 	bool m_does_lost_focus_pause_game = false;
 
+#if IRRLICHT_VERSION_MT_REVISION < 5
 	int m_reset_HW_buffer_counter = 0;
+#endif
+
 #ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
 #endif
@@ -1060,9 +1063,9 @@ bool Game::startup(bool *kill,
 void Game::run()
 {
 	ProfilerGraph graph;
-	RunStats stats              = { 0 };
-	CameraOrientation cam_view_target  = { 0 };
-	CameraOrientation cam_view  = { 0 };
+	RunStats stats = {};
+	CameraOrientation cam_view_target = {};
+	CameraOrientation cam_view = {};
 	FpsControl draw_times;
 	f32 dtime; // in seconds
 
@@ -1488,7 +1491,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
 
 	infostream << "Connecting to server at ";
-	connect_address.print(&infostream);
+	connect_address.print(infostream);
 	infostream << std::endl;
 
 	client->connect(connect_address,
@@ -3093,10 +3096,12 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 			!runData.btn_down_for_dig,
 			camera_offset);
 
-	if (pointed != runData.pointed_old) {
+	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
-		hud->updateSelectionMesh(camera_offset);
-	}
+
+	// Note that updating the selection mesh every frame is not particularly efficient,
+	// but the halo rendering code is already inefficient so there's no point in optimizing it here
+	hud->updateSelectionMesh(camera_offset);
 
 	// Allow digging again if button is not pressed
 	if (runData.digging_blocked && !isKeyDown(KeyType::DIG))
@@ -3157,8 +3162,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
+		bool basic_debug_allowed = client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 		handlePointingAtObject(pointed, tool_item, player_position,
-				client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG));
+				m_game_ui->m_flags.show_basic_debug && basic_debug_allowed);
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
 		runData.punching = true;
@@ -3989,6 +3995,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== End scene ====================
 	*/
+#if IRRLICHT_VERSION_MT_REVISION < 5
 	if (++m_reset_HW_buffer_counter > 500) {
 		/*
 		  Periodically remove all mesh HW buffers.
@@ -4010,6 +4017,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		driver->removeAllHardwareBuffers();
 		m_reset_HW_buffer_counter = 0;
 	}
+#endif
 
 	driver->endScene();
 
@@ -4037,7 +4045,12 @@ void Game::updateShadows()
 
 	float in_timeofday = fmod(runData.time_of_day_smooth, 1.0f);
 
-	float timeoftheday = fmod(getWickedTimeOfDay(in_timeofday) + 0.75f, 0.5f) + 0.25f;
+	float timeoftheday = getWickedTimeOfDay(in_timeofday);
+	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
+	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
+	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
+
+	timeoftheday = fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;
 
 	v3f light(0.0f, 0.0f, -1.0f);

@@ -55,6 +55,8 @@ extern "C" {
 #define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
 #define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
 #define CUSTOM_RIDX_HTTP_API_LUA        (CUSTOM_RIDX_BASE + 4)
+#define CUSTOM_RIDX_VECTOR_METATABLE    (CUSTOM_RIDX_BASE + 5)
+#define CUSTOM_RIDX_METATABLE_MAP       (CUSTOM_RIDX_BASE + 6)
 
 
 // Determine if CUSTOM_RIDX_SCRIPTAPI will hold a light or full userdata
@@ -138,3 +140,7 @@ DeprecatedHandlingMode get_deprecated_handling_mode();
  * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
  */
 void log_deprecated(lua_State *L, std::string message, int stack_depth = 1);
+
+// Safely call string.dump on a function value
+// (does not pop, leaves one value on stack)
+void call_string_dump(lua_State *L, int idx);

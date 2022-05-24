@@ -1351,22 +1351,27 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
-void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
+void push_inventory_list(lua_State *L, const InventoryList &invlist)
 {
-	InventoryList *invlist = inv->getList(name);
-	if(invlist == NULL){
-		lua_pushnil(L);
-		return;
+	push_items(L, invlist.getItems());
+}
+
+/******************************************************************************/
+void push_inventory_lists(lua_State *L, const Inventory &inv)
+{
+	const auto &lists = inv.getLists();
+	lua_createtable(L, 0, lists.size());
+	for(const InventoryList *list : lists) {
+		const std::string &name = list->getName();
+		lua_pushlstring(L, name.c_str(), name.size());
+		push_inventory_list(L, *list);
+		lua_rawset(L, -3);
 	}
-	std::vector<ItemStack> items;
-	for(u32 i=0; i<invlist->getSize(); i++)
-		items.push_back(invlist->getItem(i));
-	push_items(L, items);
 }
 
 /******************************************************************************/
 void read_inventory_list(lua_State *L, int tableindex,
-		Inventory *inv, const char *name, Server* srv, int forcesize)
+		Inventory *inv, const char *name, IGameDef *gdef, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
@@ -1378,7 +1383,7 @@ void read_inventory_list(lua_State *L, int tableindex,
 	}
 
 	// Get Lua-specified items to insert into the list
-	std::vector<ItemStack> items = read_items(L, tableindex,srv);
+	std::vector<ItemStack> items = read_items(L, tableindex, gdef);
 	size_t listsize = (forcesize >= 0) ? forcesize : items.size();
 
 	// Create or resize/clear list
@@ -1630,7 +1635,7 @@ void push_items(lua_State *L, const std::vector<ItemStack> &items)
 }
 
 /******************************************************************************/
-std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
+std::vector<ItemStack> read_items(lua_State *L, int index, IGameDef *gdef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -1646,7 +1651,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 		if (items.size() < (u32) key) {
 			items.resize(key);
 		}
-		items[key - 1] = read_item(L, -1, srv->idef());
+		items[key - 1] = read_item(L, -1, gdef->idef());
 		lua_pop(L, 1);
 	}
 	return items;
@@ -1972,6 +1977,12 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_pushnumber(L, elem->number);
 	lua_setfield(L, -2, "number");
 
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		// waypoints reuse the item field to store precision, precision = item - 1
+		lua_pushnumber(L, elem->item - 1);
+		lua_setfield(L, -2, "precision");
+	}
+	// push the item field for waypoints as well for backwards compatibility
 	lua_pushnumber(L, elem->item);
 	lua_setfield(L, -2, "item");
 

@@ -476,10 +476,10 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	sqlite3_vrfy(sqlite3_step(m_stmt_player_remove_inventory_items), SQLITE_DONE);
 	sqlite3_reset(m_stmt_player_remove_inventory_items);
 
-	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
+	const auto &inventory_lists = sao->getInventory()->getLists();
 	std::ostringstream oss;
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
-		const InventoryList* list = inventory_lists[i];
+		const InventoryList *list = inventory_lists[i];
 
 		str_to_sqlite(m_stmt_player_add_inventory, 1, player->getName());
 		int_to_sqlite(m_stmt_player_add_inventory, 2, i);

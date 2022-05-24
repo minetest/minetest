@@ -227,7 +227,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		Compose auth methods for answer
 	*/
 	std::string encpwd; // encrypted Password field for the user
-	bool has_auth = m_script->getAuth(playername, &encpwd, NULL);
+	bool has_auth = m_script->getAuth(playername, &encpwd, nullptr);
 	u32 auth_mechs = 0;
 
 	client->chosen_mech = AUTH_MECHANISM_NONE;
@@ -1461,11 +1461,9 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
+	const std::string playername = client->getName();
 
-	std::string playername = client->getName();
-
-	std::string salt;
-	std::string verification_key;
+	std::string salt, verification_key;
 
 	std::string addr_s = getPeerAddress(peer_id).serializeString();
 	u8 is_empty;
@@ -1474,6 +1472,9 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 
 	verbosestream << "Server: Got TOSERVER_FIRST_SRP from " << addr_s
 		<< ", with is_empty=" << (is_empty == 1) << std::endl;
+
+	const bool empty_disallowed = !isSingleplayer() && is_empty == 1 &&
+		g_settings->getBool("disallow_empty_password");
 
 	// Either this packet is sent because the user is new or to change the password
 	if (cstate == CS_HelloSent) {
@@ -1485,9 +1486,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 
-		if (!isSingleplayer() &&
-				g_settings->getBool("disallow_empty_password") &&
-				is_empty == 1) {
+		if (empty_disallowed) {
 			actionstream << "Server: " << playername
 					<< " supplied empty password from " << addr_s << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_EMPTY_PASSWORD);
@@ -1495,8 +1494,19 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		}
 
 		std::string initial_ver_key;
-
 		initial_ver_key = encode_srp_verifier(verification_key, salt);
+
+		// It is possible for multiple connections to get this far with the same
+		// player name. In the end only one player with a given name will be emerged
+		// (see Server::StateTwoClientInit) but we still have to be careful here.
+		if (m_script->getAuth(playername, nullptr, nullptr)) {
+			// Another client beat us to it
+			actionstream << "Server: Client from " << addr_s
+				<< " tried to register " << playername << " a second time."
+				<< std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
+			return;
+		}
 		m_script->createAuth(playername, initial_ver_key);
 		m_script->on_authplayer(playername, addr_s, true);
 
@@ -1509,6 +1519,15 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 		m_clients.event(peer_id, CSE_SudoLeave);
+
+		if (empty_disallowed) {
+			actionstream << "Server: " << playername
+					<< " supplied empty password" << std::endl;
+			SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Changing to an empty password is not allowed."));
+			return;
+		}
+
 		std::string pw_db_field = encode_srp_verifier(verification_key, salt);
 		bool success = m_script->setPassword(playername, pw_db_field);
 		if (success) {
@@ -1530,14 +1549,14 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 
-	bool wantSudo = (cstate == CS_Active);
-
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _A packet in wrong state " << cstate <<
 			" from " << getPeerAddress(peer_id).serializeString() <<
 			". Ignoring." << std::endl;
 		return;
 	}
+
+	const bool wantSudo = (cstate == CS_Active);
 
 	if (client->chosen_mech != AUTH_MECHANISM_NONE) {
 		actionstream << "Server: got SRP _A packet, while auth is already "
@@ -1585,8 +1604,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 
 	client->chosen_mech = chosen;
 
-	std::string salt;
-	std::string verifier;
+	std::string salt, verifier;
 
 	if (based_on == 0) {
 
@@ -1618,6 +1636,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 			<< std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
+			client->resetChosenMech();
 			return;
 		}
 
@@ -1635,10 +1654,10 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
-	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
-	std::string playername = client->getName();
+	const std::string addr_s = client->getAddress().serializeString();
+	const std::string playername = client->getName();
 
-	bool wantSudo = (cstate == CS_Active);
+	const bool wantSudo = (cstate == CS_Active);
 
 	verbosestream << "Server: Received TOSERVER_SRP_BYTES_M." << std::endl;
 
@@ -1684,6 +1703,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 				<< " tried to change their password, but supplied wrong"
 				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(peer_id);
+			client->resetChosenMech();
 			return;
 		}
 
@@ -1697,8 +1717,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (client->create_player_on_auth_success) {
 		m_script->createAuth(playername, client->enc_pwd);
 
-		std::string checkpwd; // not used, but needed for passing something
-		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
+		if (!m_script->getAuth(playername, nullptr, nullptr)) {
 			errorstream << "Server: " << playername <<
 				" cannot be authenticated (auth handler does not work?)" <<
 				std::endl;

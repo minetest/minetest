@@ -164,8 +164,13 @@ static int traversetable (global_State *g, Table *h) {
     markobject(g, h->metatable);
   mode = gfasttm(g, h->metatable, TM_MODE);
   if (mode && ttisstring(mode)) {  /* is there a weak mode? */
-    weakkey = (strchr(svalue(mode), 'k') != NULL);
-    weakvalue = (strchr(svalue(mode), 'v') != NULL);
+    // Android's 'FORTIFY libc' calls __builtin_object_size on the argument of strchr.
+    // This produces an incorrect size for the expression `svalue(mode)`, causing
+    // an assertion. By placing it in a temporary, __builtin_object_size returns
+    // -1 (for unknown size) which functions correctly.
+    const char *tmp = svalue(mode);
+    weakkey = (strchr(tmp, 'k') != NULL);
+    weakvalue = (strchr(tmp, 'v') != NULL);
     if (weakkey || weakvalue) {  /* is really weak? */
       h->marked &= ~(KEYWEAK | VALUEWEAK);  /* clear bits */
       h->marked |= cast_byte((weakkey << KEYWEAKBIT) |

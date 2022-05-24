@@ -592,9 +592,10 @@ enable_waving_plants (Waving plants) bool false
 #    Requires shaders to be enabled.
 enable_dynamic_shadows (Dynamic shadows) bool false
 
-#    Set the shadow strength.
+#    Set the shadow strength gamma.
+#    Adjusts the intensity of in-game dynamic shadows.
 #    Lower value means lighter shadows, higher value means darker shadows.
-shadow_strength (Shadow strength) float 0.2 0.05 1.0
+shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 
 #    Maximum distance to render shadows.
 shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 120.0 10.0 1000.0
@@ -630,8 +631,8 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
-#    Minimum value: 1.0; maximum value: 10.0
-shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
+#    Minimum value: 1.0; maximum value: 15.0
+shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 
 #    Set the tilt of Sun/Moon orbit in degrees.
 #    Value of 0 means no tilt / vertical orbit.
@@ -857,6 +858,10 @@ autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 #    A restart is required after changing this.
 show_entity_selectionbox (Show entity selection boxes) bool false
 
+#    Distance in nodes at which transparency depth sorting is enabled
+#    Use this to limit the performance impact of transparency depth sorting
+transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
+
 [*Menus]
 
 #    Use a cloud animation for the main menu background.
@@ -983,7 +988,7 @@ mute_sound (Mute sound) bool false
 [Client]
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
-clickable_chat_weblinks (Chat weblinks) bool false
+clickable_chat_weblinks (Chat weblinks) bool true
 
 #    Optional override for chat weblink color.
 chat_weblink_color (Weblink color) string
@@ -1040,6 +1045,12 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500
+
+#    Whether to show technical names.
+#    Affects mods and texture packs in the Content and Select Mods menus, as well as
+#    setting names in All Settings.
+#    Controlled by the checkbox in the "All settings" menu.
+show_technical_names (Show technical names) bool false
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
@@ -1175,7 +1186,7 @@ enable_mod_channels (Mod channels) bool false
 #    If this is set, players will always (re)spawn at the given position.
 static_spawnpoint (Static spawnpoint) string
 
-#    If enabled, new players cannot join with an empty password.
+#    If enabled, players cannot join without a password or change theirs to an empty password.
 disallow_empty_password (Disallow empty passwords) bool false
 
 #    If enabled, disable cheat prevention in multiplayer.
@@ -1457,7 +1468,8 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    -    action
 #    -    info
 #    -    verbose
-debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
+#    -    trace
+debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose,trace
 
 #    If the file size of debug.txt exceeds the number of megabytes specified in
 #    this setting when it is opened, the file is moved to debug.txt.1,
@@ -1466,7 +1478,7 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 debug_log_size_max (Debug log file size threshold) int 50
 
 #    Minimal level of logging to be written to chat.
-chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose,trace
 
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.

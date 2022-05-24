@@ -59,7 +59,7 @@ public:
 	int getFamily() const { return m_addr_family; }
 	bool isIPv6() const { return m_addr_family == AF_INET6; }
 	bool isZero() const;
-	void print(std::ostream *s) const;
+	void print(std::ostream &s) const;
 	std::string serializeString() const;
 	bool isLocalhost() const;
 

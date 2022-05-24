@@ -47,11 +47,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_storage.h"
 
 extern "C" {
-#include "lualib.h"
+#include <lualib.h>
 }
 
 ServerScripting::ServerScripting(Server* server):
-		ScriptApiBase(ScriptingType::Server)
+		ScriptApiBase(ScriptingType::Server),
+		asyncEngine(server)
 {
 	setGameDef(server);
 
@@ -86,6 +87,48 @@ ServerScripting::ServerScripting(Server* server):
 	lua_setglobal(L, "INIT");
 
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
+}
+
+void ServerScripting::initAsync()
+{
+	// Save globals to transfer
+	{
+		lua_State *L = getStack();
+		lua_getglobal(L, "core");
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "get_globals_to_transfer");
+		lua_call(L, 0, 1);
+		auto *data = script_pack(L, -1);
+		assert(!data->contains_userdata);
+		getServer()->m_async_globals_data.reset(data);
+		lua_pushnil(L);
+		lua_setfield(L, -3, "get_globals_to_transfer"); // unset function too
+		lua_pop(L, 2); // pop 'core', return value
+	}
+
+	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
+	asyncEngine.registerStateInitializer(InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiCraft::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiItemMod::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiServer::InitializeAsync);
+	// not added: ModApiMapgen is a minefield for thread safety
+	// not added: ModApiHttp async api can't really work together with our jobs
+	// not added: ModApiStorage is probably not thread safe(?)
+
+	asyncEngine.initialize(0);
+}
+
+void ServerScripting::stepAsync()
+{
+	asyncEngine.step(getStack());
+}
+
+u32 ServerScripting::queueAsync(std::string &&serialized_func,
+	PackedValue *param, const std::string &mod_origin)
+{
+	return asyncEngine.queueAsyncJob(std::move(serialized_func),
+			param, mod_origin);
 }
 
 void ServerScripting::InitializeModApi(lua_State *L, int top)
@@ -124,4 +167,25 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);
+}
+
+void ServerScripting::InitializeAsync(lua_State *L, int top)
+{
+	// classes
+	LuaItemStack::Register(L);
+	LuaPerlinNoise::Register(L);
+	LuaPerlinNoiseMap::Register(L);
+	LuaPseudoRandom::Register(L);
+	LuaPcgRandom::Register(L);
+	LuaSecureRandom::Register(L);
+	LuaVoxelManip::Register(L);
+	LuaSettings::Register(L);
+
+	// globals data
+	lua_getglobal(L, "core");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	auto *data = ModApiBase::getServer(L)->m_async_globals_data.get();
+	script_unpack(L, data);
+	lua_setfield(L, -2, "transferred_globals");
+	lua_pop(L, 1); // pop 'core'
 }

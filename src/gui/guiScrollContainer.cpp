@@ -59,12 +59,11 @@ bool GUIScrollContainer::OnEvent(const SEvent &event)
 void GUIScrollContainer::draw()
 {
 	if (isVisible()) {
-		core::list<IGUIElement *>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			if ((*it)->isNotClipped() ||
+		for (auto child : Children)
+			if (child->isNotClipped() ||
 					AbsoluteClippingRect.isRectCollided(
-							(*it)->getAbsolutePosition()))
-				(*it)->draw();
+							child->getAbsolutePosition()))
+				child->draw();
 	}
 }
 

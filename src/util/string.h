@@ -295,11 +295,11 @@ inline std::string lowercase(const std::string &str)
 inline std::string trim(const std::string &str)
 {
 	size_t front = 0;
+	size_t back = str.size();
 
-	while (std::isspace(str[front]))
+	while (front < back && std::isspace(str[front]))
 		++front;
 
-	size_t back = str.size();
 	while (back > front && std::isspace(str[back - 1]))
 		--back;
 
@@ -410,7 +410,7 @@ DEFINE_STD_TOSTRING_FLOATINGPOINT(long double)
 template <typename T>
 inline wstring to_wstring(T val)
 {
-      return utf8_to_wide(to_string(val));
+	return utf8_to_wide(to_string(val));
 }
 }
 #endif
@@ -749,7 +749,7 @@ inline irr::core::stringw utf8_to_stringw(const std::string &input)
 /**
  * Sanitize the name of a new directory. This consists of two stages:
  * 1. Check for 'reserved filenames' that can't be used on some filesystems
- *    and prefix them
+ *    and add a prefix to them
  * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
 std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix);

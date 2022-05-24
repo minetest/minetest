@@ -478,6 +478,12 @@ struct ContentFeatures
 		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
 	}
 
+	bool lightingEquivalent(const ContentFeatures &other) const {
+		return light_propagates == other.light_propagates
+				&& sunlight_propagates == other.sunlight_propagates
+				&& light_source == other.light_source;
+	}
+
 	int getGroup(const std::string &group) const
 	{
 		return itemgroup_get(groups, group);
@@ -533,7 +539,7 @@ public:
 	 */
 	inline const ContentFeatures& get(content_t c) const {
 		return
-			c < m_content_features.size() ?
+			(c < m_content_features.size() && !m_content_features[c].name.empty()) ?
 				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 	}
 

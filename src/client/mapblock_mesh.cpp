@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include <array>
+#include <algorithm>
 
 /*
 	MeshMakeData
@@ -1004,6 +1005,174 @@ static void applyTileColor(PreMeshBuffer &pmb)
 }
 
 /*
+	MapBlockBspTree
+*/
+
+void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
+{
+	this->triangles = triangles;
+
+	nodes.clear();
+
+	// assert that triangle index can fit into s32
+	assert(triangles->size() <= 0x7FFFFFFFL);
+	std::vector<s32> indexes;
+	indexes.reserve(triangles->size());
+	for (u32 i = 0; i < triangles->size(); i++)
+		indexes.push_back(i);
+
+	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes, 0);
+}
+
+/**
+ * @brief Find a candidate plane to split a set of triangles in two
+ * 
+ * The candidate plane is represented by one of the triangles from the set.
+ * 
+ * @param list Vector of indexes of the triangles in the set
+ * @param triangles Vector of all triangles in the BSP tree
+ * @return Address of the triangle that represents the proposed split plane
+ */
+static const MeshTriangle *findSplitCandidate(const std::vector<s32> &list, const std::vector<MeshTriangle> &triangles)
+{
+	// find the center of the cluster.
+	v3f center(0, 0, 0);
+	size_t n = list.size();
+	for (s32 i : list) {
+		center += triangles[i].centroid / n;
+	}
+
+	// find the triangle with the largest area and closest to the center
+	const MeshTriangle *candidate_triangle = &triangles[list[0]];
+	const MeshTriangle *ith_triangle;
+	for (s32 i : list) {
+		ith_triangle = &triangles[i];
+		if (ith_triangle->areaSQ > candidate_triangle->areaSQ ||
+				(ith_triangle->areaSQ == candidate_triangle->areaSQ &&
+				ith_triangle->centroid.getDistanceFromSQ(center) < candidate_triangle->centroid.getDistanceFromSQ(center))) {
+			candidate_triangle = ith_triangle;
+		}
+	}
+	return candidate_triangle;
+}
+
+s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::vector<s32> &list, u32 depth)
+{
+	// if the list is empty, don't bother
+	if (list.empty())
+		return -1;
+
+	// if there is only one triangle, or the delta is insanely small, this is a leaf node
+	if (list.size() == 1 || delta < 0.01) {
+		nodes.emplace_back(normal, origin, list, -1, -1);
+		return nodes.size() - 1;
+	}
+
+	std::vector<s32> front_list;
+	std::vector<s32> back_list;
+	std::vector<s32> node_list;
+
+	// split the list
+	for (s32 i : list) {
+		const MeshTriangle &triangle = (*triangles)[i];
+		float factor = normal.dotProduct(triangle.centroid - origin);
+		if (factor == 0)
+			node_list.push_back(i);
+		else if (factor > 0)
+			front_list.push_back(i);
+		else
+			back_list.push_back(i);
+	}
+
+	// define the new split-plane
+	v3f candidate_normal(normal.Z, normal.X, normal.Y);
+	float candidate_delta = delta;
+	if (depth % 3 == 2)
+		candidate_delta /= 2;
+
+	s32 front_index = -1;
+	s32 back_index = -1;
+
+	if (!front_list.empty()) {
+		v3f next_normal = candidate_normal;
+		v3f next_origin = origin + delta * normal;
+		float next_delta = candidate_delta;
+		if (next_delta < 10) {
+			const MeshTriangle *candidate = findSplitCandidate(front_list, *triangles);
+			next_normal = candidate->getNormal();
+			next_origin = candidate->centroid;
+		}
+		front_index = buildTree(next_normal, next_origin, next_delta, front_list, depth + 1);
+
+		// if there are no other triangles, don't create a new node
+		if (back_list.empty() && node_list.empty())
+			return front_index;
+	}
+
+	if (!back_list.empty()) {
+		v3f next_normal = candidate_normal;
+		v3f next_origin = origin - delta * normal;
+		float next_delta = candidate_delta;
+		if (next_delta < 10) {
+			const MeshTriangle *candidate = findSplitCandidate(back_list, *triangles);
+			next_normal = candidate->getNormal();
+			next_origin = candidate->centroid;
+		}
+
+		back_index = buildTree(next_normal, next_origin, next_delta, back_list, depth + 1);
+
+		// if there are no other triangles, don't create a new node
+		if (front_list.empty() && node_list.empty())
+			return back_index;
+	}
+
+	nodes.emplace_back(normal, origin, node_list, front_index, back_index);
+
+	return nodes.size() - 1;
+}
+
+void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output) const
+{
+	if (node < 0) return; // recursion break;
+
+	const TreeNode &n = nodes[node];
+	float factor = n.normal.dotProduct(viewpoint - n.origin);
+
+	if (factor > 0)
+		traverse(n.back_ref, viewpoint, output);
+	else
+		traverse(n.front_ref, viewpoint, output);
+
+	if (factor != 0)
+		for (s32 i : n.triangle_refs)
+			output.push_back(i);
+
+	if (factor > 0)
+		traverse(n.front_ref, viewpoint, output);
+	else
+		traverse(n.back_ref, viewpoint, output);
+}
+
+
+
+/*
+	PartialMeshBuffer
+*/
+
+void PartialMeshBuffer::beforeDraw() const
+{
+	// Patch the indexes in the mesh buffer before draw
+	m_buffer->Indices = std::move(m_vertex_indexes);
+	m_buffer->setDirty(scene::EBT_INDEX);
+}
+
+void PartialMeshBuffer::afterDraw() const
+{
+	// Take the data back
+	m_vertex_indexes = std::move(m_buffer->Indices.steal());
+}
+
+/*
 	MapBlockMesh
 */
 
@@ -1084,6 +1253,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert MeshCollector to SMesh
 	*/
 
+	const bool desync_animations = g_settings->getBool(
+		"desynchronize_mapblock_texture_animation");
+
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
@@ -1113,18 +1285,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			// - Texture animation
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
 				// Add to MapBlockMesh in order to animate these tiles
-				m_animation_tiles[std::pair<u8, u32>(layer, i)] = p.layer;
-				m_animation_frames[std::pair<u8, u32>(layer, i)] = 0;
-				if (g_settings->getBool(
-						"desynchronize_mapblock_texture_animation")) {
+				auto &info = m_animation_info[{layer, i}];
+				info.tile = p.layer;
+				info.frame = 0;
+				if (desync_animations) {
 					// Get starting position from noise
-					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] =
+					info.frame_offset =
 							100000 * (2.0 + noise3d(
 							data->m_blockpos.X, data->m_blockpos.Y,
 							data->m_blockpos.Z, 0));
 				} else {
 					// Play all synchronized
-					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] = 0;
+					info.frame_offset = 0;
 				}
 				// Replace tile texture with the first animation frame
 				p.layer.texture = (*p.layer.frames)[0].texture;
@@ -1135,19 +1307,23 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				// Dummy sunlight to handle non-sunlit areas
 				video::SColorf sunlight;
 				get_sunlight_color(&sunlight, 0);
-				u32 vertex_count = p.vertices.size();
+
+				std::map<u32, video::SColor> colors;
+				const u32 vertex_count = p.vertices.size();
 				for (u32 j = 0; j < vertex_count; j++) {
 					video::SColor *vc = &p.vertices[j].Color;
 					video::SColor copy = *vc;
 					if (vc->getAlpha() == 0) // No sunlight - no need to animate
 						final_color_blend(vc, copy, sunlight); // Finalize color
 					else // Record color to animate
-						m_daynight_diffs[std::pair<u8, u32>(layer, i)][j] = copy;
+						colors[j] = copy;
 
 					// The sunlight ratio has been stored,
 					// delete alpha (for the final rendering).
 					vc->setAlpha(255);
 				}
+				if (!colors.empty())
+					m_daynight_diffs[{layer, i}] = std::move(colors);
 			}
 
 			// Create material
@@ -1173,8 +1349,31 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material = material;
-			buf->append(&p.vertices[0], p.vertices.size(),
-				&p.indices[0], p.indices.size());
+			switch (p.layer.material_type) {
+			// list of transparent materials taken from tile.h
+			case TILE_MATERIAL_ALPHA:
+			case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+				{
+					buf->append(&p.vertices[0], p.vertices.size(),
+						&p.indices[0], 0);
+
+					MeshTriangle t;
+					t.buffer = buf;
+					for (u32 i = 0; i < p.indices.size(); i += 3) {
+						t.p1 = p.indices[i];
+						t.p2 = p.indices[i + 1];
+						t.p3 = p.indices[i + 2];
+						t.updateAttributes();
+						m_transparent_triangles.push_back(t);
+					}
+				}
+				break;
+			default:
+				buf->append(&p.vertices[0], p.vertices.size(),
+					&p.indices[0], p.indices.size());
+				break;
+			}
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
@@ -1187,23 +1386,26 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	}
 
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+	m_bsp_tree.buildTree(&m_transparent_triangles);
 
 	// Check if animation is required for this mesh
 	m_has_animation =
 		!m_crack_materials.empty() ||
 		!m_daynight_diffs.empty() ||
-		!m_animation_tiles.empty();
+		!m_animation_info.empty();
 }
 
 MapBlockMesh::~MapBlockMesh()
 {
 	for (scene::IMesh *m : m_mesh) {
+#if IRRLICHT_VERSION_MT_REVISION < 5
 		if (m_enable_vbo) {
 			for (u32 i = 0; i < m->getMeshBufferCount(); i++) {
 				scene::IMeshBuffer *buf = m->getMeshBuffer(i);
 				RenderingEngine::get_video_driver()->removeHardwareBuffer(buf);
 			}
 		}
+#endif
 		m->drop();
 	}
 	delete m_minimap_mapblock;
@@ -1224,25 +1426,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 		for (auto &crack_material : m_crack_materials) {
 			scene::IMeshBuffer *buf = m_mesh[crack_material.first.first]->
 				getMeshBuffer(crack_material.first.second);
-			std::string basename = crack_material.second;
 
 			// Create new texture name from original
-			std::ostringstream os;
-			os << basename << crack;
+			std::string s = crack_material.second + itos(crack);
 			u32 new_texture_id = 0;
 			video::ITexture *new_texture =
-					m_tsrc->getTextureForMesh(os.str(), &new_texture_id);
+					m_tsrc->getTextureForMesh(s, &new_texture_id);
 			buf->getMaterial().setTexture(0, new_texture);
 
-			// If the current material is also animated,
-			// update animation info
-			auto anim_iter = m_animation_tiles.find(crack_material.first);
-			if (anim_iter != m_animation_tiles.end()) {
-				TileLayer &tile = anim_iter->second;
+			// If the current material is also animated, update animation info
+			auto anim_it = m_animation_info.find(crack_material.first);
+			if (anim_it != m_animation_info.end()) {
+				TileLayer &tile = anim_it->second.tile;
 				tile.texture = new_texture;
 				tile.texture_id = new_texture_id;
 				// force animation update
-				m_animation_frames[crack_material.first] = -1;
+				anim_it->second.frame = -1;
 			}
 		}
 
@@ -1250,28 +1449,25 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	}
 
 	// Texture animation
-	for (auto &animation_tile : m_animation_tiles) {
-		const TileLayer &tile = animation_tile.second;
+	for (auto &it : m_animation_info) {
+		const TileLayer &tile = it.second.tile;
 		// Figure out current frame
-		int frameoffset = m_animation_frame_offsets[animation_tile.first];
-		int frame = (int)(time * 1000 / tile.animation_frame_length_ms
-				+ frameoffset) % tile.animation_frame_count;
+		int frameno = (int)(time * 1000 / tile.animation_frame_length_ms
+				+ it.second.frame_offset) % tile.animation_frame_count;
 		// If frame doesn't change, skip
-		if (frame == m_animation_frames[animation_tile.first])
+		if (frameno == it.second.frame)
 			continue;
 
-		m_animation_frames[animation_tile.first] = frame;
+		it.second.frame = frameno;
 
-		scene::IMeshBuffer *buf = m_mesh[animation_tile.first.first]->
-			getMeshBuffer(animation_tile.first.second);
+		scene::IMeshBuffer *buf = m_mesh[it.first.first]->getMeshBuffer(it.first.second);
 
-		const FrameSpec &animation_frame = (*tile.frames)[frame];
-		buf->getMaterial().setTexture(0, animation_frame.texture);
+		const FrameSpec &frame = (*tile.frames)[frameno];
+		buf->getMaterial().setTexture(0, frame.texture);
 		if (m_enable_shaders) {
-			if (animation_frame.normal_texture)
-				buf->getMaterial().setTexture(1,
-					animation_frame.normal_texture);
-			buf->getMaterial().setTexture(2, animation_frame.flags_texture);
+			if (frame.normal_texture)
+				buf->getMaterial().setTexture(1, frame.normal_texture);
+			buf->getMaterial().setTexture(2, frame.flags_texture);
 		}
 	}
 
@@ -1296,6 +1492,67 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	}
 
 	return true;
+}
+
+void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
+{
+	// nothing to do if the entire block is opaque
+	if (m_transparent_triangles.empty())
+		return;
+
+	v3f block_posf = intToFloat(block_pos * MAP_BLOCKSIZE, BS);
+	v3f rel_camera_pos = camera_pos - block_posf;
+
+	std::vector<s32> triangle_refs;
+	m_bsp_tree.traverse(rel_camera_pos, triangle_refs);
+
+	// arrange index sequences into partial buffers
+	m_transparent_buffers.clear();
+
+	scene::SMeshBuffer *current_buffer = nullptr;
+	std::vector<u16> current_strain;
+	for (auto i : triangle_refs) {
+		const auto &t = m_transparent_triangles[i];
+		if (current_buffer != t.buffer) {
+			if (current_buffer) {
+				m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+				current_strain.clear();
+			}
+			current_buffer = t.buffer;
+		}
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (!current_strain.empty())
+		m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+}
+
+void MapBlockMesh::consolidateTransparentBuffers()
+{
+	m_transparent_buffers.clear();
+
+	scene::SMeshBuffer *current_buffer = nullptr;
+	std::vector<u16> current_strain;
+
+	// use the fact that m_transparent_triangles is already arranged by buffer
+	for (const auto &t : m_transparent_triangles) {
+		if (current_buffer != t.buffer) {
+			if (current_buffer != nullptr) {
+				this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+				current_strain.clear();
+			}
+			current_buffer = t.buffer;
+		}
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (!current_strain.empty()) {
+		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+	}
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)

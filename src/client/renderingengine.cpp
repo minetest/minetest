@@ -116,7 +116,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
-	if (g_logger.getTraceEnabled())
+	if (tracestream)
 		params.LoggingLevel = irr::ELL_DEBUG;
 	params.DriverType = driverType;
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);

@@ -69,7 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Retrieve Environment pointer as `env` (no map lock)
 #define GET_PLAIN_ENV_PTR_NO_MAP_LOCK            \
-	Environment *env = (Environment *)getEnv(L); \
+	Environment *env = getEnv(L);                \
 	if (env == NULL)                             \
 		return 0
 

@@ -31,9 +31,7 @@ public:
 	GUIPasswordChange(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr, Client *client,
 			ISimpleTextureSource *tsrc);
-	~GUIPasswordChange();
 
-	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/

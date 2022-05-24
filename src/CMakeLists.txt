@@ -330,6 +330,7 @@ add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
+add_subdirectory(benchmark)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
@@ -412,6 +413,9 @@ if(BUILD_UNITTESTS)
 	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
 endif()
 
+if(BUILD_BENCHMARKS)
+	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
+endif()
 
 # This gives us the icon and file version information
 if(WIN32)
@@ -452,6 +456,10 @@ if(BUILD_UNITTESTS)
 	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
 endif()
 
+if(BUILD_BENCHMARKS)
+	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
+endif()
+
 list(SORT client_SRCS)
 
 # Server sources
@@ -470,6 +478,9 @@ endif()
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
+	${PROJECT_SOURCE_DIR}/script
+)
+include_directories(SYSTEM
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
@@ -477,7 +488,6 @@ include_directories(
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	${PROJECT_SOURCE_DIR}/script
 )
 
 if(USE_GETTEXT)
@@ -485,7 +495,7 @@ if(USE_GETTEXT)
 endif()
 
 if(BUILD_CLIENT)
-	include_directories(
+	include_directories(SYSTEM
 		${FREETYPE_INCLUDE_DIRS}
 		${SOUND_INCLUDE_DIRS}
 		${X11_INCLUDE_DIR}
@@ -565,6 +575,9 @@ if(BUILD_CLIENT)
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
+	if(BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME} catch2)
+	endif()
 endif(BUILD_CLIENT)
 
 
@@ -623,6 +636,9 @@ if(BUILD_SERVER)
 			${PROJECT_NAME}server
 			${CURL_LIBRARY}
 		)
+	endif()
+	if(BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME}server catch2)
 	endif()
 endif(BUILD_SERVER)
 
@@ -691,13 +707,12 @@ if(MSVC)
 	endif()
 else()
 	# GCC or compatible compilers such as Clang
+	set(WARNING_FLAGS "-Wall -Wextra")
+	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter -Wno-implicit-fallthrough")
 	if(WARN_ALL)
-		set(RELEASE_WARNING_FLAGS "-Wall")
+		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
-	endif()
-	if(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
-		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
 	endif()
 
 	if(APPLE AND USE_LUAJIT)
@@ -709,7 +724,7 @@ else()
 			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
 			if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 				# FreeBSD uses lld, and lld does not support -Ttext-segment, suggesting
-				# --image-base instead. Not sure if it's equivalent change for the purpose 
+				# --image-base instead. Not sure if it's equivalent change for the purpose
 				# but at least if fixes build on FreeBSD/aarch64
 				# XXX: the condition should also be changed to check for lld regardless of
 				# os, bit CMake doesn't have anything like CMAKE_LINKER_IS_LLD yet
@@ -723,7 +738,6 @@ else()
 	if(MINGW)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -mwindows")
 	endif()
 
 	# Use a safe subset of flags to speed up math calculations:
@@ -741,7 +755,7 @@ else()
 		endif()
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${OTHER_FLAGS} -pipe -funroll-loops")
 	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
@@ -754,11 +768,16 @@ else()
 			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${MATH_FLAGS}")
 		endif()
 	endif()
-	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g")
+	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
+	endif()
+
+	if(MINGW)
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -mwindows")
 	endif()
 endif()
 
@@ -821,12 +840,13 @@ if(WIN32)
 		if(LUA_DLL)
 			install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(BUILD_CLIENT AND IRRLICHT_DLL)
-			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
-		endif()
 		if(BUILD_CLIENT AND USE_GETTEXT AND GETTEXT_DLL)
 			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 		endif()
+	endif()
+
+	if(BUILD_CLIENT AND IRRLICHT_DLL)
+		install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

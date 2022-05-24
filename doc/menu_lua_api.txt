@@ -246,13 +246,14 @@ Package - content which is downloadable from the content db, may or may not be i
 * core.get_texturepath() (possible in async calls)
     * returns path to default textures
 * core.get_game(index)
+    * `name` in return value is deprecated, use `title` instead.
     * returns:
 
         {
             id               = <id>,
             path             = <full path to game>,
             gamemods_path    = <path>,
-            name             = <name of game>,
+            title            = <title of game>,
             menuicon_path    = <full path to menuicon>,
             author           = "author",
             DEPRECATED:
@@ -264,8 +265,9 @@ Package - content which is downloadable from the content db, may or may not be i
     * returns
 
         {
-            name             = "name of content",
+            name             = "technical_id",
             type             = "mod" or "modpack" or "game" or "txp",
+            title            = "Human readable title",
             description      = "description",
             author           = "author",
             path             = "path/to/content",

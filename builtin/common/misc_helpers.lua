@@ -425,53 +425,49 @@ function core.string_to_pos(value)
 		return nil
 	end
 
-	local x, y, z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	value = value:match("^%((.-)%)$") or value -- strip parentheses
+
+	local x, y, z = value:trim():match("^([%d.-]+)[,%s]%s*([%d.-]+)[,%s]%s*([%d.-]+)$")
 	if x and y and z then
 		x = tonumber(x)
 		y = tonumber(y)
 		z = tonumber(z)
 		return vector.new(x, y, z)
 	end
-	x, y, z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
-	if x and y and z then
-		x = tonumber(x)
-		y = tonumber(y)
-		z = tonumber(z)
-		return vector.new(x, y, z)
-	end
+
 	return nil
 end
 
 
 --------------------------------------------------------------------------------
-function core.string_to_area(value)
-	local p1, p2 = unpack(value:split(") ("))
-	if p1 == nil or p2 == nil then
-		return nil
+
+do
+	local rel_num_cap = "(~?-?%d*%.?%d*)" -- may be overly permissive as this will be tonumber'ed anyways
+	local num_delim = "[,%s]%s*"
+	local pattern = "^" .. table.concat({rel_num_cap, rel_num_cap, rel_num_cap}, num_delim) .. "$"
+
+	local function parse_area_string(pos, relative_to)
+		local pp = {}
+		pp.x, pp.y, pp.z = pos:trim():match(pattern)
+		return core.parse_coordinates(pp.x, pp.y, pp.z, relative_to)
 	end
 
-	p1 = core.string_to_pos(p1 .. ")")
-	p2 = core.string_to_pos("(" .. p2)
-	if p1 == nil or p2 == nil then
-		return nil
+	function core.string_to_area(value, relative_to)
+		local p1, p2 = value:match("^%((.-)%)%s*%((.-)%)$")
+		if not p1 then
+			return
+		end
+
+		p1 = parse_area_string(p1, relative_to)
+		p2 = parse_area_string(p2, relative_to)
+
+		if p1 == nil or p2 == nil then
+			return
+		end
+
+		return p1, p2
 	end
-
-	return p1, p2
 end
-
-local function test_string_to_area()
-	local p1, p2 = core.string_to_area("(10.0, 5, -2) (  30.2,   4, -12.53)")
-	assert(p1.x == 10.0 and p1.y == 5 and p1.z == -2)
-	assert(p2.x == 30.2 and p2.y == 4 and p2.z == -12.53)
-
-	p1, p2 = core.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
-	assert(p1 == nil and p2 == nil)
-
-	p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
-	assert(p1 == nil and p2 == nil)
-end
-
-test_string_to_area()
 
 --------------------------------------------------------------------------------
 function table.copy(t, seen)
@@ -700,4 +696,72 @@ end
 
 function core.is_nan(number)
 	return number ~= number
+end
+
+--[[ Helper function for parsing an optionally relative number
+of a chat command parameter, using the chat command tilde notation.
+
+Parameters:
+* arg: String snippet containing the number; possible values:
+    * "<number>": return as number
+    * "~<number>": return relative_to + <number>
+    * "~": return relative_to
+    * Anything else will return `nil`
+* relative_to: Number to which the `arg` number might be relative to
+
+Returns:
+A number or `nil`, depending on `arg.
+
+Examples:
+* `core.parse_relative_number("5", 10)` returns 5
+* `core.parse_relative_number("~5", 10)` returns 15
+* `core.parse_relative_number("~", 10)` returns 10
+]]
+function core.parse_relative_number(arg, relative_to)
+	if not arg then
+		return nil
+	elseif arg == "~" then
+		return relative_to
+	elseif string.sub(arg, 1, 1) == "~" then
+		local number = tonumber(string.sub(arg, 2))
+		if not number then
+			return nil
+		end
+		if core.is_nan(number) or number == math.huge or number == -math.huge then
+			return nil
+		end
+		return relative_to + number
+	else
+		local number = tonumber(arg)
+		if core.is_nan(number) or number == math.huge or number == -math.huge then
+			return nil
+		end
+		return number
+	end
+end
+
+--[[ Helper function to parse coordinates that might be relative
+to another position; supports chat command tilde notation.
+Intended to be used in chat command parameter parsing.
+
+Parameters:
+* x, y, z: Parsed x, y, and z coordinates as strings
+* relative_to: Position to which to compare the position
+
+Syntax of x, y and z:
+* "<number>": return as number
+* "~<number>": return <number> + player position on this axis
+* "~": return player position on this axis
+
+Returns: a vector or nil for invalid input or if player does not exist
+]]
+function core.parse_coordinates(x, y, z, relative_to)
+	if not relative_to then
+		x, y, z = tonumber(x), tonumber(y), tonumber(z)
+		return x and y and z and { x = x, y = y, z = z }
+	end
+	local rx = core.parse_relative_number(x, relative_to.x)
+	local ry = core.parse_relative_number(y, relative_to.y)
+	local rz = core.parse_relative_number(z, relative_to.z)
+	return rx and ry and rz and { x = rx, y = ry, z = rz }
 end

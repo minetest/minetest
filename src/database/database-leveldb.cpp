@@ -74,7 +74,7 @@ void Database_LevelDB::loadBlock(const v3s16 &pos, std::string *block)
 		i64tos(getBlockAsInteger(pos)), block);
 
 	if (!status.ok())
-		block->clear();	
+		block->clear();
 }
 
 bool Database_LevelDB::deleteBlock(const v3s16 &pos)

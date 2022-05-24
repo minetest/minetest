@@ -45,7 +45,7 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=1.9.0mt4
+irrlicht_version=1.9.0mt6
 ogg_version=1.3.5
 openal_version=1.21.1
 vorbis_version=1.3.7
@@ -83,7 +83,7 @@ download () {
 # this distinction should be gotten rid of next time
 
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32-dw2.zip" irrlicht-$irrlicht_version.zip
+download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/dw2/zlib-$zlib_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip"
@@ -116,14 +116,12 @@ git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 # Build the thing
 cd $builddir
 [ -d build ] && rm -rf build
-mkdir build
-cd build
 
 irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
 vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
 gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
-cmake -S $sourcedir -B . \
+cmake -S $sourcedir -B build \
 	-DCMAKE_TOOLCHAIN_FILE=$toolchain_file \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
@@ -184,9 +182,9 @@ cmake -S $sourcedir -B . \
 	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
 	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
 
-make -j$(nproc)
+cmake --build build -j$(nproc)
 
-[ -z "$NO_PACKAGE" ] && make package
+[ -z "$NO_PACKAGE" ] && cmake --build build --target package
 
 exit 0
 # EOF

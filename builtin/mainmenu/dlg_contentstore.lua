@@ -25,7 +25,7 @@ end
 
 -- Unordered preserves the original order of the ContentDB API,
 -- before the package list is ordered based on installed state.
-local store = { packages = {}, packages_full = {}, packages_full_unordered = {} }
+local store = { packages = {}, packages_full = {}, packages_full_unordered = {}, aliases = {} }
 
 local http = core.get_http_api()
 
@@ -151,11 +151,9 @@ local function start_install(package, reason)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					if name_is_title then
-						conf:set("name",   package.title)
-					else
-						conf:set("title",  package.title)
-						conf:set("name",   package.name)
+					conf:set("title", package.title)
+					if not name_is_title then
+						conf:set("name", package.name)
 					end
 					if not conf:get("description") then
 						conf:set("description", package.short_description)
@@ -360,7 +358,7 @@ function install_dialog.get_formspec()
 			selected_game_idx = i
 		end
 
-		games[i] = core.formspec_escape(games[i].name)
+		games[i] = core.formspec_escape(games[i].title)
 	end
 
 	local selected_game = pkgmgr.games[selected_game_idx]
@@ -410,7 +408,7 @@ function install_dialog.get_formspec()
 		"container[0.375,0.70]",
 
 		"label[0,0.25;", fgettext("Base Game:"), "]",
-		"dropdown[2,0;4.25,0.5;gameid;", table.concat(games, ","), ";", selected_game_idx, "]",
+		"dropdown[2,0;4.25,0.5;selected_game;", table.concat(games, ","), ";", selected_game_idx, "]",
 
 		"label[0,0.8;", fgettext("Dependencies:"), "]",
 
@@ -461,9 +459,9 @@ function install_dialog.handle_submit(this, fields)
 		return true
 	end
 
-	if fields.gameid then
+	if fields.selected_game then
 		for _, game in pairs(pkgmgr.games) do
-			if game.name == fields.gameid then
+			if game.title == fields.selected_game then
 				core.settings:set("menu_last_game", game.id)
 				break
 			end
@@ -862,8 +860,7 @@ function store.get_formspec(dlgdata)
 			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
 		elseif package.queued then
 			formspec[#formspec + 1] = left_base
-			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
-			formspec[#formspec + 1] = "cdb_queued.png;queued]"
+			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
 		elseif not package.path then
 			local elem_name = "install_" .. i .. ";"
 			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"

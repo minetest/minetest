@@ -32,13 +32,12 @@ GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
 
 GUIFileSelectMenu::~GUIFileSelectMenu()
 {
-	removeChildren();
 	setlocale(LC_NUMERIC, "C");
 }
 
 void GUIFileSelectMenu::regenerateGui(v2u32 screensize)
 {
-	removeChildren();
+	removeAllChildren();
 	m_fileOpenDialog = 0;
 
 	core::dimension2du size(600 * m_gui_scale, 400 * m_gui_scale);

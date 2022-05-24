@@ -395,6 +395,7 @@ local function parse_config_file(read_all, parse_mods)
 
 				table.insert(settings, {
 					name = mod.name,
+					readable_name = mod.title,
 					level = 1,
 					type = "category",
 				})
@@ -956,7 +957,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 	local current_level = 0
 	for _, entry in ipairs(settings) do
 		local name
-		if not core.settings:get_bool("main_menu_technical_settings") and entry.readable_name then
+		if not core.settings:get_bool("show_technical_names") and entry.readable_name then
 			name = fgettext_ne(entry.readable_name)
 		else
 			name = entry.name
@@ -997,7 +998,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
+					.. dump(core.settings:get_bool("show_technical_names")) .. "]"
 
 	return formspec
 end
@@ -1080,7 +1081,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields["cb_tech_settings"] then
-		core.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
+		core.settings:set("show_technical_names", fields["cb_tech_settings"])
 		core.settings:write()
 		core.update_formspec(this:get_formspec())
 		return true

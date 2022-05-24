@@ -62,7 +62,8 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
+    * `title`: Required, a human-readable title to address the game, e.g. `title = Minetest Game`.
+    * `name`: (Deprecated) same as title.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
@@ -2011,7 +2012,7 @@ Example definition of the capabilities of an item
         max_drop_level=1,
         groupcaps={
             crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
-        }
+        },
         damage_groups = {fleshy=2},
     }
 
@@ -3248,7 +3249,7 @@ Colors
 `#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
 
 Named colors are also supported and are equivalent to
-[CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
+[CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/#named-color).
 To specify the value of the alpha channel, append `#A` or `#AA` to the end of
 the color name (e.g. `colorname#08`).
 
@@ -3409,6 +3410,9 @@ vectors are written like this: `(x, y, z)`:
 * `vector.apply(v, func)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+* `vector.combine(v, w, func)`:
+	* Returns a vector where the function `func` has combined both components of `v` and `w`
+	  for each component
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -3421,7 +3425,7 @@ vectors are written like this: `(x, y, z)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.offset(v, x, y, z)`:
     * Returns the sum of the vectors `v` and `(x, y, z)`.
-* `vector.check()`:
+* `vector.check(v)`:
     * Returns a boolean value indicating whether `v` is a real vector, eg. created
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
@@ -3546,8 +3550,16 @@ Helper functions
 * `minetest.string_to_pos(string)`: returns a position or `nil`
     * Same but in reverse.
     * If the string can't be parsed to a position, nothing is returned.
-* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
+* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)", relative_to)`:
+    * returns two positions
     * Converts a string representing an area box into two positions
+    * X1, Y1, ... Z2 are coordinates
+    * `relative_to`: Optional. If set to a position, each coordinate
+      can use the tilde notation for relative positions
+    * Tilde notation: "~": Relative coordinate
+                      "~<number>": Relative coordinate plus <number>
+    * Example: `minetest.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})`
+      returns `{x=1,y=2,z=3}, {x=15,y=5,z=10}`
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used
       in formspecs.
@@ -5772,6 +5784,68 @@ Timing
 * `job:cancel()`
     * Cancels the job function from being called
 
+Async environment
+-----------------
+
+The engine allows you to submit jobs to be ran in an isolated environment
+concurrently with normal server operation.
+A job consists of a function to be ran in the async environment, any amount of
+arguments (will be serialized) and a callback that will be called with the return
+value of the job function once it is finished.
+
+The async environment does *not* have access to the map, entities, players or any
+globals defined in the 'usual' environment. Consequently, functions like
+`minetest.get_node()` or `minetest.get_player_by_name()` simply do not exist in it.
+
+Arguments and return values passed through this can contain certain userdata
+objects that will be seamlessly copied (not shared) to the async environment.
+This allows you easy interoperability for delegating work to jobs.
+
+* `minetest.handle_async(func, callback, ...)`:
+    * Queue the function `func` to be ran in an async environment.
+      Note that there are multiple persistent workers and any of them may
+      end up running a given job. The engine will scale the amount of
+      worker threads automatically.
+    * When `func` returns the callback is called (in the normal environment)
+      with all of the return values as arguments.
+    * Optional: Variable number of arguments that are passed to `func`
+* `minetest.register_async_dofile(path)`:
+    * Register a path to a Lua file to be imported when an async environment
+      is initialized. You can use this to preload code which you can then call
+      later using `minetest.handle_async()`.
+
+### List of APIs available in an async environment
+
+Classes:
+* `ItemStack`
+* `PerlinNoise`
+* `PerlinNoiseMap`
+* `PseudoRandom`
+* `PcgRandom`
+* `SecureRandom`
+* `VoxelArea`
+* `VoxelManip`
+    * only if transferred into environment; can't read/write to map
+* `Settings`
+
+Class instances that can be transferred between environments:
+* `ItemStack`
+* `PerlinNoise`
+* `PerlinNoiseMap`
+* `VoxelManip`
+
+Functions:
+* Standalone helpers such as logging, filesystem, encoding,
+  hashing or compression APIs
+* `minetest.request_insecure_environment` (same restrictions apply)
+
+Variables:
+* `minetest.settings`
+* `minetest.registered_items`, `registered_nodes`, `registered_tools`,
+  `registered_craftitems` and `registered_aliases`
+    * with all functions and userdata values replaced by `true`, calling any
+      callbacks here is obviously not possible
+
 Server
 ------
 
@@ -6360,9 +6434,9 @@ An `InvRef` is a reference to an inventory.
 * `set_width(listname, width)`: set width of list; currently used for crafting
 * `get_stack(listname, i)`: get a copy of stack index `i` in list
 * `set_stack(listname, i, stack)`: copy `stack` to index `i` in list
-* `get_list(listname)`: return full list
+* `get_list(listname)`: return full list (list of `ItemStack`s)
 * `set_list(listname, list)`: set full list (size will not change)
-* `get_lists()`: returns list of inventory lists
+* `get_lists()`: returns table that maps listnames to inventory lists
 * `set_lists(lists)`: sets inventory lists (size will not change)
 * `add_item(listname, stack)`: add item somewhere in list, returns leftover
   `ItemStack`.
@@ -6722,7 +6796,7 @@ object you are working with still exists.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version)
+* `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
 * `get_luaentity()`
 
 #### Player only (no-op for other objects)
@@ -7024,6 +7098,12 @@ object you are working with still exists.
     * Returns `false` if failed.
     * Resource intensive - use sparsely
     * To get blockpos, integer divide pos by 16
+* `set_lighting(light_definition)`: sets lighting for the player
+    * `light_definition` is a table with the following optional fields:
+      * `shadows` is a table that controls ambient shadows
+        * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
+* `get_lighting()`: returns the current state of lighting for the player.
+    * Result is a table with the same fields as `light_definition` in `set_lighting`.
 
 `PcgRandom`
 -----------
@@ -8485,9 +8565,8 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
         spawn_by = "default:water",
         -- Node (or list of nodes) that the decoration only spawns next to.
-        -- Checks two horizontal planes of 8 neighbouring nodes (including
-        -- diagonal neighbours), one plane level with the 'place_on' node and a
-        -- plane one node above that.
+        -- Checks the 8 neighbouring nodes on the same Y, and also the ones
+        -- at Y+1, excluding both center nodes.
 
         num_spawn_by = 1,
         -- Number of spawn_by nodes that must be surrounding the decoration

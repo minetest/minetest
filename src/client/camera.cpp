@@ -47,7 +47,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
-	m_client(client)
+	m_client(client),
+	m_player_light_color(0xFFFFFFFF)
 {
 	auto smgr = rendering_engine->get_scene_manager();
 	// note: making the camera node a child of the player node
@@ -153,8 +154,10 @@ void Camera::step(f32 dtime)
 	bool was_under_zero = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
-	if (m_wield_change_timer >= 0 && was_under_zero)
+	if (m_wield_change_timer >= 0 && was_under_zero) {
 		m_wieldnode->setItem(m_wield_item_next, m_client);
+		m_wieldnode->setNodeLightColor(m_player_light_color);
+	}
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -555,7 +558,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
 
-	m_wieldnode->setNodeLightColor(player->light_color);
+	m_player_light_color = player->light_color;
+	m_wieldnode->setNodeLightColor(m_player_light_color);
 
 	// Set render distance
 	updateViewingRange();

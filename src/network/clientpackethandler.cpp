@@ -183,7 +183,7 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	m_access_denied_reason = "Unknown";
 
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
-		// 13/03/15 Legacy code from 0.4.12 and lesser but is still used
+		// Legacy code from 0.4.12 and older but is still used
 		// in some places of the server code
 		if (pkt->getSize() >= 2) {
 			std::wstring wide_reason;
@@ -196,14 +196,14 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
+	u8 denyCode;
 	*pkt >> denyCode;
+
 	if (denyCode == SERVER_ACCESSDENIED_SHUTDOWN ||
 			denyCode == SERVER_ACCESSDENIED_CRASH) {
 		*pkt >> m_access_denied_reason;
-		if (m_access_denied_reason.empty()) {
+		if (m_access_denied_reason.empty())
 			m_access_denied_reason = accessDeniedStrings[denyCode];
-		}
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
@@ -220,9 +220,8 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		// Until then (which may be never), this is outside
 		// of the defined protocol.
 		*pkt >> m_access_denied_reason;
-		if (m_access_denied_reason.empty()) {
+		if (m_access_denied_reason.empty())
 			m_access_denied_reason = "Unknown";
-		}
 	}
 }
 
@@ -1746,4 +1745,12 @@ void Client::handleCommand_MinimapModes(NetworkPacket *pkt)
 
 	if (m_minimap)
 		m_minimap->setModeIndex(mode);
+}
+
+void Client::handleCommand_SetLighting(NetworkPacket *pkt)
+{
+	Lighting& lighting = m_env.getLocalPlayer()->getLighting();
+
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.shadow_intensity;
 }

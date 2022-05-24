@@ -269,9 +269,15 @@ Server::Server(
 			"minetest_core_latency",
 			"Latency value (in seconds)");
 
-	m_aom_buffer_counter = m_metrics_backend->addCounter(
-			"minetest_core_aom_generated_count",
-			"Number of active object messages generated");
+
+	const std::string aom_types[] = {"reliable", "unreliable"};
+	for (u32 i = 0; i < ARRLEN(aom_types); i++) {
+		std::string help_str("Number of active object messages generated (");
+		help_str.append(aom_types[i]).append(")");
+		m_aom_buffer_counter[i] = m_metrics_backend->addCounter(
+				"minetest_core_aom_generated_count", help_str,
+				{{"type", aom_types[i]}});
+	}
 
 	m_packet_recv_counter = m_metrics_backend->addCounter(
 			"minetest_core_server_packet_recv",
@@ -280,6 +286,10 @@ Server::Server(
 	m_packet_recv_processed_counter = m_metrics_backend->addCounter(
 			"minetest_core_server_packet_recv_processed",
 			"Valid received packets processed");
+
+	m_map_edit_event_counter = m_metrics_backend->addCounter(
+			"minetest_core_map_edit_events",
+			"Number of map edit events");
 
 	m_lag_gauge->set(g_settings->getFloat("dedicated_server_step"));
 }
@@ -397,7 +407,7 @@ void Server::init()
 	}
 
 	// Create emerge manager
-	m_emerge = new EmergeManager(this);
+	m_emerge = new EmergeManager(this, m_metrics_backend.get());
 
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
@@ -431,6 +441,7 @@ void Server::init()
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
+	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
 
 	// Read Textures and calculate sha1 sums
@@ -462,7 +473,8 @@ void Server::init()
 
 	// Initialize Environment
 	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
-	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
+	m_env = new ServerEnvironment(servermap, m_script, this,
+		m_path_world, m_metrics_backend.get());
 
 	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
@@ -480,6 +492,9 @@ void Server::init()
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
+
+	// Do this after regular script init is done
+	m_script->initAsync();
 
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
@@ -522,7 +537,7 @@ void Server::start()
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
-	m_bind_addr.print(&actionstream);
+	m_bind_addr.print(actionstream);
 	actionstream << "." << std::endl;
 }
 
@@ -620,6 +635,7 @@ void Server::AsyncRunStep(bool initial_step)
 			max_lag = dtime;
 		}
 		m_env->reportMaxLagEstimate(max_lag);
+
 		// Step environment
 		m_env->step(dtime);
 	}
@@ -666,7 +682,7 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
 		std::map<v3s16, MapBlock*> modified_blocks;
-		m_env->getMap().transformLiquids(modified_blocks, m_env);
+		m_env->getServerMap().transformLiquids(modified_blocks, m_env);
 
 		/*
 			Set the modified blocks unsent for all the clients
@@ -770,10 +786,14 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Get active object messages from environment
 		ActiveObjectMessage aom(0);
-		u32 aom_count = 0;
+		u32 count_reliable = 0, count_unreliable = 0;
 		for(;;) {
 			if (!m_env->getActiveObjectMessage(&aom))
 				break;
+			if (aom.reliable)
+				count_reliable++;
+			else
+				count_unreliable++;
 
 			std::vector<ActiveObjectMessage>* message_list = nullptr;
 			auto n = buffered_messages.find(aom.id);
@@ -784,10 +804,10 @@ void Server::AsyncRunStep(bool initial_step)
 				message_list = n->second;
 			}
 			message_list->push_back(std::move(aom));
-			aom_count++;
 		}
 
-		m_aom_buffer_counter->increment(aom_count);
+		m_aom_buffer_counter[0]->increment(count_reliable);
+		m_aom_buffer_counter[1]->increment(count_unreliable);
 
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
@@ -861,15 +881,13 @@ void Server::AsyncRunStep(bool initial_step)
 		// We will be accessing the environment
 		MutexAutoLock lock(m_env_mutex);
 
-		// Don't send too many at a time
-		//u32 count = 0;
-
-		// Single change sending is disabled if queue size is not small
+		// Single change sending is disabled if queue size is big
 		bool disable_single_change_sending = false;
 		if(m_unsent_map_edit_queue.size() >= 4)
 			disable_single_change_sending = true;
 
-		int event_count = m_unsent_map_edit_queue.size();
+		const auto event_count = m_unsent_map_edit_queue.size();
+		m_map_edit_event_counter->increment(event_count);
 
 		// We'll log the amount of each
 		Profiler prof;
@@ -1039,8 +1057,7 @@ void Server::Receive()
 		} catch (const ClientStateError &e) {
 			errorstream << "ProcessData: peer=" << peer_id << " what()="
 					 << e.what() << std::endl;
-			DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
-					L"Try reconnecting or updating your client");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		} catch (const con::PeerNotFoundException &e) {
 			// Do nothing
 		} catch (const con::NoIncomingDataException &e) {
@@ -1069,15 +1086,13 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to an another client)" << std::endl;
-			DenyAccess_Legacy(peer_id, L"Another client is connected with this "
-					L"name. If your client closed unexpectedly, try again in "
-					L"a minute.");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
 		} else {
 			errorstream << "Server: " << playername << ": Failed to emerge player"
 					<< std::endl;
-			DenyAccess_Legacy(peer_id, L"Could not allocate player.");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	/*
@@ -1142,18 +1157,16 @@ void Server::ProcessData(NetworkPacket *pkt)
 		Address address = getPeerAddress(peer_id);
 		std::string addr_s = address.serializeString();
 
-		if(m_banmanager->isIpBanned(addr_s)) {
+		// FIXME: Isn't it a bit excessive to check this for every packet?
+		if (m_banmanager->isIpBanned(addr_s)) {
 			std::string ban_name = m_banmanager->getBanName(addr_s);
 			infostream << "Server: A banned client tried to connect from "
-					<< addr_s << "; banned name was "
-					<< ban_name << std::endl;
-			// This actually doesn't seem to transfer to the client
-			DenyAccess_Legacy(peer_id, L"Your ip is banned. Banned name was "
-					+ utf8_to_wide(ban_name));
+					<< addr_s << "; banned name was " << ban_name << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+				"Your IP is banned. Banned name was " + ban_name);
 			return;
 		}
-	}
-	catch(con::PeerNotFoundException &e) {
+	} catch (con::PeerNotFoundException &e) {
 		/*
 		 * no peer for this packet found
 		 * most common reason is peer timeout, e.g. peer didn't
@@ -1404,13 +1417,6 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
 			reason == SERVER_ACCESSDENIED_CRASH)
 		pkt << custom_reason << (u8)reconnect;
-	Send(&pkt);
-}
-
-void Server::SendAccessDenied_Legacy(session_t peer_id,const std::wstring &reason)
-{
-	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED_LEGACY, 0, peer_id);
-	pkt << reason;
 	Send(&pkt);
 }
 
@@ -1850,6 +1856,16 @@ void Server::SendOverrideDayNightRatio(session_t peer_id, bool do_override,
 			1 + 2, peer_id);
 
 	pkt << do_override << (u16) (ratio * 65535);
+
+	Send(&pkt);
+}
+
+void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
+{
+	NetworkPacket pkt(TOCLIENT_SET_LIGHTING,
+			4, peer_id);
+	
+	pkt << lighting.shadow_intensity;
 
 	Send(&pkt);
 }
@@ -2383,22 +2399,34 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 }
 
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
-		u16 net_proto_version)
+		u16 net_proto_version, SerializedBlockCache *cache)
 {
-	/*
-		Create a packet with the block in the right format
-	*/
 	thread_local const int net_compression_level = rangelim(g_settings->getS16("map_compression_level_net"), -1, 9);
-	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false, net_compression_level);
-	block->serializeNetworkSpecific(os);
-	std::string s = os.str();
+	std::string s, *sptr = nullptr;
 
-	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + s.size(), peer_id);
+	if (cache) {
+		auto it = cache->find({block->getPos(), ver});
+		if (it != cache->end())
+			sptr = &it->second;
+	}
 
+	// Serialize the block in the right format
+	if (!sptr) {
+		std::ostringstream os(std::ios_base::binary);
+		block->serialize(os, ver, false, net_compression_level);
+		block->serializeNetworkSpecific(os);
+		s = os.str();
+		sptr = &s;
+	}
+
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + sptr->size(), peer_id);
 	pkt << block->getPos();
-	pkt.putRawString(s.c_str(), s.size());
+	pkt.putRawString(*sptr);
 	Send(&pkt);
+
+	// Store away in cache
+	if (cache && sptr == &s)
+		(*cache)[{block->getPos(), ver}] = std::move(s);
 }
 
 void Server::SendBlocks(float dtime)
@@ -2408,7 +2436,7 @@ void Server::SendBlocks(float dtime)
 
 	std::vector<PrioritySortedBlockTransfer> queue;
 
-	u32 total_sending = 0;
+	u32 total_sending = 0, unique_clients = 0;
 
 	{
 		ScopeProfiler sp2(g_profiler, "Server::SendBlocks(): Collect list");
@@ -2423,7 +2451,9 @@ void Server::SendBlocks(float dtime)
 				continue;
 
 			total_sending += client->getSendingCount();
+			const auto old_count = queue.size();
 			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
+			unique_clients += queue.size() > old_count ? 1 : 0;
 		}
 	}
 
@@ -2442,6 +2472,12 @@ void Server::SendBlocks(float dtime)
 	ScopeProfiler sp(g_profiler, "Server::SendBlocks(): Send to clients");
 	Map &map = m_env->getMap();
 
+	SerializedBlockCache cache, *cache_ptr = nullptr;
+	if (unique_clients > 1) {
+		// caching is pointless with a single client
+		cache_ptr = &cache;
+	}
+
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		if (total_sending >= max_blocks_to_send)
 			break;
@@ -2456,7 +2492,7 @@ void Server::SendBlocks(float dtime)
 			continue;
 
 		SendBlockNoLock(block_to_send.peer_id, block, client->serialization_version,
-				client->net_proto_version);
+				client->net_proto_version, cache_ptr);
 
 		client->SentBlock(block_to_send.pos);
 		total_sending++;
@@ -2826,29 +2862,10 @@ void Server::DenySudoAccess(session_t peer_id)
 }
 
 
-void Server::DenyAccessVerCompliant(session_t peer_id, u16 proto_ver, AccessDeniedCode reason,
-		const std::string &str_reason, bool reconnect)
-{
-	SendAccessDenied(peer_id, reason, str_reason, reconnect);
-
-	m_clients.event(peer_id, CSE_SetDenied);
-	DisconnectPeer(peer_id);
-}
-
-
 void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason)
+		const std::string &custom_reason, bool reconnect)
 {
-	SendAccessDenied(peer_id, reason, custom_reason);
-	m_clients.event(peer_id, CSE_SetDenied);
-	DisconnectPeer(peer_id);
-}
-
-// 13/03/15: remove this function when protocol version 25 will become
-// the minimum version for MT users, maybe in 1 year
-void Server::DenyAccess_Legacy(session_t peer_id, const std::wstring &reason)
-{
-	SendAccessDenied_Legacy(peer_id, reason);
+	SendAccessDenied(peer_id, reason, custom_reason, reconnect);
 	m_clients.event(peer_id, CSE_SetDenied);
 	DisconnectPeer(peer_id);
 }
@@ -3034,8 +3051,8 @@ std::wstring Server::handleChat(const std::string &name,
 			return ws.str();
 		}
 		case RPLAYER_CHATRESULT_KICK:
-			DenyAccess_Legacy(player->getPeerId(),
-					L"You have been kicked due to message flooding.");
+			DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING,
+				"You have been kicked due to message flooding.");
 			return L"";
 		case RPLAYER_CHATRESULT_OK:
 			break;
@@ -3152,7 +3169,7 @@ std::string Server::getStatusString()
 	// Version
 	os << "version: " << g_version_string;
 	// Game
-	os << " | game: " << (m_gamespec.name.empty() ? m_gamespec.id : m_gamespec.name);
+	os << " | game: " << (m_gamespec.title.empty() ? m_gamespec.id : m_gamespec.title);
 	// Uptime
 	os << " | uptime: " << duration_to_string((int) m_uptime_counter->get());
 	// Max lag estimate
@@ -3445,6 +3462,13 @@ void Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
 }
 
+void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
+{
+	sanity_check(player);
+	player->setLighting(lighting);
+	SendSetLighting(player->getPeerId(), lighting);
+}
+
 void Server::notifyPlayers(const std::wstring &msg)
 {
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(msg));
@@ -3729,11 +3753,6 @@ const std::vector<ModSpec> & Server::getMods() const
 const ModSpec *Server::getModSpec(const std::string &modname) const
 {
 	return m_modmgr->getModSpec(modname);
-}
-
-void Server::getModNames(std::vector<std::string> &modlist)
-{
-	m_modmgr->getModNames(modlist);
 }
 
 std::string Server::getBuiltinLuaPath()

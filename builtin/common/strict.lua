@@ -1,8 +1,3 @@
-
--- Always warn when creating a global variable, even outside of a function.
--- This ignores mod namespaces (variables with the same name as the current mod).
-local WARN_INIT = false
-
 local getinfo = debug.getinfo
 
 function core.global_exists(name)
@@ -33,11 +28,6 @@ function meta:__newindex(name, value)
 		end
 		declared[name] = true
 	end
-	-- Ignore mod namespaces
-	if WARN_INIT and name ~= core.get_current_modname() then
-		core.log("warning", ("Global variable %q created at %s.")
-			:format(name, desc))
-	end
 	rawset(self, name, value)
 end
 
@@ -54,4 +44,3 @@ function meta:__index(name)
 end
 
 setmetatable(_G, meta)
-

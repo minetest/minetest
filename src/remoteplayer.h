@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 #include "skyparams.h"
+#include "lighting.h"
 
 class PlayerSAO;
 
@@ -125,6 +126,10 @@ public:
 		*frame_speed = local_animation_speed;
 	}
 
+	void setLighting(const Lighting &lighting) { m_lighting = lighting; }
+
+	const Lighting& getLighting() const { return m_lighting; }
+
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version = 0;
@@ -159,6 +164,8 @@ private:
 	SunParams m_sun_params;
 	MoonParams m_moon_params;
 	StarParams m_star_params;
+
+	Lighting m_lighting;
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

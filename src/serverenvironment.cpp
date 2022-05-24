@@ -393,7 +393,7 @@ static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *scriptIface, Server *server,
-	const std::string &path_world):
+	const std::string &path_world, MetricsBackend *mb):
 	Environment(server),
 	m_map(map),
 	m_script(scriptIface),
@@ -460,6 +460,15 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 
 	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
 	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
+
+	m_step_time_counter = mb->addCounter(
+		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
+
+	m_active_block_gauge = mb->addGauge(
+		"minetest_env_active_blocks", "Number of active blocks");
+
+	m_active_object_gauge = mb->addGauge(
+		"minetest_env_active_objects", "Number of active objects");
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -552,10 +561,8 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	const std::string &str_reason, bool reconnect)
 {
-	for (RemotePlayer *player : m_players) {
-		m_server->DenyAccessVerCompliant(player->getPeerId(),
-			player->protocol_version, reason, str_reason, reconnect);
-	}
+	for (RemotePlayer *player : m_players)
+		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
 }
 
 void ServerEnvironment::saveLoadedPlayers(bool force)
@@ -892,7 +899,7 @@ public:
 			for (ActiveABM &aabm : *m_aabms[c]) {
 				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
 					continue;
-				
+
 				if (myrand() % aabm.chance != 0)
 					continue;
 
@@ -1285,6 +1292,8 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 void ServerEnvironment::step(float dtime)
 {
 	ScopeProfiler sp2(g_profiler, "ServerEnv::step()", SPT_AVG);
+	const auto start_time = porting::getTimeUs();
+
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 
@@ -1353,6 +1362,8 @@ void ServerEnvironment::step(float dtime)
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players, active_block_range, active_object_range,
 			blocks_removed, blocks_added);
+
+		m_active_block_gauge->set(m_active_blocks.size());
 
 		/*
 			Handle removed blocks
@@ -1483,6 +1494,8 @@ void ServerEnvironment::step(float dtime)
 	*/
 	m_script->environment_Step(dtime);
 
+	m_script->stepAsync();
+
 	/*
 		Step active objects
 	*/
@@ -1497,9 +1510,12 @@ void ServerEnvironment::step(float dtime)
 			send_recommended = true;
 		}
 
-		auto cb_state = [this, dtime, send_recommended] (ServerActiveObject *obj) {
+		u32 object_count = 0;
+
+		auto cb_state = [&] (ServerActiveObject *obj) {
 			if (obj->isGone())
 				return;
+			object_count++;
 
 			// Step object
 			obj->step(dtime, send_recommended);
@@ -1507,6 +1523,8 @@ void ServerEnvironment::step(float dtime)
 			obj->dumpAOMessagesToQueue(m_active_object_messages);
 		};
 		m_ao_manager.step(dtime, cb_state);
+
+		m_active_object_gauge->set(object_count);
 	}
 
 	/*
@@ -1548,6 +1566,9 @@ void ServerEnvironment::step(float dtime)
 
 	// Send outdated detached inventories
 	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
+
+	const auto end_time = porting::getTimeUs();
+	m_step_time_counter->increment(end_time - start_time);
 }
 
 ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
