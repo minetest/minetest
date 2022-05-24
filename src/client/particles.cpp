@@ -86,6 +86,8 @@ Particle::Particle(
 			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
 			blendop = video::EBO_ADD;
 		break;
+
+		default: assert(false);
 	}
 
 	// Texture
