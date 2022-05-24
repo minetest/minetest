@@ -140,8 +140,8 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 			LuaParticleParams::readTweenTable(L, "origin", p.attractor);
 			p.attractor_attachment = LuaParticleParams::readAttachmentID(L, "origin_attached");
 			if (p.attractor_kind != AttractorKind::point) {
-				LuaParticleParams::readTweenTable(L, "angle", p.attractor_angle);
-				p.attractor_angle_attachment = LuaParticleParams::readAttachmentID(L, "angle_attached");
+				LuaParticleParams::readTweenTable(L, "direction", p.attractor_angle);
+				p.attractor_angle_attachment = LuaParticleParams::readAttachmentID(L, "direction_attached");
 			}
 		}
 	} else {

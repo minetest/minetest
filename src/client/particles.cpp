@@ -82,9 +82,9 @@ Particle::Particle(
 		break;
 
 		case ParticleParamTypes::BlendMode::screen:
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_DST_ALPHA;
-			blendop = video::EBO_MAX;
+			bfsrc = video::EBF_ONE;
+			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
+			blendop = video::EBO_ADD;
 		break;
 	}
 
@@ -320,6 +320,7 @@ void Particle::updateVertices()
 
 	// see #10398
 	// v3s16 camera_offset = m_env->getCameraOffset();
+	// particle position is now handled by step()
 	m_box.reset(v3f());
 
 	for (video::S3DVertex &vertex : m_vertices) {
@@ -332,8 +333,6 @@ void Particle::updateVertices()
 			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
 		m_box.addInternalPoint(vertex.Pos);
-		// see #10398
-		// vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
 	}
 }
 
