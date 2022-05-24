@@ -8984,7 +8984,7 @@ degradation in older clients).
       maxpos = {x = 0, y = 0, z = 0},
       minpos = {x = 0, y = 0, z = 0},
 
-	  -- absolute value
+      -- absolute value
       pos = 0,
       -- all components of every particle's position vector will be set to this
       -- value
@@ -9016,15 +9016,15 @@ degradation in older clients).
             -- exponential and there is no particular maximum or minimum value
         },
 
-		-- tween table
+        -- tween table
         pos_tween = {...},
         -- a tween table should consist of a list of frames in the same form as the
         -- untweened pos property above, which the engine will interpolate between,
-		-- and optionally a number of properties that control how the interpolation
-		-- takes place. currently **only two frames**, the first and the last, are
-		-- used, but extra frames are accepted for the sake of forward compatibility.
-		-- any of the above definition styles can be used here as well in any combination
-		-- supported by the property type
+        -- and optionally a number of properties that control how the interpolation
+        -- takes place. currently **only two frames**, the first and the last, are
+        -- used, but extra frames are accepted for the sake of forward compatibility.
+        -- any of the above definition styles can be used here as well in any combination
+        -- supported by the property type
 
         pos_tween = {
             style = "fwd",
@@ -9049,19 +9049,19 @@ degradation in older clients).
 
             -- frames
 
-	            -- floats
-	            0, 0,
+                -- floats
+                0, 0,
 
-	            -- vec3s
-	            vector.new(0,0,0),
-	            vector.new(0,0,0),
+                -- vec3s
+                vector.new(0,0,0),
+                vector.new(0,0,0),
 
-	            -- vec3 ranges
-	            { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
-	            { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+                -- vec3 ranges
+                { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+                { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
 
-	            -- mixed
-	            0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+                -- mixed
+                0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
         },
     }
 
@@ -9217,7 +9217,7 @@ texpools.
                 aspect_w = 16, aspect_h = 16,
 
                 length = 3,
-				-- the animation lasts for 3s and then repeats
+                -- the animation lasts for 3s and then repeats
                 length = -3,
                 -- repeat the animation three times over the particle's lifetime
                 -- (post-v5.6.0 clients only)
