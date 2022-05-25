@@ -626,8 +626,8 @@ shadow_map_color (Colored shadows) bool false
 #    Spread a complete update of shadow map over given amount of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
-#    Minimum value: 1; maximum value: 8
-shadow_update_frames (Map shadows update frames) int 1 1 8
+#    Minimum value: 1; maximum value: 16
+shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
