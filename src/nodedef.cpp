@@ -901,8 +901,15 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			solidness = 0;
 			visual_solidness = 1;
 		} else {
-			drawtype = NDT_NORMAL;
-			solidness = 2;
+			if (waving >= 1) {
+				// waving nodes must make faces so there are no gaps
+				drawtype = NDT_ALLFACES;
+				solidness = 0;
+				visual_solidness = 1;
+			} else {
+				drawtype = NDT_NORMAL;
+				solidness = 2;
+			}
 			for (TileDef &td : tdef)
 				td.name += std::string("^[noalpha");
 		}
