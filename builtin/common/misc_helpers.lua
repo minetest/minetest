@@ -253,7 +253,8 @@ local formspec_escapes = {
 	[","] = "\\,"
 }
 function core.formspec_escape(text)
-	return text and text:gsub(".", formspec_escapes)
+	-- Use explicit character set instead of dot here because it doubles the performance
+	return text and text:gsub("[\\%[%];,]", formspec_escapes)
 end
 
 
