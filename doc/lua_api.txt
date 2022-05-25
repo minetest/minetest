@@ -7099,6 +7099,8 @@ object you are working with still exists.
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
+* `respawn()`: Respawns the player using the same mechanism as the death screen,
+  including calling on_respawnplayer callbacks.
 
 `PcgRandom`
 -----------
