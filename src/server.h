@@ -336,6 +336,8 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
+	void RespawnPlayer(session_t peer_id);
+
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
@@ -529,7 +531,6 @@ private:
 	*/
 
 	void HandlePlayerDeath(PlayerSAO* sao, const PlayerHPChangeReason &reason);
-	void RespawnPlayer(session_t peer_id);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
 	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);

@@ -2784,9 +2784,10 @@ void Server::RespawnPlayer(session_t peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
-	playersao->setHP(playersao->accessObjectProperties()->hp_max,
+	const auto *prop = playersao->accessObjectProperties();
+	playersao->setHP(prop->hp_max,
 			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
-	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
+	playersao->setBreath(prop->breath_max);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if (!repositioned) {
