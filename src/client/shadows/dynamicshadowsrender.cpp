@@ -242,7 +242,7 @@ void ShadowRenderer::updateSMTextures()
 
 		// detect if SM should be regenerated
 		for (DirectionalLight &light : m_light_list) {
-			if (light.should_update_map_shadow) {
+			if (light.should_update_map_shadow || m_force_update_shadow_map) {
 				light.should_update_map_shadow = false;
 				m_current_frame = 0;
 				reset_sm_texture = true;
@@ -271,14 +271,14 @@ void ShadowRenderer::updateSMTextures()
 			// should put some gl* fn here
 
 
-			if (m_current_frame < m_map_shadow_update_frames) {
+			if (m_current_frame < m_map_shadow_update_frames || m_force_update_shadow_map) {
 				m_driver->setRenderTarget(shadowMapTargetTexture, reset_sm_texture, true,
 						video::SColor(255, 255, 255, 255));
 				renderShadowMap(shadowMapTargetTexture, light);
 
 				// Render transparent part in one pass.
 				// This is also handled in ClientMap.
-				if (m_current_frame == m_map_shadow_update_frames - 1) {
+				if (m_current_frame == m_map_shadow_update_frames - 1 || m_force_update_shadow_map) {
 					if (m_shadow_map_colored) {
 						m_driver->setRenderTarget(0, false, false);
 						m_driver->setRenderTarget(shadowMapTextureColors,
@@ -298,7 +298,7 @@ void ShadowRenderer::updateSMTextures()
 			++m_current_frame;
 
 		// pass finished, swap textures and commit light changes
-		if (m_current_frame == m_map_shadow_update_frames) {
+		if (m_current_frame == m_map_shadow_update_frames || m_force_update_shadow_map) {
 			if (shadowMapClientMapFuture != nullptr)
 				std::swap(shadowMapClientMapFuture, shadowMapClientMap);
 
@@ -306,6 +306,7 @@ void ShadowRenderer::updateSMTextures()
 			for (DirectionalLight &light : m_light_list)
 				light.commitFrustum();
 		}
+		m_force_update_shadow_map = false;
 	}
 }
 
@@ -432,7 +433,10 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		m_driver->setTransform(video::ETS_WORLD,
 				map_node->getAbsoluteTransformation());
 
-		map_node->renderMapShadows(m_driver, material, pass, m_current_frame, m_map_shadow_update_frames);
+		int frame = m_force_update_shadow_map ? 0 : m_current_frame;
+		int total_frames = m_force_update_shadow_map ? 1 : m_map_shadow_update_frames;
+
+		map_node->renderMapShadows(m_driver, material, pass, frame, total_frames);
 		break;
 	}
 }
