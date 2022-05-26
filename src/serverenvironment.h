@@ -454,7 +454,8 @@ private:
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
-	IntervalLimiter m_active_blocks_management_interval;
+	bool m_force_update_active_blocks = false;
+	IntervalLimiter m_active_blocks_mgmt_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	// Whether the variables below have been read from file yet
