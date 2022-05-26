@@ -626,6 +626,9 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 	/* Add object to environment */
 	addActiveObject(playersao);
 
+	// Update active blocks asap so objects in those blocks appear on the client
+	m_force_update_active_blocks = true;
+
 	return playersao;
 }
 
@@ -1332,8 +1335,10 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Manage active block list
 	*/
-	if (m_active_blocks_management_interval.step(dtime, m_cache_active_block_mgmt_interval)) {
+	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval) ||
+		m_force_update_active_blocks) {
 		ScopeProfiler sp(g_profiler, "ServerEnv: update active blocks", SPT_AVG);
+
 		/*
 			Get player block positions
 		*/
@@ -1396,6 +1401,7 @@ void ServerEnvironment::step(float dtime)
 			activateBlock(block);
 		}
 	}
+	m_force_update_active_blocks = false;
 
 	/*
 		Mess around in active blocks
