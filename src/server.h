@@ -492,7 +492,7 @@ private:
 			std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100, bool remove_metadata = true);
 
-	void sendMetadataChanged(const std::list<v3s16> &meta_updates,
+	void sendMetadataChanged(const std::unordered_set<v3s16> &positions,
 			float far_d_nodes = 100);
 
 	// Environment and Connection must be locked when called
