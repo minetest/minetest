@@ -530,7 +530,7 @@ void Client::step(float dtime)
 	{
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
-		auto shadow_renderer = RenderingEngine::get_shadow_renderer();
+		bool force_update_shadows = false;
 		while (!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
@@ -560,8 +560,7 @@ void Client::step(float dtime)
 					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
-						if (shadow_renderer)
-							shadow_renderer->setForceUpdateShadowMap();
+						force_update_shadows = true;
 					}
 				}
 			} else {
@@ -587,6 +586,10 @@ void Client::step(float dtime)
 
 		if (num_processed_meshes > 0)
 			g_profiler->graphAdd("num_processed_meshes", num_processed_meshes);
+
+		auto shadow_renderer = RenderingEngine::get_shadow_renderer();
+		if (shadow_renderer && force_update_shadows)
+			shadow_renderer->setForceUpdateShadowMap();
 	}
 
 	/*
