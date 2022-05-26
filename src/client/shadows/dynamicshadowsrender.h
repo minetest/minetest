@@ -74,7 +74,7 @@ public:
 	void removeNodeFromShadowList(scene::ISceneNode *node);
 
 	void update(video::ITexture *outputTarget = nullptr);
-	void forceUpdateShadowMap() { m_force_update_shadow_map = true; }
+	void setForceUpdateShadowMap() { m_force_update_shadow_map = true; }
 	void drawDebug();
 
 	video::ITexture *get_texture()
