@@ -796,7 +796,7 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 	m_access_denied = true;
 	if (timeout)
 		m_access_denied_reason = gettext("Connection timed out.");
-	else
+	else if (m_access_denied_reason.empty())
 		m_access_denied_reason = gettext("Connection aborted (protocol error?).");
 }
 
