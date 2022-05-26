@@ -378,10 +378,7 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	/*
 		Update m_list
 	*/
-	m_list.clear();
-	for (v3s16 p : newlist) {
-		m_list.insert(p);
-	}
+	m_list = std::move(newlist);
 }
 
 /*
@@ -1343,7 +1340,8 @@ void ServerEnvironment::step(float dtime)
 			Get player block positions
 		*/
 		std::vector<PlayerSAO*> players;
-		for (RemotePlayer *player: m_players) {
+		players.reserve(m_players.size());
+		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
 				continue;
@@ -1368,8 +1366,6 @@ void ServerEnvironment::step(float dtime)
 		m_active_blocks.update(players, active_block_range, active_object_range,
 			blocks_removed, blocks_added);
 
-		m_active_block_gauge->set(m_active_blocks.size());
-
 		/*
 			Handle removed blocks
 		*/
@@ -1393,13 +1389,19 @@ void ServerEnvironment::step(float dtime)
 		for (const v3s16 &p: blocks_added) {
 			MapBlock *block = m_map->getBlockOrEmerge(p);
 			if (!block) {
-				m_active_blocks.m_list.erase(p);
-				m_active_blocks.m_abm_list.erase(p);
+				// TODO: The blocks removed here will only be picked up again
+				// on the next cycle. To minimize the latency of objects being
+				// activated we could remember the blocks pending activating
+				// and activate them instantly as soon as they're loaded.
+				m_active_blocks.remove(p);
 				continue;
 			}
 
 			activateBlock(block);
 		}
+
+		// Some blocks may be removed again by the code above so do this here
+		m_active_block_gauge->set(m_active_blocks.size());
 	}
 	m_force_update_active_blocks = false;
 

@@ -180,8 +180,14 @@ public:
 		m_list.clear();
 	}
 
+	void remove(v3s16 p) {
+		m_list.erase(p);
+		m_abm_list.erase(p);
+	}
+
 	std::set<v3s16> m_list;
 	std::set<v3s16> m_abm_list;
+	// list of blocks that are always active, not modified by this class
 	std::set<v3s16> m_forceloaded_list;
 };
 
