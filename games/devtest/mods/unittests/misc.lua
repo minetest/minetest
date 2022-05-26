@@ -48,3 +48,23 @@ local function test_v3s16_metatable(player, pos)
 	assert(vector.check(found_pos))
 end
 unittests.register("test_v3s16_metatable", test_v3s16_metatable, {map=true})
+
+local function test_clear_meta(_, pos)
+	local ref = core.get_meta(pos)
+
+	for way = 1, 3 do
+		ref:set_string("foo", "bar")
+		assert(ref:contains("foo"))
+
+		if way == 1 then
+			ref:from_table({})
+		elseif way == 2 then
+			ref:from_table(nil)
+		else
+			ref:set_string("foo", "")
+		end
+
+		assert(#core.find_nodes_with_meta(pos, pos) == 0, "clearing failed " .. way)
+	end
+end
+unittests.register("test_clear_meta", test_clear_meta, {map=true})
