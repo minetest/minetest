@@ -3226,7 +3226,6 @@ PointedThing Game::updatePointedThing(
 			v3f pos = runData.selected_object->getPosition();
 			selectionboxes->push_back(aabb3f(selection_box));
 			hud->setSelectionPos(pos, camera_offset);
-			hud->setSelectionRotation(runData.selected_object->getSceneNode()->getAbsoluteTransformation().getRotationDegrees());
 		}
 	} else if (result.type == POINTEDTHING_NODE) {
 		// Update selection boxes
@@ -3245,7 +3244,6 @@ PointedThing Game::updatePointedThing(
 		}
 		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
 			camera_offset);
-		hud->setSelectionRotation(v3f(0.0f, 0.0f, 0.0f));
 		hud->setSelectedFaceNormal(v3f(
 			result.intersection_normal.X,
 			result.intersection_normal.Y,

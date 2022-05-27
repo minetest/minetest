@@ -202,25 +202,21 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			// ID of the current box (loop counter)
 			u16 id = 0;
 
-			/*
-			"I understand how the engines work now.
-			It came to me in a dream. The engines don't move the ship at all.
-			The ship stays where it is and the engines move the universe around it."
-			- Hubert J. Farnsworth in "Futurama"
-			*/
 			v3f npf = intToFloat(np, BS);
-			v3f rel_start = state->m_shootline.start - npf;
+			// This loop translates the boxes to their in-world place.
 			for (aabb3f &box : boxes) {
+				box.MinEdge += npf;
+				box.MaxEdge += npf;
+
 				v3f intersection_point;
-				v3f intersection_normal;
-				if (!boxLineCollision(box, rel_start,
+				v3s16 intersection_normal;
+				if (!boxLineCollision(box, state->m_shootline.start,
 						state->m_shootline.getVector(), &intersection_point,
 						&intersection_normal)) {
 					++id;
 					continue;
 				}
 
-				intersection_point += npf;
 				f32 distanceSq = (intersection_point
 					- state->m_shootline.start).getLengthSQ();
 				// If this is the nearest collision, save it
@@ -263,7 +259,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			result.node_real_undersurface = floatToInt(
 				fake_intersection, BS);
 			result.node_abovesurface = result.node_real_undersurface
-				+ floatToInt(result.intersection_normal, 1.0f);
+				+ result.intersection_normal;
 			// Push found PointedThing
 			state->m_found.push(result);
 			// If this is nearer than the old nearest object,

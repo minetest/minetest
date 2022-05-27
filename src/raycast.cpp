@@ -18,7 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "raycast.h"
-#include "irrlichttypes_extrabloated.h"
+#include "irr_v3d.h"
+#include "irr_aabb3d.h"
 #include "constants.h"
 
 bool RaycastSort::operator() (const PointedThing &pt1,
@@ -67,7 +68,7 @@ RaycastState::RaycastState(const core::line3d<f32> &shootline,
 
 
 bool boxLineCollision(const aabb3f &box, const v3f &start,
-	const v3f &dir, v3f *collision_point, v3f *collision_normal)
+	const v3f &dir, v3f *collision_point, v3s16 *collision_normal)
 {
 	if (box.isPointInside(start)) {
 		*collision_point = start;
@@ -89,7 +90,7 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 					&& (collision_point->Y <= box.MaxEdge.Y)
 					&& (collision_point->Z >= box.MinEdge.Z)
 					&& (collision_point->Z <= box.MaxEdge.Z)) {
-				collision_normal->set((dir.X > 0) ? -1.0f : 1.0f, 0.0f, 0.0f);
+				collision_normal->set((dir.X > 0) ? -1 : 1, 0, 0);
 				return true;
 			}
 		}
@@ -108,7 +109,7 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 					&& (collision_point->X <= box.MaxEdge.X)
 					&& (collision_point->Z >= box.MinEdge.Z)
 					&& (collision_point->Z <= box.MaxEdge.Z)) {
-				collision_normal->set(0.0f, (dir.Y > 0) ? -1.0f : 1.0f, 0.0f);
+				collision_normal->set(0, (dir.Y > 0) ? -1 : 1, 0);
 				return true;
 			}
 		}
@@ -127,24 +128,10 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 					&& (collision_point->X <= box.MaxEdge.X)
 					&& (collision_point->Y >= box.MinEdge.Y)
 					&& (collision_point->Y <= box.MaxEdge.Y)) {
-				collision_normal->set(0.0f, 0.0f, (dir.Z > 0.0f) ? -1.0f : 1.0f);
+				collision_normal->set(0, 0, (dir.Z > 0) ? -1 : 1);
 				return true;
 			}
 		}
 	}
 	return false;
-}
-
-bool boxLineCollision(const aabb3f &box, const v3f &rotation,
-	const v3f &start, const v3f &dir,
-	v3f *collision_point, v3f *collision_normal)
-{
-	core::quaternion rot(rotation * core::DEGTORAD);
-	rot.makeInverse(); // inversely transform the ray
-	bool collision = boxLineCollision(box, rot * start, rot * dir, collision_point, collision_normal);
-	// transform the results back
-	rot.makeInverse();
-	*collision_point = rot * *collision_point;
-	*collision_normal = rot * *collision_normal;
-	return collision;
 }
