@@ -1753,14 +1753,24 @@ void ServerEnvironment::getSelectedActiveObjects(
 			continue;
 
 		v3f pos = obj->getBasePosition();
-
-		aabb3f offsetted_box(selection_box.MinEdge + pos,
-			selection_box.MaxEdge + pos);
+		v3f rel_pos = shootline_on_map.start - pos;
 
 		v3f current_intersection;
-		v3s16 current_normal;
-		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
-				&current_intersection, &current_normal)) {
+		v3f current_normal;
+
+		ObjectProperties *props = obj->accessObjectProperties();
+		bool rotate_selectionbox = props ? props->rotate_selectionbox : false;
+		bool collision;
+		UnitSAO* usao = dynamic_cast<UnitSAO*>(obj);
+		if (rotate_selectionbox && usao != nullptr) {
+			collision = boxLineCollision(selection_box, usao->getRotation(),
+				rel_pos, line_vector, &current_intersection, &current_normal);
+		} else {
+			collision = boxLineCollision(selection_box, rel_pos, line_vector,
+				&current_intersection, &current_normal);
+		}
+		if (collision) {
+			current_intersection += pos;
 			objects.emplace_back(
 				(s16) obj->getId(), current_intersection, current_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
