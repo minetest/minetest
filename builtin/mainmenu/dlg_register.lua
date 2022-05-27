@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 
 local function register_formspec(dialogdata)
-	local title = fgettext("Joining $1", dialogdata.address)
+	local title = fgettext("Joining $1", dialogdata.server and dialogdata.server.name or dialogdata.address)
 	local buttons_y = 4 + 1.3
 	if dialogdata.error then
 		buttons_y = buttons_y + 0.8
@@ -28,7 +28,7 @@ local function register_formspec(dialogdata)
 		"formspec_version[4]",
 		"size[8,", tostring(buttons_y + 1.175), "]",
 		"set_focus[", (dialogdata.name ~= "" and "password" or "name"), "]",
-		"label[0.375,0.8;", core.formspec_escape(title), "]",
+		"label[0.375,0.8;", title, "]",
 		"field[0.375,1.575;7.25,0.8;name;", core.formspec_escape(fgettext("Name")), ";",
 				core.formspec_escape(dialogdata.name), "]",
 		"pwdfield[0.375,2.875;7.25,0.8;password;", core.formspec_escape(fgettext("Password")), "]",
@@ -37,8 +37,8 @@ local function register_formspec(dialogdata)
 
 	if dialogdata.error then
 		table.insert_all(retval, {
-			"style_type[label;textcolor=", mt_color_orange, "]",
-			"label[0.375,", tostring(buttons_y - 0.6), ";", core.formspec_escape(dialogdata.error), "]",
+			"box[0.375,", tostring(buttons_y - 0.9), ";7.25,0.6;darkred]",
+			"label[0.625,", tostring(buttons_y - 0.6), ";", core.formspec_escape(dialogdata.error), "]",
 		})
 	end
 
@@ -81,11 +81,6 @@ local function register_buttonhandler(this, fields)
 			serverlistmgr.add_favorite(server)
 			gamedata.servername        = server.name
 			gamedata.serverdescription = server.description
-
-			if not is_server_protocol_compat_or_error(
-						server.proto_min, server.proto_max) then
-				return true
-			end
 		else
 			gamedata.servername        = ""
 			gamedata.serverdescription = ""

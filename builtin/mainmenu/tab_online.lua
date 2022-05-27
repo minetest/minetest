@@ -108,7 +108,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	if tabdata.selected then
 		if gamedata.fav then
-			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Delete favorite") .. "]"
+			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
 			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. defaulttexturedir ..
 				"server_favorite_delete.png;btn_delete_favorite;]"
@@ -394,8 +394,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.btn_mp_register and fields.te_address ~= "" and fields.te_port then
 		local idx = core.get_table_index("servers")
 		local server = idx and tabdata.lookup[idx]
-		if server and (server.address ~= gamedata.address or server.port ~= gamedata.port) then
+		if server and (server.address ~= fields.te_address or server.port ~= tonumber(fields.te_port)) then
 			server = nil
+		end
+
+		if server and not is_server_protocol_compat_or_error(
+					server.proto_min, server.proto_max) then
+			return true
 		end
 
 		local dlg = create_register_dialog(fields.te_address, tonumber(fields.te_port), server)
