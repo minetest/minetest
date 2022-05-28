@@ -82,8 +82,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 		return src;
 
 	// Calculate scaled texture name.
-	char rectstr[200];
-	porting::mt_snprintf(rectstr, sizeof(rectstr), "%d:%d:%d:%d:%d:%d",
+	std::string rectstr = StringPrintf("%d:%d:%d:%d:%d:%d",
 		srcrect.UpperLeftCorner.X,
 		srcrect.UpperLeftCorner.Y,
 		srcrect.getWidth(),
@@ -91,7 +90,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 		destrect.getWidth(),
 		destrect.getHeight());
 	io::path origname = src->getName().getPath();
-	io::path scalename = origname + "@guiScalingFilter:" + rectstr;
+	io::path scalename = origname + "@guiScalingFilter:" + rectstr.c_str();
 
 	// Search for existing scaled texture.
 	auto it_txr = g_txrCache.find(scalename);

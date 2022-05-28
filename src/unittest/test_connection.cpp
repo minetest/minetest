@@ -315,10 +315,8 @@ void TestConnection::testConnectSendReceive()
 		for (int i = 0; i < datasize && i < 20; i++) {
 			if (i % 2 == 0)
 				infostream << " ";
-			char buf[10];
-			porting::mt_snprintf(buf, sizeof(buf), "%.2X",
+			infostream << StringPrintf("%.2X",
 				((int)((const char *)pkt.getU8Ptr(0))[i]) & 0xff);
-			infostream<<buf;
 		}
 		if (datasize > 20)
 			infostream << "...";
@@ -358,9 +356,7 @@ void TestConnection::testConnectSendReceive()
 		for (int i = 0; i < size && i < 20; i++) {
 			if (i % 2 == 0)
 				infostream << " ";
-			char buf[10];
-			porting::mt_snprintf(buf, sizeof(buf), "%.2X", ((int)(recvdata[i])) & 0xff);
-			infostream << buf;
+			infostream << StringPrintf("%.2X", ((int)(recvdata[i])) & 0xff);
 		}
 		if (size > 20)
 			infostream << "...";

@@ -95,20 +95,20 @@ void ProfilerGraph::draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 		}
 
 		const s32 texth = 15;
-		char buf[10];
+		std::string buf;
 		if (floorf(show_max) == show_max)
-			porting::mt_snprintf(buf, sizeof(buf), "%.5g", show_max);
+			buf = StringPrintf("%.5g", show_max);
 		else
-			porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_max);
+			buf = StringPrintf("%.3g", show_max);
 		font->draw(utf8_to_wide(buf).c_str(),
 				core::rect<s32>(textx, y - graphh, textx2,
 						y - graphh + texth),
 				meta.color);
 
 		if (floorf(show_min) == show_min)
-			porting::mt_snprintf(buf, sizeof(buf), "%.5g", show_min);
+			buf = StringPrintf("%.5g", show_min);
 		else
-			porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_min);
+			buf = StringPrintf("%.3g", show_min);
 		font->draw(utf8_to_wide(buf).c_str(),
 				core::rect<s32>(textx, y - texth, textx2, y), meta.color);
 

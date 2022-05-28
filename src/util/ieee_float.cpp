@@ -24,7 +24,7 @@
  */
 #include "ieee_float.h"
 #include "log.h"
-#include "porting.h"
+#include "util/string.h"
 #include <limits>
 #include <cmath>
 
@@ -107,17 +107,16 @@ FloatType getFloatSerializationType()
 	warningstream << "floatSerialization: f32 and u32 endianness are "
 		"not equal or machine is not IEEE-754 compliant" << std::endl;
 	u32 i;
-	char buf[128];
 
 	// NaN checks aren't included in the main loop
 	if (!std::isnan(u32Tof32Slow(0x7FC00000UL))) {
-		porting::mt_snprintf(buf, sizeof(buf),
+		auto buf = StringPrintf(
 			"u32Tof32Slow(0x7FC00000) failed to produce a NaN, actual: %.9g",
 			u32Tof32Slow(0x7FC00000UL));
 		infostream << buf << std::endl;
 	}
 	if (!std::isnan(u32Tof32Slow(0xFFC00000UL))) {
-		porting::mt_snprintf(buf, sizeof(buf),
+		auto buf = StringPrintf(
 			"u32Tof32Slow(0xFFC00000) failed to produce a NaN, actual: %.9g",
 			u32Tof32Slow(0xFFC00000UL));
 		infostream << buf << std::endl;
@@ -126,7 +125,7 @@ FloatType getFloatSerializationType()
 	i = f32Tou32Slow(std::numeric_limits<f32>::quiet_NaN());
 	// check that it corresponds to a NaN encoding
 	if ((i & 0x7F800000UL) != 0x7F800000UL || (i & 0x7FFFFFUL) == 0) {
-		porting::mt_snprintf(buf, sizeof(buf),
+		auto buf = StringPrintf(
 			"f32Tou32Slow(NaN) failed to encode NaN, actual: 0x%X", i);
 		infostream << buf << std::endl;
 	}

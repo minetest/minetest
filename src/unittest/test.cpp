@@ -327,10 +327,7 @@ std::string TestBase::getTestTempDirectory()
 	if (!m_test_dir.empty())
 		return m_test_dir;
 
-	char buf[32];
-	porting::mt_snprintf(buf, sizeof(buf), "%08X", myrand());
-
-	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
+	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + StringPrintf("%08X", myrand());
 	if (!fs::CreateDir(m_test_dir))
 		throw TestFailedException();
 
@@ -339,10 +336,7 @@ std::string TestBase::getTestTempDirectory()
 
 std::string TestBase::getTestTempFile()
 {
-	char buf[32];
-	porting::mt_snprintf(buf, sizeof(buf), "%08X", myrand());
-
-	return getTestTempDirectory() + DIR_DELIM + buf + ".tmp";
+	return getTestTempDirectory() + DIR_DELIM + StringPrintf("%08X", myrand()) + ".tmp";
 }
 
 

@@ -325,9 +325,7 @@ void ScriptApiBase::stackDump(std::ostream &o)
 				o << (readParam<bool>(m_luastack, i) ? "true" : "false");
 				break;
 			case LUA_TNUMBER:  /* numbers */ {
-				char buf[10];
-				porting::mt_snprintf(buf, sizeof(buf), "%lf", lua_tonumber(m_luastack, i));
-				o << buf;
+				o << StringPrintf("%lf", lua_tonumber(m_luastack, i));
 				break;
 			}
 			default:  /* other values */

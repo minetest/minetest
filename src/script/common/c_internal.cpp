@@ -86,12 +86,9 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 	if (!err_descr)
 		err_descr = "<no description>";
 
-	char buf[256];
-	porting::mt_snprintf(buf, sizeof(buf), "%s error from mod '%s' in callback %s(): ",
-		err_type, mod, fxn);
-
-	std::string err_msg(buf);
-	err_msg += err_descr;
+	std::string err_msg = StringPrintf(
+		"%s error from mod '%s' in callback %s(): %s",
+		err_type, mod, fxn, err_descr);
 
 	if (pcall_result == LUA_ERRMEM) {
 		err_msg += "\nCurrent Lua memory usage: "
