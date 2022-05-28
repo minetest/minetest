@@ -40,23 +40,30 @@ jobs:
   luacheck:
     name: "Builtin Luacheck and Unit Tests"
     runs-on: ubuntu-20.04
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: leafo/gh-actions-lua@v9
-      with:
-        luaVersion: "5.1.5"
-    - uses: leafo/gh-actions-luarocks@v4
 
-    - name: Install luarocks tools
-      run: |
-        luarocks install --local luacheck
-        luarocks install --local busted
+      - uses: actions/checkout@v3
+      - uses: leafo/gh-actions-lua@v9
+        with:
+          luaVersion: "5.1.5"
+      - uses: leafo/gh-actions-luarocks@v4
 
-    - name: Run checks (builtin)
-      run: |
-        $HOME/.luarocks/bin/luacheck builtin
-        $HOME/.luarocks/bin/busted builtin
+      - name: Install LuaJIT
+        run: |
+          sudo apt-get update && sudo apt-get install -y luajit
 
-    - name: Run checks (devtest)
-      run: |
-        $HOME/.luarocks/bin/luacheck --config=games/devtest/.luacheckrc games/devtest
+      - name: Install luarocks tools
+        run: |
+          luarocks install --local luacheck
+          luarocks install --local busted
+
+      - name: Run checks (builtin)
+        run: |
+          $HOME/.luarocks/bin/luacheck builtin
+          $HOME/.luarocks/bin/busted builtin
+          $HOME/.luarocks/bin/busted builtin --lua=luajit
+
+      - name: Run checks (devtest)
+        run: |
+          $HOME/.luarocks/bin/luacheck --config=games/devtest/.luacheckrc games/devtest
