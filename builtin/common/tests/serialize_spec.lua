@@ -97,10 +97,11 @@ describe("serialize", function()
 	it("strips functions in safe mode", function()
 		local test_in = {
 			func = function(a, b)
-				return nil * nil -- would throw an error if called
+				error("test")
 			end,
 			foo = "bar"
 		}
+		setfenv(test_in.func, _G)
 
 		local str = core.serialize(test_in)
 		assert.not_nil(str:find("loadstring"))
