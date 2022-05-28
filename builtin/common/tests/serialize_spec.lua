@@ -97,7 +97,7 @@ describe("serialize", function()
 	it("strips functions in safe mode", function()
 		local test_in = {
 			func = function(a, b)
-				error("test")
+				return nil * nil -- would throw an error if called
 			end,
 			foo = "bar"
 		}
