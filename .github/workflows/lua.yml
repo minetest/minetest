@@ -51,7 +51,10 @@ jobs:
 
       - name: Install LuaJIT
         run: |
-          sudo apt-get update && sudo apt-get install -y luajit
+          cd $HOME
+          git clone https://github.com/LuaJIT/LuaJIT/
+          cd LuaJIT
+          make -j$(nproc)
 
       - name: Install luarocks tools
         run: |
@@ -62,7 +65,7 @@ jobs:
         run: |
           $HOME/.luarocks/bin/luacheck builtin
           $HOME/.luarocks/bin/busted builtin
-          $HOME/.luarocks/bin/busted builtin --lua=luajit
+          $HOME/.luarocks/bin/busted builtin --lua=$HOME/LuaJIT/src/luajit
 
       - name: Run checks (devtest)
         run: |
