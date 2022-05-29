@@ -66,8 +66,10 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(getmeta(false));
 
 	// If the metadata is now empty, get rid of it
-	if (meta && meta->empty())
+	if (meta && meta->empty()) {
 		clearMeta();
+		meta = nullptr;
+	}
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
