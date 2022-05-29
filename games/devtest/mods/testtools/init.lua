@@ -766,13 +766,13 @@ minetest.register_tool("testtools:node_meta_editor", {
 	end,
 })
 
-local get_item_next_to_wielded_item = function(player)
+local function get_item_next_to_wielded_item(player)
 	local inv = player:get_inventory()
 	local wield = player:get_wield_index()
 	local itemstack = inv:get_stack("main", wield+1)
 	return itemstack
 end
-local set_item_next_to_wielded_item = function(player, itemstack)
+local function set_item_next_to_wielded_item(player, itemstack)
 	local inv = player:get_inventory()
 	local wield = player:get_wield_index()
 	inv:set_stack("main", wield+1, itemstack)
