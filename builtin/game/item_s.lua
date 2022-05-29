@@ -157,7 +157,8 @@ end
 
 function core.is_colored_paramtype(ptype)
 	return (ptype == "color") or (ptype == "colorfacedir") or
-		(ptype == "colorwallmounted") or (ptype == "colordegrotate")
+		(ptype == "color4dir") or (ptype == "colorwallmounted") or
+		(ptype == "colordegrotate")
 end
 
 function core.strip_param2_color(param2, paramtype2)
@@ -166,6 +167,8 @@ function core.strip_param2_color(param2, paramtype2)
 	end
 	if paramtype2 == "colorfacedir" then
 		param2 = math.floor(param2 / 32) * 32
+	elseif paramtype2 == "color4dir" then
+		param2 = math.floor(param2 / 4) * 4
 	elseif paramtype2 == "colorwallmounted" then
 		param2 = math.floor(param2 / 8) * 8
 	elseif paramtype2 == "colordegrotate" then
