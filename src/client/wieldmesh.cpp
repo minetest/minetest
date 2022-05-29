@@ -386,6 +386,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 

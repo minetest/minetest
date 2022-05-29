@@ -99,17 +99,8 @@ enum NodeBoxType
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
 };
 
-struct NodeBox
+struct NodeBoxConnected
 {
-	enum NodeBoxType type;
-	// NODEBOX_REGULAR (no parameters)
-	// NODEBOX_FIXED
-	std::vector<aabb3f> fixed;
-	// NODEBOX_WALLMOUNTED
-	aabb3f wall_top;
-	aabb3f wall_bottom;
-	aabb3f wall_side; // being at the -X side
-	// NODEBOX_CONNECTED
 	std::vector<aabb3f> connect_top;
 	std::vector<aabb3f> connect_bottom;
 	std::vector<aabb3f> connect_front;
@@ -124,9 +115,35 @@ struct NodeBox
 	std::vector<aabb3f> disconnected_right;
 	std::vector<aabb3f> disconnected;
 	std::vector<aabb3f> disconnected_sides;
+};
+
+struct NodeBox
+{
+	enum NodeBoxType type;
+	// NODEBOX_REGULAR (no parameters)
+	// NODEBOX_FIXED
+	std::vector<aabb3f> fixed;
+	// NODEBOX_WALLMOUNTED
+	aabb3f wall_top;
+	aabb3f wall_bottom;
+	aabb3f wall_side; // being at the -X side
+	// NODEBOX_CONNECTED
+	// (kept externally to not bloat the structure)
+	std::shared_ptr<NodeBoxConnected> connected;
 
 	NodeBox()
 	{ reset(); }
+	~NodeBox() = default;
+
+	inline NodeBoxConnected &getConnected() {
+		if (!connected)
+			connected = std::make_shared<NodeBoxConnected>();
+		return *connected;
+	}
+	inline const NodeBoxConnected &getConnected() const {
+		assert(connected);
+		return *connected;
+	}
 
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
@@ -290,7 +307,6 @@ struct ContentFeatures
 	// up    down  right left  back  front
 	TileSpec tiles[6];
 	// Special tiles
-	// - Currently used for flowing liquids
 	TileSpec special_tiles[CF_SPECIAL_COUNT];
 	u8 solidness; // Used when choosing which face is drawn
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
@@ -539,7 +555,7 @@ public:
 	 */
 	inline const ContentFeatures& get(content_t c) const {
 		return
-			c < m_content_features.size() ?
+			(c < m_content_features.size() && !m_content_features[c].name.empty()) ?
 				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 	}
 

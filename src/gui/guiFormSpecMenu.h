@@ -212,7 +212,7 @@ public:
 		m_lockscreensize = basescreensize;
 	}
 
-	void removeChildren();
+	void removeTooltip();
 	void setInitialFocus();
 
 	void setFocus(const std::string &elementname)
@@ -467,7 +467,7 @@ private:
 	 * types were drawn before others.
 	 * This function sorts the elements in the old order for backwards compatibility.
 	 */
-	void legacySortElements(core::list<IGUIElement *>::Iterator from);
+	void legacySortElements(std::list<IGUIElement *>::iterator from);
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;

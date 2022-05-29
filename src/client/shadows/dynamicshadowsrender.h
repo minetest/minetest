@@ -74,6 +74,7 @@ public:
 	void removeNodeFromShadowList(scene::ISceneNode *node);
 
 	void update(video::ITexture *outputTarget = nullptr);
+	void setForceUpdateShadowMap() { m_force_update_shadow_map = true; }
 	void drawDebug();
 
 	video::ITexture *get_texture()
@@ -131,6 +132,7 @@ private:
 	bool m_shadows_enabled;
 	bool m_shadows_supported;
 	bool m_shadow_map_colored;
+	bool m_force_update_shadow_map;
 	u8 m_map_shadow_update_frames; /* Use this number of frames to update map shaodw */
 	u8 m_current_frame{0}; /* Current frame */
 	f32 m_perspective_bias_xy;

@@ -50,7 +50,7 @@ local labels = {
 		fgettext("Low"),
 		fgettext("Medium"),
 		fgettext("High"),
-		fgettext("Ultra High")
+		fgettext("Very High")
 	}
 }
 
@@ -219,8 +219,9 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"..
-			"label[8.25,3.0;" .. fgettext("Dynamic shadows: ") .. "]" ..
-			"dropdown[8.25,3.5;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
+			"label[8.25,2.8;" .. fgettext("Dynamic shadows:") .. "]" ..
+			"label[8.25,3.2;" .. fgettext("(game support required)") .. "]" ..
+					"dropdown[8.25,3.7;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
 					.. getSettingIndex.ShadowMapping() .. "]"
 	else
 		tab_string = tab_string ..
@@ -364,11 +365,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.settings:set("enable_dynamic_shadows", "false")
 	else
 		local shadow_presets = {
-			[2] = { 55,  512,  "true", 0, "false" },
-			[3] = { 82,  1024, "true", 1, "false" },
-			[4] = { 240, 2048, "true", 1, "false" },
-			[5] = { 240, 2048, "true", 2,  "true" },
-			[6] = { 300, 4096, "true", 2,  "true" },
+			[2] = { 62,  512,  "true", 0, "false" },
+			[3] = { 93,  1024, "true", 0, "false" },
+			[4] = { 140, 2048, "true", 1, "false" },
+			[5] = { 210, 4096, "true", 2,  "true" },
+			[6] = { 300, 8192, "true", 2,  "true" },
 		}
 		local s = shadow_presets[table.indexof(labels.shadow_levels, fields["dd_shadows"])]
 		if s then

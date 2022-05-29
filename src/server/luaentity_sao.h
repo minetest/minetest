@@ -36,23 +36,30 @@ public:
 	{
 	}
 	~LuaEntitySAO();
+
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
+
 	bool isStaticAllowed() const { return m_prop.static_save; }
 	bool shouldUnload() const { return true; }
 	void getStaticData(std::string *result) const;
+
 	u32 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
 			ServerActiveObject *puncher = nullptr,
 			float time_from_last_punch = 1000000.0f,
 			u16 initial_wear = 0);
+
 	void rightClick(ServerActiveObject *clicker);
+
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
+
 	std::string getDescription();
+
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	u16 getHP() const;
 

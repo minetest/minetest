@@ -1000,22 +1000,25 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			push_aabb3f(L, box.wall_side);
 			lua_setfield(L, -2, "wall_side");
 			break;
-		case NODEBOX_CONNECTED:
+		case NODEBOX_CONNECTED: {
 			lua_pushstring(L, "connected");
 			lua_setfield(L, -2, "type");
-			push_box(L, box.connect_top);
+			const auto &c = box.getConnected();
+			push_box(L, c.connect_top);
 			lua_setfield(L, -2, "connect_top");
-			push_box(L, box.connect_bottom);
+			push_box(L, c.connect_bottom);
 			lua_setfield(L, -2, "connect_bottom");
-			push_box(L, box.connect_front);
+			push_box(L, c.connect_front);
 			lua_setfield(L, -2, "connect_front");
-			push_box(L, box.connect_back);
+			push_box(L, c.connect_back);
 			lua_setfield(L, -2, "connect_back");
-			push_box(L, box.connect_left);
+			push_box(L, c.connect_left);
 			lua_setfield(L, -2, "connect_left");
-			push_box(L, box.connect_right);
+			push_box(L, c.connect_right);
 			lua_setfield(L, -2, "connect_right");
+			// half the boxes are missing here?
 			break;
+		}
 		default:
 			FATAL_ERROR("Invalid box.type");
 			break;
@@ -1143,20 +1146,24 @@ NodeBox read_nodebox(lua_State *L, int index)
 	NODEBOXREAD(nodebox.wall_top, "wall_top");
 	NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
 	NODEBOXREAD(nodebox.wall_side, "wall_side");
-	NODEBOXREADVEC(nodebox.connect_top, "connect_top");
-	NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
-	NODEBOXREADVEC(nodebox.connect_front, "connect_front");
-	NODEBOXREADVEC(nodebox.connect_left, "connect_left");
-	NODEBOXREADVEC(nodebox.connect_back, "connect_back");
-	NODEBOXREADVEC(nodebox.connect_right, "connect_right");
-	NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
-	NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
-	NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
-	NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
-	NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
-	NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
-	NODEBOXREADVEC(nodebox.disconnected, "disconnected");
-	NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
+
+	if (nodebox.type == NODEBOX_CONNECTED) {
+		auto &c = nodebox.getConnected();
+		NODEBOXREADVEC(c.connect_top, "connect_top");
+		NODEBOXREADVEC(c.connect_bottom, "connect_bottom");
+		NODEBOXREADVEC(c.connect_front, "connect_front");
+		NODEBOXREADVEC(c.connect_left, "connect_left");
+		NODEBOXREADVEC(c.connect_back, "connect_back");
+		NODEBOXREADVEC(c.connect_right, "connect_right");
+		NODEBOXREADVEC(c.disconnected_top, "disconnected_top");
+		NODEBOXREADVEC(c.disconnected_bottom, "disconnected_bottom");
+		NODEBOXREADVEC(c.disconnected_front, "disconnected_front");
+		NODEBOXREADVEC(c.disconnected_left, "disconnected_left");
+		NODEBOXREADVEC(c.disconnected_back, "disconnected_back");
+		NODEBOXREADVEC(c.disconnected_right, "disconnected_right");
+		NODEBOXREADVEC(c.disconnected, "disconnected");
+		NODEBOXREADVEC(c.disconnected_sides, "disconnected_sides");
+	}
 
 	return nodebox;
 }

@@ -646,6 +646,8 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		else
 			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
 		end
+	else
+		error("basefolder didn't return a recognised type, this shouldn't happen")
 	end
 
 	-- Copy it
@@ -692,7 +694,7 @@ function pkgmgr.preparemodlist(data)
 		retval[#retval + 1] = {
 			type = "game",
 			is_game_content = true,
-			name = fgettext("$1 mods", gamespec.name),
+			name = fgettext("$1 mods", gamespec.title),
 			path = gamespec.path
 		}
 	end
@@ -873,10 +875,10 @@ end
 function pkgmgr.gamelist()
 	local retval = ""
 	if #pkgmgr.games > 0 then
-		retval = retval .. core.formspec_escape(pkgmgr.games[1].name)
+		retval = retval .. core.formspec_escape(pkgmgr.games[1].title)
 
 		for i=2,#pkgmgr.games,1 do
-			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].name)
+			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].title)
 		end
 	end
 	return retval

@@ -42,9 +42,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
-    - name: Install luarocks
-      run: |
-        sudo apt-get update && sudo apt-get install -y luarocks
+    - uses: leafo/gh-actions-lua@v9
+      with:
+        luaVersion: "5.1.5"
+    - uses: leafo/gh-actions-luarocks@v4
 
     - name: Install luarocks tools
       run: |

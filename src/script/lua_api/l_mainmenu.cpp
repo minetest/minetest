@@ -304,7 +304,11 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_settable(L,    top_lvl2);
 
 		lua_pushstring(L,  "name");
-		lua_pushstring(L,  game.name.c_str());
+		lua_pushstring(L,  game.title.c_str());
+		lua_settable(L,    top_lvl2);
+
+		lua_pushstring(L,  "title");
+		lua_pushstring(L,  game.title.c_str());
 		lua_settable(L,    top_lvl2);
 
 		lua_pushstring(L,  "author");
@@ -355,6 +359,11 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 
 	lua_pushstring(L, spec.author.c_str());
 	lua_setfield(L, -2, "author");
+
+	if (!spec.title.empty()) {
+		lua_pushstring(L, spec.title.c_str());
+		lua_setfield(L, -2, "title");
+	}
 
 	lua_pushinteger(L, spec.release);
 	lua_setfield(L, -2, "release");

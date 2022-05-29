@@ -127,7 +127,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
 {
-	removeChildren();
+	removeAllChildren();
+	removeTooltip();
 
 	for (auto &table_it : m_tables)
 		table_it.second->drop();
@@ -174,14 +175,8 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	}
 }
 
-void GUIFormSpecMenu::removeChildren()
+void GUIFormSpecMenu::removeTooltip()
 {
-	const core::list<gui::IGUIElement*> &children = getChildren();
-
-	while (!children.empty()) {
-		(*children.getLast())->remove();
-	}
-
 	if (m_tooltip_element) {
 		m_tooltip_element->remove();
 		m_tooltip_element->drop();
@@ -199,16 +194,7 @@ void GUIFormSpecMenu::setInitialFocus()
 	// 5. first focusable (not statictext, not tabheader)
 	// 6. first child element
 
-	core::list<gui::IGUIElement*> children = getChildren();
-
-	// in case "children" contains any NULL elements, remove them
-	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
-			it != children.end();) {
-		if (*it)
-			++it;
-		else
-			it = children.erase(it);
-	}
+	const auto& children = getChildren();
 
 	// 1. first empty editbox
 	for (gui::IGUIElement *it : children) {
@@ -236,8 +222,7 @@ void GUIFormSpecMenu::setInitialFocus()
 	}
 
 	// 4. last button
-	for (core::list<gui::IGUIElement*>::Iterator it = children.getLast();
-			it != children.end(); --it) {
+	for (auto it = children.rbegin(); it != children.rend(); ++it) {
 		if ((*it)->getType() == gui::EGUIET_BUTTON) {
 			Environment->setFocus(*it);
 			return;
@@ -257,7 +242,7 @@ void GUIFormSpecMenu::setInitialFocus()
 	if (children.empty())
 		Environment->setFocus(this);
 	else
-		Environment->setFocus(*(children.begin()));
+		Environment->setFocus(children.front());
 }
 
 GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
@@ -3045,7 +3030,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	// Remove children
-	removeChildren();
+	removeAllChildren();
+	removeTooltip();
 
 	for (auto &table_it : m_tables)
 		table_it.second->drop();
@@ -3341,7 +3327,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	pos_offset = v2f32();
 
 	// used for formspec versions < 3
-	core::list<IGUIElement *>::Iterator legacy_sort_start = Children.getLast();
+	std::list<IGUIElement *>::iterator legacy_sort_start = std::prev(Children.end()); // last element
 
 	if (enable_prepends) {
 		// Backup the coordinates so that prepends can use the coordinates of choice.
@@ -3356,7 +3342,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		// legacy sorting for formspec versions < 3
 		if (m_formspec_version >= 3)
 			// prepends do not need to be reordered
-			legacy_sort_start = Children.getLast();
+			legacy_sort_start = std::prev(Children.end()); // last element
 		else if (version_backup >= 3)
 			// only prepends elements have to be reordered
 			legacySortElements(legacy_sort_start);
@@ -3437,7 +3423,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 }
 
-void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator from)
+void GUIFormSpecMenu::legacySortElements(std::list<IGUIElement *>::iterator from)
 {
 	/*
 		Draw order for formspec_version <= 2:
@@ -3454,17 +3440,16 @@ void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator fro
 	if (from == Children.end())
 		from = Children.begin();
 	else
-		from++;
+		++from;
 
-	core::list<IGUIElement *>::Iterator to = Children.end();
+	std::list<IGUIElement *>::iterator to = Children.end();
 	// 1: Copy into a sortable container
-	std::vector<IGUIElement *> elements;
-	for (auto it = from; it != to; ++it)
-		elements.emplace_back(*it);
+	std::vector<IGUIElement *> elements(from, to);
 
 	// 2: Sort the container
 	std::stable_sort(elements.begin(), elements.end(),
 			[this] (const IGUIElement *a, const IGUIElement *b) -> bool {
+		// TODO: getSpecByID is a linear search. It should made O(1), or cached here.
 		const FieldSpec *spec_a = getSpecByID(a->getID());
 		const FieldSpec *spec_b = getSpecByID(b->getID());
 		return spec_a && spec_b &&
@@ -3472,10 +3457,7 @@ void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator fro
 	});
 
 	// 3: Re-assign the pointers
-	for (auto e : elements) {
-		*from = e;
-		from++;
-	}
+	reorderChildren(from, to, elements);
 }
 
 #ifdef __ANDROID__
@@ -3600,12 +3582,11 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		This is where all the drawing happens.
 	*/
-	core::list<IGUIElement*>::Iterator it = Children.begin();
-	for (; it != Children.end(); ++it)
-		if ((*it)->isNotClipped() ||
+	for (auto child : Children)
+		if (child->isNotClipped() ||
 				AbsoluteClippingRect.isRectCollided(
-						(*it)->getAbsolutePosition()))
-			(*it)->draw();
+						child->getAbsolutePosition()))
+			child->draw();
 
 	for (gui::IGUIElement *e : m_clickthrough_elements)
 		e->setVisible(false);

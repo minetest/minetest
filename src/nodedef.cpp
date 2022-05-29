@@ -56,20 +56,7 @@ void NodeBox::reset()
 	wall_bottom = aabb3f(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2);
 	wall_side = aabb3f(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2);
 	// no default for other parts
-	connect_top.clear();
-	connect_bottom.clear();
-	connect_front.clear();
-	connect_left.clear();
-	connect_back.clear();
-	connect_right.clear();
-	disconnected_top.clear();
-	disconnected_bottom.clear();
-	disconnected_front.clear();
-	disconnected_left.clear();
-	disconnected_back.clear();
-	disconnected_right.clear();
-	disconnected.clear();
-	disconnected_sides.clear();
+	connected.reset();
 }
 
 void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
@@ -99,7 +86,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 		writeV3F32(os, wall_side.MinEdge);
 		writeV3F32(os, wall_side.MaxEdge);
 		break;
-	case NODEBOX_CONNECTED:
+	case NODEBOX_CONNECTED: {
 		writeU8(os, type);
 
 #define WRITEBOX(box) \
@@ -109,22 +96,25 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 			writeV3F32(os, i.MaxEdge); \
 		};
 
+		const auto &c = getConnected();
+
 		WRITEBOX(fixed);
-		WRITEBOX(connect_top);
-		WRITEBOX(connect_bottom);
-		WRITEBOX(connect_front);
-		WRITEBOX(connect_left);
-		WRITEBOX(connect_back);
-		WRITEBOX(connect_right);
-		WRITEBOX(disconnected_top);
-		WRITEBOX(disconnected_bottom);
-		WRITEBOX(disconnected_front);
-		WRITEBOX(disconnected_left);
-		WRITEBOX(disconnected_back);
-		WRITEBOX(disconnected_right);
-		WRITEBOX(disconnected);
-		WRITEBOX(disconnected_sides);
+		WRITEBOX(c.connect_top);
+		WRITEBOX(c.connect_bottom);
+		WRITEBOX(c.connect_front);
+		WRITEBOX(c.connect_left);
+		WRITEBOX(c.connect_back);
+		WRITEBOX(c.connect_right);
+		WRITEBOX(c.disconnected_top);
+		WRITEBOX(c.disconnected_bottom);
+		WRITEBOX(c.disconnected_front);
+		WRITEBOX(c.disconnected_left);
+		WRITEBOX(c.disconnected_back);
+		WRITEBOX(c.disconnected_right);
+		WRITEBOX(c.disconnected);
+		WRITEBOX(c.disconnected_sides);
 		break;
+	}
 	default:
 		writeU8(os, type);
 		break;
@@ -173,21 +163,23 @@ void NodeBox::deSerialize(std::istream &is)
 
 		u16 count;
 
+		auto &c = getConnected();
+
 		READBOXES(fixed);
-		READBOXES(connect_top);
-		READBOXES(connect_bottom);
-		READBOXES(connect_front);
-		READBOXES(connect_left);
-		READBOXES(connect_back);
-		READBOXES(connect_right);
-		READBOXES(disconnected_top);
-		READBOXES(disconnected_bottom);
-		READBOXES(disconnected_front);
-		READBOXES(disconnected_left);
-		READBOXES(disconnected_back);
-		READBOXES(disconnected_right);
-		READBOXES(disconnected);
-		READBOXES(disconnected_sides);
+		READBOXES(c.connect_top);
+		READBOXES(c.connect_bottom);
+		READBOXES(c.connect_front);
+		READBOXES(c.connect_left);
+		READBOXES(c.connect_back);
+		READBOXES(c.connect_right);
+		READBOXES(c.disconnected_top);
+		READBOXES(c.disconnected_bottom);
+		READBOXES(c.disconnected_front);
+		READBOXES(c.disconnected_left);
+		READBOXES(c.disconnected_back);
+		READBOXES(c.disconnected_right);
+		READBOXES(c.disconnected);
+		READBOXES(c.disconnected_sides);
 	}
 }
 
@@ -409,9 +401,9 @@ void ContentFeatures::reset()
 	drowning = 0;
 	light_source = 0;
 	damage_per_second = 0;
-	node_box = NodeBox();
-	selection_box = NodeBox();
-	collision_box = NodeBox();
+	node_box.reset();
+	selection_box.reset();
+	collision_box.reset();
 	waving = 0;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
@@ -909,8 +901,15 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			solidness = 0;
 			visual_solidness = 1;
 		} else {
-			drawtype = NDT_NORMAL;
-			solidness = 2;
+			if (waving >= 1) {
+				// waving nodes must make faces so there are no gaps
+				drawtype = NDT_ALLFACES;
+				solidness = 0;
+				visual_solidness = 1;
+			} else {
+				drawtype = NDT_NORMAL;
+				solidness = 2;
+			}
 			for (TileDef &td : tdef)
 				td.name += std::string("^[noalpha");
 		}
@@ -1091,10 +1090,8 @@ void NodeDefManager::clear()
 	{
 		ContentFeatures f;
 		f.name = "unknown";
-		TileDef unknownTile;
-		unknownTile.name = "unknown_node.png";
 		for (int t = 0; t < 6; t++)
-			f.tiledef[t] = unknownTile;
+			f.tiledef[t].name = "unknown_node.png";
 		// Insert directly into containers
 		content_t c = CONTENT_UNKNOWN;
 		m_content_features[c] = f;
@@ -1296,22 +1293,23 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			break;
 		}
 		case NODEBOX_CONNECTED: {
+			const auto &c = nodebox.getConnected();
 			// Add all possible connected boxes
-			boxVectorUnion(nodebox.fixed,               box_union);
-			boxVectorUnion(nodebox.connect_top,         box_union);
-			boxVectorUnion(nodebox.connect_bottom,      box_union);
-			boxVectorUnion(nodebox.connect_front,       box_union);
-			boxVectorUnion(nodebox.connect_left,        box_union);
-			boxVectorUnion(nodebox.connect_back,        box_union);
-			boxVectorUnion(nodebox.connect_right,       box_union);
-			boxVectorUnion(nodebox.disconnected_top,    box_union);
-			boxVectorUnion(nodebox.disconnected_bottom, box_union);
-			boxVectorUnion(nodebox.disconnected_front,  box_union);
-			boxVectorUnion(nodebox.disconnected_left,   box_union);
-			boxVectorUnion(nodebox.disconnected_back,   box_union);
-			boxVectorUnion(nodebox.disconnected_right,  box_union);
-			boxVectorUnion(nodebox.disconnected,        box_union);
-			boxVectorUnion(nodebox.disconnected_sides,  box_union);
+			boxVectorUnion(nodebox.fixed,         box_union);
+			boxVectorUnion(c.connect_top,         box_union);
+			boxVectorUnion(c.connect_bottom,      box_union);
+			boxVectorUnion(c.connect_front,       box_union);
+			boxVectorUnion(c.connect_left,        box_union);
+			boxVectorUnion(c.connect_back,        box_union);
+			boxVectorUnion(c.connect_right,       box_union);
+			boxVectorUnion(c.disconnected_top,    box_union);
+			boxVectorUnion(c.disconnected_bottom, box_union);
+			boxVectorUnion(c.disconnected_front,  box_union);
+			boxVectorUnion(c.disconnected_left,   box_union);
+			boxVectorUnion(c.disconnected_back,   box_union);
+			boxVectorUnion(c.disconnected_right,  box_union);
+			boxVectorUnion(c.disconnected,        box_union);
+			boxVectorUnion(c.disconnected_sides,  box_union);
 			break;
 		}
 		default: {

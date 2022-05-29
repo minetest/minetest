@@ -440,6 +440,7 @@ void Server::init()
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
+	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
 
 	// Read Textures and calculate sha1 sums
@@ -890,7 +891,7 @@ void Server::AsyncRunStep(bool initial_step)
 		// We'll log the amount of each
 		Profiler prof;
 
-		std::list<v3s16> node_meta_updates;
+		std::unordered_set<v3s16> node_meta_updates;
 
 		while (!m_unsent_map_edit_queue.empty()) {
 			MapEditEvent* event = m_unsent_map_edit_queue.front();
@@ -917,9 +918,7 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_BLOCK_NODE_METADATA_CHANGED: {
 				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
 				if (!event->is_private_change) {
-					// Don't send the change yet. Collect them to eliminate dupes.
-					node_meta_updates.remove(event->p);
-					node_meta_updates.push_back(event->p);
+					node_meta_updates.emplace(event->p);
 				}
 
 				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
@@ -972,7 +971,7 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 
 		// Send all metadata updates
-		if (node_meta_updates.size())
+		if (!node_meta_updates.empty())
 			sendMetadataChanged(node_meta_updates);
 	}
 
@@ -2289,12 +2288,12 @@ void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_player
 	}
 }
 
-void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far_d_nodes)
+void Server::sendMetadataChanged(const std::unordered_set<v3s16> &positions, float far_d_nodes)
 {
-	float maxd = far_d_nodes * BS;
 	NodeMetadataList meta_updates_list(false);
-	std::vector<session_t> clients = m_clients.getClientIDs();
+	std::ostringstream os(std::ios::binary);
 
+	std::vector<session_t> clients = m_clients.getClientIDs();
 	ClientInterface::AutoLock clientlock(m_clients);
 
 	for (session_t i : clients) {
@@ -2302,18 +2301,20 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 		if (!client)
 			continue;
 
-		ServerActiveObject *player = m_env->getActiveObject(i);
-		v3f player_pos = player ? player->getBasePosition() : v3f();
+		ServerActiveObject *player = getPlayerSAO(i);
+		v3s16 player_pos;
+		if (player)
+			player_pos = floatToInt(player->getBasePosition(), BS);
 
-		for (const v3s16 &pos : meta_updates) {
+		for (const v3s16 pos : positions) {
 			NodeMetadata *meta = m_env->getMap().getNodeMetadata(pos);
 
 			if (!meta)
 				continue;
 
 			v3s16 block_pos = getNodeBlockPos(pos);
-			if (!client->isBlockSent(block_pos) || (player &&
-					player_pos.getDistanceFrom(intToFloat(pos, BS)) > maxd)) {
+			if (!client->isBlockSent(block_pos) ||
+					player_pos.getDistanceFrom(pos) > far_d_nodes) {
 				client->SetBlockNotSent(block_pos);
 				continue;
 			}
@@ -2325,14 +2326,15 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 			continue;
 
 		// Send the meta changes
-		std::ostringstream os(std::ios::binary);
+		os.str("");
 		meta_updates_list.serialize(os, client->serialization_version, false, true, true);
-		std::ostringstream oss(std::ios::binary);
-		compressZlib(os.str(), oss);
+		std::string raw = os.str();
+		os.str("");
+		compressZlib(raw, os);
 
-		NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
-		pkt.putLongString(oss.str());
-		m_clients.send(i, 0, &pkt, true);
+		NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0, i);
+		pkt.putLongString(os.str());
+		Send(&pkt);
 
 		meta_updates_list.clear();
 	}
@@ -2783,9 +2785,10 @@ void Server::RespawnPlayer(session_t peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
-	playersao->setHP(playersao->accessObjectProperties()->hp_max,
+	const auto *prop = playersao->accessObjectProperties();
+	playersao->setHP(prop->hp_max,
 			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
-	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
+	playersao->setBreath(prop->breath_max);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if (!repositioned) {
@@ -3109,7 +3112,7 @@ std::string Server::getStatusString()
 	// Version
 	os << "version: " << g_version_string;
 	// Game
-	os << " | game: " << (m_gamespec.name.empty() ? m_gamespec.id : m_gamespec.name);
+	os << " | game: " << (m_gamespec.title.empty() ? m_gamespec.id : m_gamespec.title);
 	// Uptime
 	os << " | uptime: " << duration_to_string((int) m_uptime_counter->get());
 	// Max lag estimate

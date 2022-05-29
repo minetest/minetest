@@ -62,7 +62,8 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
+    * `title`: Required, a human-readable title to address the game, e.g. `title = Minetest Game`.
+    * `name`: (Deprecated) same as title.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
@@ -2011,7 +2012,7 @@ Example definition of the capabilities of an item
         max_drop_level=1,
         groupcaps={
             crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
-        }
+        },
         damage_groups = {fleshy=2},
     }
 
@@ -3549,8 +3550,16 @@ Helper functions
 * `minetest.string_to_pos(string)`: returns a position or `nil`
     * Same but in reverse.
     * If the string can't be parsed to a position, nothing is returned.
-* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
+* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)", relative_to)`:
+    * returns two positions
     * Converts a string representing an area box into two positions
+    * X1, Y1, ... Z2 are coordinates
+    * `relative_to`: Optional. If set to a position, each coordinate
+      can use the tilde notation for relative positions
+    * Tilde notation: "~": Relative coordinate
+                      "~<number>": Relative coordinate plus <number>
+    * Example: `minetest.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})`
+      returns `{x=1,y=2,z=3}, {x=15,y=5,z=10}`
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used
       in formspecs.
@@ -7090,6 +7099,8 @@ object you are working with still exists.
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
+* `respawn()`: Respawns the player using the same mechanism as the death screen,
+  including calling on_respawnplayer callbacks.
 
 `PcgRandom`
 -----------
@@ -8551,9 +8562,8 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
         spawn_by = "default:water",
         -- Node (or list of nodes) that the decoration only spawns next to.
-        -- Checks two horizontal planes of 8 neighbouring nodes (including
-        -- diagonal neighbours), one plane level with the 'place_on' node and a
-        -- plane one node above that.
+        -- Checks the 8 neighbouring nodes on the same Y, and also the ones
+        -- at Y+1, excluding both center nodes.
 
         num_spawn_by = 1,
         -- Number of spawn_by nodes that must be surrounding the decoration

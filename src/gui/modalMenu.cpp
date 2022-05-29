@@ -108,19 +108,6 @@ void GUIModalMenu::quitMenu()
 #endif
 }
 
-void GUIModalMenu::removeChildren()
-{
-	const core::list<gui::IGUIElement *> &children = getChildren();
-	core::list<gui::IGUIElement *> children_copy;
-	for (gui::IGUIElement *i : children) {
-		children_copy.push_back(i);
-	}
-
-	for (gui::IGUIElement *i : children_copy) {
-		i->remove();
-	}
-}
-
 // clang-format off
 bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 {
@@ -265,13 +252,11 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 				return retval;
 
 			m_jni_field_name = field_name;
-			/*~ Imperative, as in "Enter/type in text".
-			Don't forget the space. */
-			std::string message = gettext("Enter ");
 			std::string label = wide_to_utf8(getLabelByID(hovered->getID()));
 			if (label.empty())
 				label = "text";
-			message += strgettext(label) + ":";
+			/*~ Imperative, as in "Type in text" */
+			std::string message = fmtgettext("Enter %s:");
 
 			// single line text input
 			int type = 2;

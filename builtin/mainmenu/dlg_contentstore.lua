@@ -151,11 +151,9 @@ local function start_install(package, reason)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					if name_is_title then
-						conf:set("name",   package.title)
-					else
-						conf:set("title",  package.title)
-						conf:set("name",   package.name)
+					conf:set("title", package.title)
+					if not name_is_title then
+						conf:set("name", package.name)
 					end
 					if not conf:get("description") then
 						conf:set("description", package.short_description)
@@ -360,7 +358,7 @@ function install_dialog.get_formspec()
 			selected_game_idx = i
 		end
 
-		games[i] = core.formspec_escape(games[i].name)
+		games[i] = core.formspec_escape(games[i].title)
 	end
 
 	local selected_game = pkgmgr.games[selected_game_idx]
@@ -410,7 +408,7 @@ function install_dialog.get_formspec()
 		"container[0.375,0.70]",
 
 		"label[0,0.25;", fgettext("Base Game:"), "]",
-		"dropdown[2,0;4.25,0.5;gameid;", table.concat(games, ","), ";", selected_game_idx, "]",
+		"dropdown[2,0;4.25,0.5;selected_game;", table.concat(games, ","), ";", selected_game_idx, "]",
 
 		"label[0,0.8;", fgettext("Dependencies:"), "]",
 
@@ -461,9 +459,9 @@ function install_dialog.handle_submit(this, fields)
 		return true
 	end
 
-	if fields.gameid then
+	if fields.selected_game then
 		for _, game in pairs(pkgmgr.games) do
-			if game.name == fields.gameid then
+			if game.title == fields.selected_game then
 				core.settings:set("menu_last_game", game.id)
 				break
 			end

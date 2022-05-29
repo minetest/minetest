@@ -1162,13 +1162,14 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 void PartialMeshBuffer::beforeDraw() const
 {
 	// Patch the indexes in the mesh buffer before draw
-
-	m_buffer->Indices.clear();
-	if (!m_vertex_indexes.empty()) {
-		for (auto index : m_vertex_indexes)
-			m_buffer->Indices.push_back(index);
-	}
+	m_buffer->Indices = std::move(m_vertex_indexes);
 	m_buffer->setDirty(scene::EBT_INDEX);
+}
+
+void PartialMeshBuffer::afterDraw() const
+{
+	// Take the data back
+	m_vertex_indexes = std::move(m_buffer->Indices.steal());
 }
 
 /*
@@ -1348,30 +1349,22 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material = material;
-			switch (p.layer.material_type) {
-			// list of transparent materials taken from tile.h
-			case TILE_MATERIAL_ALPHA:
-			case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
-				{
-					buf->append(&p.vertices[0], p.vertices.size(),
-						&p.indices[0], 0);
+			if (p.layer.isTransparent()) {
+				buf->append(&p.vertices[0], p.vertices.size(), nullptr, 0);
 
-					MeshTriangle t;
-					t.buffer = buf;
-					for (u32 i = 0; i < p.indices.size(); i += 3) {
-						t.p1 = p.indices[i];
-						t.p2 = p.indices[i + 1];
-						t.p3 = p.indices[i + 2];
-						t.updateAttributes();
-						m_transparent_triangles.push_back(t);
-					}
+				MeshTriangle t;
+				t.buffer = buf;
+				m_transparent_triangles.reserve(p.indices.size() / 3);
+				for (u32 i = 0; i < p.indices.size(); i += 3) {
+					t.p1 = p.indices[i];
+					t.p2 = p.indices[i + 1];
+					t.p3 = p.indices[i + 2];
+					t.updateAttributes();
+					m_transparent_triangles.push_back(t);
 				}
-				break;
-			default:
+			} else {
 				buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
-				break;
 			}
 			mesh->addMeshBuffer(buf);
 			buf->drop();
@@ -1514,7 +1507,7 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 		const auto &t = m_transparent_triangles[i];
 		if (current_buffer != t.buffer) {
 			if (current_buffer) {
-				m_transparent_buffers.emplace_back(current_buffer, current_strain);
+				m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 				current_strain.clear();
 			}
 			current_buffer = t.buffer;
@@ -1525,7 +1518,7 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	}
 
 	if (!current_strain.empty())
-		m_transparent_buffers.emplace_back(current_buffer, current_strain);
+		m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 }
 
 void MapBlockMesh::consolidateTransparentBuffers()
@@ -1539,7 +1532,7 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	for (const auto &t : m_transparent_triangles) {
 		if (current_buffer != t.buffer) {
 			if (current_buffer != nullptr) {
-				this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+				this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 				current_strain.clear();
 			}
 			current_buffer = t.buffer;
@@ -1550,7 +1543,7 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	}
 
 	if (!current_strain.empty()) {
-		this->m_transparent_buffers.emplace_back(current_buffer, current_strain);
+		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 	}
 }
 

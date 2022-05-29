@@ -336,6 +336,8 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
+	void RespawnPlayer(session_t peer_id);
+
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
@@ -425,11 +427,10 @@ private:
 		std::unordered_set<session_t> waiting_players;
 	};
 
-	// the standard library does not implement std::hash for pairs so we have this:
+	// The standard library does not implement std::hash for pairs so we have this:
 	struct SBCHash {
 		size_t operator() (const std::pair<v3s16, u16> &p) const {
-			return (((size_t) p.first.X) << 48) | (((size_t) p.first.Y) << 32) |
-				(((size_t) p.first.Z) << 16) | ((size_t) p.second);
+			return std::hash<v3s16>()(p.first) ^ p.second;
 		}
 	};
 
@@ -491,7 +492,7 @@ private:
 			std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100, bool remove_metadata = true);
 
-	void sendMetadataChanged(const std::list<v3s16> &meta_updates,
+	void sendMetadataChanged(const std::unordered_set<v3s16> &positions,
 			float far_d_nodes = 100);
 
 	// Environment and Connection must be locked when called
@@ -530,7 +531,6 @@ private:
 	*/
 
 	void HandlePlayerDeath(PlayerSAO* sao, const PlayerHPChangeReason &reason);
-	void RespawnPlayer(session_t peer_id);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
 	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);

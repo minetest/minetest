@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <common/c_internal.h>
 #include "content/subgames.h"
 #include "porting.h"
 #include "filesys.h"
@@ -44,6 +45,25 @@ bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 }
 
 }
+
+
+void SubgameSpec::checkAndLog() const
+{
+	// Log deprecation messages
+	auto handling_mode = get_deprecated_handling_mode();
+	if (!deprecation_msgs.empty() && handling_mode != DeprecatedHandlingMode::Ignore) {
+		std::ostringstream os;
+		os << "Game " << title << " at " << path << ":" << std::endl;
+		for (auto msg : deprecation_msgs)
+			os << "\t" << msg << std::endl;
+
+		if (handling_mode == DeprecatedHandlingMode::Error)
+			throw ModError(os.str());
+		else
+			warningstream << os.str();
+	}
+}
+
 
 struct GameFindPath
 {
@@ -121,11 +141,13 @@ SubgameSpec findSubgame(const std::string &id)
 	Settings conf;
 	conf.readConfigFile(conf_path.c_str());
 
-	std::string game_name;
-	if (conf.exists("name"))
-		game_name = conf.get("name");
+	std::string game_title;
+	if (conf.exists("title"))
+		game_title = conf.get("title");
+	else if (conf.exists("name"))
+		game_title = conf.get("name");
 	else
-		game_name = id;
+		game_title = id;
 
 	std::string game_author;
 	if (conf.exists("author"))
@@ -140,8 +162,14 @@ SubgameSpec findSubgame(const std::string &id)
 	menuicon_path = getImagePath(
 			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
-	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
+
+	SubgameSpec spec(id, game_path, gamemod_path, mods_paths, game_title,
 			menuicon_path, game_author, game_release);
+
+	if (conf.exists("name") && !conf.exists("title"))
+		spec.deprecation_msgs.push_back("\"name\" setting in game.conf is deprecated, please use \"title\" instead");
+
+	return spec;
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -159,10 +187,12 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 		std::string conf_path = world_gamepath + DIR_DELIM + "game.conf";
 		conf.readConfigFile(conf_path.c_str());
 
-		if (conf.exists("name"))
-			gamespec.name = conf.get("name");
+		if (conf.exists("title"))
+			gamespec.title = conf.get("title");
+		else if (conf.exists("name"))
+			gamespec.title = conf.get("name");
 		else
-			gamespec.name = world_gameid;
+			gamespec.title = world_gameid;
 
 		return gamespec;
 	}

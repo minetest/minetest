@@ -34,8 +34,10 @@
 #include <irrlicht.h>
 #include <ft2build.h>
 #include <vector>
+#include <map>
 #include <irrUString.h>
 #include "util/enriched_string.h"
+#include "util/basic_macros.h"
 #include FT_FREETYPE_H
 
 namespace irr
@@ -45,23 +47,34 @@ namespace gui
 	struct SGUITTFace;
 	class CGUITTFont;
 
-	//! Class to assist in deleting glyphs.
-	class CGUITTAssistDelete
-	{
-		public:
-			template <class T, typename TAlloc>
-			static void Delete(core::array<T, TAlloc>& a)
-			{
-				TAlloc allocator;
-				allocator.deallocate(a.pointer());
-			}
-	};
-
 	//! Structure representing a single TrueType glyph.
 	struct SGUITTGlyph
 	{
 		//! Constructor.
-		SGUITTGlyph() : isLoaded(false), glyph_page(0), surface(0), parent(0) {}
+		SGUITTGlyph() :
+			isLoaded(false),
+			glyph_page(0),
+			source_rect(),
+			offset(),
+			advance(),
+			surface(0),
+			parent(0)
+		{}
+
+		DISABLE_CLASS_COPY(SGUITTGlyph);
+
+		//! This class would be trivially copyable except for the reference count on `surface`.
+		SGUITTGlyph(SGUITTGlyph &&other) :
+			isLoaded(other.isLoaded),
+			glyph_page(other.glyph_page),
+			source_rect(other.source_rect),
+			offset(other.offset),
+			advance(other.advance),
+			surface(other.surface),
+			parent(other.parent)
+		{
+			other.surface = 0;
+		}
 
 		//! Destructor.
 		~SGUITTGlyph() { unload(); }
@@ -345,7 +358,7 @@ namespace gui
 		private:
 			// Manages the FreeType library.
 			static FT_Library c_library;
-			static core::map<io::path, SGUITTFace*> c_faces;
+			static std::map<io::path, SGUITTFace*> c_faces;
 			static bool c_libraryLoaded;
 			static scene::IMesh* shared_plane_ptr_;
 			static scene::SMesh  shared_plane_;

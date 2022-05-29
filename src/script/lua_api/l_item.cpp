@@ -594,6 +594,9 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 		// be done
 		if (f.name == "ignore")
 			return 0;
+		// This would break everything
+		if (f.name.empty())
+			throw LuaError("Cannot register node with empty name");
 
 		content_t id = ndef->set(f.name, f);
 

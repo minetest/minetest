@@ -132,7 +132,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps --old-irr clang-9
+          install_linux_deps clang-9
 
       - name: Build prometheus-cpp
         run: |
@@ -230,7 +230,7 @@ jobs:
         with:
           repository: minetest/irrlicht
           path: lib/irrlichtmt/
-          ref: "1.9.0mt5"
+          ref: "1.9.0mt6"
 
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v7
