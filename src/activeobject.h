@@ -72,6 +72,29 @@ enum ActiveObjectCommand {
 	AO_CMD_SET_ANIMATION_SPEED
 };
 
+struct BonePositionOverride {
+	struct Property {
+		v3f previous;
+		v3f vector;
+		bool absolute;
+		f32 interpolation;
+		Property() {
+			previous = v3f(0, 0, 0);
+			vector = v3f(0, 0, 0);
+			absolute = false;
+			interpolation = 0;
+		}
+	} *position, *rotation, *scale;
+	f32 dtime_passed;
+	BonePositionOverride() {
+		position = new Property();
+		rotation = new Property();
+		scale = new Property();
+		dtime_passed = 0;
+	}
+};
+
+
 /*
 	Parent class for ServerActiveObject and ClientActiveObject
 */

@@ -45,7 +45,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "client/shader.h"
 #include "client/minimap.h"
-#include "server/serveractiveobject.h" // TODO fix this hack by isolating the BonePosOverride struct
 
 class Settings;
 struct ToolCapabilities;
