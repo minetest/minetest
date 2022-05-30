@@ -563,7 +563,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
 	BonePositionOverride *override = new BonePositionOverride();
-	if (lua_isnil(L, 3)) {
+	if (lua_isnil(L, 3) || lua_isnone(L, 3)) {
 		sao->setBoneOverride(bone, override);
 		return 0;
 	}
