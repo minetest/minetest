@@ -42,11 +42,13 @@ extern "C" {
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
 #define CHECK_FLOAT_RANGE(value, name) \
 if (value < F1000_MIN || value > F1000_MAX) { \
-	std::ostringstream error_text; \
-	error_text << "Invalid float vector dimension range '" name "' " << \
+	warningstream << "Invalid float vector dimension range '" name "' " << \
 	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
 	" got " << value << ")." << std::endl; \
-	throw LuaError(error_text.str()); \
+	if (value < F1000_MIN) \
+		value = F1000_MIN; \
+	else \
+		value = F1000_MAX; \
 }
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
