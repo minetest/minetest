@@ -73,8 +73,9 @@ enum ActiveObjectCommand {
 	AO_CMD_SET_ANIMATION_SPEED
 };
 
-struct BonePositionOverride
+class BonePositionOverride
 {
+public:
 	struct PositionProperty
 	{
 		v3f previous{};
@@ -101,6 +102,11 @@ struct BonePositionOverride
 		position = new PositionProperty();
 		rotation = new RotationProperty();
 		scale = new ScaleProperty();
+	}
+	~BonePositionOverride() {
+		delete position;
+		delete rotation;
+		delete scale;
 	}
 };
 
