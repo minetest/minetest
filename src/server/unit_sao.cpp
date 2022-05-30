@@ -290,7 +290,9 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	// parameters
 	os << serializeString16(bone);
 	writeV3F32(os, override->position->vector);
-	writeV3F32(os, override->rotation->vector);
+	v3f euler_rot;
+	override->rotation->next.toEuler(euler_rot);
+	writeV3F32(os, euler_rot * core::RADTODEG);
 	writeV3F32(os, override->scale->vector);
 	writeF32(os, override->position->interpolation);
 	writeF32(os, override->rotation->interpolation);

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irr_aabb3d.h"
 #include "irr_v3d.h"
+#include <quaternion.h>
 #include <string>
 
 
@@ -79,18 +80,30 @@ struct BonePositionOverride {
 		bool absolute;
 		f32 interpolation;
 		Property() {
-			previous = v3f(0, 0, 0);
-			vector = v3f(0, 0, 0);
+			v3f previous();
+			v3f vector();
 			absolute = false;
-			interpolation = 0;
+			interpolation = 0.0f;
 		}
-	} *position, *rotation, *scale;
+	} *position, *scale;
+	struct RotationProperty {
+		core::quaternion previous;
+		core::quaternion next;
+		bool absolute;
+		f32 interpolation;
+		RotationProperty() {
+			core::quaternion previous();
+			core::quaternion next();
+			absolute = false;
+			interpolation = 0.0f;
+		}
+	} *rotation;
 	f32 dtime_passed;
 	BonePositionOverride() {
 		position = new Property();
-		rotation = new Property();
+		rotation = new RotationProperty();
 		scale = new Property();
-		dtime_passed = 0;
+		dtime_passed = 0.0f;
 	}
 };
 

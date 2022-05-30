@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "client/shader.h"
 #include "client/minimap.h"
+#include <quaternion.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -1535,9 +1536,10 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
 		if (!bone)
 			continue;
-		
+
 		BonePositionOverride* override = it.second;
 		override->dtime_passed += dtime;
+
 		v3f position = override->position->vector;
 		if (override->position->interpolation > override->dtime_passed) {
 			f32 done = override->dtime_passed / override->position->interpolation;
@@ -1546,24 +1548,19 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		bone->setPosition(override->position->absolute
 				? position
 				: position + bone->getPosition());
-		v3f rotation = override->rotation->vector;
-		if (override->rotation->interpolation > override->dtime_passed) {
-			f32 done = override->dtime_passed / override->rotation->interpolation;
-			v3f previous = override->rotation->previous;
-			v3f diff = rotation - previous;
-			rotation.X = fabsf(diff.X) < 180.0f
-					? rotation.X * done + previous.X * (1 - done)
-					: fmodf(previous.X * done + rotation.X * (1 - done), 360.0f);
-			rotation.Y = fabsf(diff.Y) < 180.0f
-					? rotation.Y * done + previous.Y * (1 - done)
-					: fmodf(previous.Y * done + rotation.Y * (1 - done), 360.0f);
-			rotation.Z = fabsf(diff.Z) < 180.0f
-					? rotation.Z * done + previous.Z * (1 - done)
-					: fmodf(previous.Z * done + rotation.Z * (1 - done), 360.0f);
+
+		core::quaternion rotation;
+		f32 progress = override->dtime_passed / override->rotation->interpolation;
+		if (progress > 1.0f || override->rotation->interpolation == 0.0f) progress = 1.0f;
+		rotation.slerp(override->rotation->previous, override->rotation->next, progress);
+		if (!override->rotation->absolute) {
+			core::quaternion bone_rot(bone->getRotation() * core::DEGTORAD);
+			rotation = rotation * bone_rot; // first rotate around bone rot, then rot
 		}
-		bone->setRotation(override->rotation->absolute
-				? rotation
-				: rotation + bone->getRotation());
+		v3f rot_euler;
+		rotation.toEuler(rot_euler);
+		bone->setRotation(rot_euler * core::RADTODEG);
+
 		v3f scale = override->scale->vector;
 		if (override->scale->interpolation > override->dtime_passed) {
 			f32 done = override->dtime_passed / override->scale->interpolation;
@@ -1571,7 +1568,7 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		}
 		bone->setScale(override->scale->absolute
 				? scale
-				: scale + bone->getScale());
+				: scale * bone->getScale());
 	}
 
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
@@ -1865,7 +1862,7 @@ void GenericCAO::processMessage(const std::string &data)
 		BonePositionOverride* previous = m_bone_position[bone];
 		BonePositionOverride* override = new BonePositionOverride();
 		override->position->vector = readV3F32(is);
-		override->rotation->vector = readV3F32(is);
+		override->rotation->next = core::quaternion(readV3F32(is) * core::DEGTORAD);
 		if (is.eof()) {
 			override->position->absolute = true;
 			override->rotation->absolute = true;
@@ -1880,7 +1877,7 @@ void GenericCAO::processMessage(const std::string &data)
 			override->scale->absolute = (absoluteFlag & 4) > 0;
 			if (previous) {
 				override->position->previous = previous->position->vector;
-				override->rotation->previous = previous->rotation->vector;
+				override->rotation->previous = previous->rotation->next;
 				override->scale->previous = previous->scale->vector;
 			}
 		}
