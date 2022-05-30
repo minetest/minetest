@@ -1534,50 +1534,45 @@ void GenericCAO::updateBonePosition(f32 dtime)
 	for (auto &it : m_bone_position) {
 		std::string bone_name = it.first;
 		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if (bone) {
-			BonePositionOverride* override = it.second;
-			override->dtime_passed += dtime;
-			v3f position = override->position->vector;
-			if (override->position->interpolation > override->dtime_passed) {
-				f32 done = override->dtime_passed / override->position->interpolation;
-				position = position.getInterpolated(override->position->previous, done);
-			}
-			bone->setPosition(override->position->absolute
-					? position
-					: position + bone->getPosition());
-			v3f rotation = override->rotation->vector;
-			if (override->rotation->interpolation > override->dtime_passed) {
-				f32 done = override->dtime_passed / override->rotation->interpolation;
-				v3f previous = override->rotation->previous;
-				v3f diff = rotation - previous;
-				if (fabsf(diff.X) < 180.0f) {
-					rotation.X = rotation.X * done + previous.X * (1 - done);
-				} else {
-					rotation.X = fmodf(previous.X * done + rotation.X * (1 - done), 360.0f);
-				}
-				if (fabsf(diff.Y) < 180.0f) {
-					rotation.Y = rotation.Y * done + previous.Y * (1 - done);
-				} else {
-					rotation.Y = fmodf(previous.Y * done + rotation.Y * (1 - done), 360.0f);
-				}
-				if (fabsf(diff.Z) < 180.0f) {
-					rotation.Z = rotation.Z * done + previous.Z * (1 - done);
-				} else {
-					rotation.Z = fmodf(previous.Z * done + rotation.Z * (1 - done), 360.0f);
-				}
-			}
-			bone->setRotation(override->rotation->absolute
-					? rotation
-					: rotation + bone->getRotation());
-			v3f scale = override->scale->vector;
-			if (override->scale->interpolation > override->dtime_passed) {
-				f32 done = override->dtime_passed / override->scale->interpolation;
-				scale = scale.getInterpolated(override->position->previous, done);
-			}
-			bone->setScale(override->scale->absolute
-					? scale
-					: scale + bone->getScale());
+		if (!bone)
+			continue;
+		
+		BonePositionOverride* override = it.second;
+		override->dtime_passed += dtime;
+		v3f position = override->position->vector;
+		if (override->position->interpolation > override->dtime_passed) {
+			f32 done = override->dtime_passed / override->position->interpolation;
+			position = position.getInterpolated(override->position->previous, done);
 		}
+		bone->setPosition(override->position->absolute
+				? position
+				: position + bone->getPosition());
+		v3f rotation = override->rotation->vector;
+		if (override->rotation->interpolation > override->dtime_passed) {
+			f32 done = override->dtime_passed / override->rotation->interpolation;
+			v3f previous = override->rotation->previous;
+			v3f diff = rotation - previous;
+			rotation.X = fabsf(diff.X) < 180.0f
+					? rotation.X * done + previous.X * (1 - done)
+					: fmodf(previous.X * done + rotation.X * (1 - done), 360.0f);
+			rotation.Y = fabsf(diff.Y) < 180.0f
+					? rotation.Y * done + previous.Y * (1 - done)
+					: fmodf(previous.Y * done + rotation.Y * (1 - done), 360.0f);
+			rotation.Z = fabsf(diff.Z) < 180.0f
+					? rotation.Z * done + previous.Z * (1 - done)
+					: fmodf(previous.Z * done + rotation.Z * (1 - done), 360.0f);
+		}
+		bone->setRotation(override->rotation->absolute
+				? rotation
+				: rotation + bone->getRotation());
+		v3f scale = override->scale->vector;
+		if (override->scale->interpolation > override->dtime_passed) {
+			f32 done = override->dtime_passed / override->scale->interpolation;
+			scale = scale.getInterpolated(override->position->previous, done);
+		}
+		bone->setScale(override->scale->absolute
+				? scale
+				: scale + bone->getScale());
 	}
 
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
@@ -1872,11 +1867,11 @@ void GenericCAO::processMessage(const std::string &data)
 		BonePositionOverride* override = new BonePositionOverride();
 		override->position->vector = readV3F32(is);
 		override->rotation->vector = readV3F32(is);
-		override->scale->vector = readV3F32(is);
 		if (is.eof()) {
 			override->position->absolute = true;
 			override->rotation->absolute = true;
 		} else {
+			override->scale->vector = readV3F32(is);
 			override->position->interpolation = readF32(is);
 			override->rotation->interpolation = readF32(is);
 			override->scale->interpolation = readF32(is);
