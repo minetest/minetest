@@ -94,7 +94,6 @@ const std::unordered_map<std::string, BonePositionOverride *> &
 UnitSAO::getBoneOverrides() const
 {
 	return m_bone_position;
->>>>>>> Extend bone override capabilities
 }
 
 // clang-format off
