@@ -119,7 +119,7 @@ protected:
 	ObjectProperties m_prop;
 
 	// Stores position and rotation for each bone name
-	std::unordered_map<std::string, BonePositionOverride *> m_bone_position;
+	std::unordered_map<std::string, BonePositionOverride *> m_bone_override;
 
 	int m_attachment_parent_id = 0;
 
@@ -141,7 +141,7 @@ private:
 	bool m_animation_speed_sent = false;
 
 	// Bone positions
-	bool m_bone_position_sent = false;
+	bool m_bone_override_sent = false;
 
 	// Attachments
 	std::unordered_set<int> m_attachment_child_ids;

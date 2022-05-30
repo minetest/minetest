@@ -1527,11 +1527,11 @@ void GenericCAO::updateAnimationSpeed()
 
 void GenericCAO::updateBonePosition(f32 dtime)
 {
-	if (m_bone_position.empty() || !m_animated_meshnode)
+	if (m_bone_override.empty() || !m_animated_meshnode)
 		return;
 
 	m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for (auto &it : m_bone_position) {
+	for (auto &it : m_bone_override) {
 		std::string bone_name = it.first;
 		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
 		if (!bone)
@@ -1577,7 +1577,7 @@ void GenericCAO::updateBonePosition(f32 dtime)
 
 		//If bone is manually positioned there is no need to perform the bug check
 		bool skip = false;
-		for (auto &it : m_bone_position) {
+		for (auto &it : m_bone_override) {
 			if (it.first == bone->getName()) {
 				skip = true;
 				break;
@@ -1857,7 +1857,7 @@ void GenericCAO::processMessage(const std::string &data)
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString16(is);
-		BonePositionOverride* previous = m_bone_position[bone];
+		BonePositionOverride* previous = m_bone_override[bone];
 		BonePositionOverride* override = new BonePositionOverride();
 		override->position->vector = readV3F32(is);
 		override->rotation->next = core::quaternion(readV3F32(is) * core::DEGTORAD);
@@ -1874,7 +1874,7 @@ void GenericCAO::processMessage(const std::string &data)
 					&& override->position->vector == v3f(0.0f, 0.0f, 0.0f)
 					&& override->rotation->next == core::quaternion()
 					&& override->scale->vector == v3f(1.0f, 1.0f, 1.0f)) {
-				m_bone_position.erase(bone); // identity override, remove
+				m_bone_override.erase(bone); // identity override, remove
 			} else {
 				override->position->absolute = (absoluteFlag & 1) > 0;
 				override->rotation->absolute = (absoluteFlag & 2) > 0;
@@ -1889,7 +1889,7 @@ void GenericCAO::processMessage(const std::string &data)
 					override->rotation->interpolation_duration = 0.0f;
 					override->scale->interpolation_duration = 0.0f;
 				}
-				m_bone_position[bone] = override;
+				m_bone_override[bone] = override;
 			}
 		}
 		if (previous) delete previous;
