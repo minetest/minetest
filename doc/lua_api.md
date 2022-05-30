@@ -7191,15 +7191,29 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`
 * `set_bone_position([bone, position, rotation])`
+	* Shorthand for `set_bone_override(bone, {position = {x = position.x, y = position.y, z = position.z, absolute = true}, rotation = {x = rotation.x, y = rotation.y, z = rotation.z, absolute = true}})`
+	* Supports older servers & clients (< 5.6)
+	* **Deprecated**, use `set_bone_override` instead
 * `get_bone_position(bone)`: returns position and rotation of the bone
-<!-- TODO compat -->
+	* Shorthand for `get_bone_override(bone).position.vector, get_bone_override(bone).rotation.vector`
+	* **Deprecated**, use `get_bone_override` instead
 * `set_bone_override(bone, override)`
     * `bone`: string
-    * `override`: `{ position = property, rotation = property, scale = property }`
-      * `property`: `{ x = 0, y = 0, z = 0, interpolation = 0 --[[in seconds]], absolute = false}`
+    * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
+      * `override = nil` (or nothing) is shorthand for `override = {}` which clears the override
+      * `property`: `{ x = ..., y = ..., z = ..., interpolation_duration = 0, absolute = false}` or `nil`;
+        setting a property to `nil` is equivalent to no override on that property
       * `x`, `y` and `z` are in blocksize for position and scale (times ten), and in degrees for rotation
-* `get_bone_override(bone)`: returns override in the above format
-* `get_bone_overrides()`: returns bone overrides as `[bonename] = override`
+      * `absolute`: If set to `false`, the override will be relative to the animated property:
+      	* Transposition in the case of `position`;
+      	* Composition in the case of `rotation`;
+      	* Multiplication in the case of `scale`
+      * `interpolation_duration`: Time it takes (on the client, in seconds) to interpolate between the old & new value
+    * Not supported by older servers (< 5.6);
+      older clients (< 5.6) support only position & rotation
+      and will ignore interpolation & relativity entirely
+* `get_bone_override(bone)`: returns `override` in the above format
+* `get_bone_overrides()`: returns bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
 * `is_player()`: returns true for players, false otherwise
