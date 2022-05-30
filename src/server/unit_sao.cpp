@@ -78,10 +78,7 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 void UnitSAO::setBoneOverride(const std::string &bone, BonePositionOverride *override)
 {
 	// store these so they can be updated to clients
-	if (override == nullptr)
-		m_bone_position.erase(bone);
-	else
-		m_bone_position[bone] = override;
+	m_bone_position[bone] = override;
 	m_bone_position_sent = false;
 }
 
@@ -294,9 +291,9 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	override->rotation->next.toEuler(euler_rot);
 	writeV3F32(os, euler_rot * core::RADTODEG);
 	writeV3F32(os, override->scale->vector);
-	writeF32(os, override->position->interpolation);
-	writeF32(os, override->rotation->interpolation);
-	writeF32(os, override->scale->interpolation);
+	writeF32(os, override->position->interpolation_duration);
+	writeF32(os, override->rotation->interpolation_duration);
+	writeF32(os, override->scale->interpolation_duration);
 	// clang-format off
 	writeU8(os, override->position->absolute * 1
 	          + override->rotation->absolute * 2

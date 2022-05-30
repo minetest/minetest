@@ -78,24 +78,24 @@ struct BonePositionOverride {
 		v3f previous;
 		v3f vector;
 		bool absolute;
-		f32 interpolation;
+		f32 interpolation_duration;
 		Property() {
 			v3f previous();
 			v3f vector();
 			absolute = false;
-			interpolation = 0.0f;
+			interpolation_duration = 0.0f;
 		}
 	} *position, *scale;
 	struct RotationProperty {
 		core::quaternion previous;
 		core::quaternion next;
 		bool absolute;
-		f32 interpolation;
+		f32 interpolation_duration;
 		RotationProperty() {
 			core::quaternion previous();
 			core::quaternion next();
 			absolute = false;
-			interpolation = 0.0f;
+			interpolation_duration = 0.0f;
 		}
 	} *rotation;
 	f32 dtime_passed;
@@ -103,6 +103,7 @@ struct BonePositionOverride {
 		position = new Property();
 		rotation = new RotationProperty();
 		scale = new Property();
+		scale->vector = v3f(1.0f, 1.0f, 1.0f);
 		dtime_passed = 0.0f;
 	}
 };
