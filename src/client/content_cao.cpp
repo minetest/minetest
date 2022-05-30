@@ -1874,7 +1874,6 @@ void GenericCAO::processMessage(const std::string &data)
 					&& override->position->vector == v3f(0.0f, 0.0f, 0.0f)
 					&& override->rotation->next == core::quaternion()
 					&& override->scale->vector == v3f(1.0f, 1.0f, 1.0f)) {
-				errorstream << "erasing " << bone << std::endl;
 				m_bone_position.erase(bone); // identity override, remove
 			} else {
 				override->position->absolute = (absoluteFlag & 1) > 0;

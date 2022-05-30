@@ -568,36 +568,36 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		return 0;
 	}
 	lua_getfield(L, 3, "position");
-	if (!lua_isnil(L, 4)) {
+	if (!lua_isnil(L, -1)) {
 		override->position->vector = check_v3f(L, 4);
-		lua_getfield(L, 4, "absolute");
+		lua_getfield(L, -1, "absolute");
 		override->position->absolute = lua_toboolean(L, 5);
 		lua_pop(L, 1);
-		lua_getfield(L, 4, "interpolation_duration");
-		if (lua_isnumber(L, 5))
-			override->position->interpolation_duration = lua_tonumber(L, 5);
+		lua_getfield(L, -1, "interpolation_duration");
+		if (lua_isnumber(L, -1))
+			override->position->interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 2);
 	}
 	lua_getfield(L, 3, "rotation");
-	if (!lua_isnil(L, 4)) {
-		override->rotation->next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
-		lua_getfield(L, 4, "absolute");
-		override->rotation->absolute = lua_toboolean(L, 5);
+	if (!lua_isnil(L, -1)) {
+		override->rotation->next = core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
+		lua_getfield(L, -1, "absolute");
+		override->rotation->absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
-		lua_getfield(L, 4, "interpolation_duration");
-		if (lua_isnumber(L, 5))
-			override->rotation->interpolation_duration = lua_tonumber(L, 5);
+		lua_getfield(L, -1, "interpolation_duration");
+		if (lua_isnumber(L, -1))
+			override->rotation->interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 2);
 	}
 	lua_getfield(L, 3, "scale");
-	if (!lua_isnil(L, 4)) {
-		override->scale->vector = check_v3f(L, 4);
-		lua_getfield(L, 4, "absolute");
-		override->scale->absolute = lua_toboolean(L, 5);
+	if (!lua_isnil(L, -1)) {
+		override->scale->vector = check_v3f(L, -1);
+		lua_getfield(L, -1, "absolute");
+		override->scale->absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
-		lua_getfield(L, 4, "interpolation_duration");
-		if (lua_isnumber(L, 5))
-			override->scale->interpolation_duration = lua_tonumber(L, 5);
+		lua_getfield(L, -1, "interpolation_duration");
+		if (lua_isnumber(L, -1))
+			override->scale->interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 2);
 	}
 	sao->setBoneOverride(bone, override);
