@@ -1867,7 +1867,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_animation_speed = readF32(is);
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
-		std::string bone = deSerializeString32(is);
+		std::string bone = deSerializeString16(is);
 		BonePositionOverride* previous = m_bone_position[bone];
 		BonePositionOverride* override = new BonePositionOverride();
 		override->position->vector = readV3F32(is);
