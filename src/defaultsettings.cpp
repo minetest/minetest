@@ -193,10 +193,10 @@ void set_default_settings()
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 #if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	settings->setDefault("video_driver", "ogles1");
-#else
+#ifdef _IRR_COMPILE_WITH_OGLES2_
 	settings->setDefault("video_driver", "ogles2");
+#else
+	settings->setDefault("video_driver", "ogles1");
 #endif
 #else
 	settings->setDefault("video_driver", "opengl");
@@ -235,11 +235,7 @@ void set_default_settings()
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-#if ENABLE_GLES
-	settings->setDefault("enable_shaders", "false");
-#else
 	settings->setDefault("enable_shaders", "true");
-#endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
