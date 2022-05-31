@@ -1527,8 +1527,12 @@ void GenericCAO::updateAnimationSpeed()
 
 void GenericCAO::updateBonePosition(f32 dtime)
 {
-	if (m_bone_override.empty() || !m_animated_meshnode)
+	if (!m_animated_meshnode)
 		return;
+	if (m_bone_override.empty()) {
+		m_animated_meshnode->setJointMode(scene::EJUOR_NONE);
+		return;
+	}
 
 	m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL); // To write positions to the mesh on render
 	for (auto &it : m_bone_override) {
