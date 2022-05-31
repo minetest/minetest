@@ -73,7 +73,7 @@ enum ActiveObjectCommand {
 	AO_CMD_SET_ANIMATION_SPEED
 };
 
-struct BonePositionOverride
+struct BoneOverride
 {
 	struct PositionProperty
 	{

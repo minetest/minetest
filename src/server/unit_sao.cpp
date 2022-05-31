@@ -75,7 +75,7 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBoneOverride(const std::string &bone, BonePositionOverride *override)
+void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride *override)
 {
 	// store these so they can be updated to clients
 	auto prev_override = m_bone_override[bone];
@@ -84,12 +84,12 @@ void UnitSAO::setBoneOverride(const std::string &bone, BonePositionOverride *ove
 	m_bone_override_sent = false;
 }
 
-BonePositionOverride *UnitSAO::getBoneOverride(const std::string &bone)
+BoneOverride *UnitSAO::getBoneOverride(const std::string &bone)
 {
 	return m_bone_override[bone];
 }
 
-const std::unordered_map<std::string, BonePositionOverride*> &
+const std::unordered_map<std::string, BoneOverride*> &
 UnitSAO::getBoneOverrides() const
 {
 	return m_bone_override;
@@ -281,7 +281,7 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 }
 
 std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const BonePositionOverride *override)
+		const std::string &bone, const BoneOverride *override)
 {
 	std::ostringstream os(std::ios::binary);
 	// command

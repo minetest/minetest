@@ -1541,7 +1541,7 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		if (!bone)
 			continue;
 
-		BonePositionOverride *override = it.second;
+		BoneOverride *override = it.second;
 		override->dtime_passed += dtime;
 
 		// Position
@@ -1861,8 +1861,8 @@ void GenericCAO::processMessage(const std::string &data)
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString16(is);
-		BonePositionOverride *previous = m_bone_override[bone];
-		BonePositionOverride *override = new BonePositionOverride();
+		BoneOverride *previous = m_bone_override[bone];
+		BoneOverride *override = new BoneOverride();
 		override->position.vector = readV3F32(is);
 		override->rotation.next = core::quaternion(readV3F32(is) * core::DEGTORAD);
 		if (is.eof()) {

@@ -521,7 +521,7 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	BonePositionOverride *override = new BonePositionOverride();
+	BoneOverride *override = new BoneOverride();
 	if (!lua_isnil(L, 3))
 		override->position.vector = check_v3f(L, 3);
 	if (!lua_isnil(L, 4))
@@ -543,7 +543,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 	std::string bone = readParam<std::string>(L, 2, "");
-	BonePositionOverride *override = sao->getBoneOverride(bone);
+	BoneOverride *override = sao->getBoneOverride(bone);
 	push_v3f(L, override->position.vector);
 	v3f euler_rot;
 	override->rotation.next.toEuler(euler_rot);
@@ -562,7 +562,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	BonePositionOverride *override = new BonePositionOverride();
+	BoneOverride *override = new BoneOverride();
 	if (lua_isnil(L, 3) || lua_isnone(L, 3)) {
 		sao->setBoneOverride(bone, override);
 		return 0;
@@ -604,7 +604,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	return 0;
 }
 
-void push_bone_override(lua_State *L, BonePositionOverride *override)
+void push_bone_override(lua_State *L, BoneOverride *override)
 {
 	lua_newtable(L);
 	lua_newtable(L);
