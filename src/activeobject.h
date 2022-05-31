@@ -73,41 +73,30 @@ enum ActiveObjectCommand {
 	AO_CMD_SET_ANIMATION_SPEED
 };
 
-class BonePositionOverride
+struct BonePositionOverride
 {
-public:
 	struct PositionProperty
 	{
 		v3f previous{};
 		v3f vector{};
 		bool absolute{};
 		f32 interpolation_duration{};
-	} *position;
+	} position;
 	struct RotationProperty
 	{
 		core::quaternion previous{};
 		core::quaternion next{};
 		bool absolute{};
 		f32 interpolation_duration{};
-	} *rotation;
+	} rotation;
 	struct ScaleProperty
 	{
 		v3f previous{};
 		v3f vector{1.0f, 1.0f, 1.0f};
 		bool absolute{};
 		f32 interpolation_duration{};
-	} *scale;
+	} scale;
 	f32 dtime_passed{};
-	BonePositionOverride() {
-		position = new PositionProperty();
-		rotation = new RotationProperty();
-		scale = new ScaleProperty();
-	}
-	~BonePositionOverride() {
-		delete position;
-		delete rotation;
-		delete scale;
-	}
 };
 
 

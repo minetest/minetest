@@ -72,7 +72,7 @@ public:
 	// Bone position
 	void setBoneOverride(const std::string &bone, BonePositionOverride *override);
 	BonePositionOverride *getBoneOverride(const std::string &bone);
-	const std::unordered_map<std::string, BonePositionOverride *> &
+	const std::unordered_map<std::string, BonePositionOverride*> &
 	getBoneOverrides() const;
 
 	// Attachments
@@ -119,7 +119,7 @@ protected:
 	ObjectProperties m_prop;
 
 	// Stores position and rotation for each bone name
-	std::unordered_map<std::string, BonePositionOverride *> m_bone_override;
+	std::unordered_map<std::string, BonePositionOverride*> m_bone_override;
 
 	int m_attachment_parent_id = 0;
 

@@ -521,15 +521,15 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	BonePositionOverride* override = new BonePositionOverride();
+	BonePositionOverride *override = new BonePositionOverride();
 	if (!lua_isnil(L, 3))
-		override->position->vector = check_v3f(L, 3);
+		override->position.vector = check_v3f(L, 3);
 	if (!lua_isnil(L, 4))
-		override->rotation->next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
-	override->position->absolute = true;
-	override->rotation->absolute = true;
-	override->position->interpolation_duration = 0.0f;
-	override->position->interpolation_duration = 0.0f;
+		override->rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
+	override->position.absolute = true;
+	override->rotation.absolute = true;
+	override->position.interpolation_duration = 0.0f;
+	override->position.interpolation_duration = 0.0f;
 	sao->setBoneOverride(bone, override);
 	return 0;
 }
@@ -543,10 +543,10 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 	std::string bone = readParam<std::string>(L, 2, "");
-	BonePositionOverride* override = sao->getBoneOverride(bone);
-	push_v3f(L, override->position->vector);
+	BonePositionOverride *override = sao->getBoneOverride(bone);
+	push_v3f(L, override->position.vector);
 	v3f euler_rot;
-	override->rotation->next.toEuler(euler_rot);
+	override->rotation.next.toEuler(euler_rot);
 	push_v3f(L, euler_rot * core::RADTODEG);
 	return 2;
 }
@@ -569,35 +569,35 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	}
 	lua_getfield(L, 3, "position");
 	if (!lua_isnil(L, -1)) {
-		override->position->vector = check_v3f(L, 4);
+		override->position.vector = check_v3f(L, 4);
 		lua_getfield(L, -1, "absolute");
-		override->position->absolute = lua_toboolean(L, 5);
+		override->position.absolute = lua_toboolean(L, 5);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "interpolation_duration");
 		if (lua_isnumber(L, -1))
-			override->position->interpolation_duration = lua_tonumber(L, -1);
+			override->position.interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 2);
 	}
 	lua_getfield(L, 3, "rotation");
 	if (!lua_isnil(L, -1)) {
-		override->rotation->next = core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
+		override->rotation.next = core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
 		lua_getfield(L, -1, "absolute");
-		override->rotation->absolute = lua_toboolean(L, -1);
+		override->rotation.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "interpolation_duration");
 		if (lua_isnumber(L, -1))
-			override->rotation->interpolation_duration = lua_tonumber(L, -1);
+			override->rotation.interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 2);
 	}
 	lua_getfield(L, 3, "scale");
 	if (!lua_isnil(L, -1)) {
-		override->scale->vector = check_v3f(L, -1);
+		override->scale.vector = check_v3f(L, -1);
 		lua_getfield(L, -1, "absolute");
-		override->scale->absolute = lua_toboolean(L, -1);
+		override->scale.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "interpolation_duration");
 		if (lua_isnumber(L, -1))
-			override->scale->interpolation_duration = lua_tonumber(L, -1);
+			override->scale.interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 2);
 	}
 	sao->setBoneOverride(bone, override);
@@ -608,29 +608,29 @@ void push_bone_override(lua_State *L, BonePositionOverride *override)
 {
 	lua_newtable(L);
 	lua_newtable(L);
-	push_v3f(L, override->position->vector);
+	push_v3f(L, override->position.vector);
 	lua_setfield(L, -2, "vector");
-	lua_pushnumber(L, override->position->interpolation_duration);
+	lua_pushnumber(L, override->position.interpolation_duration);
 	lua_setfield(L, -2, "interpolation_duration");
-	lua_pushboolean(L, override->position->absolute);
+	lua_pushboolean(L, override->position.absolute);
 	lua_setfield(L, -2, "absolute");
 	lua_setfield(L, -2, "position");
 	lua_newtable(L);
 	v3f euler_rot;
-	override->rotation->next.toEuler(euler_rot);
+	override->rotation.next.toEuler(euler_rot);
 	push_v3f(L, euler_rot * core::RADTODEG);
 	lua_setfield(L, -2, "vector");
-	lua_pushnumber(L, override->rotation->interpolation_duration);
+	lua_pushnumber(L, override->rotation.interpolation_duration);
 	lua_setfield(L, -2, "interpolation_duration");
-	lua_pushboolean(L, override->rotation->absolute);
+	lua_pushboolean(L, override->rotation.absolute);
 	lua_setfield(L, -2, "absolute");
 	lua_setfield(L, -2, "rotation");
 	lua_newtable(L);
-	push_v3f(L, override->scale->vector);
+	push_v3f(L, override->scale.vector);
 	lua_setfield(L, -2, "vector");
-	lua_pushnumber(L, override->scale->interpolation_duration);
+	lua_pushnumber(L, override->scale.interpolation_duration);
 	lua_setfield(L, -2, "interpolation_duration");
-	lua_pushboolean(L, override->scale->absolute);
+	lua_pushboolean(L, override->scale.absolute);
 	lua_setfield(L, -2, "absolute");
 	lua_setfield(L, -2, "scale");
 }

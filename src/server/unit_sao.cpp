@@ -89,7 +89,7 @@ BonePositionOverride *UnitSAO::getBoneOverride(const std::string &bone)
 	return m_bone_override[bone];
 }
 
-const std::unordered_map<std::string, BonePositionOverride *> &
+const std::unordered_map<std::string, BonePositionOverride*> &
 UnitSAO::getBoneOverrides() const
 {
 	return m_bone_override;
@@ -288,18 +288,18 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
 	os << serializeString16(bone);
-	writeV3F32(os, override->position->vector);
+	writeV3F32(os, override->position.vector);
 	v3f euler_rot;
-	override->rotation->next.toEuler(euler_rot);
+	override->rotation.next.toEuler(euler_rot);
 	writeV3F32(os, euler_rot * core::RADTODEG);
-	writeV3F32(os, override->scale->vector);
-	writeF32(os, override->position->interpolation_duration);
-	writeF32(os, override->rotation->interpolation_duration);
-	writeF32(os, override->scale->interpolation_duration);
+	writeV3F32(os, override->scale.vector);
+	writeF32(os, override->position.interpolation_duration);
+	writeF32(os, override->rotation.interpolation_duration);
+	writeF32(os, override->scale.interpolation_duration);
 	// clang-format off
-	writeU8(os, override->position->absolute * 1
-	          + override->rotation->absolute * 2
-	          + override->scale->absolute    * 4);
+	writeU8(os, override->position.absolute * 1
+	          + override->rotation.absolute * 2
+	          + override->scale.absolute    * 4);
 	// clang-format on
 	return os.str();
 }
