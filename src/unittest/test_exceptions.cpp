@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 #include "util/string.h"
+#include "gettext.h"
 #include "exceptions.h"
 
 class TestExceptions : public TestBase
@@ -30,6 +31,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testConstructors();
+	void testStringPrintf();
 };
 
 static TestExceptions g_test_instance;
@@ -37,6 +39,7 @@ static TestExceptions g_test_instance;
 void TestExceptions::runTests(IGameDef *gamedef)
 {
 	TEST(testConstructors);
+	TEST(testStringPrintf);
 }
 
 DEFINE_EXCEPTION(CustomException1)
@@ -79,4 +82,11 @@ void TestExceptions::testConstructors()
 	} catch (const CustomException2 &e) {
 		UASSERTEQ(std::string, e.what(), "The Default Message");
 	}
+}
+
+void TestExceptions::testStringPrintf()
+{
+	std::string bigstr(10000, 'x');
+	std::string s = fmtgettext("%s", bigstr.c_str());
+	UASSERTEQ(size_t, s.size(), bigstr.size());
 }
