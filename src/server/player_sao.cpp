@@ -319,8 +319,14 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	return os.str();
 }
 
-void PlayerSAO::setBasePosition(const v3f &position)
+void PlayerSAO::setBasePosition(v3f position)
 {
+	// It's not entirely clear which parts of the network protocol still use
+	// v3f1000, but the script API enforces its bound on all float vectors
+	// (maybe it shouldn't?). For that reason we need to make sure the position
+	// isn't ever set to values that fail this restriction.
+	clampToF1000(position);
+
 	if (m_player && position != m_base_position)
 		m_player->setDirty(true);
 
@@ -344,7 +350,7 @@ void PlayerSAO::setPos(const v3f &pos)
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
-	m_last_good_position = pos;
+	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
@@ -357,7 +363,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
-	m_last_good_position = pos;
+	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
