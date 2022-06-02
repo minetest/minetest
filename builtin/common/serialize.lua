@@ -138,11 +138,15 @@ local function serialize(value, write)
 		end
 		if type_ == "table" then
 			write("{")
-			-- First write list keys
-			local len = #value
-			for i = 1, len do
-				dump(value[i])
+			-- First write list keys:
+			-- Don't use the table length #value here as it may horribly fail
+			-- for tables which use large integers as keys in the hash part;
+			-- stop at the first "hole" (nil value) instead by using ipairs
+			local len = 0
+			for i, v in ipairs(value) do
+				dump(v)
 				write(";")
+				len = i
 			end
 			-- Now write map keys ([key] = value)
 			for k, v in next, value do
