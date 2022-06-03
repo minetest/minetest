@@ -3590,6 +3590,12 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
+* `minetest.get_tool_wear_after_use(uses [, initial_wear])`
+    * Simulates a tool being used once and returns the added wear,
+      such that, if only this function is used to calculate wear,
+      the tool will break exactly after `uses` times of uses
+    * `uses`: Number of times the tool can be used
+    * `initial_wear`: The initial wear the tool starts with (default: 0)
 * `minetest.get_dig_params(groups, tool_capabilities [, wear])`:
     Simulates an item that digs a node.
     Returns a table with the following fields:
@@ -6525,7 +6531,13 @@ an itemstring, a table or `nil`.
   or those of the hand if none are defined for this item type
 * `add_wear(amount)`
     * Increases wear by `amount` if the item is a tool, otherwise does nothing
+    * Valid `amount` range is [0,65536]
     * `amount`: number, integer
+* `add_wear_by_uses(max_uses)`
+    * Increases wear in such a way that, if only this function is called,
+      the item breaks after `max_uses` times
+    * Valid `max_uses` range is [0,65536]
+    * Does nothing if item is not a tool or if `max_uses` is 0
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
 * `item_fits(item)`: returns `true` if item or stack can be fully added to

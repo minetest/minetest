@@ -108,10 +108,19 @@ private:
 	static int l_get_tool_capabilities(lua_State *L);
 
 	// add_wear(self, amount) -> true/false
-	// The range for "amount" is [0,65535]. Wear is only added if the item
+	// The range for "amount" is [0,65536]. Wear is only added if the item
 	// is a tool. Adding wear might destroy the item.
 	// Returns true if the item is (or was) a tool.
 	static int l_add_wear(lua_State *L);
+
+	// add_wear_by_uses(self, max_uses) -> true/false
+	// The range for "max_uses" is [0,65536].
+	// Adds wear to the item in such a way that, if
+	// only this function is called to add wear, the item
+	// will be destroyed exactly after `max_uses` times of calling it.
+	// No-op if `max_uses` is 0 or item is not a tool.
+	// Returns true if the item is (or was) a tool.
+	static int l_add_wear_by_uses(lua_State *L);
 
 	// add_item(self, itemstack or itemstring or table or nil) -> itemstack
 	// Returns leftover item stack
