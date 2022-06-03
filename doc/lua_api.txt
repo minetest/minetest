@@ -1673,10 +1673,16 @@ these formats.
 ### Serialized
 
 This is called "stackstring" or "itemstring". It is a simple string with
-1-3 components: the full item identifier, an optional amount and an optional
-wear value. Syntax:
+1-4 components:
 
-    <identifier> [<amount>[ <wear>]]
+1. Full item identifier ("item name")
+2. Optional amount
+3. Optional wear value
+4. Optional item metadata
+
+Syntax:
+
+    <identifier> [<amount>[ <wear>[ <metadata>]]]
 
 Examples:
 
@@ -1684,6 +1690,26 @@ Examples:
 * `"default:dirt 5"`: 5 dirt
 * `"default:pick_stone"`: a new stone pickaxe
 * `"default:pick_wood 1 21323"`: a wooden pickaxe, ca. 1/3 worn out
+* `[[default:pick_wood 1 21323 "\u0001description\u0002My worn out pick\u0003"]]`:
+  * a wooden pickaxe from the `default` mod,
+  * amount must be 1 (pickaxe is a tool), ca. 1/3 worn out (it's a tool),
+  * with the `description` field set to `"My worn out pick"` in its metadata
+* `[[default:dirt 5 0 "\u0001description\u0002Special dirt\u0003"]]`:
+  * analogeous to the above example
+  * note how the wear is set to `0` as dirt is not a tool
+
+You should ideally use the `ItemStack` format to build complex item strings
+(especially if they use item metadata)
+without relying on the serialization format. Example:
+
+    local stack = ItemStack("default:pick_wood")
+    stack:set_wear(21323)
+    stack:get_meta():set_string("description", "My worn out pick")
+    local itemstring = stack:to_string()
+
+Additionally the methods `minetest.itemstring_with_palette(item, palette_index)`
+and `minetest.itemstring_with_color(item, colorstring)` may be used to create
+item strings encoding color information in their metadata.
 
 ### Table format
 
