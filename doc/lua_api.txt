@@ -1779,7 +1779,6 @@ An example: Make meat soup from any meat, any water and any bowl:
             {"group:water"},
             {"group:bowl"},
         },
-        -- preserve = {"group:bowl"}, -- Not implemented yet (TODO)
     }
 
 Another example: Make red wool from white wool and red dye:
