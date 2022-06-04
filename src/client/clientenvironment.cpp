@@ -506,6 +506,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 		bool collision;
 		GenericCAO* gcao = dynamic_cast<GenericCAO*>(obj);
 		if (gcao != nullptr && gcao->getProperties().rotate_selectionbox) {
+			gcao->getSceneNode()->updateAbsolutePosition();
 			collision = boxLineCollision(selection_box, obj->getSceneNode()->getAbsoluteTransformation().getRotationDegrees(),
 				rel_pos, line_vector, &current_intersection, &current_normal);
 		} else {
