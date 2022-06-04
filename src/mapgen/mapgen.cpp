@@ -238,7 +238,8 @@ u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 
 u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 {
-	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
+	// Multiply by unsigned number to avoid signed overflow (UB)
+	u32 n = 1619U * p.X + 31337U * p.Y + 52591U * p.Z + 1013U * seed;
 	n = (n >> 13) ^ n;
 	return (n * (n * n * 60493 + 19990303) + 1376312589);
 }
