@@ -77,6 +77,11 @@ struct PointedThing
 	v3f intersection_normal;
 	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
+	 * Raw normal vector of the intersection before applying rotation.
+	 */
+	v3f raw_intersection_normal;
+	/*!
+	 * Only valid if type isn't POINTEDTHING_NONE.
 	 * Indicates which selection box is selected, if there are more of them.
 	 */
 	u16 box_id = 0;
@@ -93,7 +98,7 @@ struct PointedThing
 		const v3s16 &real_under, const v3f &point, const v3f &normal,
 		u16 box_id, f32 distSq);
 	//! Constructor for POINTEDTHING_OBJECT
-	PointedThing(s16 id, const v3f &point, const v3f &normal, f32 distSq);
+	PointedThing(s16 id, const v3f &point, const v3f &normal, const v3f &raw_normal, f32 distSq);
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

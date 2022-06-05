@@ -3232,6 +3232,7 @@ PointedThing Game::updatePointedThing(
 			else
 				hud->setSelectionRotation(v3f(0.0f, 0.0f, 0.0f));
 		}
+		hud->setSelectedFaceNormal(result.raw_intersection_normal);
 	} else if (result.type == POINTEDTHING_NODE) {
 		// Update selection boxes
 		MapNode n = map.getNode(result.node_undersurface);
@@ -3250,10 +3251,7 @@ PointedThing Game::updatePointedThing(
 		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
 			camera_offset);
 		hud->setSelectionRotation(v3f(0.0f, 0.0f, 0.0f));
-		hud->setSelectedFaceNormal(v3f(
-			result.intersection_normal.X,
-			result.intersection_normal.Y,
-			result.intersection_normal.Z));
+		hud->setSelectedFaceNormal(result.intersection_normal);
 	}
 
 	// Update selection mesh light level and vertex colors

@@ -502,20 +502,22 @@ void ClientEnvironment::getSelectedActiveObjects(
 
 		v3f current_intersection;
 		v3f current_normal;
+		v3f current_raw_normal;
 		v3f rel_pos = shootline_on_map.start - obj->getPosition();
 		bool collision;
 		GenericCAO* gcao = dynamic_cast<GenericCAO*>(obj);
 		if (gcao != nullptr && gcao->getProperties().rotate_selectionbox) {
 			gcao->getSceneNode()->updateAbsolutePosition();
 			collision = boxLineCollision(selection_box, obj->getSceneNode()->getAbsoluteTransformation().getRotationDegrees(),
-				rel_pos, line_vector, &current_intersection, &current_normal);
+				rel_pos, line_vector, &current_intersection, &current_normal, &current_raw_normal);
 		} else {
 			collision = boxLineCollision(selection_box, rel_pos, line_vector,
 				&current_intersection, &current_normal);
+			current_raw_normal = current_normal;
 		}
 		if (collision) {
 			current_intersection += obj->getPosition();
-			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal,
+			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}

@@ -1757,6 +1757,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 
 		v3f current_intersection;
 		v3f current_normal;
+		v3f current_raw_normal;
 
 		ObjectProperties *props = obj->accessObjectProperties();
 		bool rotate_selectionbox = props ? props->rotate_selectionbox : false;
@@ -1764,15 +1765,16 @@ void ServerEnvironment::getSelectedActiveObjects(
 		UnitSAO* usao = dynamic_cast<UnitSAO*>(obj);
 		if (rotate_selectionbox && usao != nullptr) {
 			collision = boxLineCollision(selection_box, usao->getTotalRotation(),
-				rel_pos, line_vector, &current_intersection, &current_normal);
+				rel_pos, line_vector, &current_intersection, &current_normal, &current_raw_normal);
 		} else {
 			collision = boxLineCollision(selection_box, rel_pos, line_vector,
 				&current_intersection, &current_normal);
+			current_raw_normal = current_normal;
 		}
 		if (collision) {
 			current_intersection += pos;
 			objects.emplace_back(
-				(s16) obj->getId(), current_intersection, current_normal,
+				(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}

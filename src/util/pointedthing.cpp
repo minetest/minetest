@@ -36,12 +36,13 @@ PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	distanceSq(distSq)
 {}
 
-PointedThing::PointedThing(s16 id, const v3f &point, const v3f &normal,
+PointedThing::PointedThing(s16 id, const v3f &point, const v3f &normal, const v3f &raw_normal,
 	f32 distSq) :
 	type(POINTEDTHING_OBJECT),
 	object_id(id),
 	intersection_point(point),
 	intersection_normal(normal),
+	raw_intersection_normal(raw_normal),
 	distanceSq(distSq)
 {}
 

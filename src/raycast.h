@@ -78,4 +78,4 @@ bool boxLineCollision(const aabb3f &box, const v3f &start, const v3f &dir,
 
 bool boxLineCollision(const aabb3f &box, const v3f &box_rotation,
 	const v3f &start, const v3f &dir,
-	v3f *collision_point, v3f *collision_normal);
+	v3f *collision_point, v3f *collision_normal, v3f *raw_collision_normal);
