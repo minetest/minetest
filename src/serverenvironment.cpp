@@ -1763,7 +1763,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 		bool collision;
 		UnitSAO* usao = dynamic_cast<UnitSAO*>(obj);
 		if (rotate_selectionbox && usao != nullptr) {
-			collision = boxLineCollision(selection_box, usao->getRotation(),
+			collision = boxLineCollision(selection_box, usao->getTotalRotation(),
 				rel_pos, line_vector, &current_intersection, &current_normal);
 		} else {
 			collision = boxLineCollision(selection_box, rel_pos, line_vector,

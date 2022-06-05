@@ -180,6 +180,11 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			m_velocity += dtime * m_acceleration;
 		}
 
+		if (fabs(m_prop.automatic_rotate) > 0.001f) {
+			m_rotation_add_yaw = modulo360f(m_rotation_add_yaw + dtime * core::RADTODEG *
+					m_prop.automatic_rotate);
+		}
+
 		if (m_prop.automatic_face_movement_dir &&
 				(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)) {
 			float target_yaw = atan2(m_velocity.Z, m_velocity.X) * 180 / M_PI
