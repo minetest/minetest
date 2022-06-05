@@ -1033,9 +1033,9 @@ serverlist_file (Serverlist file) string favoriteservers.json
 #    0 to disable queueing and -1 to make the queue size unlimited.
 max_out_chat_queue_size (Maximum size of the out chat queue) int 20
 
-#    Enable register confirmation when connecting to server.
-#    If disabled, new account will be registered automatically.
-enable_register_confirmation (Enable register confirmation) bool true
+#    If enabled, account registration is separate from login in the UI.
+#    If disabled, new accounts will be registered automatically when logging in.
+enable_split_login_register (Enable split login/register) bool true
 
 [*Advanced]
 

@@ -43,7 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
-#include "gui/guiConfirmRegistration.h"
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
@@ -1480,7 +1479,8 @@ bool Game::connectToServer(const GameStartData &start_data,
 				start_data.password, start_data.address,
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound, eventmgr,
-				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get());
+				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
+				start_data.allow_login_or_register);
 		client->migrateModStorage();
 	} catch (const BaseException &e) {
 		*error_message = fmtgettext("Error creating client: %s", e.what());
@@ -1543,28 +1543,16 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 			}
 
-			if (client->m_is_registration_confirmation_state) {
-				if (registration_confirmation_shown) {
-					// Keep drawing the GUI
-					m_rendering_engine->draw_menu_scene(guienv, dtime, true);
-				} else {
-					registration_confirmation_shown = true;
-					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, start_data.name, start_data.password,
-						   connection_aborted, texture_src))->drop();
-				}
-			} else {
-				wait_time += dtime;
-				// Only time out if we aren't waiting for the server we started
-				if (!start_data.address.empty() && wait_time > 10) {
-					*error_message = gettext("Connection timed out.");
-					errorstream << *error_message << std::endl;
-					break;
-				}
-
-				// Update status
-				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
+			wait_time += dtime;
+			// Only time out if we aren't waiting for the server we started
+			if (!start_data.address.empty() && wait_time > 10) {
+				*error_message = gettext("Connection timed out.");
+				errorstream << *error_message << std::endl;
+				break;
 			}
+
+			// Update status
+			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
 		// TODO: Should something be done here? At least an info/error
