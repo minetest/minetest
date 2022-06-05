@@ -213,6 +213,18 @@ void openURIAndroid(const std::string &url)
 	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
 }
 
+void shareFileAndroid(const std::string &path)
+{
+	jmethodID url_open = jnienv->GetMethodID(nativeActivity, "shareFile",
+			"(Ljava/lang/String;)V");
+
+	FATAL_ERROR_IF(url_open == nullptr,
+			"porting::shareFileAndroid unable to find java openURI method");
+
+	jstring jurl = jnienv->NewStringUTF(path.c_str());
+	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
+}
+
 int getInputDialogState()
 {
 	jmethodID dialogstate = jnienv->GetMethodID(nativeActivity,
