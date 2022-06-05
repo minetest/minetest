@@ -41,7 +41,7 @@ void RenderingCoreSecondStage::initMaterial()
 	mat.ZWriteEnable = video::EZW_ON;
 	u32 shader = s->getShader("3d_secondstage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 	mat.MaterialType = s->getShaderInfo(shader).material;
-	for (int k = 0; k < 3; ++k) {
+	for (int k = 0; k < 4; ++k) {
 		mat.TextureLayer[k].AnisotropicFilter = false;
 		mat.TextureLayer[k].BilinearFilter = false;
 		mat.TextureLayer[k].TrilinearFilter = false;
@@ -64,7 +64,7 @@ void RenderingCoreSecondStage::initTextures()
 	renderTarget->setTexture(renderTargets, depthmap);
 	mat.TextureLayer[0].Texture = rendered;
 	mat.TextureLayer[1].Texture = normalmap;
-	mat.TextureLayer[2].Texture = depthmap;
+	mat.TextureLayer[3].Texture = depthmap;
 }
 
 void RenderingCoreSecondStage::clearTextures()

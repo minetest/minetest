@@ -1,10 +1,18 @@
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
-uniform sampler2D textureFlags;
+uniform sampler2D ShadowMapSampler;
 
 #define rendered baseTexture
 #define normalmap normalTexture
-#define depthmap textureFlags
+#define depthmap ShadowMapSampler
+
+const float far = 20000.;
+const float near = 1.;
+float mapDepth(float depth)
+{
+	depth = 2. * near / (far + near - depth * (far - near));
+	return clamp(pow(depth, 1./2.5), 0.0, 1.0);
+}
 
 void main(void)
 {
@@ -13,7 +21,8 @@ void main(void)
 	vec4 normal_and_depth = texture2D(normalmap, uv);
 	vec3 normal = normal_and_depth.rgb;
 	float draw_type = normal_and_depth.a * 256. / 25.;
-	float depth = texture2D(depthmap, uv).r;
+	float depth = mapDepth(texture2D(depthmap, uv).r);
+
 	if (uv.x < 0.5 && uv.y < 0.5)
 		gl_FragColor = color;
 	else if (uv.y < 0.5)
