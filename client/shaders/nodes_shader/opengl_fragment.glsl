@@ -496,7 +496,7 @@ void main(void)
 
 #ifdef SECONDSTAGE
 	gl_FragData[0] = col;
-	gl_FragData[1] = vec4(normalPass, DRAW_TYPE);
+	gl_FragData[1] = vec4(normalPass, DRAW_TYPE / 256.);
 	gl_FragData[2] = vec4((fogDistance-length(eyeVec))/1000, 0,0,0);
 #else
 	gl_FragColor = col;
