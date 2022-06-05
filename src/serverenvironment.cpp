@@ -258,6 +258,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	v3s16 pos;
 	MapNode n;
 	content_t c;
+	bool pos_valid; // dummy, we know it's valid
 	auto it = getLBMsIntroducedAfter(stamp);
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
@@ -268,7 +269,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoCheck(pos, nullptr);
+					n = block->getNodeNoCheck(pos, &pos_valid);
 					c = n.getContent();
 
 					// If content_t are not matching perform an LBM lookup
