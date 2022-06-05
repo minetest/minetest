@@ -57,12 +57,11 @@ void RenderingCoreSecondStage::initTextures()
 	normalmap = driver->addRenderTargetTexture(
 			screensize, "3d_normalmap", video::ECF_A8R8G8B8);
 	depthmap = driver->addRenderTargetTexture(
-			screensize, "3d_depthmap", video::ECF_R32F);
+			screensize, "3d_depthmap", video::ECF_D32);
 	renderTargets.push_back(rendered);
 	renderTargets.push_back(normalmap);
-	renderTargets.push_back(depthmap);
 	renderTarget = driver->addRenderTarget();
-	renderTarget->setTexture(renderTargets, nullptr);
+	renderTarget->setTexture(renderTargets, depthmap);
 	mat.TextureLayer[0].Texture = rendered;
 	mat.TextureLayer[1].Texture = normalmap;
 	mat.TextureLayer[2].Texture = depthmap;
@@ -74,6 +73,7 @@ void RenderingCoreSecondStage::clearTextures()
 	driver->removeTexture(rendered);
 	driver->removeTexture(normalmap);
 	driver->removeTexture(depthmap);
+	renderTargets.clear();
 }
 
 void RenderingCoreSecondStage::drawAll()
@@ -87,6 +87,9 @@ void RenderingCoreSecondStage::drawAll()
 
 void RenderingCoreSecondStage::draw()
 {
+	// driver->setTransform(video::ETS_VIEW, core::matrix4::EM4CONST_IDENTITY);
+	// driver->setTransform(video::ETS_PROJECTION, core::matrix4::EM4CONST_IDENTITY);
+	// driver->setTransform(video::ETS_WORLD, core::matrix4::EM4CONST_IDENTITY);
 	static const video::S3DVertex vertices[4] = {
 			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
 					video::SColor(255, 0, 255, 255), 1.0, 0.0),
