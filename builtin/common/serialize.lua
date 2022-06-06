@@ -135,7 +135,7 @@ local function serialize(value, write)
 			end
 			-- Now write map keys ([key] = value)
 			for k, v in next, value do
-				-- Check whether this is a non-list key (hash key)
+				-- We have written all non-float keys in [1, len] already
 				if type(k) ~= "number" or k % 1 ~= 0 or k < 1 or k > len then
 					if first then first = false else write(",") end
 					if use_short_key(k) then
