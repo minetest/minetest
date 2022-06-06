@@ -207,9 +207,6 @@ local function deserialize(func, safe)
 		env.loadstring = dummy_func
 	else
 		env.loadstring = function(str, ...)
-			if str:byte(1) == 0x1B then
-				return nil, "Bytecode prohibited"
-			end
 			local func, err = loadstring(str, ...)
 			if func then
 				setfenv(func, env)
@@ -227,8 +224,5 @@ local function deserialize(func, safe)
 end
 
 function core.deserialize(str, safe)
-	if str:byte(1) == 0x1B then
-		return nil, "Bytecode prohibited"
-	end
 	return deserialize(assert(loadstring(str)), safe)
 end
