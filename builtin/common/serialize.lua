@@ -146,7 +146,7 @@ local function serialize(value, write)
 			local len = 0
 			for i, v in ipairs(value) do
 				dump(v)
-				write(";")
+				write(",")
 				len = i
 			end
 			-- Now write map keys ([key] = value)
@@ -162,7 +162,7 @@ local function serialize(value, write)
 					end
 					write("=")
 					dump(v)
-					write(";")
+					write(",")
 				end
 			end
 			write("}")
