@@ -50,13 +50,6 @@ for _, keyword in pairs({
 	keywords[keyword] = true
 end
 
--- Build a table with the succeeding character from A-Z
--- Used to increment references quickly
-local succ_ref_char = {}
-for char = ("A"):byte(), ("Z"):byte() - 1 do
-	succ_ref_char[string.char(char)] = string.char(char + 1)
-end
-
 local function quote(string)
 	return string_format("%q", string)
 end
@@ -68,19 +61,7 @@ end
 -- Serializes Lua nil, booleans, numbers, strings, tables and even functions
 -- Tables are referenced by reference, strings are referenced by value. Supports circular tables.
 local function serialize(value, write)
-	-- References are stored as tables of characters A-Z, which are digits of a base 26 number
-	local reference = {"A"}
-	local function increment_reference(place)
-		if not reference[place] then
-			reference[place] = "B"
-		elseif reference[place] == "Z" then
-			-- Carriage
-			reference[place] = "A"
-			return increment_reference(place + 1)
-		else
-			reference[place] = succ_ref_char[reference[place]]
-		end
-	end
+	local reference, refnum = "r1", 1
 	-- [object] = reference string
 	local references = {}
 	-- Circular tables that must be filled using `table[key] = value` statements
@@ -89,8 +70,7 @@ local function serialize(value, write)
 		local type_ = type(object)
 		-- Object must appear more than once. If it is a string, the reference has to be shorter than the string.
 		if count >= 2 and (type_ ~= "string" or #reference + 2 < #object) then
-			local ref = table_concat(reference)
-			write(ref)
+			write(reference)
 			write("=")
 			if type_ == "table" then
 				write("{}")
@@ -100,11 +80,12 @@ local function serialize(value, write)
 				write(quote(object))
 			end
 			write(";")
-			references[object] = ref
+			references[object] = reference
 			if type_ == "table" then
-				to_fill[object] = ref
+				to_fill[object] = reference
 			end
-			increment_reference(1)
+			refnum = refnum + 1
+			reference = ("r%X"):format(refnum)
 		end
 	end
 	-- Used to decide whether we should do "key=..."
