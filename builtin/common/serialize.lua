@@ -2,8 +2,8 @@
 -- From: https://github.com/appgurueu/modlib/blob/master/luon.lua
 -- License: MIT
 
-local next, pairs, pcall, error, type, setfenv, loadstring
-	= next, pairs, pcall, error, type, setfenv, loadstring
+local next, rawget, pairs, pcall, error, type, setfenv, loadstring
+	= next, rawget, pairs, pcall, error, type, setfenv, loadstring
 
 local table_concat, string_dump, string_format, string_match, math_huge
 	= table.concat, string.dump, string.format, string.match, math.huge
@@ -123,17 +123,21 @@ local function serialize(value, write)
 			-- First write list keys:
 			-- Don't use the table length #value here as it may horribly fail
 			-- for tables which use large integers as keys in the hash part;
-			-- stop at the first "hole" (nil value) instead by using ipairs
+			-- stop at the first "hole" (nil value) instead
 			local len = 0
-			for i, v in ipairs(value) do
+			local first = true -- whether this is the first entry, which may not have a leading comma
+			while true do
+				local v = rawget(value, len + 1) -- use rawget to avoid metatables like the vector metatable
+				if v == nil then break end
+				if first then first = false else write(",") end
 				dump(v)
-				write(",")
-				len = i
+				len = len + 1
 			end
 			-- Now write map keys ([key] = value)
 			for k, v in next, value do
 				-- Check whether this is a non-list key (hash key)
 				if type(k) ~= "number" or k % 1 ~= 0 or k < 1 or k > len then
+					if first then first = false else write(",") end
 					if use_short_key(k) then
 						write(k)
 					else
@@ -143,7 +147,6 @@ local function serialize(value, write)
 					end
 					write("=")
 					dump(v)
-					write(",")
 				end
 			end
 			write("}")
