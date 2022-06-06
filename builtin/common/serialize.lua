@@ -169,6 +169,7 @@ local function serialize(value, write)
 			return
 		end
 	end
+	-- Write the statements to fill circular tables
 	for table, ref in pairs(to_fill) do
 		for k, v in pairs(table) do
 			write(ref)
