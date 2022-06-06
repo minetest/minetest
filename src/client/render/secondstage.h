@@ -34,7 +34,7 @@ protected:
 	void initMaterial();
 	void initTextures() override;
 	void clearTextures() override;
-	void draw();
+	void applyEffects();
 
 public:
 	RenderingCoreSecondStage(IrrlichtDevice *_device, Client *_client, Hud *_hud);

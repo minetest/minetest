@@ -80,12 +80,13 @@ void RenderingCoreSecondStage::drawAll()
 {
     driver->setRenderTargetEx(renderTarget, video::ECBF_ALL, skycolor);
 	draw3D();
+	drawPostFx();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
-	draw();
+	applyEffects();
 	drawHUD();
 }
 
-void RenderingCoreSecondStage::draw()
+void RenderingCoreSecondStage::applyEffects()
 {
 	// driver->setTransform(video::ETS_VIEW, core::matrix4::EM4CONST_IDENTITY);
 	// driver->setTransform(video::ETS_PROJECTION, core::matrix4::EM4CONST_IDENTITY);
