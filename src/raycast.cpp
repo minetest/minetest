@@ -144,6 +144,8 @@ bool boxLineCollision(const aabb3f &box, const v3f &rotation,
 	core::quaternion rot(rotation * core::DEGTORAD);
 	rot.makeInverse(); // inversely transform the ray
 	bool collision = boxLineCollision(box, rot * start, rot * dir, collision_point, collision_normal);
+	if (!collision) return collision;
+
 	// transform the results back
 	rot.makeInverse();
 	*collision_point = rot * *collision_point;
