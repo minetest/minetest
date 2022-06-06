@@ -44,7 +44,8 @@ for _, keyword in pairs({
 	"and", "break", "do", "else", "elseif",
 	"end", "false", "for", "function", "if",
 	"in", "local", "nil", "not", "or",
-	"repeat", "return", "then", "true", "until", "while"
+	"repeat", "return", "then", "true", "until", "while",
+	"goto" -- LuaJIT, Lua 5.2+
 }) do
 	keywords[keyword] = true
 end
