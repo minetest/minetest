@@ -5,8 +5,8 @@
 local next, pairs, pcall, error, type, setfenv, loadstring
 	= next, pairs, pcall, error, type, setfenv, loadstring
 
-local table_insert, table_concat, string_dump, string_format, string_match, math_huge
-	= table.insert, table.concat, string.dump, string.format, string.match, math.huge
+local table_concat, string_dump, string_format, string_match, math_huge
+	= table.concat, string.dump, string.format, string.match, math.huge
 
 -- Recursively counts occurences of objects (non-primitives including strings) in a table.
 local function count_objects(value)
@@ -193,7 +193,8 @@ end
 function core.serialize(value)
 	local rope = {}
 	serialize(value, function(text)
-		table_insert(rope, text)
+		 -- Faster than table.insert(rope, text) on PUC Lua 5.1
+		rope[#rope + 1] = text
 	end)
 	return table_concat(rope)
 end
