@@ -182,9 +182,14 @@ end
 
 local function dummy_func() end
 
-local function deserialize(func, safe)
-	-- math.huge is serialized to inf, 0/0 is serialized to -nan
-	local env = {inf = math_huge, nan = 0/0}
+local nan = (0/0)^1 -- +nan
+
+function core.deserialize(str, safe)
+	local func, err = loadstring(str)
+	if not func then return nil, err end
+
+	-- math.huge is serialized to inf, NaNs are serialized to nan by Lua
+	local env = {inf = math_huge, nan = nan}
 	if safe then
 		env.loadstring = dummy_func
 	else
@@ -203,10 +208,4 @@ local function deserialize(func, safe)
 		return value_or_err
 	end
 	return nil, value_or_err
-end
-
-function core.deserialize(str, safe)
-	local f, err = loadstring(str)
-	if not f then return nil, err end
-	return deserialize(f, safe)
 end
