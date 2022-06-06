@@ -2,8 +2,8 @@
 -- From: https://github.com/appgurueu/modlib/blob/master/luon.lua
 -- License: MIT
 
-local assert, next, pairs, pcall, error, type, setfenv, loadstring
-	= assert, next, pairs, pcall, error, type, setfenv, loadstring
+local next, pairs, pcall, error, type, setfenv, loadstring
+	= next, pairs, pcall, error, type, setfenv, loadstring
 
 local table_insert, table_concat, string_dump, string_format, string_match, math_huge
 	= table.insert, table.concat, string.dump, string.format, string.match, math.huge
@@ -224,5 +224,7 @@ local function deserialize(func, safe)
 end
 
 function core.deserialize(str, safe)
-	return deserialize(assert(loadstring(str)), safe)
+	local f, err = loadstring(str)
+	if not f then return nil, err end
+	return deserialize(f, safe)
 end
