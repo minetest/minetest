@@ -1572,6 +1572,7 @@ Exact pointing location (currently only `Raycast` supports these fields):
 * `pointed_thing.intersection_normal`: Unit vector, points outwards of the
   selected selection box. This specifies which face is pointed at.
   Is a null vector `vector.zero()` when the pointer is inside the selection box.
+  Will already be rotated properly if the entity uses a rotated selection box.
 
 
 
@@ -7233,6 +7234,15 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 * `objects`: if false, only nodes will be returned. Default is true.
 * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
              returned. Default is false.
+
+### Limitations
+
+Raycasts don't always work properly for attached objects as the server has no knowledge of models & bones.
+
+For rotated objects the server calculates the total rotation incurred through `automatic_rotate`.
+This may not exactly match the client's values due to network latency and delayed property sending.
+In singleplayer mode this will generally be negligible; in a network setting however raycasts
+concerning rotated objects with `automatic_rotate` may be slightly off.
 
 ### Methods
 
