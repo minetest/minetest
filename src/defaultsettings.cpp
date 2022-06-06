@@ -456,7 +456,6 @@ void set_default_settings()
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
-	settings->setDefault("fps_max", "0");
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
