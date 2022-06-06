@@ -1760,10 +1760,9 @@ void ServerEnvironment::getSelectedActiveObjects(
 		v3f current_raw_normal;
 
 		ObjectProperties *props = obj->accessObjectProperties();
-		bool rotate_selectionbox = props ? props->rotate_selectionbox : false;
 		bool collision;
 		UnitSAO* usao = dynamic_cast<UnitSAO*>(obj);
-		if (rotate_selectionbox && usao != nullptr) {
+		if (props->rotate_selectionbox && usao != nullptr) {
 			collision = boxLineCollision(selection_box, usao->getTotalRotation(),
 				rel_pos, line_vector, &current_intersection, &current_normal, &current_raw_normal);
 		} else {

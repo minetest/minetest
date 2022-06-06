@@ -91,7 +91,7 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 					&& (collision_point->Y <= box.MaxEdge.Y)
 					&& (collision_point->Z >= box.MinEdge.Z)
 					&& (collision_point->Z <= box.MaxEdge.Z)) {
-				collision_normal->set((dir.X > 0) ? -1.0f : 1.0f, 0.0f, 0.0f);
+				collision_normal->set((dir.X > 0) ? -1 : 1, 0, 0);
 				return true;
 			}
 		}
@@ -110,7 +110,7 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 					&& (collision_point->X <= box.MaxEdge.X)
 					&& (collision_point->Z >= box.MinEdge.Z)
 					&& (collision_point->Z <= box.MaxEdge.Z)) {
-				collision_normal->set(0.0f, (dir.Y > 0) ? -1.0f : 1.0f, 0.0f);
+				collision_normal->set(0, (dir.Y > 0) ? -1 : 1, 0);
 				return true;
 			}
 		}
@@ -129,7 +129,7 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 					&& (collision_point->X <= box.MaxEdge.X)
 					&& (collision_point->Y >= box.MinEdge.Y)
 					&& (collision_point->Y <= box.MaxEdge.Y)) {
-				collision_normal->set(0.0f, 0.0f, (dir.Z > 0.0f) ? -1.0f : 1.0f);
+				collision_normal->set(0, 0, (dir.Z > 0) ? -1 : 1);
 				return true;
 			}
 		}

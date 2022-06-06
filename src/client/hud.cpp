@@ -825,7 +825,8 @@ void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
 
 void Hud::drawSelectionMesh()
 {
-	if (m_mode == HIGHLIGHT_NONE || (m_mode == HIGHLIGHT_HALO && !m_selection_mesh)) return;
+	if (m_mode == HIGHLIGHT_NONE || (m_mode == HIGHLIGHT_HALO && !m_selection_mesh)
+		return;
 	video::SMaterial oldmaterial = driver->getMaterial2D();
 	driver->setMaterial(m_selection_material);
 	core::matrix4 oldtransform = driver->getTransform(video::ETS_WORLD);
