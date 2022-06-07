@@ -43,31 +43,36 @@ void TestProfiler::runTests(IGameDef *gamedef)
 
 void TestProfiler::testProfilerAverage()
 {
-	Profiler p;
+	auto &p = g_profiler;
+	auto &c = g_collector;
+
+	Profiler::enable();
 
 	p.avg("Test1", 1.f);
-	UASSERT(p.getValue("Test1") == 1.f);
+	UASSERT(c.getValue("Test1") == 1.f);
 
 	p.avg("Test1", 2.f);
-	UASSERT(p.getValue("Test1") == 1.5f);
+	UASSERT(c.getValue("Test1") == 1.5f);
 
 	p.avg("Test1", 3.f);
-	UASSERT(p.getValue("Test1") == 2.f);
+	UASSERT(c.getValue("Test1") == 2.f);
 
 	p.avg("Test1", 486.f);
-	UASSERT(p.getValue("Test1") == 123.f);
+	UASSERT(c.getValue("Test1") == 123.f);
 
 	p.avg("Test1", 8);
-	UASSERT(p.getValue("Test1") == 100.f);
+	UASSERT(c.getValue("Test1") == 100.f);
 
 	p.avg("Test1", 700);
-	UASSERT(p.getValue("Test1") == 200.f);
+	UASSERT(c.getValue("Test1") == 200.f);
 
 	p.avg("Test1", 10000);
-	UASSERT(p.getValue("Test1") == 1600.f);
+	UASSERT(c.getValue("Test1") == 1600.f);
 
 	p.avg("Test2", 123.56);
 	p.avg("Test2", 123.58);
 
-	UASSERT(p.getValue("Test2") == 123.57f);
+	UASSERT(c.getValue("Test2") == 123.57f);
+
+	Profiler::disable();
 }

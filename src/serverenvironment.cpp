@@ -1291,7 +1291,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 void ServerEnvironment::step(float dtime)
 {
-	ScopeProfiler sp2(g_profiler, "ServerEnv::step()", SPT_AVG);
+	ScopeProfiler sp2("ServerEnv::step()");
 	const auto start_time = porting::getTimeUs();
 
 	/* Step time of day */
@@ -1318,7 +1318,7 @@ void ServerEnvironment::step(float dtime)
 		Handle players
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "ServerEnv: move players", SPT_AVG);
+		ScopeProfiler sp("ServerEnv: move players");
 		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
@@ -1334,7 +1334,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval) ||
 		m_force_update_active_blocks) {
-		ScopeProfiler sp(g_profiler, "ServerEnv: update active blocks", SPT_AVG);
+		ScopeProfiler sp("ServerEnv: update active blocks");
 
 		/*
 			Get player block positions
@@ -1409,7 +1409,7 @@ void ServerEnvironment::step(float dtime)
 		Mess around in active blocks
 	*/
 	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval)) {
-		ScopeProfiler sp(g_profiler, "ServerEnv: Run node timers", SPT_AVG);
+		ScopeProfiler sp("ServerEnv: Run node timers");
 
 		float dtime = m_cache_nodetimer_interval;
 
@@ -1447,7 +1447,7 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval)) {
-		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
+		ScopeProfiler sp("SEnv: modify in blocks avg per interval");
 		TimeTaker timer("modify in active blocks per interval");
 
 		// Initialize handling of ActiveBlockModifiers
@@ -1489,10 +1489,10 @@ void ServerEnvironment::step(float dtime)
 				break;
 			}
 		}
-		g_profiler->avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
-		g_profiler->avg("ServerEnv: active blocks cached", blocks_cached);
-		g_profiler->avg("ServerEnv: active blocks scanned for ABMs", blocks_scanned);
-		g_profiler->avg("ServerEnv: ABMs run", abms_run);
+		g_profiler.avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
+		g_profiler.avg("ServerEnv: active blocks cached", blocks_cached);
+		g_profiler.avg("ServerEnv: active blocks scanned for ABMs", blocks_scanned);
+		g_profiler.avg("ServerEnv: ABMs run", abms_run);
 
 		timer.stop(true);
 	}
@@ -1508,7 +1508,7 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "ServerEnv: Run SAO::step()", SPT_AVG);
+		ScopeProfiler sp("ServerEnv: Run SAO::step()");
 
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
@@ -1824,7 +1824,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 */
 void ServerEnvironment::removeRemovedObjects()
 {
-	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
+	ScopeProfiler sp("ServerEnvironment::removeRemovedObjects()");
 
 	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it

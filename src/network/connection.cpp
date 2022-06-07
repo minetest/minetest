@@ -40,12 +40,6 @@ namespace con
 /******************************************************************************/
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
-#ifdef NDEBUG
-	#define PROFILE(a)
-#else
-	#define PROFILE(a) a
-#endif
-
 // TODO: Clean this up.
 #define LOG(a) a
 
@@ -904,8 +898,8 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 								jitter * (1/num_samples);
 
 		if (!profiler_id.empty()) {
-			g_profiler->graphAdd(profiler_id + " RTT [ms]", rtt * 1000.f);
-			g_profiler->graphAdd(profiler_id + " jitter [ms]", jitter * 1000.f);
+			g_profiler.graphAdd(profiler_id + " RTT [ms]", rtt * 1000.f);
+			g_profiler.graphAdd(profiler_id + " jitter [ms]", jitter * 1000.f);
 		}
 	}
 	/* save values required for next loop */
@@ -925,6 +919,21 @@ bool Peer::isTimedOut(float timeout)
 	return m_timeout_counter > timeout;
 }
 
+void Peer::initProfileIds()
+{
+	std::string connDesc = m_connection->getDesc();
+	{
+		std::stringstream ss;
+		ss << "runTimeouts[" << connDesc << ";" << id << ";RELIABLE]";
+		runTimeoutsIdentifier = ss.str();
+	}
+	{
+		std::stringstream ss;
+		ss << "sendPackets[" << connDesc << ";" << id << ";RELIABLE]";
+		sendPacketsIdentifier = ss.str();
+	}
+}
+
 void Peer::Drop()
 {
 	{
@@ -934,15 +943,8 @@ void Peer::Drop()
 			return;
 	}
 
-	PROFILE(std::stringstream peerIdentifier1);
-	PROFILE(peerIdentifier1 << "runTimeouts[" << m_connection->getDesc()
-			<< ";" << id << ";RELIABLE]");
-	PROFILE(g_profiler->remove(peerIdentifier1.str()));
-	PROFILE(std::stringstream peerIdentifier2);
-	PROFILE(peerIdentifier2 << "sendPackets[" << m_connection->getDesc()
-			<< ";" << id << ";RELIABLE]");
-	PROFILE(ScopeProfiler peerprofiler(g_profiler, peerIdentifier2.str(), SPT_AVG));
-
+	g_profiler.remove(runTimeoutsIdentifier);
+	g_profiler.remove(sendPacketsIdentifier);
 	delete this;
 }
 

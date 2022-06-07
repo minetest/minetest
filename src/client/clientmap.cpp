@@ -186,7 +186,7 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 
 void ClientMap::updateDrawList()
 {
-	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
+	ScopeProfiler sp("CM::updateDrawList()");
 
 	m_needs_update_drawlist = false;
 
@@ -302,10 +302,10 @@ void ClientMap::updateDrawList()
 			m_last_drawn_sectors.insert(sp);
 	}
 
-	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
-	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
-	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
-	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
+	g_profiler.avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
+	g_profiler.avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
+	g_profiler.avg("MapBlocks drawn [#]", m_drawlist.size());
+	g_profiler.avg("MapBlocks loaded [#]", blocks_loaded);
 }
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
@@ -495,20 +495,20 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		vertex_count += buf->getIndexCount();
 	}
 
-	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
+	g_profiler.avg(prefix + "draw meshes [ms]", draw.stop(true));
 
 	// Log only on solid pass because values are the same
 	if (pass == scene::ESNRP_SOLID) {
-		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
+		g_profiler.avg("renderMap(): animated meshes [#]", mesh_animate_count);
 	}
 
 	if (pass == scene::ESNRP_TRANSPARENT) {
-		g_profiler->avg("renderMap(): transparent buffers [#]", draw_order.size());
+		g_profiler.avg("renderMap(): transparent buffers [#]", draw_order.size());
 	}
 
-	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
-	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
-	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
+	g_profiler.avg(prefix + "vertices drawn [#]", vertex_count);
+	g_profiler.avg(prefix + "drawcalls [#]", drawcall_count);
+	g_profiler.avg(prefix + "material swaps [#]", material_swaps);
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
@@ -587,7 +587,7 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		int oldvalue, bool *sunlight_seen_result)
 {
-	ScopeProfiler sp(g_profiler, "CM::getBackgroundBrightness", SPT_AVG);
+	ScopeProfiler sp("CM::getBackgroundBrightness");
 	static v3f z_directions[50] = {
 		v3f(-100, 0, 0)
 	};
@@ -835,10 +835,10 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	driver->setMaterial(clean); // reset material to defaults
 	driver->draw3DLine(v3f(), v3f(), video::SColor(0));
 
-	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
-	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
-	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
-	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
+	g_profiler.avg(prefix + "draw meshes [ms]", draw.stop(true));
+	g_profiler.avg(prefix + "vertices drawn [#]", vertex_count);
+	g_profiler.avg(prefix + "drawcalls [#]", drawcall_count);
+	g_profiler.avg(prefix + "material swaps [#]", material_swaps);
 }
 
 /*
@@ -846,7 +846,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 */
 void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length)
 {
-	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
+	ScopeProfiler sp("CM::updateDrawListShadow()");
 
 	v3s16 cam_pos_nodes = floatToInt(shadow_light_pos, BS);
 	v3s16 p_blocks_min;
@@ -904,15 +904,15 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 		}
 	}
 
-	g_profiler->avg("SHADOW MapBlock meshes in range [#]", blocks_in_range_with_mesh);
-	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
-	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
-	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
+	g_profiler.avg("SHADOW MapBlock meshes in range [#]", blocks_in_range_with_mesh);
+	g_profiler.avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
+	g_profiler.avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
+	g_profiler.avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
 
 void ClientMap::updateTransparentMeshBuffers()
 {
-	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
+	ScopeProfiler sp("CM::updateTransparentMeshBuffers");
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
 	f32 sorting_distance_sq = pow(m_cache_transparency_sorting_distance * BS, 2.0f);
@@ -941,8 +941,8 @@ void ClientMap::updateTransparentMeshBuffers()
 		}
 	}
 
-	g_profiler->avg("CM::Transparent Buffers - Sorted", sorted_blocks);
-	g_profiler->avg("CM::Transparent Buffers - Unsorted", unsorted_blocks);
+	g_profiler.avg("CM::Transparent Buffers - Sorted", sorted_blocks);
+	g_profiler.avg("CM::Transparent Buffers - Unsorted", unsorted_blocks);
 	m_needs_update_transparent_meshes = false;
 }
 

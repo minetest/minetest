@@ -132,7 +132,7 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 	}
 
 	u64 end_time = porting::getTimeUs();
-	g_profiler->avg("l_deprecated_function", end_time - start_time);
+	g_profiler.avg("l_deprecated_function", end_time - start_time);
 
 	return func(L);
 }

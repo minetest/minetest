@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include <IGUIEnvironment.h>
 #include "gui/guiFormSpecMenu.h"
+#include "gui/stackedareachart.h"
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "game.h"
@@ -91,6 +92,12 @@ public:
 	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count);
 	void updateChatSize();
 
+	bool usingProfiler();
+
+	// called every frame (to draw thread charts)
+	void drawProfiler(video::IVideoDriver *driver, gui::IGUIFont *font);
+
+	// called every ~3 seconds
 	void updateProfiler();
 
 	void toggleChat();
@@ -129,7 +136,11 @@ private:
 
 	gui::IGUIStaticText *m_guitext_profiler = nullptr; // Profiler text
 	u8 m_profiler_current_page = 0;
-	const u8 m_profiler_max_page = 3;
+	const u8 m_profiler_print_pages = 3;
+
+	u64 m_profiler_thread_update_time = 0;
+	std::vector<std::string> m_profiler_thread_names;
+	StackedAreaChart m_profiler_thread_chart;
 
 	// Default: "". If other than "": Empty show_formspec packets will only
 	// close the formspec when the formname matches

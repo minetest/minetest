@@ -91,7 +91,7 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		cached_blocks.push_back(cacheBlock(map, p + dp,
 				SKIP_UPDATE_IF_ALREADY_CACHED,
 				&cache_hit_counter));
-	g_profiler->avg("MeshUpdateQueue: MapBlocks from cache [%]",
+	g_profiler.avg("MeshUpdateQueue: MapBlocks from cache [%]",
 			100.0f * cache_hit_counter / cached_blocks.size());
 
 	/*
@@ -228,7 +228,7 @@ void MeshUpdateQueue::cleanupCache()
 {
 	const int mapblock_kB = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE *
 			sizeof(MapNode) / 1000;
-	g_profiler->avg("MeshUpdateQueue MapBlock cache size kB",
+	g_profiler.avg("MeshUpdateQueue MapBlock cache size kB",
 			mapblock_kB * m_cache.size());
 
 	// The cache size is kept roughly below cache_soft_max_size, not letting
@@ -294,7 +294,7 @@ void MeshUpdateThread::doUpdate()
 	while ((q = m_queue_in.pop())) {
 		if (m_generation_interval)
 			sleep_ms(m_generation_interval);
-		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
+		ScopeProfiler sp("Client: Mesh making (sum)");
 
 		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
 

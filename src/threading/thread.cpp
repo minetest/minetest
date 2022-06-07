@@ -25,6 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/thread.h"
 #include "threading/mutex_auto_lock.h"
+#include "profiler.h"
 #include "log.h"
 #include "porting.h"
 
@@ -177,8 +178,8 @@ void Thread::threadProc(Thread *thr)
 #endif
 
 	thr->setName(thr->m_name);
-
 	g_logger.registerThread(thr->m_name);
+	g_profiler.setThreadName(thr->m_name);
 	thr->m_running = true;
 
 	// Wait for the thread that started this one to finish initializing the

@@ -1068,9 +1068,8 @@ void Game::run()
 	FpsControl draw_times;
 	f32 dtime; // in seconds
 
-	/* Clear the profiler */
-	Profiler::GraphValues dummyvalues;
-	g_profiler->graphGet(dummyvalues);
+	/* Clear the profiler graph */
+	g_collector.graphGet();
 
 	draw_times.reset();
 
@@ -1764,22 +1763,33 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 		profiler_print_interval = 3;
 	}
 
+	// Decide here whether the profiler should be enabled/disabled globally.
+	bool needProfiler =
+		(print_to_log && infostream) ||
+		m_game_ui->usingProfiler() ||
+		m_game_ui->m_flags.show_profiler_graph;
+	if (needProfiler) {
+		Profiler::enable();
+	} else {
+		Profiler::disable();
+	}
+
 	if (profiler_interval.step(dtime, profiler_print_interval)) {
 		if (print_to_log) {
 			infostream << "Profiler:" << std::endl;
-			g_profiler->print(infostream);
+			g_collector.print(infostream);
 		}
 
 		m_game_ui->updateProfiler();
-		g_profiler->clear();
+		g_collector.clear();
 	}
 
 	// Update update graphs
-	g_profiler->graphAdd("Time non-rendering [us]",
+	g_profiler.graphAdd("Time non-rendering [us]",
 		draw_times.busy_time - stats.drawtime);
 
-	g_profiler->graphAdd("Sleep [us]", draw_times.sleep_time);
-	g_profiler->graphAdd("FPS", 1.0f / dtime);
+	g_profiler.graphAdd("Sleep [us]", draw_times.sleep_time);
+	g_profiler.graphAdd("FPS", 1.0f / dtime);
 }
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
@@ -3976,6 +3986,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	if (m_game_ui->m_flags.show_profiler_graph)
 		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
 
+	m_game_ui->drawProfiler(driver, g_fontengine->getFont());
+
 	/*
 		Damage flash
 	*/
@@ -4018,16 +4030,14 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	driver->endScene();
 
 	stats->drawtime = tt_draw.stop(true);
-	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
-	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
+	g_profiler.graphAdd("Draw scene [us]", stats->drawtime);
+	g_profiler.avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
 
 /* Log times and stuff for visualization */
 inline void Game::updateProfilerGraphs(ProfilerGraph *graph)
 {
-	Profiler::GraphValues values;
-	g_profiler->graphGet(values);
-	graph->put(values);
+	graph->put(g_collector.graphGet());
 }
 
 /****************************************************************************

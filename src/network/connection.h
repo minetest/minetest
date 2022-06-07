@@ -497,7 +497,8 @@ class Peer {
 			address(address_),
 			m_last_timeout_check(porting::getTimeMs())
 		{
-		};
+			initProfileIds();
+		}
 
 		virtual ~Peer() {
 			MutexAutoLock usage_lock(m_exclusive_access_mutex);
@@ -506,6 +507,10 @@ class Peer {
 
 		// Unique id of the peer
 		const session_t id;
+
+		// Profiling ids
+		std::string runTimeoutsIdentifier;
+		std::string sendPacketsIdentifier;
 
 		void Drop();
 
@@ -575,6 +580,7 @@ class Peer {
 		// Ping timer
 		float m_ping_timer = 0.0f;
 	private:
+		void initProfileIds();
 
 		struct rttstats {
 			float jitter_min = FLT_MAX;

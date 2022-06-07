@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profilergraph.h"
 #include "util/string.h"
 
-void ProfilerGraph::put(const Profiler::GraphValues &values)
+void ProfilerGraph::put(const StatsCollector::GraphValuesMap &values)
 {
 	m_log.emplace_back(values);
 
@@ -126,7 +126,7 @@ void ProfilerGraph::draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 		for (const Piece &piece : m_log) {
 			float value = 0;
 			bool value_exists = false;
-			Profiler::GraphValues::const_iterator k = piece.values.find(id);
+			StatsCollector::GraphValuesMap::const_iterator k = piece.values.find(id);
 
 			if (k != piece.values.end()) {
 				value = k->second;

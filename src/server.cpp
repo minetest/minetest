@@ -589,7 +589,7 @@ void Server::AsyncRunStep(bool initial_step)
 	if((dtime < 0.001) && !initial_step)
 		return;
 
-	ScopeProfiler sp(g_profiler, "Server::AsyncRunStep()", SPT_AVG);
+	ScopeProfiler sp("Server::AsyncRunStep()");
 
 	{
 		MutexAutoLock lock1(m_step_dtime_mutex);
@@ -644,7 +644,7 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		MutexAutoLock lock(m_env_mutex);
 		// Run Map's timers and unload unused data
-		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
+		ScopeProfiler sp("Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("server_unload_unused_data_timeout"),
 			U32_MAX);
@@ -678,7 +678,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		MutexAutoLock lock(m_env_mutex);
 
-		ScopeProfiler sp(g_profiler, "Server: liquid transform");
+		ScopeProfiler sp("Server: liquid transform");
 
 		std::map<v3s16, MapBlock*> modified_blocks;
 		m_env->getServerMap().transformLiquids(modified_blocks, m_env);
@@ -742,7 +742,7 @@ void Server::AsyncRunStep(bool initial_step)
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
 			const RemoteClientMap &clients = m_clients.getClientList();
-			ScopeProfiler sp(g_profiler, "Server: update objects within range");
+			ScopeProfiler sp("Server: update objects within range");
 
 			m_player_gauge->set(clients.size());
 			for (const auto &client_it : clients) {
@@ -777,7 +777,7 @@ void Server::AsyncRunStep(bool initial_step)
 	*/
 	{
 		MutexAutoLock envlock(m_env_mutex);
-		ScopeProfiler sp(g_profiler, "Server: send SAO messages");
+		ScopeProfiler sp("Server: send SAO messages");
 
 		// Key = object id
 		// Value = data sent by object
@@ -889,7 +889,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_map_edit_event_counter->increment(event_count);
 
 		// We'll log the amount of each
-		Profiler prof;
+		std::map<std::string, u64> prof;
 
 		std::unordered_set<v3s16> node_meta_updates;
 
@@ -905,18 +905,18 @@ void Server::AsyncRunStep(bool initial_step)
 			switch (event->type) {
 			case MEET_ADDNODE:
 			case MEET_SWAPNODE:
-				prof.add("MEET_ADDNODE", 1);
+				prof["MEET_ADDNODE"] += 1;
 				sendAddNode(event->p, event->n, &far_players,
 						disable_single_change_sending ? 5 : 30,
 						event->type == MEET_ADDNODE);
 				break;
 			case MEET_REMOVENODE:
-				prof.add("MEET_REMOVENODE", 1);
+				prof["MEET_REMOVENODE"] += 1;
 				sendRemoveNode(event->p, &far_players,
 						disable_single_change_sending ? 5 : 30);
 				break;
 			case MEET_BLOCK_NODE_METADATA_CHANGED: {
-				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
+				prof["MEET_BLOCK_NODE_METADATA_CHANGED"] += 1;
 				if (!event->is_private_change) {
 					node_meta_updates.emplace(event->p);
 				}
@@ -929,13 +929,13 @@ void Server::AsyncRunStep(bool initial_step)
 				break;
 			}
 			case MEET_OTHER:
-				prof.add("MEET_OTHER", 1);
+				prof["MEET_OTHER"] += 1;
 				for (const v3s16 &modified_block : event->modified_blocks) {
 					m_clients.markBlockposAsNotSent(modified_block);
 				}
 				break;
 			default:
-				prof.add("unknown", 1);
+				prof["unknown"] += 1;
 				warningstream << "Server: Unknown MapEditEvent "
 						<< ((u32)event->type) << std::endl;
 				break;
@@ -964,10 +964,14 @@ void Server::AsyncRunStep(bool initial_step)
 
 		if (event_count >= 5) {
 			infostream << "Server: MapEditEvents:" << std::endl;
-			prof.print(infostream);
+			for (const auto &kv : prof) {
+				infostream << "  " << kv.first << ": " << kv.second << std::endl;
+			}
 		} else if (event_count != 0) {
 			verbosestream << "Server: MapEditEvents:" << std::endl;
-			prof.print(verbosestream);
+			for (const auto &kv : prof) {
+				verbosestream << "  " << kv.first << ": " << kv.second << std::endl;
+			}
 		}
 
 		// Send all metadata updates
@@ -999,7 +1003,7 @@ void Server::AsyncRunStep(bool initial_step)
 			counter = 0.0;
 			MutexAutoLock lock(m_env_mutex);
 
-			ScopeProfiler sp(g_profiler, "Server: map saving (sum)");
+			ScopeProfiler sp("Server: map saving (sum)");
 
 			// Save ban file
 			if (m_banmanager->isModified()) {
@@ -1147,7 +1151,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 	// Environment is locked first.
 	MutexAutoLock envlock(m_env_mutex);
 
-	ScopeProfiler sp(g_profiler, "Server: Process network packet (sum)");
+	ScopeProfiler sp("Server: Process network packet (sum)");
 	u32 peer_id = pkt->getPeerId();
 
 	try {
@@ -2381,7 +2385,7 @@ void Server::SendBlocks(float dtime)
 	u32 total_sending = 0, unique_clients = 0;
 
 	{
-		ScopeProfiler sp2(g_profiler, "Server::SendBlocks(): Collect list");
+		ScopeProfiler sp2("Server::SendBlocks(): Collect list");
 
 		std::vector<session_t> clients = m_clients.getClientIDs();
 
@@ -2411,7 +2415,7 @@ void Server::SendBlocks(float dtime)
 	u32 max_blocks_to_send = (m_env->getPlayerCount() + g_settings->getU32("max_users")) *
 		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
 
-	ScopeProfiler sp(g_profiler, "Server::SendBlocks(): Send to clients");
+	ScopeProfiler sp("Server::SendBlocks(): Send to clients");
 	Map &map = m_env->getMap();
 
 	SerializedBlockCache cache, *cache_ptr = nullptr;
@@ -3899,12 +3903,15 @@ void dedicated_server_loop(Server &server, bool &kill)
 			Profiler
 		*/
 		if (profiler_print_interval != 0) {
+			Profiler::enable();
 			if(m_profiler_interval.step(steplen, profiler_print_interval))
 			{
 				infostream<<"Profiler:"<<std::endl;
-				g_profiler->print(infostream);
-				g_profiler->clear();
+				g_collector.print(infostream);
+				g_collector.clear();
 			}
+		} else {
+			Profiler::disable();
 		}
 	}
 

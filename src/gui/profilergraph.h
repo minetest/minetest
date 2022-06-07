@@ -32,8 +32,8 @@ class ProfilerGraph
 private:
 	struct Piece
 	{
-		Piece(Profiler::GraphValues v) : values(std::move(v)) {}
-		Profiler::GraphValues values;
+		Piece(StatsCollector::GraphValuesMap v) : values(std::move(v)) {}
+		StatsCollector::GraphValuesMap values;
 	};
 	struct Meta
 	{
@@ -54,7 +54,7 @@ public:
 
 	ProfilerGraph() = default;
 
-	void put(const Profiler::GraphValues &values);
+	void put(const StatsCollector::GraphValuesMap &values);
 
 	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 			gui::IGUIFont *font) const;

@@ -619,8 +619,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	std::map<v3s16, MapBlock *> *modified_blocks)
 {
 	MutexAutoLock envlock(m_server->m_env_mutex);
-	ScopeProfiler sp(g_profiler,
-		"EmergeThread: after Mapgen::makeChunk", SPT_AVG);
+	ScopeProfiler sp("EmergeThread: after Mapgen::makeChunk");
 
 	/*
 		Perform post-processing on blocks (invalidate lighting, queue liquid
@@ -706,8 +705,7 @@ void *EmergeThread::run()
 		action = getBlockOrStartGen(pos, allow_gen, &block, &bmdata);
 		if (action == EMERGE_GENERATED) {
 			{
-				ScopeProfiler sp(g_profiler,
-					"EmergeThread: Mapgen::makeChunk", SPT_AVG);
+				ScopeProfiler sp("EmergeThread: Mapgen::makeChunk");
 
 				m_mapgen->makeChunk(&bmdata);
 			}

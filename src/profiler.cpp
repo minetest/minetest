@@ -20,128 +20,42 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "porting.h"
 
-static Profiler main_profiler;
-Profiler *g_profiler = &main_profiler;
-ScopeProfiler::ScopeProfiler(
-		Profiler *profiler, const std::string &name, ScopeProfilerType type) :
-		m_profiler(profiler),
-		m_name(name), m_type(type)
-{
-	m_name.append(" [ms]");
-	if (m_profiler)
-		m_timer = new TimeTaker(m_name, nullptr, PRECISION_MILLI);
-}
+StatsCollector g_collector;
+std::atomic<bool> Profiler::m_profiling_enabled{false};
+thread_local Profiler g_profiler;
+thread_local std::vector<ScopeProfiler*> ScopeProfiler::m_stack;
 
-ScopeProfiler::~ScopeProfiler()
-{
-	if (!m_timer)
-		return;
-
-	float duration_ms = m_timer->stop(true);
-	float duration = duration_ms;
-	if (m_profiler) {
-		switch (m_type) {
-		case SPT_ADD:
-			m_profiler->add(m_name, duration);
-			break;
-		case SPT_AVG:
-			m_profiler->avg(m_name, duration);
-			break;
-		case SPT_GRAPH_ADD:
-			m_profiler->graphAdd(m_name, duration);
-			break;
-		}
-	}
-	delete m_timer;
-}
-
-Profiler::Profiler()
+void StatsCollector::clear()
 {
 	m_start_time = porting::getTimeMs();
+	MutexAutoLock lock(m_mutex);
+	for (auto profiler : m_threads) {
+		profiler->clear();
+	}
 }
 
-void Profiler::add(const std::string &name, float value)
+std::vector<std::string> StatsCollector::listThreadNames()
 {
 	MutexAutoLock lock(m_mutex);
-	{
-		/* No average shall have been used; mark add used as -2 */
-		std::map<std::string, int>::iterator n = m_avgcounts.find(name);
-		if (n == m_avgcounts.end()) {
-			m_avgcounts[name] = -2;
-		} else {
-			if (n->second == -1)
-				n->second = -2;
-			assert(n->second == -2);
-		}
+	std::vector<std::string> threads;
+	for (const auto & profiler : m_threads) {
+		threads.push_back(profiler->getThreadName());
 	}
-	{
-		std::map<std::string, float>::iterator n = m_data.find(name);
-		if (n == m_data.end())
-			m_data[name] = value;
-		else
-			n->second += value;
-	}
+	return threads;
 }
 
-void Profiler::avg(const std::string &name, float value)
+int StatsCollector::print(std::ostream &o, u32 page, u32 pagecount)
 {
-	MutexAutoLock lock(m_mutex);
-	int &count = m_avgcounts[name];
-
-	assert(count != -2);
-	count = MYMAX(count, 0) + 1;
-	m_data[name] += value;
-}
-
-void Profiler::clear()
-{
-	MutexAutoLock lock(m_mutex);
-	for (auto &it : m_data) {
-		it.second = 0;
-	}
-	m_avgcounts.clear();
-	m_start_time = porting::getTimeMs();
-}
-
-float Profiler::getValue(const std::string &name) const
-{
-	auto numerator = m_data.find(name);
-	if (numerator == m_data.end())
-		return 0.f;
-
-	auto denominator = m_avgcounts.find(name);
-	if (denominator != m_avgcounts.end()) {
-		if (denominator->second >= 1)
-			return numerator->second / denominator->second;
-	}
-
-	return numerator->second;
-}
-
-int Profiler::getAvgCount(const std::string &name) const
-{
-	auto n = m_avgcounts.find(name);
-
-	if (n != m_avgcounts.end() && n->second >= 1)
-		return n->second;
-
-	return 1;
-}
-
-u64 Profiler::getElapsedMs() const
-{
-	return porting::getTimeMs() - m_start_time;
-}
-
-int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
-{
-	GraphValues values;
+	ProfileDataMap values;
 	getPage(values, page, pagecount);
-	char num_buf[50];
+	return print(o, values);
+}
 
+int StatsCollector::print(std::ostream &o, const ProfileDataMap &values)
+{
 	for (const auto &i : values) {
 		o << "  " << i.first << " ";
-		if (i.second == 0) {
+		if (i.second.total == 0) {
 			o << std::endl;
 			continue;
 		}
@@ -153,30 +67,52 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 			else
 				o << " ";
 		}
+		float total = i.second.total;
+		u64 count = i.second.count;
+		if (i.second.kind == PD_STAT && count > 0) {
+			total /= count;
+			count = 1;
+		}
+		char num_buf[50];
 		porting::mt_snprintf(num_buf, sizeof(num_buf), "% 4ix % 3g",
-				getAvgCount(i.first), i.second);
+			(unsigned int)count, (double)total);
 		o << num_buf << std::endl;
 	}
 	return values.size();
 }
 
-void Profiler::getPage(GraphValues &o, u32 page, u32 pagecount)
+void StatsCollector::getPage(ProfileDataMap &o, u32 page, u32 pagecount)
 {
 	MutexAutoLock lock(m_mutex);
+	aggregateThreads();
 
 	u32 minindex, maxindex;
-	paging(m_data.size(), page, pagecount, minindex, maxindex);
+	paging(m_combined_data.size(), page, pagecount, minindex, maxindex);
+	sanity_check(minindex <= maxindex);
+	sanity_check(maxindex <= m_combined_data.size());
 
-	for (const auto &i : m_data) {
-		if (maxindex == 0)
-			break;
-		maxindex--;
+	// Copy slice of the map corresponding to the page
+	auto begin = std::next(m_combined_data.begin(), minindex);
+	auto end = std::next(m_combined_data.begin(), maxindex);
+	o.insert(begin, end);
+}
 
-		if (minindex != 0) {
-			minindex--;
-			continue;
+// Must hold m_mutex when calling this
+void StatsCollector::aggregateThreads()
+{
+	for (auto profiler : m_threads) {
+		auto data = profiler->takeData();
+		auto& thread_specific_data = m_thread_data[profiler->getThreadName()];
+		for (const auto &kv : data) {
+			m_combined_data[kv.first].merge(kv.second);
+			// Thread-specific data is just scope timers
+			if (kv.second.kind == PD_TIME) {
+				thread_specific_data[kv.first].merge(kv.second);
+			}
 		}
-
-		o[i.first] = i.second / getAvgCount(i.first);
+		auto graphvalues = profiler->takeGraphValues();
+		for (const auto &kv : graphvalues) {
+			m_combined_graphvalues[kv.first] += kv.second;
+		}
 	}
 }

@@ -935,7 +935,7 @@ static void updateFastFaceRow(
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
 						pf, sp, face_dir_corrected, scale, dest);
-				g_profiler->avg("Meshgen: Tiles per face [#]", continuous_tiles_count);
+				g_profiler.avg("Meshgen: Tiles per face [#]", continuous_tiles_count);
 			}
 
 			continuous_tiles_count = 1;

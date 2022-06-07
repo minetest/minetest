@@ -329,7 +329,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 	bool save_before_unloading = maySaveBlocks();
 
 	// Profile modified reasons
-	Profiler modprofiler;
+	std::map<std::string, u64> modprofiler;
 
 	std::vector<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
@@ -359,7 +359,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 					// Save if modified
 					if (block->getModified() != MOD_STATE_CLEAN
 							&& save_before_unloading) {
-						modprofiler.add(block->getModifiedReasonString(), 1);
+						modprofiler[block->getModifiedReasonString()] += 1;
 						if (!saveBlock(block))
 							continue;
 						saved_blocks_count++;
@@ -413,7 +413,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 
 			// Save if modified
 			if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading) {
-				modprofiler.add(block->getModifiedReasonString(), 1);
+				modprofiler[block->getModifiedReasonString()] += 1;
 				if (!saveBlock(block))
 					continue;
 				saved_blocks_count++;
@@ -457,7 +457,9 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 		if(saved_blocks_count != 0){
 			PrintInfo(infostream); // ServerMap/ClientMap:
 			infostream<<"Blocks modified by: "<<std::endl;
-			modprofiler.print(infostream);
+			for (const auto &kv : modprofiler) {
+				infostream << "  " << kv.first << " " << kv.second << std::endl;
+			}
 		}
 	}
 }
@@ -1633,7 +1635,7 @@ void ServerMap::save(ModifiedState save_level)
 	}
 
 	// Profile modified reasons
-	Profiler modprofiler;
+	std::map<std::string, u64> modprofiler;
 
 	u32 block_count = 0;
 	u32 block_count_all = 0; // Number of blocks in memory
@@ -1657,7 +1659,7 @@ void ServerMap::save(ModifiedState save_level)
 					save_started = true;
 				}
 
-				modprofiler.add(block->getModifiedReasonString(), 1);
+				modprofiler[block->getModifiedReasonString()] += 1;
 
 				saveBlock(block);
 				block_count++;
@@ -1679,7 +1681,9 @@ void ServerMap::save(ModifiedState save_level)
 				<< std::endl;
 		PrintInfo(infostream); // ServerMap/ClientMap:
 		infostream<<"Blocks modified by: "<<std::endl;
-		modprofiler.print(infostream);
+		for (const auto &kv : modprofiler) {
+			infostream << "  " << kv.first << " " << kv.second << std::endl;
+		}
 	}
 
 	const auto end_time = porting::getTimeUs();

@@ -258,14 +258,47 @@ void GameUI::updateChatSize()
 	m_guitext_chat->setRelativePosition(chat_size);
 }
 
+bool GameUI::usingProfiler()
+{
+	return m_profiler_current_page != 0;
+}
+
+
+void GameUI::drawProfiler(video::IVideoDriver *driver, gui::IGUIFont *font)
+{
+	if (m_profiler_current_page <= m_profiler_print_pages)
+		return;
+
+	u64 now = porting::getTimeMs();
+
+	// Update the chart every 50ms.
+	// With 256 entries, this makes the entire chart 12.8 seconds long
+	if (now - m_profiler_thread_update_time > 50) {
+		m_profiler_thread_update_time = now;
+		int index = m_profiler_current_page - m_profiler_print_pages - 1;
+		sanity_check(index >= 0 && index < (int)m_profiler_thread_names.size());
+		auto name = m_profiler_thread_names[index];
+		// Discard all other thread's data
+		auto thread_data = g_collector.getThreadMap()[name];
+		// Use only the 'self' time for the chart
+		std::map<std::string, float> chart_data;
+		for (const auto &kv : thread_data) {
+			chart_data[kv.first] = kv.second.self;
+		}
+		m_profiler_thread_chart.setTitle(name + " Thread");
+		m_profiler_thread_chart.put(chart_data);
+	}
+	m_profiler_thread_chart.draw(core::rect<s32>(6, 50, 6 + 800, 50 + 400), driver, font);
+}
+
 void GameUI::updateProfiler()
 {
-	if (m_profiler_current_page != 0) {
+	if (m_profiler_current_page > 0 && m_profiler_current_page <= m_profiler_print_pages) {
 		std::ostringstream os(std::ios_base::binary);
 		os << "   Profiler page " << (int)m_profiler_current_page <<
-				", elapsed: " << g_profiler->getElapsedMs() << " ms)" << std::endl;
+				", elapsed: " << g_collector.getElapsedMs() << " ms)" << std::endl;
 
-		int lines = g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);
+		int lines = g_collector.print(os, m_profiler_current_page, m_profiler_print_pages);
 		++lines;
 
 		EnrichedString str(utf8_to_wide(os.str()));
@@ -280,9 +313,10 @@ void GameUI::updateProfiler()
 		lower_right.Y += size.Height;
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
+		m_guitext_profiler->setVisible(true);
+	} else {
+		m_guitext_profiler->setVisible(false);
 	}
-
-	m_guitext_profiler->setVisible(m_profiler_current_page != 0);
 }
 
 void GameUI::toggleChat()
@@ -305,14 +339,33 @@ void GameUI::toggleHud()
 
 void GameUI::toggleProfiler()
 {
-	m_profiler_current_page = (m_profiler_current_page + 1) % (m_profiler_max_page + 1);
+	// m_profiler_current_page:
+	//
+	//   0     : Not displayed
+	//   1 - 3 : Profiler print pages
+	//   4+    : Stacked Area Graphs for threads
+
+	// Update the thread list, except when we're looking at a thread,
+	// because it would be confusing if they disappeared/changed order
+	if (m_profiler_current_page <= m_profiler_print_pages)
+		m_profiler_thread_names = g_collector.listThreadNames();
+
+	u8 max_pages = m_profiler_print_pages + m_profiler_thread_names.size();
+	m_profiler_current_page += 1;
+
+	// Wrap around
+	if (m_profiler_current_page > max_pages)
+		m_profiler_current_page = 0;
+
+	// Clear the chart
+	m_profiler_thread_chart.clear();
 
 	// FIXME: This updates the profiler with incomplete values
 	updateProfiler();
 
 	if (m_profiler_current_page != 0) {
 		std::wstring msg = fwgettext("Profiler shown (page %d of %d)",
-				m_profiler_current_page, m_profiler_max_page);
+				m_profiler_current_page, max_pages);
 		showStatusText(msg);
 	} else {
 		showTranslatedStatusText("Profiler hidden");

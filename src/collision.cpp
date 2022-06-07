@@ -232,7 +232,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	static bool time_notification_done = false;
 	Map *map = &env->getMap();
 
-	ScopeProfiler sp(g_profiler, "collisionMoveSimple()", SPT_AVG);
+	ScopeProfiler sp("collisionMoveSimple()");
 
 	collisionMoveResult result;
 
@@ -268,7 +268,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, "collisionMoveSimple(): collect boxes", SPT_AVG);
+	ScopeProfiler sp2("collisionMoveSimple(): collect boxes");
 
 	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
