@@ -1021,12 +1021,12 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 	for (u32 i = 0; i < triangles->size(); i++)
 		indexes.push_back(i);
 
-	if (indexes.size() > 0) {
+	if (!indexes.empty()) {
 		// Start in the center of the block with increment of one quarter in each direction
-		root = buildTree(v3f(1, 0, 0), v3f((MAP_BLOCKSIZE + 1) * 0.5 * BS), MAP_BLOCKSIZE * 0.25 * BS, indexes, 0);
-	}
-	else
+		root = buildTree(v3f(1, 0, 0), v3f((MAP_BLOCKSIZE + 1) * 0.5f * BS), MAP_BLOCKSIZE * 0.25f * BS, indexes, 0);
+	} else {
 		root = -1;
+	}
 }
 
 /**
