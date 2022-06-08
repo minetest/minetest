@@ -290,7 +290,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 		os<<serializeString32(m_init_state);
 	}
 	writeU16(os, m_hp);
-	writeV3F1000(os, m_velocity);
+	writeV3F1000(os, clampToF1000(m_velocity));
 	// yaw
 	writeF1000(os, m_rotation.Y);
 

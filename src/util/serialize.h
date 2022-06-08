@@ -439,16 +439,14 @@ MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 //// More serialization stuff
 ////
 
-inline void clampToF1000(float &v)
+inline float clampToF1000(float v)
 {
-	v = core::clamp(v, F1000_MIN, F1000_MAX);
+	return core::clamp(v, F1000_MIN, F1000_MAX);
 }
 
-inline void clampToF1000(v3f &v)
+inline v3f clampToF1000(v3f v)
 {
-	clampToF1000(v.X);
-	clampToF1000(v.Y);
-	clampToF1000(v.Z);
+	return {clampToF1000(v.X), clampToF1000(v.Y), clampToF1000(v.Z)};
 }
 
 // Creates a string with the length as the first two bytes

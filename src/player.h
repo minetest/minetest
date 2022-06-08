@@ -141,7 +141,6 @@ public:
 
 	void setSpeed(v3f speed)
 	{
-		clampToF1000(speed);
 		m_speed = speed;
 	}
 
