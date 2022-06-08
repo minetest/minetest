@@ -4617,8 +4617,8 @@ provided by the Minetest engine and can be used by mods:
       * `ban`: can ban other players using `/ban` command.
       * `password`: can use `/setpassword` and `/clearpassword` commands
         to manage players' passwords.
-      * `protection_bypass`: can bypass node protection.
-        See also `minetest.is_protected(pos, name)`.
+      * `protection_bypass`: can bypass node protection. Note that the engine does not act upon this privilege,
+        it is only an implementation suggestion for games.
 
   * Administrative privileges:
       * `server`: can use `/fixlight`, `/deleteblocks` and `/deleteobjects`
