@@ -321,12 +321,6 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 
 void PlayerSAO::setBasePosition(v3f position)
 {
-	// It's not entirely clear which parts of the network protocol still use
-	// v3f1000, but the script API enforces its bound on all float vectors
-	// (maybe it shouldn't?). For that reason we need to make sure the position
-	// isn't ever set to values that fail this restriction.
-	clampToF1000(position);
-
 	if (m_player && position != m_base_position)
 		m_player->setDirty(true);
 
