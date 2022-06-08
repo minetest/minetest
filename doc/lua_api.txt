@@ -4631,7 +4631,7 @@ Related settings
 Minetest includes the following settings to control behavior of privileges:
 
    * `default_privs`: defines privileges granted to new players.
-   * `basic_privs`: defines privileges that can be granted by players having
+   * `basic_privs`: defines privileges that can be granted/revoked by players having
     the `basic_privs` privilege. This can be used, for example, to give 
     limited moderation powers to selected users.
 
