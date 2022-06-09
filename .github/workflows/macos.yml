@@ -60,6 +60,16 @@ jobs:
         run: |
           ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
 
+      - name: CPack
+        run: |
+          cd build
+          cpack -G ZIP -B macos
+
+      - name: Package Clean
+        run: |
+          rm -r build/macos/_CPack_Packages
+          rm -rf build/macos/minetest.app
+
       - uses: actions/upload-artifact@v3
         with:
           name: minetest-macos
