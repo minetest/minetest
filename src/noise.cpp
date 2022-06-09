@@ -38,15 +38,6 @@
 // Unsigned magic seed prevents undefined behavior.
 #define NOISE_MAGIC_SEED 1013U
 
-typedef float (*Interp2dFxn)(
-		float v00, float v10, float v01, float v11,
-		float x, float y);
-
-typedef float (*Interp3dFxn)(
-		float v000, float v100, float v010, float v110,
-		float v001, float v101, float v011, float v111,
-		float x, float y, float z);
-
 FlagDesc flagdesc_noiseparams[] = {
 	{"defaults",    NOISE_FLAG_DEFAULTS},
 	{"eased",       NOISE_FLAG_EASED},
@@ -219,7 +210,7 @@ inline float biLinearInterpolationNoEase(
 }
 
 
-float triLinearInterpolation(
+inline float triLinearInterpolation(
 	float v000, float v100, float v010, float v110,
 	float v001, float v101, float v011, float v111,
 	float x, float y, float z)
@@ -232,7 +223,7 @@ float triLinearInterpolation(
 	return linearInterpolation(u, v, tz);
 }
 
-float triLinearInterpolationNoEase(
+inline float triLinearInterpolationNoEase(
 	float v000, float v100, float v010, float v110,
 	float v001, float v101, float v011, float v111,
 	float x, float y, float z)
@@ -518,9 +509,6 @@ void Noise::gradientMap2D(
 	s32 x0, y0;
 
 	bool eased = np.flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED);
-	Interp2dFxn interpolate = eased ?
-		biLinearInterpolation : biLinearInterpolationNoEase;
-
 	x0 = std::floor(x);
 	y0 = std::floor(y);
 	u = x - (float)x0;
@@ -547,7 +535,10 @@ void Noise::gradientMap2D(
 		u = orig_u;
 		noisex = 0;
 		for (i = 0; i != sx; i++) {
-			gradient_buf[index++] = interpolate(v00, v10, v01, v11, u, v);
+			gradient_buf[index++] =
+				eased ?
+				biLinearInterpolation(v00, v10, v01, v11, u, v) :
+				biLinearInterpolationNoEase(v00, v10, v01, v11, u, v);
 
 			u += step_x;
 			if (u >= 1.0) {
@@ -583,8 +574,7 @@ void Noise::gradientMap3D(
 	u32 nlx, nly, nlz;
 	s32 x0, y0, z0;
 
-	Interp3dFxn interpolate = (np.flags & NOISE_FLAG_EASED) ?
-		triLinearInterpolation : triLinearInterpolationNoEase;
+	bool eased = np.flags & NOISE_FLAG_EASED;
 
 	x0 = std::floor(x);
 	y0 = std::floor(y);
@@ -625,10 +615,16 @@ void Noise::gradientMap3D(
 			u = orig_u;
 			noisex = 0;
 			for (i = 0; i != sx; i++) {
-				gradient_buf[index++] = interpolate(
-					v000, v100, v010, v110,
-					v001, v101, v011, v111,
-					u, v, w);
+				gradient_buf[index++] = eased ?
+					triLinearInterpolation(
+						v000, v100, v010, v110,
+						v001, v101, v011, v111,
+						u, v, w)
+					:
+					triLinearInterpolationNoEase(
+						v000, v100, v010, v110,
+						v001, v101, v011, v111,
+						u, v, w);
 
 				u += step_x;
 				if (u >= 1.0) {
