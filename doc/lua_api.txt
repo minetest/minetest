@@ -4551,7 +4551,7 @@ Callbacks:
     * Called when the object is instantiated.
     * `dtime_s` is the time passed since the object was unloaded, which can be
       used for updating the entity state.
-* `on_deactivate(self)
+* `on_deactivate(self)`
     * Called when the object is about to get removed or unloaded.
 * `on_step(self, dtime)`
     * Called on every server tick, after movement and collision processing.
