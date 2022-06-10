@@ -106,7 +106,6 @@ Particle::Particle(
 			video::EMFN_MODULATE_1X,
 			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
 	m_material.BlendOperation = blendop;
-	m_material.setFlag(video::EMF_BLEND_OPERATION, true);
 	m_material.setTexture(0, m_texture.ref);
 	m_texpos = texpos;
 	m_texsize = texsize;
