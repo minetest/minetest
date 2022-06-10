@@ -7632,7 +7632,7 @@ Used by `minetest.register_lbm`.
 
 A loading block modifier (LBM) is used to define a function that is called for
 specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
-gets loaded.
+gets activated (not loaded!)
 
     {
         label = "Upgrade legacy doors",
@@ -7647,8 +7647,8 @@ gets loaded.
         -- Groups (as of group:groupname) will work as well.
 
         run_at_every_load = false,
-        -- Whether to run the LBM's action every time a block gets loaded,
-        -- and not only the first time the block gets loaded after the LBM
+        -- Whether to run the LBM's action every time a block gets activated,
+        -- and not only the first time the block gets activated after the LBM
         -- was introduced.
 
         action = function(pos, node),
