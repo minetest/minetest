@@ -567,9 +567,9 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	}
 	lua_getfield(L, 3, "position");
 	if (!lua_isnil(L, -1)) {
-		props->position.vector = check_v3f(L, 4);
+		props->position.vector = check_v3f(L, -1);
 		lua_getfield(L, -1, "absolute");
-		props->position.absolute = lua_toboolean(L, 5);
+		props->position.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "interpolation_duration");
 		if (lua_isnumber(L, -1))
