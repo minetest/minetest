@@ -7193,22 +7193,22 @@ child will follow movement and rotation of that bone.
 * `set_bone_position([bone, position, rotation])`
 	* Shorthand for `set_bone_override(bone, {position = ..., rotation = ...})` using absolute values.
 	* Supports older servers & clients (< 5.6)
-	* **Deprecated**, use `set_bone_override` instead
+	* **Deprecated**; use `set_bone_override` instead
 * `get_bone_position(bone)`: returns position and rotation of the bone
 	* Shorthand for `get_bone_override(bone).position.vector, get_bone_override(bone).rotation.vector`
 	* **Deprecated**, use `get_bone_override` instead
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
-      * `override = nil` (or nothing) is shorthand for `override = {}` which clears the override
-      * `property`: `{ x = ..., y = ..., z = ..., interpolation_duration = 0, absolute = false}` or `nil`;
-        setting a property to `nil` is equivalent to no override on that property
-      * `x`, `y` and `z` are in blocksize for position and scale (times ten), and in degrees for rotation
-      * `absolute`: If set to `false`, the override will be relative to the animated property:
-      	* Transposition in the case of `position`;
-      	* Composition in the case of `rotation`;
-      	* Multiplication in the case of `scale`
-      * `interpolation_duration`: Time it takes (on the client, in seconds) to interpolate between the old & new value
+        * `override = nil` (or nothing) is shorthand for `override = {}` which clears the override
+        * `property`: `{ x = ..., y = ..., z = ..., interpolation_duration = 0, absolute = false}` or `nil`;
+          setting a property to `nil` is equivalent to no override on that property
+        * `x`, `y` and `z` are in blocksize for position and scale (times ten), and in degrees for rotation
+        * `absolute`: If set to `false`, the override will be relative to the animated property:
+            * Transposition in the case of `position`;
+            * Composition in the case of `rotation`;
+            * Multiplication in the case of `scale`
+        * `interpolation_duration`: Time it takes (on the client, in seconds) to interpolate between the old & new value
     * Not supported by older servers (< 5.6);
       older clients (< 5.6) support only position & rotation
       and will ignore interpolation & relativity entirely
