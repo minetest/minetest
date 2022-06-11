@@ -4551,8 +4551,14 @@ Callbacks:
     * Called when the object is instantiated.
     * `dtime_s` is the time passed since the object was unloaded, which can be
       used for updating the entity state.
-* `on_deactivate(self)
+* `on_deactivate(self, removal)
     * Called when the object is about to get removed or unloaded.
+	* `removal`: boolean indicating whether the object is about to get removed.
+	  Calling `object:remove()` on an active object will call this with `removal=true`.
+	  The mapblock the entity resides in being unloaded will call this with `removal=false`.
+	* Note that this won't be called if the object hasn't been activated in the first place.
+	  In particular, `minetest.clear_objects({mode = "full"})` won't call this,
+	  whereas `minetest.clear_objects({mode = "quick"})` might call this.
 * `on_step(self, dtime)`
     * Called on every server tick, after movement and collision processing.
       `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting

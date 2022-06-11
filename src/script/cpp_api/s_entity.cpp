@@ -103,7 +103,7 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 	lua_pop(L, 2); // Pop object and error handler
 }
 
-void ScriptApiEntity::luaentity_Deactivate(u16 id)
+void ScriptApiEntity::luaentity_Deactivate(u16 id, bool removal)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -120,9 +120,9 @@ void ScriptApiEntity::luaentity_Deactivate(u16 id)
 	if (!lua_isnil(L, -1)) {
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 		lua_pushvalue(L, object);
-
+		lua_pushboolean(L, removal);
 		setOriginFromTable(object);
-		PCALL_RES(lua_pcall(L, 1, 0, error_handler));
+		PCALL_RES(lua_pcall(L, 2, 0, error_handler));
 	} else {
 		lua_pop(L, 1);
 	}

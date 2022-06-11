@@ -80,9 +80,9 @@ public:
 	bool collideWithObjects() const;
 
 protected:
-	void dispatchScriptDeactivate();
-	virtual void onMarkedForDeactivation() { dispatchScriptDeactivate(); }
-	virtual void onMarkedForRemoval() { dispatchScriptDeactivate(); }
+	void dispatchScriptDeactivate(bool removal);
+	virtual void onMarkedForDeactivation() { dispatchScriptDeactivate(false); }
+	virtual void onMarkedForRemoval() { dispatchScriptDeactivate(true); }
 
 private:
 	std::string getPropertyPacket();
