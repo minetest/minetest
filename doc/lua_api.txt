@@ -1192,7 +1192,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       used to compensate for how `glasslike` reduces visual thickness.
 * `torchlike`
     * A single vertical texture.
-    * If `paramtype2="[color]wallmounted":
+    * If `paramtype2="[color]wallmounted"`:
         * If placed on top of a node, uses the first texture specified in `tiles`.
         * If placed against the underside of a node, uses the second texture
           specified in `tiles`.
@@ -1204,7 +1204,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `signlike`
     * A single texture parallel to, and mounted against, the top, underside or
       side of a node.
-    * If `paramtype2="[color]wallmounted", it rotates according to `param2`
+    * If `paramtype2="[color]wallmounted"`, it rotates according to `param2`
     * If `paramtype2="none"`, it will always be on the floor.
 * `plantlike`
     * Two vertical and diagonal textures at right-angles to each other.
