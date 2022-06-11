@@ -72,8 +72,7 @@ public:
 	// Bone position
 	void setBoneOverride(const std::string &bone, BoneOverride *override);
 	BoneOverride *getBoneOverride(const std::string &bone);
-	const std::unordered_map<std::string, BoneOverride*> &
-	getBoneOverrides() const;
+	const std::unordered_map<std::string, BoneOverride*> &getBoneOverrides() const;
 
 	// Attachments
 	ServerActiveObject *getParent() const;

@@ -297,9 +297,9 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	writeF32(os, override->rotation.interpolation_duration);
 	writeF32(os, override->scale.interpolation_duration);
 	// clang-format off
-	writeU8(os, override->position.absolute * 1
-	          + override->rotation.absolute * 2
-	          + override->scale.absolute    * 4);
+	writeU8(os, (override->position.absolute & 1) << 0
+	          | (override->rotation.absolute & 1) << 1
+	          | (override->scale.absolute & 1) << 2);
 	// clang-format on
 	return os.str();
 }

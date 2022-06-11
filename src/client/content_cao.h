@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "constants.h"
 #include <cassert>
-#include "server/serveractiveobject.h"
 
 class Camera;
 class Client;
@@ -104,7 +103,7 @@ private:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
-	std::unordered_map<std::string, BoneOverride*> m_bone_override;
+	BoneOverrideMap m_bone_override;
 
 	int m_attachment_parent_id = 0;
 	std::unordered_set<int> m_attachment_child_ids;

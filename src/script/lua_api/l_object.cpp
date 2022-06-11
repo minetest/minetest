@@ -528,8 +528,6 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 		override->rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
 	override->position.absolute = true;
 	override->rotation.absolute = true;
-	override->position.interpolation_duration = 0.0f;
-	override->position.interpolation_duration = 0.0f;
 	sao->setBoneOverride(bone, override);
 	return 0;
 }
@@ -563,7 +561,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
 	BoneOverride *override = new BoneOverride();
-	if (lua_isnil(L, 3) || lua_isnone(L, 3)) {
+	if (lua_isnoneornil(L, 3)) {
 		sao->setBoneOverride(bone, override);
 		return 0;
 	}

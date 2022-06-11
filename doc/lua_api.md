@@ -7191,7 +7191,7 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`
 * `set_bone_position([bone, position, rotation])`
-	* Shorthand for `set_bone_override(bone, {position = {x = position.x, y = position.y, z = position.z, absolute = true}, rotation = {x = rotation.x, y = rotation.y, z = rotation.z, absolute = true}})`
+	* Shorthand for `set_bone_override(bone, {position = ..., rotation = ...})` using absolute values.
 	* Supports older servers & clients (< 5.6)
 	* **Deprecated**, use `set_bone_override` instead
 * `get_bone_position(bone)`: returns position and rotation of the bone

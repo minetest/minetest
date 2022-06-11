@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include <quaternion.h>
 #include <string>
+#include <unordered_map>
 
 
 enum ActiveObjectType {
@@ -77,27 +78,29 @@ struct BoneOverride
 {
 	struct PositionProperty
 	{
-		v3f previous{};
-		v3f vector{};
-		bool absolute{};
-		f32 interpolation_duration{};
+		v3f previous;
+		v3f vector;
+		bool absolute = false;
+		f32 interpolation_duration = 0;
 	} position;
 	struct RotationProperty
 	{
-		core::quaternion previous{};
-		core::quaternion next{};
-		bool absolute{};
-		f32 interpolation_duration{};
+		core::quaternion previous;
+		core::quaternion next;
+		bool absolute = false;
+		f32 interpolation_duration = 0;
 	} rotation;
 	struct ScaleProperty
 	{
-		v3f previous{};
+		v3f previous;
 		v3f vector{1.0f, 1.0f, 1.0f};
-		bool absolute{};
-		f32 interpolation_duration{};
+		bool absolute = false;
+		f32 interpolation_duration = 0;
 	} scale;
-	f32 dtime_passed{};
+	f32 dtime_passed = 0;
 };
+
+typedef std::unordered_map<std::string, BoneOverride*> BoneOverrideMap;
 
 
 /*
