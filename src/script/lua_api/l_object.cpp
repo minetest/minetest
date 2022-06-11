@@ -566,7 +566,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		return 0;
 	}
 
-	auto read_prop_attrs = [L](auto prop) {
+	auto read_prop_attrs = [L](auto &prop) {
 		lua_getfield(L, -1, "absolute");
 		prop.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
@@ -574,25 +574,24 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		if (lua_isnumber(L, -1))
 			prop.interpolation_duration = lua_tonumber(L, -1);
 		lua_pop(L, 1);
-		return prop;
 	};
 
 	lua_getfield(L, 3, "position");
 	if (!lua_isnil(L, -1)) {
 		props->position.vector = check_v3f(L, -1);
-		props->position = read_prop_attrs(props->position);
+		read_prop_attrs(props->position);
 		lua_pop(L, 1);
 	}
 	lua_getfield(L, 3, "rotation");
 	if (!lua_isnil(L, -1)) {
 		props->rotation.next = core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
-		props->rotation = read_prop_attrs(props->rotation);
+		read_prop_attrs(props->rotation);
 		lua_pop(L, 1);
 	}
 	lua_getfield(L, 3, "scale");
 	if (!lua_isnil(L, -1)) {
 		props->scale.vector = check_v3f(L, -1);
-		props->scale = read_prop_attrs(props->scale);
+		read_prop_attrs(props->scale);
 		lua_pop(L, 1);
 	}
 	sao->setBoneOverride(bone, props);
