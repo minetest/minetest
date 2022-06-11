@@ -565,38 +565,35 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		sao->setBoneOverride(bone, props);
 		return 0;
 	}
-	lua_getfield(L, 3, "position");
-	if (!lua_isnil(L, -1)) {
-		props->position.vector = check_v3f(L, -1);
+
+	auto read_prop_attrs = [L](auto prop) {
 		lua_getfield(L, -1, "absolute");
-		props->position.absolute = lua_toboolean(L, -1);
+		prop.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "interpolation_duration");
 		if (lua_isnumber(L, -1))
-			props->position.interpolation_duration = lua_tonumber(L, -1);
-		lua_pop(L, 2);
+			prop.interpolation_duration = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		return prop;
+	};
+
+	lua_getfield(L, 3, "position");
+	if (!lua_isnil(L, -1)) {
+		props->position.vector = check_v3f(L, -1);
+		props->position = read_prop_attrs(props->position);
+		lua_pop(L, 1);
 	}
 	lua_getfield(L, 3, "rotation");
 	if (!lua_isnil(L, -1)) {
 		props->rotation.next = core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
-		lua_getfield(L, -1, "absolute");
-		props->rotation.absolute = lua_toboolean(L, -1);
+		props->rotation = read_prop_attrs(props->rotation);
 		lua_pop(L, 1);
-		lua_getfield(L, -1, "interpolation_duration");
-		if (lua_isnumber(L, -1))
-			props->rotation.interpolation_duration = lua_tonumber(L, -1);
-		lua_pop(L, 2);
 	}
 	lua_getfield(L, 3, "scale");
 	if (!lua_isnil(L, -1)) {
 		props->scale.vector = check_v3f(L, -1);
-		lua_getfield(L, -1, "absolute");
-		props->scale.absolute = lua_toboolean(L, -1);
+		props->scale = read_prop_attrs(props->scale);
 		lua_pop(L, 1);
-		lua_getfield(L, -1, "interpolation_duration");
-		if (lua_isnumber(L, -1))
-			props->scale.interpolation_duration = lua_tonumber(L, -1);
-		lua_pop(L, 2);
 	}
 	sao->setBoneOverride(bone, props);
 	return 0;
@@ -606,37 +603,25 @@ void push_bone_override(lua_State *L, BoneOverride *props)
 {
 	lua_newtable(L);
 
-	lua_newtable(L);
-	push_v3f(L, props->position.vector);
-	lua_setfield(L, -2, "vector");
-	lua_pushnumber(L, props->position.interpolation_duration);
-	lua_setfield(L, -2, "interpolation_duration");
-	lua_pushboolean(L, props->position.absolute);
-	lua_setfield(L, -2, "absolute");
-	lua_setfield(L, -2, "position");
-	lua_pop(L, 1);
+	auto push_prop = [L](const char *name, auto prop, v3f vec) {
+		lua_newtable(L);
+		push_v3f(L, vec);
+		lua_setfield(L, -2, "vector");
+		lua_pushnumber(L, prop.interpolation_duration);
+		lua_setfield(L, -2, "interpolation_duration");
+		lua_pushboolean(L, prop.absolute);
+		lua_setfield(L, -2, "absolute");
+		lua_setfield(L, -2, name);
+		lua_pop(L, 1);
+	};
 
-	lua_newtable(L);
+	push_prop("position", props->position, props->position.vector);
+
 	v3f euler_rot;
 	props->rotation.next.toEuler(euler_rot);
-	push_v3f(L, euler_rot * core::RADTODEG);
-	lua_setfield(L, -2, "vector");
-	lua_pushnumber(L, props->rotation.interpolation_duration);
-	lua_setfield(L, -2, "interpolation_duration");
-	lua_pushboolean(L, props->rotation.absolute);
-	lua_setfield(L, -2, "absolute");
-	lua_setfield(L, -2, "rotation");
-	lua_pop(L, 1);
+	push_prop("rotation", props->rotation, euler_rot * core::RADTODEG);
 
-	lua_newtable(L);
-	push_v3f(L, props->scale.vector);
-	lua_setfield(L, -2, "vector");
-	lua_pushnumber(L, props->scale.interpolation_duration);
-	lua_setfield(L, -2, "interpolation_duration");
-	lua_pushboolean(L, props->scale.absolute);
-	lua_setfield(L, -2, "absolute");
-	lua_setfield(L, -2, "scale");
-	lua_pop(L, 1);
+	push_prop("scale", props->scale, props->scale.vector);
 
 	// leave only override table on top of the stack
 }
