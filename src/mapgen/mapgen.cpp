@@ -514,15 +514,48 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 	//printf("propagateSunlight: %dms\n", t.stop());
 }
 
+// findPropagationCutoff
+//
+// Returns the highest y that needs light propagation.
+//
+// Above ground, there is generally a tall tower of open air with only sunlight.
+// There's no need to initiate propagation from these nodes, since they are
+// surrounded by sunlight.
+//
+// This function can skip over these open air nodes using only a single memory
+// access per node. In contrast, spreadLight() requires 7 memory accesses
+// (the node + 6 dirs) to initiate propagation.
+//
+// This speeds up calcLighting by a factor of ~2.6x (measured on X86-64).
+//
+int Mapgen::findPropagationCutoff(const v3s16 &nmin, const v3s16 &nmax)
+{
+	VoxelArea a(nmin, nmax);
+	for (int y = a.MaxEdge.Y; y >= a.MinEdge.Y; y--) {
+		for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
+			u32 i = vm->m_area.index(a.MinEdge.X, y, z);
+			for (int x = a.MinEdge.X; x <= a.MaxEdge.X; x++, i++) {
+				MapNode &n = vm->m_data[i];
+				if (n.getContent() == CONTENT_IGNORE)
+					continue;
+				if (n.param1 == LIGHT_SUN)
+					continue;
+				return std::min(y + 1, (int)a.MaxEdge.Y);
+			}
+		}
+	}
+	return a.MinEdge.Y;
+}
 
 void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 {
 	//TimeTaker t("spreadLight");
 	std::queue<std::pair<v3s16, u8>> queue;
 	VoxelArea a(nmin, nmax);
+	int ycutoff = findPropagationCutoff(nmin, nmax);
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
-		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
+		for (int y = a.MinEdge.Y; y <= ycutoff; y++) {
 			u32 i = vm->m_area.index(a.MinEdge.X, y, z);
 			for (int x = a.MinEdge.X; x <= a.MaxEdge.X; x++, i++) {
 				MapNode &n = vm->m_data[i];
