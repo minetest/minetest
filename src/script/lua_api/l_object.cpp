@@ -605,6 +605,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 void push_bone_override(lua_State *L, BoneOverride *props)
 {
 	lua_newtable(L);
+
 	lua_newtable(L);
 	push_v3f(L, props->position.vector);
 	lua_setfield(L, -2, "vector");
@@ -613,6 +614,8 @@ void push_bone_override(lua_State *L, BoneOverride *props)
 	lua_pushboolean(L, props->position.absolute);
 	lua_setfield(L, -2, "absolute");
 	lua_setfield(L, -2, "position");
+	lua_pop(L, 1);
+
 	lua_newtable(L);
 	v3f euler_rot;
 	props->rotation.next.toEuler(euler_rot);
@@ -623,6 +626,8 @@ void push_bone_override(lua_State *L, BoneOverride *props)
 	lua_pushboolean(L, props->rotation.absolute);
 	lua_setfield(L, -2, "absolute");
 	lua_setfield(L, -2, "rotation");
+	lua_pop(L, 1);
+
 	lua_newtable(L);
 	push_v3f(L, props->scale.vector);
 	lua_setfield(L, -2, "vector");
@@ -631,6 +636,9 @@ void push_bone_override(lua_State *L, BoneOverride *props)
 	lua_pushboolean(L, props->scale.absolute);
 	lua_setfield(L, -2, "absolute");
 	lua_setfield(L, -2, "scale");
+	lua_pop(L, 1);
+
+	// leave only override table on top of the stack
 }
 
 // get_bone_override(self, bone)
