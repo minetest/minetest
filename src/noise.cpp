@@ -192,6 +192,7 @@ inline float biLinearInterpolation(
 	float x, float y,
 	bool eased)
 {
+	// Inlining will optimize this branch out when possible
 	if (eased) {
 		x = easeCurve(x);
 		y = easeCurve(y);
@@ -208,6 +209,7 @@ inline float triLinearInterpolation(
 	float x, float y, float z,
 	bool eased)
 {
+	// Inlining will optimize this branch out when possible
 	if (eased) {
 		x = easeCurve(x);
 		y = easeCurve(y);
