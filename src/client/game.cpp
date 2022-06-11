@@ -2605,6 +2605,9 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 	if (client->modsLoaded())
 		client->getScript()->on_damage_taken(event->player_damage.amount);
 
+	if (!event->player_damage.effect)
+		return;
+
 	// Damage flash and hurt tilt are not used at death
 	if (client->getHP() > 0) {
 		LocalPlayer *player = client->getEnv().getLocalPlayer();

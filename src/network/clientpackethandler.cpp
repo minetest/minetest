@@ -570,6 +570,10 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 
 	u16 hp;
 	*pkt >> hp;
+	bool damage_effect = true;
+	try {
+		*pkt >> damage_effect;
+	} catch (PacketError &e) {};
 
 	player->hp = hp;
 
@@ -581,6 +585,7 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 		ClientEvent *event = new ClientEvent();
 		event->type = CE_PLAYER_DAMAGE;
 		event->player_damage.amount = oldhp - hp;
+		event->player_damage.effect = damage_effect;
 		m_client_event_queue.push(event);
 	}
 }

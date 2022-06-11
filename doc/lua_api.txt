@@ -4551,8 +4551,14 @@ Callbacks:
     * Called when the object is instantiated.
     * `dtime_s` is the time passed since the object was unloaded, which can be
       used for updating the entity state.
-* `on_deactivate(self)`
+* `on_deactivate(self, removal)`
     * Called when the object is about to get removed or unloaded.
+	* `removal`: boolean indicating whether the object is about to get removed.
+	  Calling `object:remove()` on an active object will call this with `removal=true`.
+	  The mapblock the entity resides in being unloaded will call this with `removal=false`.
+	* Note that this won't be called if the object hasn't been activated in the first place.
+	  In particular, `minetest.clear_objects({mode = "full"})` won't call this,
+	  whereas `minetest.clear_objects({mode = "quick"})` might call this.
 * `on_step(self, dtime)`
     * Called on every server tick, after movement and collision processing.
       `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
@@ -7632,7 +7638,7 @@ Used by `minetest.register_lbm`.
 
 A loading block modifier (LBM) is used to define a function that is called for
 specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
-gets loaded.
+gets activated (not loaded!)
 
     {
         label = "Upgrade legacy doors",
@@ -7647,8 +7653,8 @@ gets loaded.
         -- Groups (as of group:groupname) will work as well.
 
         run_at_every_load = false,
-        -- Whether to run the LBM's action every time a block gets loaded,
-        -- and not only the first time the block gets loaded after the LBM
+        -- Whether to run the LBM's action every time a block gets activated,
+        -- and not only the first time the block gets activated after the LBM
         -- was introduced.
 
         action = function(pos, node),

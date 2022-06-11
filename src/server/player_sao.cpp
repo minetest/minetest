@@ -495,7 +495,7 @@ void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool fr
 		m_hp = hp;
 		m_env->getGameDef()->HandlePlayerHPChange(this, reason);
 	} else if (from_client)
-		m_env->getGameDef()->SendPlayerHP(this);
+		m_env->getGameDef()->SendPlayerHP(this, true);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)
