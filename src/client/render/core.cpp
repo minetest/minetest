@@ -26,6 +26,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
 
+/// Draw3D pipeline step
+void Draw3D::run()
+{
+	m_smgr->drawAll();
+	m_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	if (!m_state->show_hud)
+		return;
+	m_hud->drawBlockBounds();
+	m_hud->drawSelectionMesh();
+	if (m_state->draw_wield_tool)
+		m_camera->drawWieldedTool();
+}
+
+void DrawHUD::run()
+{
+	if (m_state->show_hud) {
+		if (m_shadow_renderer)
+			m_shadow_renderer->drawDebug();
+
+		if (m_state->draw_crosshair)
+			m_hud->drawCrosshair();
+
+		m_hud->drawHotbar(m_client->getEnv().getLocalPlayer()->getWieldIndex());
+		m_hud->drawLuaElements(m_camera->getOffset());
+		m_camera->drawNametags();
+		if (m_mapper && m_state->show_minimap)
+			m_mapper->drawMinimap();
+	}
+	m_guienv->drawAll();
+}
+
+
+
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
 	guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),

@@ -20,12 +20,65 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include "irrlichttypes_extrabloated.h"
+#include "pipeline.h"
 
 class ShadowRenderer;
 class Camera;
 class Client;
 class Hud;
 class Minimap;
+
+struct PipelineState
+{
+	bool show_hud {true};
+	bool show_minimap {true};
+	bool draw_wield_tool {true};
+	bool draw_crosshair {true};
+};
+
+class Draw3D : RenderStep
+{
+public:
+	Draw3D(PipelineState *state, scene::ISceneManager *smgr, video::IVideoDriver *driver, Hud *hud, Camera *camera) :
+			m_state(state),
+			m_smgr(smgr),
+			m_driver(driver),
+			m_hud(hud),
+			m_camera(camera)
+	{}
+
+	virtual void run() override;
+private:
+	PipelineState *m_state;
+	scene::ISceneManager *m_smgr;
+	video::IVideoDriver *m_driver;
+	Hud *m_hud;
+	Camera *m_camera;
+};
+
+class DrawHUD : RenderStep
+{
+public:
+	DrawHUD(PipelineState *state, Hud *hud, Camera *camera, Minimap *mapper, Client *client, gui::IGUIEnvironment *guienv, ShadowRenderer *shadow_renderer) :
+			m_state(state),
+			m_hud(hud),
+			m_camera(camera),
+			m_mapper(mapper),
+			m_client(client),
+			m_guienv(guienv),
+			m_shadow_renderer(shadow_renderer)
+	{}
+
+	virtual void run() override;
+private:
+	PipelineState *m_state;
+	Hud *m_hud;
+	Camera *m_camera;
+	Minimap *m_mapper;
+	Client *m_client;
+	gui::IGUIEnvironment *m_guienv;
+	ShadowRenderer *m_shadow_renderer;
+};
 
 class RenderingCore
 {
