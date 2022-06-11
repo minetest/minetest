@@ -1541,23 +1541,23 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		if (!bone)
 			continue;
 
-		BoneOverride *override = it.second;
-		override->dtime_passed += dtime;
+		BoneOverride *props = it.second;
+		props->dtime_passed += dtime;
 
 		// Position
-		v3f position = override->position.vector;
-		f32 progress = override->dtime_passed / override->position.interpolation_duration;
-		if (progress > 1.0f || override->position.interpolation_duration == 0.0f) progress = 1.0f;
-		position = position.getInterpolated(override->position.previous, progress);
-		bone->setPosition(override->position.absolute
+		v3f position = props->position.vector;
+		f32 progress = props->dtime_passed / props->position.interpolation_duration;
+		if (progress > 1.0f || props->position.interpolation_duration == 0.0f) progress = 1.0f;
+		position = position.getInterpolated(props->position.previous, progress);
+		bone->setPosition(props->position.absolute
 				? position
 				: position + bone->getPosition());
 		// Rotation
 		core::quaternion rotation;
-		progress = override->dtime_passed / override->rotation.interpolation_duration;
-		if (progress > 1.0f || override->rotation.interpolation_duration == 0.0f) progress = 1.0f;
-		rotation.slerp(override->rotation.previous, override->rotation.next, progress);
-		if (!override->rotation.absolute) {
+		progress = props->dtime_passed / props->rotation.interpolation_duration;
+		if (progress > 1.0f || props->rotation.interpolation_duration == 0.0f) progress = 1.0f;
+		rotation.slerp(props->rotation.previous, props->rotation.next, progress);
+		if (!props->rotation.absolute) {
 			core::quaternion bone_rot(bone->getRotation() * core::DEGTORAD);
 			rotation = rotation * bone_rot; // first rotate around bone rot, then rot
 		}
@@ -1565,10 +1565,10 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		rotation.toEuler(rot_euler);
 		bone->setRotation(rot_euler * core::RADTODEG);
 		//Scale
-		progress = override->dtime_passed / override->scale.interpolation_duration;
-		if (progress > 1.0f || override->scale.interpolation_duration == 0.0f) progress = 1.0f;
-		v3f scale = override->scale.vector.getInterpolated(override->scale.previous, progress);
-		bone->setScale(override->scale.absolute
+		progress = props->dtime_passed / props->scale.interpolation_duration;
+		if (progress > 1.0f || props->scale.interpolation_duration == 0.0f) progress = 1.0f;
+		v3f scale = props->scale.vector.getInterpolated(props->scale.previous, progress);
+		bone->setScale(props->scale.absolute
 				? scale
 				: scale * bone->getScale());
 	}
@@ -1861,39 +1861,40 @@ void GenericCAO::processMessage(const std::string &data)
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString16(is);
-		BoneOverride *previous = m_bone_override[bone];
-		BoneOverride *override = new BoneOverride();
-		override->position.vector = readV3F32(is);
-		override->rotation.next = core::quaternion(readV3F32(is) * core::DEGTORAD);
+		const BoneOverride *previous = m_bone_override[bone];
+		BoneOverride *props = new BoneOverride();
+		props->position.vector = readV3F32(is);
+		props->rotation.next = core::quaternion(readV3F32(is) * core::DEGTORAD);
 		if (is.eof()) {
-			override->position.absolute = true;
-			override->rotation.absolute = true;
+			// Legacy compatibility for protocol version <= 40
+			props->position.absolute = true;
+			props->rotation.absolute = true;
 		} else {
-			override->scale.vector = readV3F32(is);
-			override->position.interpolation_duration = readF32(is);
-			override->rotation.interpolation_duration = readF32(is);
-			override->scale.interpolation_duration = readF32(is);
+			props->scale.vector = readV3F32(is);
+			props->position.interpolation_duration = readF32(is);
+			props->rotation.interpolation_duration = readF32(is);
+			props->scale.interpolation_duration = readF32(is);
 			u8 absoluteFlag = readU8(is);
 			if (absoluteFlag == 0
-					&& override->position.vector == v3f(0.0f, 0.0f, 0.0f)
-					&& override->rotation.next == core::quaternion()
-					&& override->scale.vector == v3f(1.0f, 1.0f, 1.0f)) {
+					&& props->position.vector == v3f(0.0f, 0.0f, 0.0f)
+					&& props->rotation.next == core::quaternion()
+					&& props->scale.vector == v3f(1.0f, 1.0f, 1.0f)) {
 				m_bone_override.erase(bone); // identity override, remove
 			} else {
-				override->position.absolute = (absoluteFlag & 1) > 0;
-				override->rotation.absolute = (absoluteFlag & 2) > 0;
-				override->scale.absolute = (absoluteFlag & 4) > 0;
+				props->position.absolute = (absoluteFlag & 1) > 0;
+				props->rotation.absolute = (absoluteFlag & 2) > 0;
+				props->scale.absolute = (absoluteFlag & 4) > 0;
 				if (previous) {
-					override->position.previous = previous->position.vector;
-					override->rotation.previous = previous->rotation.next;
-					override->scale.previous = previous->scale.vector;
+					props->position.previous = previous->position.vector;
+					props->rotation.previous = previous->rotation.next;
+					props->scale.previous = previous->scale.vector;
 				} else {
 					// disable interpolation
-					override->position.interpolation_duration = 0.0f;
-					override->rotation.interpolation_duration = 0.0f;
-					override->scale.interpolation_duration = 0.0f;
+					props->position.interpolation_duration = 0.0f;
+					props->rotation.interpolation_duration = 0.0f;
+					props->scale.interpolation_duration = 0.0f;
 				}
-				m_bone_override[bone] = override;
+				m_bone_override[bone] = props;
 			}
 		}
 		if (previous) delete previous;
