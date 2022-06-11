@@ -493,6 +493,7 @@ void Client::step(float dtime)
 			ClientEvent *event = new ClientEvent();
 			event->type = CE_PLAYER_DAMAGE;
 			event->player_damage.amount = damage;
+			event->player_damage.effect = true;
 			m_client_event_queue.push(event);
 		}
 	}
