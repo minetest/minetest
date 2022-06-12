@@ -217,9 +217,10 @@ void Particle::step(float dtime)
 		}
 		m_pos = p_pos / BS;
 	} else {
-		// apply acceleration
+		// apply velocity and acceleration to position
+		m_pos += (m_velocity + m_acceleration * 0.5f * dtime) * dtime;
+		// apply acceleration to velocity
 		m_velocity += m_acceleration * dtime;
-		m_pos += m_velocity * dtime;
 	}
 
 	if (m_animation.type != TAT_NONE) {

@@ -70,11 +70,11 @@ public:
 	// Temporary option for old move code
 	bool physics_override_new_move = true;
 
-	void move(f32 dtime, Environment *env, f32 pos_max_d);
-	void move(f32 dtime, Environment *env, f32 pos_max_d,
+	void move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d);
+	void move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
 	// Temporary option for old move code
-	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
+	void old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
 
 	void applyControl(float dtime, Environment *env);

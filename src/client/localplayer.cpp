@@ -165,7 +165,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	return true;
 }
 
-void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
+void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	// Node at feet position, update each ClientEnvironment::step()
@@ -174,7 +174,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Temporary option for old move code
 	if (!physics_override_new_move) {
-		old_move(dtime, env, pos_max_d, collision_info);
+		old_move(dtime, gravity, env, pos_max_d, collision_info);
 		return;
 	}
 
@@ -292,7 +292,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	float player_stepheight = (m_cao == nullptr) ? 0.0f :
 		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 
-	v3f accel_f;
+	v3f accel_f(0, -gravity, 0);
 	const v3f initial_position = position;
 	const v3f initial_speed = m_speed;
 
@@ -455,9 +455,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
-void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
+void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d)
 {
-	move(dtime, env, pos_max_d, NULL);
+	move(dtime, gravity, env, pos_max_d, NULL);
 }
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
@@ -743,7 +743,7 @@ void LocalPlayer::accelerate(const v3f &target_speed, const f32 max_increase_H,
 }
 
 // Temporary option for old move code
-void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
+void LocalPlayer::old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 	std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
@@ -879,7 +879,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	// TODO: This shouldn't be hardcoded but decided by the server
 	float player_stepheight = touching_ground ? (BS * 0.6f) : (BS * 0.2f);
 
-	v3f accel_f;
+	v3f accel_f(0, -gravity, 0);
 	const v3f initial_position = position;
 	const v3f initial_speed = m_speed;
 
