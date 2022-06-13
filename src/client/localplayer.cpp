@@ -452,7 +452,7 @@ void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 	}
 
 	// Autojump
-	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
+	handleAutojump(dtime, gravity, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d)
@@ -1044,7 +1044,7 @@ void LocalPlayer::old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max
 	}
 
 	// Autojump
-	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
+	handleAutojump(dtime, gravity, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
@@ -1066,7 +1066,7 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 	return 1.0f;
 }
 
-void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
+void LocalPlayer::handleAutojump(f32 dtime, f32 gravity, Environment *env,
 	const collisionMoveResult &result, const v3f &initial_position,
 	const v3f &initial_speed, f32 pos_max_d)
 {
@@ -1117,8 +1117,11 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 		}
 	}
 
-	float jump_height = 1.1f; // TODO: better than a magic number
-	v3f jump_pos = initial_position + v3f(0.0f, jump_height * BS, 0.0f);
+
+	float jumpspeed = movement_speed_jump * physics_override_jump;
+	float peak_dtime = jumpspeed / gravity; // at the peak of the jump v = gt <=> t = v / g
+	float jump_height = (jumpspeed - 0.5 * gravity * peak_dtime) * peak_dtime; // s = vt - 1/2 gt^2
+	v3f jump_pos = initial_position + v3f(0.0f, jump_height, 0.0f);
 	v3f jump_speed = initial_speed;
 
 	// try at peak of jump, zero step height

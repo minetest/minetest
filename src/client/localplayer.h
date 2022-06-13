@@ -166,7 +166,7 @@ private:
 		const f32 max_increase_V, const bool use_pitch);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 	float getSlipFactor(Environment *env, const v3f &speedH);
-	void handleAutojump(f32 dtime, Environment *env,
+	void handleAutojump(f32 dtime, float gravity, Environment *env,
 		const collisionMoveResult &result,
 		const v3f &position_before_move, const v3f &speed_before_move,
 		f32 pos_max_d);
