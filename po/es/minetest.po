@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-06-20 09:52+0000\n"
-"Last-Translator: Raquel Fariña Agra <raquelagra1@gmail.com>\n"
+"Last-Translator: runs <runspect@yahoo.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -976,7 +976,7 @@ msgstr "Actualizar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
-msgstr "Descripción del Servidor"
+msgstr "Descripción del servidor"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1068,7 +1068,7 @@ msgstr "Marcar nodos"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Nada"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
