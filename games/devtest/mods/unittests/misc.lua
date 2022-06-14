@@ -89,5 +89,10 @@ local function test_content_ids()
 	assert(core.get_name_from_content_id(core.CONTENT_AIR) == "air")
 	assert(core.get_name_from_content_id(core.CONTENT_UNKNOWN) == "unknown")
 	assert(core.get_name_from_content_id(core.CONTENT_IGNORE) == "ignore")
+
+	assert(pcall(core.get_content_id, "~") == false)
+	assert(pcall(core.get_content_id) == false)
+	assert(core.get_name_from_content_id(0xFFFF) == "unknown")
+	assert(pcall(core.get_name_from_content_id) == false)
 end
 unittests.register("test_content_ids", test_content_ids, {player=true})
