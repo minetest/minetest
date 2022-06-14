@@ -80,3 +80,14 @@ unittests.register("test_punch_node", function(_, pos)
 	minetest.remove_node(pos)
 	-- currently failing: assert(on_punch_called)
 end, {map=true})
+
+local function test_content_ids()
+	assert(core.get_content_id("air") == core.CONTENT_AIR)
+	assert(core.get_content_id("unknown") == core.CONTENT_UNKNOWN)
+	assert(core.get_content_id("ignore") == core.CONTENT_IGNORE)
+
+	assert(core.get_name_from_content_id(core.CONTENT_AIR) == "air")
+	assert(core.get_name_from_content_id(core.CONTENT_UNKNOWN) == "unknown")
+	assert(core.get_name_from_content_id(core.CONTENT_IGNORE) == "ignore")
+end
+unittests.register("test_content_ids", test_content_ids, {player=true})
