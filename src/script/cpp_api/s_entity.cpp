@@ -244,7 +244,7 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+	assert(puncher);
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -294,7 +294,10 @@ bool ScriptApiEntity::luaentity_run_simple_callback(u16 id,
 	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object);  // self
-	objectrefGetOrCreate(L, sao);  // killer reference
+	if (sao)
+		objectrefGetOrCreate(L, sao);  // sao reference
+	else
+		lua_pushnil(L);
 
 	setOriginFromTable(object);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
