@@ -6,6 +6,14 @@ local function test_random()
 end
 unittests.register("test_random", test_random)
 
+local function test_cxx_exceptions()
+	local ok, msg = pcall(core.get_content_id, "~!~")
+	assert(not ok)
+	assert(type(msg) == "string")
+	assert(msg:find("~!~", 1, true) ~= nil)
+end
+unittests.register("test_cxx_exceptions", test_cxx_exceptions)
+
 local function test_dynamic_media(cb, player)
 	if core.get_player_information(player:get_player_name()).protocol_version < 40 then
 		core.log("warning", "test_dynamic_media: Client too old, skipping test.")
