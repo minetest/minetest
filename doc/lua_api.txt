@@ -4568,6 +4568,9 @@ Registering privileges
 A mod can register a custom privilege using `minetest.register_privilege` function 
 to give server administrators fine-grained access control over mod functionality.
 
+For consistency and practical reasons, privileges should strictly increase the abilities of the user.
+Do not register custom privileges that e.g. restrict the player from certain in-game actions.
+
 Checking privileges
 -------------------
 
@@ -4584,6 +4587,9 @@ A mod can update player privileges using `minetest.set_player_privs` function.
 Players holding the `privs` privilege can see and manage privileges for all
 players on the server.
 
+A mod can subscribe to changes in player privileges using `minetest.register_on_priv_grant`
+and `minetest.register_on_priv_revoke` functions.
+
 Built-in privileges
 -------------------
 
@@ -4593,19 +4599,19 @@ provided by the Minetest engine and can be used by mods:
   * Basic privileges are normally granted to all players:
       * `shout`: can communicate using the in-game chat.
       * `interact`: can modify the world by digging, building and interacting
-        with the blocks, entities and other players. Players without the `interact`
+        with the nodes, entities and other players. Players without the `interact`
         privilege can only travel and observe the world.
 
   * Advanced privileges allow bypassing certain aspects of the gameplay:
       * `fast`: can use "fast mode" to move with maximum speed.
       * `fly`: can use "fly mode" to move freely above the ground without falling.
-      * `noclip`: can use "noclip mode" to fly through solid blocks (e.g. walls).
+      * `noclip`: can use "noclip mode" to fly through solid nodes (e.g. walls).
       * `teleport`: can use `/teleport` command to move to any point in the world.
       * `creative`: can access creative inventory.
       * `bring`: can teleport other players to oneself.
       * `give`: can use `/give` and `/giveme` commands to give any item
         in the game to oneself or others.
-      * `settime`: can use `/time` command to change current server time.
+      * `settime`: can use `/time` command to change current in-game time.
       * `debug`: can enable wireframe rendering mode.
 
   * Security-related privileges:
