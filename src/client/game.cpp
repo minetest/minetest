@@ -1629,9 +1629,11 @@ bool Game::getServerContent(bool *aborted)
 				message << " " << receive << "%";
 			message.precision(2);
 
-			if ((USE_CURL == 0) ||
-					(!g_settings->getBool("enable_remote_media_server"))) {
-				float cur = client->getCurRate();
+			// The media downloading speed status only works on multiplayer
+			// servers without a remote media server. If this is not the case
+			// then 'cur' will be 0, so don't show it on the progress bar.
+			float cur = client->getCurRate();
+			if (cur > 0) {
 				std::string cur_unit = gettext("KiB/s");
 
 				if (cur > 900) {
