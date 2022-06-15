@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-16 02:52+0000\n"
-"Last-Translator: Yiu Man Ho <yiufamily.hh@gmail.com>\n"
+"PO-Revision-Date: 2022-06-20 09:52+0000\n"
+"Last-Translator: Ivon Huang <qj985n2@protonmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.13.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -422,7 +422,7 @@ msgstr "遊戲"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "生成非破碎地形: 海洋與地底"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
