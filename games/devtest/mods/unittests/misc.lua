@@ -14,6 +14,13 @@ local function test_cxx_exceptions()
 end
 unittests.register("test_cxx_exceptions", test_cxx_exceptions)
 
+local function test_lua_exceptions()
+	local ok, msg = pcall(error, "error")
+	assert(not ok)
+	assert(msg == "error")
+end
+unittests.register("test_lua_exceptions", test_lua_exceptions)
+
 local function test_dynamic_media(cb, player)
 	if core.get_player_information(player:get_player_name()).protocol_version < 40 then
 		core.log("warning", "test_dynamic_media: Client too old, skipping test.")
