@@ -4,6 +4,8 @@
 -- Server or writable access to IGameDef on the engine side.
 -- (The '_s' stands for standalone.)
 
+local builtin_shared = ...
+
 --
 -- Item definition helpers
 --
@@ -176,4 +178,48 @@ function core.strip_param2_color(param2, paramtype2)
 	end
 	-- paramtype2 == "color" requires no modification.
 	return param2
+end
+
+-- Content ID caching
+
+local old_get_content_id = core.get_content_id
+local old_get_name_from_content_id = core.get_name_from_content_id
+
+local name2content = setmetatable({}, {
+	__index = function(self, name)
+		return old_get_content_id(name)
+	end,
+})
+
+local content2name = setmetatable({}, {
+	__index = function(self, id)
+		return old_get_name_from_content_id(id)
+	end,
+})
+
+function core.get_content_id(name)
+	return name2content[name]
+end
+
+function core.get_name_from_content_id(id)
+	return content2name[id]
+end
+
+-- Cache content IDs after they have stopped changing.
+function builtin_shared.cache_content_ids()
+	for name in pairs(core.registered_nodes) do
+		local id = old_get_content_id(name)
+		name2content[name] = id
+		content2name[id] = name
+	end
+	-- unknown is not in the registered node list.
+	local unknown_name = old_get_name_from_content_id(core.CONTENT_UNKNOWN)
+	name2content[unknown_name] = core.CONTENT_UNKNOWN
+	content2name[core.CONTENT_UNKNOWN] = unknown_name
+
+	for name in pairs(core.registered_aliases) do
+		if core.registered_nodes[name] then
+			name2content[name] = old_get_content_id(name)
+		end
+	end
 end

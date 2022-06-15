@@ -8,7 +8,7 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 local builtin_shared = {}
 
 dofile(gamepath .. "constants.lua")
-dofile(gamepath .. "item_s.lua")
+assert(loadfile(gamepath .. "item_s.lua"))(builtin_shared)
 dofile(gamepath .. "register.lua")
 
 if core.settings:get_bool("profiler.load") then
