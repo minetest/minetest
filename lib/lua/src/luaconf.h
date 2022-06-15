@@ -766,11 +766,6 @@ union luai_Cast { double l_d; long l_l; };
 */
 
 
-/* MINETEST-SPECIFIC CHANGE: Convert C++ exceptions into Lua errors. */
-struct lua_State;
-LUAI_API_EXTERN int script_exception_wrapper(struct lua_State *L, int (*f)(struct lua_State *));
-#define luai_cfunction_wrapper(L, f) script_exception_wrapper(L, f)
-
 
 #endif
 

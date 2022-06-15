@@ -112,8 +112,7 @@ enum RunCallbacksMode
 // Gets a backtrace of the current execution point
 std::string script_get_backtrace(lua_State *L);
 // Wrapper for CFunction calls that converts C++ exceptions to Lua errors
-// This function is extern "C" so that Lua can make use of it (see lib/lua/src/luaconf.h).
-extern "C" int script_exception_wrapper(lua_State *L, lua_CFunction f);
+int script_exception_wrapper(lua_State *L, lua_CFunction f);
 // Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 
