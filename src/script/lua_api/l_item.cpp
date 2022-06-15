@@ -612,8 +612,10 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 		read_content_features(L, f, table);
 		// when a mod reregisters ignore, only texture changes and such should
 		// be done
-		if (f.name == "ignore")
-			return 0;
+		if (f.name == "ignore") {
+			lua_pushinteger(L, CONTENT_IGNORE);
+			return 1;
+		}
 		// This would break everything
 		if (f.name.empty())
 			throw LuaError("Cannot register node with empty name");
@@ -625,6 +627,8 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 					+ itos(MAX_REGISTERED_CONTENT+1)
 					+ ") exceeded (" + name + ")");
 		}
+		lua_pushinteger(L, id);
+		return 1;
 	}
 
 	return 0; /* number of results */
@@ -667,57 +671,13 @@ int ModApiItemMod::l_register_alias_raw(lua_State *L)
 	return 0; /* number of results */
 }
 
-// get_content_id(name)
-int ModApiItemMod::l_get_content_id(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-
-	const IItemDefManager *idef = getGameDef(L)->idef();
-	const NodeDefManager *ndef = getGameDef(L)->ndef();
-
-	// If this is called at mod load time, NodeDefManager isn't aware of
-	// aliases yet, so we need to handle them manually
-	std::string alias_name = idef->getAlias(name);
-
-	content_t content_id;
-	if (alias_name != name) {
-		if (!ndef->getId(alias_name, content_id))
-			throw LuaError("Unknown node: " + alias_name +
-					" (from alias " + name + ")");
-	} else if (!ndef->getId(name, content_id)) {
-		throw LuaError("Unknown node: " + name);
-	}
-
-	lua_pushinteger(L, content_id);
-	return 1; /* number of results */
-}
-
-// get_name_from_content_id(name)
-int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	content_t c = luaL_checkint(L, 1);
-
-	const NodeDefManager *ndef = getGameDef(L)->ndef();
-	const char *name = ndef->get(c).name.c_str();
-
-	lua_pushstring(L, name);
-	return 1; /* number of results */
-}
-
 void ModApiItemMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(register_item_raw);
 	API_FCT(unregister_item_raw);
 	API_FCT(register_alias_raw);
-	API_FCT(get_content_id);
-	API_FCT(get_name_from_content_id);
 }
 
 void ModApiItemMod::InitializeAsync(lua_State *L, int top)
 {
-	// all read-only functions
-	API_FCT(get_content_id);
-	API_FCT(get_name_from_content_id);
 }

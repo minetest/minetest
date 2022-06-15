@@ -1208,6 +1208,14 @@ void pushnode(lua_State *L, const MapNode &n, const NodeDefManager *ndef)
 	lua_setfield(L, -2, "param2");
 }
 
+int pushnode_flat(lua_State *L, const MapNode &n)
+{
+	lua_pushnumber(L, n.param0);
+	lua_pushnumber(L, n.param1);
+	lua_pushnumber(L, n.param2);
+	return 3;
+}
+
 /******************************************************************************/
 void warn_if_field_exists(lua_State *L, int table,
 		const char *name, const std::string &message)

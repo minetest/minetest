@@ -27,6 +27,7 @@ core.registered_nodes = {}
 core.registered_craftitems = {}
 core.registered_tools = {}
 core.registered_aliases = {}
+core.registered_content_ids = {}
 
 -- For tables that are indexed by item name:
 -- If table[X] does not exist, default to table[core.registered_aliases[X]]
@@ -175,13 +176,17 @@ function core.register_item(name, itemdef)
 
 	itemdef.mod_origin = core.get_current_modname() or "??"
 
-	-- Disable all further modifications
-	getmetatable(itemdef).__newindex = {}
-
 	--core.log("Registering item: " .. itemdef.name)
 	core.registered_items[itemdef.name] = itemdef
 	core.registered_aliases[itemdef.name] = nil
-	register_item_raw(itemdef)
+	local content_id = register_item_raw(itemdef)
+	if itemdef.type == "node" then
+		itemdef.content_id = content_id
+		core.registered_content_ids[content_id] = itemdef
+	end
+
+	-- Disable all further modifications
+	getmetatable(itemdef).__newindex = {}
 end
 
 function core.unregister_item(name)
@@ -191,9 +196,11 @@ function core.unregister_item(name)
 		return
 	end
 	-- Erase from registered_* table
-	local type = core.registered_items[name].type
+	local itemdef = core.registered_items[name]
+	local type = itemdef.type
 	if type == "node" then
 		core.registered_nodes[name] = nil
+		core.registered_content_ids[itemdef.content_id] = nil
 	elseif type == "craft" then
 		core.registered_craftitems[name] = nil
 	elseif type == "tool" then

@@ -132,7 +132,7 @@ MapNode            readnode                  (lua_State *L, int index,
                                               const NodeDefManager *ndef);
 void               pushnode                  (lua_State *L, const MapNode &n,
                                               const NodeDefManager *ndef);
-
+int                pushnode_flat             (lua_State *L, const MapNode &n);
 
 void               read_groups               (lua_State *L, int index,
                                               ItemGroupList &result);

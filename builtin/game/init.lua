@@ -35,5 +35,6 @@ dofile(gamepath .. "forceloading.lua")
 dofile(gamepath .. "statbars.lua")
 dofile(gamepath .. "knockback.lua")
 dofile(gamepath .. "async.lua")
+dofile(gamepath .. "map.lua")
 
 profiler = nil

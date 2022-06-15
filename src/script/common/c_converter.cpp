@@ -207,6 +207,15 @@ v3d read_v3d(lua_State *L, int index)
 	return pos;
 }
 
+v3d read_v3d_flat(lua_State *L, int index)
+{
+	v3d pos;
+	pos.X = lua_tonumber(L, index);
+	pos.Y = lua_tonumber(L, index + 1);
+	pos.Z = lua_tonumber(L, index + 2);
+	return pos;
+}
+
 v3d check_v3d(lua_State *L, int index)
 {
 	v3d pos;
@@ -269,6 +278,13 @@ v3s16 read_v3s16(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = read_v3d(L, index);
+	return doubleToInt(pf, 1.0);
+}
+
+v3s16 read_v3s16_flat(lua_State *L, int index)
+{
+	// Correct rounding at <0
+	v3d pf = read_v3d_flat(L, index);
 	return doubleToInt(pf, 1.0);
 }
 

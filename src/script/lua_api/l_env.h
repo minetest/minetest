@@ -43,13 +43,8 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_swap_node(lua_State *L);
 
-	// get_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_get_node(lua_State *L);
-
-	// get_node_or_nil(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_get_node_or_nil(lua_State *L);
+	// get_node_raw(x, y, z)
+	static int l_get_node_raw(lua_State *L);
 
 	// get_node_light(pos, timeofday)
 	// pos = {x=num, y=num, z=num}

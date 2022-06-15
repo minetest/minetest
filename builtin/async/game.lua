@@ -27,11 +27,13 @@ do
 
 	-- reassemble other tables
 	all.registered_nodes = {}
+	all.registered_content_ids = {}
 	all.registered_craftitems = {}
 	all.registered_tools = {}
 	for k, v in pairs(all.registered_items) do
 		if v.type == "node" then
 			all.registered_nodes[k] = v
+			all.registered_content_ids[v.content_id] = v
 		elseif v.type == "craftitem" then
 			all.registered_craftitems[k] = v
 		elseif v.type == "tool" then

@@ -91,3 +91,21 @@ function core.encode_png(width, height, data, compression)
 
 	return o_encode_png(width, height, data, compression or 6)
 end
+
+function core.get_name_from_content_id(content_id)
+	return core.registered_content_ids[content_id].name
+end
+
+function core.get_content_id(name)
+	local alias = core.registered_aliases[name]
+	local k = alias or name
+	local itemdef = core.registered_nodes[k]
+	if itemdef == nil then
+		if alias == nil then
+			error("Unknown node: " .. k)
+		else
+			error("Unknown node: " .. k .. " (from alias " .. name .. ")")
+		end
+	end
+	return itemdef.content_id
+end

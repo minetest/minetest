@@ -355,39 +355,16 @@ int ModApiEnvMod::l_swap_node(lua_State *L)
 	return 1;
 }
 
-// get_node(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_get_node(lua_State *L)
+// get_node_raw(x, y, z)
+int ModApiEnvMod::l_get_node_raw(lua_State *L)
 {
 	GET_ENV_PTR;
-
-	// pos
-	v3s16 pos = read_v3s16(L, 1);
-	// Do it
-	MapNode n = env->getMap().getNode(pos);
-	// Return node
-	pushnode(L, n, env->getGameDef()->ndef());
-	return 1;
-}
-
-// get_node_or_nil(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
-{
-	GET_ENV_PTR;
-
-	// pos
-	v3s16 pos = read_v3s16(L, 1);
-	// Do it
+	v3s16 pos = read_v3s16_flat(L, 1); // consumes 3 args
 	bool pos_ok;
 	MapNode n = env->getMap().getNode(pos, &pos_ok);
-	if (pos_ok) {
-		// Return node
-		pushnode(L, n, env->getGameDef()->ndef());
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
+	pushnode_flat(L, n);
+	lua_pushboolean(L, pos_ok);
+	return 4;
 }
 
 // get_node_light(pos, timeofday)
@@ -1451,8 +1428,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
-	API_FCT(get_node);
-	API_FCT(get_node_or_nil);
+	API_FCT(get_node_raw);
 	API_FCT(get_node_light);
 	API_FCT(get_natural_light);
 	API_FCT(place_node);
