@@ -90,7 +90,7 @@ const std::wstring &Translations::getPluralTranslation(
 	}
 
 	// Create the vector if it doesn't exist
-	std::vector<std::wstring> v = m_plural_translations[key];
+	std::vector<std::wstring> &v = m_plural_translations[key];
 	if (n < v.size()) {
 		return v[n];
 	} else {
@@ -356,7 +356,7 @@ void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry
 	// Process an entry from a PO file and add it to the translation table
 	// Assumes that entry[L"msgid"] is always defined
 	std::wstring textdomain;
-	auto ctx = entry.find(L"msgctx");
+	auto ctx = entry.find(L"msgctxt");
 	if (ctx != entry.end()) {
 		textdomain = ctx->second;
 	} else {
@@ -482,12 +482,12 @@ inline u32 readVarEndian(bool is_be, const char *data)
 {
 	if (is_be) {
 		return
-			((u32)data[0] << 24) | ((u32)data[1] << 16) |
-			((u32)data[2] <<  8) | ((u32)data[3] <<  0);
+			((u32)(unsigned char)data[0] << 24) | ((u32)(unsigned char)data[1] << 16) |
+			((u32)(unsigned char)data[2] <<  8) | ((u32)(unsigned char)data[3] <<  0);
 	} else {
 		return
-			((u32)data[0] <<  0) | ((u32)data[1] <<  8) |
-			((u32)data[2] << 16) | ((u32)data[3] << 24);
+			((u32)(unsigned char)data[0] <<  0) | ((u32)(unsigned char)data[1] <<  8) |
+			((u32)(unsigned char)data[2] << 16) | ((u32)(unsigned char)data[3] << 24);
 	}
 }
 
@@ -543,7 +543,6 @@ void Translations::loadMoTranslation(const std::string &data) {
 		loadMoEntry(original, translated);
 	}
 	
-	warningstream << "mo files are unsupported for now" << std::endl;
 	return;
 }
 
