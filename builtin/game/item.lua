@@ -682,8 +682,3 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	on_drop = nil,
 	on_use = nil,
 }
-
-core.after(0, function()
-	-- The set of content IDs can no longer change.
-	builtin_shared.cache_content_ids()
-end)
