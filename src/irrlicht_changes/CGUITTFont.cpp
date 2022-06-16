@@ -1,7 +1,7 @@
 /*
    CGUITTFont FreeType class for Irrlicht
    Copyright (c) 2009-2010 John Norman
-   Copyright (c) 2016 Nathanaël Courant
+   Copyright (c) 2016 Nathanaëlle Courant
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any

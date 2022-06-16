@@ -20,7 +20,7 @@
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com>",
 	"sfan5 <sfan5@live.de>",
-	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
+	"Nathanaëlle Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"paramat",
 	"Andrew Ward (rubenwardy) <rw@rubenwardy.com>",
