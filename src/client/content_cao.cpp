@@ -858,7 +858,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 void GenericCAO::updateLight(u32 day_night_ratio)
 {
-	if (m_glow < 0)
+	if (m_prop.glow < 0)
 		return;
 
 	u16 light_at_pos = 0;
@@ -883,7 +883,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (!pos_ok)
 		light_at_pos = LIGHT_SUN;
 
-	video::SColor light = encode_light(light_at_pos, m_glow);
+	video::SColor light = encode_light(light_at_pos, m_prop.glow);
 	if (!m_enable_shaders)
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 
@@ -1319,7 +1319,6 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
-	m_glow = m_prop.glow;
 
 	video::ITexture *shadow_texture = nullptr;
 	if (auto shadow = RenderingEngine::get_shadow_renderer())
@@ -1496,7 +1495,7 @@ void GenericCAO::updateTextures(std::string mod)
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			// Set mesh color (only if lighting is disabled)
-			if (!m_prop.colors.empty() && m_glow < 0)
+			if (!m_prop.colors.empty() && m_prop.glow < 0)
 				setMeshColor(mesh, m_prop.colors[0]);
 		}
 	}
