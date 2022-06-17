@@ -5073,8 +5073,8 @@ Call these functions only at load time!
 * `minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing))`
     * Called when a node is punched
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
-    * Called after generating a piece of world. Modifying nodes inside the area
-      is a bit faster than usually.
+    * Called after generating a piece of world. Modifying nodes inside this area
+      is a bit faster than usual.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
