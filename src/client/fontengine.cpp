@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gettext.h"
 #include "irrlicht_changes/CGUITTFont.h"
+#include "util/numeric.h" // rangelim
 
 /** maximum size distance for getting a "similar" font size */
 #define MAX_FONT_SIZE_OFFSET 10
@@ -172,9 +173,9 @@ unsigned int FontEngine::getFontSize(FontMode mode)
 /******************************************************************************/
 void FontEngine::readSettings()
 {
-	m_default_size[FM_Standard]  = g_settings->getU16("font_size");
-	m_default_size[_FM_Fallback] = g_settings->getU16("font_size");
-	m_default_size[FM_Mono]      = g_settings->getU16("mono_font_size");
+	m_default_size[FM_Standard]  = rangelim(g_settings->getU16("font_size"), 5, 72);
+	m_default_size[_FM_Fallback] = m_default_size[FM_Standard];
+	m_default_size[FM_Mono]      = rangelim(g_settings->getU16("mono_font_size"), 5, 72);
 
 	m_default_bold = g_settings->getBool("font_bold");
 	m_default_italic = g_settings->getBool("font_italic");

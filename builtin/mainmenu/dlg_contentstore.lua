@@ -191,7 +191,7 @@ end
 
 local function queue_download(package, reason)
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
-	if number_downloading < max_concurrent_downloads then
+	if number_downloading < math.max(max_concurrent_downloads, 1) then
 		start_install(package, reason)
 	else
 		table.insert(download_queue, { package = package, reason = reason })

@@ -169,8 +169,8 @@ EmergeManager::EmergeManager(Server *server, MetricsBackend *mb)
 		);
 	}
 
-	s16 nthreads = 1;
-	g_settings->getS16NoEx("num_emerge_threads", nthreads);
+	u16 nthreads = 1;
+	g_settings->getU16NoEx("num_emerge_threads", nthreads);
 	// If automatic, leave a proc for the main thread and one for
 	// some other misc thread
 	if (nthreads == 0)

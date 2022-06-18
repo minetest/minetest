@@ -68,7 +68,7 @@ void GameUI::init()
 	u16 chat_font_size = g_settings->getU16("chat_font_size");
 	if (chat_font_size != 0) {
 		m_guitext_chat->setOverrideFont(g_fontengine->getFont(
-			chat_font_size, FM_Unspecified));
+			rangelim(chat_font_size, 5, 72), FM_Unspecified));
 	}
 
 

@@ -86,8 +86,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screen_w = g_settings->getU16("screen_w");
-	u16 screen_h = g_settings->getU16("screen_h");
+	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
+	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
@@ -592,7 +592,7 @@ static float calcDisplayDensity()
 	}
 
 	/* return manually specified dpi */
-	return g_settings->getFloat("screen_dpi") / 96.0;
+	return std::max(g_settings->getFloat("screen_dpi"), 1.0f) / 96.0;
 }
 
 float RenderingEngine::getDisplayDensity()
@@ -615,7 +615,7 @@ static float calcDisplayDensity(irr::video::IVideoDriver *driver)
 	}
 
 	/* return manually specified dpi */
-	return g_settings->getFloat("screen_dpi") / 96.0f;
+	return std::max(g_settings->getFloat("screen_dpi"), 1.0f) / 96.0f;
 }
 
 float RenderingEngine::getDisplayDensity()
@@ -633,7 +633,8 @@ float RenderingEngine::getDisplayDensity()
 
 float RenderingEngine::getDisplayDensity()
 {
-	return (g_settings->getFloat("screen_dpi") / 96.0) * g_settings->getFloat("display_density_factor");
+	return (std::max(g_settings->getFloat("screen_dpi"), 1.0f) / 96.0) *
+		g_settings->getFloat("display_density_factor");
 }
 
 #endif
