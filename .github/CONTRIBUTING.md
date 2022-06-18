@@ -30,7 +30,7 @@ Contributions are welcome! Here's how you can help:
 
 3. Start coding!
     - Refer to the
-      [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt),
+      [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.md),
       [Developer Wiki](http://dev.minetest.net/Main_Page) and other
       [documentation](https://github.com/minetest/minetest/tree/master/doc).
     - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and

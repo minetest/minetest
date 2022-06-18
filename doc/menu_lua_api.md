@@ -5,7 +5,7 @@ Introduction
 -------------
 
 The main menu is defined as a formspec by Lua in `builtin/mainmenu/`
-Description of formspec language to show your menu is in `lua_api.txt`
+Description of formspec language to show your menu is in `lua_api.md`
 
 
 Callbacks
@@ -77,7 +77,7 @@ Filesystem
   * `destination` folder to extract to
   * returns true/false
 * `core.sound_play(spec, looped)` -> handle
-  * `spec` = `SimpleSoundSpec` (see `lua_api.txt`)
+  * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
   * `looped` = bool
 * `core.sound_stop(handle)`
 * `core.get_video_drivers()`
@@ -338,7 +338,7 @@ Settings
 * `core.settings:save()` -> nil, save all settings to config file
 
 For a complete list of methods of the `Settings` object see
-[lua_api.txt](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt)
+[lua_api.md](https://github.com/minetest/minetest/blob/master/doc/lua_api.md)
 
 
 Worlds
@@ -371,7 +371,7 @@ Helpers
 * `fgettext(string, ...)` -> string
   * same as `fgettext_ne()`, but calls `core.formspec_escape` before returning result
 * `core.parse_json(string[, nullvalue])` -> something (possible in async calls)
-  * see `core.parse_json` (`lua_api.txt`)
+  * see `core.parse_json` (`lua_api.md`)
 * `dump(obj, dumped={})`
   * Return object serialized as a string
 * `string:split(separator)`
