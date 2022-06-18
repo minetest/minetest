@@ -218,8 +218,9 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	if (spec.italic)
 		setting_suffix.append("_italic");
 
-	u32 size = std::max<u32>(spec.size * RenderingEngine::getDisplayDensity() *
-			g_settings->getFloat("gui_scaling"), 1);
+	// Font size in pixels for FreeType
+	u32 size = rangelim(spec.size * RenderingEngine::getDisplayDensity() *
+			g_settings->getFloat("gui_scaling"), 1U, 500U);
 
 	// Constrain the font size to a certain multiple, if necessary
 	u16 divisible_by = g_settings->getU16(setting_prefix + "font_size_divisible_by");
