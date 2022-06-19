@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-06-19 11:22+0000\n"
-"Last-Translator: Pietro Cappuccino <p.cappuccino@tiscali.it>\n"
+"PO-Revision-Date: 2022-06-20 09:52+0000\n"
+"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -1085,7 +1085,7 @@ msgstr "Impostazioni"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "Shader"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
@@ -1226,7 +1226,7 @@ msgstr "- Pubblico: "
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- PvP: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
