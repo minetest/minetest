@@ -377,7 +377,7 @@ local pages = {
 
 	-- Animation
 		[[
-			formspec_version[5]
+			formspec_version[6]
 			size[12,13]
 			animated_image[0.5,0.5;1,1;;testformspec_animation.png;4;100]
 			animated_image[0.5,1.75;1,1;;testformspec_animation.jpg;4;100]

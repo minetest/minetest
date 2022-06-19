@@ -767,31 +767,50 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts;
-	if (!precheckElement("image", element, 3, 4, parts))
+	if (!precheckElement("image", element, 2, 4, parts))
 		return;
 
-	std::vector<std::string> v_pos = split(parts[0],',');
-	std::vector<std::string> v_geom = split(parts[1],',');
-	std::string name = unescape_string(parts[2]);
+	size_t offset = parts.size() >= 3;
 
+	std::vector<std::string> v_pos = split(parts[0],',');
 	MY_CHECKPOS("image", 0);
-	MY_CHECKGEOM("image", 1);
+
+	std::vector<std::string> v_geom;
+	if (parts.size() >= 3) {
+		v_geom = split(parts[1],',');
+		MY_CHECKGEOM("image", 1);
+	}
+
+	std::string name = unescape_string(parts[1 + offset]);
+	video::ITexture *texture = m_tsrc->getTexture(name);
 
 	v2s32 pos;
 	v2s32 geom;
 
+	if (parts.size() < 3) {
+		if (texture != nullptr) {
+			core::dimension2du dim = texture->getOriginalSize();
+			geom.X = dim.Width;
+			geom.Y = dim.Height;
+		} else {
+			geom = v2s32(0);
+		}
+	}
+
 	if (data->real_coordinates) {
 		pos = getRealCoordinateBasePos(v_pos);
-		geom = getRealCoordinateGeometry(v_geom);
+		if (parts.size() >= 3)
+			geom = getRealCoordinateGeometry(v_geom);
 	} else {
 		pos = getElementBasePos(&v_pos);
-		geom.X = stof(v_geom[0]) * (float)imgsize.X;
-		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+		if (parts.size() >= 3) {
+			geom.X = stof(v_geom[0]) * (float)imgsize.X;
+			geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+		}
 	}
 
 	if (!data->explicit_size)
-		warningstream << "Invalid use of image without a size[] element"
-				<< std::endl;
+		warningstream << "Invalid use of image without a size[] element" << std::endl;
 
 	FieldSpec spec(
 		name,
@@ -810,7 +829,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
 		spec.fid, rect);
 
-	e->setTexture(m_tsrc->getTexture(name));
+	e->setTexture(texture);
 	e->setMiddleRect(middle);
 
 	auto style = getDefaultStyleForElement("image", spec.fname);

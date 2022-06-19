@@ -2480,7 +2480,7 @@ Elements
 
 * Show an image.
 * `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
-    * Requires formspec version >= 5.
+    * Requires formspec version >= 6.
     * See `background9[]` documentation for more information.
 
 ### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>;<middle>]`
@@ -2493,7 +2493,7 @@ Elements
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
 * `frame start` (optional): The index of the frame to start on. Default `1`.
 * `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
-    * Requires formspec version >= 5.
+    * Requires formspec version >= 6.
     * See `background9[]` documentation for more information.
 
 ### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
