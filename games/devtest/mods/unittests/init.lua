@@ -36,6 +36,7 @@ local function await(invoke)
 			called_early = {...}
 		else
 			coroutine.resume(co, ...)
+			co = nil
 		end
 	end)
 	if called_early ~= true then

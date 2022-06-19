@@ -123,10 +123,10 @@ local function test_handle_async(cb)
 
 	core.handle_async(func, function(...)
 		if not deepequal(expect, {...}) then
-			cb("Values did not equal")
+			return cb("Values did not equal")
 		end
 		if core.get_last_run_mod() ~= expect[1] then
-			cb("Mod name not tracked correctly")
+			return cb("Mod name not tracked correctly")
 		end
 
 		-- Test passing of nil arguments and return values
@@ -134,7 +134,7 @@ local function test_handle_async(cb)
 			return a, b
 		end, function(a, b)
 			if b ~= 123 then
-				cb("Argument went missing")
+				return cb("Argument went missing")
 			end
 			cb()
 		end, nil, 123)
@@ -151,7 +151,7 @@ local function test_userdata_passing2(cb, _, pos)
 		return vm_:get_node_at(pos_)
 	end, function(ret)
 		if not deepequal(expect, ret) then
-			cb("Node data mismatch (one-way)")
+			return cb("Node data mismatch (one-way)")
 		end
 
 		-- VManip: test a roundtrip
@@ -159,7 +159,7 @@ local function test_userdata_passing2(cb, _, pos)
 			return vm_
 		end, function(vm2)
 			if not deepequal(expect, vm2:get_node_at(pos)) then
-				cb("Node data mismatch (roundtrip)")
+				return cb("Node data mismatch (roundtrip)")
 			end
 			cb()
 		end, vm)
