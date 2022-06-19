@@ -872,7 +872,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 		MapNode n = m_env->getMap().getNode(pos[i], &this_ok);
 		if (this_ok) {
 			u16 this_light = getInteriorLight(n, 0, m_client->ndef());
-			u8 this_light_intensity = MYMAX(this_light & 0xFF, (this_light >> 8) && 0xFF);
+			u8 this_light_intensity = MYMAX(this_light & 0xFF, this_light >> 8);
 			if (this_light_intensity > light_at_pos_intensity) {
 				light_at_pos = this_light;
 				light_at_pos_intensity = this_light_intensity;
