@@ -2545,8 +2545,6 @@ Elements
         will be added to the width and height of the texture, allowing it to be used as the
         distance from the far end.
     * All numbers in middle are integers.
-* Example for formspec 8x4 in 16x resolution:
-  image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 * Available since formspec version 2
