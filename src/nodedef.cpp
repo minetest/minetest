@@ -61,9 +61,7 @@ void NodeBox::reset()
 
 void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 {
-	// Protocol >= 36
-	const u8 version = 6;
-	writeU8(os, version);
+	writeU8(os, 6); // version. Protocol >= 36
 
 	switch (type) {
 	case NODEBOX_LEVELED:
@@ -123,8 +121,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 
 void NodeBox::deSerialize(std::istream &is)
 {
-	int version = readU8(is);
-	if (version < 6)
+	if (readU8(is) < 6)
 		throw SerializationError("unsupported NodeBox version");
 
 	reset();
@@ -249,14 +246,13 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 		writeU8(os, align_style);
 }
 
-void TileDef::deSerialize(std::istream &is, u8 contentfeatures_version,
-	NodeDrawType drawtype)
+void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_version)
 {
-	int version = readU8(is);
-	if (version < 6)
+	if (readU8(is) < 6)
 		throw SerializationError("unsupported TileDef version");
+
 	name = deSerializeString16(is);
-	animation.deSerialize(is, version);
+	animation.deSerialize(is, protocol_version);
 	u16 flags = readU16(is);
 	backface_culling = flags & TILE_FLAG_BACKFACE_CULLING;
 	tileable_horizontal = flags & TILE_FLAG_TILEABLE_HORIZONTAL;
@@ -448,8 +444,7 @@ u8 ContentFeatures::getAlphaForLegacy() const
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 {
-	const u8 version = CONTENTFEATURES_VERSION;
-	writeU8(os, version);
+	writeU8(os, CONTENTFEATURES_VERSION);
 
 	// general
 	os << serializeString16(name);
@@ -534,9 +529,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	collision_box.serialize(os, protocol_version);
 
 	// sound
-	sound_footstep.serialize(os, version);
-	sound_dig.serialize(os, version);
-	sound_dug.serialize(os, version);
+	sound_footstep.serialize(os, protocol_version);
+	sound_dig.serialize(os, protocol_version);
+	sound_dug.serialize(os, protocol_version);
 
 	// legacy
 	writeU8(os, legacy_facedir_simple);
@@ -550,11 +545,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, liquid_move_physics);
 }
 
-void ContentFeatures::deSerialize(std::istream &is)
+void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 {
-	// version detection
-	const u8 version = readU8(is);
-	if (version < CONTENTFEATURES_VERSION)
+	if (readU8(is) < CONTENTFEATURES_VERSION)
 		throw SerializationError("unsupported ContentFeatures version");
 
 	// general
@@ -576,13 +569,13 @@ void ContentFeatures::deSerialize(std::istream &is)
 	if (readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
 	for (TileDef &td : tiledef)
-		td.deSerialize(is, version, drawtype);
+		td.deSerialize(is, drawtype, protocol_version);
 	for (TileDef &td : tiledef_overlay)
-		td.deSerialize(is, version, drawtype);
+		td.deSerialize(is, drawtype, protocol_version);
 	if (readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
 	for (TileDef &td : tiledef_special)
-		td.deSerialize(is, version, drawtype);
+		td.deSerialize(is, drawtype, protocol_version);
 	setAlphaFromLegacy(readU8(is));
 	color.setRed(readU8(is));
 	color.setGreen(readU8(is));
@@ -633,9 +626,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	collision_box.deSerialize(is);
 
 	// sounds
-	sound_footstep.deSerialize(is, version);
-	sound_dig.deSerialize(is, version);
-	sound_dug.deSerialize(is, version);
+	sound_footstep.deSerialize(is, protocol_version);
+	sound_dig.deSerialize(is, protocol_version);
+	sound_dug.deSerialize(is, protocol_version);
 
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
@@ -1546,12 +1539,13 @@ void NodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
 }
 
 
-void NodeDefManager::deSerialize(std::istream &is)
+void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 {
 	clear();
-	int version = readU8(is);
-	if (version != 1)
+
+	if (readU8(is) < 1)
 		throw SerializationError("unsupported NodeDefinitionManager version");
+
 	u16 count = readU16(is);
 	std::istringstream is2(deSerializeString32(is), std::ios::binary);
 	ContentFeatures f;
@@ -1561,7 +1555,7 @@ void NodeDefManager::deSerialize(std::istream &is)
 		// Read it from the string wrapper
 		std::string wrapper = deSerializeString16(is2);
 		std::istringstream wrapper_is(wrapper, std::ios::binary);
-		f.deSerialize(wrapper_is);
+		f.deSerialize(wrapper_is, protocol_version);
 
 		// Check error conditions
 		if (i == CONTENT_IGNORE || i == CONTENT_AIR || i == CONTENT_UNKNOWN) {

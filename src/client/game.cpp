@@ -282,7 +282,7 @@ public:
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
-				m_sound->playSound(m_player_step_sound, false);
+				m_sound->playSound(m_player_step_sound);
 		}
 	}
 
@@ -290,7 +290,7 @@ public:
 	{
 		if (m_player_jump_timer <= 0.0f) {
 			m_player_jump_timer = 0.2f;
-			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f));
 		}
 	}
 
@@ -315,32 +315,32 @@ public:
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
+		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
+		sm->m_sound->playSound(sm->m_player_rightpunch_sound);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		NodeDugEvent *nde = (NodeDugEvent *)e;
-		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
+		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
+		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5));
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
+		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5));
 	}
 
 	void registerReceiver(MtEventManager *mgr)

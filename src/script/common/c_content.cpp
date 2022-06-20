@@ -1051,22 +1051,26 @@ void push_palette(lua_State *L, const std::vector<video::SColor> *palette)
 
 /******************************************************************************/
 void read_server_sound_params(lua_State *L, int index,
-		ServerSoundParams &params)
+		ServerPlayingSound &params)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	// Clear
-	params = ServerSoundParams();
+
 	if(lua_istable(L, index)){
+		// Functional overlap: this may modify SimpleSoundSpec contents
+		getfloatfield(L, index, "fade", params.spec.fade);
+		getfloatfield(L, index, "pitch", params.spec.pitch);
+		getboolfield(L, index, "loop", params.spec.loop);
+
 		getfloatfield(L, index, "gain", params.gain);
+
+		// Handle positional information
 		getstringfield(L, index, "to_player", params.to_player);
-		getfloatfield(L, index, "fade", params.fade);
-		getfloatfield(L, index, "pitch", params.pitch);
 		lua_getfield(L, index, "pos");
 		if(!lua_isnil(L, -1)){
 			v3f p = read_v3f(L, -1)*BS;
 			params.pos = p;
-			params.type = ServerSoundParams::SSP_POSITIONAL;
+			params.type = ServerPlayingSound::SSP_POSITIONAL;
 		}
 		lua_pop(L, 1);
 		lua_getfield(L, index, "object");
@@ -1075,13 +1079,12 @@ void read_server_sound_params(lua_State *L, int index,
 			ServerActiveObject *sao = ObjectRef::getobject(ref);
 			if(sao){
 				params.object = sao->getId();
-				params.type = ServerSoundParams::SSP_OBJECT;
+				params.type = ServerPlayingSound::SSP_OBJECT;
 			}
 		}
 		lua_pop(L, 1);
 		params.max_hear_distance = BS*getfloatfield_default(L, index,
 				"max_hear_distance", params.max_hear_distance/BS);
-		getboolfield(L, index, "loop", params.loop);
 		getstringfield(L, index, "exclude_player", params.exclude_player);
 	}
 }

@@ -36,9 +36,6 @@ class Client;
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 
-// PROTOCOL_VERSION >= 37
-static const u8 CONTENTFEATURES_VERSION = 13;
-
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
@@ -286,8 +283,7 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, u8 contentfeatures_version,
-		NodeDrawType drawtype);
+	void deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_version);
 };
 
 // Defines the number of special tiles per nodedef
@@ -299,6 +295,10 @@ struct TileDef
 
 struct ContentFeatures
 {
+	// PROTOCOL_VERSION >= 37. This is legacy and should not be increased anymore, 
+	// write checks that depend directly on the protocol version instead.
+	static const u8 CONTENTFEATURES_VERSION = 13;
+
 	/*
 		Cached stuff
 	 */
@@ -447,7 +447,7 @@ struct ContentFeatures
 	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*
 		Some handy methods
@@ -690,7 +690,7 @@ public:
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
-	 * @param protocol_version serialization version of ContentFeatures
+	 * @param protocol_version Active network protocol version
 	 */
 	void serialize(std::ostream &os, u16 protocol_version) const;
 
@@ -698,8 +698,9 @@ public:
 	 * Restores the manager from a serialized stream.
 	 * This clears the previous state.
 	 * @param is input stream containing a serialized NodeDefManager
+	 * @param protocol_version Active network protocol version
 	 */
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*!
 	 * Used to indicate that node registration has finished.
