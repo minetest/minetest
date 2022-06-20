@@ -27,6 +27,8 @@ protected:
 	int scale = 0;
 	video::ITexture *lowres = nullptr;
 
+	RenderPipeline pipeline;
+
 	void initTextures() override;
 	void clearTextures() override;
 	void beforeDraw() override;

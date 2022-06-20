@@ -31,6 +31,11 @@ RenderingCorePlain::RenderingCorePlain(
 	: RenderingCore(_device, _client, _hud)
 {
 	scale = g_settings->getU16("undersampling");
+
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::draw3D)));
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawPostFx)));
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::upscale)));
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawHUD)));
 }
 
 void RenderingCorePlain::initTextures()
@@ -69,8 +74,5 @@ void RenderingCorePlain::upscale()
 
 void RenderingCorePlain::drawAll()
 {
-	draw3D();
-	drawPostFx();
-	upscale();
-	drawHUD();
+	pipeline.run();
 }

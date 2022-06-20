@@ -153,6 +153,32 @@ public:
     virtual void run() = 0;
 };
 
+class TrivialRenderStep : public RenderStep
+{
+public:
+    virtual void setRenderSource(RenderSource *source) override {}
+    virtual void setRenderTarget(RenderTarget *target) override {}
+    virtual void reset() override {}
+};
+
+template <class _Core>
+class TrampolineStep : public TrivialRenderStep
+{
+public:
+    typedef void (_Core::*_Call)();
+    TrampolineStep(_Core *core, _Call call) :
+        core(core), call(call)
+    {}
+
+    virtual void run() override 
+    {
+        (core->*call)();
+    }
+private:
+    _Core *core;
+    _Call call;
+};
+
 class RenderPipeline : public RenderStep
 {
 public:
