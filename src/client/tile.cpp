@@ -901,6 +901,8 @@ static video::IImage *createInventoryCubeImage(
 	return result;
 }
 
+void blitBaseImage(video::IImage* &src, video::IImage* &dst);
+
 video::IImage* TextureSource::generateImage(const std::string &name)
 {
 	// Get the base image
@@ -966,10 +968,42 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 
 	/*
 		If this name is enclosed in parentheses, generate it
-		and blit it onto the base image
+		and blit it onto the base image.
+
+		Bug 12459 (2022-06):
+		This code forgot to check, whether the base image and
+		the part in parentheses have matching size, before blitting.
+		To support mods relying on this undocumented behavior,
+		the fix is only implemented for double parentheses.
 	*/
-	if (last_part_of_name[0] == paren_open
-			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
+	bool in_parentheses = last_part_of_name[0] == paren_open
+			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close;
+	bool in_double_parentheses = false;
+	if (in_parentheses
+			&& last_part_of_name.size() >= 4
+			&& last_part_of_name[1] == paren_open
+			&& last_part_of_name[last_part_of_name.size() - 2] == paren_close) {
+		in_double_parentheses = true;
+		// Stuff like ((a.png)^(b.png)) does not count as double parentheses.
+		// Double parentheses is only when the part between double parentheses
+		// would still be balanced.
+		u8 paren_bal = 0;
+		for (s32 i = last_part_of_name.size() - 3; i >= 2; i--) {
+			const char c = last_part_of_name[i];
+			if (c == paren_close) {
+				paren_bal++;
+			} else if (c == paren_open) {
+				if (paren_bal == 0) {
+					// Would be unbalanced, therefore not double parentheses.
+					in_double_parentheses = false;
+					break;
+				}
+				paren_bal--;
+			}
+		}
+	}
+
+	if (in_parentheses) {
 		std::string name2 = last_part_of_name.substr(1,
 				last_part_of_name.size() - 2);
 		video::IImage *tmp = generateImage(name2);
@@ -981,7 +1015,12 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 		}
 		core::dimension2d<u32> dim = tmp->getDimension();
 		if (baseimg) {
-			blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
+			if (in_double_parentheses) {
+				blitBaseImage(tmp, baseimg);
+			} else {
+				// Bug 12459: Blit without scaling. (See above.)
+				blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
+			}
 			tmp->drop();
 		} else {
 			baseimg = tmp;

@@ -454,6 +454,20 @@ Example: `cobble.png^(thing1.png^thing2.png)`
 A texture for `thing1.png^thing2.png` is created and the resulting
 texture is overlaid on top of `cobble.png`.
 
+Note: if a texture group in _single_ parentheses is overlaid on another texture,
+automatic scaling does not work.
+This is to support older mods making use of this issue.
+If you can not guarantee that the base texture has the same size as the
+texture group (e. g. because a texture part is provided by another mod),
+you should use _double_ parentheses.
+
+Example: `cobble.png^((external_texture.png))`
+
+If you need to overlay textures without scaling, you should use
+the `[combine` modifier instead.
+
+Example: `[combine:16x16:0,0=cobble.png:0,0=small_overlay.png`
+
 ### Escaping
 
 Modifiers that accept texture names (e.g. `[combine`) accept escaping to allow
