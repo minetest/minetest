@@ -50,7 +50,7 @@ public:
 	virtual void run() override;
 
 	virtual void setRenderSource(RenderSource *) override {}
-	virtual void setRenderTarget(RenderTarget *) override {}
+	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
 	virtual void reset() override {}
 private:
 	PipelineState *m_state;
@@ -58,6 +58,7 @@ private:
 	video::IVideoDriver *m_driver;
 	Hud *m_hud;
 	Camera *m_camera;
+	RenderTarget *m_target {nullptr};
 };
 
 class DrawHUD : public RenderStep
@@ -116,13 +117,15 @@ protected:
 	RenderStep *stepHUD;
 	RenderTarget *screen;
 
+	RenderPipeline pipeline;
+
 
 	void updateScreenSize();
 	virtual void initTextures() {}
 	virtual void clearTextures() {}
 
 	virtual void beforeDraw() {}
-	virtual void drawAll() = 0;
+	virtual void drawAll();
 
 	void draw3D();
 	void drawHUD();

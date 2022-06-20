@@ -26,9 +26,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
 
+
+
+
 /// Draw3D pipeline step
 void Draw3D::run()
 {
+	if (m_target)
+		m_target->activate();
+
 	m_smgr->drawAll();
 	m_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (!m_state->show_hud)
@@ -137,6 +143,7 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 		shadow_renderer->update();
 	}
 
+	pipeline.reset();
 	beforeDraw();
 	drawAll();
 }
@@ -154,4 +161,9 @@ void RenderingCore::drawHUD()
 void RenderingCore::drawPostFx()
 {
 	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
+}
+
+void RenderingCore::drawAll()
+{
+	pipeline.run();
 }

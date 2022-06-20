@@ -58,6 +58,31 @@ void TextureBuffer::ensureRenderTarget()
     }
 }
 
+void TextureBuffer::setTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    if (m_render_target) {
+        m_driver->removeRenderTarget(m_render_target);
+        m_render_target = nullptr;
+    }
+
+    if (m_textures.size() > index && m_textures[index])
+        m_driver->removeTexture(m_textures[index]);
+
+    m_textures.reallocate(index + 1);
+    m_textures[index] = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
+
+}
+
+void ColorBuffer::setTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    if (m_texture) {
+        m_driver->removeTexture(m_texture);
+        m_texture = nullptr;
+    }
+
+    m_texture = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
+}
+
 void ScreenTarget::activate()
 {
     m_driver->setRenderTarget(nullptr, m_clear, m_clear);

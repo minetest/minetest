@@ -28,14 +28,19 @@ inline u32 scaledown(u32 coef, u32 size)
 
 RenderingCorePlain::RenderingCorePlain(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCore(_device, _client, _hud)
+	: RenderingCore(_device, _client, _hud), buffer(_device->getVideoDriver()), upscale(_device->getVideoDriver())
 {
 	scale = g_settings->getU16("undersampling");
 
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::draw3D)));
+	pipeline.addStep(step3D);
 	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawPostFx)));
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::upscale)));
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawHUD)));
+	if (scale > 1) {
+		step3D->setRenderTarget(&buffer);
+		upscale.setRenderSource(&buffer);
+		upscale.setRenderTarget(screen);
+		pipeline.addStep(&upscale);
+	}
+	pipeline.addStep(stepHUD);
 }
 
 void RenderingCorePlain::initTextures()
@@ -43,36 +48,18 @@ void RenderingCorePlain::initTextures()
 	if (scale <= 1)
 		return;
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	lowres = driver->addRenderTargetTexture(
-			size, "render_lowres", video::ECF_A8R8G8B8);
+	buffer.setTexture(0, size.X, size.Y, "upscale", video::ECF_A8R8G8B8);
+	upscale.setSourceSize(size);
+	upscale.setTargetSize(screensize);
 }
 
-void RenderingCorePlain::clearTextures()
-{
-	if (scale <= 1)
-		return;
-	driver->removeTexture(lowres);
-}
+// class UpscaleStep
 
-void RenderingCorePlain::beforeDraw()
+void UpscaleStep::run()
 {
-	if (scale <= 1)
-		return;
-	driver->setRenderTarget(lowres, true, true, skycolor);
-}
-
-void RenderingCorePlain::upscale()
-{
-	if (scale <= 1)
-		return;
-	driver->setRenderTarget(0, true, true);
-	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	v2u32 dest_size{scale * size.X, scale * size.Y};
-	driver->draw2DImage(lowres, core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
-			core::rect<s32>(0, 0, size.X, size.Y));
-}
-
-void RenderingCorePlain::drawAll()
-{
-	pipeline.run();
+	video::ITexture *lowres = m_source->getTexture(0);
+	m_target->activate();
+	m_driver->draw2DImage(lowres,
+			core::rect<s32>(0, 0, m_targetSize.X, m_targetSize.Y),
+			core::rect<s32>(0, 0, m_sourceSize.X, m_sourceSize.Y));
 }

@@ -21,20 +21,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "core.h"
 
+class UpscaleStep : public RenderStep
+{
+public:
+	UpscaleStep(video::IVideoDriver *driver) :
+		m_driver(driver)
+	{}
+
+    virtual void setRenderSource(RenderSource *source) override { m_source = source; }
+    virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
+    virtual void reset() override {};
+    virtual void run() override;
+
+	void setSourceSize(v2u32 sourceSize) { m_sourceSize = sourceSize; }
+	void setTargetSize(v2u32 targetSize) { m_targetSize = targetSize; }
+private:
+	video::IVideoDriver *m_driver;
+	RenderSource *m_source;
+	RenderTarget *m_target;
+	v2u32 m_sourceSize;
+	v2u32 m_targetSize;
+};
+
 class RenderingCorePlain : public RenderingCore
 {
 protected:
 	int scale = 0;
-	video::ITexture *lowres = nullptr;
-
-	RenderPipeline pipeline;
+	ColorBuffer buffer;
+	UpscaleStep upscale;
 
 	void initTextures() override;
-	void clearTextures() override;
-	void beforeDraw() override;
-	void upscale();
 
 public:
 	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-	void drawAll() override;
 };

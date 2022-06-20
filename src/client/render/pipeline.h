@@ -45,6 +45,7 @@ public:
     virtual void reset() {};
 };
 
+///
 /// Represents a render target (screen or FBO)
 class RenderTarget
 {
@@ -79,7 +80,7 @@ public:
 
     virtual ~TextureBuffer() override;
 
-    void setTexture(u8 index, u16 width, u16 height, u16 format);
+    void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
 
     virtual u8 getTextureCount() override { return m_textures.size(); }
     virtual video::ITexture *getTexture(u8 index) override;
@@ -90,6 +91,33 @@ private:
     core::array<video::ITexture *> m_textures;
     video::IRenderTarget *m_render_target { nullptr };
     video::IVideoDriver *m_driver;
+};
+
+class ColorBuffer : public RenderSource, public RenderTarget
+{
+public:
+
+    ColorBuffer(video::IVideoDriver *driver)
+            : m_driver(driver)
+    {}
+
+    virtual ~ColorBuffer()
+    {
+        if (m_texture)
+            m_driver->removeTexture(m_texture);
+    }
+
+    void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
+    void setClearColor(video::SColor color) { m_clear_color = color; }
+
+    virtual u8 getTextureCount() override { return 1; }
+    virtual video::ITexture *getTexture(u8 index) { return m_texture; }
+    virtual void activate() { m_driver->setRenderTarget(m_texture, m_clear, m_clear, m_clear_color); };
+private:
+    video::ITexture * m_texture { nullptr };
+    video::IVideoDriver *m_driver;
+    video::SColor m_clear_color { 0x0L };
+
 };
 
 class RemappingSource : RenderSource
