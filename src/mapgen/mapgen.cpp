@@ -453,9 +453,8 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 			!ndef->get(n).light_propagates)
 		return;
 
-	// Since this recursive function only terminates when there is no light from
-	// either bank left, we need to take the max of both banks into account for
-	// the case where spreading has stopped for one light bank but not the other.
+	// MYMAX still needed here because we only exit early if both banks have
+	// nothing to propagate anymore.
 	light = MYMAX(light_day, n.param1 & 0x0F) |
 			MYMAX(light_night, n.param1 & 0xF0);
 
@@ -470,12 +469,9 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nm
 	bool propagate_shadow)
 {
 	ScopeProfiler sp(g_profiler, "EmergeThread: update lighting", SPT_AVG);
-	//TimeTaker t("updateLighting");
 
 	propagateSunlight(nmin, nmax, propagate_shadow);
 	spreadLight(full_nmin, full_nmax);
-
-	//printf("updateLighting: %dms\n", t.stop());
 }
 
 
