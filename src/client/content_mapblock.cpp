@@ -114,7 +114,7 @@ void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply
 			n.getColor(*f, &layer->color);
 	}
 
-	if (apply_crack)
+	if (apply_crack && top_layer)
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
 

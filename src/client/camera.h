@@ -217,11 +217,11 @@ private:
 
 	// Server-sent FOV variables
 	bool m_server_sent_fov = false;
-	f32 m_curr_fov_degrees, m_old_fov_degrees, m_target_fov_degrees;
+	f32 m_curr_fov_degrees = 0.0f, m_old_fov_degrees = 0.0f, m_target_fov_degrees = 0.0f;
 
 	// FOV transition variables
 	bool m_fov_transition_active = false;
-	f32 m_fov_diff, m_transition_time;
+	f32 m_fov_diff = 0.0f, m_transition_time = 0.0f;
 
 	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
 	v2f m_arm_dir;

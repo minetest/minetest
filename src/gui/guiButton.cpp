@@ -744,13 +744,14 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 			Padding.UpperLeftCorner + BgMiddle.UpperLeftCorner,
 			Padding.LowerRightCorner + BgMiddle.LowerRightCorner);
 
-	GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin());
+	if (GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin())) {
 	core::vector2d<s32> defaultPressOffset(
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
 	ContentOffset = style.getVector2i(StyleSpec::CONTENT_OFFSET, isPressed()
 			? defaultPressOffset
 			: core::vector2d<s32>(0));
+	}
 
 	core::rect<s32> childBounds(
 				Padding.UpperLeftCorner.X + ContentOffset.X,

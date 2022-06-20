@@ -856,6 +856,12 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 }
 #endif
 
+/**
+ * Read arbitrary file and return read status
+ * @param path Path on filesystem
+ * @param out string reference to write to
+ * @returns read success status
+ */
 bool ReadFile(const std::string &path, std::string &out)
 {
 	std::ifstream is(path, std::ios::binary | std::ios::ate);

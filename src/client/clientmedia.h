@@ -236,7 +236,7 @@ private:
 	// Information about the one file we want to fetch
 	std::string m_file_name;
 	std::string m_file_sha1;
-	s32 m_current_remote;
+	s32 m_current_remote = 0;
 
 	// Array of remote media servers
 	std::vector<std::string> m_remotes;

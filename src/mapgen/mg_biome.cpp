@@ -33,12 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 BiomeManager::BiomeManager(Server *server) :
-	ObjDefManager(server, OBJDEF_BIOME)
+	ObjDefManager(server, OBJDEF_BIOME),
+	m_server(server)
 {
-	m_server = server;
-
 	// Create default biome to be used in case none exist
-	Biome *b = new Biome;
+	Biome *b = new Biome();
 
 	b->name            = "default";
 	b->flags           = 0;

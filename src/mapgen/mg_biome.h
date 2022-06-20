@@ -247,6 +247,6 @@ public:
 private:
 	BiomeManager() {};
 
-	Server *m_server;
+	Server *m_server = nullptr;
 
 };

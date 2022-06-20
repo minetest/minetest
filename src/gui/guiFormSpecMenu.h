@@ -259,7 +259,7 @@ public:
 	void acceptInput(FormspecQuitMode quitmode=quit_mode_no);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
-	bool doPause;
+	bool doPause = false;
 	bool pausesGame() { return doPause; }
 
 	GUITable* getTable(const std::string &tablename);
@@ -344,8 +344,8 @@ protected:
 	bool m_lock = false;
 	v2u32 m_lockscreensize;
 
-	bool m_bgnonfullscreen;
-	bool m_bgfullscreen;
+	bool m_bgnonfullscreen = false;
+	bool m_bgfullscreen = false;
 	video::SColor m_bgcolor;
 	video::SColor m_fullscreen_bgcolor;
 	video::SColor m_default_tooltip_bgcolor;

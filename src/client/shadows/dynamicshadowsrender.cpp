@@ -119,7 +119,7 @@ void ShadowRenderer::initialize()
 	m_texture_format_color = m_shadow_map_texture_32bit
 						 ? video::ECOLOR_FORMAT::ECF_G32R32F
 						 : video::ECOLOR_FORMAT::ECF_G16R16F;
-	
+
 	m_shadows_enabled &= m_shadows_supported;
 }
 
@@ -264,7 +264,7 @@ void ShadowRenderer::updateSMTextures()
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
 					cb->CameraPos = light.getFuturePlayerPos();
 				}
-			
+
 			// set the Render Target
 			// right now we can only render in usual RTT, not
 			// Depth texture is available in irrlicth maybe we
@@ -326,7 +326,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values for entities are set in updateSMTextures
-			// SM texture for entities is not updated incrementally and 
+			// SM texture for entities is not updated incrementally and
 			// must by updated using current player position.
 			m_shadow_depth_entity_cb->CameraPos = light.getPlayerPos();
 
@@ -369,7 +369,7 @@ void ShadowRenderer::drawDebug()
 		m_driver->draw2DImage(shadowMapClientMap,
 				core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
 				core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
-	
+
 	if (shadowMapTextureDynamicObjects)
 		m_driver->draw2DImage(shadowMapTextureDynamicObjects,
 				core::rect<s32>(0, 128 + 50 + 128, 128,
@@ -677,7 +677,11 @@ std::string ShadowRenderer::readShaderFile(const std::string &path)
 	prefix.append("#line 0\n");
 
 	std::string content;
-	fs::ReadFile(path, content);
+	if (!fs::ReadFile(path, content)) {
+		errorstream << "failed to read shader file " << path
+					<< ", inconsistent rendering may happen" << std::endl;
+		return "";
+	}
 
 	return prefix + content;
 }

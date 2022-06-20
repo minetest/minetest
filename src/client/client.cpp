@@ -103,6 +103,7 @@ Client::Client(
 		GameUI *game_ui,
 		ELoginRegister allow_login_or_register
 ):
+	m_allow_login_or_register(allow_login_or_register),
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
 	m_itemdef(itemdef),
@@ -125,8 +126,7 @@ Client::Client(
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
 	m_game_ui(game_ui),
-	m_modchannel_mgr(new ModChannelMgr()),
-	m_allow_login_or_register(allow_login_or_register)
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
