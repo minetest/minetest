@@ -66,6 +66,8 @@ struct HTTPFetchRequest
 	// application/x-www-form-urlencoded.  POST-only.
 	bool multipart = false;
 
+	bool showprogress = false;
+
 	//  The Method to use default = GET
 	//  Avaible methods GET, POST, PUT, DELETE
 	HttpMethod method = HTTP_GET;

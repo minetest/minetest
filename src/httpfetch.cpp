@@ -45,6 +45,7 @@ static PcgRandom g_callerid_randomness;
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
 	connect_timeout(10 * 1000),
+	showprogress(g_settings->getBool("curl_showprogress")),
 	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
 {
 }
@@ -163,6 +164,15 @@ static size_t httpfetch_discardfunction(
 	return size * nmemb;
 }
 
+static int httpfetch_downloadstatus(
+		void *ptr, curl_off_t dtotal, curl_off_t dnow, curl_off_t utotal, curl_off_t unow)
+{
+	if (dtotal > 0)
+		verbosestream<<"httpfetch_downloadstatus: "
+			<< dtotal << " downloaded" << std::endl;
+	return 0;
+}
+
 class CurlHandlePool
 {
 	std::list<CURL*> handles;
@@ -277,6 +287,11 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 
 	if (!request.useragent.empty())
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, request.useragent.c_str());
+
+	if (request.showprogress) {
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, httpfetch_downloadstatus);
+	}
 
 	// Set up a write callback that writes to the
 	// ostringstream ongoing->oss, unless the data
