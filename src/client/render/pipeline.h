@@ -130,7 +130,7 @@ public:
 };
 
 /// Enables direct output to screen buffer
-class ScreenTarget : RenderTarget
+class ScreenTarget : public RenderTarget
 {
 public:
     ScreenTarget(video::IVideoDriver *driver) :

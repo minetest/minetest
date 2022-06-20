@@ -79,12 +79,19 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 			g_settings->getBool("enable_dynamic_shadows")) {
 		shadow_renderer = new ShadowRenderer(device, client);
 	}
+
+	screen = new ScreenTarget(driver);
+	step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
+	stepHUD = new DrawHUD(&pipelineState, hud, camera, mapper, client, guienv, shadow_renderer);
 }
 
 RenderingCore::~RenderingCore()
 {
+	delete step3D;
+	delete stepHUD;
 	clearTextures();
 	delete shadow_renderer;
+	delete screen;
 }
 
 void RenderingCore::initialize()
@@ -116,6 +123,14 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	draw_wield_tool = _draw_wield_tool;
 	draw_crosshair = _draw_crosshair;
 
+	pipelineState.draw_crosshair = draw_crosshair;
+	pipelineState.draw_wield_tool = draw_wield_tool;
+	pipelineState.show_hud = show_hud;
+	pipelineState.show_minimap = show_minimap;
+
+	step3D->reset();
+	stepHUD->reset();
+
 	if (shadow_renderer) {
 		// This is necessary to render shadows for animations correctly
 		smgr->getRootSceneNode()->OnAnimate(device->getTimer()->getTime());
@@ -128,32 +143,12 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 
 void RenderingCore::draw3D()
 {
-	smgr->drawAll();
-	if (shadow_renderer)
-		shadow_renderer->drawDebug();
-
-	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (!show_hud)
-		return;
-	hud->drawBlockBounds();
-	hud->drawSelectionMesh();
-	if (draw_wield_tool)
-		camera->drawWieldedTool();
+	step3D->run();
 }
 
 void RenderingCore::drawHUD()
 {
-	if (show_hud) {
-		if (draw_crosshair)
-			hud->drawCrosshair();
-
-		hud->drawHotbar(client->getEnv().getLocalPlayer()->getWieldIndex());
-		hud->drawLuaElements(camera->getOffset());
-		camera->drawNametags();
-		if (mapper && show_minimap)
-			mapper->drawMinimap();
-	}
-	guienv->drawAll();
+	stepHUD->run();
 }
 
 void RenderingCore::drawPostFx()

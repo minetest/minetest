@@ -36,7 +36,7 @@ struct PipelineState
 	bool draw_crosshair {true};
 };
 
-class Draw3D : RenderStep
+class Draw3D : public RenderStep
 {
 public:
 	Draw3D(PipelineState *state, scene::ISceneManager *smgr, video::IVideoDriver *driver, Hud *hud, Camera *camera) :
@@ -48,6 +48,10 @@ public:
 	{}
 
 	virtual void run() override;
+
+	virtual void setRenderSource(RenderSource *) override {}
+	virtual void setRenderTarget(RenderTarget *) override {}
+	virtual void reset() override {}
 private:
 	PipelineState *m_state;
 	scene::ISceneManager *m_smgr;
@@ -56,7 +60,7 @@ private:
 	Camera *m_camera;
 };
 
-class DrawHUD : RenderStep
+class DrawHUD : public RenderStep
 {
 public:
 	DrawHUD(PipelineState *state, Hud *hud, Camera *camera, Minimap *mapper, Client *client, gui::IGUIEnvironment *guienv, ShadowRenderer *shadow_renderer) :
@@ -70,6 +74,10 @@ public:
 	{}
 
 	virtual void run() override;
+
+	virtual void setRenderSource(RenderSource *) override {}
+	virtual void setRenderTarget(RenderTarget *) override {}
+	virtual void reset() override {}
 private:
 	PipelineState *m_state;
 	Hud *m_hud;
@@ -102,6 +110,12 @@ protected:
 	Hud *hud;
 
 	ShadowRenderer *shadow_renderer;
+
+	PipelineState pipelineState;
+	RenderStep *step3D;
+	RenderStep *stepHUD;
+	RenderTarget *screen;
+
 
 	void updateScreenSize();
 	virtual void initTextures() {}
