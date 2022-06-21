@@ -592,13 +592,13 @@ static float calcDisplayDensity()
 	}
 
 	/* return manually specified dpi */
-	return std::max(g_settings->getFloat("screen_dpi"), 1.0f) / 96.0;
+	return g_settings->getFloat("screen_dpi") / 96.0;
 }
 
 float RenderingEngine::getDisplayDensity()
 {
 	static float cached_display_density = calcDisplayDensity();
-	return cached_display_density * g_settings->getFloat("display_density_factor");
+	return std::max(cached_display_density * g_settings->getFloat("display_density_factor"), 0.5f);
 }
 
 #elif defined(_WIN32)
@@ -615,7 +615,7 @@ static float calcDisplayDensity(irr::video::IVideoDriver *driver)
 	}
 
 	/* return manually specified dpi */
-	return std::max(g_settings->getFloat("screen_dpi"), 1.0f) / 96.0f;
+	return g_settings->getFloat("screen_dpi") / 96.0f;
 }
 
 float RenderingEngine::getDisplayDensity()
@@ -626,15 +626,15 @@ float RenderingEngine::getDisplayDensity()
 		display_density = calcDisplayDensity(get_video_driver());
 		cached = true;
 	}
-	return display_density * g_settings->getFloat("display_density_factor");
+	return std::max(display_density * g_settings->getFloat("display_density_factor"), 0.5f);
 }
 
 #else
 
 float RenderingEngine::getDisplayDensity()
 {
-	return (std::max(g_settings->getFloat("screen_dpi"), 1.0f) / 96.0) *
-		g_settings->getFloat("display_density_factor");
+	return std::max(g_settings->getFloat("screen_dpi") / 96.0f *
+		g_settings->getFloat("display_density_factor"), 0.5f);
 }
 
 #endif

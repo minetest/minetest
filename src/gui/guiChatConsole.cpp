@@ -76,9 +76,9 @@ GUIChatConsole::GUIChatConsole(
 		m_background_color.setBlue(clamp_u8(myround(console_color.Z)));
 	}
 
-	const u16 chat_font_size = rangelim(g_settings->getU16("chat_font_size"), 5, 72);
+	const u16 chat_font_size = g_settings->getU16("chat_font_size");
 	m_font = g_fontengine->getFont(chat_font_size != 0 ?
-		chat_font_size : FONT_SIZE_UNSPECIFIED, FM_Mono);
+		rangelim(chat_font_size, 5, 72) : FONT_SIZE_UNSPECIFIED, FM_Mono);
 
 	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font" << std::endl;
