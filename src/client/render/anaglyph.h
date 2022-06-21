@@ -19,16 +19,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include "pipeline.h"
 #include "stereo.h"
+
+
+/**
+ * Set color mask when rendering the next steps
+ */
+class SetColorMaskStep : public TrivialRenderStep
+{
+public:
+	SetColorMaskStep(video::IVideoDriver *driver, int color_mask);
+
+	void run() override;
+private:
+	video::IVideoDriver *driver;
+	int color_mask;
+};
+
+/**
+ * Resets depth buffer of the current render target
+ * 
+ */
+class ClearDepthBufferTarget : public RenderTarget
+{
+public:
+	ClearDepthBufferTarget(video::IVideoDriver *driver, RenderTarget *target);
+
+	void reset() override {}
+	void activate() override;
+private:
+	video::IVideoDriver *driver;
+	RenderTarget *target;
+};
 
 class RenderingCoreAnaglyph : public RenderingCoreStereo
 {
 protected:
-	void setupMaterial(int color_mask);
-	void useEye(bool right) override;
-	void resetEye() override;
+	void createPipeline() override;
 
 public:
 	using RenderingCoreStereo::RenderingCoreStereo;
-	void drawAll() override;
 };

@@ -20,6 +20,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include "core.h"
+#include "pipeline.h"
+
+
+/**
+ * Offset camera for a specific eye in stereo rendering mode
+ */
+class OffsetCameraStep : public TrivialRenderStep
+{
+public:
+	OffsetCameraStep(scene::ICameraSceneNode *camera, float eye_offset);
+	OffsetCameraStep(scene::ICameraSceneNode *camera, bool right_eye);
+
+	void run() override;
+	void reset() override;
+private:
+	scene::ICameraSceneNode *camera;
+	core::matrix4 base_transform;
+	core::matrix4 move;
+};
 
 class RenderingCoreStereo : public RenderingCore
 {
@@ -32,6 +51,9 @@ protected:
 	virtual void useEye(bool right);
 	virtual void resetEye();
 	void renderBothImages();
+
+	void useRightEye() { useEye(true); }
+	void useLeftEye() { useEye(false); }
 
 public:
 	RenderingCoreStereo(IrrlichtDevice *_device, Client *_client, Hud *_hud);

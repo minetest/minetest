@@ -23,11 +23,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "settings.h"
 
+OffsetCameraStep::OffsetCameraStep(scene::ICameraSceneNode *_camera, float eye_offset) :
+	camera(_camera)
+{
+	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
+}
+
+
+OffsetCameraStep::OffsetCameraStep(scene::ICameraSceneNode *_camera, bool right_eye) :
+	camera(_camera)
+{
+	float eye_offset = eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f) * (right_eye ? 1 : -1);
+	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
+}
+
+void OffsetCameraStep::reset()
+{
+	base_transform = camera->getRelativeTransformation();
+}
+
+void OffsetCameraStep::run()
+{
+	camera->setPosition((base_transform * move).getTranslation());
+}
+
 RenderingCoreStereo::RenderingCoreStereo(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCore(_device, _client, _hud)
 {
-	eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f);
 }
 
 void RenderingCoreStereo::beforeDraw()

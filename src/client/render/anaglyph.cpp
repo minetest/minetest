@@ -19,15 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "anaglyph.h"
+#include "client/camera.h"
 
-void RenderingCoreAnaglyph::drawAll()
-{
-	renderBothImages();
-	drawPostFx();
-	drawHUD();
-}
 
-void RenderingCoreAnaglyph::setupMaterial(int color_mask)
+/// SetColorMaskStep step
+
+SetColorMaskStep::SetColorMaskStep(video::IVideoDriver *_driver, int _color_mask)
+	: driver(_driver), color_mask(_color_mask)
+{}
+
+void SetColorMaskStep::run()
 {
 	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
 	mat.reset();
@@ -38,15 +39,39 @@ void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 			   scene::ESNRP_SHADOW;
 }
 
-void RenderingCoreAnaglyph::useEye(bool right)
+/// ClearDepthBufferTarget
+
+ClearDepthBufferTarget::ClearDepthBufferTarget(video::IVideoDriver *_driver, RenderTarget *_target) :
+	driver(_driver), target(_target)
+{}
+
+void ClearDepthBufferTarget::activate()
 {
-	RenderingCoreStereo::useEye(right);
+	target->activate();
 	driver->clearBuffers(video::ECBF_DEPTH);
-	setupMaterial(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
 }
 
-void RenderingCoreAnaglyph::resetEye()
+void RenderingCoreAnaglyph::createPipeline()
 {
-	setupMaterial(video::ECP_ALL);
-	RenderingCoreStereo::resetEye();
+	scene::ICameraSceneNode *cam_node = camera->getCameraNode();
+
+	// clear depth buffer every time 3D is rendered
+	step3D->setRenderTarget(pipeline.own(new ClearDepthBufferTarget(driver, screen)));
+
+	// left eye
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, false)));
+	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_RED)));
+	pipeline.addStep(step3D);
+
+	// right eye
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, true)));
+	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_GREEN | video::ECP_BLUE)));
+	pipeline.addStep(step3D);
+
+	// reset
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, 0.0f)));
+	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_ALL)));
+	
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreAnaglyph>(this, &RenderingCoreAnaglyph::drawPostFx)));
+	pipeline.addStep(stepHUD);
 }
