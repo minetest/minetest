@@ -135,6 +135,7 @@ protected:
 
 	virtual void beforeDraw() {}
 	virtual void drawAll();
+	virtual void createPipeline() {}
 
 	void draw3D();
 	void drawHUD();

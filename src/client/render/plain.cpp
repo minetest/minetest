@@ -31,7 +31,20 @@ RenderingCorePlain::RenderingCorePlain(
 	: RenderingCore(_device, _client, _hud), buffer(_device->getVideoDriver()), upscale(_device->getVideoDriver())
 {
 	scale = g_settings->getU16("undersampling");
+}
 
+void RenderingCorePlain::initTextures()
+{
+	if (scale <= 1)
+		return;
+	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
+	buffer.setTexture(0, size.X, size.Y, "upscale", video::ECF_A8R8G8B8);
+	upscale.setSourceSize(size);
+	upscale.setTargetSize(screensize);
+}
+
+void RenderingCorePlain::createPipeline()
+{
 	if (scale > 1) {
 		pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::setSkyColor)));
 	}
@@ -44,16 +57,6 @@ RenderingCorePlain::RenderingCorePlain(
 		pipeline.addStep(&upscale);
 	}
 	pipeline.addStep(stepHUD);
-}
-
-void RenderingCorePlain::initTextures()
-{
-	if (scale <= 1)
-		return;
-	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	buffer.setTexture(0, size.X, size.Y, "upscale", video::ECF_A8R8G8B8);
-	upscale.setSourceSize(size);
-	upscale.setTargetSize(screensize);
 }
 
 void RenderingCorePlain::setSkyColor()

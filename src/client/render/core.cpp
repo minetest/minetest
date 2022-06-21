@@ -108,6 +108,7 @@ void RenderingCore::initialize()
 	initTextures();
 	if (shadow_renderer)
 		shadow_renderer->initialize();
+	createPipeline();
 }
 
 void RenderingCore::updateScreenSize()
