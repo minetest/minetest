@@ -85,7 +85,7 @@ void ColorBuffer::setTexture(u8 index, u16 width, u16 height, const std::string 
 
 void ScreenTarget::activate()
 {
-    m_driver->setRenderTarget(nullptr, m_clear, m_clear);
+    m_driver->setRenderTarget(nullptr, m_clear, m_clear, m_clear_color);
     RenderTarget::activate();
 }
 
