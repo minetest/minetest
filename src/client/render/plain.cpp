@@ -32,6 +32,9 @@ RenderingCorePlain::RenderingCorePlain(
 {
 	scale = g_settings->getU16("undersampling");
 
+	if (scale > 1) {
+		pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::setSkyColor)));
+	}
 	pipeline.addStep(step3D);
 	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawPostFx)));
 	if (scale > 1) {
@@ -51,6 +54,11 @@ void RenderingCorePlain::initTextures()
 	buffer.setTexture(0, size.X, size.Y, "upscale", video::ECF_A8R8G8B8);
 	upscale.setSourceSize(size);
 	upscale.setTargetSize(screensize);
+}
+
+void RenderingCorePlain::setSkyColor()
+{
+	buffer.setClearColor(skycolor);
 }
 
 // class UpscaleStep

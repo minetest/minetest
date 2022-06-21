@@ -68,4 +68,6 @@ protected:
 
 public:
 	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
+private:
+	void setSkyColor();
 };
