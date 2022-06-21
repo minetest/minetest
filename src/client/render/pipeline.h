@@ -27,49 +27,72 @@ class RenderSource;
 class RenderTarget;
 class RenderStep;
 
-/// Represents a source of rendering information
+/**
+ * Represents a source of rendering information such as textures
+ */
 class RenderSource
 {
 public:
-    /// Virtual destructor to ensure correct release of resources
     virtual ~RenderSource() = default;
 
-    /// Return the number of texture in the source.
+    /**
+     * Return the number of textures in the source.
+     */
     virtual u8 getTextureCount() = 0;
 
-    /// Get a texture by index. 
-    /// Returns nullptr is the texture does not exist.
+    /**
+     * Get a texture by index. 
+     * Returns nullptr is the texture does not exist.
+     */
     virtual video::ITexture *getTexture(u8 index) = 0;
 
-    /// Resets the state of the object for the next pipeline iteration
+    /**
+     * Resets the state of the object for the next pipeline iteration
+     */
     virtual void reset() {};
 };
 
-///
-/// Represents a render target (screen or FBO)
+/**
+ *  Represents a render target (screen or framebuffer)
+ */
 class RenderTarget
 {
 public:
-    /// Virtual destructor to ensure correct release of resources
     virtual ~RenderTarget() = default;
 
-    /// Activate the render target and configure OpenGL state
+    /**
+     * Set the clear color of the render target
+     * 
+     * @param color color use when clearing the render target
+     */
+    void setClearColor(video::SColor color) { m_clear_color = color; }
+
+    /**
+     * Activate the render target and configure OpenGL state for the output.
+     * This is usually done by @see RenderStep implementations.
+     */
     virtual void activate()
     {
         m_clear = false;
     };
 
-    /// Resets the state of the object for the next pipeline iteration
+    /**
+     * Resets the state of the object for the next pipeline iteration
+     */
     virtual void reset()
     {
         m_clear = true;
     };
 protected:
     bool m_clear {true};
+    video::SColor m_clear_color { 0x0u };
 };
 
-/// Texture buffer represents set of textures
-/// that are used as both render target and render source
+/**
+ * Texture buffer represents a framebuffer with a multiple attached textures.
+ *
+ * @note Use of TextureBuffer requires use of gl_FragData[] in the shader
+ */
 class TextureBuffer : public RenderSource, public RenderTarget
 {
 public:
@@ -80,6 +103,15 @@ public:
 
     virtual ~TextureBuffer() override;
 
+    /**
+     * Configure texture for the specific index
+     * 
+     * @param index index of the texture
+     * @param width width of the texture in pixels
+     * @param height height of the texture in pixels
+     * @param name unique name of the texture
+     * @param format color format
+     */
     void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
 
     virtual u8 getTextureCount() override { return m_textures.size(); }
@@ -93,6 +125,11 @@ private:
     video::IVideoDriver *m_driver;
 };
 
+/**
+ * Represents a framebuffer with a single attached color texture.
+ *
+ * @note Use of TextureBuffer requires use of gl_FragColor in the shader.
+ */
 class ColorBuffer : public RenderSource, public RenderTarget
 {
 public:
@@ -107,8 +144,16 @@ public:
             m_driver->removeTexture(m_texture);
     }
 
+    /**
+     * Configure texture for the color buffer
+     * 
+     * @param index index of the texture
+     * @param width width of the texture in pixels
+     * @param height height of the texture in pixels
+     * @param name unique name of the texture
+     * @param format color format
+     */
     void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
-    void setClearColor(video::SColor color) { m_clear_color = color; }
 
     virtual u8 getTextureCount() override { return 1; }
     virtual video::ITexture *getTexture(u8 index) { return m_texture; }
@@ -116,10 +161,13 @@ public:
 private:
     video::ITexture * m_texture { nullptr };
     video::IVideoDriver *m_driver;
-    video::SColor m_clear_color { 0x0L };
-
 };
 
+/**
+ * Allows remapping texture indicies in another RenderSource.
+ * 
+ * @note all unmapped indexes are passed through to the underlying render source.
+ */
 class RemappingSource : RenderSource
 {
 public:
@@ -127,6 +175,12 @@ public:
             : m_source(source)
     {}
 
+    /**
+     * Maps texture index to a different index in the dependent source.
+     * 
+     * @param index texture index as requested by the @see RenderStep.
+     * @param target_index matching texture index in the underlying @see RenderSource.
+     */
     void setMapping(u8 index, u8 target_index)
     {
         if (index >= m_mappings.size()) {
@@ -156,7 +210,9 @@ public:
     std::vector<u8> m_mappings;
 };
 
-/// Enables direct output to screen buffer
+/**
+ * Implements direct output to screen framebuffer.
+ */
 class ScreenTarget : public RenderTarget
 {
 public:
@@ -170,16 +226,44 @@ private:
     video::IVideoDriver *m_driver;
 };
 
+/**
+ * Base class for rendering steps in the pipeline
+ */
 class RenderStep
 {
 public:
     virtual ~RenderStep() = default;
+
+    /**
+     * Assigns render source to this step.
+     * 
+     * @param source source of rendering information
+     */
     virtual void setRenderSource(RenderSource *source) = 0;
+
+    /**
+     * Assigned render target to this step.
+     * 
+     * @param target render target to send output to.
+     */
     virtual void setRenderTarget(RenderTarget *target) = 0;
+
+    /**
+     * Resets the step state before executing the pipeline.
+     * 
+     * Steps may carry state between invocations in the pipeline.
+     */
     virtual void reset() = 0;
+
+    /**
+     * Runs the step. This method is invoked by the pipeline.
+     */
     virtual void run() = 0;
 };
 
+/**
+ * Provides default empty implementation of supporting methods in a rendering step.
+ */
 class TrivialRenderStep : public RenderStep
 {
 public:
@@ -188,12 +272,22 @@ public:
     virtual void reset() override {}
 };
 
-template <class _Core>
+/**
+ * Implements a trivial step by calling a method on another object (rendering core)
+ * 
+ * @tparam _Target type of the object to invoke the method for.
+ */
+template <class _Target>
 class TrampolineStep : public TrivialRenderStep
 {
 public:
-    typedef void (_Core::*_Call)();
-    TrampolineStep(_Core *core, _Call call) :
+    /**
+     * Describes the prototype of supported method
+     */
+    typedef void (_Target::*_Call)();
+
+
+    TrampolineStep(_Target *core, _Call call) :
         core(core), call(call)
     {}
 
@@ -202,30 +296,62 @@ public:
         (core->*call)();
     }
 private:
-    _Core *core;
+    _Target *core;
     _Call call;
 };
 
+/**
+ * Render Pipeline provides a flexible way to execute rendering steps in the engine.
+ * 
+ * RenderPipeline also implements @see RenderStep, allowing for nesting of the pipelines.
+ */
 class RenderPipeline : public RenderStep
 {
 public:
+    /**
+     * Add a step to the end of the pipeline
+     * 
+     * @param step reference to a @see RenderStep implementation.
+     */
     void addStep(RenderStep *step)
     {
         m_pipeline.push_back(step);
     }
 
+    /**
+     * Capture ownership of a dynamically created @see RenderStep instance.
+     * 
+     * RenderPipeline will delete the instance when the pipeline is destroyed.
+     * 
+     * @param step reference to the instance.
+     * @return RenderStep* value of the 'step' parameter.
+     */
     RenderStep *own(RenderStep *step)
     {
         m_steps.push_back(std::unique_ptr<RenderStep>(step));
         return step;
     }
 
+    /**
+     * Capture ownership of a dynamically created @see RenderSource instance.
+     * 
+     * RenderPipeline will delete the instance when the pipeline is destroyed.
+     * 
+     * @param source reference to the instance.
+     * @return RenderSource* value of the 'source' parameter.
+     */
     RenderSource *own(RenderSource *source)
     {
         m_sources.push_back(std::unique_ptr<RenderSource>(source));
         return source;
     }
 
+    /**
+     * Capture ownership of a dynamically created @see RenderTarget instance.
+     * 
+     * @param target reference to the instance
+     * @return RenderTarget* value of the 'target' parameter
+     */
     RenderTarget *own(RenderTarget *target)
     {
         m_targets.push_back(std::unique_ptr<RenderTarget>(target));

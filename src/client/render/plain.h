@@ -21,6 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "core.h"
 
+/**
+ * UpscaleStep step performs rescaling of the image 
+ * in the source texture 0 to the size of the target.
+ */
 class UpscaleStep : public RenderStep
 {
 public:
@@ -33,7 +37,17 @@ public:
     virtual void reset() override {};
     virtual void run() override;
 
+	/**
+	 * Set the dimensions of the source image
+	 * @param sourceSize dimensions of the source buffer in pixels
+	 */
 	void setSourceSize(v2u32 sourceSize) { m_sourceSize = sourceSize; }
+
+	/**
+	 * Set the dimensions of the render target
+	 * 
+	 * @param targetSize dimensions of the render target in pixels
+	 */
 	void setTargetSize(v2u32 targetSize) { m_targetSize = targetSize; }
 private:
 	video::IVideoDriver *m_driver;

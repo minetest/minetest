@@ -28,6 +28,9 @@ class Client;
 class Hud;
 class Minimap;
 
+/**
+ * Represents the pipeline state of the rendering core.
+ */
 struct PipelineState
 {
 	bool show_hud {true};
@@ -36,6 +39,9 @@ struct PipelineState
 	bool draw_crosshair {true};
 };
 
+/**
+ * Implements a pipeline step that renders the 3D scene
+ */
 class Draw3D : public RenderStep
 {
 public:
@@ -61,6 +67,9 @@ private:
 	RenderTarget *m_target {nullptr};
 };
 
+/**
+ * Implements a pipeline step that renders the game HUD
+ */
 class DrawHUD : public RenderStep
 {
 public:
