@@ -1911,8 +1911,11 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
 		if (client->modsLoaded())
 			openConsole(0.2, L".");
-		else
-			m_game_ui->showStatusText(wgettext("Client side scripting is disabled"));
+		else {
+			const wchar_t *text = wgettext("Client side scripting is disabled");
+			m_game_ui->showStatusText(text);
+			delete[] text;
+		}
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
