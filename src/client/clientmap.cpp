@@ -669,21 +669,37 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	return ret;
 }
 
+const v3f cuboid_corners[8] = {
+	v3f(-1, -1, -1),
+	v3f(-1, -1,  1),
+	v3f(-1,  1, -1),
+	v3f(-1,  1,  1),
+	v3f( 1, -1, -1),
+	v3f( 1, -1,  1),
+	v3f( 1,  1, -1),
+	v3f( 1,  1,  1),
+};
+
 void ClientMap::renderPostFx(CameraMode cam_mode)
 {
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
 	MapNode n = getNode(floatToInt(m_camera_position, BS));
+	video::SColor post_effect_color = m_nodedef->get(n).post_effect_color;
 
-	const ContentFeatures& features = m_nodedef->get(n);
-	video::SColor post_effect_color = features.post_effect_color;
-
-	// If the camera is in a solid node, make everything black.
-	// (first person mode only)
-	if (features.solidness == 2 && cam_mode == CAMERA_MODE_FIRST &&
-		!m_control.allow_noclip) {
-		post_effect_color = video::SColor(255, 0, 0, 0);
+	if (cam_mode == CAMERA_MODE_FIRST && !m_control.allow_noclip) {
+		// Account for the near clipping plane to counter see-through "glitches":
+		// Check all nodes within a radius of near_plane (Manhattan distance)
+		f32 near_plane = 1.5f * m_client->getCamera()->getCameraNode()->getNearValue();
+		for (v3f corner : cuboid_corners) {
+			v3s16 pos = floatToInt(near_plane * corner + m_camera_position, BS);
+			if (m_nodedef->get(getNode(pos)).solidness == 2) {
+				// If the camera is in (or next to) a solid node, make everything black.
+				post_effect_color = video::SColor(255, 0, 0, 0);
+				break;
+			}
+		}
 	}
 
 	if (post_effect_color.getAlpha() != 0) {
