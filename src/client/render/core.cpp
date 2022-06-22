@@ -88,9 +88,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 
 	screen = new ScreenTarget(driver);
 	step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
-	step3D->setRenderTarget(screen);
 	stepHUD = new DrawHUD(&pipelineState, hud, camera, mapper, client, guienv, shadow_renderer);
-	stepHUD->setRenderTarget(screen);
 }
 
 RenderingCore::~RenderingCore()
