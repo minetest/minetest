@@ -24,11 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreSecondStage : public RenderingCoreStereo
 {
 protected:
-	video::ITexture *rendered = nullptr;
-	video::ITexture *normalmap = nullptr;
-	video::ITexture *depthmap = nullptr;
-	video::IRenderTarget *renderTarget = nullptr;
-	irr::core::array<irr::video::ITexture*> renderTargets;
+	TextureBuffer buffer;
 	video::SMaterial mat;
 
 	void initMaterial();

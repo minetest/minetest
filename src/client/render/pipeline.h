@@ -114,15 +114,28 @@ public:
      */
     void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
 
+    /**
+     * @Configure depth texture and assign index
+     * 
+     * @param index index to use for the depth texture
+     * @param width width of the texture in pixels
+     * @param height height of the texture in pixels
+     * @param name unique name for the texture
+     * @param format color format
+     */
+    void setDepthTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
+
     virtual u8 getTextureCount() override { return m_textures.size(); }
     virtual video::ITexture *getTexture(u8 index) override;
     virtual void activate() override;
 private:
     void ensureRenderTarget();
 
-    core::array<video::ITexture *> m_textures;
-    video::IRenderTarget *m_render_target { nullptr };
     video::IVideoDriver *m_driver;
+    core::array<video::ITexture *> m_textures;
+    video::ITexture *m_depth_texture { nullptr };
+    u8 m_depth_texture_index { 255 /* assume unused */ };
+    video::IRenderTarget *m_render_target { nullptr };
 };
 
 /**

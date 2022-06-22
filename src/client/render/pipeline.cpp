@@ -37,6 +37,8 @@ TextureBuffer::~TextureBuffer()
 
 video::ITexture *TextureBuffer::getTexture(u8 index)
 {
+    if (index == m_depth_texture_index)
+        return m_depth_texture;
     if (index >= m_textures.size())
         return nullptr;
     return m_textures[index];
@@ -45,7 +47,7 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
 void TextureBuffer::activate()
 {
     ensureRenderTarget();
-    m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0);
+    m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, m_clear_color);
     RenderTarget::activate();
 }
 
@@ -54,7 +56,7 @@ void TextureBuffer::ensureRenderTarget()
     if (!m_render_target)
     {
         m_render_target = m_driver->addRenderTarget();
-        m_render_target->setTexture(m_textures, nullptr);
+        m_render_target->setTexture(m_textures, m_depth_texture);
     }
 }
 
@@ -65,12 +67,42 @@ void TextureBuffer::setTexture(u8 index, u16 width, u16 height, const std::strin
         m_render_target = nullptr;
     }
 
+    if (m_depth_texture_index == index) {
+        if (m_depth_texture)
+            m_driver->removeTexture(m_depth_texture);
+        m_depth_texture = nullptr;
+        m_depth_texture_index = 255; /* unused */
+    }
     if (m_textures.size() > index && m_textures[index])
         m_driver->removeTexture(m_textures[index]);
 
     m_textures.reallocate(index + 1);
-    m_textures[index] = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
+    while (m_textures.size() < index + 1)
+        m_textures.push_back(nullptr);
 
+    m_textures[index] = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
+}
+
+void TextureBuffer::setDepthTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    if (m_render_target) {
+        m_driver->removeRenderTarget(m_render_target);
+        m_render_target = nullptr;
+    }
+
+    if (m_textures.size() > index && m_textures[index]) {
+        m_driver->removeTexture(m_textures[index]);
+        m_textures[index] = nullptr;
+    }
+    
+    if (m_depth_texture)
+        m_driver->removeTexture(m_depth_texture);
+    
+    if (index == m_textures.size() - 1)
+        m_textures.reallocate(index);
+    
+    m_depth_texture_index = index;
+    m_depth_texture = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
 }
 
 void ColorBuffer::setTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)

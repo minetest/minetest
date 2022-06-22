@@ -26,9 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 RenderingCoreSecondStage::RenderingCoreSecondStage(
 		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
-		RenderingCoreStereo(_device, _client, _hud)
+		RenderingCoreStereo(_device, _client, _hud),
+		buffer(_device->getVideoDriver())
 {
 	initMaterial();
+	step3D->setRenderTarget(&buffer);
 }
 
 void RenderingCoreSecondStage::initMaterial()
@@ -52,33 +54,19 @@ void RenderingCoreSecondStage::initMaterial()
 
 void RenderingCoreSecondStage::initTextures()
 {
-	rendered = driver->addRenderTargetTexture(
-			screensize, "3d_render", video::ECF_A8R8G8B8);
-	normalmap = driver->addRenderTargetTexture(
-			screensize, "3d_normalmap", video::ECF_A8R8G8B8);
-	depthmap = driver->addRenderTargetTexture(
-			screensize, "3d_depthmap", video::ECF_D32);
-	renderTargets.push_back(rendered);
-	renderTargets.push_back(normalmap);
-	renderTarget = driver->addRenderTarget();
-	renderTarget->setTexture(renderTargets, depthmap);
-	mat.TextureLayer[0].Texture = rendered;
-	mat.TextureLayer[1].Texture = normalmap;
-	mat.TextureLayer[3].Texture = depthmap;
+	buffer.setTexture(0, screensize.X, screensize.Y, "3d_render", video::ECF_A8R8G8B8);
+	buffer.setTexture(1, screensize.X, screensize.Y, "3d_normalmap", video::ECF_A8R8G8B8);
+	buffer.setDepthTexture(2, screensize.X, screensize.Y, "3d_depthmap", video::ECF_D32);
 }
 
 void RenderingCoreSecondStage::clearTextures()
 {
-	driver->removeRenderTarget(renderTarget);
-	driver->removeTexture(rendered);
-	driver->removeTexture(normalmap);
-	driver->removeTexture(depthmap);
-	renderTargets.clear();
 }
 
 void RenderingCoreSecondStage::drawAll()
 {
-    driver->setRenderTargetEx(renderTarget, video::ECBF_ALL, skycolor);
+	buffer.RenderTarget::reset();
+	buffer.setClearColor(skycolor);
 	draw3D();
 	drawPostFx();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
@@ -88,6 +76,9 @@ void RenderingCoreSecondStage::drawAll()
 
 void RenderingCoreSecondStage::applyEffects()
 {
+	mat.TextureLayer[0].Texture = buffer.getTexture(0);
+	mat.TextureLayer[1].Texture = buffer.getTexture(1);
+	mat.TextureLayer[3].Texture = buffer.getTexture(2);
 	// driver->setTransform(video::ETS_VIEW, core::matrix4::EM4CONST_IDENTITY);
 	// driver->setTransform(video::ETS_PROJECTION, core::matrix4::EM4CONST_IDENTITY);
 	// driver->setTransform(video::ETS_WORLD, core::matrix4::EM4CONST_IDENTITY);
