@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
 "PO-Revision-Date: 2022-06-22 15:24+0000\n"
-"Last-Translator: Темак <artemkotlubai@yandex.ru>\n"
+"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -6695,7 +6695,7 @@ msgstr "Качество теневого фильтра"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map max distance in nodes to render shadows"
-msgstr "Максимальное расстояние карты теней в узлах для рендеринга теней"
+msgstr "Максимальное расстояние карты теней в нодах для рендеринга теней"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture in 32 bits"
