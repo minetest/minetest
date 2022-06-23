@@ -20,18 +20,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include "stereo.h"
+#include "pipeline.h"
+
+class PostProcessingStep : public RenderStep
+{
+public:
+	PostProcessingStep(video::IVideoDriver *driver, video::E_MATERIAL_TYPE shader, const std::vector<u8> &texture_map);
+
+	
+	void setRenderSource(RenderSource *source) override;
+	void setRenderTarget(RenderTarget *target) override;
+	void reset() override;
+	void run() override;
+
+private:
+	video::IVideoDriver *driver { nullptr };
+	std::vector<u8> texture_map;
+	RenderSource *source { nullptr };
+	RenderTarget *target { nullptr };
+	video::SMaterial material;
+
+	void createMaterial(video::E_MATERIAL_TYPE shader);
+};
 
 class RenderingCoreSecondStage : public RenderingCoreStereo
 {
 protected:
 	TextureBuffer buffer;
-	video::SMaterial mat;
 
-	void initMaterial();
-	void initTextures() override;
-	void clearTextures() override;
 	void createPipeline() override;
-	void applyEffects();
 	void resetBuffer();
 
 public:
