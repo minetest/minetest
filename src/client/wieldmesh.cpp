@@ -408,10 +408,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_RAILLIKE:
 		case NDT_PLANTLIKE:
 		case NDT_FLOWINGLIQUID: {
-			int t = 0;
-			if (f.drawtype == NDT_RAILLIKE) {
-				t = 4;
-			}
+			int t = f.drawtype == NDT_RAILLIKE ? 4 : 0;
 			v3f wscale = def.wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
 				wscale.Z *= 0.1f;

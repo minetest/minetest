@@ -1359,12 +1359,6 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	} else {
 		tile_index = rail_kinds[code].tile_index;
 		angle = rail_kinds[code].angle;
-
-		// Fix angle for fallback end texture
-		if (tile_index == end && angle >= 180 &&
-				f.tiledef[end].name == f.tiledef[straight].name) {
-			angle -= 180;
-		}
 	}
 
 	useTile(tile_index, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);

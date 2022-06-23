@@ -568,30 +568,27 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 				break;
 			}
 		}
+
 		// Copy last value to all remaining textures
 		int max_i = 6;
-		if (f.drawtype == NDT_RAILLIKE) {
-			// For raillike, we have special handling below
-			max_i = 4;
-			if (i > 4) {
-				i = 4;
-			}
-		}
-		if (i >= 1){
-			TileDef lasttile = f.tiledef[i-1];
-			while (i < max_i){
+		if (f.drawtype == NDT_RAILLIKE)
+			max_i = 4; // special handling below
+		i = std::min(i, max_i);
+		if (i >= 1) {
+			const auto &lasttile = f.tiledef[i-1];
+			while (i < max_i) {
 				f.tiledef[i] = lasttile;
 				i++;
 			}
 		}
-		// Raillike: Fallback to 'straight' texture for
-		// missing 'single' and 'end' texture
+
+		// Raillike: Fallback to 'straight' texture for 'single' and 'end' texture
 		if (f.drawtype == NDT_RAILLIKE) {
-			if (f.tiledef[4].name.empty()) {
+			if (f.tiledef[4].name.empty())
 				f.tiledef[4] = f.tiledef[0];
-			}
 			if (f.tiledef[5].name.empty()) {
 				f.tiledef[5] = f.tiledef[0];
+				f.tiledef[5].name += "^[transform2";
 			}
 		}
 	}
@@ -616,7 +613,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		}
 		// Copy last value to all remaining textures
 		if (i >= 1) {
-			TileDef lasttile = f.tiledef_overlay[i - 1];
+			const auto &lasttile = f.tiledef_overlay[i - 1];
 			while (i < 6) {
 				f.tiledef_overlay[i] = lasttile;
 				i++;

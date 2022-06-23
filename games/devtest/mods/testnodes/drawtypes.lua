@@ -574,12 +574,7 @@ for r=1, #rails do
 	if id ~= "groupless" then
 		raillike_group = minetest.raillike_group(id)
 	end
-	local railcolors
-	if colorize then
-		railcolors = colors
-	else
-		railcolors = {""}
-	end
+	local railcolors = colorize and colors or {""}
 	for c=1, #railcolors do
 		local color
 		if railcolors[c] ~= "" then
