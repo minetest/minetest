@@ -236,6 +236,7 @@ function serverlistmgr.add_favorite(new_favorite)
 		address = new_favorite.address,
 		port = new_favorite.port,
 		description = new_favorite.description,
+		nick = new_favorite.nick,
 	}
 
 	local favorites = serverlistmgr.get_favorites()

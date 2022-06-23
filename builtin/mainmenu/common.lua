@@ -47,7 +47,9 @@ end
 
 function render_serverlist_row(spec)
 	local text = ""
-	if spec.name then
+	if spec.nick then
+		text = text .. core.formspec_escape(spec.nick:trim())
+	elseif spec.name then
 		text = text .. core.formspec_escape(spec.name:trim())
 	elseif spec.address then
 		text = text .. core.formspec_escape(spec.address:trim())

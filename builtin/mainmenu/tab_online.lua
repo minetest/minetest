@@ -77,7 +77,7 @@ local function get_formspec(tabview, name, tabdata)
 		"container_end[]" ..
 
 		"container[9.75,0]" ..
-		"box[0,0;5.75,7;#666666]" ..
+		"box[0,0;5.75,7.95;#666666]" ..
 
 		-- Address / Port
 		"label[0.25,0.35;" .. fgettext("Address") .. "]" ..
@@ -104,7 +104,8 @@ local function get_formspec(tabview, name, tabdata)
 	if tabdata.selected then
 		if gamedata.fav then
 			retval = retval .. "button[0.25,6;2.5,0.75;btn_delete_favorite;" ..
-				fgettext("Del. Favorite") .. "]"
+				fgettext("Del. Favorite") .. "]button[0.25,6.95;2.5,0.75;btn_rename_favorite;" ..
+				fgettext("Rename") .. "]"
 		end
 		if gamedata.serverdescription then
 			retval = retval .. "textarea[0.25,3;5.25,2.75;;;" ..
@@ -141,7 +142,7 @@ local function get_formspec(tabview, name, tabdata)
 		"align=inline,padding=0.25,width=1.5;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
-		"table[0.25,1;9.25,5.75;servers;"
+		"table[0.25,1;9.25,6.67;servers;"
 
 	local servers = get_sorted_servers()
 
@@ -173,7 +174,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval, "size[15.5,7,false]real_coordinates[true]"
+	return retval, "size[15.5,7.95,false]real_coordinates[true]"
 end
 
 --------------------------------------------------------------------------------
@@ -314,6 +315,20 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		serverlistmgr.delete_favorite(server)
 		-- the server at [idx+1] will be at idx once list is refreshed
 		set_selected_server(tabdata, idx, tabdata.lookup[idx+1])
+		return true
+	end
+
+	if fields.btn_rename_favorite then
+		local idx = core.get_table_index("servers")
+		if not idx then return end
+		local fav = tabdata.lookup[idx]
+		if not fav then return end
+
+		local dlg_renamefav = create_rename_favorite_dlg(fav)
+		dlg_renamefav:set_parent(tabview)
+		tabview:hide()
+		dlg_renamefav:show()
+
 		return true
 	end
 
