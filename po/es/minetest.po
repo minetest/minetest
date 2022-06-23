@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-06-20 09:52+0000\n"
-"Last-Translator: runs <runspect@yahoo.es>\n"
+"PO-Revision-Date: 2022-06-27 03:16+0000\n"
+"Last-Translator: Raquel Fariña Agra <raquelagra1@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -245,7 +245,7 @@ msgstr "$1 descargando..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr "$1 dependencias requeridas no se encuentran."
+msgstr "$1 dependencias requeridas no se encuentren."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
@@ -640,7 +640,7 @@ msgstr "Persistencia"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Por favor, introduzca un entero válido."
+msgstr "Por favor, introduce un entero válido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
@@ -2874,7 +2874,7 @@ msgstr "Conectar a un servidor media externo"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr "Conectar gafas si el nodo lo soporta."
+msgstr "Conectar gafas si el nodo lo permite."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -4169,7 +4169,7 @@ msgid ""
 msgstr ""
 "Si se habilita, los datos del mundo inválidos no causarán que el servidor se "
 "apague.\n"
-"Actívelo sólo si sabe lo que hace."
+"Actívelo solo si sabe lo que hace."
 
 #: src/settings_translation_file.cpp
 msgid ""
