@@ -710,7 +710,6 @@ local function show_meta_formspec(user, metatype, pos_or_item, key, value, keyli
 		textlist..
 		"field[3,0.5;12,1;key;"..F(S("Key"))..";"..F(key).."]"..
 		"textarea[3,1.5;12,6;value;"..F(S("Value (use empty value to delete key)"))..";"..F(value).."]"..
-		"button[0,8;3,1;get;"..F(S("Get value")).."]"..
 		"button[4,8;3,1;set;"..F(S("Set value")).."]"
 
 	local extra_label
@@ -932,11 +931,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				end
 				meta = pos_or_item:get_meta()
 			end
-			if fields.get then
-				local value = meta:get_string(fields.key)
-				show_meta_formspec(player, metatype, pos_or_item, fields.key, value,
-						get_meta_keylist(meta, name, true))
-			elseif fields.set then
+			if fields.set then
 				meta:set_string(fields.key, fields.value)
 				if metatype == "item" then
 					set_item_next_to_wielded_item(player, pos_or_item)
