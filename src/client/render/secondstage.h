@@ -30,9 +30,10 @@ protected:
 	void initMaterial();
 	void initTextures() override;
 	void clearTextures() override;
+	void createPipeline() override;
 	void applyEffects();
+	void resetBuffer();
 
 public:
 	RenderingCoreSecondStage(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-	void drawAll() override;
 };

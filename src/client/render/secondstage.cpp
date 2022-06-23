@@ -63,15 +63,20 @@ void RenderingCoreSecondStage::clearTextures()
 {
 }
 
-void RenderingCoreSecondStage::drawAll()
+void RenderingCoreSecondStage::createPipeline()
+{
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreSecondStage>(this, &RenderingCoreSecondStage::resetBuffer)));
+	pipeline.addStep(step3D);
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreSecondStage>(this, &RenderingCoreSecondStage::drawPostFx)));
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderTarget>(screen, &RenderTarget::activate)));
+	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreSecondStage>(this, &RenderingCoreSecondStage::applyEffects)));
+	pipeline.addStep(stepHUD);
+}
+
+void RenderingCoreSecondStage::resetBuffer()
 {
 	buffer.RenderTarget::reset();
 	buffer.setClearColor(skycolor);
-	draw3D();
-	drawPostFx();
-	driver->setRenderTarget(nullptr, false, false, skycolor);
-	applyEffects();
-	drawHUD();
 }
 
 void RenderingCoreSecondStage::applyEffects()
