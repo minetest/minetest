@@ -52,7 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/sound.h"
 #include "util/hex.h"
 #include "util/numeric.h"
-#include "util/string.h" // for parseColorString()
+#include "util/string.h"
 #include "irrlicht_changes/static_text.h"
 #include "client/guiscalingfilter.h"
 #include "guiAnimatedImage.h"
@@ -1727,23 +1727,23 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		return;
 
 	std::vector<std::string> v_pos = split(parts[0],',');
-	std::string text = parts[1];
 
 	MY_CHECKPOS("label",0);
 
 	if(!data->explicit_size)
 		warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
-	std::vector<std::string> lines = split(text, '\n');
-
 	auto style = getDefaultStyleForElement("label", "");
 	gui::IGUIFont *font = style.getFont();
 	if (!font)
 		font = m_font;
 
+	std::wstring text = unescape_translate(
+		unescape_string(utf8_to_wide(parts[1])));
+	std::vector<std::wstring> lines = split(text, L'\n');
+
 	for (unsigned int i = 0; i != lines.size(); i++) {
-		std::wstring wlabel_colors = translate_string(
-			utf8_to_wide(unescape_string(lines[i])));
+		std::wstring wlabel_colors = lines[i];
 		// Without color escapes to get the font dimensions
 		std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
 
