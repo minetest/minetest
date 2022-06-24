@@ -105,14 +105,14 @@ void TextureBuffer::setDepthTexture(u8 index, u16 width, u16 height, const std::
     m_depth_texture = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
 }
 
-void ColorBuffer::setTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)
-{
-    if (m_texture) {
-        m_driver->removeTexture(m_texture);
-        m_texture = nullptr;
-    }
+TextureBufferOutput::TextureBufferOutput(video::IVideoDriver *_driver, TextureBuffer *_buffer, u8 _texture_index)
+    : driver(_driver), buffer(_buffer), texture_index(_texture_index)
+{}
 
-    m_texture = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
+void TextureBufferOutput::activate()
+{
+    driver->setRenderTarget(buffer->getTexture(texture_index), m_clear, m_clear, m_clear_color);
+    RenderTarget::activate();
 }
 
 void ScreenTarget::activate()

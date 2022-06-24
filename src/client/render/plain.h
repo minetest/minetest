@@ -60,9 +60,12 @@ private:
 class RenderingCorePlain : public RenderingCore
 {
 protected:
+	const int TEXTURE_UPSCALE = 0;
+
 	int scale = 0;
-	ColorBuffer buffer;
+	TextureBuffer buffer;
 	UpscaleStep upscale;
+    TextureBufferOutput buffer_output;
 
 	void initTextures() override;
 	void createPipeline() override;

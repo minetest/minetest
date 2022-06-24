@@ -139,41 +139,17 @@ private:
 };
 
 /**
- * Represents a framebuffer with a single attached color texture.
- *
- * @note Use of TextureBuffer requires use of gl_FragColor in the shader.
+ * Targets output to designated texture in texture buffer
  */
-class ColorBuffer : public RenderSource, public RenderTarget
+class TextureBufferOutput : public RenderTarget
 {
 public:
-
-    ColorBuffer(video::IVideoDriver *driver)
-            : m_driver(driver)
-    {}
-
-    virtual ~ColorBuffer()
-    {
-        if (m_texture)
-            m_driver->removeTexture(m_texture);
-    }
-
-    /**
-     * Configure texture for the color buffer
-     * 
-     * @param index index of the texture
-     * @param width width of the texture in pixels
-     * @param height height of the texture in pixels
-     * @param name unique name of the texture
-     * @param format color format
-     */
-    void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
-
-    virtual u8 getTextureCount() override { return 1; }
-    virtual video::ITexture *getTexture(u8 index) { return m_texture; }
-    virtual void activate() { m_driver->setRenderTarget(m_texture, m_clear, m_clear, m_clear_color); };
+    TextureBufferOutput(video::IVideoDriver *driver, TextureBuffer *buffer, u8 texture_index);
+    void activate() override;
 private:
-    video::ITexture * m_texture { nullptr };
-    video::IVideoDriver *m_driver;
+    video::IVideoDriver *driver;
+    TextureBuffer *buffer;
+    u8 texture_index;
 };
 
 /**
