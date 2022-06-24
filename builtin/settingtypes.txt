@@ -794,7 +794,7 @@ desynchronize_mapblock_texture_animation (Desynchronize block animation) bool tr
 hud_hotbar_max_width (Maximum hotbar width) float 1.0 0.001 1.0
 
 #    Modifies the size of the HUD elements.
-hud_scaling (HUD scale factor) float 1.0 0.1
+hud_scaling (HUD scale factor) float 1.0 0.5 20
 
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
@@ -867,7 +867,7 @@ menu_clouds (Clouds in menu) bool true
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
-gui_scaling (GUI scaling) float 1.0 0.5
+gui_scaling (GUI scaling) float 1.0 0.5 20
 
 #    When gui_scaling_filter is true, all GUI images need to be
 #    filtered in software, but some images are generated directly
