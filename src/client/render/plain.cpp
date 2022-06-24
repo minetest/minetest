@@ -27,8 +27,7 @@ inline u32 scaledown(u32 coef, u32 size)
 }
 
 RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud) : 
-		RenderingCore(_device, _client, _hud), buffer(_device->getVideoDriver()), upscale(_device->getVideoDriver()), 
-		buffer_output(_device->getVideoDriver(), &buffer, TEXTURE_UPSCALE)
+		RenderingCore(_device, _client, _hud), buffer(_device->getVideoDriver()), upscale(_device->getVideoDriver())
 {
 	scale = g_settings->getU16("undersampling");
 }
@@ -45,24 +44,17 @@ void RenderingCorePlain::initTextures()
 
 void RenderingCorePlain::createPipeline()
 {
-	if (scale > 1) {
-		pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::setSkyColor)));
-	}
 	pipeline.addStep(step3D);
 	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawPostFx)));
 	if (scale > 1) {
-		step3D->setRenderTarget(&buffer_output);
+	    TextureBufferOutput *buffer_output = new TextureBufferOutput(driver, &buffer, TEXTURE_UPSCALE);
+		buffer_output->setClearColor(&skycolor);
+		step3D->setRenderTarget(pipeline.own(buffer_output));
 		upscale.setRenderSource(&buffer);
 		upscale.setRenderTarget(screen);
 		pipeline.addStep(&upscale);
 	}
 	pipeline.addStep(stepHUD);
-}
-
-void RenderingCorePlain::setSkyColor()
-{
-	buffer_output.reset();
-	buffer_output.setClearColor(skycolor);
 }
 
 // class UpscaleStep

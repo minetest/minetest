@@ -65,12 +65,9 @@ protected:
 	int scale = 0;
 	TextureBuffer buffer;
 	UpscaleStep upscale;
-    TextureBufferOutput buffer_output;
 
 	void initTextures() override;
 	void createPipeline() override;
 public:
 	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-private:
-	void setSkyColor();
 };

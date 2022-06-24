@@ -66,7 +66,7 @@ public:
      * 
      * @param color color use when clearing the render target
      */
-    void setClearColor(video::SColor color) { m_clear_color = color; }
+    void setClearColor(video::SColor *color) { m_clear_color = color; }
 
     /**
      * Activate the render target and configure OpenGL state for the output.
@@ -86,7 +86,9 @@ public:
     };
 protected:
     bool m_clear {true};
-    video::SColor m_clear_color { 0x0u };
+    video::SColor *m_clear_color { nullptr };
+
+    video::SColor getClearColor() { return m_clear_color ? *m_clear_color : video::SColor(0x0u); }
 };
 
 /**

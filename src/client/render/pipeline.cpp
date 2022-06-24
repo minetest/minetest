@@ -47,7 +47,7 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
 void TextureBuffer::activate()
 {
     ensureRenderTarget();
-    m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, m_clear_color);
+    m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, getClearColor());
     RenderTarget::activate();
 }
 
@@ -111,13 +111,13 @@ TextureBufferOutput::TextureBufferOutput(video::IVideoDriver *_driver, TextureBu
 
 void TextureBufferOutput::activate()
 {
-    driver->setRenderTarget(buffer->getTexture(texture_index), m_clear, m_clear, m_clear_color);
+    driver->setRenderTarget(buffer->getTexture(texture_index), m_clear, m_clear, getClearColor());
     RenderTarget::activate();
 }
 
 void ScreenTarget::activate()
 {
-    m_driver->setRenderTarget(nullptr, m_clear, m_clear, m_clear_color);
+    m_driver->setRenderTarget(nullptr, m_clear, m_clear, getClearColor());
     RenderTarget::activate();
 }
 
