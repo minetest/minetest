@@ -19,61 +19,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "interlaced.h"
+#include "secondstage.h"
 #include "client/client.h"
 #include "client/shader.h"
-#include "client/tile.h"
+#include "client/camera.h"
 
 RenderingCoreInterlaced::RenderingCoreInterlaced(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreStereo(_device, _client, _hud)
+	: RenderingCoreStereo(_device, _client, _hud),
+	buffer(_device->getVideoDriver())
 {
-	initMaterial();
-}
-
-void RenderingCoreInterlaced::initMaterial()
-{
-	IShaderSource *s = client->getShaderSource();
-	mat.UseMipMaps = false;
-	mat.ZBuffer = false;
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
-	mat.ZWriteEnable = video::EZW_OFF;
-#else
-	mat.ZWriteEnable = false;
-#endif
-	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
-	mat.MaterialType = s->getShaderInfo(shader).material;
-	for (int k = 0; k < 3; ++k) {
-		mat.TextureLayer[k].AnisotropicFilter = false;
-		mat.TextureLayer[k].BilinearFilter = false;
-		mat.TextureLayer[k].TrilinearFilter = false;
-		mat.TextureLayer[k].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		mat.TextureLayer[k].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-	}
 }
 
 void RenderingCoreInterlaced::initTextures()
 {
 	v2u32 image_size{screensize.X, screensize.Y / 2};
-	left = driver->addRenderTargetTexture(
-			image_size, "3d_render_left", video::ECF_A8R8G8B8);
-	right = driver->addRenderTargetTexture(
-			image_size, "3d_render_right", video::ECF_A8R8G8B8);
-	mask = driver->addTexture(screensize, "3d_render_mask", video::ECF_A8R8G8B8);
+	buffer.setTexture(TEXTURE_LEFT, image_size.X, image_size.Y, "3d_render_left", video::ECF_A8R8G8B8);
+	buffer.setTexture(TEXTURE_RIGHT, image_size.X, image_size.Y, "3d_render_right", video::ECF_A8R8G8B8);
+	buffer.setTexture(TEXTURE_MASK, screensize.X, screensize.Y, "3d_render_mask", video::ECF_A8R8G8B8);
 	initMask();
-	mat.TextureLayer[0].Texture = left;
-	mat.TextureLayer[1].Texture = right;
-	mat.TextureLayer[2].Texture = mask;
-}
-
-void RenderingCoreInterlaced::clearTextures()
-{
-	driver->removeTexture(left);
-	driver->removeTexture(right);
-	driver->removeTexture(mask);
 }
 
 void RenderingCoreInterlaced::initMask()
 {
+	auto mask = buffer.getTexture(TEXTURE_MASK);
 	u8 *data = reinterpret_cast<u8 *>(mask->lock());
 	for (u32 j = 0; j < screensize.Y; j++) {
 		u8 val = j % 2 ? 0xff : 0x00;
@@ -83,38 +52,25 @@ void RenderingCoreInterlaced::initMask()
 	mask->unlock();
 }
 
-void RenderingCoreInterlaced::drawAll()
+void RenderingCoreInterlaced::createPipeline()
 {
-	renderBothImages();
-	merge();
-	drawHUD();
-}
+	auto cam_node = camera->getCameraNode();
 
-void RenderingCoreInterlaced::merge()
-{
-	static const video::S3DVertex vertices[4] = {
-			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
-					video::SColor(255, 0, 255, 255), 1.0, 0.0),
-			video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
-					video::SColor(255, 255, 0, 255), 0.0, 0.0),
-			video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
-					video::SColor(255, 255, 255, 0), 0.0, 1.0),
-			video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
-					video::SColor(255, 255, 255, 255), 1.0, 1.0),
-	};
-	static const u16 indices[6] = {0, 1, 2, 2, 3, 0};
-	driver->setMaterial(mat);
-	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
-}
+	// eyes
+	for (bool right : { false, true }) {
+		pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, right)));
+		auto step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
+		pipeline.addStep(pipeline.own(step3D));
+		auto output = new TextureBufferOutput(driver, &buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
+		output->setClearColor(&skycolor);
+		step3D->setRenderTarget(pipeline.own(output));
+	}
 
-void RenderingCoreInterlaced::useEye(bool _right)
-{
-	driver->setRenderTarget(_right ? right : left, true, true, skycolor);
-	RenderingCoreStereo::useEye(_right);
-}
-
-void RenderingCoreInterlaced::resetEye()
-{
-	driver->setRenderTarget(nullptr, false, false, skycolor);
-	RenderingCoreStereo::resetEye();
+	IShaderSource *s = client->getShaderSource();
+	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
+	auto merge = new PostProcessingStep(driver, s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });
+	merge->setRenderSource(&buffer);
+	merge->setRenderTarget(screen);
+	pipeline.addStep(pipeline.own(merge));
+	pipeline.addStep(stepHUD);
 }

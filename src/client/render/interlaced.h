@@ -24,20 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreInterlaced : public RenderingCoreStereo
 {
 protected:
-	video::ITexture *left = nullptr;
-	video::ITexture *right = nullptr;
-	video::ITexture *mask = nullptr;
-	video::SMaterial mat;
+	static const u8 TEXTURE_LEFT = 0;
+	static const u8 TEXTURE_RIGHT = 1;
+	static const u8 TEXTURE_MASK = 2;
 
-	void initMaterial();
+	TextureBuffer buffer;
+
 	void initTextures() override;
-	void clearTextures() override;
 	void initMask();
-	void useEye(bool right) override;
-	void resetEye() override;
-	void merge();
+	void createPipeline() override;
 
 public:
 	RenderingCoreInterlaced(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-	void drawAll() override;
 };
