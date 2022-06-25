@@ -167,7 +167,7 @@ public:
 
 	void setPosition(const v3f &pos)
 	{
-		pos_translator.val_current = pos;
+		pos_translator.init(pos);
 	}
 
 	inline const v3f &getRotation() const { return m_rotation; }
