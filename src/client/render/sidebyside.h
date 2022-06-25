@@ -21,6 +21,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "stereo.h"
 
+class DrawImageStep : public RenderStep
+{
+public:
+	DrawImageStep(video::IVideoDriver *driver, u8 texture_index, v2s32 *pos);
+
+	void setRenderSource(RenderSource *_source) override;
+	void setRenderTarget(RenderTarget *_target) override;
+
+	void reset() override {}
+	void run() override;
+private:
+	video::IVideoDriver *driver;
+	u8 texture_index;
+	v2s32 *pos;
+	RenderSource *source;
+	RenderTarget *target;
+};
+
 class RenderingCoreSideBySide : public RenderingCoreStereo
 {
 protected:

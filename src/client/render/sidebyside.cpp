@@ -22,40 +22,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/camera.h"
 
-class DrawImageStep : public RenderStep
+DrawImageStep::DrawImageStep(video::IVideoDriver *driver, u8 texture_index, v2s32 *pos) :
+	driver(driver), texture_index(texture_index), pos(pos)
+{}
+
+void DrawImageStep::setRenderSource(RenderSource *_source)
 {
-public:
-	DrawImageStep(video::IVideoDriver *driver, u8 texture_index, v2s32 *pos) :
-		driver(driver), texture_index(texture_index), pos(pos)
-	{}
+	source = _source;
+}
+void DrawImageStep::setRenderTarget(RenderTarget *_target)
+{
+	target = _target;
+}
 
-	void setRenderSource(RenderSource *_source) override
-	{
-		source = _source;
-	}
-
-	void setRenderTarget(RenderTarget *_target) override
-	{
-		target = _target;
-	}
-
-	void reset() override {}
-
-	void run() override
-	{
-		if (target)
-			target->activate();
-		
-		auto texture = source->getTexture(texture_index);
-		driver->draw2DImage(texture, pos ? *pos : v2s32 {});
-	}
-private:
-	video::IVideoDriver *driver;
-	u8 texture_index;
-	v2s32 *pos;
-	RenderSource *source;
-	RenderTarget *target;
-};
+void DrawImageStep::run()
+{
+	if (target)
+		target->activate();
+	
+	auto texture = source->getTexture(texture_index);
+	driver->draw2DImage(texture, pos ? *pos : v2s32 {});
+}
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal, bool _flipped)
