@@ -42,6 +42,7 @@ local function add_tab(self,tab)
 		event_handler = tab.cbf_events,
 		get_formspec = tab.cbf_formspec,
 		tabsize = tab.tabsize,
+		formspec_version = tab.formspec_version,
 		on_change = tab.on_change,
 		tabdata = {},
 	}
@@ -69,6 +70,10 @@ local function get_formspec(self)
 		local tsize = tab.tabsize or {width=self.width, height=self.height}
 		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height,
 				dump(self.fixed_size))
+
+		if tab.formspec_version then
+			prepend = ("formspec_version[%d]"):format(tab.formspec_version) .. prepend
+		end
 	end
 
 	local formspec = (prepend or "") .. self:tab_header() .. content
