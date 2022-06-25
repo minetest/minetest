@@ -162,6 +162,18 @@ describe("table", function()
 		assert.equal(1, table.indexof({"foo", "bar"}, "foo"))
 		assert.equal(-1, table.indexof({"foo", "bar"}, "baz"))
 	end)
+
+	it("copy()", function()
+		local t1 = {1, {}, foo = "foo"}
+		t1[0] = t1
+		assert.same(t1, table.copy(t1))
+
+		local t2 = {}
+		t2[t2] = t2
+		local t2_copy = table.copy(t2)
+		assert.equal(t2_copy, next(t2_copy))
+		assert.equal(t2_copy, t2_copy[t2_copy])
+	end)
 end)
 
 describe("formspec_escape", function()

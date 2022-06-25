@@ -477,9 +477,12 @@ function table.copy(t, seen)
 	local n = {}
 	seen = seen or {}
 	seen[t] = n
-	for k, v in pairs(t) do
+	-- Avoid pairs() as it makes traces abort here.
+	local k, v = next(t)
+	while k ~= nil do
 		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
 			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
+		k, v = next(t, k)
 	end
 	return n
 end
