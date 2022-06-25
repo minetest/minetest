@@ -24,20 +24,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreSideBySide : public RenderingCoreStereo
 {
 protected:
-	video::ITexture *left = nullptr;
-	video::ITexture *right = nullptr;
+	static const u8 TEXTURE_LEFT = 0;
+	static const u8 TEXTURE_RIGHT = 1;
+
+	TextureBuffer buffer;
 	bool horizontal = false;
 	bool flipped = false;
-	core::dimension2du image_size;
 	v2s32 rpos;
 
 	void initTextures() override;
-	void clearTextures() override;
-	void useEye(bool right) override;
-	void resetEye() override;
+	void createPipeline() override;
 
 public:
 	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
 			bool _horizontal = false, bool _flipped = false);
-	void drawAll() override;
 };

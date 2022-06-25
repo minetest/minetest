@@ -111,19 +111,24 @@ TextureBufferOutput::TextureBufferOutput(video::IVideoDriver *_driver, TextureBu
 
 void TextureBufferOutput::activate()
 {
-    driver->setRenderTarget(buffer->getTexture(texture_index), m_clear, m_clear, getClearColor());
+    auto texture = buffer->getTexture(texture_index);
+    driver->setRenderTarget(texture, m_clear, m_clear, getClearColor());
+    driver->OnResize(texture->getSize());
+
     RenderTarget::activate();
 }
 
 void ScreenTarget::activate()
 {
     m_driver->setRenderTarget(nullptr, m_clear, m_clear, getClearColor());
+    m_driver->OnResize(m_screen_size);
     RenderTarget::activate();
 }
 
 void ScreenTarget::reset()
 {
     m_clear = true;
+    m_screen_size = m_driver->getScreenSize();
 }
 
 RenderStep *createRenderingPipeline(const std::string &stereo_mode, video::IVideoDriver *driver,

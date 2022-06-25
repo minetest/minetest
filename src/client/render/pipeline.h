@@ -216,6 +216,7 @@ public:
     virtual void reset() override;
 private:
     video::IVideoDriver *m_driver;
+    core::dimension2du m_screen_size { 0, 0 };
 };
 
 /**

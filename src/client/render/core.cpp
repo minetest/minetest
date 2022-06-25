@@ -87,17 +87,17 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	}
 
 	screen = new ScreenTarget(driver);
+	pipeline.own(screen);
 	step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
+	pipeline.own(step3D);
 	stepHUD = new DrawHUD(&pipelineState, hud, camera, mapper, client, guienv, shadow_renderer);
+	pipeline.own(stepHUD);
 }
 
 RenderingCore::~RenderingCore()
 {
-	delete step3D;
-	delete stepHUD;
 	clearTextures();
 	delete shadow_renderer;
-	delete screen;
 }
 
 void RenderingCore::initialize()

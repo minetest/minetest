@@ -19,17 +19,53 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "sidebyside.h"
-#include <ICameraSceneNode.h>
 #include "client/hud.h"
+#include "client/camera.h"
+
+class DrawImageStep : public RenderStep
+{
+public:
+	DrawImageStep(video::IVideoDriver *driver, u8 texture_index, v2s32 *pos) :
+		driver(driver), texture_index(texture_index), pos(pos)
+	{}
+
+	void setRenderSource(RenderSource *_source) override
+	{
+		source = _source;
+	}
+
+	void setRenderTarget(RenderTarget *_target) override
+	{
+		target = _target;
+	}
+
+	void reset() override {}
+
+	void run() override
+	{
+		if (target)
+			target->activate();
+		
+		auto texture = source->getTexture(texture_index);
+		driver->draw2DImage(texture, pos ? *pos : v2s32 {});
+	}
+private:
+	video::IVideoDriver *driver;
+	u8 texture_index;
+	v2s32 *pos;
+	RenderSource *source;
+	RenderTarget *target;
+};
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal, bool _flipped)
-	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal), flipped(_flipped)
+	: RenderingCoreStereo(_device, _client, _hud), buffer(driver), horizontal(_horizontal), flipped(_flipped)
 {
 }
 
 void RenderingCoreSideBySide::initTextures()
 {
+	core::dimension2du image_size;
 	if (horizontal) {
 		image_size = {screensize.X, screensize.Y / 2};
 		rpos = v2s32(0, screensize.Y / 2);
@@ -38,37 +74,30 @@ void RenderingCoreSideBySide::initTextures()
 		rpos = v2s32(screensize.X / 2, 0);
 	}
 	virtual_size = image_size;
-	left = driver->addRenderTargetTexture(
-			image_size, "3d_render_left", video::ECF_A8R8G8B8);
-	right = driver->addRenderTargetTexture(
-			image_size, "3d_render_right", video::ECF_A8R8G8B8);
+	buffer.setTexture(TEXTURE_LEFT, image_size.Width, image_size.Height, "3d_render_left", video::ECF_A8R8G8B8);
+	buffer.setTexture(TEXTURE_RIGHT, image_size.Width, image_size.Height, "3d_render_right", video::ECF_A8R8G8B8);
 }
 
-void RenderingCoreSideBySide::clearTextures()
+void RenderingCoreSideBySide::createPipeline()
 {
-	driver->removeTexture(left);
-	driver->removeTexture(right);
-}
+	auto cam_node = camera->getCameraNode();
 
-void RenderingCoreSideBySide::drawAll()
-{
-	driver->OnResize(image_size); // HACK to make GUI smaller
-	renderBothImages();
-	driver->OnResize(screensize);
-	driver->draw2DImage(left, {});
-	driver->draw2DImage(right, rpos);
-}
+	// eyes
+	for (bool right : { false, true }) {
+		pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, flipped ? !right : right)));
+		auto step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
+		pipeline.addStep(pipeline.own(step3D));
+		auto output = new TextureBufferOutput(driver, &buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
+		output->setClearColor(&skycolor);
+		step3D->setRenderTarget(pipeline.own(output));
+		pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreSideBySide>(this, &RenderingCoreSideBySide::drawPostFx)));
+		pipeline.addStep(stepHUD);
+	}
 
-void RenderingCoreSideBySide::useEye(bool _right)
-{
-	driver->setRenderTarget(_right ? right : left, true, true, skycolor);
-	RenderingCoreStereo::useEye(_right ^ flipped);
-}
-
-void RenderingCoreSideBySide::resetEye()
-{
-	hud->resizeHotbar();
-	drawHUD();
-	driver->setRenderTarget(nullptr, false, false, skycolor);
-	RenderingCoreStereo::resetEye();
+	for (bool right : { false, true }) {
+		auto step = new DrawImageStep(driver, right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? &rpos : nullptr);
+		step->setRenderSource(&buffer);
+		step->setRenderTarget(screen);
+		pipeline.addStep(pipeline.own(step));
+	}
 }
