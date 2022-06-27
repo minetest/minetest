@@ -451,6 +451,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		start_data.name = menudata.name;
 		start_data.password = menudata.password;
 		start_data.address = std::move(menudata.address);
+		start_data.allow_login_or_register = menudata.allow_login_or_register;
 		server_name = menudata.servername;
 		server_description = menudata.serverdescription;
 
@@ -564,6 +565,8 @@ void ClientLauncher::speed_tests()
 	// volatile to avoid some potential compiler optimisations
 	volatile static s16 temp16;
 	volatile static f32 tempf;
+	// Silence compiler warning
+	(void)temp16;
 	static v3f tempv3f1;
 	static v3f tempv3f2;
 	static std::string tempstring;

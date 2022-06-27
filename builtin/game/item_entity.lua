@@ -58,17 +58,21 @@ core.register_entity(":__builtin:item", {
 		local glow = def and def.light_source and
 			math.floor(def.light_source / 2 + 0.5)
 
+		local size_bias = 1e-3 * math.random() -- small random bias to counter Z-fighting
+		local c = {-size, -size, -size, size, size, size}
 		self.object:set_properties({
 			is_visible = true,
 			visual = "wielditem",
 			textures = {itemname},
-			visual_size = {x = size, y = size},
-			collisionbox = {-size, -size, -size, size, size, size},
+			visual_size = {x = size + size_bias, y = size + size_bias},
+			collisionbox = c,
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
 			glow = glow,
 		})
 
+		-- cache for usage in on_step
+		self._collisionbox = c
 	end,
 
 	get_staticdata = function(self)
@@ -93,6 +97,7 @@ core.register_entity(":__builtin:item", {
 		self.object:set_armor_groups({immortal = 1})
 		self.object:set_velocity({x = 0, y = 2, z = 0})
 		self.object:set_acceleration({x = 0, y = -gravity, z = 0})
+		self._collisionbox = self.initial_properties.collisionbox
 		self:set_item()
 	end,
 
@@ -163,7 +168,7 @@ core.register_entity(":__builtin:item", {
 		local pos = self.object:get_pos()
 		local node = core.get_node_or_nil({
 			x = pos.x,
-			y = pos.y + self.object:get_properties().collisionbox[2] - 0.05,
+			y = pos.y + self._collisionbox[2] - 0.05,
 			z = pos.z
 		})
 		-- Delete in 'ignore' nodes
@@ -176,7 +181,7 @@ core.register_entity(":__builtin:item", {
 		if self.force_out then
 			-- This code runs after the entity got a push from the is_stuck code.
 			-- It makes sure the entity is entirely outside the solid node
-			local c = self.object:get_properties().collisionbox
+			local c = self._collisionbox
 			local s = self.force_out_start
 			local f = self.force_out
 			local ok = (f.x > 0 and pos.x + c[1] > s.x + 0.5) or

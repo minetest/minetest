@@ -430,6 +430,33 @@ mouse control = true]
 			checkbox[0.5,5.5.5;snd_chk;Sound;]
 			tabheader[0.5,7;8,0.65;snd_tab;Soundtab1,Soundtab2,Soundtab3;1;false;false]
 		]],
+
+	-- Background
+		[[
+			formspec_version[3]
+			size[12,13]
+			box[0,0;12,13;#f0f1]
+			background[0,0;0,0;testformspec_bg.png;true]
+			box[3.9,2.9;6.2,4.2;#d00f]
+			scroll_container[4,3;6,4;scrbar;vertical]
+				background9[1,0.5;0,0;testformspec_bg_9slice.png;true;4,6]
+				label[0,0.2;Backgrounds are not be applied to scroll containers,]
+				label[0,0.5;but to the whole form.]
+			scroll_container_end[]
+			scrollbar[3.5,3;0.3,4;vertical;scrbar;0]
+			container[2,11]
+				box[-0.1,0.5;3.2,1;#fff5]
+				background[0,0;2,3;testformspec_bg.png;false]
+				background9[1,0;2,3;testformspec_bg_9slice.png;false;4,6]
+			container_end[]
+		]],
+
+	-- Unsized
+		[[
+			formspec_version[3]
+			background9[0,0;0,0;testformspec_bg_9slice.png;true;4,6]
+			background[1,1;0,0;testformspec_bg.png;true]
+		]],
 }
 
 local page_id = 2
@@ -439,7 +466,7 @@ local function show_test_formspec(pname)
 		page = page()
 	end
 
-	local fs = page .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound;" .. page_id .. ";false;false]"
+	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end

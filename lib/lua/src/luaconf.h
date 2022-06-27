@@ -143,6 +143,14 @@
 #define LUA_INTEGER	ptrdiff_t
 
 
+/* MINETEST-SPECIFIC CHANGE: make sure API functions conform to the C ABI. */
+#if defined(__cplusplus)
+#define LUAI_API_EXTERN extern "C"
+#else
+#define LUAI_API_EXTERN extern
+#endif
+
+
 /*
 @@ LUA_API is a mark for all core API functions.
 @@ LUALIB_API is a mark for all standard library functions.
@@ -154,14 +162,14 @@
 #if defined(LUA_BUILD_AS_DLL)
 
 #if defined(LUA_CORE) || defined(LUA_LIB)
-#define LUA_API __declspec(dllexport)
+#define LUA_API LUAI_API_EXTERN __declspec(dllexport)
 #else
-#define LUA_API __declspec(dllimport)
+#define LUA_API LUAI_API_EXTERN __declspec(dllimport)
 #endif
 
 #else
 
-#define LUA_API		extern
+#define LUA_API		LUAI_API_EXTERN
 
 #endif
 

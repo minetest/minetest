@@ -1,11 +1,9 @@
-project(lua C)
+project(lua CXX)
 
 set(LUA_VERSION_MAJOR 5)
 set(LUA_VERSION_MINOR 1)
 set(LUA_VERSION_PATCH 4)
 set(LUA_VERSION "${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}.${LUA_VERSION_PATCH}")
-
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(COMMON_CFLAGS)
 set(COMMON_LDFLAGS)
@@ -50,19 +48,12 @@ if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")
 endif(LUA_ANSI)
 
+# Standard flags to use
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|(Apple)?Clang")
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic")
+endif()
+
 # COMMON_CFLAGS has no effect without this line
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_CFLAGS}")
 
-
-# Standard flags to use for each build type.
-if(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic -std=gnu99")
-	set(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}     -O2")
-	set(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}       -O0 -g")
-	set(CMAKE_C_FLAGS_PROFILE        "${CMAKE_C_FLAGS_PROFILE}     -O1 -g")
-	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_WITHDEBINFO} -O2 -g")
-endif(CMAKE_COMPILER_IS_GNUCC)
-
-
-add_subdirectory(src build)
-
+add_subdirectory(src)

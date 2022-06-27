@@ -622,9 +622,9 @@ void GUIEngine::updateTopLeftTextSize()
 }
 
 /******************************************************************************/
-s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
+s32 GUIEngine::playSound(const SimpleSoundSpec &spec)
 {
-	s32 handle = m_sound_manager->playSound(spec, looped);
+	s32 handle = m_sound_manager->playSound(spec);
 	return handle;
 }
 

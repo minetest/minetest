@@ -195,6 +195,7 @@ struct TileLayer
 			texture_id == other.texture_id &&
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
+			has_color == other.has_color &&
 			color == other.color &&
 			scale == other.scale;
 	}
@@ -259,6 +260,17 @@ struct TileLayer
 			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
 	}
 
+	bool isTransparent() const
+	{
+		switch (material_type) {
+		case TILE_MATERIAL_ALPHA:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+			return true;
+		}
+		return false;
+	}
+
 	// Ordered for size, please do not reorder
 
 	video::ITexture *texture = nullptr;
@@ -288,9 +300,9 @@ struct TileLayer
 	 * The color of the tile, or if the tile does not own
 	 * a color then the color of the node owning this tile.
 	 */
-	video::SColor color;
+	video::SColor color = video::SColor(0, 0, 0, 0);
 
-	u8 scale;
+	u8 scale = 1;
 };
 
 /*!
@@ -307,7 +319,8 @@ struct TileSpec
 		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 			if (layers[layer] != other.layers[layer])
 				return false;
-			if (!layers[layer].isTileable())
+			// Only non-transparent tiles can be merged into fast faces
+			if (layers[layer].isTransparent() || !layers[layer].isTileable())
 				return false;
 		}
 		return rotation == 0

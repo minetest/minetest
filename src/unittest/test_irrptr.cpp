@@ -93,7 +93,9 @@ void TestIrrPtr::testRefCounting()
 
 #if defined(__clang__)
 	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+	#if __clang_major__ >= 7
+		#pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+	#endif
 	#pragma GCC diagnostic ignored "-Wself-move"
 #endif
 

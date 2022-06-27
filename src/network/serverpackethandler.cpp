@@ -227,7 +227,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		Compose auth methods for answer
 	*/
 	std::string encpwd; // encrypted Password field for the user
-	bool has_auth = m_script->getAuth(playername, &encpwd, NULL);
+	bool has_auth = m_script->getAuth(playername, &encpwd, nullptr);
 	u32 auth_mechs = 0;
 
 	client->chosen_mech = AUTH_MECHANISM_NONE;
@@ -380,55 +380,47 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 {
 	session_t peer_id = pkt->getPeerId();
 
-	PlayerSAO* playersao = StageTwoClientInit(peer_id);
+	// decode all information first
+	u8 major_ver, minor_ver, patch_ver, reserved;
+	u16 formspec_ver = 1; // v1 for clients older than 5.1.0-dev
+	std::string full_ver;
 
-	if (playersao == NULL) {
-		errorstream << "TOSERVER_CLIENT_READY stage 2 client init failed "
+	*pkt >> major_ver >> minor_ver >> patch_ver >> reserved >> full_ver;
+	if (pkt->getRemainingBytes() >= 2)
+		*pkt >> formspec_ver;
+
+	m_clients.setClientVersion(peer_id, major_ver, minor_ver, patch_ver,
+		full_ver);
+
+	// Emerge player
+	PlayerSAO* playersao = StageTwoClientInit(peer_id);
+	if (!playersao) {
+		errorstream << "Server: stage 2 client init failed "
 			"peer_id=" << peer_id << std::endl;
 		DisconnectPeer(peer_id);
 		return;
 	}
 
-
-	if (pkt->getSize() < 8) {
-		errorstream << "TOSERVER_CLIENT_READY client sent inconsistent data, "
-			"disconnecting peer_id: " << peer_id << std::endl;
-		DisconnectPeer(peer_id);
-		return;
-	}
-
-	u8 major_ver, minor_ver, patch_ver, reserved;
-	std::string full_ver;
-	*pkt >> major_ver >> minor_ver >> patch_ver >> reserved >> full_ver;
-
-	m_clients.setClientVersion(peer_id, major_ver, minor_ver, patch_ver,
-		full_ver);
-
-	if (pkt->getRemainingBytes() >= 2)
-		*pkt >> playersao->getPlayer()->formspec_version;
-
-	const std::vector<std::string> &players = m_clients.getPlayerNames();
-	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
-	list_pkt << (u8) PLAYER_LIST_INIT << (u16) players.size();
-	for (const std::string &player: players) {
-		list_pkt <<  player;
-	}
-	m_clients.send(peer_id, 0, &list_pkt, true);
-
-	NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
-	// (u16) 1 + std::string represents a pseudo vector serialization representation
-	notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(playersao->getPlayer()->getName());
-	m_clients.sendToAll(&notice_pkt);
+	playersao->getPlayer()->formspec_version = formspec_ver;
 	m_clients.event(peer_id, CSE_SetClientReady);
+
+	// Send player list to this client
+	{
+		const std::vector<std::string> &players = m_clients.getPlayerNames();
+		NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
+		list_pkt << (u8) PLAYER_LIST_INIT << (u16) players.size();
+		for (const auto &player : players)
+			list_pkt << player;
+		Send(peer_id, &list_pkt);
+	}
 
 	s64 last_login;
 	m_script->getAuth(playersao->getPlayer()->getName(), nullptr, nullptr, &last_login);
 	m_script->on_joinplayer(playersao, last_login);
 
 	// Send shutdown timer if shutdown has been scheduled
-	if (m_shutdown_state.isTimerRunning()) {
+	if (m_shutdown_state.isTimerRunning())
 		SendChatMessage(peer_id, m_shutdown_state.getShutdownTimerMessage());
-	}
 }
 
 void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
@@ -1469,11 +1461,9 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
+	const std::string playername = client->getName();
 
-	std::string playername = client->getName();
-
-	std::string salt;
-	std::string verification_key;
+	std::string salt, verification_key;
 
 	std::string addr_s = getPeerAddress(peer_id).serializeString();
 	u8 is_empty;
@@ -1482,6 +1472,9 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 
 	verbosestream << "Server: Got TOSERVER_FIRST_SRP from " << addr_s
 		<< ", with is_empty=" << (is_empty == 1) << std::endl;
+
+	const bool empty_disallowed = !isSingleplayer() && is_empty == 1 &&
+		g_settings->getBool("disallow_empty_password");
 
 	// Either this packet is sent because the user is new or to change the password
 	if (cstate == CS_HelloSent) {
@@ -1493,9 +1486,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 
-		if (!isSingleplayer() &&
-				g_settings->getBool("disallow_empty_password") &&
-				is_empty == 1) {
+		if (empty_disallowed) {
 			actionstream << "Server: " << playername
 					<< " supplied empty password from " << addr_s << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_EMPTY_PASSWORD);
@@ -1503,8 +1494,19 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		}
 
 		std::string initial_ver_key;
-
 		initial_ver_key = encode_srp_verifier(verification_key, salt);
+
+		// It is possible for multiple connections to get this far with the same
+		// player name. In the end only one player with a given name will be emerged
+		// (see Server::StateTwoClientInit) but we still have to be careful here.
+		if (m_script->getAuth(playername, nullptr, nullptr)) {
+			// Another client beat us to it
+			actionstream << "Server: Client from " << addr_s
+				<< " tried to register " << playername << " a second time."
+				<< std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
+			return;
+		}
 		m_script->createAuth(playername, initial_ver_key);
 		m_script->on_authplayer(playername, addr_s, true);
 
@@ -1517,6 +1519,15 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 		m_clients.event(peer_id, CSE_SudoLeave);
+
+		if (empty_disallowed) {
+			actionstream << "Server: " << playername
+					<< " supplied empty password" << std::endl;
+			SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Changing to an empty password is not allowed."));
+			return;
+		}
+
 		std::string pw_db_field = encode_srp_verifier(verification_key, salt);
 		bool success = m_script->setPassword(playername, pw_db_field);
 		if (success) {
@@ -1538,14 +1549,14 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 
-	bool wantSudo = (cstate == CS_Active);
-
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _A packet in wrong state " << cstate <<
 			" from " << getPeerAddress(peer_id).serializeString() <<
 			". Ignoring." << std::endl;
 		return;
 	}
+
+	const bool wantSudo = (cstate == CS_Active);
 
 	if (client->chosen_mech != AUTH_MECHANISM_NONE) {
 		actionstream << "Server: got SRP _A packet, while auth is already "
@@ -1593,8 +1604,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 
 	client->chosen_mech = chosen;
 
-	std::string salt;
-	std::string verifier;
+	std::string salt, verifier;
 
 	if (based_on == 0) {
 
@@ -1626,6 +1636,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 			<< std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
+			client->resetChosenMech();
 			return;
 		}
 
@@ -1643,10 +1654,10 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
-	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
-	std::string playername = client->getName();
+	const std::string addr_s = client->getAddress().serializeString();
+	const std::string playername = client->getName();
 
-	bool wantSudo = (cstate == CS_Active);
+	const bool wantSudo = (cstate == CS_Active);
 
 	verbosestream << "Server: Received TOSERVER_SRP_BYTES_M." << std::endl;
 
@@ -1692,6 +1703,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 				<< " tried to change their password, but supplied wrong"
 				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(peer_id);
+			client->resetChosenMech();
 			return;
 		}
 
@@ -1705,8 +1717,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (client->create_player_on_auth_success) {
 		m_script->createAuth(playername, client->enc_pwd);
 
-		std::string checkpwd; // not used, but needed for passing something
-		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
+		if (!m_script->getAuth(playername, nullptr, nullptr)) {
 			errorstream << "Server: " << playername <<
 				" cannot be authenticated (auth handler does not work?)" <<
 				std::endl;

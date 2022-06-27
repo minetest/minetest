@@ -176,7 +176,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 (may be sent as unrel over channel 1 too)
 	{ "TOCLIENT_HP",                       0, true }, // 0x33
 	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
-	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     0, true }, // 0x35
+	null_command_factory, // 0x35
 	{ "TOCLIENT_FOV",                      0, true }, // 0x36
 	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
 	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38

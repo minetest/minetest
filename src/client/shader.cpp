@@ -40,20 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "config.h"
 
-#if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-#include <GLES/gl.h>
-#else
-#include <GLES2/gl2.h>
-#endif
-#else
-#ifndef __APPLE__
-#include <GL/gl.h>
-#else
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl.h>
-#endif
-#endif
+#include <mt_opengl.h>
 
 /*
 	A cache from shader name to shader path
@@ -223,17 +210,24 @@ public:
 
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
-	CachedVertexShaderSetting<float, 16> m_world_view_proj;
-	CachedVertexShaderSetting<float, 16> m_world;
+	CachedVertexShaderSetting<f32, 16> m_world_view_proj;
+	CachedVertexShaderSetting<f32, 16> m_world;
 
 	// Shadow-related
-	CachedPixelShaderSetting<float, 16> m_shadow_view_proj;
-	CachedPixelShaderSetting<float, 3> m_light_direction;
-	CachedPixelShaderSetting<float> m_texture_res;
-	CachedPixelShaderSetting<float> m_shadow_strength;
-	CachedPixelShaderSetting<float> m_time_of_day;
-	CachedPixelShaderSetting<float> m_shadowfar;
+	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
+	CachedPixelShaderSetting<f32, 3> m_light_direction;
+	CachedPixelShaderSetting<f32> m_texture_res;
+	CachedPixelShaderSetting<f32> m_shadow_strength;
+	CachedPixelShaderSetting<f32> m_time_of_day;
+	CachedPixelShaderSetting<f32> m_shadowfar;
+	CachedPixelShaderSetting<f32, 4> m_camera_pos;
 	CachedPixelShaderSetting<s32> m_shadow_texture;
+	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
+	CachedVertexShaderSetting<f32> m_perspective_bias1_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
+	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
+	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
 
 #if ENABLE_GLES
 	// Modelview matrix
@@ -248,18 +242,25 @@ public:
 	MainShaderConstantSetter() :
 		  m_world_view_proj("mWorldViewProj")
 		, m_world("mWorld")
-#if ENABLE_GLES
-		, m_world_view("mWorldView")
-		, m_texture("mTexture")
-		, m_normal("mNormal")
-#endif
 		, m_shadow_view_proj("m_ShadowViewProj")
 		, m_light_direction("v_LightDirection")
 		, m_texture_res("f_textureresolution")
 		, m_shadow_strength("f_shadow_strength")
 		, m_time_of_day("f_timeofday")
 		, m_shadowfar("f_shadowfar")
+		, m_camera_pos("CameraPos")
 		, m_shadow_texture("ShadowMapSampler")
+		, m_perspective_bias0_vertex("xyPerspectiveBias0")
+		, m_perspective_bias0_pixel("xyPerspectiveBias0")
+		, m_perspective_bias1_vertex("xyPerspectiveBias1")
+		, m_perspective_bias1_pixel("xyPerspectiveBias1")
+		, m_perspective_zbias_vertex("zPerspectiveBias")
+		, m_perspective_zbias_pixel("zPerspectiveBias")
+#if ENABLE_GLES
+		, m_world_view("mWorldView")
+		, m_texture("mTexture")
+		, m_normal("mNormal")
+#endif
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -306,26 +307,40 @@ public:
 			shadowViewProj *= light.getViewMatrix();
 			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
 
-			float v_LightDirection[3];
+			f32 v_LightDirection[3];
 			light.getDirection().getAs3Values(v_LightDirection);
 			m_light_direction.set(v_LightDirection, services);
 
-			float TextureResolution = light.getMapResolution();
+			f32 TextureResolution = light.getMapResolution();
 			m_texture_res.set(&TextureResolution, services);
 
-			float ShadowStrength = shadow->getShadowStrength();
+			f32 ShadowStrength = shadow->getShadowStrength();
 			m_shadow_strength.set(&ShadowStrength, services);
 
-			float timeOfDay = shadow->getTimeOfDay();
+			f32 timeOfDay = shadow->getTimeOfDay();
 			m_time_of_day.set(&timeOfDay, services);
 
-			float shadowFar = shadow->getMaxShadowFar();
+			f32 shadowFar = shadow->getMaxShadowFar();
 			m_shadowfar.set(&shadowFar, services);
+
+			f32 cam_pos[4];
+			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
+			m_camera_pos.set(cam_pos, services);
 
 			// I dont like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);
+
+			f32 bias0 = shadow->getPerspectiveBiasXY();
+			m_perspective_bias0_vertex.set(&bias0, services);
+			m_perspective_bias0_pixel.set(&bias0, services);
+			f32 bias1 = 1.0f - bias0 + 1e-5f;
+			m_perspective_bias1_vertex.set(&bias1, services);
+			m_perspective_bias1_pixel.set(&bias1, services);
+			f32 zbias = shadow->getPerspectiveBiasZ();
+			m_perspective_zbias_vertex.set(&zbias, services);
+			m_perspective_zbias_pixel.set(&zbias, services);
 		}
 	}
 };
@@ -667,13 +682,19 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		)";
 	}
 
+	// Since this is the first time we're using the GL bindings be extra careful.
+	// This should be removed before 5.6.0 or similar.
+	if (!GL.GetString) {
+		errorstream << "OpenGL procedures were not loaded correctly, "
+			"please open a bug report with details about your platform/OS." << std::endl;
+		abort();
+	}
+
 	bool use_discard = use_gles;
-#ifdef __unix__
 	// For renderers that should use discard instead of GL_ALPHA_TEST
-	const char* gl_renderer = (const char*)glGetString(GL_RENDERER);
-	if (strstr(gl_renderer, "GC7000"))
+	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
+	if (strstr(renderer, "GC7000"))
 		use_discard = true;
-#endif
 	if (use_discard) {
 		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
 			shaders_header << "#define USE_DISCARD 1\n";
@@ -749,6 +770,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			shadow_soft_radius = 1.0f;
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
 	}
+
+	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string common_header = shaders_header.str();
 

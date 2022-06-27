@@ -6,10 +6,8 @@ Note: The vector.*-functions must be able to accept old vectors that had no meta
 -- localize functions
 local setmetatable = setmetatable
 
-vector = {}
-
-local metatable = {}
-vector.metatable = metatable
+-- vector.metatable is set by C++.
+local metatable = vector.metatable
 
 local xyz = {"x", "y", "z"}
 
@@ -109,6 +107,14 @@ function vector.apply(v, func)
 		func(v.x),
 		func(v.y),
 		func(v.z)
+	)
+end
+
+function vector.combine(a, b, func)
+	return fast_new(
+		func(a.x, b.x),
+		func(a.y, b.y),
+		func(a.z, b.z)
 	)
 end
 

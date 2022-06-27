@@ -223,8 +223,8 @@ Run it:
 - You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
   - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to have the Irrlicht or IrrlichtMt library installed.
-  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlicht/include`.
+- If you build a bare server you don't need to compile IrrlichtMt, just the headers suffice.
+  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlichtmt/include`.
 
 - Minetest will use the IrrlichtMt package that is found first, given by the following order:
   1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
@@ -240,6 +240,7 @@ General options and their default values:
     BUILD_CLIENT=TRUE          - Build Minetest client
     BUILD_SERVER=FALSE         - Build Minetest server
     BUILD_UNITTESTS=TRUE       - Build unittest sources
+    BUILD_BENCHMARKS=FALSE     - Build benchmark sources
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build
@@ -249,7 +250,7 @@ General options and their default values:
     ENABLE_CURL=ON             - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
-    ENABLE_GLES=OFF            - Build for OpenGL ES instead of OpenGL (requires support by IrrlichtMt)
+    ENABLE_GLES=OFF            - Enable extra support code for OpenGL ES (requires support by IrrlichtMt)
     ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
@@ -259,7 +260,6 @@ General options and their default values:
     ENABLE_PROMETHEUS=OFF      - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
     ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
-    OPENGL_GL_PREFERENCE=LEGACY - Linux client build only; See CMake Policy CMP0072 for reference
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
@@ -300,15 +300,12 @@ Library specific options:
     OPENAL_DLL                      - Only if building with sound on Windows; path to OpenAL32.dll
     OPENAL_INCLUDE_DIR              - Only if building with sound; directory where al.h is located
     OPENAL_LIBRARY                  - Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
-    OPENGLES2_INCLUDE_DIR           - Only if building with GLES; directory that contains gl2.h
-    OPENGLES2_LIBRARY               - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
     SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
     SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
     VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
     VORBIS_DLL                      - Only if building with sound on Windows; paths to vorbis DLLs
     VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
     VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
-    XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
     ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib
@@ -421,8 +418,8 @@ git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
 #### Build
 
 ```bash
-mkdir cmakebuild
-cd cmakebuild
+mkdir build
+cd build
 
 cmake .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \

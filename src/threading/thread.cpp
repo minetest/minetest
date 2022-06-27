@@ -121,11 +121,11 @@ bool Thread::start()
 		return false;
 	}
 
-	// Allow spawned thread to continue
-	m_start_finished_mutex.unlock();
-
 	while (!m_running)
 		sleep_ms(1);
+
+	// Allow spawned thread to continue
+	m_start_finished_mutex.unlock();
 
 	m_joinable = true;
 

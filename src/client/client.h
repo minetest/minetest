@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh_generator_thread.h"
 #include "network/address.h"
 #include "network/peerhandler.h"
+#include "gameparams.h"
 #include <fstream>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
@@ -127,7 +128,8 @@ public:
 			MtEventManager *event,
 			RenderingEngine *rendering_engine,
 			bool ipv6,
-			GameUI *game_ui
+			GameUI *game_ui,
+			ELoginRegister allow_login_or_register
 	);
 
 	~Client();
@@ -227,6 +229,7 @@ public:
 	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
 	void handleCommand_MediaPush(NetworkPacket *pkt);
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
+	void handleCommand_SetLighting(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -346,8 +349,7 @@ public:
 	u16 getProtoVersion()
 	{ return m_proto_ver; }
 
-	void confirmRegistration();
-	bool m_is_registration_confirmation_state = false;
+	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	bool m_simple_singleplayer_mode;
 
 	float mediaReceiveProgress();
@@ -406,7 +408,7 @@ public:
 	}
 
 	ClientScripting *getScript() { return m_script; }
-	const bool modsLoaded() const { return m_mods_loaded; }
+	bool modsLoaded() const { return m_mods_loaded; }
 
 	void pushToEventQueue(ClientEvent *event);
 
@@ -459,7 +461,6 @@ private:
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
 	void sendInit(const std::string &playerName);
-	void promptConfirmRegistration(AuthMechanism chosen_auth_mechanism);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(const std::vector<v3s16> &blocks);

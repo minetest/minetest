@@ -266,10 +266,12 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	std::vector<aabb3f> &boxes = *p_boxes;
 
 	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
-		const std::vector<aabb3f> &fixed = nodebox.fixed;
+		const auto &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr, true);
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
+
+		boxes.reserve(boxes.size() + fixed.size());
 		for (aabb3f box : fixed) {
 			if (nodebox.type == NODEBOX_LEVELED)
 				box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
@@ -437,41 +439,43 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	{
 		size_t boxes_size = boxes.size();
 		boxes_size += nodebox.fixed.size();
+		const auto &c = nodebox.getConnected();
+
 		if (neighbors & 1)
-			boxes_size += nodebox.connect_top.size();
+			boxes_size += c.connect_top.size();
 		else
-			boxes_size += nodebox.disconnected_top.size();
+			boxes_size += c.disconnected_top.size();
 
 		if (neighbors & 2)
-			boxes_size += nodebox.connect_bottom.size();
+			boxes_size += c.connect_bottom.size();
 		else
-			boxes_size += nodebox.disconnected_bottom.size();
+			boxes_size += c.disconnected_bottom.size();
 
 		if (neighbors & 4)
-			boxes_size += nodebox.connect_front.size();
+			boxes_size += c.connect_front.size();
 		else
-			boxes_size += nodebox.disconnected_front.size();
+			boxes_size += c.disconnected_front.size();
 
 		if (neighbors & 8)
-			boxes_size += nodebox.connect_left.size();
+			boxes_size += c.connect_left.size();
 		else
-			boxes_size += nodebox.disconnected_left.size();
+			boxes_size += c.disconnected_left.size();
 
 		if (neighbors & 16)
-			boxes_size += nodebox.connect_back.size();
+			boxes_size += c.connect_back.size();
 		else
-			boxes_size += nodebox.disconnected_back.size();
+			boxes_size += c.disconnected_back.size();
 
 		if (neighbors & 32)
-			boxes_size += nodebox.connect_right.size();
+			boxes_size += c.connect_right.size();
 		else
-			boxes_size += nodebox.disconnected_right.size();
+			boxes_size += c.disconnected_right.size();
 
 		if (neighbors == 0)
-			boxes_size += nodebox.disconnected.size();
+			boxes_size += c.disconnected.size();
 
 		if (neighbors < 4)
-			boxes_size += nodebox.disconnected_sides.size();
+			boxes_size += c.disconnected_sides.size();
 
 		boxes.reserve(boxes_size);
 
@@ -484,47 +488,47 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		BOXESPUSHBACK(nodebox.fixed);
 
 		if (neighbors & 1) {
-			BOXESPUSHBACK(nodebox.connect_top);
+			BOXESPUSHBACK(c.connect_top);
 		} else {
-			BOXESPUSHBACK(nodebox.disconnected_top);
+			BOXESPUSHBACK(c.disconnected_top);
 		}
 
 		if (neighbors & 2) {
-			BOXESPUSHBACK(nodebox.connect_bottom);
+			BOXESPUSHBACK(c.connect_bottom);
 		} else {
-			BOXESPUSHBACK(nodebox.disconnected_bottom);
+			BOXESPUSHBACK(c.disconnected_bottom);
 		}
 
 		if (neighbors & 4) {
-			BOXESPUSHBACK(nodebox.connect_front);
+			BOXESPUSHBACK(c.connect_front);
 		} else {
-			BOXESPUSHBACK(nodebox.disconnected_front);
+			BOXESPUSHBACK(c.disconnected_front);
 		}
 
 		if (neighbors & 8) {
-			BOXESPUSHBACK(nodebox.connect_left);
+			BOXESPUSHBACK(c.connect_left);
 		} else {
-			BOXESPUSHBACK(nodebox.disconnected_left);
+			BOXESPUSHBACK(c.disconnected_left);
 		}
 
 		if (neighbors & 16) {
-			BOXESPUSHBACK(nodebox.connect_back);
+			BOXESPUSHBACK(c.connect_back);
 		} else {
-			BOXESPUSHBACK(nodebox.disconnected_back);
+			BOXESPUSHBACK(c.disconnected_back);
 		}
 
 		if (neighbors & 32) {
-			BOXESPUSHBACK(nodebox.connect_right);
+			BOXESPUSHBACK(c.connect_right);
 		} else {
-			BOXESPUSHBACK(nodebox.disconnected_right);
+			BOXESPUSHBACK(c.disconnected_right);
 		}
 
 		if (neighbors == 0) {
-			BOXESPUSHBACK(nodebox.disconnected);
+			BOXESPUSHBACK(c.disconnected);
 		}
 
 		if (neighbors < 4) {
-			BOXESPUSHBACK(nodebox.disconnected_sides);
+			BOXESPUSHBACK(c.disconnected_sides);
 		}
 
 	}

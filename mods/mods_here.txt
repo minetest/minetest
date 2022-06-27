@@ -1,4 +1,10 @@
+You can use the content tab in the main menu
+
+ OR
+
 You can install Minetest mods by copying (and extracting) them into this folder.
 To enable them, go to the configure world window in the main menu or write
+
   load_mod_<modname> = true
-in world.mt in the world directory.
+
+in world.mt in the world directory. 

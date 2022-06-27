@@ -40,7 +40,7 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 Metadata* NodeMetaRef::getmeta(bool auto_create)
 {
 	if (m_is_local)
-		return m_meta;
+		return m_local_meta;
 
 	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
 	if (meta == NULL && auto_create) {
@@ -62,9 +62,14 @@ void NodeMetaRef::clearMeta()
 void NodeMetaRef::reportMetadataChange(const std::string *name)
 {
 	SANITY_CHECK(!m_is_local);
-	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(m_meta);
+	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(getmeta(false));
+
+	// If the metadata is now empty, get rid of it
+	if (meta && meta->empty()) {
+		clearMeta();
+		meta = nullptr;
+	}
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
@@ -127,18 +132,14 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 	// fields
 	MetaDataRef::handleToTable(L, _meta);
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *) _meta;
 
 	// inventory
-	lua_newtable(L);
 	Inventory *inv = meta->getInventory();
 	if (inv) {
-		std::vector<const InventoryList *> lists = inv->getLists();
-		for(std::vector<const InventoryList *>::const_iterator
-				i = lists.begin(); i != lists.end(); ++i) {
-			push_inventory_list(L, inv, (*i)->getName().c_str());
-			lua_setfield(L, -2, (*i)->getName().c_str());
-		}
+		push_inventory_lists(L, *inv);
+	} else {
+		lua_newtable(L);
 	}
 	lua_setfield(L, -2, "inventory");
 }
@@ -178,8 +179,8 @@ NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
 }
 
 NodeMetaRef::NodeMetaRef(Metadata *meta):
-	m_meta(meta),
-	m_is_local(true)
+	m_is_local(true),
+	m_local_meta(meta)
 {
 }
 

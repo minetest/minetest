@@ -93,7 +93,8 @@ GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 
 GUIKeyChangeMenu::~GUIKeyChangeMenu()
 {
-	removeChildren();
+	removeAllChildren();
+	key_used_text = nullptr;
 
 	for (key_setting *ks : key_settings) {
 		delete[] ks->button_name;
@@ -102,23 +103,10 @@ GUIKeyChangeMenu::~GUIKeyChangeMenu()
 	key_settings.clear();
 }
 
-void GUIKeyChangeMenu::removeChildren()
-{
-	const core::list<gui::IGUIElement*> &children = getChildren();
-	core::list<gui::IGUIElement*> children_copy;
-	for (gui::IGUIElement*i : children) {
-		children_copy.push_back(i);
-	}
-
-	for (gui::IGUIElement *i : children_copy) {
-		i->remove();
-	}
-	key_used_text = nullptr;
-}
-
 void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
-	removeChildren();
+	removeAllChildren();
+	key_used_text = nullptr;
 
 	const float s = m_gui_scale;
 	DesiredRect = core::rect<s32>(
@@ -136,7 +124,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 600 * s, 40 * s);
 		rect += topleft + v2s32(25 * s, 3 * s);
 		//gui::IGUIStaticText *t =
-		const wchar_t *text = wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)");
+		const wchar_t *text = wgettext("Keybindings.");
 		Environment->addStaticText(text,
 								   rect, false, true, this, -1);
 		delete[] text;

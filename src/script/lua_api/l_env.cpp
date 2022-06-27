@@ -640,7 +640,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 
 	v3f pos = checkFloatPos(L, 1);
 	const char *name = luaL_checkstring(L, 2);
-	const char *staticdata = luaL_optstring(L, 3, "");
+	std::string staticdata = readParam<std::string>(L, 3, "");
 
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
@@ -757,7 +757,7 @@ int ModApiEnvMod::l_get_objects_in_area(lua_State *L)
 {
 	GET_ENV_PTR;
 	ScriptApiBase *script = getScriptApiBase(L);
-	
+
 	v3f minp = read_v3f(L, 1) * BS;
 	v3f maxp = read_v3f(L, 2) * BS;
 	aabb3f box(minp, maxp);
@@ -1219,7 +1219,8 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 	sortBoxVerticies(bpmin, bpmax);
 
 	size_t num_blocks = VoxelArea(bpmin, bpmax).getVolume();
-	assert(num_blocks != 0);
+	if (num_blocks == 0)
+		return 0;
 
 	if (lua_isfunction(L, 3)) {
 		callback = LuaEmergeAreaCallback;
@@ -1386,7 +1387,7 @@ int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
 	GET_ENV_PTR;
 
 	v3s16 p0 = read_v3s16(L, 1);
-	env->getMap().transforming_liquid_add(p0);
+	env->getServerMap().transforming_liquid_add(p0);
 	return 1;
 }
 
@@ -1409,7 +1410,7 @@ int ModApiEnvMod::l_compare_block_status(lua_State *L)
 	v3s16 nodepos = check_v3s16(L, 1);
 	std::string condition_s = luaL_checkstring(L, 2);
 	auto status = env->getBlockStatus(getNodeBlockPos(nodepos));
-	
+
 	int condition_i = -1;
 	if (!string_to_enum(es_BlockStatusType, condition_i, condition_s))
 		return 0; // Unsupported

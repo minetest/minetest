@@ -426,16 +426,6 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		camera_impact = getSpeed().Y * -1;
 	}
 
-	{
-		camera_barely_in_ceiling = false;
-		v3s16 camera_np = floatToInt(getEyePosition(), BS);
-		MapNode n = map->getNode(camera_np);
-		if (n.getContent() != CONTENT_IGNORE) {
-			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2)
-				camera_barely_in_ceiling = true;
-		}
-	}
-
 	/*
 		Check properties of the node on which the player is standing
 	*/
@@ -672,19 +662,21 @@ v3s16 LocalPlayer::getStandingNodePos()
 
 v3s16 LocalPlayer::getFootstepNodePos()
 {
+	v3f feet_pos = getPosition() + v3f(0.0f, m_collisionbox.MinEdge.Y, 0.0f);
+
 	// Emit swimming sound if the player is in liquid
 	if (in_liquid_stable)
-		return floatToInt(getPosition(), BS);
+		return floatToInt(feet_pos, BS);
 
 	// BS * 0.05 below the player's feet ensures a 1/16th height
 	// nodebox is detected instead of the node below it.
 	if (touching_ground)
-		return floatToInt(getPosition() - v3f(0.0f, BS * 0.05f, 0.0f), BS);
+		return floatToInt(feet_pos - v3f(0.0f, BS * 0.05f, 0.0f), BS);
 
 	// A larger distance below is necessary for a footstep sound
 	// when landing after a jump or fall. BS * 0.5 ensures water
 	// sounds when swimming in 1 node deep water.
-	return floatToInt(getPosition() - v3f(0.0f, BS * 0.5f, 0.0f), BS);
+	return floatToInt(feet_pos - v3f(0.0f, BS * 0.5f, 0.0f), BS);
 }
 
 v3s16 LocalPlayer::getLightPosition() const
@@ -694,8 +686,7 @@ v3s16 LocalPlayer::getLightPosition() const
 
 v3f LocalPlayer::getEyeOffset() const
 {
-	float eye_height = camera_barely_in_ceiling ? m_eye_height - 0.125f : m_eye_height;
-	return v3f(0.0f, BS * eye_height, 0.0f);
+	return v3f(0.0f, BS * m_eye_height, 0.0f);
 }
 
 ClientActiveObject *LocalPlayer::getParent() const
@@ -1021,16 +1012,6 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_REGAIN_GROUND));
 		// Set camera impact value to be used for view bobbing
 		camera_impact = getSpeed().Y * -1.0f;
-	}
-
-	{
-		camera_barely_in_ceiling = false;
-		v3s16 camera_np = floatToInt(getEyePosition(), BS);
-		MapNode n = map->getNode(camera_np);
-		if (n.getContent() != CONTENT_IGNORE) {
-			if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2)
-				camera_barely_in_ceiling = true;
-		}
 	}
 
 	/*

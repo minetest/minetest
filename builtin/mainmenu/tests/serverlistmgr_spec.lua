@@ -1,4 +1,5 @@
 _G.core = {}
+_G.vector = {metatable = {}}
 _G.unpack = table.unpack
 _G.serverlistmgr = {}
 

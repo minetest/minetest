@@ -27,26 +27,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include <fstream>
 
-static inline void get_data_and_border_flags(lua_State *L, u8 start_i,
-		bool *borders, bool *data)
+static inline void get_data_and_corner_flags(lua_State *L, u8 start_i,
+		bool *corners, bool *data)
 {
 	if (!lua_isboolean(L, start_i))
 		return;
-	*borders = lua_toboolean(L, start_i);
+	*corners = lua_toboolean(L, start_i);
 	if (!lua_isboolean(L, start_i + 1))
 		return;
 	*data = lua_toboolean(L, start_i + 1);
 }
 
 static void push_area(lua_State *L, const Area *a,
-		bool include_borders, bool include_data)
+		bool include_corners, bool include_data)
 {
-	if (!include_borders && !include_data) {
+	if (!include_corners && !include_data) {
 		lua_pushboolean(L, true);
 		return;
 	}
 	lua_newtable(L);
-	if (include_borders) {
+	if (include_corners) {
 		push_v3s16(L, a->minedge);
 		lua_setfield(L, -2, "min");
 		push_v3s16(L, a->maxedge);
@@ -59,13 +59,13 @@ static void push_area(lua_State *L, const Area *a,
 }
 
 static inline void push_areas(lua_State *L, const std::vector<Area *> &areas,
-		bool borders, bool data)
+		bool corners, bool data)
 {
 	lua_newtable(L);
 	size_t cnt = areas.size();
 	for (size_t i = 0; i < cnt; i++) {
 		lua_pushnumber(L, areas[i]->id);
-		push_area(L, areas[i], borders, data);
+		push_area(L, areas[i], corners, data);
 		lua_settable(L, -3);
 	}
 }
@@ -94,7 +94,7 @@ int LuaAreaStore::gc_object(lua_State *L)
 	return 0;
 }
 
-// get_area(id, include_borders, include_data)
+// get_area(id, include_corners, include_data)
 int LuaAreaStore::l_get_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -104,9 +104,9 @@ int LuaAreaStore::l_get_area(lua_State *L)
 
 	u32 id = luaL_checknumber(L, 2);
 
-	bool include_borders = true;
+	bool include_corners = true;
 	bool include_data = false;
-	get_data_and_border_flags(L, 3, &include_borders, &include_data);
+	get_data_and_corner_flags(L, 3, &include_corners, &include_data);
 
 	const Area *res;
 
@@ -114,12 +114,12 @@ int LuaAreaStore::l_get_area(lua_State *L)
 	if (!res)
 		return 0;
 
-	push_area(L, res, include_borders, include_data);
+	push_area(L, res, include_corners, include_data);
 
 	return 1;
 }
 
-// get_areas_for_pos(pos, include_borders, include_data)
+// get_areas_for_pos(pos, include_corners, include_data)
 int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -129,19 +129,19 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 
 	v3s16 pos = check_v3s16(L, 2);
 
-	bool include_borders = true;
+	bool include_corners = true;
 	bool include_data = false;
-	get_data_and_border_flags(L, 3, &include_borders, &include_data);
+	get_data_and_corner_flags(L, 3, &include_corners, &include_data);
 
 	std::vector<Area *> res;
 
 	ast->getAreasForPos(&res, pos);
-	push_areas(L, res, include_borders, include_data);
+	push_areas(L, res, include_corners, include_data);
 
 	return 1;
 }
 
-// get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)
+// get_areas_in_area(corner1, corner2, accept_overlap, include_corners, include_data)
 int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -149,25 +149,26 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	v3s16 minedge = check_v3s16(L, 2);
-	v3s16 maxedge = check_v3s16(L, 3);
+	v3s16 minp = check_v3s16(L, 2);
+	v3s16 maxp = check_v3s16(L, 3);
+	sortBoxVerticies(minp, maxp);
 
-	bool include_borders = true;
+	bool include_corners = true;
 	bool include_data = false;
 	bool accept_overlap = false;
 	if (lua_isboolean(L, 4)) {
 		accept_overlap = readParam<bool>(L, 4);
-		get_data_and_border_flags(L, 5, &include_borders, &include_data);
+		get_data_and_corner_flags(L, 5, &include_corners, &include_data);
 	}
 	std::vector<Area *> res;
 
-	ast->getAreasInArea(&res, minedge, maxedge, accept_overlap);
-	push_areas(L, res, include_borders, include_data);
+	ast->getAreasInArea(&res, minp, maxp, accept_overlap);
+	push_areas(L, res, include_corners, include_data);
 
 	return 1;
 }
 
-// insert_area(edge1, edge2, data, id)
+// insert_area(corner1, corner2, data, id)
 int LuaAreaStore::l_insert_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

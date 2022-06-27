@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
+#include "util/metricsbackend.h"
 #include <set>
 #include <random>
 
@@ -167,19 +168,27 @@ public:
 		std::set<v3s16> &blocks_removed,
 		std::set<v3s16> &blocks_added);
 
-	bool contains(v3s16 p){
+	bool contains(v3s16 p) const {
 		return (m_list.find(p) != m_list.end());
 	}
 
-	void clear(){
+	auto size() const {
+		return m_list.size();
+	}
+
+	void clear() {
 		m_list.clear();
+	}
+
+	void remove(v3s16 p) {
+		m_list.erase(p);
+		m_abm_list.erase(p);
 	}
 
 	std::set<v3s16> m_list;
 	std::set<v3s16> m_abm_list;
+	// list of blocks that are always active, not modified by this class
 	std::set<v3s16> m_forceloaded_list;
-
-private:
 };
 
 /*
@@ -198,7 +207,7 @@ class ServerEnvironment : public Environment
 {
 public:
 	ServerEnvironment(ServerMap *map, ServerScripting *scriptIface,
-		Server *server, const std::string &path_world);
+		Server *server, const std::string &path_world, MetricsBackend *mb);
 	~ServerEnvironment();
 
 	Map & getMap();
@@ -451,7 +460,8 @@ private:
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
-	IntervalLimiter m_active_blocks_management_interval;
+	bool m_force_update_active_blocks = false;
+	IntervalLimiter m_active_blocks_mgmt_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	// Whether the variables below have been read from file yet
@@ -486,6 +496,11 @@ private:
 	IntervalLimiter m_particle_management_interval;
 	std::unordered_map<u32, float> m_particle_spawners;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
+
+	// Environment metrics
+	MetricCounterPtr m_step_time_counter;
+	MetricGaugePtr m_active_block_gauge;
+	MetricGaugePtr m_active_object_gauge;
 
 	ServerActiveObject* createSAO(ActiveObjectType type, v3f pos, const std::string &data);
 };

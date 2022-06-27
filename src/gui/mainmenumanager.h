@@ -64,10 +64,6 @@ public:
 		// Remove all entries if there are duplicates
 		m_stack.remove(menu);
 
-		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
-		assert(*i == menu);
-		m_stack.erase(i);*/
-
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(true);
 	}

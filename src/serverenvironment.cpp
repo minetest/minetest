@@ -258,23 +258,23 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	v3s16 pos;
 	MapNode n;
 	content_t c;
-	lbm_lookup_map::const_iterator it = getLBMsIntroducedAfter(stamp);
+	bool pos_valid; // dummy, we know it's valid
+	auto it = getLBMsIntroducedAfter(stamp);
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
 		// penalty on each call
-		content_t previous_c{};
-		std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
+		content_t previous_c = CONTENT_IGNORE;
+		const std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
 
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoEx(pos);
+					n = block->getNodeNoCheck(pos, &pos_valid);
 					c = n.getContent();
 
 					// If content_t are not matching perform an LBM lookup
 					if (previous_c != c) {
-						lbm_list = (std::vector<LoadingBlockModifierDef *> *)
-							it->second.lookup(c);
+						lbm_list = it->second.lookup(c);
 						previous_c = c;
 					}
 
@@ -378,10 +378,7 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	/*
 		Update m_list
 	*/
-	m_list.clear();
-	for (v3s16 p : newlist) {
-		m_list.insert(p);
-	}
+	m_list = std::move(newlist);
 }
 
 /*
@@ -393,7 +390,7 @@ static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *scriptIface, Server *server,
-	const std::string &path_world):
+	const std::string &path_world, MetricsBackend *mb):
 	Environment(server),
 	m_map(map),
 	m_script(scriptIface),
@@ -460,6 +457,15 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 
 	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
 	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
+
+	m_step_time_counter = mb->addCounter(
+		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
+
+	m_active_block_gauge = mb->addGauge(
+		"minetest_env_active_blocks", "Number of active blocks");
+
+	m_active_object_gauge = mb->addGauge(
+		"minetest_env_active_objects", "Number of active objects");
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -552,10 +558,8 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	const std::string &str_reason, bool reconnect)
 {
-	for (RemotePlayer *player : m_players) {
-		m_server->DenyAccessVerCompliant(player->getPeerId(),
-			player->protocol_version, reason, str_reason, reconnect);
-	}
+	for (RemotePlayer *player : m_players)
+		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
 }
 
 void ServerEnvironment::saveLoadedPlayers(bool force)
@@ -618,6 +622,9 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 
 	/* Add object to environment */
 	addActiveObject(playersao);
+
+	// Update active blocks asap so objects in those blocks appear on the client
+	m_force_update_active_blocks = true;
 
 	return playersao;
 }
@@ -892,7 +899,7 @@ public:
 			for (ActiveABM &aabm : *m_aabms[c]) {
 				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
 					continue;
-				
+
 				if (myrand() % aabm.chance != 0)
 					continue;
 
@@ -1285,6 +1292,8 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 void ServerEnvironment::step(float dtime)
 {
 	ScopeProfiler sp2(g_profiler, "ServerEnv::step()", SPT_AVG);
+	const auto start_time = porting::getTimeUs();
+
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 
@@ -1323,13 +1332,16 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Manage active block list
 	*/
-	if (m_active_blocks_management_interval.step(dtime, m_cache_active_block_mgmt_interval)) {
+	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval) ||
+		m_force_update_active_blocks) {
 		ScopeProfiler sp(g_profiler, "ServerEnv: update active blocks", SPT_AVG);
+
 		/*
 			Get player block positions
 		*/
 		std::vector<PlayerSAO*> players;
-		for (RemotePlayer *player: m_players) {
+		players.reserve(m_players.size());
+		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
 				continue;
@@ -1377,14 +1389,21 @@ void ServerEnvironment::step(float dtime)
 		for (const v3s16 &p: blocks_added) {
 			MapBlock *block = m_map->getBlockOrEmerge(p);
 			if (!block) {
-				m_active_blocks.m_list.erase(p);
-				m_active_blocks.m_abm_list.erase(p);
+				// TODO: The blocks removed here will only be picked up again
+				// on the next cycle. To minimize the latency of objects being
+				// activated we could remember the blocks pending activating
+				// and activate them instantly as soon as they're loaded.
+				m_active_blocks.remove(p);
 				continue;
 			}
 
 			activateBlock(block);
 		}
+
+		// Some blocks may be removed again by the code above so do this here
+		m_active_block_gauge->set(m_active_blocks.size());
 	}
+	m_force_update_active_blocks = false;
 
 	/*
 		Mess around in active blocks
@@ -1483,6 +1502,8 @@ void ServerEnvironment::step(float dtime)
 	*/
 	m_script->environment_Step(dtime);
 
+	m_script->stepAsync();
+
 	/*
 		Step active objects
 	*/
@@ -1497,9 +1518,12 @@ void ServerEnvironment::step(float dtime)
 			send_recommended = true;
 		}
 
-		auto cb_state = [this, dtime, send_recommended] (ServerActiveObject *obj) {
+		u32 object_count = 0;
+
+		auto cb_state = [&] (ServerActiveObject *obj) {
 			if (obj->isGone())
 				return;
+			object_count++;
 
 			// Step object
 			obj->step(dtime, send_recommended);
@@ -1507,6 +1531,8 @@ void ServerEnvironment::step(float dtime)
 			obj->dumpAOMessagesToQueue(m_active_object_messages);
 		};
 		m_ao_manager.step(dtime, cb_state);
+
+		m_active_object_gauge->set(object_count);
 	}
 
 	/*
@@ -1548,6 +1574,9 @@ void ServerEnvironment::step(float dtime)
 
 	// Send outdated detached inventories
 	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
+
+	const auto end_time = porting::getTimeUs();
+	m_step_time_counter->increment(end_time - start_time);
 }
 
 ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)

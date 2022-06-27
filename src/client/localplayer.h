@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "constants.h"
 #include "settings.h"
+#include "lighting.h"
 #include <list>
 
 class Client;
@@ -158,6 +159,8 @@ public:
 		added_velocity += vel;
 	}
 
+	inline Lighting& getLighting() { return m_lighting; }
+
 private:
 	void accelerate(const v3f &target_speed, const f32 max_increase_H,
 		const f32 max_increase_V, const bool use_pitch);
@@ -196,7 +199,6 @@ private:
 	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	f32 m_yaw = 0.0f;
 	f32 m_pitch = 0.0f;
-	bool camera_barely_in_ceiling = false;
 	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
 		BS * 1.75f, BS * 0.30f);
 	float m_eye_height = 1.625f;
@@ -209,4 +211,5 @@ private:
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
+	Lighting m_lighting;
 };

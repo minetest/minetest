@@ -8,6 +8,6 @@ cmake .. \
 	-DCMAKE_INSTALL_PREFIX=/usr/local \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DENABLE_TESTING=0
-make -j2
+make -j$(nproc)
 sudo make install
 

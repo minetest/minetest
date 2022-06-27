@@ -27,7 +27,14 @@ struct ContentSpec
 	std::string type;
 	std::string author;
 	u32 release = 0;
+
+	/// Technical name / Id
 	std::string name;
+
+	/// Human-readable title
+	std::string title;
+
+	/// Short description
 	std::string desc;
 	std::string path;
 };

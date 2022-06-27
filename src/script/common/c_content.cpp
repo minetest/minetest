@@ -198,7 +198,7 @@ void read_object_properties(lua_State *L, int index,
 		prop->hp_max = (u16)rangelim(hp_max, 0, U16_MAX);
 
 		if (prop->hp_max < sao->getHP()) {
-			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP_MAX);
 			sao->setHP(prop->hp_max, reason);
 		}
 	}
@@ -1000,22 +1000,25 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			push_aabb3f(L, box.wall_side);
 			lua_setfield(L, -2, "wall_side");
 			break;
-		case NODEBOX_CONNECTED:
+		case NODEBOX_CONNECTED: {
 			lua_pushstring(L, "connected");
 			lua_setfield(L, -2, "type");
-			push_box(L, box.connect_top);
+			const auto &c = box.getConnected();
+			push_box(L, c.connect_top);
 			lua_setfield(L, -2, "connect_top");
-			push_box(L, box.connect_bottom);
+			push_box(L, c.connect_bottom);
 			lua_setfield(L, -2, "connect_bottom");
-			push_box(L, box.connect_front);
+			push_box(L, c.connect_front);
 			lua_setfield(L, -2, "connect_front");
-			push_box(L, box.connect_back);
+			push_box(L, c.connect_back);
 			lua_setfield(L, -2, "connect_back");
-			push_box(L, box.connect_left);
+			push_box(L, c.connect_left);
 			lua_setfield(L, -2, "connect_left");
-			push_box(L, box.connect_right);
+			push_box(L, c.connect_right);
 			lua_setfield(L, -2, "connect_right");
+			// half the boxes are missing here?
 			break;
+		}
 		default:
 			FATAL_ERROR("Invalid box.type");
 			break;
@@ -1048,22 +1051,26 @@ void push_palette(lua_State *L, const std::vector<video::SColor> *palette)
 
 /******************************************************************************/
 void read_server_sound_params(lua_State *L, int index,
-		ServerSoundParams &params)
+		ServerPlayingSound &params)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	// Clear
-	params = ServerSoundParams();
+
 	if(lua_istable(L, index)){
+		// Functional overlap: this may modify SimpleSoundSpec contents
+		getfloatfield(L, index, "fade", params.spec.fade);
+		getfloatfield(L, index, "pitch", params.spec.pitch);
+		getboolfield(L, index, "loop", params.spec.loop);
+
 		getfloatfield(L, index, "gain", params.gain);
+
+		// Handle positional information
 		getstringfield(L, index, "to_player", params.to_player);
-		getfloatfield(L, index, "fade", params.fade);
-		getfloatfield(L, index, "pitch", params.pitch);
 		lua_getfield(L, index, "pos");
 		if(!lua_isnil(L, -1)){
 			v3f p = read_v3f(L, -1)*BS;
 			params.pos = p;
-			params.type = ServerSoundParams::SSP_POSITIONAL;
+			params.type = ServerPlayingSound::SSP_POSITIONAL;
 		}
 		lua_pop(L, 1);
 		lua_getfield(L, index, "object");
@@ -1072,13 +1079,12 @@ void read_server_sound_params(lua_State *L, int index,
 			ServerActiveObject *sao = ObjectRef::getobject(ref);
 			if(sao){
 				params.object = sao->getId();
-				params.type = ServerSoundParams::SSP_OBJECT;
+				params.type = ServerPlayingSound::SSP_OBJECT;
 			}
 		}
 		lua_pop(L, 1);
 		params.max_hear_distance = BS*getfloatfield_default(L, index,
 				"max_hear_distance", params.max_hear_distance/BS);
-		getboolfield(L, index, "loop", params.loop);
 		getstringfield(L, index, "exclude_player", params.exclude_player);
 	}
 }
@@ -1143,20 +1149,24 @@ NodeBox read_nodebox(lua_State *L, int index)
 	NODEBOXREAD(nodebox.wall_top, "wall_top");
 	NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
 	NODEBOXREAD(nodebox.wall_side, "wall_side");
-	NODEBOXREADVEC(nodebox.connect_top, "connect_top");
-	NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
-	NODEBOXREADVEC(nodebox.connect_front, "connect_front");
-	NODEBOXREADVEC(nodebox.connect_left, "connect_left");
-	NODEBOXREADVEC(nodebox.connect_back, "connect_back");
-	NODEBOXREADVEC(nodebox.connect_right, "connect_right");
-	NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
-	NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
-	NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
-	NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
-	NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
-	NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
-	NODEBOXREADVEC(nodebox.disconnected, "disconnected");
-	NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
+
+	if (nodebox.type == NODEBOX_CONNECTED) {
+		auto &c = nodebox.getConnected();
+		NODEBOXREADVEC(c.connect_top, "connect_top");
+		NODEBOXREADVEC(c.connect_bottom, "connect_bottom");
+		NODEBOXREADVEC(c.connect_front, "connect_front");
+		NODEBOXREADVEC(c.connect_left, "connect_left");
+		NODEBOXREADVEC(c.connect_back, "connect_back");
+		NODEBOXREADVEC(c.connect_right, "connect_right");
+		NODEBOXREADVEC(c.disconnected_top, "disconnected_top");
+		NODEBOXREADVEC(c.disconnected_bottom, "disconnected_bottom");
+		NODEBOXREADVEC(c.disconnected_front, "disconnected_front");
+		NODEBOXREADVEC(c.disconnected_left, "disconnected_left");
+		NODEBOXREADVEC(c.disconnected_back, "disconnected_back");
+		NODEBOXREADVEC(c.disconnected_right, "disconnected_right");
+		NODEBOXREADVEC(c.disconnected, "disconnected");
+		NODEBOXREADVEC(c.disconnected_sides, "disconnected_sides");
+	}
 
 	return nodebox;
 }
@@ -1351,22 +1361,27 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
-void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
+void push_inventory_list(lua_State *L, const InventoryList &invlist)
 {
-	InventoryList *invlist = inv->getList(name);
-	if(invlist == NULL){
-		lua_pushnil(L);
-		return;
+	push_items(L, invlist.getItems());
+}
+
+/******************************************************************************/
+void push_inventory_lists(lua_State *L, const Inventory &inv)
+{
+	const auto &lists = inv.getLists();
+	lua_createtable(L, 0, lists.size());
+	for(const InventoryList *list : lists) {
+		const std::string &name = list->getName();
+		lua_pushlstring(L, name.c_str(), name.size());
+		push_inventory_list(L, *list);
+		lua_rawset(L, -3);
 	}
-	std::vector<ItemStack> items;
-	for(u32 i=0; i<invlist->getSize(); i++)
-		items.push_back(invlist->getItem(i));
-	push_items(L, items);
 }
 
 /******************************************************************************/
 void read_inventory_list(lua_State *L, int tableindex,
-		Inventory *inv, const char *name, Server* srv, int forcesize)
+		Inventory *inv, const char *name, IGameDef *gdef, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
@@ -1378,7 +1393,7 @@ void read_inventory_list(lua_State *L, int tableindex,
 	}
 
 	// Get Lua-specified items to insert into the list
-	std::vector<ItemStack> items = read_items(L, tableindex,srv);
+	std::vector<ItemStack> items = read_items(L, tableindex, gdef);
 	size_t listsize = (forcesize >= 0) ? forcesize : items.size();
 
 	// Create or resize/clear list
@@ -1630,7 +1645,7 @@ void push_items(lua_State *L, const std::vector<ItemStack> &items)
 }
 
 /******************************************************************************/
-std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
+std::vector<ItemStack> read_items(lua_State *L, int index, IGameDef *gdef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -1646,7 +1661,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 		if (items.size() < (u32) key) {
 			items.resize(key);
 		}
-		items[key - 1] = read_item(L, -1, srv->idef());
+		items[key - 1] = read_item(L, -1, gdef->idef());
 		lua_pop(L, 1);
 	}
 	return items;
@@ -1972,6 +1987,12 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_pushnumber(L, elem->number);
 	lua_setfield(L, -2, "number");
 
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		// waypoints reuse the item field to store precision, precision = item - 1
+		lua_pushnumber(L, elem->item - 1);
+		lua_setfield(L, -2, "precision");
+	}
+	// push the item field for waypoints as well for backwards compatibility
 	lua_pushnumber(L, elem->item);
 	lua_setfield(L, -2, "item");
 

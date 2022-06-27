@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
+#include "benchmark/benchmark.h"
 #include "chat_interface.h"
 #include "debug.h"
 #include "unittest/test.h"
@@ -212,7 +213,19 @@ int main(int argc, char *argv[])
 		return 1;
 #endif
 	}
+
+	// Run benchmarks
+	if (cmd_args.getFlag("run-benchmarks")) {
+#if BUILD_BENCHMARKS
+		return run_benchmarks();
+#else
+		errorstream << "Benchmark support is not enabled in this binary. "
+			<< "If you want to enable it, compile project with BUILD_BENCHMARKS=1 flag."
+			<< std::endl;
+		return 1;
 #endif
+	}
+#endif // __ANDROID__
 
 	GameStartData game_params;
 #ifdef SERVER
@@ -277,6 +290,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set network port (UDP)"))));
 	allowed_options->insert(std::make_pair("run-unittests", ValueSpec(VALUETYPE_FLAG,
 			_("Run the unit tests and exit"))));
+	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
+			_("Run the benchmarks and exit"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
@@ -453,14 +468,6 @@ static bool setup_log_params(const Settings &cmd_args)
 		}
 	}
 
-	// If trace is enabled, enable logging of certain things
-	if (cmd_args.getFlag("trace")) {
-		dstream << _("Enabling trace level debug output") << std::endl;
-		g_logger.setTraceEnabled(true);
-		dout_con_ptr = &verbosestream; // This is somewhat old
-		socket_enable_debug_output = true; // Sockets doesn't use log.h
-	}
-
 	// In certain cases, output info level on stderr
 	if (cmd_args.getFlag("info") || cmd_args.getFlag("verbose") ||
 			cmd_args.getFlag("trace") || cmd_args.getFlag("speedtests"))
@@ -469,6 +476,12 @@ static bool setup_log_params(const Settings &cmd_args)
 	// In certain cases, output verbose level on stderr
 	if (cmd_args.getFlag("verbose") || cmd_args.getFlag("trace"))
 		g_logger.addOutput(&stderr_output, LL_VERBOSE);
+
+	if (cmd_args.getFlag("trace")) {
+		dstream << _("Enabling trace level debug output") << std::endl;
+		g_logger.addOutput(&stderr_output, LL_TRACE);
+		socket_enable_debug_output = true;
+	}
 
 	return true;
 }
@@ -599,7 +612,7 @@ static void init_log_streams(const Settings &cmd_args)
 		warningstream << "Deprecated use of debug_log_level with an "
 			"integer value; please update your configuration." << std::endl;
 		static const char *lev_name[] =
-			{"", "error", "action", "info", "verbose"};
+			{"", "error", "action", "info", "verbose", "trace"};
 		int lev_i = atoi(conf_loglev.c_str());
 		if (lev_i < 0 || lev_i >= (int)ARRLEN(lev_name)) {
 			warningstream << "Supplied invalid debug_log_level!"

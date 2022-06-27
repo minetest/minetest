@@ -36,9 +36,6 @@ class Client;
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 
-// PROTOCOL_VERSION >= 37
-static const u8 CONTENTFEATURES_VERSION = 13;
-
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
@@ -99,17 +96,8 @@ enum NodeBoxType
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
 };
 
-struct NodeBox
+struct NodeBoxConnected
 {
-	enum NodeBoxType type;
-	// NODEBOX_REGULAR (no parameters)
-	// NODEBOX_FIXED
-	std::vector<aabb3f> fixed;
-	// NODEBOX_WALLMOUNTED
-	aabb3f wall_top;
-	aabb3f wall_bottom;
-	aabb3f wall_side; // being at the -X side
-	// NODEBOX_CONNECTED
 	std::vector<aabb3f> connect_top;
 	std::vector<aabb3f> connect_bottom;
 	std::vector<aabb3f> connect_front;
@@ -124,9 +112,35 @@ struct NodeBox
 	std::vector<aabb3f> disconnected_right;
 	std::vector<aabb3f> disconnected;
 	std::vector<aabb3f> disconnected_sides;
+};
+
+struct NodeBox
+{
+	enum NodeBoxType type;
+	// NODEBOX_REGULAR (no parameters)
+	// NODEBOX_FIXED
+	std::vector<aabb3f> fixed;
+	// NODEBOX_WALLMOUNTED
+	aabb3f wall_top;
+	aabb3f wall_bottom;
+	aabb3f wall_side; // being at the -X side
+	// NODEBOX_CONNECTED
+	// (kept externally to not bloat the structure)
+	std::shared_ptr<NodeBoxConnected> connected;
 
 	NodeBox()
 	{ reset(); }
+	~NodeBox() = default;
+
+	inline NodeBoxConnected &getConnected() {
+		if (!connected)
+			connected = std::make_shared<NodeBoxConnected>();
+		return *connected;
+	}
+	inline const NodeBoxConnected &getConnected() const {
+		assert(connected);
+		return *connected;
+	}
 
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
@@ -269,8 +283,7 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, u8 contentfeatures_version,
-		NodeDrawType drawtype);
+	void deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_version);
 };
 
 // Defines the number of special tiles per nodedef
@@ -282,6 +295,10 @@ struct TileDef
 
 struct ContentFeatures
 {
+	// PROTOCOL_VERSION >= 37. This is legacy and should not be increased anymore, 
+	// write checks that depend directly on the protocol version instead.
+	static const u8 CONTENTFEATURES_VERSION = 13;
+
 	/*
 		Cached stuff
 	 */
@@ -290,7 +307,6 @@ struct ContentFeatures
 	// up    down  right left  back  front
 	TileSpec tiles[6];
 	// Special tiles
-	// - Currently used for flowing liquids
 	TileSpec special_tiles[CF_SPECIAL_COUNT];
 	u8 solidness; // Used when choosing which face is drawn
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
@@ -431,7 +447,7 @@ struct ContentFeatures
 	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*
 		Some handy methods
@@ -476,6 +492,12 @@ struct ContentFeatures
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
 		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
+	}
+
+	bool lightingEquivalent(const ContentFeatures &other) const {
+		return light_propagates == other.light_propagates
+				&& sunlight_propagates == other.sunlight_propagates
+				&& light_source == other.light_source;
 	}
 
 	int getGroup(const std::string &group) const
@@ -533,7 +555,7 @@ public:
 	 */
 	inline const ContentFeatures& get(content_t c) const {
 		return
-			c < m_content_features.size() ?
+			(c < m_content_features.size() && !m_content_features[c].name.empty()) ?
 				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 	}
 
@@ -668,7 +690,7 @@ public:
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
-	 * @param protocol_version serialization version of ContentFeatures
+	 * @param protocol_version Active network protocol version
 	 */
 	void serialize(std::ostream &os, u16 protocol_version) const;
 
@@ -676,8 +698,9 @@ public:
 	 * Restores the manager from a serialized stream.
 	 * This clears the previous state.
 	 * @param is input stream containing a serialized NodeDefManager
+	 * @param protocol_version Active network protocol version
 	 */
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*!
 	 * Used to indicate that node registration has finished.
