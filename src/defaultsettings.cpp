@@ -280,6 +280,7 @@ void set_default_settings()
 	// Input
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
+	settings->setDefault("fov_sensitivity", "1.0");
 	settings->setDefault("repeat_place_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");

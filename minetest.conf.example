@@ -61,6 +61,10 @@
 #    type: float
 # mouse_sensitivity = 0.2
 
+#    FOV sensitivity multiplier.
+#    type: float
+# fov_sensitivity = 1.0
+
 #    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
 #    type: bool

@@ -99,6 +99,9 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2
 
+#    FOV sensitivity multiplier.
+fov_sensitivity (FOV sensitivity) float 1.0
+
 #    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
 aux1_descends (Aux1 key for climbing/descending) bool false
