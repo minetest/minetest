@@ -597,13 +597,8 @@ core.nodedef_default = {
 	-- Node properties
 	drawtype = "normal",
 	visual_scale = 1.0,
-	-- Don't define these because otherwise the old tile_images and
-	-- special_materials wouldn't be read
-	--tiles ={""},
-	--special_tiles = {
-	--	{name="", backface_culling=true},
-	--	{name="", backface_culling=true},
-	--},
+	tiles = {},
+	special_tiles = {},
 	post_effect_color = {a=0, r=0, g=0, b=0},
 	paramtype = "none",
 	paramtype2 = "none",

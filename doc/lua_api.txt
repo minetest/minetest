@@ -7978,7 +7978,6 @@ Used by `minetest.register_node`.
 
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
         -- Textures of node; +Y, -Y, +X, -X, +Z, -Z
-        -- Old field name was 'tile_images'.
         -- List can be shortened to needed length.
 
         overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6},
@@ -7990,7 +7989,6 @@ Used by `minetest.register_node`.
 
         special_tiles = {tile definition 1, Tile definition 2},
         -- Special textures of node; used rarely.
-        -- Old field name was 'special_materials'.
         -- List can be shortened to needed length.
 
         color = ColorSpec,
