@@ -360,8 +360,9 @@ local function create_world_buttonhandler(this, fields)
 
 	if fields["world_create_open_cdb"] then
 		local dlg = create_store_dlg("game")
-		dlg:set_parent(this)
-		this:hide()
+		dlg:set_parent(this.parent)
+		this:delete()
+		this.parent:hide()
 		dlg:show()
 		return true
 	end
