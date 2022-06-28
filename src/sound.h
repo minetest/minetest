@@ -59,3 +59,11 @@ struct SimpleSoundSpec
 	float pitch = 1.0f;
 	bool loop = false;
 };
+
+
+// The order must not be changed. This is sent over the network.
+enum class SoundLocation : u8 {
+	Local,
+	Position,
+	Object
+};
