@@ -138,11 +138,12 @@ local function player_event_handler(player,eventname)
 end
 
 function core.hud_replace_builtin(hud_name, definition)
-
 	if type(definition) ~= "table" or
 			definition.hud_elem_type ~= "statbar" then
 		return false
 	end
+
+	definition = table.copy(definition)
 
 	if hud_name == "health" then
 		definition.item = definition.item or core.PLAYER_MAX_HP_DEFAULT
