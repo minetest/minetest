@@ -146,7 +146,7 @@ function core.hud_replace_builtin(hud_name, definition)
 	definition = table.copy(definition)
 
 	if hud_name == "health" then
-		definition.item = definition.item or core.PLAYER_MAX_HP_DEFAULT
+		definition.item = definition.item or definition.number or core.PLAYER_MAX_HP_DEFAULT
 		bar_definitions.hp = definition
 
 		for name, ids in pairs(hud_ids) do
@@ -161,7 +161,7 @@ function core.hud_replace_builtin(hud_name, definition)
 	end
 
 	if hud_name == "breath" then
-		definition.item = definition.item or core.PLAYER_MAX_BREATH_DEFAULT
+		definition.item = definition.item or definition.number or core.PLAYER_MAX_BREATH_DEFAULT
 		bar_definitions.breath = definition
 
 		for name, ids in pairs(hud_ids) do
