@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MockServer : public Server
 {
 public:
-	MockServer() : Server("fakeworld", SubgameSpec("fakespec", "fakespec"), true,
+	MockServer() : Server(TEST_WORLDDIR, SubgameSpec("fakespec", "fakespec"), true,
 		Address(), true, nullptr)
 	{}
 

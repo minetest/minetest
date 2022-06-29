@@ -50,11 +50,10 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 {
 	MockServer server;
 
-	g_settings->setBool("secure.enable_security", false);
 	ServerScripting server_scripting(&server);
-	server_scripting.loadScript(porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "init.lua");
-	server_scripting.loadScript(porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "tests" + DIR_DELIM "helper_moveaction.lua");
-	g_settings->setBool("secure.enable_security", true);
+	server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "tests" +
+		DIR_DELIM "helper_moveaction.lua", BUILTIN_MOD_NAME);
 
 	MetricsBackend mb;
 	ServerEnvironment server_env(nullptr, &server_scripting, &server, "", &mb);
