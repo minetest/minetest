@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
+Copyright (C) 2022 Minetest core developers & community
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,33 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "test.h"
+#include <activeobject.h>
 
-#include "mock_activeobject.h"
-
-class TestActiveObject : public TestBase
+class MockActiveObject : public ActiveObject
 {
 public:
-	TestActiveObject() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestActiveObject"; }
+	MockActiveObject(u16 id) : ActiveObject(id) {}
 
-	void runTests(IGameDef *gamedef);
-
-	void testAOAttributes();
+	virtual ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_TEST; }
+	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
+	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
+	virtual bool collideWithObjects() const { return false; }
 };
-
-static TestActiveObject g_test_instance;
-
-void TestActiveObject::runTests(IGameDef *gamedef)
-{
-	TEST(testAOAttributes);
-}
-
-void TestActiveObject::testAOAttributes()
-{
-	MockActiveObject ao(44);
-	UASSERT(ao.getId() == 44);
-
-	ao.setId(558);
-	UASSERT(ao.getId() == 558);
-}

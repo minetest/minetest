@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
+Copyright (C) 2022 Minetest core developers & community
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,33 +17,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "test.h"
+#include <gamedef.h>
+#include <inventorymanager.h>
 
-#include "mock_activeobject.h"
-
-class TestActiveObject : public TestBase
+class MockInventoryManager : public InventoryManager
 {
 public:
-	TestActiveObject() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestActiveObject"; }
+	MockInventoryManager(IGameDef *gamedef) :
+		p1(gamedef->getItemDefManager()),
+		p2(gamedef->getItemDefManager())
+	{};
 
-	void runTests(IGameDef *gamedef);
+	virtual Inventory* getInventory(const InventoryLocation &loc){
+		if (loc.type == InventoryLocation::PLAYER && loc.name == "p1")
+			return &p1;
+		if (loc.type == InventoryLocation::PLAYER && loc.name == "p2")
+			return &p2;
+		return nullptr;
+	}
 
-	void testAOAttributes();
+	Inventory p1;
+	Inventory p2;
 };
-
-static TestActiveObject g_test_instance;
-
-void TestActiveObject::runTests(IGameDef *gamedef)
-{
-	TEST(testAOAttributes);
-}
-
-void TestActiveObject::testAOAttributes()
-{
-	MockActiveObject ao(44);
-	UASSERT(ao.getId() == 44);
-
-	ao.setId(558);
-	UASSERT(ao.getId() == 558);
-}
