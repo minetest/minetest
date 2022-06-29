@@ -159,10 +159,10 @@ struct ItemStack
 	// Takes some items.
 	// If there are not enough, takes as many as it can.
 	// Returns empty item if couldn't take any.
-	ItemStack takeItem(u32 takecount);
+	ItemStack takeItem(u16 takecount);
 
 	// Similar to takeItem, but keeps this ItemStack intact.
-	ItemStack peekItem(u32 peekcount) const;
+	ItemStack peekItem(u16 peekcount) const;
 
 	bool operator ==(const ItemStack &s) const
 	{
@@ -263,17 +263,22 @@ public:
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.
 	// Returns empty item if couldn't take any.
-	ItemStack takeItem(u32 i, u32 takecount);
+	ItemStack takeItem(u32 i, u16 takecount);
 
 	// Move an item to a different list (or a different stack in the same list)
-	// count is the maximum number of items to move (0 for everything)
+	// count is the maximum number of items to move
 	// returns number of moved items
-	u32 moveItem(u32 i, InventoryList *dest, u32 dest_i,
-		u32 count = 0, bool swap_if_needed = true, bool *did_swap = NULL);
+	u16 moveItem(u32 i, InventoryList *dest, u32 dest_i, u16 count);
 
-	// like moveItem, but without a fixed destination index
-	// also with optional rollback recording
-	void moveItemSomewhere(u32 i, InventoryList *dest, u32 count);
+	// Swap an item with another item, returns if swap succeed or not
+	bool swapItem(u32 i, InventoryList *dest, u32 dest_i);
+
+	// Try to move an item, and try to swap if can't move
+	// count is the maximum number of items to move
+	void moveOrSwapItem(u32 i, InventoryList *dest, u32 dest_i, u16 count = 0);
+
+	// Like moveItem, but without a fixed destination index
+	void moveItemSomewhere(u32 i, InventoryList *dest, u16 count);
 
 	inline bool checkModified() const { return m_dirty; }
 	inline void setModified(bool dirty = true) { m_dirty = dirty; }

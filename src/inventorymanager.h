@@ -129,9 +129,9 @@ struct InventoryAction
 	virtual IAction getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
-			IGameDef *gamedef) = 0;
-	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
-	virtual ~InventoryAction() = default;;
+			IGameDef *gamedef) const = 0;
+	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) const = 0;
+	virtual ~InventoryAction() = default;
 };
 
 struct MoveAction
@@ -146,14 +146,9 @@ struct MoveAction
 
 struct IMoveAction : public InventoryAction, public MoveAction
 {
-	// count=0 means "everything"
-	u16 count = 0;
+	// action_count=0 means "everything"
+	u16 action_count = 0;
 	bool move_somewhere = false;
-
-	// treat these as private
-	// related to movement to somewhere
-	bool caused_by_move_somewhere = false;
-	u32 move_count = 0;
 
 	IMoveAction() = default;
 
@@ -170,7 +165,7 @@ struct IMoveAction : public InventoryAction, public MoveAction
 			os << "Move ";
 		else
 			os << "MoveSomewhere ";
-		os << count << " ";
+		os << action_count << " ";
 		os << from_inv.dump() << " ";
 		os << from_list << " ";
 		os << from_i << " ";
@@ -180,21 +175,9 @@ struct IMoveAction : public InventoryAction, public MoveAction
 			os << " " << to_i;
 	}
 
-	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) const;
 
-	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
-
-	void swapDirections();
-
-	void onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player) const;
-
-	void onMove(int count, ServerActiveObject *player) const;
-
-	int allowPut(const ItemStack &dst_item, ServerActiveObject *player) const;
-
-	int allowTake(const ItemStack &src_item, ServerActiveObject *player) const;
-
-	int allowMove(int try_take_count, ServerActiveObject *player) const;
+	void clientApply(InventoryManager *mgr, IGameDef *gamedef) const;
 };
 
 struct IDropAction : public InventoryAction, public MoveAction
@@ -220,9 +203,9 @@ struct IDropAction : public InventoryAction, public MoveAction
 		os<<from_i;
 	}
 
-	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) const;
 
-	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
+	void clientApply(InventoryManager *mgr, IGameDef *gamedef) const;
 };
 
 struct ICraftAction : public InventoryAction
@@ -247,9 +230,9 @@ struct ICraftAction : public InventoryAction
 		os<<craft_inv.dump()<<" ";
 	}
 
-	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) const;
 
-	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
+	void clientApply(InventoryManager *mgr, IGameDef *gamedef) const;
 };
 
 // Crafting helper

@@ -123,6 +123,22 @@ InventoryAction *InventoryAction::deSerialize(std::istream &is)
 	return a;
 }
 
+static void recordRollbackAction(const MoveAction &ma, bool put,
+	const ItemStack &item, IGameDef *gamedef)
+{
+	if (IRollbackManager *rollback = gamedef->rollback()) {
+		RollbackAction action;
+		std::string loc;
+		{
+			std::ostringstream os(std::ios::binary);
+			(put ? ma.to_inv : ma.from_inv).serialize(os);
+			loc = os.str();
+		}
+		action.setModifyInventoryStack(loc, put ? ma.to_list : ma.from_list, put ? ma.to_i : ma.from_i, put, item);
+		rollback->reportAction(action);
+	}
+}
+
 /*
 	IMoveAction
 */
@@ -133,7 +149,7 @@ IMoveAction::IMoveAction(std::istream &is, bool somewhere) :
 	std::string ts;
 
 	std::getline(is, ts, ' ');
-	count = stoi(ts);
+	action_count = stoi(ts);
 
 	std::getline(is, ts, ' ');
 	from_inv.deSerialize(ts);
@@ -154,94 +170,257 @@ IMoveAction::IMoveAction(std::istream &is, bool somewhere) :
 	}
 }
 
-void IMoveAction::swapDirections()
-{
-	std::swap(from_inv, to_inv);
-	std::swap(from_list, to_list);
-	std::swap(from_i, to_i);
-}
-
-void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player) const
+static void onPutAndOnTake(const MoveAction& ma, const ItemStack &item, ServerActiveObject *player)
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
-	if (to_inv.type == InventoryLocation::DETACHED)
-		sa->detached_inventory_OnPut(*this, src_item, player);
-	else if (to_inv.type == InventoryLocation::NODEMETA)
-		sa->nodemeta_inventory_OnPut(*this, src_item, player);
-	else if (to_inv.type == InventoryLocation::PLAYER)
-		sa->player_inventory_OnPut(*this, src_item, player);
+	if (ma.to_inv.type == InventoryLocation::DETACHED)
+		sa->detached_inventory_OnPut(ma, item, player);
+	else if (ma.to_inv.type == InventoryLocation::NODEMETA)
+		sa->nodemeta_inventory_OnPut(ma, item, player);
+	else if (ma.to_inv.type == InventoryLocation::PLAYER)
+		sa->player_inventory_OnPut(ma, item, player);
 	else
 		assert(false);
 
-	if (from_inv.type == InventoryLocation::DETACHED)
-		sa->detached_inventory_OnTake(*this, src_item, player);
-	else if (from_inv.type == InventoryLocation::NODEMETA)
-		sa->nodemeta_inventory_OnTake(*this, src_item, player);
-	else if (from_inv.type == InventoryLocation::PLAYER)
-		sa->player_inventory_OnTake(*this, src_item, player);
+	if (ma.from_inv.type == InventoryLocation::DETACHED)
+		sa->detached_inventory_OnTake(ma, item, player);
+	else if (ma.from_inv.type == InventoryLocation::NODEMETA)
+		sa->nodemeta_inventory_OnTake(ma, item, player);
+	else if (ma.from_inv.type == InventoryLocation::PLAYER)
+		sa->player_inventory_OnTake(ma, item, player);
 	else
 		assert(false);
 }
 
-void IMoveAction::onMove(int count, ServerActiveObject *player) const
+static void onMove(const MoveAction& ma, int count, ServerActiveObject *player)
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
-	if (from_inv.type == InventoryLocation::DETACHED)
-		sa->detached_inventory_OnMove(*this, count, player);
-	else if (from_inv.type == InventoryLocation::NODEMETA)
-		sa->nodemeta_inventory_OnMove(*this, count, player);
-	else if (from_inv.type == InventoryLocation::PLAYER)
-		sa->player_inventory_OnMove(*this, count, player);
+	if (ma.from_inv.type == InventoryLocation::DETACHED)
+		sa->detached_inventory_OnMove(ma, count, player);
+	else if (ma.from_inv.type == InventoryLocation::NODEMETA)
+		sa->nodemeta_inventory_OnMove(ma, count, player);
+	else if (ma.from_inv.type == InventoryLocation::PLAYER)
+		sa->player_inventory_OnMove(ma, count, player);
 	else
 		assert(false);
 }
 
-int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *player) const
+static int allowPut(const MoveAction& ma, const ItemStack &item, ServerActiveObject *player)
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
-	int dst_can_put_count = 0xffff;
-	if (to_inv.type == InventoryLocation::DETACHED)
-		dst_can_put_count = sa->detached_inventory_AllowPut(*this, dst_item, player);
-	else if (to_inv.type == InventoryLocation::NODEMETA)
-		dst_can_put_count = sa->nodemeta_inventory_AllowPut(*this, dst_item, player);
-	else if (to_inv.type == InventoryLocation::PLAYER)
-		dst_can_put_count = sa->player_inventory_AllowPut(*this, dst_item, player);
+	int can_put_count = 0xffff;
+	if (ma.to_inv.type == InventoryLocation::DETACHED)
+		can_put_count = sa->detached_inventory_AllowPut(ma, item, player);
+	else if (ma.to_inv.type == InventoryLocation::NODEMETA)
+		can_put_count = sa->nodemeta_inventory_AllowPut(ma, item, player);
+	else if (ma.to_inv.type == InventoryLocation::PLAYER)
+		can_put_count = sa->player_inventory_AllowPut(ma, item, player);
 	else
 		assert(false);
-	return dst_can_put_count;
+	return can_put_count;
 }
 
-int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject *player) const
+static int allowTake(const MoveAction& ma, const ItemStack &item, ServerActiveObject *player)
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
-	int src_can_take_count = 0xffff;
-	if (from_inv.type == InventoryLocation::DETACHED)
-		src_can_take_count = sa->detached_inventory_AllowTake(*this, src_item, player);
-	else if (from_inv.type == InventoryLocation::NODEMETA)
-		src_can_take_count = sa->nodemeta_inventory_AllowTake(*this, src_item, player);
-	else if (from_inv.type == InventoryLocation::PLAYER)
-		src_can_take_count = sa->player_inventory_AllowTake(*this, src_item, player);
+	int can_take_count = 0xffff;
+	if (ma.from_inv.type == InventoryLocation::DETACHED)
+		can_take_count = sa->detached_inventory_AllowTake(ma, item, player);
+	else if (ma.from_inv.type == InventoryLocation::NODEMETA)
+		can_take_count = sa->nodemeta_inventory_AllowTake(ma, item, player);
+	else if (ma.from_inv.type == InventoryLocation::PLAYER)
+		can_take_count = sa->player_inventory_AllowTake(ma, item, player);
 	else
 		assert(false);
-	return src_can_take_count;
+	return can_take_count;
 }
 
-int IMoveAction::allowMove(int try_take_count, ServerActiveObject *player) const
+static int allowMove(const MoveAction& ma, int try_take_count, ServerActiveObject *player)
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
-	int src_can_take_count = 0xffff;
-	if (from_inv.type == InventoryLocation::DETACHED)
-		src_can_take_count = sa->detached_inventory_AllowMove(*this, try_take_count, player);
-	else if (from_inv.type == InventoryLocation::NODEMETA)
-		src_can_take_count = sa->nodemeta_inventory_AllowMove(*this, try_take_count, player);
-	else if (from_inv.type == InventoryLocation::PLAYER)
-		src_can_take_count = sa->player_inventory_AllowMove(*this, try_take_count, player);
+	int can_take_count = 0xffff;
+	if (ma.from_inv.type == InventoryLocation::DETACHED)
+		can_take_count = sa->detached_inventory_AllowMove(ma, try_take_count, player);
+	else if (ma.from_inv.type == InventoryLocation::NODEMETA)
+		can_take_count = sa->nodemeta_inventory_AllowMove(ma, try_take_count, player);
+	else if (ma.from_inv.type == InventoryLocation::PLAYER)
+		can_take_count = sa->player_inventory_AllowMove(ma, try_take_count, player);
 	else
 		assert(false);
-	return src_can_take_count;
+	return can_take_count;
 }
 
-void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+static std::pair<s16, bool> move(const MoveAction& ma, InventoryList *list_from, InventoryList *list_to,
+	u16 count, bool ignore_rollback, InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+{
+	ItemStack src_item = list_from->getItem(ma.from_i);
+
+	if (src_item.empty())
+		return {0, false};
+
+	if (count == 0 || src_item.count < count)
+		count = src_item.count;
+
+	bool inf_from = false;
+	bool inf_to = false;
+	u16 orig_count = count;
+
+	/*
+		Collect information of endpoints
+	*/
+	if (ma.from_inv == ma.to_inv) {
+		// Move action within the same inventory
+		int can_take_count = allowMove(ma, count, player);
+		if (can_take_count >= 0 && can_take_count < count)
+			count = can_take_count;
+	} else {
+		src_item.count = count;
+		int can_take_count = allowTake(ma, src_item, player);
+		if (can_take_count == -1)
+			inf_from = true;
+		else if (can_take_count >= 0 && can_take_count < count)
+			count = can_take_count;
+
+		if (count > 0) {
+			src_item.count = count;
+			int can_put_count = allowPut(ma, src_item, player);
+			if (can_put_count == -1)
+				inf_to = true;
+			else if (can_put_count >= 0 && can_put_count < count)
+				count = can_put_count;
+		}
+	}
+
+	u16 moved_count = 0;
+	if (count > 0)
+		moved_count = list_from->moveItem(ma.from_i, list_to, ma.to_i, count);
+
+	infostream << "IMoveAction::apply(): moved " << moved_count << " from " << count << " items:"
+		<< " orig_count=" << orig_count
+		<< " from inv=\"" << ma.from_inv.dump() << "\""
+		<< " list=\"" <<  ma.from_list << "\""
+		<< " i=" <<  ma.from_i
+		<< " to inv=\"" <<  ma.to_inv.dump() << "\""
+		<< " list=\"" <<  ma.to_list << "\""
+		<< " i=" << ma.to_i
+		<< std::endl;
+
+	if (moved_count == 0)
+		return {0, count == orig_count}; // Can swap only full stack
+
+	ItemStack item = list_to->getItem(ma.to_i);
+	item.count = moved_count;
+
+	if (inf_from) {
+		ItemStack& item = list_from->getItem(ma.from_i);
+		if (!item.empty())
+			item.count += moved_count;
+	}
+
+	if (inf_to) {
+		ItemStack& item = list_to->getItem(ma.to_i);
+		if (item.count > moved_count)
+			item.count -= moved_count;
+	}
+
+	/*
+		Record rollback information
+	*/
+	if (!ignore_rollback && !inf_from)
+		recordRollbackAction(ma, false, item, gamedef);
+
+	if (!ignore_rollback && !inf_to)
+		recordRollbackAction(ma, true, item, gamedef);
+
+	/*
+		Report move to endpoints
+	*/
+	if (ma.from_inv == ma.to_inv) {
+		onMove(ma, moved_count, player);
+		mgr->setInventoryModified(ma.from_inv);
+	} else {
+		onPutAndOnTake(ma, item, player);
+		mgr->setInventoryModified(ma.from_inv);
+		mgr->setInventoryModified(ma.to_inv);
+	}
+
+	return {moved_count, false};
+}
+
+static bool swap(const MoveAction& ma, InventoryList *list_from, InventoryList *list_to,
+	bool ignore_rollback, InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+{
+	ItemStack to_item = list_to->getItem(ma.to_i);
+	if (to_item.empty())
+		return false;
+
+	MoveAction swap_action;
+	swap_action.from_inv = ma.to_inv;
+	swap_action.from_list = ma.to_list;
+	swap_action.from_i = ma.to_i;
+	swap_action.to_inv = ma.from_inv;
+	swap_action.to_list = ma.from_list;
+	swap_action.to_i = ma.from_i;
+
+	// From item was checked in move
+	if (ma.from_inv == ma.to_inv) {
+		int dst_can_take_count = allowMove(swap_action, to_item.count, player);
+		if (dst_can_take_count >= 0 && dst_can_take_count < to_item.count)
+			return false; // Can swap only full stack
+	} else {
+		int dst_can_take_count = allowTake(swap_action, to_item, player);
+		if (dst_can_take_count >= 0 && dst_can_take_count < to_item.count)
+			return false;
+		int dst_can_put_count = allowPut(swap_action, to_item, player);
+		if (dst_can_put_count >= 0 && dst_can_put_count < to_item.count)
+			return false;
+	}
+
+	bool swapped = list_from->swapItem(ma.from_i, list_to, ma.to_i);
+	infostream << "IMoveAction::apply(): " << (swapped ? "swapped" : "did not swap") << " items:"
+		<< " from inv=\"" << ma.from_inv.dump() << "\""
+		<< " list=\"" <<  ma.from_list << "\""
+		<< " i=" <<  ma.from_i
+		<< " to inv=\"" <<  ma.to_inv.dump() << "\""
+		<< " list=\"" <<  ma.to_list << "\""
+		<< " i=" <<  ma.to_i
+		<< std::endl;
+
+	if (!swapped)
+		return false;
+
+	// Callbacks could change the inventory, better to report what was actually swapped
+	ItemStack from_item = list_to->getItem(ma.to_i);
+	to_item = list_from->getItem(ma.from_i);
+
+	/*
+		Record rollback information
+	*/
+	if (!ignore_rollback) {
+		recordRollbackAction(ma, false, from_item, gamedef);
+		recordRollbackAction(ma, true, from_item, gamedef);
+		recordRollbackAction(swap_action, false, to_item, gamedef);
+		recordRollbackAction(swap_action, true, to_item, gamedef);
+	}
+
+	/*
+		Report swap to endpoints
+	*/
+	if (ma.from_inv == ma.to_inv) {
+		onMove(ma, from_item.count, player);
+		onMove(swap_action, to_item.count, player);
+		mgr->setInventoryModified(ma.from_inv);
+	} else {
+		onPutAndOnTake(ma, from_item, player);
+		onPutAndOnTake(swap_action, to_item, player);
+		mgr->setInventoryModified(ma.from_inv);
+		mgr->setInventoryModified(ma.to_inv);
+	}
+
+	return true;
+}
+
+void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) const
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
@@ -278,50 +457,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	if (move_somewhere) {
-		s16 old_to_i = to_i;
-		u16 old_count = count;
-		caused_by_move_somewhere = true;
-		move_somewhere = false;
-
-		infostream << "IMoveAction::apply(): moving item somewhere"
-			<< " msom=" << move_somewhere
-			<< " count=" << count
-			<< " from inv=\"" << from_inv.dump() << "\""
-			<< " list=\"" << from_list << "\""
-			<< " i=" << from_i
-			<< " to inv=\"" << to_inv.dump() << "\""
-			<< " list=\"" << to_list << "\""
-			<< std::endl;
-
-		// Try to add the item to destination list
-		s16 dest_size = list_to->getSize();
-		// First try all the non-empty slots
-		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
-			if (!list_to->getItem(dest_i).empty()) {
-				to_i = dest_i;
-				apply(mgr, player, gamedef);
-				assert(move_count <= count);
-				count -= move_count;
-			}
-		}
-
-		// Then try all the empty ones
-		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
-			if (list_to->getItem(dest_i).empty()) {
-				to_i = dest_i;
-				apply(mgr, player, gamedef);
-				count -= move_count;
-			}
-		}
-
-		to_i = old_to_i;
-		count = old_count;
-		caused_by_move_somewhere = false;
-		move_somewhere = true;
-		return;
-	}
-
 	if (from_i < 0 || list_from->getSize() <= (u32) from_i) {
 		infostream << "IMoveAction::apply(): FAIL: source index out of bounds: "
 			<< "size of from_list=\"" << list_from->getSize() << "\""
@@ -329,197 +464,66 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	if (to_i < 0 || list_to->getSize() <= (u32) to_i) {
-		infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
-			<< "size of to_list=\"" << list_to->getSize() << "\""
-			<< ", to_index=\"" << to_i << "\"" << std::endl;
-		return;
-	}
+	// Do not handle rollback if both inventories are that of the same player
+	bool ignore_rollback = from_inv.type == InventoryLocation::PLAYER && from_inv == to_inv;
 
-	/*
-		Do not handle rollback if both inventories are that of the same player
-	*/
-	bool ignore_rollback = (
-		from_inv.type == InventoryLocation::PLAYER &&
-		from_inv == to_inv);
+	if (move_somewhere) {
+		infostream << "IMoveAction::apply(): moving item somewhere"
+			<< " count=" << action_count
+			<< " from inv=\"" << from_inv.dump() << "\""
+			<< " list=\"" << from_list << "\""
+			<< " i=" << from_i
+			<< " to inv=\"" << to_inv.dump() << "\""
+			<< " list=\"" << to_list << "\""
+			<< std::endl;
 
-	/*
-		Collect information of endpoints
-	*/
+		if (list_from == list_to)
+			return;
 
-	ItemStack src_item = list_from->getItem(from_i);
-	if (count > 0 && count < src_item.count)
-		src_item.count = count;
-	if (src_item.empty())
-		return;
+		u16 count = action_count;
+		if (count == 0) {
+			ItemStack src_item = list_from->getItem(from_i);
 
-	int src_can_take_count = 0xffff;
-	int dst_can_put_count = 0xffff;
+			if (src_item.empty())
+				return;
 
-	// this is needed for swapping items inside one inventory to work
-	ItemStack restitem;
-	bool allow_swap = !list_to->itemFits(to_i, src_item, &restitem)
-		&& restitem.count == src_item.count
-		&& !caused_by_move_somewhere;
-	move_count = src_item.count - restitem.count;
-
-	// Shift-click: Cannot fill this stack, proceed with next slot
-	if (caused_by_move_somewhere && move_count == 0) {
-		return;
-	}
-
-	if (allow_swap) {
-		// Swap will affect the entire stack if it can performed.
-		src_item = list_from->getItem(from_i);
-		count = src_item.count;
-	}
-
-	if (from_inv == to_inv) {
-		// Move action within the same inventory
-		src_can_take_count = allowMove(src_item.count, player);
-
-		bool swap_expected = allow_swap;
-		allow_swap = allow_swap
-			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count);
-		if (allow_swap) {
-			int try_put_count = list_to->getItem(to_i).count;
-			swapDirections();
-			dst_can_put_count = allowMove(try_put_count, player);
-			allow_swap = allow_swap
-				&& (dst_can_put_count == -1 || dst_can_put_count >= try_put_count);
-			swapDirections();
-		} else {
-			dst_can_put_count = src_can_take_count;
+			count = src_item.count;
 		}
-		if (swap_expected != allow_swap)
-			src_can_take_count = dst_can_put_count = 0;
-	} else {
-		// Take from one inventory, put into another
-		int src_item_count = src_item.count;
-		if (caused_by_move_somewhere)
-			// When moving somewhere: temporarily use the actual movable stack
-			// size to ensure correct callback execution.
-			src_item.count = move_count;
-		dst_can_put_count = allowPut(src_item, player);
-		src_can_take_count = allowTake(src_item, player);
-		if (caused_by_move_somewhere)
-			// Reset source item count
-			src_item.count = src_item_count;
-		bool swap_expected = allow_swap;
-		allow_swap = allow_swap
-			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count)
-			&& (dst_can_put_count == -1 || dst_can_put_count >= src_item.count);
-		// A swap is expected, which means that we have to
-		// run the "allow" callbacks a second time with swapped inventories
-		if (allow_swap) {
-			ItemStack dst_item = list_to->getItem(to_i);
-			swapDirections();
 
-			int src_can_take = allowPut(dst_item, player);
-			int dst_can_put = allowTake(dst_item, player);
-			allow_swap = allow_swap
-				&& (src_can_take == -1 || src_can_take >= dst_item.count)
-				&& (dst_can_put == -1 || dst_can_put >= dst_item.count);
-			swapDirections();
-		}
-		if (swap_expected != allow_swap)
-			src_can_take_count = dst_can_put_count = 0;
-	}
+		MoveAction ma(*this);
 
-	int old_count = count;
+		// Try to add the item to destination list
+		s16 dest_size = list_to->getSize();
 
-	/* Modify count according to collected data */
-	count = src_item.count;
-	if (src_can_take_count != -1 && count > src_can_take_count)
-		count = src_can_take_count;
-	if (dst_can_put_count != -1 && count > dst_can_put_count)
-		count = dst_can_put_count;
-
-	/* Limit according to source item count */
-	if (count > list_from->getItem(from_i).count)
-		count = list_from->getItem(from_i).count;
-
-	/* If no items will be moved, don't go further */
-	if (count == 0) {
-		if (caused_by_move_somewhere)
-			// Set move count to zero, as no items have been moved
-			move_count = 0;
-
-		// Undo client prediction. See 'clientApply'
-		if (from_inv.type == InventoryLocation::PLAYER)
-			list_from->setModified();
-
-		if (to_inv.type == InventoryLocation::PLAYER)
-			list_to->setModified();
-
-		infostream<<"IMoveAction::apply(): move was completely disallowed:"
-				<<" count="<<old_count
-				<<" from inv=\""<<from_inv.dump()<<"\""
-				<<" list=\""<<from_list<<"\""
-				<<" i="<<from_i
-				<<" to inv=\""<<to_inv.dump()<<"\""
-				<<" list=\""<<to_list<<"\""
-				<<" i="<<to_i
-				<<std::endl;
-
-		return;
-	}
-
-	src_item = list_from->getItem(from_i);
-	src_item.count = count;
-	ItemStack from_stack_was = list_from->getItem(from_i);
-	ItemStack to_stack_was = list_to->getItem(to_i);
-
-	/*
-		Perform actual move
-
-		If something is wrong (source item is empty, destination is the
-		same as source), nothing happens
-	*/
-	bool did_swap = false;
-	move_count = list_from->moveItem(from_i,
-		list_to, to_i, count, allow_swap, &did_swap);
-	if (caused_by_move_somewhere)
-		count = old_count;
-	assert(allow_swap == did_swap);
-
-	// If source is infinite, reset it's stack
-	if (src_can_take_count == -1) {
-		// For the caused_by_move_somewhere == true case we didn't force-put the item,
-		// which guarantees there is no leftover, and code below would duplicate the
-		// (not replaced) to_stack_was item.
-		if (!caused_by_move_somewhere) {
-			// If destination stack is of different type and there are leftover
-			// items, attempt to put the leftover items to a different place in the
-			// destination inventory.
-			// The client-side GUI will try to guess if this happens.
-			if (from_stack_was.name != to_stack_was.name) {
-				for (u32 i = 0; i < list_to->getSize(); i++) {
-					if (list_to->getItem(i).empty()) {
-						list_to->changeItem(i, to_stack_was);
-						break;
-					}
-				}
+		// First try all the non-empty slots
+		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
+			if (!list_to->getItem(dest_i).empty()) {
+				ma.to_i = dest_i;
+				u16 moved_count;
+				std::tie(moved_count, std::ignore) = move(ma, list_from, list_to, count, ignore_rollback, mgr, player, gamedef);
+				count -= moved_count;
 			}
 		}
-		if (move_count > 0 || did_swap) {
-			list_from->deleteItem(from_i);
-			list_from->addItem(from_i, from_stack_was);
-		}
-	}
-	// If destination is infinite, reset it's stack and take count from source
-	if (dst_can_put_count == -1) {
-		list_to->deleteItem(to_i);
-		list_to->addItem(to_i, to_stack_was);
-		list_from->deleteItem(from_i);
-		list_from->addItem(from_i, from_stack_was);
-		list_from->takeItem(from_i, count);
-	}
 
-	infostream << "IMoveAction::apply(): moved"
-			<< " msom=" << move_somewhere
-			<< " caused=" << caused_by_move_somewhere
-			<< " count=" << count
+		// Then try all the empty ones
+		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
+			if (list_to->getItem(dest_i).empty()) {
+				ma.to_i = dest_i;
+				u16 moved_count;
+				std::tie(moved_count, std::ignore) = move(ma, list_from, list_to, count, ignore_rollback, mgr, player, gamedef);
+				count -= moved_count;
+			}
+		}
+	} else {
+		if (to_i < 0 || list_to->getSize() <= (u32) to_i) {
+			infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
+				<< "size of to_list=\"" << list_to->getSize() << "\""
+				<< ", to_index=\"" << to_i << "\"" << std::endl;
+			return;
+		}
+
+		infostream << "IMoveAction::apply(): moving item"
+			<< " count=" << action_count
 			<< " from inv=\"" << from_inv.dump() << "\""
 			<< " list=\"" << from_list << "\""
 			<< " i=" << from_i
@@ -528,83 +532,17 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<< " i=" << to_i
 			<< std::endl;
 
-	// If we are inside the move somewhere loop, we don't need to report
-	// anything if nothing happened
-	if (caused_by_move_somewhere && move_count == 0)
-		return;
+		if (list_from == list_to && from_i == to_i)
+			return;
 
-	/*
-		Record rollback information
-	*/
-	if (!ignore_rollback && gamedef->rollback()) {
-		IRollbackManager *rollback = gamedef->rollback();
-
-		// If source is not infinite, record item take
-		if (src_can_take_count != -1) {
-			RollbackAction action;
-			std::string loc;
-			{
-				std::ostringstream os(std::ios::binary);
-				from_inv.serialize(os);
-				loc = os.str();
-			}
-			action.setModifyInventoryStack(loc, from_list, from_i, false,
-					src_item);
-			rollback->reportAction(action);
-		}
-		// If destination is not infinite, record item put
-		if (dst_can_put_count != -1) {
-			RollbackAction action;
-			std::string loc;
-			{
-				std::ostringstream os(std::ios::binary);
-				to_inv.serialize(os);
-				loc = os.str();
-			}
-			action.setModifyInventoryStack(loc, to_list, to_i, true,
-					src_item);
-			rollback->reportAction(action);
-		}
-	}
-
-	/*
-		Report move to endpoints
-	*/
-
-	// Source = destination => move
-	if (from_inv == to_inv) {
-		onMove(count, player);
-		if (did_swap) {
-			// Item is now placed in source list
-			src_item = list_from->getItem(from_i);
-			swapDirections();
-			onMove(src_item.count, player);
-			swapDirections();
-		}
-		mgr->setInventoryModified(from_inv);
-	} else {
-		int src_item_count = src_item.count;
-		if (caused_by_move_somewhere)
-			// When moving somewhere: temporarily use the actual movable stack
-			// size to ensure correct callback execution.
-			src_item.count = move_count;
-		onPutAndOnTake(src_item, player);
-		if (caused_by_move_somewhere)
-			// Reset source item count
-			src_item.count = src_item_count;
-		if (did_swap) {
-			// Item is now placed in source list
-			src_item = list_from->getItem(from_i);
-			swapDirections();
-			onPutAndOnTake(src_item, player);
-			swapDirections();
-		}
-		mgr->setInventoryModified(to_inv);
-		mgr->setInventoryModified(from_inv);
+		bool allow_swap;
+		std::tie(std::ignore, allow_swap) = move(*this, list_from, list_to, action_count, ignore_rollback, mgr, player, gamedef);
+		if (allow_swap) // Adding was not possible, try to swap
+			swap(*this, list_from, list_to, ignore_rollback, mgr, player, gamedef);
 	}
 }
 
-void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
+void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef) const
 {
 	// Optional InventoryAction operation that is run on the client
 	// to make lag less apparent.
@@ -626,9 +564,9 @@ void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 		return;
 
 	if (!move_somewhere)
-		list_from->moveItem(from_i, list_to, to_i, count);
+		list_from->moveOrSwapItem(from_i, list_to, to_i, action_count);
 	else
-		list_from->moveItemSomewhere(from_i, list_to, count);
+		list_from->moveItemSomewhere(from_i, list_to, action_count);
 
 	mgr->setInventoryModified(from_inv);
 	if (inv_from != inv_to)
@@ -655,7 +593,7 @@ IDropAction::IDropAction(std::istream &is)
 	from_i = stoi(ts);
 }
 
-void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) const
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 
@@ -784,26 +722,12 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Record rollback information
 	*/
-	if (!ignore_src_rollback && gamedef->rollback()) {
-		IRollbackManager *rollback = gamedef->rollback();
-
-		// If source is not infinite, record item take
-		if (src_can_take_count != -1) {
-			RollbackAction action;
-			std::string loc;
-			{
-				std::ostringstream os(std::ios::binary);
-				from_inv.serialize(os);
-				loc = os.str();
-			}
-			action.setModifyInventoryStack(loc, from_list, from_i,
-					false, src_item);
-			rollback->reportAction(action);
-		}
+	if (!ignore_src_rollback && src_can_take_count != -1) {
+		recordRollbackAction(*this, false, src_item, gamedef);
 	}
 }
 
-void IDropAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
+void IDropAction::clientApply(InventoryManager *mgr, IGameDef *gamedef) const
 {
 	// Optional InventoryAction operation that is run on the client
 	// to make lag less apparent.
@@ -846,7 +770,7 @@ ICraftAction::ICraftAction(std::istream &is)
 }
 
 void ICraftAction::apply(InventoryManager *mgr,
-	ServerActiveObject *player, IGameDef *gamedef)
+	ServerActiveObject *player, IGameDef *gamedef) const
 {
 	Inventory *inv_craft = mgr->getInventory(craft_inv);
 
@@ -954,12 +878,11 @@ void ICraftAction::apply(InventoryManager *mgr,
 			<<std::endl;
 }
 
-void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
+void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef) const
 {
 	// Optional InventoryAction operation that is run on the client
 	// to make lag less apparent.
 }
-
 
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack &result,
@@ -996,4 +919,3 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 
 	return found;
 }
-

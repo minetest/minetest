@@ -4389,7 +4389,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (move) {
 				infostream << "Handing IAction::Move to manager" << std::endl;
 				IMoveAction *a = new IMoveAction();
-				a->count = move_amount;
+				a->action_count = move_amount;
 				a->from_inv = m_selected_item->inventoryloc;
 				a->from_list = m_selected_item->listname;
 				a->from_i = m_selected_item->i;
@@ -4426,7 +4426,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				infostream << "Handing IAction::Move to manager" << std::endl;
 				IMoveAction *a = new IMoveAction();
-				a->count = shift_move_amount;
+				a->action_count = shift_move_amount;
 				a->from_inv = s.inventoryloc;
 				a->from_list = s.listname;
 				a->from_i = s.i;

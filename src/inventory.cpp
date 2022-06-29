@@ -349,9 +349,9 @@ bool ItemStack::itemFits(ItemStack newitem,
 	return newitem.empty();
 }
 
-ItemStack ItemStack::takeItem(u32 takecount)
+ItemStack ItemStack::takeItem(u16 takecount)
 {
-	if(takecount == 0 || count == 0)
+	if (takecount == 0 || count == 0)
 		return ItemStack();
 
 	ItemStack result = *this;
@@ -369,7 +369,7 @@ ItemStack ItemStack::takeItem(u32 takecount)
 	return result;
 }
 
-ItemStack ItemStack::peekItem(u32 peekcount) const
+ItemStack ItemStack::peekItem(u16 peekcount) const
 {
 	if(peekcount == 0 || count == 0)
 		return ItemStack();
@@ -636,7 +636,7 @@ bool InventoryList::roomForItem(const ItemStack &item_) const
 
 bool InventoryList::containsItem(const ItemStack &item, bool match_meta) const
 {
-	u32 count = item.count;
+	u16 count = item.count;
 	if (count == 0)
 		return true;
 
@@ -658,7 +658,7 @@ ItemStack InventoryList::removeItem(const ItemStack &item)
 	ItemStack removed;
 	for (auto i = m_items.rbegin(); i != m_items.rend(); ++i) {
 		if (i->name == item.name) {
-			u32 still_to_remove = item.count - removed.count;
+			u16 still_to_remove = item.count - removed.count;
 			ItemStack leftover = removed.addItem(i->takeItem(still_to_remove),
 					m_itemdef);
 			// Allow oversized stacks
@@ -673,7 +673,7 @@ ItemStack InventoryList::removeItem(const ItemStack &item)
 	return removed;
 }
 
-ItemStack InventoryList::takeItem(u32 i, u32 takecount)
+ItemStack InventoryList::takeItem(u32 i, u16 takecount)
 {
 	if(i >= m_items.size())
 		return ItemStack();
@@ -684,8 +684,11 @@ ItemStack InventoryList::takeItem(u32 i, u32 takecount)
 	return taken;
 }
 
-void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
+void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u16 count)
 {
+	if (this == dest)
+		return;
+
 	// Take item from source list
 	ItemStack item1;
 	if (count == 0)
@@ -705,51 +708,60 @@ void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
 	}
 }
 
-u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
-		u32 count, bool swap_if_needed, bool *did_swap)
+u16 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u16 count)
 {
 	if (this == dest && i == dest_i)
 		return count;
 
 	// Take item from source list
-	ItemStack item1;
-	if (count == 0)
-		item1 = changeItem(i, ItemStack());
-	else
-		item1 = takeItem(i, count);
-
+	ItemStack item1 = takeItem(i, count);
 	if (item1.empty())
 		return 0;
 
 	// Try to add the item to destination list
-	u32 oldcount = item1.count;
+	u16 oldcount = item1.count;
 	item1 = dest->addItem(dest_i, item1);
 
-	// If something is returned, the item was not fully added
-	if (!item1.empty()) {
-		// If olditem is returned, nothing was added.
-		bool nothing_added = (item1.count == oldcount);
-
-		// If something else is returned, part of the item was left unadded.
-		// Add the other part back to the source item
+	// If something else is returned, part of the item was left unadded.
+	// Add the other part back to the source item
+	if (!item1.empty())
 		addItem(i, item1);
 
-		// If olditem is returned, nothing was added.
-		// Swap the items
-		if (nothing_added && swap_if_needed) {
-			// Tell that we swapped
-			if (did_swap != NULL) {
-				*did_swap = true;
-			}
-			// Take item from source list
-			item1 = changeItem(i, ItemStack());
-			// Adding was not possible, swap the items.
-			ItemStack item2 = dest->changeItem(dest_i, item1);
-			// Put item from destination list to the source list
-			changeItem(i, item2);
-		}
-	}
 	return (oldcount - item1.count);
+}
+
+bool InventoryList::swapItem(u32 i, InventoryList *dest, u32 dest_i)
+{
+	if (this == dest && i == dest_i)
+		return true;
+
+	// Take item from source list
+	ItemStack item1 = changeItem(i, ItemStack());
+	if (item1.empty())
+		return false;
+
+	// Swap the items
+	ItemStack item2 = dest->changeItem(dest_i, item1);
+	// Put item from destination list to the source list
+	changeItem(i, item2);
+
+	return true;
+}
+
+void InventoryList::moveOrSwapItem(u32 i, InventoryList *dest, u32 dest_i, u16 count)
+{
+	ItemStack item1 = getItem(i);
+	if (item1.empty())
+		return;
+
+	if (count == 0 || item1.count < count)
+		count = item1.count;
+
+	if (moveItem(i, dest, dest_i, count) == 0) {
+		// Adding was not possible, try to swap
+		if (count == item1.count) // Can swap only full stack
+			swapItem(i, dest, dest_i);
+	}
 }
 
 /*
