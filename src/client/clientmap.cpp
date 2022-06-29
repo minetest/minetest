@@ -669,7 +669,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	return ret;
 }
 
-const v3f cuboid_corners[8] = {
+static const v3f cuboid_corners[8] = {
 	v3f(-1, -1, -1),
 	v3f(-1, -1,  1),
 	v3f(-1,  1, -1),
