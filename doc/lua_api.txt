@@ -3647,6 +3647,9 @@ Translations
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
+Consider using the tool [update_translations](https://github.com/minetest-tools/update_translations)
+to generate and update translation files automatically from the Lua source.
+
 Translating a string
 --------------------
 
