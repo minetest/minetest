@@ -1905,6 +1905,21 @@ emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 1
 #    'on_generated'. For many users the optimum setting may be '1'.
 num_emerge_threads (Number of emerge threads) int 1 0 32767
 
+[**cURL]
+
+#    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
+curl_timeout (cURL interactive timeout) int 20000 100 2147483647
+
+#    Limits number of parallel HTTP requests. Affects:
+#    -    Media fetch if server uses remote_media setting.
+#    -    Serverlist download and server announcement.
+#    -    Downloads performed by main menu (e.g. mod manager).
+#    Only has an effect if compiled with cURL.
+curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
+
+#    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
+curl_file_download_timeout (cURL file download timeout) int 300000 100 2147483647
+
 [**Misc]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
@@ -1921,19 +1936,6 @@ enable_console (Enable console window) bool false
 #    This is a trade-off between SQLite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
 max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096 0 4294967295
-
-#    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
-curl_timeout (cURL interactive timeout) int 20000 100 2147483647
-
-#    Limits number of parallel HTTP requests. Affects:
-#    -    Media fetch if server uses remote_media setting.
-#    -    Serverlist download and server announcement.
-#    -    Downloads performed by main menu (e.g. mod manager).
-#    Only has an effect if compiled with cURL.
-curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
-
-#    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
-curl_file_download_timeout (cURL file download timeout) int 300000 100 2147483647
 
 #    World directory (everything in the world is stored here).
 #    Not needed if starting from the main menu.
