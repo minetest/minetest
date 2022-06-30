@@ -110,7 +110,7 @@ safe_dig_and_place (Safe digging and placing) bool false
 invert_mouse (Invert mouse) bool false
 
 #    Mouse sensitivity multiplier.
-mouse_sensitivity (Mouse sensitivity) float 0.2
+mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
 [*Touchscreen]
 
@@ -133,10 +133,10 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 [**Screen]
 
 #    Width component of the initial window size. Ignored in fullscreen mode.
-screen_w (Screen width) int 1024 1
+screen_w (Screen width) int 1024 1 65535
 
 #    Height component of the initial window size. Ignored in fullscreen mode.
-screen_h (Screen height) int 600 1
+screen_h (Screen height) int 600 1 65535
 
 #    Save window size automatically when modified.
 autosave_screensize (Autosave screen size) bool true
@@ -152,13 +152,13 @@ pause_on_lost_focus (Pause on lost window focus) bool false
 
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
-fps_max (Maximum FPS) int 60 1
+fps_max (Maximum FPS) int 60 1 4294967295
 
 #    Vertical screen synchronization.
 vsync (VSync) bool false
 
 #    Maximum FPS when the window is not focused, or when the game is paused.
-fps_max_unfocused (FPS when unfocused or paused) int 20 1
+fps_max_unfocused (FPS when unfocused or paused) int 20 1 4294967295
 
 #    View distance in nodes.
 viewing_range (Viewing range) int 190 20 4000
@@ -209,7 +209,7 @@ enable_particles (Digging particles) bool true
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip
 
 #    Strength of 3D mode parallax.
-3d_paralax_strength (3D mode parallax strength) float 0.025
+3d_paralax_strength (3D mode parallax strength) float 0.025 -0.087 0.087
 
 [**Bobbing]
 
@@ -219,11 +219,11 @@ arm_inertia (Arm inertia) bool true
 
 #    Enable view bobbing and amount of view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-view_bobbing_amount (View bobbing factor) float 1.0
+view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 
 #    Multiplier for fall bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-fall_bobbing_amount (Fall bobbing factor) float 0.03
+fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0
 
 [**Camera]
 
@@ -335,7 +335,7 @@ texture_clean_transparent (Clean transparent textures) bool false
 #    bilinear/trilinear/anisotropic filtering is enabled.
 #    This is also used as the base node texture size for world-aligned
 #    texture autoscaling.
-texture_min_size (Minimum texture size) int 64
+texture_min_size (Minimum texture size) int 64 1 32768
 
 #    Use multi-sample antialiasing (MSAA) to smooth out block edges.
 #    This algorithm smooths out the 3D viewport while keeping the image sharp,
@@ -470,7 +470,7 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
-gui_scaling (GUI scaling) float 1.0 0.001
+gui_scaling (GUI scaling) float 1.0 0.5 20
 
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
@@ -493,7 +493,7 @@ gui_scaling_filter (GUI scaling filter) bool false
 gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
 
 #    Delay showing tooltips, stated in milliseconds.
-tooltip_show_delay (Tooltip delay) int 400
+tooltip_show_delay (Tooltip delay) int 400 0 18446744073709551615
 
 #    Append item name to tooltip.
 tooltip_append_itemname (Append item name) bool false
@@ -504,7 +504,7 @@ menu_clouds (Clouds in menu) bool true
 [**HUD]
 
 #    Modifies the size of the HUD elements.
-hud_scaling (HUD scaling) float 1.0
+hud_scaling (HUD scaling) float 1.0 0.5 20
 
 #    Whether name tag backgrounds should be shown by default.
 #    Mods may still set a background.
@@ -526,7 +526,7 @@ console_alpha (Console alpha) int 200 0 255
 
 #    Maximum proportion of current window to be used for hotbar.
 #    Useful if there's something to be displayed right or left of hotbar.
-hud_hotbar_max_width (Maximum hotbar width) float 1.0
+hud_hotbar_max_width (Maximum hotbar width) float 1.0 0.001 1.0
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 clickable_chat_weblinks (Chat weblinks) bool true
@@ -536,7 +536,7 @@ chat_weblink_color (Weblink color) string
 
 #    Font size of the recent chat text and chat prompt in point (pt).
 #    Value 0 will use the default font size.
-chat_font_size (Chat font size) int 0
+chat_font_size (Chat font size) int 0 0 72
 
 
 [**Content Repository]
@@ -554,7 +554,7 @@ contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_defa
 
 #    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
 #    This should be lower than curl_parallel_limit.
-contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3
+contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3 1
 
 
 [Client and Server]
@@ -602,7 +602,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 motd (Message of the day) string
 
 #    Maximum number of players that can be connected simultaneously.
-max_users (Maximum users) int 15
+max_users (Maximum users) int 15 0 65535
 
 #    If this is set, players will always (re)spawn at the given position.
 static_spawnpoint (Static spawnpoint) string
@@ -611,7 +611,7 @@ static_spawnpoint (Static spawnpoint) string
 
 #    Network port to listen (UDP).
 #    This value will be overridden when starting from the main menu.
-port (Server port) int 30000
+port (Server port) int 30000 1 65535
 
 #    The network interface that the server listens on.
 bind_address (Bind address) string
@@ -666,11 +666,11 @@ enable_rollback_recording (Rollback recording) bool false
 #    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to
 #    csm_restriction_noderange)
 #    READ_PLAYERINFO: 32 (disable get_player_names call client-side)
-csm_restriction_flags (Client side modding restrictions) int 62
+csm_restriction_flags (Client side modding restrictions) int 62 0 63
 
 #   If the CSM restriction for node range is enabled, get_node calls are limited
 #   to this distance from the player to the node.
-csm_restriction_noderange (Client side node lookup range restriction) int 0
+csm_restriction_noderange (Client side node lookup range restriction) int 0 0 4294967295
 
 [**Chat]
 
@@ -678,71 +678,73 @@ csm_restriction_noderange (Client side node lookup range restriction) int 0
 #    Use this to stop players from being able to use color in their messages
 strip_color_codes (Strip color codes) bool false
 
-#    Set the maximum character length of a chat message sent by clients.
-chat_message_max_size (Chat message max length) int 500
+#    Set the maximum length of a chat message (in characters) sent by clients.
+chat_message_max_size (Chat message max length) int 500 10 65535
 
 #    Amount of messages a player may send per 10 seconds.
-chat_message_limit_per_10sec (Chat message count limit) float 10.0
+chat_message_limit_per_10sec (Chat message count limit) float 10.0 1.0
 
 #    Kick players who sent more than X messages per 10 seconds.
-chat_message_limit_trigger_kick (Chat message kick threshold) int 50
+chat_message_limit_trigger_kick (Chat message kick threshold) int 50 1 65535
 
 [*Server Gameplay]
 
 #    Controls length of day/night cycle.
 #    Examples:
 #    72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged.
-time_speed (Time speed) int 72
+time_speed (Time speed) int 72 0
 
 #    Time of day when a new world is started, in millihours (0-23999).
 world_start_time (World start time) int 6125 0 23999
 
 #    Time in seconds for item entity (dropped items) to live.
 #    Setting it to -1 disables the feature.
-item_entity_ttl (Item entity TTL) int 900
+item_entity_ttl (Item entity TTL) int 900 -1
 
 #    Specifies the default stack size of nodes, items and tools.
 #    Note that mods or games may explicitly set a stack for certain (or all) items.
-default_stack_max (Default stack size) int 99
+default_stack_max (Default stack size) int 99 1 65535
 
 [**Physics]
 
 #    Horizontal and vertical acceleration on ground or when climbing,
 #    in nodes per second per second.
-movement_acceleration_default (Default acceleration) float 3
+movement_acceleration_default (Default acceleration) float 3.0 0.0
 
 #    Horizontal acceleration in air when jumping or falling,
 #    in nodes per second per second.
-movement_acceleration_air (Acceleration in air) float 2
+movement_acceleration_air (Acceleration in air) float 2.0 0.0
 
 #    Horizontal and vertical acceleration in fast mode,
 #    in nodes per second per second.
-movement_acceleration_fast (Fast mode acceleration) float 10
+movement_acceleration_fast (Fast mode acceleration) float 10.0 0.0
 
 #    Walking and flying speed, in nodes per second.
-movement_speed_walk (Walking speed) float 4
+movement_speed_walk (Walking speed) float 4.0 0.0
 
 #    Sneaking speed, in nodes per second.
-movement_speed_crouch (Sneaking speed) float 1.35
+movement_speed_crouch (Sneaking speed) float 1.35 0.0
 
 #    Walking, flying and climbing speed in fast mode, in nodes per second.
-movement_speed_fast (Fast mode speed) float 20
+movement_speed_fast (Fast mode speed) float 20.0 0.0
 
 #    Vertical climbing speed, in nodes per second.
-movement_speed_climb (Climbing speed) float 3
+movement_speed_climb (Climbing speed) float 3.0 0.0
 
 #    Initial vertical speed when jumping, in nodes per second.
-movement_speed_jump (Jumping speed) float 6.5
+movement_speed_jump (Jumping speed) float 6.5 0.0
 
+#    How much you are slowed down when moving inside a liquid.
 #    Decrease this to increase liquid resistance to movement.
-movement_liquid_fluidity (Liquid fluidity) float 1
+movement_liquid_fluidity (Liquid fluidity) float 1.0 0.001
 
 #    Maximum liquid resistance. Controls deceleration when entering liquid at
 #    high speed.
 movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
 
-#    Controls sinking speed in liquid.
-movement_liquid_sink (Liquid sinking) float 10
+#    Controls sinking speed in liquid when idling. Negative values will cause
+#    you to rise instead.
+movement_liquid_sink (Liquid sinking) float 10.0
 
 #    Acceleration of gravity, in nodes per second per second.
 movement_gravity (Gravity) float 9.81
@@ -761,10 +763,10 @@ fixed_map_seed (Fixed map seed) string
 mg_name (Mapgen name) enum v7 v7,valleys,carpathian,v5,flat,fractal,singlenode,v6
 
 #    Water surface level of the world.
-water_level (Water level) int 1
+water_level (Water level) int 1 -31000 31000
 
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
-max_block_generate_distance (Max block generate distance) int 10
+max_block_generate_distance (Max block generate distance) int 10 1 32767
 
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
@@ -801,7 +803,7 @@ mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
 mgv5_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
-mgv5_large_cave_depth (Large cave depth) int -256
+mgv5_large_cave_depth (Large cave depth) int -256 -31000 31000
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgv5_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -819,19 +821,19 @@ mgv5_large_cave_num_max (Large cave maximum number) int 2 0 64
 mgv5_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Y-level of cavern upper limit.
-mgv5_cavern_limit (Cavern limit) int -256
+mgv5_cavern_limit (Cavern limit) int -256 -31000 31000
 
 #    Y-distance over which caverns expand to full size.
-mgv5_cavern_taper (Cavern taper) int 256
+mgv5_cavern_taper (Cavern taper) int 256 0 32767
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv5_cavern_threshold (Cavern threshold) float 0.7
 
 #    Lower Y limit of dungeons.
-mgv5_dungeon_ymin (Dungeon minimum Y) int -31000
+mgv5_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgv5_dungeon_ymax (Dungeon maximum Y) int 31000
+mgv5_dungeon_ymax (Dungeon maximum Y) int 31000 -31000 31000
 
 [**Noises]
 
@@ -876,10 +878,10 @@ mgv6_freq_desert (Desert noise threshold) float 0.45
 mgv6_freq_beach (Beach noise threshold) float 0.15
 
 #    Lower Y limit of dungeons.
-mgv6_dungeon_ymin (Dungeon minimum Y) int -31000
+mgv6_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgv6_dungeon_ymax (Dungeon maximum Y) int 31000
+mgv6_dungeon_ymax (Dungeon maximum Y) int 31000 -31000 31000
 
 [**Noises]
 
@@ -925,19 +927,19 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
-mgv7_mount_zero_level (Mountain zero level) int 0
+mgv7_mount_zero_level (Mountain zero level) int 0 -31000 31000
 
 #    Lower Y limit of floatlands.
-mgv7_floatland_ymin (Floatland minimum Y) int 1024
+mgv7_floatland_ymin (Floatland minimum Y) int 1024 -31000 31000
 
 #    Upper Y limit of floatlands.
-mgv7_floatland_ymax (Floatland maximum Y) int 4096
+mgv7_floatland_ymax (Floatland maximum Y) int 4096 -31000 31000
 
 #    Y-distance over which floatlands taper from full density to nothing.
 #    Tapering starts at this distance from the Y limit.
 #    For a solid floatland layer, this controls the height of hills/mountains.
 #    Must be less than or equal to half the distance between the Y limits.
-mgv7_floatland_taper (Floatland tapering distance) int 256
+mgv7_floatland_taper (Floatland tapering distance) int 256 0 32767
 
 #    Exponent of the floatland tapering. Alters the tapering behaviour.
 #    Value = 1.0 creates a uniform, linear tapering.
@@ -964,7 +966,7 @@ mgv7_floatland_density (Floatland density) float -0.6
 #    required value depending on 'mgv7_np_floatland'), to avoid
 #    server-intensive extreme water flow and to avoid vast flooding of the
 #    world surface below.
-mgv7_floatland_ywater (Floatland water level) int -31000
+mgv7_floatland_ywater (Floatland water level) int -31000 -31000 31000
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -972,7 +974,7 @@ mgv7_floatland_ywater (Floatland water level) int -31000
 mgv7_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
-mgv7_large_cave_depth (Large cave depth) int -33
+mgv7_large_cave_depth (Large cave depth) int -33 -31000 31000
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgv7_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -990,19 +992,19 @@ mgv7_large_cave_num_max (Large cave maximum number) int 2 0 64
 mgv7_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Y-level of cavern upper limit.
-mgv7_cavern_limit (Cavern limit) int -256
+mgv7_cavern_limit (Cavern limit) int -256 -31000 31000
 
 #    Y-distance over which caverns expand to full size.
-mgv7_cavern_taper (Cavern taper) int 256
+mgv7_cavern_taper (Cavern taper) int 256 0 32767
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv7_cavern_threshold (Cavern threshold) float 0.7
 
 #    Lower Y limit of dungeons.
-mgv7_dungeon_ymin (Dungeon minimum Y) int -31000
+mgv7_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgv7_dungeon_ymax (Dungeon maximum Y) int 31000
+mgv7_dungeon_ymax (Dungeon maximum Y) int 31000 -31000 31000
 
 [**Noises]
 
@@ -1076,7 +1078,7 @@ mgcarpathian_valley_width (River valley width) float 0.25
 mgcarpathian_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
-mgcarpathian_large_cave_depth (Large cave depth) int -33
+mgcarpathian_large_cave_depth (Large cave depth) int -33 -31000 31000
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgcarpathian_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -1094,19 +1096,19 @@ mgcarpathian_large_cave_num_max (Large cave maximum number) int 2 0 64
 mgcarpathian_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Y-level of cavern upper limit.
-mgcarpathian_cavern_limit (Cavern limit) int -256
+mgcarpathian_cavern_limit (Cavern limit) int -256 -31000 31000
 
 #    Y-distance over which caverns expand to full size.
-mgcarpathian_cavern_taper (Cavern taper) int 256
+mgcarpathian_cavern_taper (Cavern taper) int 256 0 32767
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgcarpathian_cavern_threshold (Cavern threshold) float 0.7
 
 #    Lower Y limit of dungeons.
-mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000
+mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000
+mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000 -31000 31000
 
 [**Noises]
 
@@ -1168,10 +1170,10 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns,nolakes,nohills,nocaverns
 
 #    Y of flat ground.
-mgflat_ground_level (Ground level) int 8
+mgflat_ground_level (Ground level) int 8 -31000 31000
 
 #    Y of upper limit of large caves.
-mgflat_large_cave_depth (Large cave depth) int -33
+mgflat_large_cave_depth (Large cave depth) int -33 -31000 31000
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgflat_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -1210,19 +1212,19 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 mgflat_hill_steepness (Hill steepness) float 64.0
 
 #    Y-level of cavern upper limit.
-mgflat_cavern_limit (Cavern limit) int -256
+mgflat_cavern_limit (Cavern limit) int -256 -31000 31000
 
 #    Y-distance over which caverns expand to full size.
-mgflat_cavern_taper (Cavern taper) int 256
+mgflat_cavern_taper (Cavern taper) int 256 0 32767
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgflat_cavern_threshold (Cavern threshold) float 0.7
 
 #    Lower Y limit of dungeons.
-mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
+mgflat_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgflat_dungeon_ymax (Dungeon maximum Y) int 31000
+mgflat_dungeon_ymax (Dungeon maximum Y) int 31000 -31000 31000
 
 [**Noises]
 
@@ -1257,7 +1259,7 @@ mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain,noterrai
 mgfractal_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
-mgfractal_large_cave_depth (Large cave depth) int -33
+mgfractal_large_cave_depth (Large cave depth) int -33 -31000 31000
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgfractal_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -1275,10 +1277,10 @@ mgfractal_large_cave_num_max (Large cave maximum number) int 2 0 64
 mgfractal_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Lower Y limit of dungeons.
-mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
+mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
+mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000 -31000 31000
 
 #    Selects one of 18 fractal types.
 #    1 = 4D "Roundy" Mandelbrot set.
@@ -1305,7 +1307,7 @@ mgfractal_fractal (Fractal type) int 1 1 18
 #    Increasing this increases the amount of fine detail, but also
 #    increases processing load.
 #    At iterations = 20 this mapgen has a similar load to mapgen V7.
-mgfractal_iterations (Iterations) int 11
+mgfractal_iterations (Iterations) int 11 1 65535
 
 #    (X,Y,Z) scale of fractal in nodes.
 #    Actual fractal size will be 2 to 3 times larger.
@@ -1388,10 +1390,10 @@ mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_riv
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
 #    enabled. Also the vertical distance over which humidity drops by 10 if
 #    'altitude_dry' is enabled.
-mgvalleys_altitude_chill (Altitude chill) int 90
+mgvalleys_altitude_chill (Altitude chill) int 90 0 65535
 
 #    Depth below which you'll find large caves.
-mgvalleys_large_cave_depth (Large cave depth) int -33
+mgvalleys_large_cave_depth (Large cave depth) int -33 -31000 31000
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgvalleys_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -1409,19 +1411,19 @@ mgvalleys_large_cave_num_max (Large cave maximum number) int 2 0 64
 mgvalleys_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Depth below which you'll find giant caverns.
-mgvalleys_cavern_limit (Cavern upper limit) int -256
+mgvalleys_cavern_limit (Cavern upper limit) int -256 -31000 31000
 
 #    Y-distance over which caverns expand to full size.
-mgvalleys_cavern_taper (Cavern taper) int 192
+mgvalleys_cavern_taper (Cavern taper) int 192 0 32767
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgvalleys_cavern_threshold (Cavern threshold) float 0.6
 
 #    How deep to make rivers.
-mgvalleys_river_depth (River depth) int 4
+mgvalleys_river_depth (River depth) int 4 0 65535
 
 #    How wide to make rivers.
-mgvalleys_river_size (River size) int 5
+mgvalleys_river_size (River size) int 5 0 65535
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1429,10 +1431,10 @@ mgvalleys_river_size (River size) int 5
 mgvalleys_cave_width (Cave width) float 0.09
 
 #    Lower Y limit of dungeons.
-mgvalleys_dungeon_ymin (Dungeon minimum Y) int -31000
+mgvalleys_dungeon_ymin (Dungeon minimum Y) int -31000 -31000 31000
 
 #    Upper Y limit of dungeons.
-mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
+mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63 -31000 31000
 
 [**Noises]
 
@@ -1511,7 +1513,7 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    this setting when it is opened, the file is moved to debug.txt.1,
 #    deleting an older debug.txt.1 if it exists.
 #    debug.txt is only moved if this setting is positive.
-debug_log_size_max (Debug log file size threshold) int 50
+debug_log_size_max (Debug log file size threshold) int 50 1
 
 #    Minimal level of logging to be written to chat.
 chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose,trace
@@ -1572,7 +1574,7 @@ instrument.profiler (Profiler) bool false
 
 #    Print the engine's profiling data in regular intervals (in seconds).
 #    0 = disable. Useful for developers.
-profiler_print_interval (Engine profiling data print interval) int 0
+profiler_print_interval (Engine profiling data print interval) int 0 0
 
 
 [*Advanced]
@@ -1607,7 +1609,7 @@ enable_vbo (VBO) bool true
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
-cloud_radius (Cloud radius) int 12
+cloud_radius (Cloud radius) int 12 1 62
 
 #    Whether node texture animations should be desynchronized per mapblock.
 desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
@@ -1652,13 +1654,13 @@ font_bold (Font bold by default) bool false
 font_italic (Font italic by default) bool false
 
 #    Shadow offset (in pixels) of the default font. If 0, then shadow will not be drawn.
-font_shadow (Font shadow) int 1
+font_shadow (Font shadow) int 1 0 65535
 
 #    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
 #    Font size of the default font where 1 unit = 1 pixel at 96 DPI
-font_size (Font size) int 16 1
+font_size (Font size) int 16 5 72
 
 #    For pixel-style fonts that do not scale well, this ensures that font sizes used
 #    with this font will always be divisible by this value, in pixels. For instance,
@@ -1675,7 +1677,7 @@ font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
 font_path_bold_italic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
 
 #    Font size of the monospace font where 1 unit = 1 pixel at 96 DPI
-mono_font_size (Monospace font size) int 16 1
+mono_font_size (Monospace font size) int 16 5 72
 
 #    For pixel-style fonts that do not scale well, this ensures that font sizes used
 #    with this font will always be divisible by this value, in pixels. For instance,
@@ -1729,14 +1731,14 @@ prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
 
 #    Maximum size of the out chat queue.
 #    0 to disable queueing and -1 to make the queue size unlimited.
-max_out_chat_queue_size (Maximum size of the out chat queue) int 20
+max_out_chat_queue_size (Maximum size of the out chat queue) int 20 -1 32767
 
-#    Timeout for client to remove unused map data from memory.
-client_unload_unused_data_timeout (Mapblock unload timeout) int 600
+#    Timeout for client to remove unused map data from memory, in seconds.
+client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
-client_mapblock_limit (Mapblock limit) int 7500
+client_mapblock_limit (Mapblock limit) int 7500 -1 2147483647
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
@@ -1744,16 +1746,16 @@ show_debug (Show debug info) bool false
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
-max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 40
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 40 1 4294967295
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
-full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0
+full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0 0.0
 
 #    Maximum number of packets sent per send step, if you have a slow connection
 #    try reducing it, but don't reduce it to a number below double of targeted
 #    client number.
-max_packets_per_iteration (Max. packets per iteration) int 1024
+max_packets_per_iteration (Max. packets per iteration) int 1024 1 65535
 
 #    Compression level to use when sending mapblocks to the client.
 #    -1 - use default compression level
@@ -1769,7 +1771,7 @@ chat_message_format (Chat message format) string <@name> @message
 
 #    If the execution of a chat command takes longer than this specified time in
 #    seconds, add the time information to the chat command message
-chatcommand_msg_time_threshold (Chat command time message threshold) float 0.1
+chatcommand_msg_time_threshold (Chat command time message threshold) float 0.1 0.0
 
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
@@ -1784,72 +1786,72 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 [**Server/Env Performance]
 
 #    Length of a server tick and the interval at which objects are generally updated over
-#    network.
-dedicated_server_step (Dedicated server step) float 0.09
+#    network, stated in seconds.
+dedicated_server_step (Dedicated server step) float 0.09 0.0
 
 #    Whether players are shown to clients without any range limit.
 #    Deprecated, use the setting player_transfer_distance instead.
 unlimited_player_transfer_distance (Unlimited player transfer distance) bool true
 
 #    Defines the maximal player transfer distance in blocks (0 = unlimited).
-player_transfer_distance (Player transfer distance) int 0
+player_transfer_distance (Player transfer distance) int 0 0 65535
 
 #    From how far clients know about objects, stated in mapblocks (16 nodes).
 #
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
-active_object_send_range_blocks (Active object send range) int 8
+active_object_send_range_blocks (Active object send range) int 8 1 65535
 
 #    The radius of the volume of blocks around every player that is subject to the
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
 #    This should be configured together with active_object_send_range_blocks.
-active_block_range (Active block range) int 4
+active_block_range (Active block range) int 4 1 65535
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
-max_block_send_distance (Max block send distance) int 12
+max_block_send_distance (Max block send distance) int 12 1 65535
 
 #    Maximum number of forceloaded mapblocks.
-max_forceloaded_blocks (Maximum forceloaded blocks) int 16
+max_forceloaded_blocks (Maximum forceloaded blocks) int 16 0
 
-#    Interval of sending time of day to clients.
-time_send_interval (Time send interval) int 5
+#    Interval of sending time of day to clients, stated in seconds.
+time_send_interval (Time send interval) float 5.0 0.001
 
 #    Interval of saving important changes in the world, stated in seconds.
-server_map_save_interval (Map save interval) float 5.3
+server_map_save_interval (Map save interval) float 5.3 0.001
 
-#    How much the server will wait before unloading unused mapblocks.
+#    How long the server will wait before unloading unused mapblocks, stated in seconds.
 #    Higher value is smoother, but will use more RAM.
-server_unload_unused_data_timeout (Unload unused server data) int 29
+server_unload_unused_data_timeout (Unload unused server data) int 29 0 4294967295
 
 #    Maximum number of statically stored objects in a block.
-max_objects_per_block (Maximum objects per block) int 256
+max_objects_per_block (Maximum objects per block) int 256 1 65535
 
-#    Length of time between active block management cycles
-active_block_mgmt_interval (Active block management interval) float 2.0
+#    Length of time between active block management cycles, stated in seconds.
+active_block_mgmt_interval (Active block management interval) float 2.0 0.0
 
-#    Length of time between Active Block Modifier (ABM) execution cycles
-abm_interval (ABM interval) float 1.0
+#    Length of time between Active Block Modifier (ABM) execution cycles, stated in seconds.
+abm_interval (ABM interval) float 1.0 0.0
 
 #    The time budget allowed for ABMs to execute on each step
 #    (as a fraction of the ABM Interval)
 abm_time_budget (ABM time budget) float 0.2 0.1 0.9
 
-#    Length of time between NodeTimer execution cycles
-nodetimer_interval (NodeTimer interval) float 0.2
+#    Length of time between NodeTimer execution cycles, stated in seconds.
+nodetimer_interval (NodeTimer interval) float 0.2 0.0
 
 #    Max liquids processed per step.
-liquid_loop_max (Liquid loop max) int 100000
+liquid_loop_max (Liquid loop max) int 100000 1 4294967295
 
 #    The time (in seconds) that the liquids queue may grow beyond processing
 #    capacity until an attempt is made to decrease its size by dumping old queue
 #    items.  A value of 0 disables the functionality.
-liquid_queue_purge_time (Liquid queue purge time) int 0
+liquid_queue_purge_time (Liquid queue purge time) int 0 0 65535
 
 #    Liquid update interval in seconds.
-liquid_update (Liquid update tick) float 1.0
+liquid_update (Liquid update tick) float 1.0 0.001
 
 #    At this distance the server will aggressively optimize which blocks are sent to
 #    clients.
@@ -1859,7 +1861,7 @@ liquid_update (Liquid update tick) float 1.0
 #    Setting this to a value greater than max_block_send_distance disables this
 #    optimization.
 #    Stated in mapblocks (16 nodes).
-block_send_optimize_distance (Block send optimize distance) int 4 2
+block_send_optimize_distance (Block send optimize distance) int 4 2 32767
 
 #    If enabled the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
@@ -1875,7 +1877,7 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    Reducing this value increases cave and dungeon density.
 #    Altering this value is for special usage, leaving it unchanged is
 #    recommended.
-chunksize (Chunk size) int 5
+chunksize (Chunk size) int 5 1 5
 
 #    Dump the mapgen debug information.
 enable_mapgen_debug_info (Mapgen debug) bool false
@@ -1901,7 +1903,7 @@ emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 1
 #    speed, but this may harm game performance by interfering with other
 #    processes, especially in singleplayer and/or when running Lua code in
 #    'on_generated'. For many users the optimum setting may be '1'.
-num_emerge_threads (Number of emerge threads) int 1
+num_emerge_threads (Number of emerge threads) int 1 0 32767
 
 [**Misc]
 
@@ -1918,20 +1920,20 @@ enable_console (Enable console window) bool false
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between SQLite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
-max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
+max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096 0 4294967295
 
 #    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
-curl_timeout (cURL interactive timeout) int 20000
+curl_timeout (cURL interactive timeout) int 20000 100 2147483647
 
 #    Limits number of parallel HTTP requests. Affects:
 #    -    Media fetch if server uses remote_media setting.
 #    -    Serverlist download and server announcement.
 #    -    Downloads performed by main menu (e.g. mod manager).
 #    Only has an effect if compiled with cURL.
-curl_parallel_limit (cURL parallel limit) int 8
+curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 
 #    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
-curl_file_download_timeout (cURL file download timeout) int 300000
+curl_file_download_timeout (cURL file download timeout) int 300000 100 2147483647
 
 #    World directory (everything in the world is stored here).
 #    Not needed if starting from the main menu.
@@ -1958,11 +1960,11 @@ serverlist_file (Serverlist file) string favoriteservers.json
 
 [*Gamepads]
 
-#    Enable joysticks
+#    Enable joysticks. Requires a restart to take effect
 enable_joysticks (Enable joysticks) bool false
 
 #    The identifier of the joystick to use
-joystick_id (Joystick ID) int 0
+joystick_id (Joystick ID) int 0 0 255
 
 #    The type of joystick
 joystick_type (Joystick type) enum auto auto,generic,xbox,dragonrise_gamecube
@@ -1972,11 +1974,11 @@ joystick_type (Joystick type) enum auto auto,generic,xbox,dragonrise_gamecube
 repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
 
 #    The dead zone of the joystick
-joystick_deadzone (Joystick dead zone) int 2048
+joystick_deadzone (Joystick dead zone) int 2048 0 65535
 
 #    The sensitivity of the joystick axes for moving the
 #    in-game view frustum around.
-joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
+joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
 
 
 [*Temporary Settings]
