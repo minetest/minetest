@@ -351,9 +351,9 @@ local function parse_config_file(read_all, parse_mods)
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
-					fgettext_ne("Games") -- not used, but needed for xgettext
+					fgettext_ne("Content: Games") -- not used, but needed for xgettext
 					table.insert(settings, {
-						name = "Games",
+						name = "Content: Games",
 						level = 0,
 						type = "category",
 					})
@@ -384,9 +384,9 @@ local function parse_config_file(read_all, parse_mods)
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
-					fgettext_ne("Mods") -- not used, but needed for xgettext
+					fgettext_ne("Content: Mods") -- not used, but needed for xgettext
 					table.insert(settings, {
-						name = "Mods",
+						name = "Content: Mods",
 						level = 0,
 						type = "category",
 					})
