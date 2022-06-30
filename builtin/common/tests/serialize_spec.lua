@@ -154,7 +154,7 @@ describe("serialize", function()
 			local root = {}
 			local tables = {root}
 			local function random_table()
-				return  tables[#tables == 1 and 1 or math.random(1, #tables)] -- luacheck: ignore
+				return tables[math.random(1, #tables)]
 			end
 			for _ = 1, math.random(1, max_actions) do
 				local tab = random_table()
