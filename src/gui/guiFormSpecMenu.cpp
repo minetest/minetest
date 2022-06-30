@@ -1743,7 +1743,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 	std::vector<std::wstring> lines = split(text, L'\n');
 
 	for (unsigned int i = 0; i != lines.size(); i++) {
-		std::wstring wlabel_colors = lines[i];
+		const std::wstring &wlabel_colors = lines[i];
 		// Without color escapes to get the font dimensions
 		std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
 
