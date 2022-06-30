@@ -133,7 +133,9 @@ describe("serialize", function()
 		end
 		local function num()
 			local sign = math.random() < 0.5 and -1 or 1
-			local val = math.random(0, 2^52)
+			-- HACK math.random(a, b) requires a, b & b - a to fit within a 32-bit int
+			-- Use two random calls to generate a random number from 0 - 2^50 as lower & upper 25 bits
+			local val = math.random(0, 2^25) * 2^25 + math.random(0, 2^25 - 1)
 			local exp = math.random() < 0.5 and 1 or 2^(math.random(-120, 120))
 			return sign * val * exp
 		end
