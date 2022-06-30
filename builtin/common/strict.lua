@@ -41,7 +41,6 @@ function meta:__index(name)
 				:format(name, info.short_src, info.currentline))
 		warned[warn_key] = true
 	end
-	return nil
 end
 
 setmetatable(_G, meta)
