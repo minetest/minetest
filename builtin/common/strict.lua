@@ -32,7 +32,7 @@ end
 
 function meta:__index(name)
 	if declared[name] then
-		return nil
+		return
 	end
 	local info = getinfo(2, "Sl")
 	local warn_key = ("%s\0%d\0%s"):format(info.source, info.currentline, name)
