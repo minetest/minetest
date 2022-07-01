@@ -474,7 +474,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// pass the shadow map texture to the buffer texture
 			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
 			if (shadow && shadow->is_active()) {
-				auto &layer = material.TextureLayer[3];
+				auto &layer = material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW];
 				layer.Texture = shadow->get_texture();
 				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
@@ -487,6 +487,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 			driver->setMaterial(material);
 			++material_swaps;
+			material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
 		}
 
 		v3f block_wpos = intToFloat(descriptor.m_pos * MAP_BLOCKSIZE, BS);
