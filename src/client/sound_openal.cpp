@@ -322,6 +322,7 @@ private:
 	OnDemandSoundFetcher *m_fetcher;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
+	u16 m_last_used_id = 0; // only access within getFreeId() !
 	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
 	std::unordered_map<int, PlayingSound*> m_sounds_playing;
 	struct FadeState {
@@ -377,16 +378,15 @@ public:
 		infostream << "Audio: Deinitialized." << std::endl;
 	}
 
-	u16 getFreeId() const
+	u16 getFreeId()
 	{
-		static thread_local u16 last_used_id = 0;
-		u16 startid = last_used_id;
-		while (!isFreeId(++last_used_id)) {
-			if (last_used_id == startid)
+		u16 startid = m_last_used_id;
+		while (!isFreeId(++m_last_used_id)) {
+			if (m_last_used_id == startid)
 				return 0;
 		}
 
-		return last_used_id;
+		return m_last_used_id;
 	}
 
 	inline bool isFreeId(int id) const
