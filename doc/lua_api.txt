@@ -7200,6 +7200,9 @@ object you are working with still exists.
     * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
+        * `day_opacity`: Float for maximum opacity of stars at day.
+            No effect if `visible` is false.
+            (default: 0.0; maximum: 1.0; minimum: 0.0)
         * `count`: Integer number to set the number of stars in
             the skybox. Only applies to `"skybox"` and `"regular"` sky types.
             (default: `1000`)
