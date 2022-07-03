@@ -2255,7 +2255,7 @@ player named `<name>`.
 
 When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
-For coloured text you can use `minetest.colorize`.
+For colored text you can use `minetest.colorize`.
 
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
