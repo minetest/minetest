@@ -24,7 +24,7 @@ local function test_dynamic_media(cb, player)
 		to_player = player:get_player_name(),
 	}, function(name)
 		if not call_ok then
-			cb("impossible condition")
+			return cb("impossible condition")
 		end
 		cb()
 	end)

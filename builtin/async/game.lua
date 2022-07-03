@@ -25,11 +25,13 @@ do
 	local all = assert(core.transferred_globals)
 	core.transferred_globals = nil
 
-	-- reassemble other tables
 	all.registered_nodes = {}
 	all.registered_craftitems = {}
 	all.registered_tools = {}
 	for k, v in pairs(all.registered_items) do
+		-- Disable further modification
+		setmetatable(v, {__newindex = {}})
+		-- Reassemble the other tables
 		if v.type == "node" then
 			all.registered_nodes[k] = v
 		elseif v.type == "craftitem" then
@@ -43,3 +45,15 @@ do
 		core[k] = v
 	end
 end
+
+-- For tables that are indexed by item name:
+-- If table[X] does not exist, default to table[core.registered_aliases[X]]
+local alias_metatable = {
+	__index = function(t, name)
+		return rawget(t, core.registered_aliases[name])
+	end
+}
+setmetatable(core.registered_items, alias_metatable)
+setmetatable(core.registered_nodes, alias_metatable)
+setmetatable(core.registered_craftitems, alias_metatable)
+setmetatable(core.registered_tools, alias_metatable)
