@@ -778,6 +778,9 @@ void LocalPlayer::old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max
 	m_speed += added_velocity;
 	added_velocity = v3f(0.0f);
 
+	// Apply gravity (note: this is broken, but kept since this is *old* move code)
+	m_speed.Y -= gravity * dtime;
+
 	/*
 		Collision detection
 	*/
@@ -879,7 +882,7 @@ void LocalPlayer::old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max
 	// TODO: This shouldn't be hardcoded but decided by the server
 	float player_stepheight = touching_ground ? (BS * 0.6f) : (BS * 0.2f);
 
-	v3f accel_f(0, -gravity, 0);
+	v3f accel_f;
 	const v3f initial_position = position;
 	const v3f initial_speed = m_speed;
 
