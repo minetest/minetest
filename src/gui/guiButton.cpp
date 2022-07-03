@@ -320,15 +320,9 @@ void GUIButton::draw()
 					sourceRect, &AbsoluteClippingRect,
 					image_colors, UseAlphaChannel);
 		} else {
-			core::rect<s32> middle = BgMiddle;
-			// `-x` is interpreted as `w - x`
-			if (middle.LowerRightCorner.X < 0)
-				middle.LowerRightCorner.X += texture->getOriginalSize().Width;
-			if (middle.LowerRightCorner.Y < 0)
-				middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
 			draw2DImage9Slice(driver, texture,
 					ScaleImage ? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
-					middle, &AbsoluteClippingRect, image_colors);
+					sourceRect, BgMiddle, &AbsoluteClippingRect, image_colors);
 		}
 		// END PATCH
 	}

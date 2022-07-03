@@ -767,101 +767,84 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts;
-	if (!precheckElement("image", element, 2, 3, parts))
+	if (!precheckElement("image", element, 2, 4, parts))
 		return;
 
+	size_t offset = parts.size() >= 3;
+
+	std::vector<std::string> v_pos = split(parts[0],',');
+	MY_CHECKPOS("image", 0);
+
+	std::vector<std::string> v_geom;
 	if (parts.size() >= 3) {
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = unescape_string(parts[2]);
-
-		MY_CHECKPOS("image", 0);
+		v_geom = split(parts[1],',');
 		MY_CHECKGEOM("image", 1);
+	}
 
-		v2s32 pos;
-		v2s32 geom;
+	std::string name = unescape_string(parts[1 + offset]);
+	video::ITexture *texture = m_tsrc->getTexture(name);
 
-		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
-			geom = getRealCoordinateGeometry(v_geom);
+	v2s32 pos;
+	v2s32 geom;
+
+	if (parts.size() < 3) {
+		if (texture != nullptr) {
+			core::dimension2du dim = texture->getOriginalSize();
+			geom.X = dim.Width;
+			geom.Y = dim.Height;
 		} else {
-			pos = getElementBasePos(&v_pos);
+			geom = v2s32(0);
+		}
+	}
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		if (parts.size() >= 3)
+			geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		if (parts.size() >= 3) {
 			geom.X = stof(v_geom[0]) * (float)imgsize.X;
 			geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 		}
-
-		if (!data->explicit_size)
-			warningstream<<"invalid use of image without a size[] element"<<std::endl;
-
-		video::ITexture *texture = m_tsrc->getTexture(name);
-		if (!texture) {
-			errorstream << "GUIFormSpecMenu::parseImage() Unable to load texture:"
-					<< std::endl << "\t" << name << std::endl;
-			return;
-		}
-
-		FieldSpec spec(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size(),
-			1
-		);
-		core::rect<s32> rect(pos, pos + geom);
-		gui::IGUIImage *e = Environment->addImage(rect, data->current_parent,
-				spec.fid, 0, true);
-		e->setImage(texture);
-		e->setScaleImage(true);
-		auto style = getDefaultStyleForElement("image", spec.fname);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
-		m_fields.push_back(spec);
-
-		// images should let events through
-		e->grab();
-		m_clickthrough_elements.push_back(e);
-		return;
 	}
-
-	// Else: 2 arguments in "parts"
-
-	std::vector<std::string> v_pos = split(parts[0],',');
-	std::string name = unescape_string(parts[1]);
-
-	MY_CHECKPOS("image", 0);
-
-	v2s32 pos = getElementBasePos(&v_pos);
 
 	if (!data->explicit_size)
-		warningstream<<"invalid use of image without a size[] element"<<std::endl;
-
-	video::ITexture *texture = m_tsrc->getTexture(name);
-	if (!texture) {
-		errorstream << "GUIFormSpecMenu::parseImage() Unable to load texture:"
-				<< std::endl << "\t" << name << std::endl;
-		return;
-	}
+		warningstream << "Invalid use of image without a size[] element" << std::endl;
 
 	FieldSpec spec(
 		name,
 		L"",
 		L"",
-		258 + m_fields.size()
+		258 + m_fields.size(),
+		1
 	);
-	gui::IGUIImage *e = Environment->addImage(texture, pos, true,
-			data->current_parent, spec.fid, 0);
+
+	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
+
+	core::rect<s32> middle;
+	if (parts.size() >= 4)
+		parseMiddleRect(parts[3], &middle);
+
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
+		spec.fid, rect);
+
+	e->setTexture(texture);
+	e->setMiddleRect(middle);
+
 	auto style = getDefaultStyleForElement("image", spec.fname);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
-	m_fields.push_back(spec);
 
-	// images should let events through
-	e->grab();
+	// Animated images should let events through
 	m_clickthrough_elements.push_back(e);
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts;
-	if (!precheckElement("animated_image", element, 6, 7, parts))
+	if (!precheckElement("animated_image", element, 6, 8, parts))
 		return;
 
 	std::vector<std::string> v_pos  = split(parts[0], ',');
@@ -887,7 +870,8 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	}
 
 	if (!data->explicit_size)
-		warningstream << "Invalid use of animated_image without a size[] element" << std::endl;
+		warningstream << "Invalid use of animated_image without a size[] element"
+				<< std::endl;
 
 	FieldSpec spec(
 		name,
@@ -900,9 +884,17 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent, spec.fid,
-		rect, texture_name, frame_count, frame_duration, m_tsrc);
+	core::rect<s32> middle;
+	if (parts.size() >= 8)
+		parseMiddleRect(parts[7], &middle);
 
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
+		spec.fid, rect);
+
+	e->setTexture(m_tsrc->getTexture(texture_name));
+	e->setMiddleRect(middle);
+	e->setFrameDuration(frame_duration);
+	e->setFrameCount(frame_count);
 	if (parts.size() >= 7)
 		e->setFrameIndex(stoi(parts[6]) - 1);
 
@@ -1027,6 +1019,35 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 	m_fields.push_back(spec);
 }
 
+bool GUIFormSpecMenu::parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect)
+{
+	core::rect<s32> rect;
+	std::vector<std::string> v_rect = split(value, ',');
+
+	if (v_rect.size() == 1) {
+		s32 x = stoi(v_rect[0]);
+		rect.UpperLeftCorner = core::vector2di(x, x);
+		rect.LowerRightCorner = core::vector2di(-x, -x);
+	} else if (v_rect.size() == 2) {
+		s32 x = stoi(v_rect[0]);
+		s32 y =	stoi(v_rect[1]);
+		rect.UpperLeftCorner = core::vector2di(x, y);
+		rect.LowerRightCorner = core::vector2di(-x, -y);
+		// `-x` is interpreted as `w - x`
+	} else if (v_rect.size() == 4) {
+		rect.UpperLeftCorner = core::vector2di(stoi(v_rect[0]), stoi(v_rect[1]));
+		rect.LowerRightCorner = core::vector2di(stoi(v_rect[2]), stoi(v_rect[3]));
+	} else {
+		warningstream << "Invalid rectangle string format: \"" << value
+				<< "\"" << std::endl;
+		return false;
+	}
+
+	*parsed_rect = rect;
+
+	return true;
+}
+
 void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts;
@@ -1068,25 +1089,8 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 	}
 
 	core::rect<s32> middle;
-	if (parts.size() >= 5) {
-		std::vector<std::string> v_middle = split(parts[4], ',');
-		if (v_middle.size() == 1) {
-			s32 x = stoi(v_middle[0]);
-			middle.UpperLeftCorner = core::vector2di(x, x);
-			middle.LowerRightCorner = core::vector2di(-x, -x);
-		} else if (v_middle.size() == 2) {
-			s32 x = stoi(v_middle[0]);
-			s32 y =	stoi(v_middle[1]);
-			middle.UpperLeftCorner = core::vector2di(x, y);
-			middle.LowerRightCorner = core::vector2di(-x, -y);
-			// `-x` is interpreted as `w - x`
-		} else if (v_middle.size() == 4) {
-			middle.UpperLeftCorner = core::vector2di(stoi(v_middle[0]), stoi(v_middle[1]));
-			middle.LowerRightCorner = core::vector2di(stoi(v_middle[2]), stoi(v_middle[3]));
-		} else {
-			warningstream << "Invalid rectangle given to middle param of background[] element" << std::endl;
-		}
-	}
+	if (parts.size() >= 5)
+		parseMiddleRect(parts[4], &middle);
 
 	if (!data->explicit_size && !clip)
 		warningstream << "invalid use of unclipped background without a size[] element" << std::endl;

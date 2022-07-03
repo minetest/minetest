@@ -1340,10 +1340,13 @@ void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
 
 void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 {
-	StarParams stars;
+	StarParams stars = SkyboxDefaults::getStarDefaults();
 
 	*pkt >> stars.visible >> stars.count
 		>> stars.starcolor >> stars.scale;
+	try {
+		*pkt >> stars.day_opacity;
+	} catch (PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type        = CE_SET_STARS;

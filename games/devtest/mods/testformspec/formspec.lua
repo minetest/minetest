@@ -195,8 +195,10 @@ local style_fs = [[
 	style[one_btn15;border=false;bgcolor=#1cc;bgimg=testformspec_bg.png;bgimg_hovered=testformspec_bg_hovered.png;bgimg_pressed=testformspec_bg_pressed.png]
 	item_image_button[1.25,9.6;1,1;testformspec:item;one_btn15;Bg]
 
-	style[one_btn16;border=false;bgimg=testformspec_bg_9slice.png;bgimg_hovered=testformspec_bg_9slice_hovered.png;bgimg_pressed=testformspec_bg_9slice_pressed.png;bgimg_middle=4,6]
-	button[2.5,9.6;2,1;one_btn16;9-Slice Bg]
+	style[one_btn16;border=false;bgimg=testformspec_bg_9slice.png;bgimg_middle=4,6;padding=5,7;fgimg=testformspec_bg.png;fgimg_middle=1]
+	style[one_btn16:hovered;bgimg=testformspec_bg_9slice_hovered.png;fgimg=testformspec_bg_hovered.png]
+	style[one_btn16:pressed;bgimg=testformspec_bg_9slice_pressed.png;fgimg=testformspec_bg_pressed.png]
+	image_button[2.5,9.6;2,1;;one_btn16;9-Slice Bg]
 
 
 
@@ -375,12 +377,16 @@ local pages = {
 
 	-- Animation
 		[[
-			formspec_version[3]
+			formspec_version[6]
 			size[12,13]
 			animated_image[0.5,0.5;1,1;;testformspec_animation.png;4;100]
 			animated_image[0.5,1.75;1,1;;testformspec_animation.jpg;4;100]
 			animated_image[1.75,0.5;1,1;;testformspec_animation.png;100;100]
 			animated_image[3,0.5;1,1;ani_img_1;testformspec_animation.png;4;1000]
+			image[0.5,3;1,1;testformspec_bg.png;1]
+			animated_image[0.5,4.25;1,1;;[combine:16x48:0,0=testformspec_bg.png:0,16=testformspec_bg_hovered.png:0,32=testformspec_bg_pressed.png;3;250;1;1]
+			image[0.5,5.5;2,1;testformspec_9slice.png;16,0,-16,-16]
+			animated_image[2.75,5.5;1.5,0.5;;[combine:300x140:0,0=testformspec_9slice.png:0,70=(testformspec_9slice.png^[transformFX);2;500;1;16,0,-16,-16]
 			button[4.25,0.5;1,1;ani_btn_1;Current
 Number]
 			animated_image[3,1.75;1,1;ani_img_2;testformspec_animation.png;4;1000;2]

@@ -228,8 +228,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-// See also: Formspec Version History in doc/lua_api.txt
-#define FORMSPEC_API_VERSION 5
+// See also formspec [Version History] in doc/lua_api.txt
+#define FORMSPEC_API_VERSION 6
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -735,6 +735,7 @@ enum ToClientCommand
 		u32 count
 		u8[4] starcolor (ARGB)
 		f32 scale
+		f32 day_opacity
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

@@ -2883,6 +2883,7 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarCount(event->star_params->count);
 	sky->setStarColor(event->star_params->starcolor);
 	sky->setStarScale(event->star_params->scale);
+	sky->setStarDayOpacity(event->star_params->day_opacity);
 	delete event->star_params;
 }
 

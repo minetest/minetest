@@ -1775,7 +1775,8 @@ void Server::SendSetStars(session_t peer_id, const StarParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_STARS, 0, peer_id);
 
 	pkt << params.visible << params.count
-		<< params.starcolor << params.scale;
+		<< params.starcolor << params.scale
+		<< params.day_opacity;
 
 	Send(&pkt);
 }
