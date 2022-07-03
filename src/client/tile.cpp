@@ -2282,7 +2282,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 				hsl.Hue = 0;
 
 			// Apply the specified HSL adjustments
-			hsl.Hue = std::fmod(hsl.Hue + hue, 360);
+			hsl.Hue = fmod(hsl.Hue + hue, 360);
 			if (hsl.Hue < 0)
 				hsl.Hue += 360;
 
@@ -2372,15 +2372,15 @@ static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 s
 	// to the brightness setting.
 	// This allows the texture modifier to used as a brightness modifier without
 	// the user having to calculate a contrast to avoid clipping at that brightness.
-	double slope = 1 - std::fabs(norm_b);
+	double slope = 1 - fabs(norm_b);
 	
 	// Apply the user's contrast adjustment to the calculated slope, such that
 	// -127 will make it near-vertical and +127 will make it horizontal
-	double angle = std::atan(slope);
+	double angle = atan(slope);
 	angle += norm_c <= 0
 		? norm_c * angle // allow contrast slope to be lowered to 0
 		: norm_c * (M_PI_2 - angle); // allow contrast slope to be raised almost vert.
-	slope = std::tan(angle);
+	slope = tan(angle);
 
 	double c = slope <= 1
 		? -slope * 127.5 + 127.5 + scaled_b    // shift up/down when slope is horiz.
