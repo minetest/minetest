@@ -43,7 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
-#include "gui/guiConfirmRegistration.h"
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
@@ -283,7 +282,7 @@ public:
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
-				m_sound->playSound(m_player_step_sound, false);
+				m_sound->playSound(m_player_step_sound);
 		}
 	}
 
@@ -291,7 +290,7 @@ public:
 	{
 		if (m_player_jump_timer <= 0.0f) {
 			m_player_jump_timer = 0.2f;
-			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f));
 		}
 	}
 
@@ -316,32 +315,32 @@ public:
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
+		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
+		sm->m_sound->playSound(sm->m_player_rightpunch_sound);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		NodeDugEvent *nde = (NodeDugEvent *)e;
-		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
+		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
+		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5));
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
+		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5));
 	}
 
 	void registerReceiver(MtEventManager *mgr)
@@ -1480,7 +1479,8 @@ bool Game::connectToServer(const GameStartData &start_data,
 				start_data.password, start_data.address,
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound, eventmgr,
-				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get());
+				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
+				start_data.allow_login_or_register);
 		client->migrateModStorage();
 	} catch (const BaseException &e) {
 		*error_message = fmtgettext("Error creating client: %s", e.what());
@@ -1543,28 +1543,16 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 			}
 
-			if (client->m_is_registration_confirmation_state) {
-				if (registration_confirmation_shown) {
-					// Keep drawing the GUI
-					m_rendering_engine->draw_menu_scene(guienv, dtime, true);
-				} else {
-					registration_confirmation_shown = true;
-					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, start_data.name, start_data.password,
-						   connection_aborted, texture_src))->drop();
-				}
-			} else {
-				wait_time += dtime;
-				// Only time out if we aren't waiting for the server we started
-				if (!start_data.address.empty() && wait_time > 10) {
-					*error_message = gettext("Connection timed out.");
-					errorstream << *error_message << std::endl;
-					break;
-				}
-
-				// Update status
-				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
+			wait_time += dtime;
+			// Only time out if we aren't waiting for the server we started
+			if (!start_data.address.empty() && wait_time > 10) {
+				*error_message = gettext("Connection timed out.");
+				errorstream << *error_message << std::endl;
+				break;
 			}
+
+			// Update status
+			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
 		// TODO: Should something be done here? At least an info/error
@@ -1743,6 +1731,8 @@ void Game::processQueues()
 void Game::updateDebugState()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// debug UI and wireframe
 	bool has_debug = client->checkPrivilege("debug");
 	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 
@@ -1757,6 +1747,9 @@ void Game::updateDebugState()
 		hud->disableBlockBounds();
 	if (!has_debug)
 		draw_control->show_wireframe = false;
+
+	// noclip
+	draw_control->allow_noclip = m_cache_enable_noclip && client->checkPrivilege("noclip");
 }
 
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
@@ -1912,7 +1905,7 @@ void Game::processKeyInput()
 		if (client->modsLoaded())
 			openConsole(0.2, L".");
 		else
-			m_game_ui->showStatusText(wgettext("Client side scripting is disabled"));
+			m_game_ui->showTranslatedStatusText("Client side scripting is disabled");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
@@ -2612,6 +2605,9 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 	if (client->modsLoaded())
 		client->getScript()->on_damage_taken(event->player_damage.amount);
 
+	if (!event->player_damage.effect)
+		return;
+
 	// Damage flash and hurt tilt are not used at death
 	if (client->getHP() > 0) {
 		LocalPlayer *player = client->getEnv().getLocalPlayer();
@@ -2880,6 +2876,7 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarCount(event->star_params->count);
 	sky->setStarColor(event->star_params->starcolor);
 	sky->setStarScale(event->star_params->scale);
+	sky->setStarDayOpacity(event->star_params->day_opacity);
 	delete event->star_params;
 }
 
@@ -3762,7 +3759,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	float direct_brightness;
 	bool sunlight_seen;
 
-	if (m_cache_enable_noclip && m_cache_enable_free_move) {
+	// When in noclip mode force same sky brightness as above ground so you
+	// can see properly
+	if (draw_control->allow_noclip && m_cache_enable_free_move &&
+		client->checkPrivilege("fly")) {
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {

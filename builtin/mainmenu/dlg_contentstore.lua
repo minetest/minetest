@@ -488,12 +488,10 @@ local confirm_overwrite = {}
 function confirm_overwrite.get_formspec()
 	local package = confirm_overwrite.package
 
-	return "size[11.5,4.5,true]" ..
-			"label[2,2;" ..
-			fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name) .. "]"..
-			"style[install;bgcolor=red]" ..
-			"button[3.25,3.5;2.5,0.5;install;" .. fgettext("Overwrite") .. "]" ..
-			"button[5.75,3.5;2.5,0.5;cancel;" .. fgettext("Cancel") .. "]"
+	return confirmation_formspec(
+		fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name),
+		'install', fgettext("Overwrite"),
+		'cancel', fgettext("Cancel"))
 end
 
 function confirm_overwrite.handle_submit(this, fields)

@@ -258,23 +258,23 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	v3s16 pos;
 	MapNode n;
 	content_t c;
-	lbm_lookup_map::const_iterator it = getLBMsIntroducedAfter(stamp);
+	bool pos_valid; // dummy, we know it's valid
+	auto it = getLBMsIntroducedAfter(stamp);
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
 		// penalty on each call
-		content_t previous_c{};
-		std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
+		content_t previous_c = CONTENT_IGNORE;
+		const std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
 
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoEx(pos);
+					n = block->getNodeNoCheck(pos, &pos_valid);
 					c = n.getContent();
 
 					// If content_t are not matching perform an LBM lookup
 					if (previous_c != c) {
-						lbm_list = (std::vector<LoadingBlockModifierDef *> *)
-							it->second.lookup(c);
+						lbm_list = it->second.lookup(c);
 						previous_c = c;
 					}
 

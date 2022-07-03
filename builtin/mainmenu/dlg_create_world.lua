@@ -91,14 +91,14 @@ local mgv6_biomes = {
 
 local function create_world_formspec(dialogdata)
 
-	-- Error out when no games found
+	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
-		return "size[12.25,3,true]" ..
-			"box[0,0;12,2;" .. mt_color_orange .. "]" ..
-			"textarea[0.3,0;11.7,2;;;"..
-			fgettext("You have no games installed.") .. "\n" ..
-			fgettext("Download one from minetest.net") .. "]" ..
-			"button[4.75,2.5;3,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
+		return "size[8,2.5,true]" ..
+			"style[label_button;border=false]" ..
+			"button[0.5,0.5;7,0.5;label_button;" ..
+			fgettext("You have no games installed.") .. "]" ..
+			"button[0.5,1.5;2.5,0.5;world_create_open_cdb;" .. fgettext("Install a game") .. "]" ..
+			"button[5.0,1.5;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 	end
 
 	local current_mg = dialogdata.mg
@@ -317,9 +317,9 @@ local function create_world_formspec(dialogdata)
 		retval = retval ..
 			"container[0,3.5]" ..
 			"box[0,0;5.8,1.7;#ff8800]" ..
-			"textarea[0.3,0;6,1.8;;;"..
-			fgettext("Warning: The Development Test is meant for developers.") .. "\n" ..
-			fgettext("Download a game, such as Minetest Game, from minetest.net") .. "]" ..
+			"textarea[0.4,0.1;6,1.8;;;"..
+			fgettext("Development Test is meant for developers.") .. "]" ..
+			"button[1,1;4,0.5;world_create_open_cdb;" .. fgettext("Install another game") .. "]"
 			"container_end[]"
 	end
 
@@ -341,6 +341,15 @@ local function create_world_formspec(dialogdata)
 end
 
 local function create_world_buttonhandler(this, fields)
+
+	if fields["world_create_open_cdb"] then
+		local dlg = create_store_dlg("game")
+		dlg:set_parent(this.parent)
+		this:delete()
+		this.parent:hide()
+		dlg:show()
+		return true
+	end
 
 	if fields["world_create_confirm"] or
 		fields["key_enter"] then

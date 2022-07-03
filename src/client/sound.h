@@ -63,13 +63,13 @@ public:
 	virtual void step(float dtime) = 0;
 	virtual void fadeSound(int sound, float step, float gain) = 0;
 
-	int playSound(const SimpleSoundSpec &spec, bool loop)
+	int playSound(const SimpleSoundSpec &spec)
 	{
-		return playSound(spec.name, loop, spec.gain, spec.fade, spec.pitch);
+		return playSound(spec.name, spec.loop, spec.gain, spec.fade, spec.pitch);
 	}
-	int playSoundAt(const SimpleSoundSpec &spec, bool loop, const v3f &pos)
+	int playSoundAt(const SimpleSoundSpec &spec, const v3f &pos)
 	{
-		return playSoundAt(spec.name, loop, spec.gain, pos, spec.pitch);
+		return playSoundAt(spec.name, spec.loop, spec.gain, pos, spec.pitch);
 	}
 };
 

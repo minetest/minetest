@@ -159,6 +159,17 @@ int ModApiUtil::l_write_json(lua_State *L)
 	return 1;
 }
 
+// get_tool_wear_after_use(uses[, initial_wear])
+int ModApiUtil::l_get_tool_wear_after_use(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	u32 uses = readParam<int>(L, 1);
+	u16 initial_wear = readParam<int>(L, 2, 0);
+	u16 wear = calculateResultWear(uses, initial_wear);
+	lua_pushnumber(L, wear);
+	return 1;
+}
+
 // get_dig_params(groups, tool_capabilities[, wear])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
@@ -586,6 +597,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(parse_json);
 	API_FCT(write_json);
 
+	API_FCT(get_tool_wear_after_use);
 	API_FCT(get_dig_params);
 	API_FCT(get_hit_params);
 

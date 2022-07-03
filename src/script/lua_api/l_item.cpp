@@ -343,7 +343,7 @@ int LuaItemStack::l_get_tool_capabilities(lua_State *L)
 }
 
 // add_wear(self, amount) -> true/false
-// The range for "amount" is [0,65535]. Wear is only added if the item
+// The range for "amount" is [0,65536]. Wear is only added if the item
 // is a tool. Adding wear might destroy the item.
 // Returns true if the item is (or was) a tool.
 int LuaItemStack::l_add_wear(lua_State *L)
@@ -353,6 +353,25 @@ int LuaItemStack::l_add_wear(lua_State *L)
 	ItemStack &item = o->m_stack;
 	int amount = lua_tointeger(L, 2);
 	bool result = item.addWear(amount, getGameDef(L)->idef());
+	lua_pushboolean(L, result);
+	return 1;
+}
+
+// add_wear_by_uses(self, max_uses) -> true/false
+// The range for "max_uses" is [0,65536].
+// Adds wear to the item in such a way that, if
+// only this function is called to add wear, the item
+// will be destroyed exactly after `max_uses` times of calling it.
+// No-op if `max_uses` is 0 or item is not a tool.
+// Returns true if the item is (or was) a tool.
+int LuaItemStack::l_add_wear_by_uses(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+	u32 max_uses = readParam<int>(L, 2);
+	u32 add_wear = calculateResultWear(max_uses, item.wear);
+	bool result = item.addWear(add_wear, getGameDef(L)->idef());
 	lua_pushboolean(L, result);
 	return 1;
 }
@@ -532,6 +551,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, get_definition),
 	luamethod(LuaItemStack, get_tool_capabilities),
 	luamethod(LuaItemStack, add_wear),
+	luamethod(LuaItemStack, add_wear_by_uses),
 	luamethod(LuaItemStack, add_item),
 	luamethod(LuaItemStack, item_fits),
 	luamethod(LuaItemStack, take_item),

@@ -451,6 +451,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		start_data.name = menudata.name;
 		start_data.password = menudata.password;
 		start_data.address = std::move(menudata.address);
+		start_data.allow_login_or_register = menudata.allow_login_or_register;
 		server_name = menudata.servername;
 		server_description = menudata.serverdescription;
 

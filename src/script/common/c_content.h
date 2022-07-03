@@ -53,7 +53,7 @@ struct ItemDefinition;
 struct ToolCapabilities;
 struct ObjectProperties;
 struct SimpleSoundSpec;
-struct ServerSoundParams;
+struct ServerPlayingSound;
 class Inventory;
 class InventoryList;
 struct NodeBox;
@@ -91,7 +91,7 @@ void               read_soundspec            (lua_State *L, int index,
 NodeBox            read_nodebox              (lua_State *L, int index);
 
 void               read_server_sound_params  (lua_State *L, int index,
-                                              ServerSoundParams &params);
+                                              ServerPlayingSound &params);
 
 void               push_dig_params           (lua_State *L,
                                               const DigParams &params);

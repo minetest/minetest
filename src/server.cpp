@@ -136,7 +136,7 @@ void *ServerThread::run()
 	return nullptr;
 }
 
-v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
+v3f ServerPlayingSound::getPos(ServerEnvironment *env, bool *pos_exists) const
 {
 	if(pos_exists) *pos_exists = false;
 	switch(type){
@@ -1107,7 +1107,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendInventory(playersao, false);
 
 	// Send HP
-	SendPlayerHP(playersao);
+	SendPlayerHP(playersao, false);
 
 	// Send death screen
 	if (playersao->isDead())
@@ -1374,7 +1374,7 @@ void Server::SendMovement(session_t peer_id)
 void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
 	m_script->player_event(playersao, "health_changed");
-	SendPlayerHP(playersao);
+	SendPlayerHP(playersao, reason.type != PlayerHPChangeReason::SET_HP_MAX);
 
 	// Send to other clients
 	playersao->sendPunchCommand();
@@ -1383,15 +1383,15 @@ void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReas
 		HandlePlayerDeath(playersao, reason);
 }
 
-void Server::SendPlayerHP(PlayerSAO *playersao)
+void Server::SendPlayerHP(PlayerSAO *playersao, bool effect)
 {
-	SendHP(playersao->getPeerID(), playersao->getHP());
+	SendHP(playersao->getPeerID(), playersao->getHP(), effect);
 }
 
-void Server::SendHP(session_t peer_id, u16 hp)
+void Server::SendHP(session_t peer_id, u16 hp, bool effect)
 {
-	NetworkPacket pkt(TOCLIENT_HP, 1, peer_id);
-	pkt << hp;
+	NetworkPacket pkt(TOCLIENT_HP, 3, peer_id);
+	pkt << hp << effect;
 	Send(&pkt);
 }
 
@@ -1775,7 +1775,8 @@ void Server::SendSetStars(session_t peer_id, const StarParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_STARS, 0, peer_id);
 
 	pkt << params.visible << params.count
-		<< params.starcolor << params.scale;
+		<< params.starcolor << params.scale
+		<< params.day_opacity;
 
 	Send(&pkt);
 }
@@ -2066,14 +2067,13 @@ inline s32 Server::nextSoundId()
 	return ret;
 }
 
-s32 Server::playSound(const SimpleSoundSpec &spec,
-		const ServerSoundParams &params, bool ephemeral)
+s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 {
 	// Find out initial position of sound
 	bool pos_exists = false;
 	v3f pos = params.getPos(m_env, &pos_exists);
 	// If position is not found while it should be, cancel sound
-	if(pos_exists != (params.type != ServerSoundParams::SSP_LOCAL))
+	if(pos_exists != (params.type != ServerPlayingSound::SSP_LOCAL))
 		return -1;
 
 	// Filter destination clients
@@ -2118,101 +2118,68 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	if(dst_clients.empty())
 		return -1;
 
-	// Create the sound
-	s32 id;
-	ServerPlayingSound *psound = nullptr;
-	if (ephemeral) {
-		id = -1; // old clients will still use this, so pick a reserved ID
-	} else {
-		id = nextSoundId();
-		// The sound will exist as a reference in m_playing_sounds
-		m_playing_sounds[id] = ServerPlayingSound();
-		psound = &m_playing_sounds[id];
-		psound->params = params;
-		psound->spec = spec;
-	}
+	// old clients will still use this, so pick a reserved ID (-1)
+	const s32 id = ephemeral ? -1 : nextSoundId();
 
-	float gain = params.gain * spec.gain;
+	float gain = params.gain * params.spec.gain;
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
-	pkt << id << spec.name << gain
+	pkt << id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
-			<< params.loop << params.fade << params.pitch
+			<< params.spec.loop << params.spec.fade << params.spec.pitch
 			<< ephemeral;
 
 	bool as_reliable = !ephemeral;
 
-	for (const u16 dst_client : dst_clients) {
-		if (psound)
-			psound->clients.insert(dst_client);
-		m_clients.send(dst_client, 0, &pkt, as_reliable);
+	for (const session_t peer_id : dst_clients) {
+		if (!ephemeral)
+			params.clients.insert(peer_id);
+		m_clients.send(peer_id, 0, &pkt, as_reliable);
 	}
+
+	if (!ephemeral)
+		m_playing_sounds[id] = std::move(params);
 	return id;
 }
 void Server::stopSound(s32 handle)
 {
-	// Get sound reference
-	std::unordered_map<s32, ServerPlayingSound>::iterator i =
-		m_playing_sounds.find(handle);
-	if (i == m_playing_sounds.end())
+	auto it = m_playing_sounds.find(handle);
+	if (it == m_playing_sounds.end())
 		return;
-	ServerPlayingSound &psound = i->second;
+
+	ServerPlayingSound &psound = it->second;
 
 	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
 	pkt << handle;
 
-	for (std::unordered_set<session_t>::const_iterator si = psound.clients.begin();
-			si != psound.clients.end(); ++si) {
+	for (session_t peer_id : psound.clients) {
 		// Send as reliable
-		m_clients.send(*si, 0, &pkt, true);
+		m_clients.send(peer_id, 0, &pkt, true);
 	}
+
 	// Remove sound reference
-	m_playing_sounds.erase(i);
+	m_playing_sounds.erase(it);
 }
 
 void Server::fadeSound(s32 handle, float step, float gain)
 {
-	// Get sound reference
-	std::unordered_map<s32, ServerPlayingSound>::iterator i =
-		m_playing_sounds.find(handle);
-	if (i == m_playing_sounds.end())
+	auto it = m_playing_sounds.find(handle);
+	if (it == m_playing_sounds.end())
 		return;
 
-	ServerPlayingSound &psound = i->second;
-	psound.params.gain = gain;
+	ServerPlayingSound &psound = it->second;
+	psound.gain = gain; // destination gain
 
 	NetworkPacket pkt(TOCLIENT_FADE_SOUND, 4);
 	pkt << handle << step << gain;
 
-	// Backwards compability
-	bool play_sound = gain > 0;
-	ServerPlayingSound compat_psound = psound;
-	compat_psound.clients.clear();
-
-	NetworkPacket compat_pkt(TOCLIENT_STOP_SOUND, 4);
-	compat_pkt << handle;
-
-	for (std::unordered_set<u16>::iterator it = psound.clients.begin();
-			it != psound.clients.end();) {
-		if (m_clients.getProtocolVersion(*it) >= 32) {
-			// Send as reliable
-			m_clients.send(*it, 0, &pkt, true);
-			++it;
-		} else {
-			compat_psound.clients.insert(*it);
-			// Stop old sound
-			m_clients.send(*it, 0, &compat_pkt, true);
-			psound.clients.erase(it++);
-		}
+	for (session_t peer_id : psound.clients) {
+		// Send as reliable
+		m_clients.send(peer_id, 0, &pkt, true);
 	}
 
 	// Remove sound reference
-	if (!play_sound || psound.clients.empty())
-		m_playing_sounds.erase(i);
-
-	if (play_sound && !compat_psound.clients.empty()) {
-		// Play new sound volume on older clients
-		playSound(compat_psound.spec, compat_psound.params);
-	}
+	if (gain <= 0 || psound.clients.empty())
+		m_playing_sounds.erase(it);
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,

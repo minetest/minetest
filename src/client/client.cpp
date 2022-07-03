@@ -100,7 +100,8 @@ Client::Client(
 		MtEventManager *event,
 		RenderingEngine *rendering_engine,
 		bool ipv6,
-		GameUI *game_ui
+		GameUI *game_ui,
+		ELoginRegister allow_login_or_register
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -124,7 +125,8 @@ Client::Client(
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
 	m_game_ui(game_ui),
-	m_modchannel_mgr(new ModChannelMgr())
+	m_modchannel_mgr(new ModChannelMgr()),
+	m_allow_login_or_register(allow_login_or_register)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -396,10 +398,6 @@ void Client::step(float dtime)
 		initial_step = false;
 	}
 	else if(m_state == LC_Created) {
-		if (m_is_registration_confirmation_state) {
-			// Waiting confirmation
-			return;
-		}
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0) {
@@ -495,6 +493,7 @@ void Client::step(float dtime)
 			ClientEvent *event = new ClientEvent();
 			event->type = CE_PLAYER_DAMAGE;
 			event->player_damage.amount = damage;
+			event->player_damage.effect = true;
 			m_client_event_queue.push(event);
 		}
 	}
@@ -1076,18 +1075,6 @@ void Client::sendInit(const std::string &playerName)
 	pkt << playerName;
 
 	Send(&pkt);
-}
-
-void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
-{
-	m_chosen_auth_mech = chosen_auth_mechanism;
-	m_is_registration_confirmation_state = true;
-}
-
-void Client::confirmRegistration()
-{
-	m_is_registration_confirmation_state = false;
-	startAuth(m_chosen_auth_mech);
 }
 
 void Client::startAuth(AuthMechanism chosen_auth_mechanism)

@@ -60,7 +60,14 @@ jobs:
         run: |
           ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
 
+      # Zipping the built .app preserves permissions on the contained files,
+      #   which the GitHub artifact pipeline would otherwise strip away.
+      - name: CPack
+        run: |
+          cd build
+          cpack -G ZIP -B macos
+
       - uses: actions/upload-artifact@v3
         with:
           name: minetest-macos
-          path: ./build/macos/
+          path: ./build/macos/*.zip

@@ -87,7 +87,7 @@ public:
 	std::string getClientInitializationData(u16 protocol_version) override;
 	void getStaticData(std::string *result) const override;
 	void step(float dtime, bool send_recommended) override;
-	void setBasePosition(const v3f &position);
+	void setBasePosition(v3f position);
 	void setPos(const v3f &pos) override;
 	void moveTo(v3f pos, bool continuous) override;
 	void setPlayerYaw(const float yaw);
@@ -235,6 +235,7 @@ struct PlayerHPChangeReason
 	enum Type : u8
 	{
 		SET_HP,
+		SET_HP_MAX, // internal type to allow distinguishing hp reset and damage (for effects)
 		PLAYER_PUNCH,
 		FALL,
 		NODE_DAMAGE,
@@ -277,6 +278,7 @@ struct PlayerHPChangeReason
 	{
 		switch (type) {
 		case PlayerHPChangeReason::SET_HP:
+		case PlayerHPChangeReason::SET_HP_MAX:
 			return "set_hp";
 		case PlayerHPChangeReason::PLAYER_PUNCH:
 			return "punch";

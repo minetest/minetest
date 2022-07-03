@@ -96,30 +96,26 @@ struct MediaInfo
 	}
 };
 
-struct ServerSoundParams
+// Combines the pure sound (SimpleSoundSpec) with positional information
+struct ServerPlayingSound
 {
 	enum Type {
 		SSP_LOCAL,
 		SSP_POSITIONAL,
 		SSP_OBJECT
 	} type = SSP_LOCAL;
-	float gain = 1.0f;
-	float fade = 0.0f;
-	float pitch = 1.0f;
-	bool loop = false;
+
+	float gain = 1.0f; // for amplification of the base sound
 	float max_hear_distance = 32 * BS;
 	v3f pos;
 	u16 object = 0;
-	std::string to_player = "";
-	std::string exclude_player = "";
+	std::string to_player;
+	std::string exclude_player;
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
-};
 
-struct ServerPlayingSound
-{
-	ServerSoundParams params;
 	SimpleSoundSpec spec;
+
 	std::unordered_set<session_t> clients; // peer ids
 };
 
@@ -236,8 +232,7 @@ public:
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
-	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params,
-			bool ephemeral=false);
+	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
@@ -353,7 +348,7 @@ public:
 	void printToConsoleOnly(const std::string &text);
 
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
-	void SendPlayerHP(PlayerSAO *sao);
+	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
@@ -439,7 +434,7 @@ private:
 	void init();
 
 	void SendMovement(session_t peer_id);
-	void SendHP(session_t peer_id, u16 hp);
+	void SendHP(session_t peer_id, u16 hp, bool effect);
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);

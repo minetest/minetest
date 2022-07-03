@@ -39,16 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <windows.h>
 #endif
 
-#ifdef __NetBSD__
-	#include <sys/param.h>
-	#if __NetBSD_Version__ <= 999001500
-		#define BSD_ICONV_USED
-	#endif
-#elif defined(_ICONV_H_) && (defined(__FreeBSD__) || defined(__OpenBSD__) || \
-	defined(__DragonFly__))
-	#define BSD_ICONV_USED
-#endif
-
 #ifndef _WIN32
 
 static bool convert(const char *to, const char *from, char *outbuf,
@@ -56,11 +46,7 @@ static bool convert(const char *to, const char *from, char *outbuf,
 {
 	iconv_t cd = iconv_open(to, from);
 
-#ifdef BSD_ICONV_USED
-	const char *inbuf_ptr = inbuf;
-#else
 	char *inbuf_ptr = inbuf;
-#endif
 	char *outbuf_ptr = outbuf;
 
 	size_t *inbuf_left_ptr = &inbuf_size;

@@ -1021,7 +1021,12 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 	for (u32 i = 0; i < triangles->size(); i++)
 		indexes.push_back(i);
 
-	root = buildTree(v3f(1, 0, 0), v3f(85, 85, 85), 40, indexes, 0);
+	if (!indexes.empty()) {
+		// Start in the center of the block with increment of one quarter in each direction
+		root = buildTree(v3f(1, 0, 0), v3f((MAP_BLOCKSIZE + 1) * 0.5f * BS), MAP_BLOCKSIZE * 0.25f * BS, indexes, 0);
+	} else {
+		root = -1;
+	}
 }
 
 /**
@@ -1097,7 +1102,7 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 		v3f next_normal = candidate_normal;
 		v3f next_origin = origin + delta * normal;
 		float next_delta = candidate_delta;
-		if (next_delta < 10) {
+		if (next_delta < 5) {
 			const MeshTriangle *candidate = findSplitCandidate(front_list, *triangles);
 			next_normal = candidate->getNormal();
 			next_origin = candidate->centroid;
@@ -1113,7 +1118,7 @@ s32 MapBlockBspTree::buildTree(v3f normal, v3f origin, float delta, const std::v
 		v3f next_normal = candidate_normal;
 		v3f next_origin = origin - delta * normal;
 		float next_delta = candidate_delta;
-		if (next_delta < 10) {
+		if (next_delta < 5) {
 			const MeshTriangle *candidate = findSplitCandidate(back_list, *triangles);
 			next_normal = candidate->getNormal();
 			next_origin = candidate->centroid;
