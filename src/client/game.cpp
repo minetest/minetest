@@ -895,7 +895,7 @@ private:
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
 	f32  m_cache_mouse_sensitivity;
-	f32  m_cache_fov_sensitivity;
+	f32  m_cache_ads_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
 	f32  m_cache_cam_smoothing;
@@ -935,7 +935,7 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("mouse_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("fov_sensitivity",
+	g_settings->registerChangedCallback("ads_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
@@ -997,7 +997,7 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("mouse_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("fov_sensitivity",
+	g_settings->deregisterChangedCallback("ads_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
@@ -2443,13 +2443,13 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 // responsiveness independently of FOV.
 f32 Game::getSensitivityScaleFactor() const
 {
-	if (m_cache_fov_sensitivity == 0) {
+	if (m_cache_ads_sensitivity == 0) {
 		return 1.0f;
 	} else {
 		// Multiply by a constant such that it becomes 1.0 at 72 degree FOV
 		// to minimize disruption of existing sensitivity settings.
 		f32 fov_y = client->getCamera()->getFovY();
-		return pow(tan(fov_y / 2.0f) * 1.3763818698f, m_cache_fov_sensitivity);
+		return pow(tan(fov_y / 2.0f) * 1.3763818698f, m_cache_ads_sensitivity);
 	}
 }
 
@@ -4142,7 +4142,7 @@ void Game::readSettings()
 	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
-	m_cache_fov_sensitivity              = g_settings->getFloat("fov_sensitivity");
+	m_cache_ads_sensitivity              = g_settings->getFloat("ads_sensitivity");
 	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
 
@@ -4159,7 +4159,7 @@ void Game::readSettings()
 
 	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
-	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.0f, std::numeric_limits<float>::max());
+	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001f, 100.0f);
 
 	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
 }
