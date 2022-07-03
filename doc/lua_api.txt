@@ -2310,6 +2310,8 @@ Version History
   * Allow dropdown indexing events
 * Formspec version 5 (5.5.0):
   * Added padding[] element
+* Formspec version 6 (5.6.0):
+  * Add nine-slice images, animated_images, and fgimg_middle
 
 Elements
 --------
@@ -2474,20 +2476,25 @@ Elements
 * `bgcolor` tooltip background color as `ColorString` (optional)
 * `fontcolor` tooltip font color as `ColorString` (optional)
 
-### `image[<X>,<Y>;<W>,<H>;<texture name>]`
+### `image[<X>,<Y>;<W>,<H>;<texture name>;<middle>]`
 
-* Show an image
+* Show an image.
+* `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
+    * Requires formspec version >= 6.
+    * See `background9[]` documentation for more information.
 
-### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>]`
+### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>;<middle>]`
 
 * Show an animated image. The image is drawn like a "vertical_frames" tile
-    animation (See [Tile animation definition]), but uses a frame count/duration
-    for simplicity
+  animation (See [Tile animation definition]), but uses a frame count/duration for simplicity
 * `name`: Element name to send when an event occurs. The event value is the index of the current frame.
 * `texture name`: The image to use.
 * `frame count`: The number of frames animating the image.
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
-* `frame start` (Optional): The index of the frame to start on. Default `1`.
+* `frame start` (optional): The index of the frame to start on. Default `1`.
+* `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
+    * Requires formspec version >= 6.
+    * See `background9[]` documentation for more information.
 
 ### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
 
@@ -3101,6 +3108,8 @@ Some types may inherit styles from parent types.
         * This is deprecated, use states instead.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
+    * fgimg_middle - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
     * sound - a sound to be played when triggered.
 * scrollbar
