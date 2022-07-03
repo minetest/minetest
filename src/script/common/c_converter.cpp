@@ -61,6 +61,22 @@ static void set_vector_metatable(lua_State *L)
 	lua_setmetatable(L, -2);
 }
 
+// Retrieve an integer vector where all components are optional
+template<class T>
+static bool getv3intfield(lua_State *L, int index,
+		const char *fieldname, T &result)
+{
+	lua_getfield(L, index, fieldname);
+	bool got = false;
+	if (lua_istable(L, -1)) {
+		got |= getintfield(L, -1, "x", result.X);
+		got |= getintfield(L, -1, "y", result.Y);
+		got |= getintfield(L, -1, "z", result.Z);
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_createtable(L, 0, 3);

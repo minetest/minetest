@@ -21,14 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern "C" {
 #include <lua.h>
-#include <lauxlib.h>
 }
 
 class LuaHelper
 {
 protected:
-	static bool isNaN(lua_State *L, int idx);
-
 	/**
 	 * Read a value using a template type T from Lua State L and index
 	 *
