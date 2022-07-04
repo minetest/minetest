@@ -95,7 +95,7 @@ always_fly_fast (Always fly fast) bool true
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
-repeat_place_time (Place repetition interval) float 0.25 0.001
+repeat_place_time (Place repetition interval) float 0.25 0.2 2
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
