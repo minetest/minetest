@@ -3104,6 +3104,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 #ifdef HAVE_TOUCHSCREENGUI
 	if (g_settings->getBool("touchtarget") && g_touchscreengui &&
+			!g_settings->getBool("use_crosshair") &&
 			camera->getCameraMode() == CAMERA_MODE_FIRST) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
