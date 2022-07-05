@@ -80,3 +80,26 @@ unittests.register("test_punch_node", function(_, pos)
 	minetest.remove_node(pos)
 	-- currently failing: assert(on_punch_called)
 end, {map=true})
+
+local function test_compress()
+	-- This text should be compressible, to make sure the results are... normal
+	local text = "The\000 icey canoe couldn't move very well on the\128 lake. The\000 ice was too stiff and the icey canoe's paddles simply wouldn't punch through."
+	local methods = {
+		"deflate",
+		"zstd",
+		-- "noodle", -- for warning alarm test
+	}
+	local zstd_magic = string.char(0x28, 0xB5, 0x2F, 0xFD)
+	for _, method in ipairs(methods) do
+		local compressed = core.compress(text, method)
+		assert(core.decompress(compressed, method) == text, "input/output mismatch for compression method " .. method)
+		local has_zstd_magic = compressed:sub(1, 4) == zstd_magic
+		if method == "zstd" then
+			assert(has_zstd_magic, "zstd magic number not in zstd method")
+		else
+			assert(not has_zstd_magic, "zstd magic number in method " .. method .. " (which is not zstd)")
+		end
+	end
+end
+unittests.register("test_compress", test_compress)
+

@@ -897,14 +897,19 @@ Call these functions only at load time!
     * Compress a string of data.
     * `method` is a string identifying the compression method to be used.
     * Supported compression methods:
-    *     Deflate (zlib): `"deflate"`
-    * `...` indicates method-specific arguments.  Currently defined arguments are:
-    *     Deflate: `level` - Compression level, `0`-`9` or `nil`.
+        * Deflate (zlib): `"deflate"`
+        * Zstandard: `"zstd"`
+    * `...` indicates method-specific arguments. Currently defined arguments
+      are:
+        * Deflate: `level` - Compression level, `0`-`9` or `nil`.
+        * Zstandard: `level` - Compression level. Integer or `nil`. Default `3`.
+        Note any supported Zstandard compression level could be used here,
+        but these are subject to change between Zstandard versions.
 * `minetest.decompress(compressed_data, method, ...)`: returns data
-    * Decompress a string of data (using ZLib).
-    * See documentation on `minetest.compress()` for supported compression methods.
-    * currently supported.
-    * `...` indicates method-specific arguments. Currently, no methods use this.
+    * Decompress a string of data using the algorithm specified by `method`.
+    * See documentation on `minetest.compress()` for supported compression
+      methods.
+    * `...` indicates method-specific arguments. Currently, no methods use this
 * `minetest.rgba(red, green, blue[, alpha])`: returns a string
     * Each argument is a 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
