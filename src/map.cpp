@@ -326,7 +326,6 @@ struct TimeOrderedMapBlock {
 void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 		std::vector<v3s16> *unloaded_blocks)
 {
-	unload_timeout = std::max(unload_timeout, 0.0f);
 	bool save_before_unloading = maySaveBlocks();
 
 	// Profile modified reasons
