@@ -3,6 +3,7 @@
 find_path(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
 	DOC "Path to the directory with IrrlichtMt includes"
 	PATHS
+	C:/Program Files (x86)/Irrlicht/lib/cmake/IrrlichtMt/
 	/usr/local/include/irrlichtmt
 	/usr/include/irrlichtmt
 	/system/develop/headers/irrlichtmt #Haiku

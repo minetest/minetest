@@ -64,8 +64,12 @@ endif()
 # Included stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-
 set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
+
+
+if(MINGW)
+set(IRRLICHTMT_BUILD_DIR "C:/Program Files (x86)/Irrlicht/lib/cmake/IrrlichtMt")
+endif()
 if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 	find_package(IrrlichtMt QUIET
 		PATHS "${IRRLICHTMT_BUILD_DIR}"
