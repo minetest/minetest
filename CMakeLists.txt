@@ -67,11 +67,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
 
 
-if(MINGW)
-if(IRRLICHTMT_BUILD_DIR STREQUAL "")
+if(MINGW AND WIN32 AND IRRLICHTMT_BUILD_DIR STREQUAL "")
 set(IRRLICHTMT_BUILD_DIR "C:/Program Files (x86)/Irrlicht/lib/cmake/IrrlichtMt")
 endif()
-endif()
+
 if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 	find_package(IrrlichtMt QUIET
 		PATHS "${IRRLICHTMT_BUILD_DIR}"
