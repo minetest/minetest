@@ -68,7 +68,9 @@ set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
 
 
 if(MINGW)
+if(IRRLICHTMT_BUILD_DIR STREQUAL "")
 set(IRRLICHTMT_BUILD_DIR "C:/Program Files (x86)/Irrlicht/lib/cmake/IrrlichtMt")
+endif()
 endif()
 if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 	find_package(IrrlichtMt QUIET
