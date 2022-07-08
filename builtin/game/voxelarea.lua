@@ -48,20 +48,19 @@ function VoxelArea:indexp(p)
 end
 
 function VoxelArea:position(i)
-	local p = {}
 	local MinEdge = self.MinEdge
 
 	i = i - 1
 
-	p.z = math.floor(i / self.zstride) + MinEdge.z
+	local z = math.floor(i / self.zstride) + MinEdge.z
 	i = i % self.zstride
 
-	p.y = math.floor(i / self.ystride) + MinEdge.y
+	local y = math.floor(i / self.ystride) + MinEdge.y
 	i = i % self.ystride
 
-	p.x = math.floor(i) + MinEdge.x
+	local x = math.floor(i) + MinEdge.x
 
-	return p
+	return vector.new(x, y, z)
 end
 
 function VoxelArea:contains(x, y, z)
