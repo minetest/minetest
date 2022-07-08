@@ -402,10 +402,10 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	auto r_radius = p.radius.blend(fac);
 	auto r_jitter = p.jitter.blend(fac);
 	auto r_bounce = p.bounce.blend(fac);
-	v3f  attractor = p.attractor.blend(fac);
-	v3f  attractor_angle = p.attractor_angle.blend(fac);
+	v3f  attractor_origin = p.attractor_origin.blend(fac);
+	v3f  attractor_direction = p.attractor_direction.blend(fac);
 	auto attractor_obj       = findObjectByID(env, p.attractor_attachment);
-	auto attractor_angle_obj = findObjectByID(env, p.attractor_angle_attachment);
+	auto attractor_direction_obj = findObjectByID(env, p.attractor_direction_attachment);
 
 	auto r_exp = p.exptime.blend(fac);
 	auto r_size = p.size.blend(fac);
@@ -448,9 +448,12 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	}
 
 	if (attractor_obj)
-		attractor       += attractor_obj       -> getPosition() / BS;
-	if (attractor_angle_obj)
-		attractor_angle += attractor_angle_obj -> getPosition() / BS;
+		attractor_origin += attractor_obj->getPosition() / BS;
+	if (attractor_direction_obj) {
+		auto *attractor_absolute_pos_rot_matrix = attractor_direction_obj->getAbsolutePosRotMatrix();
+		if (attractor_absolute_pos_rot_matrix)
+			attractor_absolute_pos_rot_matrix->rotateVect(attractor_direction);
+	}
 
 	pp.expirationtime = r_exp.pickWithin();
 
@@ -475,16 +478,16 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 				break;
 
 			case ParticleParamTypes::AttractorKind::point: {
-				dist = pp.pos.getDistanceFrom(attractor);
-				dir = pp.pos - attractor;
+				dist = pp.pos.getDistanceFrom(attractor_origin);
+				dir = pp.pos - attractor_origin;
 				dir.normalize();
 				break;
 			}
 
 			case ParticleParamTypes::AttractorKind::line: {
 				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
-				const auto& lorigin = attractor;
-				v3f ldir = attractor_angle;
+				const auto& lorigin = attractor_origin;
+				v3f ldir = attractor_direction;
 				ldir.normalize();
 				auto origin_to_point = pp.pos - lorigin;
 				auto scalar_projection = origin_to_point.dotProduct(ldir);
@@ -499,8 +502,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 			case ParticleParamTypes::AttractorKind::plane: {
 				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
-				const v3f& porigin = attractor;
-				v3f normal = attractor_angle;
+				const v3f& porigin = attractor_origin;
+				v3f normal = attractor_direction;
 				normal.normalize();
 				v3f point_to_origin = porigin - pp.pos;
 				f32 factor = normal.dotProduct(point_to_origin);
