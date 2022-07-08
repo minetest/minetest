@@ -190,14 +190,12 @@ local nan = (0/0)^1 -- +nan
 function core.deserialize(str, safe)
 	-- Backwards compatibility
 	if str == nil then
-		core.log("warning", debug.traceback("minetest.deserialize called with nil (expected string). This is deprecated."))
+		core.log("deprecated", "minetest.deserialize called with nil (expected string).")
 		return nil, "Invalid type: Expected a string, got nil"
 	end
 	local t = type(str)
 	if t ~= "string" then
-		core.log("warning", debug.traceback(("minetest.deserialize called with %s (expected string). "
-				.. "This is deprecated and almost certainly a bug."):format(t)))
-		return nil, "Invalid type: Expected a string, got " .. t
+		error(("minetest.deserialize called with %s (expected string)."):format(t))
 	end
 
 	local func, err = loadstring(str)
