@@ -188,6 +188,18 @@ local function dummy_func() end
 local nan = (0/0)^1 -- +nan
 
 function core.deserialize(str, safe)
+	-- Backwards compatibility
+	if str == nil then
+		core.log("warning", "minetest.deserialize called with nil (expected string). This is deprecated.")
+		return nil, "Invalid type: Expected a string, got nil"
+	end
+	local t = type(str)
+	if t ~= "string" then
+		core.log("warning", ("minetest.deserialize called with %s (expected string). "
+				.. "This is deprecated and almost certainly a bug."):format(t))
+		return nil, "Invalid type: Expected a string, got " .. t
+	end
+
 	local func, err = loadstring(str)
 	if not func then return nil, err end
 
