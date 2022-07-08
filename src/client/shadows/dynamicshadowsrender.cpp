@@ -179,7 +179,9 @@ void ShadowRenderer::addNodeToShadowList(
 {
 	if (!node)
 		return;
-	m_shadow_node_array.emplace_back(NodeToApply(node, shadowMode));
+	m_shadow_node_array.emplace_back(node, shadowMode);
+	if (shadowMode == ESM_RECEIVE || shadowMode == ESM_BOTH)
+		node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
@@ -254,6 +256,10 @@ void ShadowRenderer::updateSMTextures()
 			std::string("shadowmap_final_") + itos(m_shadow_map_texture_size),
 			frt, true);
 		assert(shadowMapTextureFinal != nullptr);
+
+		for (auto &node : m_shadow_node_array)
+			if (node.shadowMode == ESM_RECEIVE || node.shadowMode == ESM_BOTH)
+				node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	}
 
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
@@ -341,9 +347,6 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 		return;
 	}
 
-	for (auto &node : m_shadow_node_array)
-		if (node.shadowMode & ESM_RECEIVE)
-			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
 
