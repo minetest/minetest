@@ -27,7 +27,7 @@ inline u32 scaledown(u32 coef, u32 size)
 }
 
 RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud) : 
-		RenderingCore(_device, _client, _hud), buffer(_device->getVideoDriver()), upscale(_device->getVideoDriver())
+		RenderingCore(_device, _client, _hud), buffer(_device->getVideoDriver())
 {
 	scale = g_settings->getU16("undersampling");
 }
@@ -38,8 +38,6 @@ void RenderingCorePlain::initTextures()
 		return;
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
 	buffer.setTexture(TEXTURE_UPSCALE, size.X, size.Y, "upscale", video::ECF_A8R8G8B8);
-	upscale.setSourceSize(size);
-	upscale.setTargetSize(screensize);
 }
 
 void RenderingCorePlain::createPipeline()
@@ -59,11 +57,11 @@ void RenderingCorePlain::createPipeline()
 
 // class UpscaleStep
 
-void UpscaleStep::run()
+void UpscaleStep::run(PipelineContext *context)
 {
 	video::ITexture *lowres = m_source->getTexture(0);
-	m_target->activate();
-	m_driver->draw2DImage(lowres,
-			core::rect<s32>(0, 0, m_targetSize.X, m_targetSize.Y),
-			core::rect<s32>(0, 0, m_sourceSize.X, m_sourceSize.Y));
+	m_target->activate(context);
+	context->device->getVideoDriver()->draw2DImage(lowres,
+			core::rect<s32>(0, 0, context->target_size.X, context->target_size.Y),
+			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }

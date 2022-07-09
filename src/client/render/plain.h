@@ -28,33 +28,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class UpscaleStep : public RenderStep
 {
 public:
-	UpscaleStep(video::IVideoDriver *driver) :
-		m_driver(driver)
-	{}
 
     virtual void setRenderSource(RenderSource *source) override { m_source = source; }
     virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
-    virtual void reset() override {};
-    virtual void run() override;
-
-	/**
-	 * Set the dimensions of the source image
-	 * @param sourceSize dimensions of the source buffer in pixels
-	 */
-	void setSourceSize(v2u32 sourceSize) { m_sourceSize = sourceSize; }
-
-	/**
-	 * Set the dimensions of the render target
-	 * 
-	 * @param targetSize dimensions of the render target in pixels
-	 */
-	void setTargetSize(v2u32 targetSize) { m_targetSize = targetSize; }
+    virtual void reset(PipelineContext *context) override {};
+    virtual void run(PipelineContext *context) override;
 private:
-	video::IVideoDriver *m_driver;
 	RenderSource *m_source;
 	RenderTarget *m_target;
-	v2u32 m_sourceSize;
-	v2u32 m_targetSize;
 };
 
 class RenderingCorePlain : public RenderingCore
