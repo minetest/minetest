@@ -131,14 +131,8 @@ protected:
 
 	void updateScreenSize();
 	virtual void initTextures() {}
-	virtual void clearTextures() {}
-
-	virtual void beforeDraw() {}
-	virtual void drawAll();
 	virtual void createPipeline() {}
 
-	void draw3D();
-	void drawHUD();
 	void drawPostFx();
 
 public:

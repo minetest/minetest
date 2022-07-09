@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "plain.h"
 #include "anaglyph.h"
 #include "interlaced.h"
-#include "pageflip.h"
 #include "sidebyside.h"
 #include "secondstage.h"
 
@@ -36,10 +35,6 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 		return new RenderingCoreAnaglyph(device, client, hud);
 	if (stereo_mode == "interlaced")
 		return new RenderingCoreInterlaced(device, client, hud);
-#ifdef STEREO_PAGEFLIP_SUPPORTED
-	if (stereo_mode == "pageflip")
-		return new RenderingCorePageflip(device, client, hud);
-#endif
 	if (stereo_mode == "sidebyside")
 		return new RenderingCoreSideBySide(device, client, hud);
 	if (stereo_mode == "topbottom")

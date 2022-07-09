@@ -96,7 +96,6 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 
 RenderingCore::~RenderingCore()
 {
-	clearTextures();
 	delete shadow_renderer;
 }
 
@@ -112,7 +111,6 @@ void RenderingCore::initialize()
 void RenderingCore::updateScreenSize()
 {
 	virtual_size = screensize;
-	clearTextures();
 	initTextures();
 }
 
@@ -145,26 +143,10 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	}
 
 	pipeline.reset();
-	beforeDraw();
-	drawAll();
-}
-
-void RenderingCore::draw3D()
-{
-	step3D->run();
-}
-
-void RenderingCore::drawHUD()
-{
-	stepHUD->run();
+	pipeline.run();
 }
 
 void RenderingCore::drawPostFx()
 {
 	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
-}
-
-void RenderingCore::drawAll()
-{
-	pipeline.run();
 }

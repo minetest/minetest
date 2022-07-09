@@ -52,32 +52,3 @@ RenderingCoreStereo::RenderingCoreStereo(
 	: RenderingCore(_device, _client, _hud)
 {
 }
-
-void RenderingCoreStereo::beforeDraw()
-{
-	cam = camera->getCameraNode();
-	base_transform = cam->getRelativeTransformation();
-}
-
-void RenderingCoreStereo::useEye(bool right)
-{
-	core::matrix4 move;
-	move.setTranslation(
-			core::vector3df(right ? eye_offset : -eye_offset, 0.0f, 0.0f));
-	cam->setPosition((base_transform * move).getTranslation());
-}
-
-void RenderingCoreStereo::resetEye()
-{
-	cam->setPosition(base_transform.getTranslation());
-}
-
-void RenderingCoreStereo::renderBothImages()
-{
-	useEye(false);
-	draw3D();
-	resetEye();
-	useEye(true);
-	draw3D();
-	resetEye();
-}

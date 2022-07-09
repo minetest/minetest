@@ -43,17 +43,7 @@ private:
 class RenderingCoreStereo : public RenderingCore
 {
 protected:
-	scene::ICameraSceneNode *cam;
-	core::matrix4 base_transform;
 	float eye_offset;
-
-	void beforeDraw() override;
-	virtual void useEye(bool right);
-	virtual void resetEye();
-	void renderBothImages();
-
-	void useRightEye() { useEye(true); }
-	void useLeftEye() { useEye(false); }
 
 public:
 	RenderingCoreStereo(IrrlichtDevice *_device, Client *_client, Hud *_hud);
