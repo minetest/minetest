@@ -1056,7 +1056,7 @@ void read_server_sound_params(lua_State *L, int index,
 		if(!lua_isnil(L, -1)){
 			v3f p = read_v3f(L, -1)*BS;
 			params.pos = p;
-			params.type = ServerPlayingSound::SSP_POSITIONAL;
+			params.type = SoundLocation::Position;
 		}
 		lua_pop(L, 1);
 		lua_getfield(L, index, "object");
@@ -1065,7 +1065,7 @@ void read_server_sound_params(lua_State *L, int index,
 			ServerActiveObject *sao = ObjectRef::getobject(ref);
 			if(sao){
 				params.object = sao->getId();
-				params.type = ServerPlayingSound::SSP_OBJECT;
+				params.type = SoundLocation::Object;
 			}
 		}
 		lua_pop(L, 1);
