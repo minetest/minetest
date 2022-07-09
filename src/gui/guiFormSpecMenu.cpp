@@ -3212,8 +3212,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			offset = v2s32(0,0);
 		}
 
-		double gui_scaling = g_settings->getFloat("gui_scaling");
-		double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
+		const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
+		const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
 		double use_imgsize;
 		if (m_lock) {

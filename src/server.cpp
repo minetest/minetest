@@ -646,8 +646,8 @@ void Server::AsyncRunStep(bool initial_step)
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("server_unload_unused_data_timeout"),
-			U32_MAX);
+			std::max(g_settings->getFloat("server_unload_unused_data_timeout"), 0.0f),
+			-1);
 	}
 
 	/*

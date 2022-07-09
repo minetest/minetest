@@ -173,7 +173,7 @@ EmergeManager::EmergeManager(Server *server, MetricsBackend *mb)
 	g_settings->getS16NoEx("num_emerge_threads", nthreads);
 	// If automatic, leave a proc for the main thread and one for
 	// some other misc thread
-	if (nthreads == 0)
+	if (nthreads <= 0)
 		nthreads = Thread::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
 		nthreads = 1;

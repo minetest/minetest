@@ -323,7 +323,7 @@ struct TimeOrderedMapBlock {
 /*
 	Updates usage timers
 */
-void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
+void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 		std::vector<v3s16> *unloaded_blocks)
 {
 	bool save_before_unloading = maySaveBlocks();
@@ -340,7 +340,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 	beginSave();
 
 	// If there is no practical limit, we spare creation of mapblock_queue
-	if (max_loaded_blocks == U32_MAX) {
+	if (max_loaded_blocks < 0) {
 		for (auto &sector_it : m_sectors) {
 			MapSector *sector = sector_it.second;
 
@@ -399,7 +399,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 		block_count_all = mapblock_queue.size();
 
 		// Delete old blocks, and blocks over the limit from the memory
-		while (!mapblock_queue.empty() && (mapblock_queue.size() > max_loaded_blocks
+		while (!mapblock_queue.empty() && ((s32)mapblock_queue.size() > max_loaded_blocks
 				|| mapblock_queue.top().block->getUsageTimer() > unload_timeout)) {
 			TimeOrderedMapBlock b = mapblock_queue.top();
 			mapblock_queue.pop();
