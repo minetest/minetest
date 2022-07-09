@@ -45,7 +45,7 @@ void RenderingCorePlain::initTextures()
 void RenderingCorePlain::createPipeline()
 {
 	pipeline.addStep(step3D);
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCorePlain>(this, &RenderingCorePlain::drawPostFx)));
+	pipeline.addStep(stepPostFx);
 	if (scale > 1) {
 	    TextureBufferOutput *buffer_output = new TextureBufferOutput(driver, &buffer, TEXTURE_UPSCALE);
 		buffer_output->setClearColor(&skycolor);

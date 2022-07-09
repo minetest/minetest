@@ -72,6 +72,6 @@ void RenderingCoreAnaglyph::createPipeline()
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, 0.0f)));
 	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_ALL)));
 	
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreAnaglyph>(this, &RenderingCoreAnaglyph::drawPostFx)));
+	pipeline.addStep(stepPostFx);
 	pipeline.addStep(stepHUD);
 }

@@ -98,6 +98,18 @@ private:
 	ShadowRenderer *m_shadow_renderer;
 };
 
+class MapPostFxStep : public TrivialRenderStep
+{
+public:
+	MapPostFxStep(Client *client, Camera *camera);
+	virtual void setRenderTarget(RenderTarget *) override;
+	virtual void run() override;
+private:
+	Client *client;
+	Camera *camera;
+	RenderTarget *target;
+};
+
 class RenderingCore
 {
 protected:
@@ -124,6 +136,7 @@ protected:
 	PipelineState pipelineState;
 	RenderStep *step3D;
 	RenderStep *stepHUD;
+	RenderStep *stepPostFx;
 	RenderTarget *screen;
 
 	RenderPipeline pipeline;
@@ -132,8 +145,6 @@ protected:
 	void updateScreenSize();
 	virtual void initTextures() {}
 	virtual void createPipeline() {}
-
-	void drawPostFx();
 
 public:
 	RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud);

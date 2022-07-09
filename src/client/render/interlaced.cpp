@@ -64,7 +64,7 @@ void RenderingCoreInterlaced::createPipeline()
 		auto output = new TextureBufferOutput(driver, &buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		output->setClearColor(&skycolor);
 		step3D->setRenderTarget(pipeline.own(output));
-		pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreInterlaced>(this, &RenderingCoreInterlaced::drawPostFx)));
+		pipeline.addStep(stepPostFx);
 	}
 
 	IShaderSource *s = client->getShaderSource();

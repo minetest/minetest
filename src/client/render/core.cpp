@@ -64,6 +64,25 @@ void DrawHUD::run()
 }
 
 
+MapPostFxStep::MapPostFxStep(Client *_client, Camera *_camera) :
+	client(_client), camera(_camera), target(nullptr)
+{
+}
+
+void MapPostFxStep::setRenderTarget(RenderTarget * _target)
+{
+	target = _target;
+}
+
+void MapPostFxStep::run()
+{
+	if (target)
+		target->activate();
+
+	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
+}
+
+
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
@@ -92,6 +111,8 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	pipeline.own(step3D);
 	stepHUD = new DrawHUD(&pipelineState, hud, camera, mapper, client, guienv, shadow_renderer);
 	pipeline.own(stepHUD);
+	stepPostFx = new MapPostFxStep(client, camera);
+	pipeline.own(stepPostFx);
 }
 
 RenderingCore::~RenderingCore()
@@ -133,9 +154,6 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	pipelineState.show_hud = show_hud;
 	pipelineState.show_minimap = show_minimap;
 
-	step3D->reset();
-	stepHUD->reset();
-
 	if (shadow_renderer) {
 		// This is necessary to render shadows for animations correctly
 		smgr->getRootSceneNode()->OnAnimate(device->getTimer()->getTime());
@@ -144,9 +162,4 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 
 	pipeline.reset();
 	pipeline.run();
-}
-
-void RenderingCore::drawPostFx()
-{
-	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
 }

@@ -126,7 +126,7 @@ void RenderingCoreSecondStage::createPipeline()
 	}
 
 	// HUD and overlays
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreSecondStage>(this, &RenderingCoreSecondStage::drawPostFx)));
+	pipeline.addStep(stepPostFx);
 	pipeline.addStep(stepHUD);
 }
 
