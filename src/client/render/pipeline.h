@@ -287,7 +287,7 @@ public:
      * 
      * Steps may carry state between invocations in the pipeline.
      */
-    virtual void reset() = 0;
+    virtual void reset() {}
 
     /**
      * Resets the step state before executing the pipeline.
@@ -299,7 +299,7 @@ public:
     /**
      * Runs the step. This method is invoked by the pipeline.
      */
-    virtual void run() = 0;
+    virtual void run() {}
 
     /**
      * Runs the step. This method is invoked by the pipeline.
@@ -404,18 +404,18 @@ public:
         return target;
     }
 
-    virtual void reset() override {}
+    virtual void reset(PipelineContext *context) override {}
 
-    virtual void run() override
+    virtual void run(PipelineContext *context) override
     {
         for (auto &target : m_targets)
-            target->reset();
+            target->reset(context);
 
         for (auto &step : m_pipeline)
-            step->reset();
+            step->reset(context);
 
         for (auto &step: m_pipeline)
-            step->run();
+            step->run(context);
     }
 
     virtual void setRenderSource(RenderSource *source) override {}

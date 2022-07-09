@@ -162,6 +162,6 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 
 	PipelineContext context(device, client, hud, skycolor, screensize);
 
-	pipeline.RenderStep::reset(&context);
-	pipeline.RenderStep::run(&context);
+	pipeline.reset(&context);
+	pipeline.run(&context);
 }
