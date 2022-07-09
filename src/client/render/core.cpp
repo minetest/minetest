@@ -30,19 +30,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 /// Draw3D pipeline step
-void Draw3D::run()
+void Draw3D::run(PipelineContext *context)
 {
 	if (m_target)
-		m_target->activate();
+		m_target->activate(context);
 
-	m_smgr->drawAll();
-	m_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	context->device->getSceneManager()->drawAll();
+	context->device->getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (!m_state->show_hud)
 		return;
-	m_hud->drawBlockBounds();
-	m_hud->drawSelectionMesh();
+	context->hud->drawBlockBounds();
+	context->hud->drawSelectionMesh();
 	if (m_state->draw_wield_tool)
-		m_camera->drawWieldedTool();
+		context->client->getCamera()->drawWieldedTool();
 }
 
 void DrawHUD::run()
@@ -107,7 +107,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 
 	screen = new ScreenTarget(driver);
 	pipeline.own(screen);
-	step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
+	step3D = new Draw3D(&pipelineState);
 	pipeline.own(step3D);
 	stepHUD = new DrawHUD(&pipelineState, hud, camera, mapper, client, guienv, shadow_renderer);
 	pipeline.own(stepHUD);

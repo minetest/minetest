@@ -45,25 +45,18 @@ struct PipelineState
 class Draw3D : public RenderStep
 {
 public:
-	Draw3D(PipelineState *state, scene::ISceneManager *smgr, video::IVideoDriver *driver, Hud *hud, Camera *camera) :
-			m_state(state),
-			m_smgr(smgr),
-			m_driver(driver),
-			m_hud(hud),
-			m_camera(camera)
+	Draw3D(PipelineState *state) :
+			m_state(state)
 	{}
-
-	virtual void run() override;
 
 	virtual void setRenderSource(RenderSource *) override {}
 	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
-	virtual void reset() override {}
+
+	virtual void reset(PipelineContext *context) override {}
+	virtual void run(PipelineContext *context) override;
+
 private:
 	PipelineState *m_state;
-	scene::ISceneManager *m_smgr;
-	video::IVideoDriver *m_driver;
-	Hud *m_hud;
-	Camera *m_camera;
 	RenderTarget *m_target {nullptr};
 };
 

@@ -59,7 +59,7 @@ void RenderingCoreInterlaced::createPipeline()
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, right)));
-		auto step3D = new Draw3D(&pipelineState, smgr, driver, hud, camera);
+		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(driver, &buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		output->setClearColor(&skycolor);
