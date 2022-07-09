@@ -67,11 +67,9 @@ void RenderingCoreSideBySide::initTextures()
 
 void RenderingCoreSideBySide::createPipeline()
 {
-	auto cam_node = camera->getCameraNode();
-
 	// eyes
 	for (bool right : { false, true }) {
-		pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, flipped ? !right : right)));
+		pipeline.addStep(pipeline.own(new OffsetCameraStep(flipped ? !right : right)));
 		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(driver, &buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
@@ -81,6 +79,7 @@ void RenderingCoreSideBySide::createPipeline()
 		pipeline.addStep(stepHUD);
 	}
 
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	for (bool right : { false, true }) {
 		auto step = new DrawImageStep(driver, right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? &rpos : nullptr);
 		step->setRenderSource(&buffer);

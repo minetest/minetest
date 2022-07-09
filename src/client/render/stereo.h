@@ -29,13 +29,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class OffsetCameraStep : public TrivialRenderStep
 {
 public:
-	OffsetCameraStep(scene::ICameraSceneNode *camera, float eye_offset);
-	OffsetCameraStep(scene::ICameraSceneNode *camera, bool right_eye);
+	OffsetCameraStep(float eye_offset);
+	OffsetCameraStep(bool right_eye);
 
-	void run() override;
-	void reset() override;
+	void run(PipelineContext *context) override;
+	void reset(PipelineContext *context) override;
 private:
-	scene::ICameraSceneNode *camera;
 	core::matrix4 base_transform;
 	core::matrix4 move;
 };

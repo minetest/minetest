@@ -58,7 +58,7 @@ void RenderingCoreInterlaced::createPipeline()
 
 	// eyes
 	for (bool right : { false, true }) {
-		pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, right)));
+		pipeline.addStep(pipeline.own(new OffsetCameraStep(right)));
 		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(driver, &buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
@@ -67,6 +67,7 @@ void RenderingCoreInterlaced::createPipeline()
 		pipeline.addStep(stepPostFx);
 	}
 
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	IShaderSource *s = client->getShaderSource();
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	auto merge = new PostProcessingStep(driver, s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });

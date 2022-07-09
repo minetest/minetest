@@ -53,23 +53,21 @@ void ClearDepthBufferTarget::activate()
 
 void RenderingCoreAnaglyph::createPipeline()
 {
-	scene::ICameraSceneNode *cam_node = camera->getCameraNode();
-
 	// clear depth buffer every time 3D is rendered
 	step3D->setRenderTarget(pipeline.own(new ClearDepthBufferTarget(driver, screen)));
 
 	// left eye
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, false)));
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(false)));
 	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_RED)));
 	pipeline.addStep(step3D);
 
 	// right eye
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, true)));
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(true)));
 	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_GREEN | video::ECP_BLUE)));
 	pipeline.addStep(step3D);
 
 	// reset
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(cam_node, 0.0f)));
+	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_ALL)));
 	
 	pipeline.addStep(stepPostFx);

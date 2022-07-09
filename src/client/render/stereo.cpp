@@ -19,32 +19,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "stereo.h"
+#include "client/client.h"
 #include "client/camera.h"
 #include "constants.h"
 #include "settings.h"
 
-OffsetCameraStep::OffsetCameraStep(scene::ICameraSceneNode *_camera, float eye_offset) :
-	camera(_camera)
+OffsetCameraStep::OffsetCameraStep(float eye_offset)
 {
 	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
 }
 
 
-OffsetCameraStep::OffsetCameraStep(scene::ICameraSceneNode *_camera, bool right_eye) :
-	camera(_camera)
+OffsetCameraStep::OffsetCameraStep(bool right_eye)
 {
 	float eye_offset = eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f) * (right_eye ? 1 : -1);
 	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
 }
 
-void OffsetCameraStep::reset()
+void OffsetCameraStep::reset(PipelineContext *context)
 {
-	base_transform = camera->getRelativeTransformation();
+	base_transform = context->client->getCamera()->getCameraNode()->getRelativeTransformation();
 }
 
-void OffsetCameraStep::run()
+void OffsetCameraStep::run(PipelineContext *context)
 {
-	camera->setPosition((base_transform * move).getTranslation());
+	context->client->getCamera()->getCameraNode()->setPosition((base_transform * move).getTranslation());
 }
 
 RenderingCoreStereo::RenderingCoreStereo(
