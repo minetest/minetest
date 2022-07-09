@@ -84,12 +84,9 @@ private:
 class MapPostFxStep : public TrivialRenderStep
 {
 public:
-	MapPostFxStep(Client *client, Camera *camera);
 	virtual void setRenderTarget(RenderTarget *) override;
-	virtual void run() override;
+	virtual void run(PipelineContext *context) override;
 private:
-	Client *client;
-	Camera *camera;
 	RenderTarget *target;
 };
 

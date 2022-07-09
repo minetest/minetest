@@ -65,22 +65,17 @@ void DrawHUD::run(PipelineContext *context)
 }
 
 
-MapPostFxStep::MapPostFxStep(Client *_client, Camera *_camera) :
-	client(_client), camera(_camera), target(nullptr)
-{
-}
-
 void MapPostFxStep::setRenderTarget(RenderTarget * _target)
 {
 	target = _target;
 }
 
-void MapPostFxStep::run()
+void MapPostFxStep::run(PipelineContext *context)
 {
 	if (target)
-		target->activate();
+		target->activate(context);
 
-	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
+	context->client->getEnv().getClientMap().renderPostFx(context->client->getCamera()->getCameraMode());
 }
 
 
@@ -112,7 +107,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	pipeline.own(step3D);
 	stepHUD = new DrawHUD(&pipelineState, shadow_renderer);
 	pipeline.own(stepHUD);
-	stepPostFx = new MapPostFxStep(client, camera);
+	stepPostFx = new MapPostFxStep();
 	pipeline.own(stepPostFx);
 }
 
