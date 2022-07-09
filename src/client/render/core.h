@@ -66,28 +66,18 @@ private:
 class DrawHUD : public RenderStep
 {
 public:
-	DrawHUD(PipelineState *state, Hud *hud, Camera *camera, Minimap *mapper, Client *client, gui::IGUIEnvironment *guienv, ShadowRenderer *shadow_renderer) :
+	DrawHUD(PipelineState *state, ShadowRenderer *shadow_renderer) :
 			m_state(state),
-			m_hud(hud),
-			m_camera(camera),
-			m_mapper(mapper),
-			m_client(client),
-			m_guienv(guienv),
 			m_shadow_renderer(shadow_renderer)
 	{}
 
-	virtual void run() override;
-
 	virtual void setRenderSource(RenderSource *) override {}
 	virtual void setRenderTarget(RenderTarget *) override {}
-	virtual void reset() override {}
+
+	virtual void reset(PipelineContext *context) override {}
+	virtual void run(PipelineContext *context) override;
 private:
 	PipelineState *m_state;
-	Hud *m_hud;
-	Camera *m_camera;
-	Minimap *m_mapper;
-	Client *m_client;
-	gui::IGUIEnvironment *m_guienv;
 	ShadowRenderer *m_shadow_renderer;
 };
 

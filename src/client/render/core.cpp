@@ -45,22 +45,23 @@ void Draw3D::run(PipelineContext *context)
 		context->client->getCamera()->drawWieldedTool();
 }
 
-void DrawHUD::run()
+void DrawHUD::run(PipelineContext *context)
 {
 	if (m_state->show_hud) {
 		if (m_shadow_renderer)
 			m_shadow_renderer->drawDebug();
 
 		if (m_state->draw_crosshair)
-			m_hud->drawCrosshair();
+			context->hud->drawCrosshair();
 
-		m_hud->drawHotbar(m_client->getEnv().getLocalPlayer()->getWieldIndex());
-		m_hud->drawLuaElements(m_camera->getOffset());
-		m_camera->drawNametags();
-		if (m_mapper && m_state->show_minimap)
-			m_mapper->drawMinimap();
+		context->hud->drawHotbar(context->client->getEnv().getLocalPlayer()->getWieldIndex());
+		context->hud->drawLuaElements(context->client->getCamera()->getOffset());
+		context->client->getCamera()->drawNametags();
+		auto mapper = context->client->getMinimap();
+		if (mapper && m_state->show_minimap)
+			mapper->drawMinimap();
 	}
-	m_guienv->drawAll();
+	context->device->getGUIEnvironment()->drawAll();
 }
 
 
@@ -109,7 +110,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	pipeline.own(screen);
 	step3D = new Draw3D(&pipelineState);
 	pipeline.own(step3D);
-	stepHUD = new DrawHUD(&pipelineState, hud, camera, mapper, client, guienv, shadow_renderer);
+	stepHUD = new DrawHUD(&pipelineState, shadow_renderer);
 	pipeline.own(stepHUD);
 	stepPostFx = new MapPostFxStep(client, camera);
 	pipeline.own(stepPostFx);
