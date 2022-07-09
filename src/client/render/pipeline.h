@@ -27,6 +27,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderSource;
 class RenderTarget;
 class RenderStep;
+class Client;
+class Hud;
+
+struct PipelineContext
+{
+    PipelineContext(IrrlichtDevice *_device, Client *_client, Hud *_hud, video::SColor _color, v2u32 _target_size)
+        : device(_device), client(_client), hud(_hud), clear_color(_color), target_size(_target_size)
+    {
+    }
+
+    IrrlichtDevice *device;
+    Client *client;
+    Hud *hud;
+    video::SColor clear_color;
+    v2u32 target_size;
+};
 
 /**
  * Represents a source of rendering information such as textures
@@ -50,7 +66,14 @@ public:
     /**
      * Resets the state of the object for the next pipeline iteration
      */
-    virtual void reset() {};
+    virtual void reset() {}
+
+    /**
+     * Resets the state of the object for the next pipeline iteration
+     * 
+     * @param context Execution context of the pipeline
+     */
+    virtual void reset(PipelineContext *context) { reset(); }
 };
 
 /**
@@ -75,7 +98,16 @@ public:
     virtual void activate()
     {
         m_clear = false;
-    };
+    }
+
+    /**
+     * Activate the render target and configure OpenGL state for the output.
+     * This is usually done by @see RenderStep implementations.
+     */
+    virtual void activate(PipelineContext *context)
+    {
+        activate();
+    }
 
     /**
      * Resets the state of the object for the next pipeline iteration
@@ -83,7 +115,16 @@ public:
     virtual void reset()
     {
         m_clear = true;
-    };
+    }
+
+    /**
+     * Resets the state of the object for the next pipeline iteration
+     */
+    virtual void reset(PipelineContext *context)
+    {
+        reset();
+    }
+
 protected:
     bool m_clear {true};
     video::SColor *m_clear_color { nullptr };
@@ -249,9 +290,21 @@ public:
     virtual void reset() = 0;
 
     /**
+     * Resets the step state before executing the pipeline.
+     * 
+     * Steps may carry state between invocations in the pipeline.
+     */
+    virtual void reset(PipelineContext *context) { reset(); }
+
+    /**
      * Runs the step. This method is invoked by the pipeline.
      */
     virtual void run() = 0;
+
+    /**
+     * Runs the step. This method is invoked by the pipeline.
+     */
+    virtual void run(PipelineContext *context) { run(); }
 };
 
 /**
