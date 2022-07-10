@@ -85,13 +85,6 @@ public:
     virtual ~RenderTarget() = default;
 
     /**
-     * Set the clear color of the render target
-     * 
-     * @param color color use when clearing the render target
-     */
-    void setClearColor(video::SColor *color) { m_clear_color = color; }
-
-    /**
      * Activate the render target and configure OpenGL state for the output.
      * This is usually done by @see RenderStep implementations.
      */
@@ -110,9 +103,6 @@ public:
 
 protected:
     bool m_clear {true};
-    video::SColor *m_clear_color { nullptr };
-
-    video::SColor getClearColor() { return m_clear_color ? *m_clear_color : video::SColor(0x0u); }
 };
 
 /**

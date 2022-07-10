@@ -103,8 +103,6 @@ void RenderingCoreSecondStage::createPipeline()
 	buffer->setTexture(0, screensize.X, screensize.Y, "3d_render", video::ECF_A8R8G8B8);
 	buffer->setTexture(1, screensize.X, screensize.Y, "3d_normalmap", video::ECF_A8R8G8B8);
 	buffer->setDepthTexture(2, screensize.X, screensize.Y, "3d_depthmap", video::ECF_D32);
-	buffer->setClearColor(&skycolor);
-
 
 	// link to 3D step
 	pipeline.own(static_cast<RenderTarget*>(buffer));

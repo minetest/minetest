@@ -109,8 +109,6 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	pipeline.own(stepHUD);
 	stepPostFx = new MapPostFxStep();
 	pipeline.own(stepPostFx);
-	
-	screen->setClearColor(&skycolor);
 }
 
 RenderingCore::~RenderingCore()

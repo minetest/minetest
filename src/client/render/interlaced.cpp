@@ -60,7 +60,6 @@ void RenderingCoreInterlaced::createPipeline()
 		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(&buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
-		output->setClearColor(&skycolor);
 		step3D->setRenderTarget(pipeline.own(output));
 		pipeline.addStep(stepPostFx);
 	}
