@@ -68,7 +68,7 @@ void RenderingCoreInterlaced::createPipeline()
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(right)));
-		auto step3D = new Draw3D(&pipelineState);
+		auto step3D = new Draw3D();
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		step3D->setRenderTarget(pipeline.own(output));

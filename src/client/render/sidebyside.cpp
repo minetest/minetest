@@ -73,7 +73,7 @@ void RenderingCoreSideBySide::createPipeline()
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(flipped ? !right : right)));
-		auto step3D = new Draw3D(&pipelineState);
+		auto step3D = new Draw3D();
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		scene_output = output;

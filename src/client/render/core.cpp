@@ -37,28 +37,28 @@ void Draw3D::run(PipelineContext *context)
 
 	context->device->getSceneManager()->drawAll();
 	context->device->getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (!m_state->show_hud)
+	if (!context->show_hud)
 		return;
 	context->hud->drawBlockBounds();
 	context->hud->drawSelectionMesh();
-	if (m_state->draw_wield_tool)
+	if (context->draw_wield_tool)
 		context->client->getCamera()->drawWieldedTool();
 }
 
 void DrawHUD::run(PipelineContext *context)
 {
-	if (m_state->show_hud) {
+	if (context->show_hud) {
 		if (m_shadow_renderer)
 			m_shadow_renderer->drawDebug();
 
-		if (m_state->draw_crosshair)
+		if (context->draw_crosshair)
 			context->hud->drawCrosshair();
 
 		context->hud->drawHotbar(context->client->getEnv().getLocalPlayer()->getWieldIndex());
 		context->hud->drawLuaElements(context->client->getCamera()->getOffset());
 		context->client->getCamera()->drawNametags();
 		auto mapper = context->client->getMinimap();
-		if (mapper && m_state->show_minimap)
+		if (mapper && context->show_minimap)
 			mapper->drawMinimap();
 	}
 	context->device->getGUIEnvironment()->drawAll();
@@ -98,9 +98,9 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	pipeline.own(screen);
 	scene_output = screen;
 
-	step3D = new Draw3D(&pipelineState);
+	step3D = new Draw3D();
 	pipeline.own(step3D);
-	stepHUD = new DrawHUD(&pipelineState, shadow_renderer);
+	stepHUD = new DrawHUD(shadow_renderer);
 	pipeline.own(stepHUD);
 	stepPostFx = new MapPostFxStep();
 	pipeline.own(stepPostFx);
@@ -123,10 +123,6 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 {
 	v2u32 screensize = driver->getScreenSize();
 
-	pipelineState.draw_crosshair = _draw_crosshair;
-	pipelineState.draw_wield_tool = _draw_wield_tool;
-	pipelineState.show_hud = _show_hud;
-	pipelineState.show_minimap = _show_minimap;
 
 	if (shadow_renderer) {
 		// This is necessary to render shadows for animations correctly
@@ -135,6 +131,10 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	}
 
 	PipelineContext context(device, client, hud, _skycolor, screensize);
+	context.draw_crosshair = _draw_crosshair;
+	context.draw_wield_tool = _draw_wield_tool;
+	context.show_hud = _show_hud;
+	context.show_minimap = _show_minimap;
 
 	pipeline.reset(&context);
 	pipeline.run(&context);

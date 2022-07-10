@@ -29,26 +29,11 @@ class Hud;
 class Minimap;
 
 /**
- * Represents the pipeline state of the rendering core.
- */
-struct PipelineState
-{
-	bool show_hud {true};
-	bool show_minimap {true};
-	bool draw_wield_tool {true};
-	bool draw_crosshair {true};
-};
-
-/**
  * Implements a pipeline step that renders the 3D scene
  */
 class Draw3D : public RenderStep
 {
 public:
-	Draw3D(PipelineState *state) :
-			m_state(state)
-	{}
-
 	virtual void setRenderSource(RenderSource *) override {}
 	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
 
@@ -56,7 +41,6 @@ public:
 	virtual void run(PipelineContext *context) override;
 
 private:
-	PipelineState *m_state;
 	RenderTarget *m_target {nullptr};
 };
 
@@ -66,8 +50,7 @@ private:
 class DrawHUD : public RenderStep
 {
 public:
-	DrawHUD(PipelineState *state, ShadowRenderer *shadow_renderer) :
-			m_state(state),
+	DrawHUD(ShadowRenderer *shadow_renderer) :
 			m_shadow_renderer(shadow_renderer)
 	{}
 
@@ -77,7 +60,6 @@ public:
 	virtual void reset(PipelineContext *context) override {}
 	virtual void run(PipelineContext *context) override;
 private:
-	PipelineState *m_state;
 	ShadowRenderer *m_shadow_renderer;
 };
 
@@ -101,7 +83,6 @@ protected:
 
 	ShadowRenderer *shadow_renderer;
 
-	PipelineState pipelineState;
 	RenderStep *step3D;
 	RenderStep *stepHUD;
 	RenderStep *stepPostFx;
