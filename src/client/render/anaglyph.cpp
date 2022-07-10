@@ -24,13 +24,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /// SetColorMaskStep step
 
-SetColorMaskStep::SetColorMaskStep(video::IVideoDriver *_driver, int _color_mask)
-	: driver(_driver), color_mask(_color_mask)
+SetColorMaskStep::SetColorMaskStep(int _color_mask)
+	: color_mask(_color_mask)
 {}
 
-void SetColorMaskStep::run()
+void SetColorMaskStep::run(PipelineContext *context)
 {
-	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
+	video::SOverrideMaterial &mat = context->device->getVideoDriver()->getOverrideMaterial();
 	mat.reset();
 	mat.Material.ColorMask = color_mask;
 	mat.EnableFlags = video::EMF_COLOR_MASK;
@@ -58,17 +58,17 @@ void RenderingCoreAnaglyph::createPipeline()
 
 	// left eye
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(false)));
-	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_RED)));
+	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_RED)));
 	pipeline.addStep(step3D);
 
 	// right eye
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(true)));
-	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_GREEN | video::ECP_BLUE)));
+	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_GREEN | video::ECP_BLUE)));
 	pipeline.addStep(step3D);
 
 	// reset
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
-	pipeline.addStep(pipeline.own(new SetColorMaskStep(driver, video::ECP_ALL)));
+	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_ALL)));
 	
 	pipeline.addStep(stepPostFx);
 	pipeline.addStep(stepHUD);

@@ -29,11 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class SetColorMaskStep : public TrivialRenderStep
 {
 public:
-	SetColorMaskStep(video::IVideoDriver *driver, int color_mask);
+	SetColorMaskStep(int color_mask);
 
-	void run() override;
+	void run(PipelineContext *context) override;
 private:
-	video::IVideoDriver *driver;
 	int color_mask;
 };
 
