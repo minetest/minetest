@@ -32,12 +32,6 @@ RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client,
 	scale = g_settings->getU16("undersampling");
 }
 
-void RenderingCorePlain::initTextures()
-{
-	if (scale <= 1)
-		return;
-}
-
 void RenderingCorePlain::createPipeline()
 {
 	pipeline.addStep(step3D);

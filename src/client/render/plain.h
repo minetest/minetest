@@ -45,7 +45,6 @@ protected:
 
 	int scale = 0;
 
-	void initTextures() override;
 	void createPipeline() override;
 public:
 	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
