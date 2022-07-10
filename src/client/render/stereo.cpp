@@ -32,7 +32,7 @@ OffsetCameraStep::OffsetCameraStep(float eye_offset)
 
 OffsetCameraStep::OffsetCameraStep(bool right_eye)
 {
-	float eye_offset = eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f) * (right_eye ? 1 : -1);
+	float eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f) * (right_eye ? 1 : -1);
 	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
 }
 
