@@ -105,17 +105,18 @@ void TextureBuffer::setDepthTexture(u8 index, u16 width, u16 height, const std::
     m_depth_texture = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
 }
 
-TextureBufferOutput::TextureBufferOutput(video::IVideoDriver *_driver, TextureBuffer *_buffer, u8 _texture_index)
-    : driver(_driver), buffer(_buffer), texture_index(_texture_index)
+TextureBufferOutput::TextureBufferOutput(TextureBuffer *_buffer, u8 _texture_index)
+    : buffer(_buffer), texture_index(_texture_index)
 {}
 
-void TextureBufferOutput::activate()
+void TextureBufferOutput::activate(PipelineContext *context)
 {
     auto texture = buffer->getTexture(texture_index);
+    auto driver = context->device->getVideoDriver();
     driver->setRenderTarget(texture, m_clear, m_clear, getClearColor());
     driver->OnResize(texture->getSize());
 
-    RenderTarget::activate();
+    RenderTarget::activate(context);
 }
 
 void ScreenTarget::activate()

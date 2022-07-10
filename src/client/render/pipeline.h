@@ -188,10 +188,9 @@ private:
 class TextureBufferOutput : public RenderTarget
 {
 public:
-    TextureBufferOutput(video::IVideoDriver *driver, TextureBuffer *buffer, u8 texture_index);
-    void activate() override;
+    TextureBufferOutput(TextureBuffer *buffer, u8 texture_index);
+    void activate(PipelineContext *context) override;
 private:
-    video::IVideoDriver *driver;
     TextureBuffer *buffer;
     u8 texture_index;
 };

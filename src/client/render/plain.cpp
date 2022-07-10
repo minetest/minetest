@@ -45,7 +45,7 @@ void RenderingCorePlain::createPipeline()
 	pipeline.addStep(step3D);
 	pipeline.addStep(stepPostFx);
 	if (scale > 1) {
-	    TextureBufferOutput *buffer_output = new TextureBufferOutput(driver, &buffer, TEXTURE_UPSCALE);
+	    TextureBufferOutput *buffer_output = new TextureBufferOutput(&buffer, TEXTURE_UPSCALE);
 		buffer_output->setClearColor(&skycolor);
 		step3D->setRenderTarget(pipeline.own(buffer_output));
 		upscale.setRenderSource(&buffer);
