@@ -80,9 +80,7 @@ void MapPostFxStep::run(PipelineContext *context)
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
-	guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
-	mapper(client->getMinimap()), hud(_hud),
-	shadow_renderer(nullptr)
+	client(_client), hud(_hud), shadow_renderer(nullptr)
 {
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (

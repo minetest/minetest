@@ -96,11 +96,7 @@ protected:
 	IrrlichtDevice *device;
 	video::IVideoDriver *driver;
 	scene::ISceneManager *smgr;
-	gui::IGUIEnvironment *guienv;
-
 	Client *client;
-	Camera *camera;
-	Minimap *mapper;
 	Hud *hud;
 
 	ShadowRenderer *shadow_renderer;
