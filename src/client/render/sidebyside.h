@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class DrawImageStep : public RenderStep
 {
 public:
-	DrawImageStep(u8 texture_index, v2s32 *pos);
+	DrawImageStep(u8 texture_index, v2f offset);
 
 	void setRenderSource(RenderSource *_source) override;
 	void setRenderTarget(RenderTarget *_target) override;
@@ -33,7 +33,7 @@ public:
 	void run(PipelineContext *context) override;
 private:
 	u8 texture_index;
-	v2s32 *pos;
+	v2f offset;
 	RenderSource *source;
 	RenderTarget *target;
 };
@@ -46,9 +46,7 @@ protected:
 
 	bool horizontal = false;
 	bool flipped = false;
-	v2s32 rpos;
 
-	void initTextures() override;
 	void createPipeline() override;
 
 public:

@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/camera.h"
 
-DrawImageStep::DrawImageStep(u8 texture_index, v2s32 *pos) :
-	texture_index(texture_index), pos(pos)
+DrawImageStep::DrawImageStep(u8 texture_index, v2f _offset) :
+	texture_index(texture_index), offset(_offset)
 {}
 
 void DrawImageStep::setRenderSource(RenderSource *_source)
@@ -41,7 +41,9 @@ void DrawImageStep::run(PipelineContext *context)
 		target->activate(context);
 	
 	auto texture = source->getTexture(texture_index);
-	context->device->getVideoDriver()->draw2DImage(texture, pos ? *pos : v2s32 {});
+	core::dimension2du output_size = context->device->getVideoDriver()->getScreenSize();
+	v2s32 pos(offset.X * output_size.Width, offset.Y * output_size.Height);
+	context->device->getVideoDriver()->draw2DImage(texture, pos);
 }
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
@@ -50,22 +52,18 @@ RenderingCoreSideBySide::RenderingCoreSideBySide(
 {
 }
 
-void RenderingCoreSideBySide::initTextures()
-{
-	if (horizontal) {
-		rpos = v2s32(0, screensize.Y / 2);
-	} else {
-		rpos = v2s32(screensize.X / 2, 0);
-	}
-}
-
 void RenderingCoreSideBySide::createPipeline()
 {
 	v2f scale;
-	if (horizontal)
+	v2f offset;
+	if (horizontal) {
 		scale = v2f(1.0f, 0.5f);
-	else
+		offset = v2f(0.0f, 0.5f);
+	}
+	else {
 		scale = v2f(0.5f, 1.0f);
+		offset = v2f(0.5f, 0.0f);
+	}
 
 	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_LEFT, scale, "3d_render_left", video::ECF_A8R8G8B8);
@@ -86,7 +84,7 @@ void RenderingCoreSideBySide::createPipeline()
 
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	for (bool right : { false, true }) {
-		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? &rpos : nullptr);
+		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? offset : v2f());
 		step->setRenderSource(buffer);
 		step->setRenderTarget(screen);
 		pipeline.addStep(pipeline.own(step));
