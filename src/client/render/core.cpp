@@ -78,9 +78,15 @@ void MapPostFxStep::run(PipelineContext *context)
 	context->client->getEnv().getClientMap().renderPostFx(context->client->getCamera()->getCameraMode());
 }
 
+void RenderShadowMapStep::run(PipelineContext *context)
+{
+	// This is necessary to render shadows for animations correctly
+	context->device->getSceneManager()->getRootSceneNode()->OnAnimate(context->device->getTimer()->getTime());
+	context->shadow_renderer->update();
+}
+
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
-	client(_client), hud(_hud), shadow_renderer(nullptr)
+	: device(_device), client(_client), hud(_hud), shadow_renderer(nullptr)
 {
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (
@@ -113,22 +119,18 @@ RenderingCore::~RenderingCore()
 
 void RenderingCore::initialize()
 {
-	if (shadow_renderer)
+	if (shadow_renderer) {
 		shadow_renderer->initialize();
+		pipeline.addStep(pipeline.own(new RenderShadowMapStep()));
+	}
+
 	createPipeline();
 }
 
 void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 		bool _draw_wield_tool, bool _draw_crosshair)
 {
-	v2u32 screensize = driver->getScreenSize();
-
-
-	if (shadow_renderer) {
-		// This is necessary to render shadows for animations correctly
-		smgr->getRootSceneNode()->OnAnimate(device->getTimer()->getTime());
-		shadow_renderer->update();
-	}
+	v2u32 screensize = device->getVideoDriver()->getScreenSize();
 
 	PipelineContext context(device, client, hud, shadow_renderer, _skycolor, screensize);
 	context.draw_crosshair = _draw_crosshair;

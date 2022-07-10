@@ -66,12 +66,16 @@ private:
 	RenderTarget *target;
 };
 
+class RenderShadowMapStep : public TrivialRenderStep
+{
+public:
+	virtual void run(PipelineContext *context) override;
+};
+
 class RenderingCore
 {
 protected:
 	IrrlichtDevice *device;
-	video::IVideoDriver *driver;
-	scene::ISceneManager *smgr;
 	Client *client;
 	Hud *hud;
 	ShadowRenderer *shadow_renderer;
