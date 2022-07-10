@@ -68,25 +68,25 @@ void RenderingCoreSideBySide::createPipeline()
 	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_LEFT, scale, "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, scale, "3d_render_right", video::ECF_A8R8G8B8);
-	pipeline.own(static_cast<RenderTarget*>(buffer));
+	pipeline->own(static_cast<RenderTarget*>(buffer));
 
 	// eyes
 	for (bool right : { false, true }) {
-		pipeline.addStep(pipeline.own(new OffsetCameraStep(flipped ? !right : right)));
+		pipeline->addStep(pipeline->own(new OffsetCameraStep(flipped ? !right : right)));
 		auto step3D = new Draw3D();
-		pipeline.addStep(pipeline.own(step3D));
+		pipeline->addStep(pipeline->own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		scene_output = output;
-		step3D->setRenderTarget(pipeline.own(output));
-		pipeline.addStep(pipeline.own(new MapPostFxStep()));
-		pipeline.addStep(pipeline.own(new DrawHUD()));
+		step3D->setRenderTarget(pipeline->own(output));
+		pipeline->addStep(pipeline->own(new MapPostFxStep()));
+		pipeline->addStep(pipeline->own(new DrawHUD()));
 	}
 
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
+	pipeline->addStep(pipeline->own(new OffsetCameraStep(0.0f)));
 	for (bool right : { false, true }) {
 		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? offset : v2f());
 		step->setRenderSource(buffer);
 		step->setRenderTarget(screen);
-		pipeline.addStep(pipeline.own(step));
+		pipeline->addStep(pipeline->own(step));
 	}
 }

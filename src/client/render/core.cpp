@@ -86,7 +86,7 @@ void RenderShadowMapStep::run(PipelineContext *context)
 }
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: device(_device), client(_client), hud(_hud), shadow_renderer(nullptr)
+	: device(_device), client(_client), hud(_hud), shadow_renderer(nullptr), pipeline(new RenderPipeline())
 {
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (
@@ -101,12 +101,13 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	}
 
 	screen = new ScreenTarget();
-	pipeline.own(screen);
+	pipeline->own(screen);
 	scene_output = screen;
 }
 
 RenderingCore::~RenderingCore()
 {
+	delete pipeline;
 	delete shadow_renderer;
 }
 
@@ -114,7 +115,7 @@ void RenderingCore::initialize()
 {
 	if (shadow_renderer) {
 		shadow_renderer->initialize();
-		pipeline.addStep(pipeline.own(new RenderShadowMapStep()));
+		pipeline->addStep(pipeline->own(new RenderShadowMapStep()));
 	}
 
 	createPipeline();
@@ -131,6 +132,6 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	context.show_hud = _show_hud;
 	context.show_minimap = _show_minimap;
 
-	pipeline.reset(&context);
-	pipeline.run(&context);
+	pipeline->reset(&context);
+	pipeline->run(&context);
 }

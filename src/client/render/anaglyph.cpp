@@ -54,23 +54,23 @@ void ClearDepthBufferTarget::activate(PipelineContext *context)
 void RenderingCoreAnaglyph::createPipeline()
 {
 	// clear depth buffer every time 3D is rendered
-	auto step3D = pipeline.own(new Draw3D());
-	step3D->setRenderTarget(pipeline.own(new ClearDepthBufferTarget(screen)));
+	auto step3D = pipeline->own(new Draw3D());
+	step3D->setRenderTarget(pipeline->own(new ClearDepthBufferTarget(screen)));
 
 	// left eye
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(false)));
-	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_RED)));
-	pipeline.addStep(step3D);
+	pipeline->addStep(pipeline->own(new OffsetCameraStep(false)));
+	pipeline->addStep(pipeline->own(new SetColorMaskStep(video::ECP_RED)));
+	pipeline->addStep(step3D);
 
 	// right eye
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(true)));
-	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_GREEN | video::ECP_BLUE)));
-	pipeline.addStep(step3D);
+	pipeline->addStep(pipeline->own(new OffsetCameraStep(true)));
+	pipeline->addStep(pipeline->own(new SetColorMaskStep(video::ECP_GREEN | video::ECP_BLUE)));
+	pipeline->addStep(step3D);
 
 	// reset
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
-	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_ALL)));
+	pipeline->addStep(pipeline->own(new OffsetCameraStep(0.0f)));
+	pipeline->addStep(pipeline->own(new SetColorMaskStep(video::ECP_ALL)));
 	
-	pipeline.addStep(pipeline.own(new MapPostFxStep()));
-	pipeline.addStep(pipeline.own(new DrawHUD()));
+	pipeline->addStep(pipeline->own(new MapPostFxStep()));
+	pipeline->addStep(pipeline->own(new DrawHUD()));
 }

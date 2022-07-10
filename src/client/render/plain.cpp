@@ -34,23 +34,23 @@ RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client,
 
 void RenderingCorePlain::createPipeline()
 {
-	auto step3D = pipeline.own(new Draw3D());
-	pipeline.addStep(step3D);
-	pipeline.addStep(pipeline.own(new MapPostFxStep()));
+	auto step3D = pipeline->own(new Draw3D());
+	pipeline->addStep(step3D);
+	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 
 	if (scale > 1) {
 		TextureBuffer *buffer = new TextureBuffer();
 		buffer->setTexture(TEXTURE_UPSCALE, v2f(1.0f / MYMAX(scale, 1), 1.0f / MYMAX(scale, 1)), "upscale", video::ECF_A8R8G8B8);
-		pipeline.own(static_cast<RenderTarget *>(buffer));
+		pipeline->own(static_cast<RenderTarget *>(buffer));
 
 	    TextureBufferOutput *buffer_output = new TextureBufferOutput(buffer, TEXTURE_UPSCALE);
-		step3D->setRenderTarget(pipeline.own(buffer_output));
+		step3D->setRenderTarget(pipeline->own(buffer_output));
 		RenderStep *upscale = new UpscaleStep();
 		upscale->setRenderSource(buffer);
 		upscale->setRenderTarget(screen);
-		pipeline.addStep(pipeline.own(upscale));
+		pipeline->addStep(pipeline->own(upscale));
 	}
-	pipeline.addStep(pipeline.own(new DrawHUD()));
+	pipeline->addStep(pipeline->own(new DrawHUD()));
 }
 
 // class UpscaleStep

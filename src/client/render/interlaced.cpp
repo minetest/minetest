@@ -61,26 +61,26 @@ void RenderingCoreInterlaced::createPipeline()
 	buffer->setTexture(TEXTURE_LEFT, v2f(1.0f, 0.5f), "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, v2f(1.0f, 0.5f), "3d_render_right", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_MASK, v2f(1.0f, 1.0f), "3d_render_mask", video::ECF_A8R8G8B8);
-	pipeline.own(static_cast<RenderTarget*>(buffer));
+	pipeline->own(static_cast<RenderTarget*>(buffer));
 
-	pipeline.addStep(pipeline.own(new InitInterlacedMaskStep(buffer, TEXTURE_MASK)));
+	pipeline->addStep(pipeline->own(new InitInterlacedMaskStep(buffer, TEXTURE_MASK)));
 
 	// eyes
 	for (bool right : { false, true }) {
-		pipeline.addStep(pipeline.own(new OffsetCameraStep(right)));
+		pipeline->addStep(pipeline->own(new OffsetCameraStep(right)));
 		auto step3D = new Draw3D();
-		pipeline.addStep(pipeline.own(step3D));
+		pipeline->addStep(pipeline->own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
-		step3D->setRenderTarget(pipeline.own(output));
-		pipeline.addStep(pipeline.own(new MapPostFxStep()));
+		step3D->setRenderTarget(pipeline->own(output));
+		pipeline->addStep(pipeline->own(new MapPostFxStep()));
 	}
 
-	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
+	pipeline->addStep(pipeline->own(new OffsetCameraStep(0.0f)));
 	IShaderSource *s = client->getShaderSource();
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	auto merge = new PostProcessingStep(s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });
 	merge->setRenderSource(buffer);
 	merge->setRenderTarget(screen);
-	pipeline.addStep(pipeline.own(merge));
-	pipeline.addStep(pipeline.own(new DrawHUD()));
+	pipeline->addStep(pipeline->own(merge));
+	pipeline->addStep(pipeline->own(new DrawHUD()));
 }

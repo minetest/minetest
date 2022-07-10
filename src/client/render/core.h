@@ -83,7 +83,7 @@ protected:
 	RenderTarget *screen;
 	RenderTarget *scene_output;
 
-	RenderPipeline pipeline;
+	RenderPipeline *pipeline;
 
 	virtual void createPipeline() {}
 
