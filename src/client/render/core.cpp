@@ -84,8 +84,6 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	mapper(client->getMinimap()), hud(_hud),
 	shadow_renderer(nullptr)
 {
-	screensize = driver->getScreenSize();
-
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (
 		g_settings->get("video_driver") != "opengl" ||
@@ -127,16 +125,10 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 {
 	v2u32 screensize = driver->getScreenSize();
 
-	skycolor = _skycolor;
-	show_hud = _show_hud;
-	show_minimap = _show_minimap;
-	draw_wield_tool = _draw_wield_tool;
-	draw_crosshair = _draw_crosshair;
-
-	pipelineState.draw_crosshair = draw_crosshair;
-	pipelineState.draw_wield_tool = draw_wield_tool;
-	pipelineState.show_hud = show_hud;
-	pipelineState.show_minimap = show_minimap;
+	pipelineState.draw_crosshair = _draw_crosshair;
+	pipelineState.draw_wield_tool = _draw_wield_tool;
+	pipelineState.show_hud = _show_hud;
+	pipelineState.show_minimap = _show_minimap;
 
 	if (shadow_renderer) {
 		// This is necessary to render shadows for animations correctly
@@ -144,7 +136,7 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 		shadow_renderer->update();
 	}
 
-	PipelineContext context(device, client, hud, skycolor, screensize);
+	PipelineContext context(device, client, hud, _skycolor, screensize);
 
 	pipeline.reset(&context);
 	pipeline.run(&context);

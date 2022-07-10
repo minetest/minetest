@@ -93,13 +93,6 @@ private:
 class RenderingCore
 {
 protected:
-	v2u32 screensize;
-	video::SColor skycolor;
-	bool show_hud;
-	bool show_minimap;
-	bool draw_wield_tool;
-	bool draw_crosshair;
-
 	IrrlichtDevice *device;
 	video::IVideoDriver *driver;
 	scene::ISceneManager *smgr;
