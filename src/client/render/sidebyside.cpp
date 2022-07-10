@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/camera.h"
 
-DrawImageStep::DrawImageStep(video::IVideoDriver *driver, u8 texture_index, v2s32 *pos) :
-	driver(driver), texture_index(texture_index), pos(pos)
+DrawImageStep::DrawImageStep(u8 texture_index, v2s32 *pos) :
+	texture_index(texture_index), pos(pos)
 {}
 
 void DrawImageStep::setRenderSource(RenderSource *_source)
@@ -35,13 +35,13 @@ void DrawImageStep::setRenderTarget(RenderTarget *_target)
 	target = _target;
 }
 
-void DrawImageStep::run()
+void DrawImageStep::run(PipelineContext *context)
 {
 	if (target)
-		target->activate();
+		target->activate(context);
 	
 	auto texture = source->getTexture(texture_index);
-	driver->draw2DImage(texture, pos ? *pos : v2s32 {});
+	context->device->getVideoDriver()->draw2DImage(texture, pos ? *pos : v2s32 {});
 }
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
@@ -81,7 +81,7 @@ void RenderingCoreSideBySide::createPipeline()
 
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	for (bool right : { false, true }) {
-		auto step = new DrawImageStep(driver, right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? &rpos : nullptr);
+		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? &rpos : nullptr);
 		step->setRenderSource(&buffer);
 		step->setRenderTarget(screen);
 		pipeline.addStep(pipeline.own(step));

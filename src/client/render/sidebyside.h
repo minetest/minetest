@@ -24,15 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class DrawImageStep : public RenderStep
 {
 public:
-	DrawImageStep(video::IVideoDriver *driver, u8 texture_index, v2s32 *pos);
+	DrawImageStep(u8 texture_index, v2s32 *pos);
 
 	void setRenderSource(RenderSource *_source) override;
 	void setRenderTarget(RenderTarget *_target) override;
 
-	void reset() override {}
-	void run() override;
+	void reset(PipelineContext *context) override {}
+	void run(PipelineContext *context) override;
 private:
-	video::IVideoDriver *driver;
 	u8 texture_index;
 	v2s32 *pos;
 	RenderSource *source;
