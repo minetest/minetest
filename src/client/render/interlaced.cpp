@@ -24,6 +24,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/camera.h"
 
+InitInterlacedMaskStep::InitInterlacedMaskStep(TextureBuffer *_buffer, u8 _index)	: 
+	buffer(_buffer), index(_index)
+{
+}
+
+void InitInterlacedMaskStep::run(PipelineContext *context)
+{
+	video::ITexture *mask = buffer->getTexture(index);
+	if (!mask)
+		return;
+	if (mask == last_mask)
+		return;
+	last_mask = mask;
+
+	auto size = mask->getSize();
+	u8 *data = reinterpret_cast<u8 *>(mask->lock());
+	for (u32 j = 0; j < size.Height; j++) {
+		u8 val = j % 8 < 0 ? 0xff : 0x00;
+		memset(data, val, 4 * size.Width);
+		data += 4 * size.Width;
+	}
+	mask->unlock();
+}
+
+
 RenderingCoreInterlaced::RenderingCoreInterlaced(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCoreStereo(_device, _client, _hud),
@@ -37,23 +62,11 @@ void RenderingCoreInterlaced::initTextures()
 	buffer.setTexture(TEXTURE_LEFT, image_size.X, image_size.Y, "3d_render_left", video::ECF_A8R8G8B8);
 	buffer.setTexture(TEXTURE_RIGHT, image_size.X, image_size.Y, "3d_render_right", video::ECF_A8R8G8B8);
 	buffer.setTexture(TEXTURE_MASK, screensize.X, screensize.Y, "3d_render_mask", video::ECF_A8R8G8B8);
-	initMask();
-}
-
-void RenderingCoreInterlaced::initMask()
-{
-	auto mask = buffer.getTexture(TEXTURE_MASK);
-	u8 *data = reinterpret_cast<u8 *>(mask->lock());
-	for (u32 j = 0; j < screensize.Y; j++) {
-		u8 val = j % 2 ? 0xff : 0x00;
-		memset(data, val, 4 * screensize.X);
-		data += 4 * screensize.X;
-	}
-	mask->unlock();
 }
 
 void RenderingCoreInterlaced::createPipeline()
 {
+	pipeline.addStep(pipeline.own(new InitInterlacedMaskStep(&buffer, TEXTURE_MASK)));
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(right)));
