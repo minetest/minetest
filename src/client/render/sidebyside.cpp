@@ -52,15 +52,11 @@ RenderingCoreSideBySide::RenderingCoreSideBySide(
 
 void RenderingCoreSideBySide::initTextures()
 {
-	core::dimension2du image_size;
 	if (horizontal) {
-		image_size = {screensize.X, screensize.Y / 2};
 		rpos = v2s32(0, screensize.Y / 2);
 	} else {
-		image_size = {screensize.X / 2, screensize.Y};
 		rpos = v2s32(screensize.X / 2, 0);
 	}
-	virtual_size = image_size;
 }
 
 void RenderingCoreSideBySide::createPipeline()
@@ -82,6 +78,7 @@ void RenderingCoreSideBySide::createPipeline()
 		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
+		scene_output = output;
 		step3D->setRenderTarget(pipeline.own(output));
 		pipeline.addStep(stepPostFx);
 		pipeline.addStep(stepHUD);

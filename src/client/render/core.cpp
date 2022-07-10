@@ -87,7 +87,6 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	shadow_renderer(nullptr)
 {
 	screensize = driver->getScreenSize();
-	virtual_size = screensize;
 
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (
@@ -103,6 +102,8 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 
 	screen = new ScreenTarget();
 	pipeline.own(screen);
+	scene_output = screen;
+
 	step3D = new Draw3D(&pipelineState);
 	pipeline.own(step3D);
 	stepHUD = new DrawHUD(&pipelineState, shadow_renderer);
@@ -127,7 +128,6 @@ void RenderingCore::initialize()
 
 void RenderingCore::updateScreenSize()
 {
-	virtual_size = screensize;
 	initTextures();
 }
 

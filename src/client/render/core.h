@@ -94,7 +94,6 @@ class RenderingCore
 {
 protected:
 	v2u32 screensize;
-	v2u32 virtual_size;
 	video::SColor skycolor;
 	bool show_hud;
 	bool show_minimap;
@@ -118,6 +117,7 @@ protected:
 	RenderStep *stepHUD;
 	RenderStep *stepPostFx;
 	RenderTarget *screen;
+	RenderTarget *scene_output;
 
 	RenderPipeline pipeline;
 
@@ -139,7 +139,7 @@ public:
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 			bool _draw_wield_tool, bool _draw_crosshair);
 
-	inline v2u32 getVirtualSize() const { return virtual_size; }
+	inline v2u32 getVirtualSize() const { return scene_output->getSize(); }
 
 	ShadowRenderer *get_shadow_renderer() { return shadow_renderer; };
 };

@@ -188,7 +188,8 @@ void TextureBufferOutput::activate(PipelineContext *context)
     auto texture = buffer->getTexture(texture_index);
     auto driver = context->device->getVideoDriver();
     driver->setRenderTarget(texture, m_clear, m_clear, context->clear_color);
-    driver->OnResize(texture->getSize());
+    size = texture->getSize();
+    driver->OnResize(size);
 
     RenderTarget::activate(context);
 }
@@ -197,14 +198,14 @@ void ScreenTarget::activate(PipelineContext *context)
 {
     auto driver = context->device->getVideoDriver();
     driver->setRenderTarget(nullptr, m_clear, m_clear, context->clear_color);
-    driver->OnResize(m_screen_size);
+    driver->OnResize(size);
     RenderTarget::activate(context);
 }
 
 void ScreenTarget::reset(PipelineContext *context)
 {
     m_clear = true;
-    m_screen_size = context->device->getVideoDriver()->getScreenSize();
+    size = context->device->getVideoDriver()->getScreenSize();
 }
 
 RenderStep *createRenderingPipeline(const std::string &stereo_mode, video::IVideoDriver *driver,
