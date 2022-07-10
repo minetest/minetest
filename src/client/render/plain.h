@@ -44,8 +44,6 @@ protected:
 	const int TEXTURE_UPSCALE = 0;
 
 	int scale = 0;
-	TextureBuffer buffer;
-	UpscaleStep upscale;
 
 	void initTextures() override;
 	void createPipeline() override;

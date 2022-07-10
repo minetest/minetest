@@ -57,7 +57,7 @@ RenderingCoreInterlaced::RenderingCoreInterlaced(
 
 void RenderingCoreInterlaced::createPipeline()
 {
-	TextureBuffer *buffer = new TextureBuffer(driver);
+	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_LEFT, v2f(1.0f, 0.5f), "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, v2f(1.0f, 0.5f), "3d_render_right", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_MASK, v2f(1.0f, 1.0f), "3d_render_mask", video::ECF_A8R8G8B8);

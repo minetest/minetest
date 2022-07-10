@@ -71,7 +71,7 @@ void RenderingCoreSideBySide::createPipeline()
 	else
 		scale = v2f(0.5f, 1.0f);
 
-	TextureBuffer *buffer = new TextureBuffer(driver);
+	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_LEFT, scale, "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, scale, "3d_render_right", video::ECF_A8R8G8B8);
 	pipeline.own(static_cast<RenderTarget*>(buffer));

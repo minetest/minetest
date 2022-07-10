@@ -97,7 +97,7 @@ RenderingCoreSecondStage::RenderingCoreSecondStage(
 
 void RenderingCoreSecondStage::createPipeline()
 {
-	auto buffer = new TextureBuffer(driver);
+	auto buffer = new TextureBuffer();
 
 	// init post-processing buffer
 	buffer->setTexture(0, v2f(1.0f, 1.0f), "3d_render", video::ECF_A8R8G8B8);

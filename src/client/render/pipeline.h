@@ -113,11 +113,6 @@ protected:
 class TextureBuffer : public RenderSource, public RenderTarget
 {
 public:
-
-    TextureBuffer(video::IVideoDriver *driver)
-            : m_driver(driver)
-    {}
-
     virtual ~TextureBuffer() override;
 
     /**
@@ -179,7 +174,7 @@ private:
 
     bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context);
 
-    video::IVideoDriver *m_driver;
+    video::IVideoDriver *m_driver { nullptr };
     std::vector<TextureDefinition> m_definitions;
     core::array<video::ITexture *> m_textures;
     video::ITexture *m_depth_texture { nullptr };
