@@ -281,24 +281,12 @@ public:
      * 
      * Steps may carry state between invocations in the pipeline.
      */
-    virtual void reset() {}
-
-    /**
-     * Resets the step state before executing the pipeline.
-     * 
-     * Steps may carry state between invocations in the pipeline.
-     */
-    virtual void reset(PipelineContext *context) { reset(); }
+    virtual void reset(PipelineContext *context) = 0;
 
     /**
      * Runs the step. This method is invoked by the pipeline.
      */
-    virtual void run() {}
-
-    /**
-     * Runs the step. This method is invoked by the pipeline.
-     */
-    virtual void run(PipelineContext *context) { run(); }
+    virtual void run(PipelineContext *context) = 0;
 };
 
 /**
@@ -309,7 +297,7 @@ class TrivialRenderStep : public RenderStep
 public:
     virtual void setRenderSource(RenderSource *source) override {}
     virtual void setRenderTarget(RenderTarget *target) override {}
-    virtual void reset() override {}
+    virtual void reset(PipelineContext *) override {}
 };
 
 /**
