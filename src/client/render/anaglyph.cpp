@@ -41,20 +41,20 @@ void SetColorMaskStep::run(PipelineContext *context)
 
 /// ClearDepthBufferTarget
 
-ClearDepthBufferTarget::ClearDepthBufferTarget(video::IVideoDriver *_driver, RenderTarget *_target) :
-	driver(_driver), target(_target)
+ClearDepthBufferTarget::ClearDepthBufferTarget(RenderTarget *_target) :
+	target(_target)
 {}
 
-void ClearDepthBufferTarget::activate()
+void ClearDepthBufferTarget::activate(PipelineContext *context)
 {
-	target->activate();
-	driver->clearBuffers(video::ECBF_DEPTH);
+	target->activate(context);
+	context->device->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 }
 
 void RenderingCoreAnaglyph::createPipeline()
 {
 	// clear depth buffer every time 3D is rendered
-	step3D->setRenderTarget(pipeline.own(new ClearDepthBufferTarget(driver, screen)));
+	step3D->setRenderTarget(pipeline.own(new ClearDepthBufferTarget(screen)));
 
 	// left eye
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(false)));

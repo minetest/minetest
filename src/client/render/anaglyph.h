@@ -43,10 +43,10 @@ private:
 class ClearDepthBufferTarget : public RenderTarget
 {
 public:
-	ClearDepthBufferTarget(video::IVideoDriver *driver, RenderTarget *target);
+	ClearDepthBufferTarget(RenderTarget *target);
 
-	void reset() override {}
-	void activate() override;
+	void reset(PipelineContext *context) override {}
+	void activate(PipelineContext *context) override;
 private:
 	video::IVideoDriver *driver;
 	RenderTarget *target;
