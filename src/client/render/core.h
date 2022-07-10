@@ -46,6 +46,8 @@ protected:
 
 public:
 	RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud);
+	RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud, 
+			ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, RenderTarget *_scene_output);
 	RenderingCore(const RenderingCore &) = delete;
 	RenderingCore(RenderingCore &&) = delete;
 	virtual ~RenderingCore();

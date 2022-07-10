@@ -44,6 +44,13 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	scene_output = screen;
 }
 
+RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud, 
+		ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, RenderTarget *_scene_output)
+	: device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer), 
+	screen(nullptr), scene_output(_scene_output), pipeline(_pipeline)
+{
+}
+
 RenderingCore::~RenderingCore()
 {
 	delete pipeline;
