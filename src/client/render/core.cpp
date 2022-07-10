@@ -48,8 +48,8 @@ void Draw3D::run(PipelineContext *context)
 void DrawHUD::run(PipelineContext *context)
 {
 	if (context->show_hud) {
-		if (m_shadow_renderer)
-			m_shadow_renderer->drawDebug();
+		if (context->shadow_renderer)
+			context->shadow_renderer->drawDebug();
 
 		if (context->draw_crosshair)
 			context->hud->drawCrosshair();
@@ -100,7 +100,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 
 	step3D = new Draw3D();
 	pipeline.own(step3D);
-	stepHUD = new DrawHUD(shadow_renderer);
+	stepHUD = new DrawHUD();
 	pipeline.own(stepHUD);
 	stepPostFx = new MapPostFxStep();
 	pipeline.own(stepPostFx);
@@ -130,7 +130,7 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 		shadow_renderer->update();
 	}
 
-	PipelineContext context(device, client, hud, _skycolor, screensize);
+	PipelineContext context(device, client, hud, shadow_renderer, _skycolor, screensize);
 	context.draw_crosshair = _draw_crosshair;
 	context.draw_wield_tool = _draw_wield_tool;
 	context.show_hud = _show_hud;

@@ -50,17 +50,11 @@ private:
 class DrawHUD : public RenderStep
 {
 public:
-	DrawHUD(ShadowRenderer *shadow_renderer) :
-			m_shadow_renderer(shadow_renderer)
-	{}
-
 	virtual void setRenderSource(RenderSource *) override {}
 	virtual void setRenderTarget(RenderTarget *) override {}
 
 	virtual void reset(PipelineContext *context) override {}
 	virtual void run(PipelineContext *context) override;
-private:
-	ShadowRenderer *m_shadow_renderer;
 };
 
 class MapPostFxStep : public TrivialRenderStep
@@ -80,7 +74,6 @@ protected:
 	scene::ISceneManager *smgr;
 	Client *client;
 	Hud *hud;
-
 	ShadowRenderer *shadow_renderer;
 
 	RenderStep *step3D;
