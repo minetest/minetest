@@ -54,8 +54,6 @@ void RenderingCoreInterlaced::initMask()
 
 void RenderingCoreInterlaced::createPipeline()
 {
-	auto cam_node = camera->getCameraNode();
-
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(right)));
