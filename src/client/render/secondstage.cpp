@@ -103,12 +103,12 @@ void RenderingCoreSecondStage::createPipeline()
 	buffer->setTexture(0, v2f(1.0f, 1.0f), "3d_render", video::ECF_A8R8G8B8);
 	buffer->setTexture(1, v2f(1.0f, 1.0f), "3d_normalmap", video::ECF_A8R8G8B8);
 	buffer->setDepthTexture(2, v2f(1.0f, 1.0f), "3d_depthmap", video::ECF_D32);
-
-	// link to 3D step
 	pipeline.own(static_cast<RenderTarget*>(buffer));
-	step3D->setRenderTarget(buffer);
+
 
 	// 3d stage
+	auto step3D = pipeline.own(new Draw3D());
+	step3D->setRenderTarget(buffer);
 	pipeline.addStep(step3D);
 
 	// post-processing stage
@@ -127,6 +127,6 @@ void RenderingCoreSecondStage::createPipeline()
 	}
 
 	// HUD and overlays
-	pipeline.addStep(stepPostFx);
-	pipeline.addStep(stepHUD);
+	pipeline.addStep(pipeline.own(new MapPostFxStep()));
+	pipeline.addStep(pipeline.own(new DrawHUD()));
 }

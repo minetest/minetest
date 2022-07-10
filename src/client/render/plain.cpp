@@ -34,8 +34,9 @@ RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client,
 
 void RenderingCorePlain::createPipeline()
 {
+	auto step3D = pipeline.own(new Draw3D());
 	pipeline.addStep(step3D);
-	pipeline.addStep(stepPostFx);
+	pipeline.addStep(pipeline.own(new MapPostFxStep()));
 
 	if (scale > 1) {
 		TextureBuffer *buffer = new TextureBuffer();
@@ -49,7 +50,7 @@ void RenderingCorePlain::createPipeline()
 		upscale->setRenderTarget(screen);
 		pipeline.addStep(pipeline.own(upscale));
 	}
-	pipeline.addStep(stepHUD);
+	pipeline.addStep(pipeline.own(new DrawHUD()));
 }
 
 // class UpscaleStep

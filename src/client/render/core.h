@@ -80,9 +80,6 @@ protected:
 	Hud *hud;
 	ShadowRenderer *shadow_renderer;
 
-	RenderStep *step3D;
-	RenderStep *stepHUD;
-	RenderStep *stepPostFx;
 	RenderTarget *screen;
 	RenderTarget *scene_output;
 

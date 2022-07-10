@@ -54,6 +54,7 @@ void ClearDepthBufferTarget::activate(PipelineContext *context)
 void RenderingCoreAnaglyph::createPipeline()
 {
 	// clear depth buffer every time 3D is rendered
+	auto step3D = pipeline.own(new Draw3D());
 	step3D->setRenderTarget(pipeline.own(new ClearDepthBufferTarget(screen)));
 
 	// left eye
@@ -70,6 +71,6 @@ void RenderingCoreAnaglyph::createPipeline()
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	pipeline.addStep(pipeline.own(new SetColorMaskStep(video::ECP_ALL)));
 	
-	pipeline.addStep(stepPostFx);
-	pipeline.addStep(stepHUD);
+	pipeline.addStep(pipeline.own(new MapPostFxStep()));
+	pipeline.addStep(pipeline.own(new DrawHUD()));
 }

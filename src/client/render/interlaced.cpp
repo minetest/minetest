@@ -72,7 +72,7 @@ void RenderingCoreInterlaced::createPipeline()
 		pipeline.addStep(pipeline.own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		step3D->setRenderTarget(pipeline.own(output));
-		pipeline.addStep(stepPostFx);
+		pipeline.addStep(pipeline.own(new MapPostFxStep()));
 	}
 
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
@@ -82,5 +82,5 @@ void RenderingCoreInterlaced::createPipeline()
 	merge->setRenderSource(buffer);
 	merge->setRenderTarget(screen);
 	pipeline.addStep(pipeline.own(merge));
-	pipeline.addStep(stepHUD);
+	pipeline.addStep(pipeline.own(new DrawHUD()));
 }

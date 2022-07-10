@@ -78,8 +78,8 @@ void RenderingCoreSideBySide::createPipeline()
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		scene_output = output;
 		step3D->setRenderTarget(pipeline.own(output));
-		pipeline.addStep(stepPostFx);
-		pipeline.addStep(stepHUD);
+		pipeline.addStep(pipeline.own(new MapPostFxStep()));
+		pipeline.addStep(pipeline.own(new DrawHUD()));
 	}
 
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));

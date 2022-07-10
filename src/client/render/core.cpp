@@ -103,13 +103,6 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	screen = new ScreenTarget();
 	pipeline.own(screen);
 	scene_output = screen;
-
-	step3D = new Draw3D();
-	pipeline.own(step3D);
-	stepHUD = new DrawHUD();
-	pipeline.own(stepHUD);
-	stepPostFx = new MapPostFxStep();
-	pipeline.own(stepPostFx);
 }
 
 RenderingCore::~RenderingCore()
