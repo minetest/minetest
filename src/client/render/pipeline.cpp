@@ -44,11 +44,11 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
     return m_textures[index];
 }
 
-void TextureBuffer::activate()
+void TextureBuffer::activate(PipelineContext *context)
 {
     ensureRenderTarget();
     m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, getClearColor());
-    RenderTarget::activate();
+    RenderTarget::activate(context);
 }
 
 void TextureBuffer::ensureRenderTarget()

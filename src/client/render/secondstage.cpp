@@ -91,24 +91,26 @@ void PostProcessingStep::run(PipelineContext *context)
 
 RenderingCoreSecondStage::RenderingCoreSecondStage(
 		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
-		RenderingCoreStereo(_device, _client, _hud),
-		buffer(_device->getVideoDriver())
+		RenderingCoreStereo(_device, _client, _hud)
 {
 }
 
 void RenderingCoreSecondStage::createPipeline()
 {
+	auto buffer = new TextureBuffer(driver);
+
 	// init post-processing buffer
-	buffer.setTexture(0, screensize.X, screensize.Y, "3d_render", video::ECF_A8R8G8B8);
-	buffer.setTexture(1, screensize.X, screensize.Y, "3d_normalmap", video::ECF_A8R8G8B8);
-	buffer.setDepthTexture(2, screensize.X, screensize.Y, "3d_depthmap", video::ECF_D32);
-	buffer.setClearColor(&skycolor);
+	buffer->setTexture(0, screensize.X, screensize.Y, "3d_render", video::ECF_A8R8G8B8);
+	buffer->setTexture(1, screensize.X, screensize.Y, "3d_normalmap", video::ECF_A8R8G8B8);
+	buffer->setDepthTexture(2, screensize.X, screensize.Y, "3d_depthmap", video::ECF_D32);
+	buffer->setClearColor(&skycolor);
+
 
 	// link to 3D step
-	step3D->setRenderTarget(&buffer);
+	pipeline.own(static_cast<RenderTarget*>(buffer));
+	step3D->setRenderTarget(buffer);
 
 	// 3d stage
-	pipeline.addStep(pipeline.own(new TrampolineStep<RenderingCoreSecondStage>(this, &RenderingCoreSecondStage::resetBuffer)));
 	pipeline.addStep(step3D);
 
 	// post-processing stage
@@ -121,7 +123,7 @@ void RenderingCoreSecondStage::createPipeline()
 		video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
 		PostProcessingStep *effect = new PostProcessingStep(shader, std::vector<u8> {0, 1, 0, 2});
-		effect->setRenderSource(&buffer);
+		effect->setRenderSource(buffer);
 		effect->setRenderTarget(screen);
 		pipeline.addStep(pipeline.own(effect));
 	}
@@ -129,9 +131,4 @@ void RenderingCoreSecondStage::createPipeline()
 	// HUD and overlays
 	pipeline.addStep(stepPostFx);
 	pipeline.addStep(stepHUD);
-}
-
-void RenderingCoreSecondStage::resetBuffer()
-{
-	buffer.RenderTarget::reset();
 }

@@ -171,7 +171,7 @@ public:
 
     virtual u8 getTextureCount() override { return m_textures.size(); }
     virtual video::ITexture *getTexture(u8 index) override;
-    virtual void activate() override;
+    virtual void activate(PipelineContext *context) override;
 private:
     void ensureRenderTarget();
 

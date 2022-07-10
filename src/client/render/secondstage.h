@@ -45,11 +45,7 @@ private:
 class RenderingCoreSecondStage : public RenderingCoreStereo
 {
 protected:
-	TextureBuffer buffer;
-
 	void createPipeline() override;
-	void resetBuffer();
-
 public:
 	RenderingCoreSecondStage(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 };
