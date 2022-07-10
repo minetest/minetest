@@ -1731,25 +1731,27 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		return;
 
 	std::vector<std::string> v_pos = split(parts[0],',');
-	std::string text = parts[1];
 
 	MY_CHECKPOS("label",0);
 
 	if(!data->explicit_size)
 		warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
-	std::vector<std::string> lines = split(text, '\n');
-
 	auto style = getDefaultStyleForElement("label", "");
 	gui::IGUIFont *font = style.getFont();
 	if (!font)
 		font = m_font;
 
-	for (unsigned int i = 0; i != lines.size(); i++) {
-		std::wstring wlabel_colors = translate_string(
-			utf8_to_wide(unescape_string(lines[i])));
-		// Without color escapes to get the font dimensions
-		std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
+	EnrichedString str(unescape_string(utf8_to_wide(parts[1])));
+	size_t str_pos = 0;
+
+	for (size_t i = 0; str_pos < str.size(); ++i) {
+		// Split per line
+		size_t str_nl = str.getString().find(L'\n', str_pos);
+		if (str_nl == std::wstring::npos)
+			str_nl = str.getString().size();
+		EnrichedString line(str.substr(str_pos, str_nl - str_pos));
+		str_pos += line.size() + 1;
 
 		core::rect<s32> rect;
 
@@ -1766,7 +1768,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 			rect = core::rect<s32>(
 				pos.X, pos.Y,
-				pos.X + font->getDimension(wlabel_plain.c_str()).Width,
+				pos.X + font->getDimension(line.c_str()).Width,
 				pos.Y + imgsize.Y);
 
 		} else {
@@ -1788,19 +1790,19 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 			rect = core::rect<s32>(
 				pos.X, pos.Y - m_btn_height,
-				pos.X + font->getDimension(wlabel_plain.c_str()).Width,
+				pos.X + font->getDimension(line.c_str()).Width,
 				pos.Y + m_btn_height);
 		}
 
 		FieldSpec spec(
 			"",
-			wlabel_colors,
+			L"",
 			L"",
 			258 + m_fields.size(),
 			4
 		);
 		gui::IGUIStaticText *e = gui::StaticText::add(Environment,
-				spec.flabel.c_str(), rect, false, false, data->current_parent,
+				line, rect, false, false, data->current_parent,
 				spec.fid);
 		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
