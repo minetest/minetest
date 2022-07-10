@@ -36,18 +36,21 @@ void RenderingCorePlain::initTextures()
 {
 	if (scale <= 1)
 		return;
-	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	buffer.setTexture(TEXTURE_UPSCALE, size.X, size.Y, "upscale", video::ECF_A8R8G8B8);
 }
 
 void RenderingCorePlain::createPipeline()
 {
 	pipeline.addStep(step3D);
 	pipeline.addStep(stepPostFx);
+
 	if (scale > 1) {
-	    TextureBufferOutput *buffer_output = new TextureBufferOutput(&buffer, TEXTURE_UPSCALE);
+		TextureBuffer *buffer = new TextureBuffer(driver);
+		buffer->setTexture(TEXTURE_UPSCALE, v2f(1.0f / MYMAX(scale, 1), 1.0f / MYMAX(scale, 1)), "upscale", video::ECF_A8R8G8B8);
+		pipeline.own(static_cast<RenderTarget *>(buffer));
+
+	    TextureBufferOutput *buffer_output = new TextureBufferOutput(buffer, TEXTURE_UPSCALE);
 		step3D->setRenderTarget(pipeline.own(buffer_output));
-		upscale.setRenderSource(&buffer);
+		upscale.setRenderSource(buffer);
 		upscale.setRenderTarget(screen);
 		pipeline.addStep(&upscale);
 	}

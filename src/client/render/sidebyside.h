@@ -44,7 +44,6 @@ protected:
 	static const u8 TEXTURE_LEFT = 0;
 	static const u8 TEXTURE_RIGHT = 1;
 
-	TextureBuffer buffer;
 	bool horizontal = false;
 	bool flipped = false;
 	v2s32 rpos;

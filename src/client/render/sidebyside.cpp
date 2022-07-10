@@ -46,7 +46,7 @@ void DrawImageStep::run(PipelineContext *context)
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal, bool _flipped)
-	: RenderingCoreStereo(_device, _client, _hud), buffer(driver), horizontal(_horizontal), flipped(_flipped)
+	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal), flipped(_flipped)
 {
 }
 
@@ -61,18 +61,27 @@ void RenderingCoreSideBySide::initTextures()
 		rpos = v2s32(screensize.X / 2, 0);
 	}
 	virtual_size = image_size;
-	buffer.setTexture(TEXTURE_LEFT, image_size.Width, image_size.Height, "3d_render_left", video::ECF_A8R8G8B8);
-	buffer.setTexture(TEXTURE_RIGHT, image_size.Width, image_size.Height, "3d_render_right", video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreSideBySide::createPipeline()
 {
+	v2f scale;
+	if (horizontal)
+		scale = v2f(1.0f, 0.5f);
+	else
+		scale = v2f(0.5f, 1.0f);
+
+	TextureBuffer *buffer = new TextureBuffer(driver);
+	buffer->setTexture(TEXTURE_LEFT, scale, "3d_render_left", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_RIGHT, scale, "3d_render_right", video::ECF_A8R8G8B8);
+	pipeline.own(static_cast<RenderTarget*>(buffer));
+
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(flipped ? !right : right)));
 		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
-		auto output = new TextureBufferOutput(&buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
+		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		step3D->setRenderTarget(pipeline.own(output));
 		pipeline.addStep(stepPostFx);
 		pipeline.addStep(stepHUD);
@@ -81,7 +90,7 @@ void RenderingCoreSideBySide::createPipeline()
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	for (bool right : { false, true }) {
 		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? &rpos : nullptr);
-		step->setRenderSource(&buffer);
+		step->setRenderSource(buffer);
 		step->setRenderTarget(screen);
 		pipeline.addStep(pipeline.own(step));
 	}

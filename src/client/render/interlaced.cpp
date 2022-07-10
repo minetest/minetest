@@ -41,7 +41,7 @@ void InitInterlacedMaskStep::run(PipelineContext *context)
 	auto size = mask->getSize();
 	u8 *data = reinterpret_cast<u8 *>(mask->lock());
 	for (u32 j = 0; j < size.Height; j++) {
-		u8 val = j % 8 < 0 ? 0xff : 0x00;
+		u8 val = j % 2 ? 0xff : 0x00;
 		memset(data, val, 4 * size.Width);
 		data += 4 * size.Width;
 	}
@@ -51,28 +51,26 @@ void InitInterlacedMaskStep::run(PipelineContext *context)
 
 RenderingCoreInterlaced::RenderingCoreInterlaced(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreStereo(_device, _client, _hud),
-	buffer(_device->getVideoDriver())
+	: RenderingCoreStereo(_device, _client, _hud)
 {
-}
-
-void RenderingCoreInterlaced::initTextures()
-{
-	v2u32 image_size{screensize.X, screensize.Y / 2};
-	buffer.setTexture(TEXTURE_LEFT, image_size.X, image_size.Y, "3d_render_left", video::ECF_A8R8G8B8);
-	buffer.setTexture(TEXTURE_RIGHT, image_size.X, image_size.Y, "3d_render_right", video::ECF_A8R8G8B8);
-	buffer.setTexture(TEXTURE_MASK, screensize.X, screensize.Y, "3d_render_mask", video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreInterlaced::createPipeline()
 {
-	pipeline.addStep(pipeline.own(new InitInterlacedMaskStep(&buffer, TEXTURE_MASK)));
+	TextureBuffer *buffer = new TextureBuffer(driver);
+	buffer->setTexture(TEXTURE_LEFT, v2f(1.0f, 0.5f), "3d_render_left", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_RIGHT, v2f(1.0f, 0.5f), "3d_render_right", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_MASK, v2f(1.0f, 1.0f), "3d_render_mask", video::ECF_A8R8G8B8);
+	pipeline.own(static_cast<RenderTarget*>(buffer));
+
+	pipeline.addStep(pipeline.own(new InitInterlacedMaskStep(buffer, TEXTURE_MASK)));
+
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline.addStep(pipeline.own(new OffsetCameraStep(right)));
 		auto step3D = new Draw3D(&pipelineState);
 		pipeline.addStep(pipeline.own(step3D));
-		auto output = new TextureBufferOutput(&buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
+		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		step3D->setRenderTarget(pipeline.own(output));
 		pipeline.addStep(stepPostFx);
 	}
@@ -81,7 +79,7 @@ void RenderingCoreInterlaced::createPipeline()
 	IShaderSource *s = client->getShaderSource();
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	auto merge = new PostProcessingStep(s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });
-	merge->setRenderSource(&buffer);
+	merge->setRenderSource(buffer);
 	merge->setRenderTarget(screen);
 	pipeline.addStep(pipeline.own(merge));
 	pipeline.addStep(stepHUD);

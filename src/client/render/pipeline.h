@@ -121,34 +121,66 @@ public:
     virtual ~TextureBuffer() override;
 
     /**
-     * Configure texture for the specific index
+     * Configure fixed-size texture for the specific index
      * 
      * @param index index of the texture
-     * @param width width of the texture in pixels
+     * @param size width and height of the texture in pixels
      * @param height height of the texture in pixels
      * @param name unique name of the texture
      * @param format color format
      */
-    void setTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
+    void setTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
+
+    /**
+     * Configure relative-size texture for the specific index
+     * 
+     * @param index index of the texture
+     * @param scale_factor relation of the texture dimensions to the screen dimensions
+     * @param name unique name of the texture
+     * @param format color format
+     */
+    void setTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
 
     /**
      * @Configure depth texture and assign index
      * 
      * @param index index to use for the depth texture
-     * @param width width of the texture in pixels
-     * @param height height of the texture in pixels
+     * @param size width and height of the texture in pixels
      * @param name unique name for the texture
      * @param format color format
      */
-    void setDepthTexture(u8 index, u16 width, u16 height, const std::string& name, video::ECOLOR_FORMAT format);
+    void setDepthTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
+
+    /**
+     * @Configure depth texture and assign index
+     * 
+     * @param index index to use for the depth texture
+     * @param scale_factor relation of the texture dimensions to the screen dimensions
+     * @param name unique name for the texture
+     * @param format color format
+     */
+    void setDepthTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
 
     virtual u8 getTextureCount() override { return m_textures.size(); }
     virtual video::ITexture *getTexture(u8 index) override;
     virtual void activate(PipelineContext *context) override;
+    virtual void reset(PipelineContext *context) override;
 private:
-    void ensureRenderTarget();
+    struct TextureDefinition
+    {
+        bool valid { false };
+        bool fixed_size { false };
+        bool dirty { false };
+        v2f scale_factor;
+        core::dimension2du size;
+        std::string name;
+        video::ECOLOR_FORMAT format;
+    };
+
+    bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context);
 
     video::IVideoDriver *m_driver;
+    std::vector<TextureDefinition> m_definitions;
     core::array<video::ITexture *> m_textures;
     video::ITexture *m_depth_texture { nullptr };
     u8 m_depth_texture_index { 255 /* assume unused */ };

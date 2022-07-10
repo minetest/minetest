@@ -39,9 +39,6 @@ protected:
 	static const u8 TEXTURE_RIGHT = 1;
 	static const u8 TEXTURE_MASK = 2;
 
-	TextureBuffer buffer;
-
-	void initTextures() override;
 	void createPipeline() override;
 
 public:

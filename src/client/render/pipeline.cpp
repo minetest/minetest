@@ -44,65 +44,139 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
     return m_textures[index];
 }
 
+
+void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    if (m_definitions.size() <= index)
+        m_definitions.resize(index + 1);
+
+    if (m_depth_texture_index == index)
+        m_depth_texture_index = 255;
+    
+    auto &definition = m_definitions[index];
+    definition.valid = true;
+    definition.dirty = true;
+    definition.fixed_size = true;
+    definition.size = size;
+    definition.name = name;
+    definition.format = format;
+}
+
+void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    if (m_definitions.size() <= index)
+        m_definitions.resize(index + 1);
+    
+    if (m_depth_texture_index == index)
+        m_depth_texture_index = 255;
+
+    auto &definition = m_definitions[index];
+    definition.valid = true;
+    definition.dirty = true;
+    definition.fixed_size = false;
+    definition.scale_factor = scale_factor;
+    definition.name = name;
+    definition.format = format;
+}
+
+void TextureBuffer::setDepthTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    setTexture(index, size, name, format);
+    m_depth_texture_index = index;
+}
+
+void TextureBuffer::setDepthTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
+{
+    setTexture(index, scale_factor, name, format);
+    m_depth_texture_index = index;
+}
+
+void TextureBuffer::reset(PipelineContext *context)
+{
+    if (!m_driver)
+        m_driver = context->device->getVideoDriver();
+
+    // remove extra textures
+    if (m_textures.size() > m_definitions.size()) {
+        for (unsigned i = m_definitions.size(); i < m_textures.size(); i++)
+            if (m_textures[i])
+                m_driver->removeTexture(m_textures[i]);
+
+        m_textures.set_used(m_definitions.size());
+    }
+
+    // add placeholders for new definitions
+    while (m_textures.size() < m_definitions.size())
+        m_textures.push_back(nullptr);
+
+    // change textures to match definitions
+    bool modified = false;
+    for (u32 i = 0; i < m_definitions.size(); i++) {
+        video::ITexture **ptr = &m_textures[i];
+        if (i == m_depth_texture_index) {
+            if (*ptr) {
+                m_driver->removeTexture(*ptr);
+                *ptr = nullptr;
+            }
+            ptr = &m_depth_texture;
+        }
+
+        if (ensureTexture(ptr, m_definitions[i], context))
+            modified = true;
+        m_definitions[i].dirty = false;
+    }
+    
+    // make sude depth texture is removed and reset
+    if (m_depth_texture_index == 255 && m_depth_texture) {
+        m_driver->removeTexture(m_depth_texture);
+        m_depth_texture = nullptr;
+    }
+
+    if (!m_render_target)
+        m_render_target = m_driver->addRenderTarget();
+
+    if (modified)
+        m_render_target->setTexture(m_textures, m_depth_texture);
+
+    RenderTarget::reset(context);
+}
+
 void TextureBuffer::activate(PipelineContext *context)
 {
-    ensureRenderTarget();
     m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, context->clear_color);
     RenderTarget::activate(context);
 }
 
-void TextureBuffer::ensureRenderTarget()
+bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context)
 {
-    if (!m_render_target)
-    {
-        m_render_target = m_driver->addRenderTarget();
-        m_render_target->setTexture(m_textures, m_depth_texture);
+    bool modify;
+    core::dimension2du size;
+    if (definition.valid) {
+        if (definition.fixed_size)
+            size = definition.size;
+        else
+            size = core::dimension2du(
+                    (u32)(context->target_size.X * definition.scale_factor.X),
+                    (u32)(context->target_size.Y * definition.scale_factor.Y));
+        
+        modify = definition.dirty || (*texture == nullptr) || (*texture)->getSize() != size;
     }
-}
-
-void TextureBuffer::setTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)
-{
-    if (m_render_target) {
-        m_driver->removeRenderTarget(m_render_target);
-        m_render_target = nullptr;
-    }
-
-    if (m_depth_texture_index == index) {
-        if (m_depth_texture)
-            m_driver->removeTexture(m_depth_texture);
-        m_depth_texture = nullptr;
-        m_depth_texture_index = 255; /* unused */
-    }
-    if (m_textures.size() > index && m_textures[index])
-        m_driver->removeTexture(m_textures[index]);
-
-    m_textures.reallocate(index + 1);
-    while (m_textures.size() < index + 1)
-        m_textures.push_back(nullptr);
-
-    m_textures[index] = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
-}
-
-void TextureBuffer::setDepthTexture(u8 index, u16 width, u16 height, const std::string &name, video::ECOLOR_FORMAT format)
-{
-    if (m_render_target) {
-        m_driver->removeRenderTarget(m_render_target);
-        m_render_target = nullptr;
+    else {
+        modify = (*texture != nullptr);
     }
 
-    if (m_textures.size() > index && m_textures[index]) {
-        m_driver->removeTexture(m_textures[index]);
-        m_textures[index] = nullptr;
-    }
-    
-    if (m_depth_texture)
-        m_driver->removeTexture(m_depth_texture);
-    
-    if (index == m_textures.size() - 1)
-        m_textures.reallocate(index);
-    
-    m_depth_texture_index = index;
-    m_depth_texture = m_driver->addRenderTargetTexture({width, height}, name.c_str(), format);
+    if (!modify)
+        return false;
+
+    if (*texture)
+        m_driver->removeTexture(*texture);
+
+    if (definition.valid)
+        *texture = m_driver->addRenderTargetTexture(size, definition.name.c_str(), definition.format);
+    else
+        *texture = nullptr;
+
+    return true;
 }
 
 TextureBufferOutput::TextureBufferOutput(TextureBuffer *_buffer, u8 _texture_index)
