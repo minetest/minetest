@@ -95,26 +95,9 @@ public:
      * Activate the render target and configure OpenGL state for the output.
      * This is usually done by @see RenderStep implementations.
      */
-    virtual void activate()
-    {
-        m_clear = false;
-    }
-
-    /**
-     * Activate the render target and configure OpenGL state for the output.
-     * This is usually done by @see RenderStep implementations.
-     */
     virtual void activate(PipelineContext *context)
     {
-        activate();
-    }
-
-    /**
-     * Resets the state of the object for the next pipeline iteration
-     */
-    virtual void reset()
-    {
-        m_clear = true;
+        m_clear = false;
     }
 
     /**
@@ -122,7 +105,7 @@ public:
      */
     virtual void reset(PipelineContext *context)
     {
-        reset();
+        m_clear = true;
     }
 
 protected:
