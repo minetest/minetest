@@ -1750,7 +1750,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		size_t str_nl = str.getString().find(L'\n', str_pos);
 		if (str_nl == std::wstring::npos)
 			str_nl = str.getString().size();
-		EnrichedString line(str.substr(str_pos, str_nl - str_pos));
+		EnrichedString line = str.substr(str_pos, str_nl - str_pos);
 		str_pos += line.size() + 1;
 
 		core::rect<s32> rect;
