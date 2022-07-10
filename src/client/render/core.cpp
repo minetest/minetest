@@ -78,8 +78,6 @@ void MapPostFxStep::run(PipelineContext *context)
 	context->client->getEnv().getClientMap().renderPostFx(context->client->getCamera()->getCameraMode());
 }
 
-
-
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
 	guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
@@ -119,26 +117,16 @@ RenderingCore::~RenderingCore()
 
 void RenderingCore::initialize()
 {
-	// have to be called late as the VMT is not ready in the constructor:
-	initTextures();
 	if (shadow_renderer)
 		shadow_renderer->initialize();
 	createPipeline();
 }
 
-void RenderingCore::updateScreenSize()
-{
-	initTextures();
-}
-
 void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 		bool _draw_wield_tool, bool _draw_crosshair)
 {
-	v2u32 ss = driver->getScreenSize();
-	if (screensize != ss) {
-		screensize = ss;
-		updateScreenSize();
-	}
+	v2u32 screensize = driver->getScreenSize();
+
 	skycolor = _skycolor;
 	show_hud = _show_hud;
 	show_minimap = _show_minimap;

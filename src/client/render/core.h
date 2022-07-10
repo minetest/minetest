@@ -121,9 +121,6 @@ protected:
 
 	RenderPipeline pipeline;
 
-
-	void updateScreenSize();
-	virtual void initTextures() {}
 	virtual void createPipeline() {}
 
 public:
