@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/tile.h"
 
-PostProcessingStep::PostProcessingStep(video::IVideoDriver *_driver, video::E_MATERIAL_TYPE shader, const std::vector<u8> &_texture_map) :
-	driver(_driver),
+PostProcessingStep::PostProcessingStep(video::E_MATERIAL_TYPE shader, const std::vector<u8> &_texture_map) :
 	texture_map(_texture_map)
 {
 	createMaterial(shader);
@@ -56,14 +55,16 @@ void PostProcessingStep::setRenderTarget(RenderTarget *_target)
 	target = _target;
 }
 
-void PostProcessingStep::reset()
+void PostProcessingStep::reset(PipelineContext *context)
 {
 }
 
-void PostProcessingStep::run()
+void PostProcessingStep::run(PipelineContext *context)
 {
 	if (target)
-		target->activate();
+		target->activate(context);
+
+	auto driver = context->device->getVideoDriver();
 
 	for (u32 i = 0; i < MYMIN(texture_map.size(), video::MATERIAL_MAX_TEXTURES); i++)
 		material.TextureLayer[i].Texture = source->getTexture(texture_map[i]);
@@ -119,7 +120,7 @@ void RenderingCoreSecondStage::createPipeline()
 		u32 shader_index = s->getShader("3d_secondstage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
-		PostProcessingStep *effect = new PostProcessingStep(driver, shader, std::vector<u8> {0, 1, 0, 2});
+		PostProcessingStep *effect = new PostProcessingStep(shader, std::vector<u8> {0, 1, 0, 2});
 		effect->setRenderSource(&buffer);
 		effect->setRenderTarget(screen);
 		pipeline.addStep(pipeline.own(effect));

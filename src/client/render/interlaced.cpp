@@ -68,7 +68,7 @@ void RenderingCoreInterlaced::createPipeline()
 	pipeline.addStep(pipeline.own(new OffsetCameraStep(0.0f)));
 	IShaderSource *s = client->getShaderSource();
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
-	auto merge = new PostProcessingStep(driver, s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });
+	auto merge = new PostProcessingStep(s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });
 	merge->setRenderSource(&buffer);
 	merge->setRenderTarget(screen);
 	pipeline.addStep(pipeline.own(merge));

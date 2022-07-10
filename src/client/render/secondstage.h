@@ -25,16 +25,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class PostProcessingStep : public RenderStep
 {
 public:
-	PostProcessingStep(video::IVideoDriver *driver, video::E_MATERIAL_TYPE shader, const std::vector<u8> &texture_map);
+	PostProcessingStep(video::E_MATERIAL_TYPE shader, const std::vector<u8> &texture_map);
 
 	
 	void setRenderSource(RenderSource *source) override;
 	void setRenderTarget(RenderTarget *target) override;
-	void reset() override;
-	void run() override;
+	void reset(PipelineContext *context) override;
+	void run(PipelineContext *context) override;
 
 private:
-	video::IVideoDriver *driver { nullptr };
 	std::vector<u8> texture_map;
 	RenderSource *source { nullptr };
 	RenderTarget *target { nullptr };
