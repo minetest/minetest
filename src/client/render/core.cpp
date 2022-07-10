@@ -101,7 +101,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 		shadow_renderer = new ShadowRenderer(device, client);
 	}
 
-	screen = new ScreenTarget(driver);
+	screen = new ScreenTarget();
 	pipeline.own(screen);
 	step3D = new Draw3D(&pipelineState);
 	pipeline.own(step3D);

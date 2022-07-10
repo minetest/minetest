@@ -248,14 +248,9 @@ public:
 class ScreenTarget : public RenderTarget
 {
 public:
-    ScreenTarget(video::IVideoDriver *driver) :
-            m_driver(driver)
-    {}
-
-    virtual void activate() override;
-    virtual void reset() override;
+    virtual void activate(PipelineContext *context) override;
+    virtual void reset(PipelineContext *context) override;
 private:
-    video::IVideoDriver *m_driver;
     core::dimension2du m_screen_size { 0, 0 };
 };
 
