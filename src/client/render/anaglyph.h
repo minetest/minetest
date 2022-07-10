@@ -19,9 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-#include "pipeline.h"
 #include "stereo.h"
-
+#include "pipeline.h"
 
 /**
  * Set color mask when rendering the next steps

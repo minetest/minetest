@@ -19,71 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "core.h"
-#include "client/camera.h"
-#include "client/client.h"
-#include "client/clientmap.h"
-#include "client/hud.h"
-#include "client/minimap.h"
+#include "plain.h"
 #include "client/shadows/dynamicshadowsrender.h"
+#include "settings.h"
 
-
-
-
-/// Draw3D pipeline step
-void Draw3D::run(PipelineContext *context)
-{
-	if (m_target)
-		m_target->activate(context);
-
-	context->device->getSceneManager()->drawAll();
-	context->device->getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (!context->show_hud)
-		return;
-	context->hud->drawBlockBounds();
-	context->hud->drawSelectionMesh();
-	if (context->draw_wield_tool)
-		context->client->getCamera()->drawWieldedTool();
-}
-
-void DrawHUD::run(PipelineContext *context)
-{
-	if (context->show_hud) {
-		if (context->shadow_renderer)
-			context->shadow_renderer->drawDebug();
-
-		if (context->draw_crosshair)
-			context->hud->drawCrosshair();
-
-		context->hud->drawHotbar(context->client->getEnv().getLocalPlayer()->getWieldIndex());
-		context->hud->drawLuaElements(context->client->getCamera()->getOffset());
-		context->client->getCamera()->drawNametags();
-		auto mapper = context->client->getMinimap();
-		if (mapper && context->show_minimap)
-			mapper->drawMinimap();
-	}
-	context->device->getGUIEnvironment()->drawAll();
-}
-
-
-void MapPostFxStep::setRenderTarget(RenderTarget * _target)
-{
-	target = _target;
-}
-
-void MapPostFxStep::run(PipelineContext *context)
-{
-	if (target)
-		target->activate(context);
-
-	context->client->getEnv().getClientMap().renderPostFx(context->client->getCamera()->getCameraMode());
-}
-
-void RenderShadowMapStep::run(PipelineContext *context)
-{
-	// This is necessary to render shadows for animations correctly
-	context->device->getSceneManager()->getRootSceneNode()->OnAnimate(context->device->getTimer()->getTime());
-	context->shadow_renderer->update();
-}
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), client(_client), hud(_hud), shadow_renderer(nullptr), pipeline(new RenderPipeline())
@@ -134,4 +73,9 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 
 	pipeline->reset(&context);
 	pipeline->run(&context);
+}
+
+v2u32 RenderingCore::getVirtualSize() const
+{
+	return scene_output->getSize();
 }

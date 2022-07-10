@@ -20,57 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include "irrlichttypes_extrabloated.h"
-#include "pipeline.h"
 
 class ShadowRenderer;
 class Camera;
 class Client;
 class Hud;
 class Minimap;
-
-/**
- * Implements a pipeline step that renders the 3D scene
- */
-class Draw3D : public RenderStep
-{
-public:
-	virtual void setRenderSource(RenderSource *) override {}
-	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
-
-	virtual void reset(PipelineContext *context) override {}
-	virtual void run(PipelineContext *context) override;
-
-private:
-	RenderTarget *m_target {nullptr};
-};
-
-/**
- * Implements a pipeline step that renders the game HUD
- */
-class DrawHUD : public RenderStep
-{
-public:
-	virtual void setRenderSource(RenderSource *) override {}
-	virtual void setRenderTarget(RenderTarget *) override {}
-
-	virtual void reset(PipelineContext *context) override {}
-	virtual void run(PipelineContext *context) override;
-};
-
-class MapPostFxStep : public TrivialRenderStep
-{
-public:
-	virtual void setRenderTarget(RenderTarget *) override;
-	virtual void run(PipelineContext *context) override;
-private:
-	RenderTarget *target;
-};
-
-class RenderShadowMapStep : public TrivialRenderStep
-{
-public:
-	virtual void run(PipelineContext *context) override;
-};
+class RenderPipeline;
+class RenderTarget;
 
 class RenderingCore
 {
@@ -100,7 +57,7 @@ public:
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 			bool _draw_wield_tool, bool _draw_crosshair);
 
-	inline v2u32 getVirtualSize() const { return scene_output->getSize(); }
+	v2u32 getVirtualSize() const;
 
 	ShadowRenderer *get_shadow_renderer() { return shadow_renderer; };
 };
