@@ -820,12 +820,12 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	s32 server_id;
 
 	SimpleSoundSpec spec;
-	u8 type; // 0=local, 1=positional, 2=object
+	SoundLocation type; // 0=local, 1=positional, 2=object
 	v3f pos;
 	u16 object_id;
 	bool ephemeral = false;
 
-	*pkt >> server_id >> spec.name >> spec.gain >> type >> pos >> object_id >> spec.loop;
+	*pkt >> server_id >> spec.name >> spec.gain >> (u8 &)type >> pos >> object_id >> spec.loop;
 
 	try {
 		*pkt >> spec.fade;
@@ -836,22 +836,20 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	// Start playing
 	int client_id = -1;
 	switch(type) {
-		case 0: // local
-			client_id = m_sound->playSound(spec);
-			break;
-		case 1: // positional
-			client_id = m_sound->playSoundAt(spec, pos);
-			break;
-		case 2:
-		{ // object
+	case SoundLocation::Local:
+		client_id = m_sound->playSound(spec);
+		break;
+	case SoundLocation::Position:
+		client_id = m_sound->playSoundAt(spec, pos);
+		break;
+	case SoundLocation::Object:
+		{
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
 				pos = cao->getPosition();
 			client_id = m_sound->playSoundAt(spec, pos);
 			break;
 		}
-		default:
-			break;
 	}
 
 	if (client_id != -1) {

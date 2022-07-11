@@ -3212,8 +3212,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			offset = v2s32(0,0);
 		}
 
-		double gui_scaling = g_settings->getFloat("gui_scaling");
-		double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
+		const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
+		const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
 		double use_imgsize;
 		if (m_lock) {
@@ -4498,7 +4498,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(s.sound, false, 1.0f);
+						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput();
 					s.send = false;
@@ -4543,7 +4543,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(s.sound, false, 1.0f);
+						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
 
 					s.send = true;
 					if (s.is_exit) {
@@ -4568,7 +4568,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(s.sound, false, 1.0f);
+						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput(quit_mode_no);
 
@@ -4586,7 +4586,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.fdefault = L"";
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(s.sound, false, 1.0f);
+						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput();
 					s.send = false;

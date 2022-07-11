@@ -138,21 +138,27 @@ void *ServerThread::run()
 
 v3f ServerPlayingSound::getPos(ServerEnvironment *env, bool *pos_exists) const
 {
-	if(pos_exists) *pos_exists = false;
-	switch(type){
-	case SSP_LOCAL:
+	if (pos_exists)
+		*pos_exists = false;
+
+	switch (type ){
+	case SoundLocation::Local:
 		return v3f(0,0,0);
-	case SSP_POSITIONAL:
-		if(pos_exists) *pos_exists = true;
+	case SoundLocation::Position:
+		if (pos_exists)
+			*pos_exists = true;
 		return pos;
-	case SSP_OBJECT: {
-		if(object == 0)
-			return v3f(0,0,0);
-		ServerActiveObject *sao = env->getActiveObject(object);
-		if(!sao)
-			return v3f(0,0,0);
-		if(pos_exists) *pos_exists = true;
-		return sao->getBasePosition(); }
+	case SoundLocation::Object:
+		{
+			if (object == 0)
+				return v3f(0,0,0);
+			ServerActiveObject *sao = env->getActiveObject(object);
+			if (!sao)
+				return v3f(0,0,0);
+			if (pos_exists)
+				*pos_exists = true;
+			return sao->getBasePosition();
+		}
 	}
 	return v3f(0,0,0);
 }
@@ -646,8 +652,8 @@ void Server::AsyncRunStep(bool initial_step)
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("server_unload_unused_data_timeout"),
-			U32_MAX);
+			std::max(g_settings->getFloat("server_unload_unused_data_timeout"), 0.0f),
+			-1);
 	}
 
 	/*
@@ -2071,9 +2077,9 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 {
 	// Find out initial position of sound
 	bool pos_exists = false;
-	v3f pos = params.getPos(m_env, &pos_exists);
+	const v3f pos = params.getPos(m_env, &pos_exists);
 	// If position is not found while it should be, cancel sound
-	if(pos_exists != (params.type != ServerPlayingSound::SSP_LOCAL))
+	if(pos_exists != (params.type != SoundLocation::Local))
 		return -1;
 
 	// Filter destination clients

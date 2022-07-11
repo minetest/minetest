@@ -1038,6 +1038,8 @@ void MapgenParams::readParams(const Settings *settings)
 	settings->getS16NoEx("chunksize", chunksize);
 	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 
+	chunksize = rangelim(chunksize, 1, 10);
+
 	delete bparams;
 	bparams = BiomeManager::createBiomeParams(BIOMEGEN_ORIGINAL);
 	if (bparams) {

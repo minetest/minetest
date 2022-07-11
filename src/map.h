@@ -205,7 +205,7 @@ public:
 		Updates usage timers and unloads unused blocks and sectors.
 		Saves modified blocks before unloading if possible.
 	*/
-	void timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
+	void timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 			std::vector<v3s16> *unloaded_blocks=NULL);
 
 	/*

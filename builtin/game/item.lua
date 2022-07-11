@@ -5,8 +5,8 @@ local builtin_shared = ...
 local function copy_pointed_thing(pointed_thing)
 	return {
 		type  = pointed_thing.type,
-		above = vector.new(pointed_thing.above),
-		under = vector.new(pointed_thing.under),
+		above = vector.copy(pointed_thing.above),
+		under = vector.copy(pointed_thing.under),
 		ref   = pointed_thing.ref,
 	}
 end

@@ -1937,7 +1937,7 @@ void Game::processKeyInput()
 		}
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
-			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+			float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
 			g_settings->setFloat("sound_volume", new_volume);
 			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
 			m_game_ui->showStatusText(msg);
@@ -1946,7 +1946,7 @@ void Game::processKeyInput()
 		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
-			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+			float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
 			g_settings->setFloat("sound_volume", new_volume);
 			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
 			m_game_ui->showStatusText(msg);
@@ -4089,10 +4089,10 @@ void FpsControl::reset()
  */
 void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 {
-	const u64 frametime_min = 1000000.0f / (
-		device->isWindowFocused() && !g_menumgr.pausesGame()
+	const float fps_limit = (device->isWindowFocused() && !g_menumgr.pausesGame())
 			? g_settings->getFloat("fps_max")
-			: g_settings->getFloat("fps_max_unfocused"));
+			: g_settings->getFloat("fps_max_unfocused");
+	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
 
 	u64 time = porting::getTimeUs();
 
@@ -4141,10 +4141,10 @@ void Game::readSettings()
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
-	m_cache_ads_sensitivity              = g_settings->getFloat("ads_sensitivity");
-	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
+	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
+  m_cache_ads_sensitivity              = g_settings->getFloat("ads_sensitivity");
+	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.25f, 2.0f);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

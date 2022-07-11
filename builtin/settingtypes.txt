@@ -95,7 +95,7 @@ always_fly_fast (Always fly fast) bool true
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
-repeat_place_time (Place repetition interval) float 0.25 0.001
+repeat_place_time (Place repetition interval) float 0.25 0.25 2
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -227,7 +227,7 @@ view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 
 #    Multiplier for fall bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0
+fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 [**Camera]
 
@@ -1881,7 +1881,7 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    Reducing this value increases cave and dungeon density.
 #    Altering this value is for special usage, leaving it unchanged is
 #    recommended.
-chunksize (Chunk size) int 5 1 5
+chunksize (Chunk size) int 5 1 10
 
 #    Dump the mapgen debug information.
 enable_mapgen_debug_info (Mapgen debug) bool false
@@ -1930,7 +1930,7 @@ curl_file_download_timeout (cURL file download timeout) int 300000 100 214748364
 screen_dpi (DPI) int 72 1
 
 #    Adjust the detected display density, used for scaling UI elements.
-display_density_factor (Display Density Scaling Factor) float 1
+display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0
 
 #    Windows systems only: Start Minetest with the command line window in the background.
 #    Contains the same information as the file debug.txt (default name).
