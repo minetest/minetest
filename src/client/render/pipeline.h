@@ -262,6 +262,17 @@ public:
 	virtual void reset(PipelineContext *context) override;
 };
 
+class DynamicTarget : public RenderTarget
+{
+public:
+	bool isConfigured() { return upstream != nullptr; }
+	void setRenderTarget(RenderTarget *value) { upstream = value; }
+	virtual void activate(PipelineContext *context) override;
+	virtual void reset(PipelineContext *context) override {} // assume upstream is managed and reset elsewhere
+private:
+	RenderTarget *upstream { nullptr };
+};
+
 /**
  * Base class for rendering steps in the pipeline
  */

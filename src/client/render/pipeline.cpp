@@ -202,8 +202,16 @@ void ScreenTarget::activate(PipelineContext *context)
 	RenderTarget::activate(context);
 }
 
+void DynamicTarget::activate(PipelineContext *context)
+{
+	if (!isConfigured())
+		throw std::logic_error("Dynamic render target is not configured before activation.");
+	upstream->activate(context);
+	size = upstream->getSize();
+}
+
 void ScreenTarget::reset(PipelineContext *context)
 {
-	m_clear = true;
+	RenderTarget::reset(context);
 	size = context->device->getVideoDriver()->getScreenSize();
 }
