@@ -309,34 +309,6 @@ public:
 };
 
 /**
- * Implements a trivial step by calling a method on another object (rendering core)
- * 
- * @tparam _Target type of the object to invoke the method for.
- */
-template <class _Target>
-class TrampolineStep : public TrivialRenderStep
-{
-public:
-	/**
-	 * Describes the prototype of supported method
-	 */
-	typedef void (_Target::*_Call)();
-
-
-	TrampolineStep(_Target *core, _Call call) :
-		core(core), call(call)
-	{}
-
-	virtual void run() override 
-	{
-		(core->*call)();
-	}
-private:
-	_Target *core;
-	_Call call;
-};
-
-/**
  * Render Pipeline provides a flexible way to execute rendering steps in the engine.
  * 
  * RenderPipeline also implements @see RenderStep, allowing for nesting of the pipelines.
