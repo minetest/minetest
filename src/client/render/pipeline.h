@@ -72,15 +72,10 @@ public:
 
 	/**
 	 * Resets the state of the object for the next pipeline iteration
-	 */
-	virtual void reset() {}
-
-	/**
-	 * Resets the state of the object for the next pipeline iteration
 	 * 
 	 * @param context Execution context of the pipeline
 	 */
-	virtual void reset(PipelineContext *context) { reset(); }
+	virtual void reset(PipelineContext *context) = 0;
 };
 
 /**
