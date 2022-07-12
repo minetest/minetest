@@ -25,20 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: device(_device), client(_client), hud(_hud), shadow_renderer(nullptr), pipeline(new RenderPipeline())
+	: device(_device), client(_client), hud(_hud), shadow_renderer(createShadowRenderer(device, client)), pipeline(new RenderPipeline())
 {
-	// disable if unsupported
-	if (g_settings->getBool("enable_dynamic_shadows") && (
-		g_settings->get("video_driver") != "opengl" ||
-		!g_settings->getBool("enable_shaders"))) {
-		g_settings->setBool("enable_dynamic_shadows", false);
-	}
-
-	if (g_settings->getBool("enable_shaders") &&
-			g_settings->getBool("enable_dynamic_shadows")) {
-		shadow_renderer = new ShadowRenderer(device, client);
-	}
-
 	screen = new ScreenTarget();
 	pipeline->own(screen);
 	scene_output = screen;
@@ -59,10 +47,8 @@ RenderingCore::~RenderingCore()
 
 void RenderingCore::initialize()
 {
-	if (shadow_renderer) {
-		shadow_renderer->initialize();
+	if (shadow_renderer)
 		pipeline->addStep(pipeline->own(new RenderShadowMapStep()));
-	}
 
 	createPipeline();
 }
