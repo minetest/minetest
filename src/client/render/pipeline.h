@@ -247,6 +247,34 @@ public:
 	std::vector<u8> m_mappings;
 };
 
+class DynamicSource : public RenderSource
+{
+public:
+	bool isConfigured() { return upstream != nullptr; }
+	void setRenderSource(RenderSource *value) { upstream = value; }
+
+	/**
+	 * Return the number of textures in the source.
+	 */
+	virtual u8 getTextureCount() override;
+
+	/**
+	 * Get a texture by index. 
+	 * Returns nullptr is the texture does not exist.
+	 */
+	virtual video::ITexture *getTexture(u8 index) override;
+
+	/**
+	 * Resets the state of the object for the next pipeline iteration
+	 * 
+	 * @param context Execution context of the pipeline
+	 */
+	virtual void reset(PipelineContext *context) override {} // assume upstream source is reset elsewhere
+
+private:
+	RenderSource *upstream { nullptr };
+};
+
 /**
  * Implements direct output to screen framebuffer.
  */

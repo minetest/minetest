@@ -194,6 +194,18 @@ void TextureBufferOutput::activate(PipelineContext *context)
 	RenderTarget::activate(context);
 }
 
+u8 DynamicSource::getTextureCount()
+{
+	assert(isConfigured());
+	return upstream->getTextureCount();
+}
+
+video::ITexture *DynamicSource::getTexture(u8 index)
+{
+	assert(isConfigured());
+	return upstream->getTexture(index);
+}
+
 void ScreenTarget::activate(PipelineContext *context)
 {
 	auto driver = context->device->getVideoDriver();
