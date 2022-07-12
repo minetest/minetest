@@ -207,11 +207,3 @@ void ScreenTarget::reset(PipelineContext *context)
 	m_clear = true;
 	size = context->device->getVideoDriver()->getScreenSize();
 }
-
-RenderStep *createRenderingPipeline(const std::string &stereo_mode, video::IVideoDriver *driver,
-		Client *client, Hud *hud)
-{
-	RenderPipeline *pipeline = new RenderPipeline();
-
-	return pipeline;
-};
