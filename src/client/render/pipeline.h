@@ -400,25 +400,19 @@ public:
 		return target;
 	}
 
+	RenderSource *getInput();
+	RenderTarget *getOutput();
+
 	virtual void reset(PipelineContext *context) override {}
+	virtual void run(PipelineContext *context) override;
 
-	virtual void run(PipelineContext *context) override
-	{
-		for (auto &target : m_targets)
-			target->reset(context);
-
-		for (auto &step : m_pipeline)
-			step->reset(context);
-
-		for (auto &step: m_pipeline)
-			step->run(context);
-	}
-
-	virtual void setRenderSource(RenderSource *source) override {}
-	virtual void setRenderTarget(RenderTarget *target) override {}
+	virtual void setRenderSource(RenderSource *source) override;
+	virtual void setRenderTarget(RenderTarget *target) override;
 private:
 	std::vector<RenderStep *> m_pipeline;
 	std::vector< std::unique_ptr<RenderStep> > m_steps;
 	std::vector< std::unique_ptr<RenderSource> > m_sources;
 	std::vector< std::unique_ptr<RenderTarget> > m_targets;
+	DynamicSource m_input;
+	DynamicTarget m_output;
 };

@@ -227,3 +227,35 @@ void ScreenTarget::reset(PipelineContext *context)
 	RenderTarget::reset(context);
 	size = context->device->getVideoDriver()->getScreenSize();
 }
+
+RenderSource *RenderPipeline::getInput()
+{
+	return &m_input;
+}
+
+RenderTarget *RenderPipeline::getOutput()
+{
+	return &m_output;
+}
+
+void RenderPipeline::run(PipelineContext *context)
+{
+	for (auto &target : m_targets)
+		target->reset(context);
+
+	for (auto &step : m_pipeline)
+		step->reset(context);
+
+	for (auto &step: m_pipeline)
+		step->run(context);
+}
+
+void RenderPipeline::setRenderSource(RenderSource *source)
+{
+	m_input.setRenderSource(source);
+}
+
+void RenderPipeline::setRenderTarget(RenderTarget *target)
+{
+	m_output.setRenderTarget(target);
+}
