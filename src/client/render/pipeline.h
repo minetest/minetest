@@ -33,17 +33,17 @@ class ShadowRenderer;
 
 struct PipelineContext
 {
-    PipelineContext(IrrlichtDevice *_device, Client *_client, Hud *_hud, ShadowRenderer *_shadow_renderer, video::SColor _color, v2u32 _target_size)
-        : device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer), clear_color(_color), target_size(_target_size)
-    {
-    }
+	PipelineContext(IrrlichtDevice *_device, Client *_client, Hud *_hud, ShadowRenderer *_shadow_renderer, video::SColor _color, v2u32 _target_size)
+		: device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer), clear_color(_color), target_size(_target_size)
+	{
+	}
 
-    IrrlichtDevice *device;
-    Client *client;
-    Hud *hud;
-    ShadowRenderer *shadow_renderer;
-    video::SColor clear_color;
-    v2u32 target_size;
+	IrrlichtDevice *device;
+	Client *client;
+	Hud *hud;
+	ShadowRenderer *shadow_renderer;
+	video::SColor clear_color;
+	v2u32 target_size;
 
 	bool show_hud {true};
 	bool show_minimap {true};
@@ -57,62 +57,62 @@ struct PipelineContext
 class RenderSource
 {
 public:
-    virtual ~RenderSource() = default;
+	virtual ~RenderSource() = default;
 
-    /**
-     * Return the number of textures in the source.
-     */
-    virtual u8 getTextureCount() = 0;
+	/**
+	 * Return the number of textures in the source.
+	 */
+	virtual u8 getTextureCount() = 0;
 
-    /**
-     * Get a texture by index. 
-     * Returns nullptr is the texture does not exist.
-     */
-    virtual video::ITexture *getTexture(u8 index) = 0;
+	/**
+	 * Get a texture by index. 
+	 * Returns nullptr is the texture does not exist.
+	 */
+	virtual video::ITexture *getTexture(u8 index) = 0;
 
-    /**
-     * Resets the state of the object for the next pipeline iteration
-     */
-    virtual void reset() {}
+	/**
+	 * Resets the state of the object for the next pipeline iteration
+	 */
+	virtual void reset() {}
 
-    /**
-     * Resets the state of the object for the next pipeline iteration
-     * 
-     * @param context Execution context of the pipeline
-     */
-    virtual void reset(PipelineContext *context) { reset(); }
+	/**
+	 * Resets the state of the object for the next pipeline iteration
+	 * 
+	 * @param context Execution context of the pipeline
+	 */
+	virtual void reset(PipelineContext *context) { reset(); }
 };
 
 /**
- *  Represents a render target (screen or framebuffer)
+ *	Represents a render target (screen or framebuffer)
  */
 class RenderTarget
 {
 public:
-    virtual ~RenderTarget() = default;
+	virtual ~RenderTarget() = default;
 
-    /**
-     * Activate the render target and configure OpenGL state for the output.
-     * This is usually done by @see RenderStep implementations.
-     */
-    virtual void activate(PipelineContext *context)
-    {
-        m_clear = false;
-    }
+	/**
+	 * Activate the render target and configure OpenGL state for the output.
+	 * This is usually done by @see RenderStep implementations.
+	 */
+	virtual void activate(PipelineContext *context)
+	{
+		m_clear = false;
+	}
 
-    /**
-     * Resets the state of the object for the next pipeline iteration
-     */
-    virtual void reset(PipelineContext *context)
-    {
-        m_clear = true;
-    }
+	/**
+	 * Resets the state of the object for the next pipeline iteration
+	 */
+	virtual void reset(PipelineContext *context)
+	{
+		m_clear = true;
+	}
 
-    virtual core::dimension2du getSize() { return size; }
+	virtual core::dimension2du getSize() { return size; }
 
 protected:
-    bool m_clear {true};
-    core::dimension2du size;
+	bool m_clear {true};
+	core::dimension2du size;
 };
 
 /**
@@ -123,73 +123,73 @@ protected:
 class TextureBuffer : public RenderSource, public RenderTarget
 {
 public:
-    virtual ~TextureBuffer() override;
+	virtual ~TextureBuffer() override;
 
-    /**
-     * Configure fixed-size texture for the specific index
-     * 
-     * @param index index of the texture
-     * @param size width and height of the texture in pixels
-     * @param height height of the texture in pixels
-     * @param name unique name of the texture
-     * @param format color format
-     */
-    void setTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
+	/**
+	 * Configure fixed-size texture for the specific index
+	 * 
+	 * @param index index of the texture
+	 * @param size width and height of the texture in pixels
+	 * @param height height of the texture in pixels
+	 * @param name unique name of the texture
+	 * @param format color format
+	 */
+	void setTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
 
-    /**
-     * Configure relative-size texture for the specific index
-     * 
-     * @param index index of the texture
-     * @param scale_factor relation of the texture dimensions to the screen dimensions
-     * @param name unique name of the texture
-     * @param format color format
-     */
-    void setTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
+	/**
+	 * Configure relative-size texture for the specific index
+	 * 
+	 * @param index index of the texture
+	 * @param scale_factor relation of the texture dimensions to the screen dimensions
+	 * @param name unique name of the texture
+	 * @param format color format
+	 */
+	void setTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
 
-    /**
-     * @Configure depth texture and assign index
-     * 
-     * @param index index to use for the depth texture
-     * @param size width and height of the texture in pixels
-     * @param name unique name for the texture
-     * @param format color format
-     */
-    void setDepthTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
+	/**
+	 * @Configure depth texture and assign index
+	 * 
+	 * @param index index to use for the depth texture
+	 * @param size width and height of the texture in pixels
+	 * @param name unique name for the texture
+	 * @param format color format
+	 */
+	void setDepthTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
 
-    /**
-     * @Configure depth texture and assign index
-     * 
-     * @param index index to use for the depth texture
-     * @param scale_factor relation of the texture dimensions to the screen dimensions
-     * @param name unique name for the texture
-     * @param format color format
-     */
-    void setDepthTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
+	/**
+	 * @Configure depth texture and assign index
+	 * 
+	 * @param index index to use for the depth texture
+	 * @param scale_factor relation of the texture dimensions to the screen dimensions
+	 * @param name unique name for the texture
+	 * @param format color format
+	 */
+	void setDepthTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
 
-    virtual u8 getTextureCount() override { return m_textures.size(); }
-    virtual video::ITexture *getTexture(u8 index) override;
-    virtual void activate(PipelineContext *context) override;
-    virtual void reset(PipelineContext *context) override;
+	virtual u8 getTextureCount() override { return m_textures.size(); }
+	virtual video::ITexture *getTexture(u8 index) override;
+	virtual void activate(PipelineContext *context) override;
+	virtual void reset(PipelineContext *context) override;
 private:
-    struct TextureDefinition
-    {
-        bool valid { false };
-        bool fixed_size { false };
-        bool dirty { false };
-        v2f scale_factor;
-        core::dimension2du size;
-        std::string name;
-        video::ECOLOR_FORMAT format;
-    };
+	struct TextureDefinition
+	{
+		bool valid { false };
+		bool fixed_size { false };
+		bool dirty { false };
+		v2f scale_factor;
+		core::dimension2du size;
+		std::string name;
+		video::ECOLOR_FORMAT format;
+	};
 
-    bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context);
+	bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context);
 
-    video::IVideoDriver *m_driver { nullptr };
-    std::vector<TextureDefinition> m_definitions;
-    core::array<video::ITexture *> m_textures;
-    video::ITexture *m_depth_texture { nullptr };
-    u8 m_depth_texture_index { 255 /* assume unused */ };
-    video::IRenderTarget *m_render_target { nullptr };
+	video::IVideoDriver *m_driver { nullptr };
+	std::vector<TextureDefinition> m_definitions;
+	core::array<video::ITexture *> m_textures;
+	video::ITexture *m_depth_texture { nullptr };
+	u8 m_depth_texture_index { 255 /* assume unused */ };
+	video::IRenderTarget *m_render_target { nullptr };
 };
 
 /**
@@ -198,11 +198,11 @@ private:
 class TextureBufferOutput : public RenderTarget
 {
 public:
-    TextureBufferOutput(TextureBuffer *buffer, u8 texture_index);
-    void activate(PipelineContext *context) override;
+	TextureBufferOutput(TextureBuffer *buffer, u8 texture_index);
+	void activate(PipelineContext *context) override;
 private:
-    TextureBuffer *buffer;
-    u8 texture_index;
+	TextureBuffer *buffer;
+	u8 texture_index;
 };
 
 /**
@@ -213,43 +213,43 @@ private:
 class RemappingSource : RenderSource
 {
 public:
-    RemappingSource(RenderSource *source)
-            : m_source(source)
-    {}
+	RemappingSource(RenderSource *source)
+			: m_source(source)
+	{}
 
-    /**
-     * Maps texture index to a different index in the dependent source.
-     * 
-     * @param index texture index as requested by the @see RenderStep.
-     * @param target_index matching texture index in the underlying @see RenderSource.
-     */
-    void setMapping(u8 index, u8 target_index)
-    {
-        if (index >= m_mappings.size()) {
-            u8 start = m_mappings.size();
-            m_mappings.resize(index);
-            for (u8 i = start; i < m_mappings.size(); ++i)
-                m_mappings[i] = i;
-        }
+	/**
+	 * Maps texture index to a different index in the dependent source.
+	 * 
+	 * @param index texture index as requested by the @see RenderStep.
+	 * @param target_index matching texture index in the underlying @see RenderSource.
+	 */
+	void setMapping(u8 index, u8 target_index)
+	{
+		if (index >= m_mappings.size()) {
+			u8 start = m_mappings.size();
+			m_mappings.resize(index);
+			for (u8 i = start; i < m_mappings.size(); ++i)
+				m_mappings[i] = i;
+		}
 
-        m_mappings[index] = target_index;
-    }
+		m_mappings[index] = target_index;
+	}
 
-    virtual u8 getTextureCount() override
-    {
-        return m_mappings.size();
-    }
+	virtual u8 getTextureCount() override
+	{
+		return m_mappings.size();
+	}
 
-    virtual video::ITexture *getTexture(u8 index) override
-    {
-        if (index < m_mappings.size())
-            index = m_mappings[index];
+	virtual video::ITexture *getTexture(u8 index) override
+	{
+		if (index < m_mappings.size())
+			index = m_mappings[index];
 
-        return m_source->getTexture(index);
-    }
+		return m_source->getTexture(index);
+	}
 public:
-    RenderSource *m_source;
-    std::vector<u8> m_mappings;
+	RenderSource *m_source;
+	std::vector<u8> m_mappings;
 };
 
 /**
@@ -258,8 +258,8 @@ public:
 class ScreenTarget : public RenderTarget
 {
 public:
-    virtual void activate(PipelineContext *context) override;
-    virtual void reset(PipelineContext *context) override;
+	virtual void activate(PipelineContext *context) override;
+	virtual void reset(PipelineContext *context) override;
 };
 
 /**
@@ -268,33 +268,33 @@ public:
 class RenderStep
 {
 public:
-    virtual ~RenderStep() = default;
+	virtual ~RenderStep() = default;
 
-    /**
-     * Assigns render source to this step.
-     * 
-     * @param source source of rendering information
-     */
-    virtual void setRenderSource(RenderSource *source) = 0;
+	/**
+	 * Assigns render source to this step.
+	 * 
+	 * @param source source of rendering information
+	 */
+	virtual void setRenderSource(RenderSource *source) = 0;
 
-    /**
-     * Assigned render target to this step.
-     * 
-     * @param target render target to send output to.
-     */
-    virtual void setRenderTarget(RenderTarget *target) = 0;
+	/**
+	 * Assigned render target to this step.
+	 * 
+	 * @param target render target to send output to.
+	 */
+	virtual void setRenderTarget(RenderTarget *target) = 0;
 
-    /**
-     * Resets the step state before executing the pipeline.
-     * 
-     * Steps may carry state between invocations in the pipeline.
-     */
-    virtual void reset(PipelineContext *context) = 0;
+	/**
+	 * Resets the step state before executing the pipeline.
+	 * 
+	 * Steps may carry state between invocations in the pipeline.
+	 */
+	virtual void reset(PipelineContext *context) = 0;
 
-    /**
-     * Runs the step. This method is invoked by the pipeline.
-     */
-    virtual void run(PipelineContext *context) = 0;
+	/**
+	 * Runs the step. This method is invoked by the pipeline.
+	 */
+	virtual void run(PipelineContext *context) = 0;
 };
 
 /**
@@ -303,9 +303,9 @@ public:
 class TrivialRenderStep : public RenderStep
 {
 public:
-    virtual void setRenderSource(RenderSource *source) override {}
-    virtual void setRenderTarget(RenderTarget *target) override {}
-    virtual void reset(PipelineContext *) override {}
+	virtual void setRenderSource(RenderSource *source) override {}
+	virtual void setRenderTarget(RenderTarget *target) override {}
+	virtual void reset(PipelineContext *) override {}
 };
 
 /**
@@ -317,23 +317,23 @@ template <class _Target>
 class TrampolineStep : public TrivialRenderStep
 {
 public:
-    /**
-     * Describes the prototype of supported method
-     */
-    typedef void (_Target::*_Call)();
+	/**
+	 * Describes the prototype of supported method
+	 */
+	typedef void (_Target::*_Call)();
 
 
-    TrampolineStep(_Target *core, _Call call) :
-        core(core), call(call)
-    {}
+	TrampolineStep(_Target *core, _Call call) :
+		core(core), call(call)
+	{}
 
-    virtual void run() override 
-    {
-        (core->*call)();
-    }
+	virtual void run() override 
+	{
+		(core->*call)();
+	}
 private:
-    _Target *core;
-    _Call call;
+	_Target *core;
+	_Call call;
 };
 
 /**
@@ -344,75 +344,75 @@ private:
 class RenderPipeline : public RenderStep
 {
 public:
-    /**
-     * Add a step to the end of the pipeline
-     * 
-     * @param step reference to a @see RenderStep implementation.
-     */
-    void addStep(RenderStep *step)
-    {
-        m_pipeline.push_back(step);
-    }
+	/**
+	 * Add a step to the end of the pipeline
+	 * 
+	 * @param step reference to a @see RenderStep implementation.
+	 */
+	void addStep(RenderStep *step)
+	{
+		m_pipeline.push_back(step);
+	}
 
-    /**
-     * Capture ownership of a dynamically created @see RenderStep instance.
-     * 
-     * RenderPipeline will delete the instance when the pipeline is destroyed.
-     * 
-     * @param step reference to the instance.
-     * @return RenderStep* value of the 'step' parameter.
-     */
-    RenderStep *own(RenderStep *step)
-    {
-        m_steps.push_back(std::unique_ptr<RenderStep>(step));
-        return step;
-    }
+	/**
+	 * Capture ownership of a dynamically created @see RenderStep instance.
+	 * 
+	 * RenderPipeline will delete the instance when the pipeline is destroyed.
+	 * 
+	 * @param step reference to the instance.
+	 * @return RenderStep* value of the 'step' parameter.
+	 */
+	RenderStep *own(RenderStep *step)
+	{
+		m_steps.push_back(std::unique_ptr<RenderStep>(step));
+		return step;
+	}
 
-    /**
-     * Capture ownership of a dynamically created @see RenderSource instance.
-     * 
-     * RenderPipeline will delete the instance when the pipeline is destroyed.
-     * 
-     * @param source reference to the instance.
-     * @return RenderSource* value of the 'source' parameter.
-     */
-    RenderSource *own(RenderSource *source)
-    {
-        m_sources.push_back(std::unique_ptr<RenderSource>(source));
-        return source;
-    }
+	/**
+	 * Capture ownership of a dynamically created @see RenderSource instance.
+	 * 
+	 * RenderPipeline will delete the instance when the pipeline is destroyed.
+	 * 
+	 * @param source reference to the instance.
+	 * @return RenderSource* value of the 'source' parameter.
+	 */
+	RenderSource *own(RenderSource *source)
+	{
+		m_sources.push_back(std::unique_ptr<RenderSource>(source));
+		return source;
+	}
 
-    /**
-     * Capture ownership of a dynamically created @see RenderTarget instance.
-     * 
-     * @param target reference to the instance
-     * @return RenderTarget* value of the 'target' parameter
-     */
-    RenderTarget *own(RenderTarget *target)
-    {
-        m_targets.push_back(std::unique_ptr<RenderTarget>(target));
-        return target;
-    }
+	/**
+	 * Capture ownership of a dynamically created @see RenderTarget instance.
+	 * 
+	 * @param target reference to the instance
+	 * @return RenderTarget* value of the 'target' parameter
+	 */
+	RenderTarget *own(RenderTarget *target)
+	{
+		m_targets.push_back(std::unique_ptr<RenderTarget>(target));
+		return target;
+	}
 
-    virtual void reset(PipelineContext *context) override {}
+	virtual void reset(PipelineContext *context) override {}
 
-    virtual void run(PipelineContext *context) override
-    {
-        for (auto &target : m_targets)
-            target->reset(context);
+	virtual void run(PipelineContext *context) override
+	{
+		for (auto &target : m_targets)
+			target->reset(context);
 
-        for (auto &step : m_pipeline)
-            step->reset(context);
+		for (auto &step : m_pipeline)
+			step->reset(context);
 
-        for (auto &step: m_pipeline)
-            step->run(context);
-    }
+		for (auto &step: m_pipeline)
+			step->run(context);
+	}
 
-    virtual void setRenderSource(RenderSource *source) override {}
-    virtual void setRenderTarget(RenderTarget *target) override {}
+	virtual void setRenderSource(RenderSource *source) override {}
+	virtual void setRenderTarget(RenderTarget *target) override {}
 private:
-    std::vector<RenderStep *> m_pipeline;
-    std::vector< std::unique_ptr<RenderStep> > m_steps;
-    std::vector< std::unique_ptr<RenderSource> > m_sources;
-    std::vector< std::unique_ptr<RenderTarget> > m_targets;
+	std::vector<RenderStep *> m_pipeline;
+	std::vector< std::unique_ptr<RenderStep> > m_steps;
+	std::vector< std::unique_ptr<RenderSource> > m_sources;
+	std::vector< std::unique_ptr<RenderTarget> > m_targets;
 };
