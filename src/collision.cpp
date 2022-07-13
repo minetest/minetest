@@ -253,8 +253,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	v3f newpos_f = *pos_f + (*speed_f + accel_f * 0.5f * dtime) * dtime;
 	*speed_f += accel_f * dtime;
 
-	// If there is no speed or acceleration, there are no collisions
-	if (speed_f->getLength() == 0 && accel_f.getLength() == 0)
+	// If the object is static, there are no collisions
+	if (newpos_f == *pos_f)
 		return result;
 
 	// Limit speed for avoiding hangs
