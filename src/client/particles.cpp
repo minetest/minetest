@@ -63,12 +63,6 @@ Particle::Particle(
 			: ParticleParamTypes::BlendMode::alpha;
 
 	switch (blendmode) {
-		case ParticleParamTypes::BlendMode::alpha:
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
-			blendop = video::EBO_ADD;
-		break;
-
 		case ParticleParamTypes::BlendMode::add:
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_DST_ALPHA;
@@ -87,7 +81,11 @@ Particle::Particle(
 			blendop = video::EBO_ADD;
 		break;
 
-		default: assert(false);
+		default: // includes ParticleParamTypes::BlendMode::alpha
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
+			blendop = video::EBO_ADD;
+		break;
 	}
 
 	// Texture
