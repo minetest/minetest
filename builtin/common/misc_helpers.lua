@@ -279,15 +279,6 @@ function core.wrap_text(text, max_length, as_table)
 	return as_table and result or table.concat(result, '\n')
 end
 
-
-function core.setting_get_pos(name)
-	local value = core.settings:get(name)
-	if not value then
-		return nil
-	end
-	return core.string_to_pos(value)
-end
-
 --------------------------------------------------------------------------------
 
 if INIT == "game" then
