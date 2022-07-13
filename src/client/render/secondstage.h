@@ -49,3 +49,5 @@ protected:
 public:
 	RenderingCoreSecondStage(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 };
+
+RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client);

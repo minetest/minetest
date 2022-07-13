@@ -97,36 +97,42 @@ RenderingCoreSecondStage::RenderingCoreSecondStage(
 
 void RenderingCoreSecondStage::createPipeline()
 {
-	auto buffer = new TextureBuffer();
-
-	// init post-processing buffer
-	buffer->setTexture(0, v2f(1.0f, 1.0f), "3d_render", video::ECF_A8R8G8B8);
-	buffer->setTexture(1, v2f(1.0f, 1.0f), "3d_normalmap", video::ECF_A8R8G8B8);
-	buffer->setDepthTexture(2, v2f(1.0f, 1.0f), "3d_depthmap", video::ECF_D32);
-	pipeline->own(static_cast<RenderTarget*>(buffer));
-
 
 	// 3d stage
-	auto step3D = pipeline->own(new Draw3D());
-	step3D->setRenderTarget(buffer);
-	pipeline->addStep(step3D);
+	auto step3D = new Draw3D();
+	pipeline->addStep(pipeline->own(step3D));
 
-	// post-processing stage
-	{
-		// set up shader
-		IWritableShaderSource *s = client->getShaderSource();
-		s->global_additional_headers = "#define SECONDSTAGE 1\n";
-		s->rebuildShaders(); // TODO remove this if possible, use shader const setters?
-		u32 shader_index = s->getShader("3d_secondstage", TILE_MATERIAL_BASIC, NDT_NORMAL);
-		video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
-
-		PostProcessingStep *effect = new PostProcessingStep(shader, std::vector<u8> {0, 1, 0, 2});
-		effect->setRenderSource(buffer);
-		effect->setRenderTarget(screen);
-		pipeline->addStep(pipeline->own(effect));
-	}
+	RenderStep *effect = addPostProcessing(pipeline, step3D, v2f(1.0f), client);
+	pipeline->addStep(pipeline->own(effect));
+	effect->setRenderTarget(screen);
 
 	// HUD and overlays
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 	pipeline->addStep(pipeline->own(new DrawHUD()));
+}
+
+RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
+{
+	auto buffer = new TextureBuffer();
+
+	// init post-processing buffer
+	buffer->setTexture(0, scale, "3d_render", video::ECF_A8R8G8B8);
+	buffer->setTexture(1, scale, "3d_normalmap", video::ECF_A8R8G8B8);
+	buffer->setDepthTexture(2, scale, "3d_depthmap", video::ECF_D32);
+	pipeline->own(static_cast<RenderTarget*>(buffer));
+
+	// attach buffer to the previous step
+	previousStep->setRenderTarget(buffer);
+
+	// post-processing stage
+	// set up shader
+	IWritableShaderSource *s = client->getShaderSource();
+	s->global_additional_headers = "#define SECONDSTAGE 1\n";
+	s->rebuildShaders(); // TODO remove this if possible, use shader const setters?
+	u32 shader_index = s->getShader("3d_secondstage", TILE_MATERIAL_BASIC, NDT_NORMAL);
+	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
+
+	PostProcessingStep *effect = new PostProcessingStep(shader, std::vector<u8> {0, 1, 0, 2});
+	effect->setRenderSource(buffer);
+	return effect;
 }
