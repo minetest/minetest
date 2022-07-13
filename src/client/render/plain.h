@@ -86,11 +86,9 @@ private:
 class RenderingCorePlain : public RenderingCore
 {
 protected:
-	const int TEXTURE_UPSCALE = 0;
-
-	int scale = 0;
-
 	void createPipeline() override;
 public:
 	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 };
+
+RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale);

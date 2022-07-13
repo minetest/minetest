@@ -96,7 +96,6 @@ void UpscaleStep::run(PipelineContext *context)
 RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud) : 
 		RenderingCore(_device, _client, _hud)
 {
-	scale = g_settings->getU16("undersampling");
 }
 
 void RenderingCorePlain::createPipeline()
@@ -105,17 +104,35 @@ void RenderingCorePlain::createPipeline()
 	pipeline->addStep(step3D);
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 
-	if (scale > 1) {
-		TextureBuffer *buffer = new TextureBuffer();
-		buffer->setTexture(TEXTURE_UPSCALE, v2f(1.0f / MYMAX(scale, 1), 1.0f / MYMAX(scale, 1)), "upscale", video::ECF_A8R8G8B8);
-		pipeline->own(static_cast<RenderTarget *>(buffer));
+	step3D = addUpscaling(pipeline, step3D, v2f(1.0));
 
-	    TextureBufferOutput *buffer_output = new TextureBufferOutput(buffer, TEXTURE_UPSCALE);
-		step3D->setRenderTarget(pipeline->own(buffer_output));
-		RenderStep *upscale = new UpscaleStep();
-		upscale->setRenderSource(buffer);
-		upscale->setRenderTarget(screen);
-		pipeline->addStep(pipeline->own(upscale));
-	}
+	step3D->setRenderTarget(screen);
+
 	pipeline->addStep(pipeline->own(new DrawHUD()));
+}
+
+RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale_factor)
+{
+	const int TEXTURE_UPSCALE = 0;
+
+	u16 scale = MYMAX(g_settings->getU16("undersampling"), 1);
+
+	if (scale <= 1)
+		return previousStep;
+
+	// Initialize buffer
+	TextureBuffer *buffer = new TextureBuffer();
+	buffer->setTexture(TEXTURE_UPSCALE, scale_factor / scale, "upscale", video::ECF_A8R8G8B8);
+	pipeline->own(static_cast<RenderTarget *>(buffer));
+
+	// Attach previous step to the buffer
+	TextureBufferOutput *buffer_output = new TextureBufferOutput(buffer, TEXTURE_UPSCALE);
+	previousStep->setRenderTarget(pipeline->own(buffer_output));
+
+	// Add upscaling step
+	RenderStep *upscale = new UpscaleStep();
+	upscale->setRenderSource(buffer);
+	pipeline->addStep(pipeline->own(upscale));
+
+	return upscale;
 }
