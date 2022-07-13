@@ -994,18 +994,18 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
-	p.minpos             = readV3F32(is);
-	p.maxpos             = readV3F32(is);
-	p.minvel             = readV3F32(is);
-	p.maxvel             = readV3F32(is);
-	p.minacc             = readV3F32(is);
-	p.maxacc             = readV3F32(is);
-	p.minexptime         = readF32(is);
-	p.maxexptime         = readF32(is);
-	p.minsize            = readF32(is);
-	p.maxsize            = readF32(is);
+
+	// older protocols do not support tweening, and send only
+	// static ranges, so we can't just use the normal serialization
+	// functions for the older values.
+	p.pos.start.legacyDeSerialize(is);
+	p.vel.start.legacyDeSerialize(is);
+	p.acc.start.legacyDeSerialize(is);
+	p.exptime.start.legacyDeSerialize(is);
+	p.size.start.legacyDeSerialize(is);
+
 	p.collisiondetection = readU8(is);
-	p.texture            = deSerializeString32(is);
+	p.texture.string     = deSerializeString32(is);
 
 	server_id = readU32(is);
 
@@ -1018,6 +1018,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.glow = readU8(is);
 	p.object_collision = readU8(is);
 
+	bool legacy_format = true;
+
 	// This is kinda awful
 	do {
 		u16 tmp_param0 = readU16(is);
@@ -1026,7 +1028,70 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node.param0 = tmp_param0;
 		p.node.param2 = readU8(is);
 		p.node_tile   = readU8(is);
-	} while (0);
+
+		// v >= 5.6.0
+		f32 tmp_sbias = readF32(is);
+		if (is.eof())
+			break;
+
+		// initial bias must be stored separately in the stream to preserve
+		// backwards compatibility with older clients, which do not support
+		// a bias field in their range "format"
+		p.pos.start.bias = tmp_sbias;
+		p.vel.start.bias = readF32(is);
+		p.acc.start.bias = readF32(is);
+		p.exptime.start.bias = readF32(is);
+		p.size.start.bias = readF32(is);
+
+		p.pos.end.deSerialize(is);
+		p.vel.end.deSerialize(is);
+		p.acc.end.deSerialize(is);
+		p.exptime.end.deSerialize(is);
+		p.size.end.deSerialize(is);
+
+		// properties for legacy texture field
+		p.texture.deSerialize(is, m_proto_ver, true);
+
+		p.drag.deSerialize(is);
+		p.jitter.deSerialize(is);
+		p.bounce.deSerialize(is);
+		ParticleParamTypes::deSerializeParameterValue(is, p.attractor_kind);
+		using ParticleParamTypes::AttractorKind;
+		if (p.attractor_kind != AttractorKind::none) {
+			p.attract.deSerialize(is);
+			p.attractor_origin.deSerialize(is);
+			p.attractor_attachment = readU16(is);
+			/* we only check the first bit, in order to allow this value
+			 * to be turned into a bit flag field later if needed */
+			p.attractor_kill = !!(readU8(is) & 1);
+			if (p.attractor_kind != AttractorKind::point) {
+				p.attractor_direction.deSerialize(is);
+				p.attractor_direction_attachment = readU16(is);
+			}
+		}
+		p.radius.deSerialize(is);
+
+		u16 texpoolsz = readU16(is);
+		p.texpool.reserve(texpoolsz);
+		for (u16 i = 0; i < texpoolsz; ++i) {
+			ServerParticleTexture newtex;
+			newtex.deSerialize(is, m_proto_ver);
+			p.texpool.push_back(newtex);
+		}
+
+		legacy_format = false;
+	} while(0);
+
+	if (legacy_format) {
+		// there's no tweening data to be had, so we need to set the
+		// legacy params to constant values, otherwise everything old
+		// will tween to zero
+		p.pos.end = p.pos.start;
+		p.vel.end = p.vel.start;
+		p.acc.end = p.acc.start;
+		p.exptime.end = p.exptime.start;
+		p.size.end = p.size.start;
+	}
 
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;

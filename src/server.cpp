@@ -160,6 +160,7 @@ v3f ServerPlayingSound::getPos(ServerEnvironment *env, bool *pos_exists) const
 			return sao->getBasePosition();
 		}
 	}
+
 	return v3f(0,0,0);
 }
 
@@ -1599,7 +1600,12 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
-		const v3f pos = (p.minpos + p.maxpos) / 2.0f * BS;
+		const v3f pos = (
+			p.pos.start.min.val +
+			p.pos.start.max.val +
+			p.pos.end.min.val +
+			p.pos.end.max.val
+		) / 4.0f * BS;
 		const float radius_sq = radius * radius;
 		/* Don't send short-lived spawners to distant players.
 		 * This could be replaced with proper tracking at some point. */
@@ -1627,11 +1633,19 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 100, peer_id);
 
-	pkt << p.amount << p.time << p.minpos << p.maxpos << p.minvel
-		<< p.maxvel << p.minacc << p.maxacc << p.minexptime << p.maxexptime
-		<< p.minsize << p.maxsize << p.collisiondetection;
+	pkt << p.amount << p.time;
+	{ // serialize legacy fields
+		std::ostringstream os(std::ios_base::binary);
+		p.pos.start.legacySerialize(os);
+		p.vel.start.legacySerialize(os);
+		p.acc.start.legacySerialize(os);
+		p.exptime.start.legacySerialize(os);
+		p.size.start.legacySerialize(os);
+		pkt.putRawString(os.str());
+	}
+	pkt << p.collisiondetection;
 
-	pkt.putLongString(p.texture);
+	pkt.putLongString(p.texture.string);
 
 	pkt << id << p.vertical << p.collision_removal << attached_id;
 	{
@@ -1641,6 +1655,51 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	}
 	pkt << p.glow << p.object_collision;
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
+
+	{ // serialize new fields
+		// initial bias for older properties
+		pkt << p.pos.start.bias
+			<< p.vel.start.bias
+			<< p.acc.start.bias
+			<< p.exptime.start.bias
+			<< p.size.start.bias;
+
+		std::ostringstream os(std::ios_base::binary);
+
+		// final tween frames of older properties
+		p.pos.end.serialize(os);
+		p.vel.end.serialize(os);
+		p.acc.end.serialize(os);
+		p.exptime.end.serialize(os);
+		p.size.end.serialize(os);
+
+		// properties for legacy texture field
+		p.texture.serialize(os, protocol_version, true);
+
+		// new properties
+		p.drag.serialize(os);
+		p.jitter.serialize(os);
+		p.bounce.serialize(os);
+		ParticleParamTypes::serializeParameterValue(os, p.attractor_kind);
+		if (p.attractor_kind != ParticleParamTypes::AttractorKind::none) {
+			p.attract.serialize(os);
+			p.attractor_origin.serialize(os);
+			writeU16(os, p.attractor_attachment); /* object ID */
+			writeU8(os, p.attractor_kill);
+			if (p.attractor_kind != ParticleParamTypes::AttractorKind::point) {
+				p.attractor_direction.serialize(os);
+				writeU16(os, p.attractor_direction_attachment);
+			}
+		}
+		p.radius.serialize(os);
+
+		ParticleParamTypes::serializeParameterValue(os, (u16)p.texpool.size());
+		for (const auto& tex : p.texpool) {
+			tex.serialize(os, protocol_version);
+		}
+
+		pkt.putRawString(os.str());
+	}
 
 	Send(&pkt);
 }
@@ -3267,7 +3326,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	u32 new_hud_flags = (player->hud_flags & ~mask) | flags;
 	if (new_hud_flags == player->hud_flags) // no change
 		return true;
-	
+
 	SendHUDSetFlags(player->getPeerId(), flags, mask);
 	player->hud_flags = new_hud_flags;
 
@@ -3692,8 +3751,8 @@ v3f Server::findSpawnPos()
 		s32 range = MYMIN(1 + i, range_max);
 		// We're going to try to throw the player to this position
 		v2s16 nodepos2d = v2s16(
-			-range + (myrand() % (range * 2)),
-			-range + (myrand() % (range * 2)));
+			-range + myrand_range(0, range*2),
+			-range + myrand_range(0, range*2));
 		// Get spawn level at point
 		s16 spawn_level = m_emerge->getSpawnLevelAtPoint(nodepos2d);
 		// Continue if MAX_MAP_GENERATION_LIMIT was returned by the mapgen to
