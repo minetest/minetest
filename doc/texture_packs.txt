@@ -209,7 +209,7 @@ Here are targets you can choose from:
 Nodes support all targets, but other items only support 'inventory'
 and 'wield'.
 
-¹ : `N` stands for any number in [0,255]. See lua_api.txt "align_style" for details.
+¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to lua_api.txt for details.
 
 ### Using the special targets
 
