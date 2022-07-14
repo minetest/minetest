@@ -55,6 +55,7 @@ void RenderingCoreAnaglyph::createPipeline()
 {
 	// clear depth buffer every time 3D is rendered
 	auto step3D = pipeline->own(new Draw3D());
+	auto screen = pipeline->own(new ScreenTarget());
 	step3D->setRenderTarget(pipeline->own(new ClearDepthBufferTarget(screen)));
 
 	// left eye

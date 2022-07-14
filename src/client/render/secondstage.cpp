@@ -104,7 +104,7 @@ void RenderingCoreSecondStage::createPipeline()
 
 	RenderStep *effect = addPostProcessing(pipeline, step3D, v2f(1.0f), client);
 	pipeline->addStep(pipeline->own(effect));
-	effect->setRenderTarget(screen);
+	effect->setRenderTarget(pipeline->own(new ScreenTarget()));
 
 	// HUD and overlays
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));

@@ -80,7 +80,7 @@ void RenderingCoreInterlaced::createPipeline()
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	auto merge = new PostProcessingStep(s->getShaderInfo(shader).material, { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK });
 	merge->setRenderSource(buffer);
-	merge->setRenderTarget(screen);
+	merge->setRenderTarget(pipeline->own(new ScreenTarget()));
 	pipeline->addStep(pipeline->own(merge));
 	pipeline->addStep(pipeline->own(new DrawHUD()));
 }

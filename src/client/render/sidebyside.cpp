@@ -81,6 +81,9 @@ void RenderingCoreSideBySide::createPipeline()
 	}
 
 	pipeline->addStep(pipeline->own(new OffsetCameraStep(0.0f)));
+
+	auto screen = pipeline->own(new ScreenTarget());
+
 	for (bool right : { false, true }) {
 		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? offset : v2f());
 		step->setRenderSource(buffer);

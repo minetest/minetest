@@ -106,7 +106,7 @@ void RenderingCorePlain::createPipeline()
 
 	step3D = addUpscaling(pipeline, step3D, v2f(1.0));
 
-	step3D->setRenderTarget(screen);
+	step3D->setRenderTarget(pipeline->own(new ScreenTarget()));
 
 	pipeline->addStep(pipeline->own(new DrawHUD()));
 }

@@ -37,8 +37,6 @@ protected:
 	Hud *hud;
 	ShadowRenderer *shadow_renderer;
 
-	RenderTarget *screen;
-
 	RenderPipeline *pipeline;
 
 	v2f virtual_size_scale;
