@@ -55,7 +55,7 @@ void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 		result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 
 	if (stereo_mode == "none") {
-		populatePlainPipeline(result->pipeline);
+		populatePlainPipeline(result->pipeline, client);
 		return;
 	}
 	if (stereo_mode == "anaglyph") {
@@ -85,5 +85,5 @@ void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 
 	// fallback to plain renderer
 	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
-	populatePlainPipeline(result->pipeline);
+	populatePlainPipeline(result->pipeline, client);
 }

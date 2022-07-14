@@ -87,4 +87,4 @@ RenderStep *create3DStage();
 RenderStep *create3DStage(Client *client, v2f scale);
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale);
 
-void populatePlainPipeline(RenderPipeline *pipeline);
+void populatePlainPipeline(RenderPipeline *pipeline, Client *client);

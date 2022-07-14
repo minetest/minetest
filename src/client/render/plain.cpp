@@ -140,9 +140,9 @@ RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 	return upscale;
 }
 
-void populatePlainPipeline(RenderPipeline *pipeline)
+void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 {
-	auto step3D = pipeline->own(create3DStage());
+	auto step3D = pipeline->own(create3DStage(client, v2f(1.0f)));
 	pipeline->addStep(step3D);
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 
