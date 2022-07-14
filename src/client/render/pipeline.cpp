@@ -188,8 +188,7 @@ void TextureBufferOutput::activate(PipelineContext *context)
 	auto texture = buffer->getTexture(texture_index);
 	auto driver = context->device->getVideoDriver();
 	driver->setRenderTarget(texture, m_clear, m_clear, context->clear_color);
-	size = texture->getSize();
-	driver->OnResize(size);
+	driver->OnResize(texture->getSize());
 
 	RenderTarget::activate(context);
 }
@@ -219,7 +218,6 @@ void DynamicTarget::activate(PipelineContext *context)
 	if (!isConfigured())
 		throw std::logic_error("Dynamic render target is not configured before activation.");
 	upstream->activate(context);
-	size = upstream->getSize();
 }
 
 void ScreenTarget::reset(PipelineContext *context)

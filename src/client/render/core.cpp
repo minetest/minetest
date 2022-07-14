@@ -25,17 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: device(_device), client(_client), hud(_hud), shadow_renderer(createShadowRenderer(device, client)), pipeline(new RenderPipeline())
+	: device(_device), client(_client), hud(_hud), shadow_renderer(createShadowRenderer(device, client)), pipeline(new RenderPipeline()), 
+	virtual_size_scale(1.0f)
 {
 	screen = new ScreenTarget();
 	pipeline->own(screen);
-	scene_output = screen;
 }
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud, 
-		ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, RenderTarget *_scene_output)
+		ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, v2f _virtual_size_scale)
 	: device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer), 
-	screen(nullptr), scene_output(_scene_output), pipeline(_pipeline)
+	screen(nullptr), pipeline(_pipeline), virtual_size_scale(_virtual_size_scale)
 {
 }
 
@@ -57,6 +57,7 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 		bool _draw_wield_tool, bool _draw_crosshair)
 {
 	v2u32 screensize = device->getVideoDriver()->getScreenSize();
+	virtual_size = v2u32(screensize.X * virtual_size_scale.X, screensize.Y * virtual_size_scale.Y);
 
 	PipelineContext context(device, client, hud, shadow_renderer, _skycolor, screensize);
 	context.draw_crosshair = _draw_crosshair;
@@ -70,5 +71,5 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 
 v2u32 RenderingCore::getVirtualSize() const
 {
-	return scene_output->getSize();
+	return virtual_size;
 }

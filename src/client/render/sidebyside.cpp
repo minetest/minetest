@@ -54,20 +54,19 @@ RenderingCoreSideBySide::RenderingCoreSideBySide(
 
 void RenderingCoreSideBySide::createPipeline()
 {
-	v2f scale;
 	v2f offset;
 	if (horizontal) {
-		scale = v2f(1.0f, 0.5f);
+		virtual_size_scale = v2f(1.0f, 0.5f);
 		offset = v2f(0.0f, 0.5f);
 	}
 	else {
-		scale = v2f(0.5f, 1.0f);
+		virtual_size_scale = v2f(0.5f, 1.0f);
 		offset = v2f(0.5f, 0.0f);
 	}
 
 	TextureBuffer *buffer = new TextureBuffer();
-	buffer->setTexture(TEXTURE_LEFT, scale, "3d_render_left", video::ECF_A8R8G8B8);
-	buffer->setTexture(TEXTURE_RIGHT, scale, "3d_render_right", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_LEFT, virtual_size_scale, "3d_render_left", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_RIGHT, virtual_size_scale, "3d_render_right", video::ECF_A8R8G8B8);
 	pipeline->own(static_cast<RenderTarget*>(buffer));
 
 	// eyes
@@ -76,7 +75,6 @@ void RenderingCoreSideBySide::createPipeline()
 		auto step3D = create3DPipeline();
 		pipeline->addStep(pipeline->own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
-		scene_output = output;
 		step3D->setRenderTarget(pipeline->own(output));
 		pipeline->addStep(pipeline->own(new MapPostFxStep()));
 		pipeline->addStep(pipeline->own(new DrawHUD()));

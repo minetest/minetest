@@ -103,11 +103,8 @@ public:
 		m_clear = true;
 	}
 
-	virtual core::dimension2du getSize() { return size; }
-
 protected:
 	bool m_clear {true};
-	core::dimension2du size;
 };
 
 /**
@@ -283,6 +280,8 @@ class ScreenTarget : public RenderTarget
 public:
 	virtual void activate(PipelineContext *context) override;
 	virtual void reset(PipelineContext *context) override;
+private:
+	core::dimension2du size;
 };
 
 class DynamicTarget : public RenderTarget
