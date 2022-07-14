@@ -69,21 +69,14 @@ local function test_clear_meta(_, pos)
 end
 unittests.register("test_clear_meta", test_clear_meta, {map=true})
 
-minetest.register_node("unittests:on_place", {
-	on_dig = function(pos)
-		minetest.remove_node(pos)
-		return true
-	end
-})
-
 local on_punch_called
 minetest.register_on_punchnode(function()
 	on_punch_called = true
 end)
 unittests.register("test_punch_node", function(_, pos)
+	minetest.place_node(pos, {name="basenodes:dirt"})
 	on_punch_called = false
-	minetest.place_node(pos, {name="unittests:on_place"})
 	minetest.punch_node(pos)
-	minetest.dig_node(pos)
+	minetest.remove_node(pos)
 	assert(on_punch_called)
-end, {map = true})
+end, {map=true})
