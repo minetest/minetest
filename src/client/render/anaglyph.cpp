@@ -53,6 +53,11 @@ void ClearDepthBufferTarget::activate(PipelineContext *context)
 
 void RenderingCoreAnaglyph::createPipeline()
 {
+	populateAnaglyphPipeline(pipeline);
+}
+
+void populateAnaglyphPipeline(RenderPipeline *pipeline)
+{
 	// clear depth buffer every time 3D is rendered
 	auto step3D = pipeline->own(new Draw3D());
 	auto screen = pipeline->own(new ScreenTarget());

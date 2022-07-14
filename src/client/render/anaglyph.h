@@ -59,3 +59,5 @@ protected:
 public:
 	using RenderingCoreStereo::RenderingCoreStereo;
 };
+
+void populateAnaglyphPipeline(RenderPipeline *pipeline);
