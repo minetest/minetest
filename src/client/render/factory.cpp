@@ -26,9 +26,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sidebyside.h"
 #include "secondstage.h"
 
+struct CreatePipelineResult
+{
+	v2f virtual_size_scale;
+	ShadowRenderer *shadow_renderer;
+	RenderPipeline *pipeline;
+};
+
+bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result);
+
 RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device,
 		Client *client, Hud *hud)
 {
+	CreatePipelineResult created_pipeline;
+	if (createPipeline(stereo_mode, device, client, hud, &created_pipeline))
+		return new RenderingCore(device, client, hud, 
+				created_pipeline.shadow_renderer, created_pipeline.pipeline, created_pipeline.virtual_size_scale);
+
 	if (stereo_mode == "none")
 		return new RenderingCorePlain(device, client, hud);
 	if (stereo_mode == "anaglyph")
@@ -47,4 +61,9 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 	// fallback to plain renderer
 	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
 	return new RenderingCorePlain(device, client, hud);
+}
+
+bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result)
+{
+	return false;
 }
