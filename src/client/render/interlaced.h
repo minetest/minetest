@@ -35,12 +35,10 @@ private:
 class RenderingCoreInterlaced : public RenderingCoreStereo
 {
 protected:
-	static const u8 TEXTURE_LEFT = 0;
-	static const u8 TEXTURE_RIGHT = 1;
-	static const u8 TEXTURE_MASK = 2;
-
 	void createPipeline() override;
 
 public:
 	RenderingCoreInterlaced(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 };
+
+void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client);

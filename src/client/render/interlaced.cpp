@@ -57,6 +57,15 @@ RenderingCoreInterlaced::RenderingCoreInterlaced(
 
 void RenderingCoreInterlaced::createPipeline()
 {
+	populateInterlacedPipeline(pipeline, client);
+}
+
+void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
+{
+	static const u8 TEXTURE_LEFT = 0;
+	static const u8 TEXTURE_RIGHT = 1;
+	static const u8 TEXTURE_MASK = 2;
+
 	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_LEFT, v2f(1.0f, 0.5f), "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, v2f(1.0f, 0.5f), "3d_render_right", video::ECF_A8R8G8B8);
