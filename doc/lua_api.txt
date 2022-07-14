@@ -6813,7 +6813,7 @@ It is possible to attach objects to other objects (`set_attach` method).
 
 When an object is attached, it is positioned relative to the parent's position
 and rotation. `get_pos` and `get_rotation` will always return the parent's
-values and can't be set directly.
+values and changes via their setter counterparts are ignored.
 
 To change position or rotation call `set_attach` again with the new values.
 
@@ -6874,7 +6874,7 @@ child will follow movement and rotation of that bone.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
 * `set_attach(parent[, bone, position, rotation, forced_visible])`
-    * `parent`: object to attach to
+    * `parent`: `ObjectRef` to attach to
     * `bone`: default `""` (the root bone)
     * `position`: relative position, default `{x=0, y=0, z=0}`
     * `rotation`: relative rotation in degrees, default `{x=0, y=0, z=0}`
@@ -7062,7 +7062,7 @@ child will follow movement and rotation of that bone.
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
     * `stat` supports the same keys as in the hud definition table except for
-      'hud_elem_type'
+      `"hud_elem_type"`.
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
@@ -8905,7 +8905,7 @@ HUD Definition
 Since most values have multiple different functions, please see the
 documentation in [HUD] section.
 
-Used by `ObjectRef:hud_add()`. Returned by `ObjectRef:hud_get()`.
+Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
     {
         hud_elem_type = "image",
