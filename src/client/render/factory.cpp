@@ -93,5 +93,32 @@ bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 		populateInterlacedPipeline(result->pipeline, client);
 		return true;
 	}
+	if (stereo_mode == "sidebyside") {
+		result->shadow_renderer = createShadowRenderer(device, client);
+		result->virtual_size_scale = v2f(1.0f);
+		result->pipeline = new RenderPipeline();
+		if (result->shadow_renderer)
+			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
+		populateSideBySidePipeline(result->pipeline, false, false, result->virtual_size_scale);
+		return true;
+	}
+	if (stereo_mode == "topbottom") {
+		result->shadow_renderer = createShadowRenderer(device, client);
+		result->virtual_size_scale = v2f(1.0f);
+		result->pipeline = new RenderPipeline();
+		if (result->shadow_renderer)
+			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
+		populateSideBySidePipeline(result->pipeline, true, false, result->virtual_size_scale);
+		return true;
+	}
+	if (stereo_mode == "crossview") {
+		result->shadow_renderer = createShadowRenderer(device, client);
+		result->virtual_size_scale = v2f(1.0f);
+		result->pipeline = new RenderPipeline();
+		if (result->shadow_renderer)
+			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
+		populateSideBySidePipeline(result->pipeline, false, true, result->virtual_size_scale);
+		return true;
+	}
 	return false;
 }

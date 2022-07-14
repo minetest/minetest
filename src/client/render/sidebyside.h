@@ -41,9 +41,6 @@ private:
 class RenderingCoreSideBySide : public RenderingCoreStereo
 {
 protected:
-	static const u8 TEXTURE_LEFT = 0;
-	static const u8 TEXTURE_RIGHT = 1;
-
 	bool horizontal = false;
 	bool flipped = false;
 
@@ -53,3 +50,5 @@ public:
 	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
 			bool _horizontal = false, bool _flipped = false);
 };
+
+void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool flipped, v2f &virtual_size_scale);

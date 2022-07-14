@@ -54,6 +54,14 @@ RenderingCoreSideBySide::RenderingCoreSideBySide(
 
 void RenderingCoreSideBySide::createPipeline()
 {
+	populateSideBySidePipeline(pipeline, horizontal, flipped, virtual_size_scale);
+}
+
+void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool flipped, v2f &virtual_size_scale)
+{
+	static const u8 TEXTURE_LEFT = 0;
+	static const u8 TEXTURE_RIGHT = 1;
+
 	v2f offset;
 	if (horizontal) {
 		virtual_size_scale = v2f(1.0f, 0.5f);
