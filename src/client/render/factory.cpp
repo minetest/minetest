@@ -66,68 +66,44 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 
 bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result)
 {
+	result->shadow_renderer = createShadowRenderer(device, client);
+	result->virtual_size_scale = v2f(1.0f);
+	result->pipeline = new RenderPipeline();
+
+	if (result->shadow_renderer)
+		result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
+
 	if (stereo_mode == "none") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populatePlainPipeline(result->pipeline);
 		return true;
 	}
 	if (stereo_mode == "anaglyph") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populateAnaglyphPipeline(result->pipeline);
 		return true;
 	}
 	if (stereo_mode == "interlaced") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populateInterlacedPipeline(result->pipeline, client);
 		return true;
 	}
 	if (stereo_mode == "sidebyside") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populateSideBySidePipeline(result->pipeline, false, false, result->virtual_size_scale);
 		return true;
 	}
 	if (stereo_mode == "topbottom") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populateSideBySidePipeline(result->pipeline, true, false, result->virtual_size_scale);
 		return true;
 	}
 	if (stereo_mode == "crossview") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populateSideBySidePipeline(result->pipeline, false, true, result->virtual_size_scale);
 		return true;
 	}
 	if (stereo_mode == "secondstage") {
-		result->shadow_renderer = createShadowRenderer(device, client);
-		result->virtual_size_scale = v2f(1.0f);
-		result->pipeline = new RenderPipeline();
-		if (result->shadow_renderer)
-			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
 		populateSecondStagePipeline(result->pipeline, client);
 		return true;
 	}
-	return false;
+
+	// fallback to plain renderer
+	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
+	populatePlainPipeline(result->pipeline);
+	return true;
 }
