@@ -93,7 +93,7 @@ void UpscaleStep::run(PipelineContext *context)
 			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }
 
-RenderStep *create3DPipeline()
+RenderStep *create3DStage()
 {
 	return new Draw3D();
 }
@@ -126,7 +126,7 @@ RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 
 void populatePlainPipeline(RenderPipeline *pipeline)
 {
-	auto step3D = pipeline->own(create3DPipeline());
+	auto step3D = pipeline->own(create3DStage());
 	pipeline->addStep(step3D);
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 

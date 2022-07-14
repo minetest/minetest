@@ -83,7 +83,7 @@ private:
 	RenderTarget *m_target;
 };
 
-RenderStep *create3DPipeline();
+RenderStep *create3DStage();
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale);
 
 void populatePlainPipeline(RenderPipeline *pipeline);
