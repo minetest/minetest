@@ -99,7 +99,7 @@ void RenderingCoreSecondStage::createPipeline()
 {
 
 	// 3d stage
-	auto step3D = new Draw3D();
+	auto step3D = create3DPipeline();
 	pipeline->addStep(pipeline->own(step3D));
 
 	RenderStep *effect = addPostProcessing(pipeline, step3D, v2f(1.0f), client);

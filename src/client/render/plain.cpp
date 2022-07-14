@@ -100,7 +100,7 @@ RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client,
 
 void RenderingCorePlain::createPipeline()
 {
-	auto step3D = pipeline->own(new Draw3D());
+	auto step3D = pipeline->own(create3DPipeline());
 	pipeline->addStep(step3D);
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 
@@ -109,6 +109,11 @@ void RenderingCorePlain::createPipeline()
 	step3D->setRenderTarget(screen);
 
 	pipeline->addStep(pipeline->own(new DrawHUD()));
+}
+
+RenderStep *create3DPipeline()
+{
+	return new Draw3D();
 }
 
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale_factor)

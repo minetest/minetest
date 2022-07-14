@@ -73,7 +73,7 @@ void RenderingCoreSideBySide::createPipeline()
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline->addStep(pipeline->own(new OffsetCameraStep(flipped ? !right : right)));
-		auto step3D = new Draw3D();
+		auto step3D = create3DPipeline();
 		pipeline->addStep(pipeline->own(step3D));
 		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		scene_output = output;

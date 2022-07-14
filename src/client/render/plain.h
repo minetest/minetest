@@ -91,4 +91,5 @@ public:
 	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 };
 
+RenderStep *create3DPipeline();
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale);
