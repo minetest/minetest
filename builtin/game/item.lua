@@ -5,8 +5,8 @@ local builtin_shared = ...
 local function copy_pointed_thing(pointed_thing)
 	return {
 		type  = pointed_thing.type,
-		above = vector.copy(pointed_thing.above),
-		under = vector.copy(pointed_thing.under),
+		above = pointed_thing.above and vector.copy(pointed_thing.above),
+		under = pointed_thing.under and vector.copy(pointed_thing.under),
 		ref   = pointed_thing.ref,
 	}
 end
@@ -176,12 +176,12 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	end
 
 	-- Place above pointed node
-	local place_to = vector.new(above)
+	local place_to = vector.copy(above)
 
 	-- If node under is buildable_to, place into it instead (eg. snow)
 	if olddef_under.buildable_to then
 		log("info", "node under is buildable to")
-		place_to = vector.new(under)
+		place_to = vector.copy(under)
 	end
 
 	if core.is_protected(place_to, playername) then
@@ -262,7 +262,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	-- Run callback
 	if def.after_place_node and not prevent_after_place then
 		-- Deepcopy place_to and pointed_thing because callback can modify it
-		local place_to_copy = vector.new(place_to)
+		local place_to_copy = vector.copy(place_to)
 		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
 		if def.after_place_node(place_to_copy, placer, itemstack,
 				pointed_thing_copy) then
@@ -273,7 +273,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	-- Run script hook
 	for _, callback in ipairs(core.registered_on_placenodes) do
 		-- Deepcopy pos, node and pointed_thing because callback can modify them
-		local place_to_copy = vector.new(place_to)
+		local place_to_copy = vector.copy(place_to)
 		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
 		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
 		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
@@ -401,7 +401,7 @@ function core.node_punch(pos, node, puncher, pointed_thing)
 	-- Run script hook
 	for _, callback in ipairs(core.registered_on_punchnodes) do
 		-- Copy pos and node because callback can modify them
-		local pos_copy = vector.new(pos)
+		local pos_copy = vector.copy(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		local pointed_thing_copy = pointed_thing and copy_pointed_thing(pointed_thing) or nil
 		callback(pos_copy, node_copy, puncher, pointed_thing_copy)
@@ -442,7 +442,7 @@ function core.node_dig(pos, node, digger)
 	local def = core.registered_nodes[node.name]
 	-- Copy pos because the callback could modify it
 	if def and (not def.diggable or
-			(def.can_dig and not def.can_dig(vector.new(pos), digger))) then
+			(def.can_dig and not def.can_dig(vector.copy(pos), digger))) then
 		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))
@@ -489,7 +489,7 @@ function core.node_dig(pos, node, digger)
 	if def and def.preserve_metadata then
 		local oldmeta = core.get_meta(pos):to_table().fields
 		-- Copy pos and node because the callback can modify them.
-		local pos_copy = vector.new(pos)
+		local pos_copy = vector.copy(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		local drop_stacks = {}
 		for k, v in pairs(drops) do
@@ -521,7 +521,7 @@ function core.node_dig(pos, node, digger)
 	-- Run callback
 	if def and def.after_dig_node then
 		-- Copy pos and node because callback can modify them
-		local pos_copy = vector.new(pos)
+		local pos_copy = vector.copy(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger)
 	end
@@ -532,7 +532,7 @@ function core.node_dig(pos, node, digger)
 		core.set_last_run_mod(origin.mod)
 
 		-- Copy pos and node because callback can modify them
-		local pos_copy = vector.new(pos)
+		local pos_copy = vector.copy(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		callback(pos_copy, node_copy, digger)
 	end
