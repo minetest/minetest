@@ -93,18 +93,6 @@ void UpscaleStep::run(PipelineContext *context)
 			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }
 
-RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud) : 
-		RenderingCore(_device, _client, _hud)
-{
-}
-
-void RenderingCorePlain::createPipeline()
-{
-	populatePlainPipeline(pipeline);
-}
-
-
-
 RenderStep *create3DPipeline()
 {
 	return new Draw3D();

@@ -32,13 +32,4 @@ private:
 	u8 index;
 };
 
-class RenderingCoreInterlaced : public RenderingCoreStereo
-{
-protected:
-	void createPipeline() override;
-
-public:
-	RenderingCoreInterlaced(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-};
-
 void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client);

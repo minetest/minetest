@@ -34,37 +34,18 @@ struct CreatePipelineResult
 	RenderPipeline *pipeline;
 };
 
-bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result);
+void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result);
 
 RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device,
 		Client *client, Hud *hud)
 {
 	CreatePipelineResult created_pipeline;
-	if (createPipeline(stereo_mode, device, client, hud, &created_pipeline))
-		return new RenderingCore(device, client, hud, 
-				created_pipeline.shadow_renderer, created_pipeline.pipeline, created_pipeline.virtual_size_scale);
-
-	if (stereo_mode == "none")
-		return new RenderingCorePlain(device, client, hud);
-	if (stereo_mode == "anaglyph")
-		return new RenderingCoreAnaglyph(device, client, hud);
-	if (stereo_mode == "interlaced")
-		return new RenderingCoreInterlaced(device, client, hud);
-	if (stereo_mode == "sidebyside")
-		return new RenderingCoreSideBySide(device, client, hud);
-	if (stereo_mode == "topbottom")
-		return new RenderingCoreSideBySide(device, client, hud, true);
-	if (stereo_mode == "crossview")
-		return new RenderingCoreSideBySide(device, client, hud, false, true);
-	if (stereo_mode == "secondstage")
-		return new RenderingCoreSecondStage(device, client, hud);
-
-	// fallback to plain renderer
-	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
-	return new RenderingCorePlain(device, client, hud);
+	createPipeline(stereo_mode, device, client, hud, &created_pipeline);
+	return new RenderingCore(device, client, hud, 
+			created_pipeline.shadow_renderer, created_pipeline.pipeline, created_pipeline.virtual_size_scale);
 }
 
-bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result)
+void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result)
 {
 	result->shadow_renderer = createShadowRenderer(device, client);
 	result->virtual_size_scale = v2f(1.0f);
@@ -75,35 +56,34 @@ bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 
 	if (stereo_mode == "none") {
 		populatePlainPipeline(result->pipeline);
-		return true;
+		return;
 	}
 	if (stereo_mode == "anaglyph") {
 		populateAnaglyphPipeline(result->pipeline);
-		return true;
+		return;
 	}
 	if (stereo_mode == "interlaced") {
 		populateInterlacedPipeline(result->pipeline, client);
-		return true;
+		return;
 	}
 	if (stereo_mode == "sidebyside") {
 		populateSideBySidePipeline(result->pipeline, false, false, result->virtual_size_scale);
-		return true;
+		return;
 	}
 	if (stereo_mode == "topbottom") {
 		populateSideBySidePipeline(result->pipeline, true, false, result->virtual_size_scale);
-		return true;
+		return;
 	}
 	if (stereo_mode == "crossview") {
 		populateSideBySidePipeline(result->pipeline, false, true, result->virtual_size_scale);
-		return true;
+		return;
 	}
 	if (stereo_mode == "secondstage") {
 		populateSecondStagePipeline(result->pipeline, client);
-		return true;
+		return;
 	}
 
 	// fallback to plain renderer
 	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
 	populatePlainPipeline(result->pipeline);
-	return true;
 }

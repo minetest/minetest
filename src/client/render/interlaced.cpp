@@ -48,18 +48,6 @@ void InitInterlacedMaskStep::run(PipelineContext *context)
 	mask->unlock();
 }
 
-
-RenderingCoreInterlaced::RenderingCoreInterlaced(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreStereo(_device, _client, _hud)
-{
-}
-
-void RenderingCoreInterlaced::createPipeline()
-{
-	populateInterlacedPipeline(pipeline, client);
-}
-
 void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 {
 	static const u8 TEXTURE_LEFT = 0;

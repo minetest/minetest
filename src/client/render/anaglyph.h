@@ -51,13 +51,4 @@ private:
 	RenderTarget *target;
 };
 
-class RenderingCoreAnaglyph : public RenderingCoreStereo
-{
-protected:
-	void createPipeline() override;
-
-public:
-	using RenderingCoreStereo::RenderingCoreStereo;
-};
-
 void populateAnaglyphPipeline(RenderPipeline *pipeline);

@@ -38,17 +38,4 @@ private:
 	RenderTarget *target;
 };
 
-class RenderingCoreSideBySide : public RenderingCoreStereo
-{
-protected:
-	bool horizontal = false;
-	bool flipped = false;
-
-	void createPipeline() override;
-
-public:
-	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
-			bool _horizontal = false, bool _flipped = false);
-};
-
 void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool flipped, v2f &virtual_size_scale);

@@ -45,9 +45,3 @@ void OffsetCameraStep::run(PipelineContext *context)
 {
 	context->client->getCamera()->getCameraNode()->setPosition((base_transform * move).getTranslation());
 }
-
-RenderingCoreStereo::RenderingCoreStereo(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCore(_device, _client, _hud)
-{
-}

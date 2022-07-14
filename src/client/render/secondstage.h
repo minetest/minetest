@@ -42,14 +42,6 @@ private:
 	void createMaterial(video::E_MATERIAL_TYPE shader);
 };
 
-class RenderingCoreSecondStage : public RenderingCoreStereo
-{
-protected:
-	void createPipeline() override;
-public:
-	RenderingCoreSecondStage(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-};
-
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client);
 
 void populateSecondStagePipeline(RenderPipeline *pipeline, Client *client);

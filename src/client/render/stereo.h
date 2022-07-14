@@ -39,12 +39,3 @@ private:
 	core::matrix4 base_transform;
 	core::matrix4 move;
 };
-
-class RenderingCoreStereo : public RenderingCore
-{
-protected:
-	float eye_offset;
-
-public:
-	RenderingCoreStereo(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-};

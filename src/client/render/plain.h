@@ -83,14 +83,6 @@ private:
 	RenderTarget *m_target;
 };
 
-class RenderingCorePlain : public RenderingCore
-{
-protected:
-	void createPipeline() override;
-public:
-	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-};
-
 RenderStep *create3DPipeline();
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale);
 

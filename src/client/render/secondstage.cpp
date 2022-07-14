@@ -88,18 +88,6 @@ void PostProcessingStep::run(PipelineContext *context)
 	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 }
 
-
-RenderingCoreSecondStage::RenderingCoreSecondStage(
-		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
-		RenderingCoreStereo(_device, _client, _hud)
-{
-}
-
-void RenderingCoreSecondStage::createPipeline()
-{
-	populateSecondStagePipeline(pipeline, client);
-}
-
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
 {
 	auto buffer = new TextureBuffer();

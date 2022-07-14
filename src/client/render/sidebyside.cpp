@@ -46,17 +46,6 @@ void DrawImageStep::run(PipelineContext *context)
 	context->device->getVideoDriver()->draw2DImage(texture, pos);
 }
 
-RenderingCoreSideBySide::RenderingCoreSideBySide(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal, bool _flipped)
-	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal), flipped(_flipped)
-{
-}
-
-void RenderingCoreSideBySide::createPipeline()
-{
-	populateSideBySidePipeline(pipeline, horizontal, flipped, virtual_size_scale);
-}
-
 void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool flipped, v2f &virtual_size_scale)
 {
 	static const u8 TEXTURE_LEFT = 0;

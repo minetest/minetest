@@ -51,11 +51,6 @@ void ClearDepthBufferTarget::activate(PipelineContext *context)
 	context->device->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 }
 
-void RenderingCoreAnaglyph::createPipeline()
-{
-	populateAnaglyphPipeline(pipeline);
-}
-
 void populateAnaglyphPipeline(RenderPipeline *pipeline)
 {
 	// clear depth buffer every time 3D is rendered
