@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "interlaced.h"
 #include "sidebyside.h"
 #include "secondstage.h"
+#include "client/shadows/dynamicshadowsrender.h"
 
 struct CreatePipelineResult
 {
@@ -65,5 +66,14 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 
 bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud, CreatePipelineResult *result)
 {
+	if (stereo_mode == "none") {
+		result->shadow_renderer = createShadowRenderer(device, client);
+		result->virtual_size_scale = v2f(1.0f);
+		result->pipeline = new RenderPipeline();
+		if (result->shadow_renderer)
+			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
+		populatePlainPipeline(result->pipeline);
+		return true;
+	}
 	return false;
 }

@@ -93,3 +93,5 @@ public:
 
 RenderStep *create3DPipeline();
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale);
+
+void populatePlainPipeline(RenderPipeline *pipeline);
