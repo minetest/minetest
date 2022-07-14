@@ -120,5 +120,14 @@ bool createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 		populateSideBySidePipeline(result->pipeline, false, true, result->virtual_size_scale);
 		return true;
 	}
+	if (stereo_mode == "secondstage") {
+		result->shadow_renderer = createShadowRenderer(device, client);
+		result->virtual_size_scale = v2f(1.0f);
+		result->pipeline = new RenderPipeline();
+		if (result->shadow_renderer)
+			result->pipeline->addStep(result->pipeline->own(new RenderShadowMapStep()));
+		populateSecondStagePipeline(result->pipeline, client);
+		return true;
+	}
 	return false;
 }

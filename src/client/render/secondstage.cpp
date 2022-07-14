@@ -97,18 +97,7 @@ RenderingCoreSecondStage::RenderingCoreSecondStage(
 
 void RenderingCoreSecondStage::createPipeline()
 {
-
-	// 3d stage
-	auto step3D = create3DPipeline();
-	pipeline->addStep(pipeline->own(step3D));
-
-	RenderStep *effect = addPostProcessing(pipeline, step3D, v2f(1.0f), client);
-	pipeline->addStep(pipeline->own(effect));
-	effect->setRenderTarget(pipeline->own(new ScreenTarget()));
-
-	// HUD and overlays
-	pipeline->addStep(pipeline->own(new MapPostFxStep()));
-	pipeline->addStep(pipeline->own(new DrawHUD()));
+	populateSecondStagePipeline(pipeline, client);
 }
 
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
@@ -135,4 +124,19 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	PostProcessingStep *effect = new PostProcessingStep(shader, std::vector<u8> {0, 1, 0, 2});
 	effect->setRenderSource(buffer);
 	return effect;
+}
+
+void populateSecondStagePipeline(RenderPipeline *pipeline, Client *client)
+{
+	// 3d stage
+	auto step3D = create3DPipeline();
+	pipeline->addStep(pipeline->own(step3D));
+
+	RenderStep *effect = addPostProcessing(pipeline, step3D, v2f(1.0f), client);
+	pipeline->addStep(pipeline->own(effect));
+	effect->setRenderTarget(pipeline->own(new ScreenTarget()));
+
+	// HUD and overlays
+	pipeline->addStep(pipeline->own(new MapPostFxStep()));
+	pipeline->addStep(pipeline->own(new DrawHUD()));
 }

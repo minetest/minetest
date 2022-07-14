@@ -51,3 +51,5 @@ public:
 };
 
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client);
+
+void populateSecondStagePipeline(RenderPipeline *pipeline, Client *client);
