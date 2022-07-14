@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "plain.h"
+#include "secondstage.h"
 #include "client/camera.h"
 #include "client/client.h"
 #include "client/clientmap.h"
@@ -96,6 +97,21 @@ void UpscaleStep::run(PipelineContext *context)
 RenderStep *create3DStage()
 {
 	return new Draw3D();
+}
+
+RenderStep *create3DStage(Client *client, v2f scale)
+{
+	RenderStep *step = new Draw3D();
+	if (g_settings->getBool("enable_shaders")) {
+		RenderPipeline *pipeline = new RenderPipeline();
+		pipeline->addStep(pipeline->own(step));
+
+		auto effect = addPostProcessing(pipeline, step, scale, client);
+		pipeline->addStep(pipeline->own(effect));
+		effect->setRenderTarget(pipeline->getOutput());
+		step = pipeline;
+	}
+	return step;
 }
 
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale_factor)
