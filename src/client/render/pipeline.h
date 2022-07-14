@@ -403,6 +403,9 @@ public:
 	RenderSource *getInput();
 	RenderTarget *getOutput();
 
+	v2f getScale() { return scale; }
+	void setScale(v2f value) { scale = value; }
+
 	virtual void reset(PipelineContext *context) override {}
 	virtual void run(PipelineContext *context) override;
 
@@ -415,4 +418,5 @@ private:
 	std::vector< std::unique_ptr<RenderTarget> > m_targets;
 	DynamicSource m_input;
 	DynamicTarget m_output;
+	v2f scale { 1.0f, 1.0f };
 };

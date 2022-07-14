@@ -240,6 +240,9 @@ RenderTarget *RenderPipeline::getOutput()
 
 void RenderPipeline::run(PipelineContext *context)
 {
+	v2u32 original_size = context->target_size;
+	context->target_size = v2u32(original_size.X * scale.X, original_size.Y * scale.Y);
+
 	for (auto &target : m_targets)
 		target->reset(context);
 
@@ -248,6 +251,8 @@ void RenderPipeline::run(PipelineContext *context)
 
 	for (auto &step: m_pipeline)
 		step->run(context);
+	
+	context->target_size = original_size;
 }
 
 void RenderPipeline::setRenderSource(RenderSource *source)
