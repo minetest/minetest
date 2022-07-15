@@ -38,4 +38,4 @@ private:
 	RenderTarget *target;
 };
 
-void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool flipped, v2f &virtual_size_scale);
+void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool horizontal, bool flipped, v2f &virtual_size_scale);

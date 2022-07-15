@@ -46,7 +46,7 @@ void DrawImageStep::run(PipelineContext *context)
 	context->device->getVideoDriver()->draw2DImage(texture, pos);
 }
 
-void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool flipped, v2f &virtual_size_scale)
+void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool horizontal, bool flipped, v2f &virtual_size_scale)
 {
 	static const u8 TEXTURE_LEFT = 0;
 	static const u8 TEXTURE_RIGHT = 1;
@@ -66,13 +66,14 @@ void populateSideBySidePipeline(RenderPipeline *pipeline, bool horizontal, bool 
 	buffer->setTexture(TEXTURE_RIGHT, virtual_size_scale, "3d_render_right", video::ECF_A8R8G8B8);
 	pipeline->own(static_cast<RenderTarget*>(buffer));
 
+	auto step3D = pipeline->own(create3DStage(client, virtual_size_scale));
+
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline->addStep(pipeline->own(new OffsetCameraStep(flipped ? !right : right)));
-		auto step3D = create3DStage();
-		pipeline->addStep(pipeline->own(step3D));
-		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
-		step3D->setRenderTarget(pipeline->own(output));
+		auto output = pipeline->own(new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT));
+		pipeline->addStep(pipeline->own(new SetRenderTargetStep(step3D, output)));
+		pipeline->addStep(step3D);
 		pipeline->addStep(pipeline->own(new MapPostFxStep()));
 		pipeline->addStep(pipeline->own(new DrawHUD()));
 	}

@@ -67,15 +67,15 @@ void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 		return;
 	}
 	if (stereo_mode == "sidebyside") {
-		populateSideBySidePipeline(result->pipeline, false, false, result->virtual_size_scale);
+		populateSideBySidePipeline(result->pipeline, client, false, false, result->virtual_size_scale);
 		return;
 	}
 	if (stereo_mode == "topbottom") {
-		populateSideBySidePipeline(result->pipeline, true, false, result->virtual_size_scale);
+		populateSideBySidePipeline(result->pipeline, client, true, false, result->virtual_size_scale);
 		return;
 	}
 	if (stereo_mode == "crossview") {
-		populateSideBySidePipeline(result->pipeline, false, true, result->virtual_size_scale);
+		populateSideBySidePipeline(result->pipeline, client, false, true, result->virtual_size_scale);
 		return;
 	}
 	if (stereo_mode == "secondstage") {
