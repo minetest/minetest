@@ -226,6 +226,16 @@ void ScreenTarget::reset(PipelineContext *context)
 	size = context->device->getVideoDriver()->getScreenSize();
 }
 
+SetRenderTargetStep::SetRenderTargetStep(RenderStep *_step, RenderTarget *_target)
+	: step(_step), target(_target)
+{
+}
+
+void SetRenderTargetStep::run(PipelineContext *context)
+{
+	step->setRenderTarget(target);
+}
+
 RenderSource *RenderPipeline::getInput()
 {
 	return &m_input;

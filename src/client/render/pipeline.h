@@ -342,6 +342,21 @@ public:
 };
 
 /**
+ * Dynamically changes render target of another step.
+ * 
+ * This allows re-running parts of the pipeline with different outputs
+ */
+class SetRenderTargetStep : public TrivialRenderStep
+{
+public:
+	SetRenderTargetStep(RenderStep *step, RenderTarget *target);
+	virtual void run(PipelineContext *context) override;
+private:
+	RenderStep *step;
+	RenderTarget *target;
+};
+
+/**
  * Render Pipeline provides a flexible way to execute rendering steps in the engine.
  * 
  * RenderPipeline also implements @see RenderStep, allowing for nesting of the pipelines.

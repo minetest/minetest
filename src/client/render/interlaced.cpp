@@ -62,13 +62,14 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 
 	pipeline->addStep(pipeline->own(new InitInterlacedMaskStep(buffer, TEXTURE_MASK)));
 
+	auto step3D = pipeline->own(create3DStage(client, v2f(1.0f, 0.5f)));
+
 	// eyes
 	for (bool right : { false, true }) {
 		pipeline->addStep(pipeline->own(new OffsetCameraStep(right)));
-		auto step3D = create3DStage();
-		pipeline->addStep(pipeline->own(step3D));
-		auto output = new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
-		step3D->setRenderTarget(pipeline->own(output));
+		auto output = pipeline->own(new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT));
+		pipeline->addStep(pipeline->own(new SetRenderTargetStep(step3D, output)));
+		pipeline->addStep(step3D);
 		pipeline->addStep(pipeline->own(new MapPostFxStep()));
 	}
 
