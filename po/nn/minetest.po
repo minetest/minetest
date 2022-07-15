@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Norwegian Nynorsk (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2021-02-20 05:50+0000\n"
+"PO-Revision-Date: 2022-07-16 23:20+0000\n"
 "Last-Translator: Tor Egil Hoftun Kvæstad <toregilhk@hotmail.com>\n"
 "Language-Team: Norwegian Nynorsk <https://hosted.weblate.org/projects/"
 "minetest/minetest/nn/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -20,31 +20,27 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Tom kommando."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Gå ut til meny"
+msgstr "Gå ut til hovudmeny"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Lokal befaling"
+msgstr "Ugyldig kommando: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Gitt kommando: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Enkeltspelar oppleving"
+msgstr "List opp spelarar som er online"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Enkeltspelar oppleving"
+msgstr "Spelarar som er online: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -63,27 +59,27 @@ msgid "You died"
 msgstr "Du døydde"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Lokal befaling"
+msgstr "Tilgjengelege kommandoar:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Lokal befaling"
+msgstr "Tilgjengelege kommandoar: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Kommandoen er ikkje tilgjengeleg: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Få hjelp med kommandoar"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Nytt '.help <kommando>' for å få meir informasjon, eller '.help all' for å "
+"liste opp alt."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -95,7 +91,7 @@ msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<ingen tilgjengeleg>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -239,6 +235,8 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 lastar ned,\n"
+"$2 i kø"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
@@ -273,9 +271,8 @@ msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr "ContentDB er ikkje tilgjengeleg når Minetest vart kompilert utan cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Laster ned..."
+msgstr "Lastar ned …"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -299,10 +296,8 @@ msgid "Install missing dependencies"
 msgstr "Installer manglande avhengigheiter"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr ""
-"Installer: Ikkje-støtta dokument type \"$1\" eller så funker ikkje arkivet"
+msgstr "Installasjon: Filtypen er ikkje støtta, eller arkivet er korrupt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -335,7 +330,7 @@ msgstr "Ver venleg å sjekke at basisspelet er korrekt."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "I kø"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -375,7 +370,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Biomblanding"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
@@ -386,9 +381,8 @@ msgid "Caverns"
 msgstr "Holer"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Oktaver"
+msgstr "Hòler"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -527,7 +521,7 @@ msgstr "Temperert, Ørken, Jungel, Tundra, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Overflateerosjon på terreng"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -542,9 +536,8 @@ msgid "Very large caverns deep in the underground"
 msgstr "Svært store holer djupt i undergrunnen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr "Åtvaring: Den minimale utviklings-testen e meint for utviklare."
+msgstr "Åtvaring: Utviklingstesten er meint for utviklarar."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -773,20 +766,18 @@ msgid "Loading..."
 msgstr "Lastar …"
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Public server list is disabled"
-msgstr "Klient side-skildring er av"
+msgstr "Den offentlege tenarlista er slått av"
 
 #: builtin/mainmenu/serverlistmgr.lua
-#, fuzzy
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Forsøkje å kople attende den offentlege tenarmaskin-lista og sjekk sambands "
-"koplingen."
+"Freist å slå på igjen den offentlege tenarlista, og sjekk Internett-"
+"tilkoplinga di."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Om"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -930,9 +921,8 @@ msgid "Start Game"
 msgstr "Start spel"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "- Adresse: "
+msgstr "Adresse"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -948,22 +938,20 @@ msgstr "Kreativ stode"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "- Skade: "
+msgstr "Skade / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Del. Favorite"
 msgstr "Slett Favoritt"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Favoritt"
+msgstr "Favorittar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Inkompatible tenarar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -974,18 +962,16 @@ msgid "Ping"
 msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Annonsér tenarmaskin"
+msgstr "Offentlege tenarar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Oppdater"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "Tenarport"
+msgstr "Tenarbeskriving"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1030,11 +1016,11 @@ msgstr "Kopla i hop glass"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
-msgstr ""
+msgstr "Dynamiske skuggar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows: "
-msgstr ""
+msgstr "Dynamiske skuggar: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1042,15 +1028,15 @@ msgstr "Fancy blader"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Høg"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Låg"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Medium"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1144,26 +1130,23 @@ msgstr "Tri-lineær filtréring"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Ultra High"
-msgstr ""
+msgstr "Svært høg"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Svært låg"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
-msgstr "Raslende lauv"
+msgstr "Vaiande lauv"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Raslende lauv"
+msgstr "Bølgjande væsker"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
-msgstr "Raslende planter"
+msgstr "Vaiande planter"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1195,9 +1178,8 @@ msgid "Connection error (timed out?)"
 msgstr "Tilkoplingsfeil (Tidsavbrot?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Kunne ikkje finne eller laste spelet \""
+msgstr "Kunne ikkje finne eller laste spel: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1264,9 +1246,8 @@ msgid "- Server Name: "
 msgstr "- Tenarnamn: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Det har skjedd ein feil:"
+msgstr "Ein serialiseringsfeil har oppstått:"
 
 #: src/client/game.cpp
 #, c-format
@@ -1323,7 +1304,7 @@ msgstr "Filmatisk modus er i gang"
 
 #: src/client/game.cpp
 msgid "Client disconnected"
-msgstr ""
+msgstr "Klienten kopla frå"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1335,7 +1316,7 @@ msgstr "Kopler til tenarmaskin..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Tilkoplinga feila av ein ukjent grunn"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1508,9 +1489,8 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "Minikart er for tiden deaktivert tå spelet eller ein modifikasjon"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Enkeltspelar oppleving"
+msgstr "Fleirspelar"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1579,7 +1559,7 @@ msgstr "Lydsystemet er slått av"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Lydsystemet er ikkje støtta på denne builden"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1588,17 +1568,17 @@ msgstr "Lyd e ikkje dempa lengre"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Tenaren køyrer sannsynlegvis ein annan versjon av %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Kunne ikkje kople til %s fordi IPv6 er slått av"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Kunne ikkje lytte på %s fordi IPv6 er slått av"
 
 #: src/client/game.cpp
 #, c-format
@@ -1936,13 +1916,12 @@ msgid "Minimap in texture mode"
 msgstr "Minikart i overflate modus, Zoom x1"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Klarte ikkje å laste ned $1"
+msgstr "Klarte ikkje å opne nettside"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Opnar nettside"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2148,9 +2127,9 @@ msgid "Muted"
 msgstr "Målbindt"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Lydstyrke: "
+msgstr "Lydstyrke: %d%%"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
@@ -2328,7 +2307,7 @@ msgstr "Gravitasjonsakselerasjon, i nodar per sekund per sekund."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr ""
+msgstr "Aktive blokkmodifikatorar"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
@@ -2348,6 +2327,9 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Adresse å kople til.\n"
+"La dette vere tomt for å starte ein lokal tenar.\n"
+"Merk at adressefeltet i hovudmenyen overkøyrer denne innstillinga."
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
@@ -2358,10 +2340,14 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Juster dpi-konfigurasjonen for din skjem (kun system utan X11/Android), "
+"f.eks. for 4K-skjermar."
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Juster den oppdaga skjermtettheita, vert nytta for å skalere "
+"brukargrensesnittelement."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2408,11 +2394,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Annonser tenar"
 
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
-msgstr ""
+msgstr "Annonser til denne tenarlista."
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2428,17 +2414,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
-msgstr ""
+msgstr "Armtreigheit"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
+"Armtreigheit gir meir realistisk armbevegingar\n"
+"når kameraet flyttar seg."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Spør om å kople til igjen etter eit kræsj"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2457,7 +2445,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
-msgstr ""
+msgstr "Automatisk framoverknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2469,7 +2457,7 @@ msgstr "Rapporter automatisk til tenarlista."
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
-msgstr ""
+msgstr "Lagre skjermstørrelsen automatisk"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
@@ -2485,7 +2473,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr ""
+msgstr "Bakoverknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2517,7 +2505,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr ""
+msgstr "Bind adresse"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
@@ -2589,7 +2577,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "Hòlebreidde"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
@@ -2630,9 +2618,8 @@ msgid "Chat command time message threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
-msgstr "Befaling"
+msgstr "Chatkommandoar"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
@@ -2644,7 +2631,7 @@ msgstr "Nettpratstast"
 
 #: src/settings_translation_file.cpp
 msgid "Chat log level"
-msgstr ""
+msgstr "Loggnivå for chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2660,16 +2647,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Maksimal lengde på chattemeldingar"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr ""
+msgstr "Knapp for å slå chatten av/på"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Skravlerøret er vist"
+msgstr "Nettlenker i chatten"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2727,7 +2713,7 @@ msgstr "Skyer"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Skyer er ei effekt på klientsida."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2738,9 +2724,8 @@ msgid "Colored fog"
 msgstr "Farga tåke"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Farga tåke"
+msgstr "Farga skuggar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2767,7 +2752,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "Kommandoknapp"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2787,11 +2772,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
-msgstr ""
+msgstr "Kople saman glas"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr ""
+msgstr "Kople til ekstern mediatenar"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
@@ -2799,15 +2784,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr ""
+msgstr "Konsollgjennomsiktigheit"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr ""
+msgstr "Konsollfarge"
 
 #: src/settings_translation_file.cpp
 msgid "Console height"
-msgstr ""
+msgstr "Konsollhøgde"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
@@ -2815,7 +2800,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "Største antal samtidige nedlastingar frå ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2841,10 +2826,13 @@ msgid ""
 "Examples:\n"
 "72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged."
 msgstr ""
+"Kontrollerer lengda på dag/natt-syklusen.\n"
+"Eksempel:\n"
+"72 = 20 min., 360 = 4 min., 1 = 24 timar, 0 = dag/natt/anna forblir uendra."
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Kontrollerer kor raskt ting synk i væske."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2891,15 +2879,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "Skade"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Knapp for å slå debuggingsinformasjon av/på"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -2962,11 +2950,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
-msgstr ""
+msgstr "Definerer område der tre har eple."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas with sandy beaches."
-msgstr ""
+msgstr "Definerer område med sandstrender."
 
 #: src/settings_translation_file.cpp
 msgid "Defines distribution of higher terrain and steepness of cliffs."
@@ -2974,7 +2962,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines distribution of higher terrain."
-msgstr ""
+msgstr "Definerer distribusjonen av høgare terreng."
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
@@ -2994,7 +2982,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
-msgstr ""
+msgstr "Definerer djupna til elvekanalen."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
