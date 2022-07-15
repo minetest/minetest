@@ -114,18 +114,22 @@ RenderStep *create3DStage(Client *client, v2f scale)
 	return step;
 }
 
-RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale_factor)
+v2f getDownscaleFactor()
+{
+	u16 undersampling = MYMAX(g_settings->getU16("undersampling"), 1);
+	return v2f(1.0f / undersampling);
+}
+
+RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f downscale_factor)
 {
 	const int TEXTURE_UPSCALE = 0;
 
-	u16 scale = MYMAX(g_settings->getU16("undersampling"), 1);
-
-	if (scale <= 1)
+	if (downscale_factor.X == 1.0f && downscale_factor.Y == 1.0f)
 		return previousStep;
 
 	// Initialize buffer
 	TextureBuffer *buffer = new TextureBuffer();
-	buffer->setTexture(TEXTURE_UPSCALE, scale_factor / scale, "upscale", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_UPSCALE, downscale_factor, "upscale", video::ECF_A8R8G8B8);
 	pipeline->own(static_cast<RenderTarget *>(buffer));
 
 	// Attach previous step to the buffer
@@ -142,11 +146,12 @@ RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 
 void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 {
-	auto step3D = pipeline->own(create3DStage(client, v2f(1.0f)));
+	auto downscale_factor = getDownscaleFactor();
+	auto step3D = pipeline->own(create3DStage(client, downscale_factor));
 	pipeline->addStep(step3D);
 	pipeline->addStep(pipeline->own(new MapPostFxStep()));
 
-	step3D = addUpscaling(pipeline, step3D, v2f(1.0));
+	step3D = addUpscaling(pipeline, step3D, downscale_factor);
 
 	step3D->setRenderTarget(pipeline->own(new ScreenTarget()));
 
