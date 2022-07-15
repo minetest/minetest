@@ -78,10 +78,6 @@ void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 		populateSideBySidePipeline(result->pipeline, client, false, true, result->virtual_size_scale);
 		return;
 	}
-	if (stereo_mode == "secondstage") {
-		populateSecondStagePipeline(result->pipeline, client);
-		return;
-	}
 
 	// fallback to plain renderer
 	errorstream << "Invalid rendering mode: " << stereo_mode << std::endl;
