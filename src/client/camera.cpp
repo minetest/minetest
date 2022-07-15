@@ -600,8 +600,11 @@ void Camera::wield(const ItemStack &item)
 	}
 }
 
-void Camera::drawWieldedTool(irr::core::matrix4* translation)
+void Camera::drawWieldedTool(irr::core::matrix4* translation,
+		const video::SColorf &post_color)
 {
+	bool enable_shaders = g_settings->getBool("enable_shaders");
+
 	// Clear Z buffer so that the wielded tool stays in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 
@@ -624,7 +627,34 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 		cam->updateAbsolutePosition();
 		cam->setTarget(focusPoint);
 	}
-	m_wieldmgr->drawAll();
+	if (enable_shaders) {
+		m_client->setWieldPostEffectColor(post_color);
+		m_wieldmgr->drawAll();
+		m_client->setWieldPostEffectColor(video::SColorf(0.0f,0.0f,0.0f,0.0f));
+	} else {
+		// Without shaders we can't easily get the same effect.
+		// This only makes it looks slightly similar, but it's wrong, i.e. we
+		// can only make it darker.
+		video::SColorf col;
+		if (post_color.a == 0.0f) {
+			col = m_player_light_color;
+		} else {
+			video::SColorf post_color_nopremul = video::SColorf(
+					std::min(1.0f, post_color.r / post_color.a),
+					std::min(1.0f, post_color.g / post_color.a),
+					std::min(1.0f, post_color.b / post_color.a),
+					std::min(1.0f, post_color.a)
+				);
+			col = video::SColorf(
+					m_player_light_color.getRed()   * post_color_nopremul.r * (1.0f / 255.0f),
+					m_player_light_color.getGreen() * post_color_nopremul.g * (1.0f / 255.0f),
+					m_player_light_color.getBlue()  * post_color_nopremul.b * (1.0f / 255.0f),
+					1.0f
+				).getInterpolated(m_player_light_color, post_color_nopremul.a);
+		}
+		m_wieldnode->setNodeLightColor(col.toSColor());
+		m_wieldmgr->drawAll();
+	}
 }
 
 void Camera::drawNametags()
