@@ -18,6 +18,7 @@ void main(void)
 {
 	vec2 uv = gl_TexCoord[0].st;
 	vec4 color = texture2D(rendered, uv).rgba;
+#ifdef SECONDSTAGE_DEBUG
 	vec4 normal_and_depth = texture2D(normalmap, uv);
 	vec3 normal = normal_and_depth.rgb;
 	float draw_type = normal_and_depth.a * 256. / 25.;
@@ -31,4 +32,7 @@ void main(void)
 		gl_FragColor = vec4(normal, 1);
 	else
 		gl_FragColor = vec4(draw_type, draw_type, draw_type, 1);
+#else
+	gl_FragColor = color;
+#endif
 }
