@@ -428,7 +428,7 @@ private:
 
 	// Generate shader given the shader name.
 	ShaderInfo generateShader(const std::string &name,
-			MaterialType material_type, NodeDrawType drawtype, const std::string &additional_headers);
+			MaterialType material_type, NodeDrawType drawtype);
 };
 
 IWritableShaderSource *createShaderSource()
@@ -517,7 +517,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		return 0;
 	}
 
-	ShaderInfo info = generateShader(name, material_type, drawtype, global_additional_headers);
+	ShaderInfo info = generateShader(name, material_type, drawtype);
 
 	/*
 		Add shader to caches (add dummy shaders too)
@@ -581,14 +581,14 @@ void ShaderSource::rebuildShaders()
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		ShaderInfo *info = &i;
 		if (!info->name.empty()) {
-			*info = generateShader(info->name, info->material_type, info->drawtype, global_additional_headers);
+			*info = generateShader(info->name, info->material_type, info->drawtype);
 		}
 	}
 }
 
 
 ShaderInfo ShaderSource::generateShader(const std::string &name,
-		MaterialType material_type, NodeDrawType drawtype, const std::string &additional_headers)
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	ShaderInfo shaderinfo;
 	shaderinfo.name = name;
@@ -681,8 +681,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			#define inVertexBinormal gl_MultiTexCoord2
 		)";
 	}
-
-	shaders_header << additional_headers;
 
 	// Since this is the first time we're using the GL bindings be extra careful.
 	// This should be removed before 5.6.0 or similar.

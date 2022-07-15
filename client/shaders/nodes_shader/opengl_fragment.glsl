@@ -48,9 +48,6 @@ varying float nightRatio;
 varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
-#ifdef SECONDSTAGE
-varying vec3 normalPass;
-#endif
 
 const float fogStart = FOG_START;
 const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
@@ -494,11 +491,7 @@ void main(void)
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
-#ifdef SECONDSTAGE
 	gl_FragData[0] = col;
-	gl_FragData[1] = vec4(normalPass, DRAW_TYPE / 256.);
+	gl_FragData[1] = vec4((vNormal + 1.) / 2., DRAW_TYPE / 256.);
 	gl_FragData[2] = vec4((fogDistance-length(eyeVec))/1000, 0,0,0);
-#else
-	gl_FragColor = col;
-#endif
 }

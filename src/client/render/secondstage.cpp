@@ -104,8 +104,6 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// post-processing stage
 	// set up shader
 	IWritableShaderSource *s = client->getShaderSource();
-	s->global_additional_headers = "#define SECONDSTAGE 1\n";
-	s->rebuildShaders(); // TODO remove this if possible, use shader const setters?
 	u32 shader_index = s->getShader("3d_secondstage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
