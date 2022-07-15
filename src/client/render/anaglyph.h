@@ -51,4 +51,20 @@ private:
 	RenderTarget *target;
 };
 
-void populateAnaglyphPipeline(RenderPipeline *pipeline);
+
+/**
+ * Enables or disables override material when activated
+ * 
+ */
+class ConfigureOverrideMaterialTarget : public RenderTarget
+{
+public:
+	ConfigureOverrideMaterialTarget(RenderTarget *upstream, bool enable);
+
+	virtual void activate(PipelineContext *context) override;
+private:
+	RenderTarget *upstream;
+	bool enable;
+};
+
+void populateAnaglyphPipeline(RenderPipeline *pipeline, Client *client);

@@ -51,12 +51,26 @@ void ClearDepthBufferTarget::activate(PipelineContext *context)
 	context->device->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 }
 
-void populateAnaglyphPipeline(RenderPipeline *pipeline)
+ConfigureOverrideMaterialTarget::ConfigureOverrideMaterialTarget(RenderTarget *_upstream, bool _enable) :
+	upstream(_upstream), enable(_enable)
+{
+}
+
+void ConfigureOverrideMaterialTarget::activate(PipelineContext *context)
+{
+	upstream->activate(context);
+	context->device->getVideoDriver()->getOverrideMaterial().Enabled = enable;
+}
+
+
+void populateAnaglyphPipeline(RenderPipeline *pipeline, Client *client)
 {
 	// clear depth buffer every time 3D is rendered
-	auto step3D = pipeline->own(create3DStage());
+	auto step3D = pipeline->own(create3DStage(client, v2f(1.0)));
 	auto screen = pipeline->own(new ScreenTarget());
-	step3D->setRenderTarget(pipeline->own(new ClearDepthBufferTarget(screen)));
+	auto clear_depth = pipeline->own(new ClearDepthBufferTarget(screen));
+	auto enable_override_material = pipeline->own(new ConfigureOverrideMaterialTarget(clear_depth, true));
+	step3D->setRenderTarget(enable_override_material);
 
 	// left eye
 	pipeline->addStep(pipeline->own(new OffsetCameraStep(false)));

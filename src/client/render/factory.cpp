@@ -59,7 +59,7 @@ void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 		return;
 	}
 	if (stereo_mode == "anaglyph") {
-		populateAnaglyphPipeline(result->pipeline);
+		populateAnaglyphPipeline(result->pipeline, client);
 		return;
 	}
 	if (stereo_mode == "interlaced") {
