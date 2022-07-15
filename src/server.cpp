@@ -431,8 +431,8 @@ void Server::init()
 		m_modmgr->printUnsatisfiedModsError();
 
 		warningstream
-			<< "Attempting to loading worlds with unsatisfied dependencies is deprecated. "
-			<< "In the future, Minetest will prevent loading." << std::endl;
+			<< "You have unsatisfied dependencies, loading your world anyway. "
+			<< "This will become a fatal error in the future." << std::endl;
 	}
 
 	//lock environment
