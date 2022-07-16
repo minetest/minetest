@@ -58,7 +58,7 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 	buffer->setTexture(TEXTURE_LEFT, v2f(1.0f, 0.5f), "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, v2f(1.0f, 0.5f), "3d_render_right", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_MASK, v2f(1.0f, 1.0f), "3d_render_mask", video::ECF_A8R8G8B8);
-	pipeline->own(static_cast<RenderTarget*>(buffer));
+	pipeline->own(buffer);
 
 	pipeline->addStep(pipeline->own(new InitInterlacedMaskStep(buffer, TEXTURE_MASK)));
 

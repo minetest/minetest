@@ -64,7 +64,7 @@ void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool h
 	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_LEFT, virtual_size_scale, "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, virtual_size_scale, "3d_render_right", video::ECF_A8R8G8B8);
-	pipeline->own(static_cast<RenderTarget*>(buffer));
+	pipeline->own(buffer);
 
 	auto step3D = pipeline->own(create3DStage(client, virtual_size_scale));
 

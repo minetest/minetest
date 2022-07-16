@@ -130,7 +130,7 @@ RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 	// Initialize buffer
 	TextureBuffer *buffer = new TextureBuffer();
 	buffer->setTexture(TEXTURE_UPSCALE, downscale_factor, "upscale", video::ECF_A8R8G8B8);
-	pipeline->own(static_cast<RenderTarget *>(buffer));
+	pipeline->own(buffer);
 
 	// Attach previous step to the buffer
 	TextureBufferOutput *buffer_output = new TextureBufferOutput(buffer, TEXTURE_UPSCALE);

@@ -251,11 +251,8 @@ void RenderPipeline::run(PipelineContext *context)
 	v2u32 original_size = context->target_size;
 	context->target_size = v2u32(original_size.X * scale.X, original_size.Y * scale.Y);
 
-	for (auto &target : m_targets)
-		target->reset(context);
-
-	for (auto &step : m_pipeline)
-		step->reset(context);
+	for (auto &object : m_objects)
+		object->reset(context);
 
 	for (auto &step: m_pipeline)
 		step->run(context);

@@ -52,13 +52,22 @@ struct PipelineContext
 };
 
 /**
- * Represents a source of rendering information such as textures
+ * Base object that can be owned by RenderPipeline
+ * 
  */
-class RenderSource
+class RenderPipelineObject
 {
 public:
-	virtual ~RenderSource() = default;
+	virtual ~RenderPipelineObject() = default;
+	virtual void reset(PipelineContext *context) {}
+};
 
+/**
+ * Represents a source of rendering information such as textures
+ */
+class RenderSource : virtual public RenderPipelineObject
+{
+public:
 	/**
 	 * Return the number of textures in the source.
 	 */
@@ -69,23 +78,14 @@ public:
 	 * Returns nullptr is the texture does not exist.
 	 */
 	virtual video::ITexture *getTexture(u8 index) = 0;
-
-	/**
-	 * Resets the state of the object for the next pipeline iteration
-	 * 
-	 * @param context Execution context of the pipeline
-	 */
-	virtual void reset(PipelineContext *context) = 0;
 };
 
 /**
  *	Represents a render target (screen or framebuffer)
  */
-class RenderTarget
+class RenderTarget : virtual public RenderPipelineObject
 {
 public:
-	virtual ~RenderTarget() = default;
-
 	/**
 	 * Activate the render target and configure OpenGL state for the output.
 	 * This is usually done by @see RenderStep implementations.
@@ -98,7 +98,7 @@ public:
 	/**
 	 * Resets the state of the object for the next pipeline iteration
 	 */
-	virtual void reset(PipelineContext *context)
+	virtual void reset(PipelineContext *context) override
 	{
 		m_clear = true;
 	}
@@ -260,14 +260,6 @@ public:
 	 * Returns nullptr is the texture does not exist.
 	 */
 	virtual video::ITexture *getTexture(u8 index) override;
-
-	/**
-	 * Resets the state of the object for the next pipeline iteration
-	 * 
-	 * @param context Execution context of the pipeline
-	 */
-	virtual void reset(PipelineContext *context) override {} // assume upstream source is reset elsewhere
-
 private:
 	RenderSource *upstream { nullptr };
 };
@@ -290,7 +282,6 @@ public:
 	bool isConfigured() { return upstream != nullptr; }
 	void setRenderTarget(RenderTarget *value) { upstream = value; }
 	virtual void activate(PipelineContext *context) override;
-	virtual void reset(PipelineContext *context) override {} // assume upstream is managed and reset elsewhere
 private:
 	RenderTarget *upstream { nullptr };
 };
@@ -298,11 +289,9 @@ private:
 /**
  * Base class for rendering steps in the pipeline
  */
-class RenderStep
+class RenderStep : virtual public RenderPipelineObject
 {
 public:
-	virtual ~RenderStep() = default;
-
 	/**
 	 * Assigns render source to this step.
 	 * 
@@ -316,13 +305,6 @@ public:
 	 * @param target render target to send output to.
 	 */
 	virtual void setRenderTarget(RenderTarget *target) = 0;
-
-	/**
-	 * Resets the step state before executing the pipeline.
-	 * 
-	 * Steps may carry state between invocations in the pipeline.
-	 */
-	virtual void reset(PipelineContext *context) = 0;
 
 	/**
 	 * Runs the step. This method is invoked by the pipeline.
@@ -382,36 +364,11 @@ public:
 	 * @param step reference to the instance.
 	 * @return RenderStep* value of the 'step' parameter.
 	 */
-	RenderStep *own(RenderStep *step)
+	template<class T>
+	T *own(T *object)
 	{
-		m_steps.push_back(std::unique_ptr<RenderStep>(step));
-		return step;
-	}
-
-	/**
-	 * Capture ownership of a dynamically created @see RenderSource instance.
-	 * 
-	 * RenderPipeline will delete the instance when the pipeline is destroyed.
-	 * 
-	 * @param source reference to the instance.
-	 * @return RenderSource* value of the 'source' parameter.
-	 */
-	RenderSource *own(RenderSource *source)
-	{
-		m_sources.push_back(std::unique_ptr<RenderSource>(source));
-		return source;
-	}
-
-	/**
-	 * Capture ownership of a dynamically created @see RenderTarget instance.
-	 * 
-	 * @param target reference to the instance
-	 * @return RenderTarget* value of the 'target' parameter
-	 */
-	RenderTarget *own(RenderTarget *target)
-	{
-		m_targets.push_back(std::unique_ptr<RenderTarget>(target));
-		return target;
+		m_objects.push_back(std::unique_ptr<RenderPipelineObject>(object));
+		return object;
 	}
 
 	RenderSource *getInput();
@@ -427,9 +384,7 @@ public:
 	virtual void setRenderTarget(RenderTarget *target) override;
 private:
 	std::vector<RenderStep *> m_pipeline;
-	std::vector< std::unique_ptr<RenderStep> > m_steps;
-	std::vector< std::unique_ptr<RenderSource> > m_sources;
-	std::vector< std::unique_ptr<RenderTarget> > m_targets;
+	std::vector< std::unique_ptr<RenderPipelineObject> > m_objects;
 	DynamicSource m_input;
 	DynamicTarget m_output;
 	v2f scale { 1.0f, 1.0f };
