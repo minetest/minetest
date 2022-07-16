@@ -341,7 +341,6 @@ void set_default_settings()
 #else
 	settings->setDefault("update_last_checked", "disabled");
 #endif
-	settings->setDefault("update_last_known", "");
 
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
