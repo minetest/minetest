@@ -665,9 +665,13 @@ Colorize the texture to the given hue. All pixels will be converted
 to the specified hue while retaining their saturation and lightness, like
 "Colorize" in GIMP. Saturation and lightness can optionally be adjusted.
 
-`<hue>` should be from -180 to +180
+`<hue>` should be from -180 to +180. The hue at 0° on an HSL color wheel is
+red, 60° is yellow, 120° is green, and 180° is cyan, while -60° is magenta
+and -120° is blue.
 
-`<saturation>` and `<lightness>` are optional, and both from -100 to +100
+`<saturation>` and `<lightness>` are optional adjustments, both from
+-100 to +100, with a default of 0. If no adjustment is specified then 
+the original saturation and lightness value of each pixel is preserved.
 
 #### `[multiply:<color>`
 

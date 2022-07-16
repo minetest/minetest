@@ -568,7 +568,7 @@ static void apply_screen(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 // Hue should be from -180 to +180, or from 0 to 360.
 // Saturation and lightness are both from -100 to +100
 static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-		int hue, int saturation, int lightness, bool colorize);
+		s32 hue, s32 saturation, s32 lightness, bool colorize);
 
 // Apply an overlay blend to an images.
 // Overlay blend combines Multiply and Screen blend modes.The parts of the top
@@ -582,7 +582,7 @@ static void apply_overlay(video::IImage *overlay, video::IImage *dst,
 // "Brightness-Contrast" in GIMP but allowing brightness to be wound all the
 // way up to white or down to black.
 static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-		int brightness, int contrast);
+		s32 brightness, s32 contrast);
 
 // Apply a mask to an image
 static void apply_mask(video::IImage *mask, video::IImage *dst,
@@ -1158,8 +1158,7 @@ void upscaleImagesToMatchLargest(video::IImage *& img1,
 		img1->drop();
 		img1 = scaled_image;
 
-	}
-	else {
+	} else {
 		// Upscale img2
 		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
 			createImage(video::ECF_A8R8G8B8, dim1);
@@ -1359,8 +1358,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[fill"))
 		{
-			u32 x = 0;
-			u32 y = 0;
+			s32 x = 0;
+			s32 y = 0;
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1382,7 +1381,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
 			img->fill(color);
 
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				baseimg = img;
 			} else {
 				blit_with_alpha(img, baseimg, v2s32(0, 0), v2s32(x, y), dim);
@@ -1980,8 +1979,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		else if (str_starts_with(part_of_name, "[hsl:") || 
 		         str_starts_with(part_of_name, "[colorizehsl:")) {
 
-			if (baseimg == NULL) {
-				errorstream << "generateImagePart(): baseimg != NULL "
+			if (baseimg == nullptr) {
+				errorstream << "generateImagePart(): baseimg == NULL "
 					<< "for part_of_name=\"" << part_of_name
 					<< "\", cancelling." << std::endl;
 				return false;
@@ -1989,9 +1988,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
-			u32 hue = mystoi(sf.next(":"), -180, 180);
-			u32 saturation = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
-			u32 lightness  = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
+			s32 hue = mystoi(sf.next(":"), -180, 180);
+			s32 saturation = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
+			s32 lightness  = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
 
 			bool colorize = str_starts_with(part_of_name, "[colorizehsl:");
 
@@ -2018,7 +2017,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		else if (str_starts_with(part_of_name, "[overlay:") ||
 		         str_starts_with(part_of_name, "[hardlight:")) {
 
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImage(): baseimg == NULL "
 					<< "for part_of_name=\"" << part_of_name
 					<< "\", cancelling." << std::endl;
@@ -2052,8 +2051,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[contrast:")) {
 
-			if (baseimg == NULL) {
-				errorstream << "generateImagePart(): baseimg != NULL "
+			if (baseimg == nullptr) {
+				errorstream << "generateImagePart(): baseimg == NULL "
 					<< "for part_of_name=\"" << part_of_name
 					<< "\", cancelling." << std::endl;
 				return false;
@@ -2061,8 +2060,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
-			u32 contrast = mystoi(sf.next(":"), -127, 127);
-			u32 brightness = sf.at_end() ? 0 : mystoi(sf.next(":"), -127, 127);
+			s32 contrast = mystoi(sf.next(":"), -127, 127);
+			s32 brightness = sf.at_end() ? 0 : mystoi(sf.next(":"), -127, 127);
 
 			apply_brightness_contrast(baseimg, v2u32(0, 0), 
 				baseimg->getDimension(), brightness, contrast);
@@ -2263,14 +2262,14 @@ static void apply_screen(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 	Saturation and lightness are both from -100 to +100
 */
 static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-	int hue, int saturation, int lightness, bool colorize)
+	s32 hue, s32 saturation, s32 lightness, bool colorize)
 {
 	video::SColorf colorf;
 	video::SColorHSL hsl;
-	double norm_s = core::clamp(saturation, -100, 100) / 100.0;
-	double norm_l = core::clamp(lightness,  -100, 100) / 100.0;
-	double multiply_s = norm_s < 0 ? norm_s + 1.0 : 1.0 - norm_s;
-	double multiply_l = norm_l < 0 ? norm_l + 1.0 : 1.0 - norm_l;
+	f32 norm_s = core::clamp(saturation, -100, 100) / 100.0f;
+	f32 norm_l = core::clamp(lightness,  -100, 100) / 100.0f;
+	f32 multiply_s = norm_s < 0 ? norm_s + 1 : 1 - norm_s;
+	f32 multiply_l = norm_l < 0 ? norm_l + 1 : 1 - norm_l;
 
 	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
 		for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
@@ -2292,7 +2291,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 			}
 			else if (norm_l > 0) {
 				// Screen-blend (invert -> multiply -> invert)
-				hsl.Luminance = 100.0 - (100.0 - hsl.Luminance) * multiply_l;
+				hsl.Luminance = 100.0f - (100.0f - hsl.Luminance) * multiply_l;
 			}
 
 			if (norm_s < 0) {
@@ -2301,7 +2300,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 			}
 			else if (norm_s > 0) {
 				// Screen-blend (invert -> multiply -> invert)
-				hsl.Saturation = 100.0 - (100.0 - hsl.Saturation) * multiply_s;
+				hsl.Saturation = 100.0f - (100.0f - hsl.Saturation) * multiply_s;
 			}
 
 			// Convert back to RGB
@@ -2356,7 +2355,7 @@ static void apply_overlay(video::IImage *blend, video::IImage *dst,
 	wound all the way up to white or down to black.
 */
 static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-	int brightness, int contrast)
+	s32 brightness, s32 contrast)
 {
 	video::SColor dst_c;
 	// Only allow normalized contrast to get as high as 127/128 to avoid infinite slope.
