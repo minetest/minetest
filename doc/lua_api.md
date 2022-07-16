@@ -669,9 +669,14 @@ to the specified hue while retaining their saturation and lightness, like
 red, 60° is yellow, 120° is green, and 180° is cyan, while -60° is magenta
 and -120° is blue.
 
-`<saturation>` and `<lightness>` are optional adjustments, both from
--100 to +100, with a default of 0. If no adjustment is specified then 
-the original saturation and lightness value of each pixel is preserved.
+`<saturation>` and `<lightness>` are optional adjustments, both
+are percentages with a default of 0. If no adjustment is specified then the
+original saturation and lightness value of each pixel is preserved.
+
+`<lightness>` is from -100 to +100.
+
+`<saturation>` goes down to -100 (fully desaturated) but may go above 100,
+allowing for even muted colors to become highly saturated.
 
 #### `[multiply:<color>`
 
@@ -705,7 +710,12 @@ Adjust the hue, saturation, and lightness of the texture. Like
 
 `<hue>` should be from -180 to +180
 
-`<saturation>` and `<lightness>` are optional, and both from -100 to +100
+`<saturation>` and `<lightness>` are optional, and both percentages.
+
+`<lightness>` is from -100 to +100.
+
+`<saturation>` goes down to -100 (fully desaturated) but may go above 100,
+allowing for even muted colors to become highly saturated.
 
 #### `[contrast:<contrast>:<brightness>`
 
