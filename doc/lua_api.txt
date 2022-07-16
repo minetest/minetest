@@ -4995,6 +4995,10 @@ Utilities
       --
       -- Note that none of these things are constant, they are likely to change during a client
       -- connection as the player resizes the window and moves it between monitors
+      --
+      -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
+      -- OSes already lie about DPI by allowing the user to configure it.
+      -- real_*_scaling is just OS DPI / 96 but with another level of user configuration.
       {
           -- Current size of the in-game render target.
           --
