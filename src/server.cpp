@@ -425,9 +425,14 @@ void Server::init()
 
 	m_modmgr = std::make_unique<ServerModManager>(m_path_world);
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
+
 	// complain about mods with unsatisfied dependencies
 	if (!m_modmgr->isConsistent()) {
 		m_modmgr->printUnsatisfiedModsError();
+
+		warningstream
+			<< "You have unsatisfied dependencies, loading your world anyway. "
+			<< "This will become a fatal error in the future." << std::endl;
 	}
 
 	//lock environment
