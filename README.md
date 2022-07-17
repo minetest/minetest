@@ -313,6 +313,41 @@ Library specific options:
     ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
     ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
 
+### Compiling for Windows using MinGW on GNU/Linux
+
+It is highly recommeded to compile on Ubuntu 20.04 or newer.
+
+#### Dependencies
+
+Install Ubuntu packages:
+
+    sudo apt install wget xz-utils unzip git cmake gettext g++-mingw-w64-i686 g++-mingw-w64-x86-64
+
+#### Download
+
+Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
+
+    git clone --depth 1 https://github.com/minetest/minetest.git
+    cd minetest
+
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
+
+    git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+
+#### Build
+
+To build executables for Windows, `cd` into the source directory, and run the provided build scripts.
+
+Build for 32-bit Windows:
+
+    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh build/win32
+
+Build for 64-bit Windows:
+
+    EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh build/win64
+
+The commands above will use the current source directory. Windows builds will be created at `build/win32/build/minetest-*-win32.zip` (32-bit) and `build/win64/build/minetest-*-win64.zip` (64-bit).
+
 ### Compiling on Windows using MSVC
 
 ### Requirements
