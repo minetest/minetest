@@ -1388,11 +1388,10 @@ HUD element types
 -----------------
 
 The position field is used for all element types.
-
 To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
-The name field is not yet used, but should contain a description of what the
+The `name` field is not yet used, but should contain a description of what the
 HUD element represents.
 
 The `direction` field is the direction in which something is drawn.
@@ -1425,10 +1424,9 @@ Supports negative values. By convention, the following values are recommended:
 *   100: Temporary text messages or notification icons
 *  1000: Full-screen effects such as full-black screen or credits.
          This includes effects that cover the entire screen
-* Other: If your HUD element doesn't fit into any category, pick a number
-         between the suggested values
 
-
+If your HUD element doesn't fit into any category, pick a number
+between the suggested values
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
@@ -1458,6 +1456,8 @@ Displays text on the HUD.
 * `offset`: offset in pixels from position.
 * `size`: size of the text.
   The player-set font size is multiplied by size.x (y value isn't used).
+* `style`: determines font style
+  Bitfield with 1 = bold, 2 = italic, 4 = monospace
 
 ### `statbar`
 
@@ -1480,7 +1480,7 @@ Displays a horizontal bar made up of half-images with an optional background.
 * `text`: The name of the inventory list to be displayed.
 * `number`: Number of items in the inventory to be displayed.
 * `item`: Position of item that is selected.
-* `direction`
+* `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
 
 ### `waypoint`
@@ -1524,7 +1524,7 @@ Displays an image oriented or translated according to current heading direction.
 * `text`: The name of the texture to use.
 * `alignment`: The alignment of the image.
 * `offset`: Offset in pixels from position.
-* `dir`: How the image is rotated/translated:
+* `direction`: How the image is rotated/translated:
   * 0 - Rotate as heading direction
   * 1 - Rotate in reverse direction
   * 2 - Translate as landscape direction
@@ -2434,7 +2434,7 @@ Elements
 
 ### `listring[<inventory location>;<list name>]`
 
-* Allows to create a ring of inventory lists
+* Appends to an internal ring of inventory lists.
 * Shift-clicking on items in one element of the ring
   will send them to the next inventory list inside the ring
 * The first occurrence of an element inside the ring will
@@ -4520,26 +4520,26 @@ generated chunk by the current mapgen.
 
 Returns a table mapping requested generation notification types to arrays of
 positions at which the corresponding generated structures are located within
-the current chunk. To set the capture of positions of interest to be recorded
-on generate, use `minetest.set_gen_notify()`.
-For decorations, the returned positions are the ground surface 'place_on'
-nodes, not the decorations themselves. A 'simple' type decoration is often 1
-node above the returned position and possibly displaced by 'place_offset_y'.
+the current chunk. To enable the capture of positions of interest to be recorded
+call `minetest.set_gen_notify()` first.
 
-Possible fields of the table returned are:
+Possible fields of the returned table are:
 
-* `dungeon`
-* `temple`
+* `dungeon`: bottom center position of dungeon rooms
+* `temple`: as above but for desert temples (mgv6 only)
 * `cave_begin`
 * `cave_end`
 * `large_cave_begin`
 * `large_cave_end`
-* `decoration`
+* `decoration#id` (see below)
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
-numeric unique decoration ID as returned by `minetest.get_decoration_id`.
+numeric unique decoration ID as returned by `minetest.get_decoration_id()`.
+For example, `decoration#123`.
 
-
+The returned positions are the ground surface 'place_on' nodes,
+not the decorations themselves. A 'simple' type decoration is often 1
+node above the returned position and possibly displaced by 'place_offset_y'.
 
 
 Registered entities
@@ -5089,7 +5089,7 @@ Call these functions only at load time!
     * Called when a node is punched
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world. Modifying nodes inside the area
-      is a bit faster than usually.
+      is a bit faster than usual.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
@@ -6827,6 +6827,21 @@ Lua back to the engine.
 Doing so is much less error-prone and you will never need to wonder if the
 object you are working with still exists.
 
+### Attachments
+
+It is possible to attach objects to other objects (`set_attach` method).
+
+When an object is attached, it is positioned relative to the parent's position
+and rotation. `get_pos` and `get_rotation` will always return the parent's
+values and changes via their setter counterparts are ignored.
+
+To change position or rotation call `set_attach` again with the new values.
+
+**Note**: Just like model dimensions, the relative position in `set_attach`
+must be multiplied by 10 compared to world positions.
+
+It is also possible to attach to a bone of the parent object. In that case the
+child will follow movement and rotation of that bone.
 
 ### Methods
 
@@ -6879,12 +6894,13 @@ object you are working with still exists.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
 * `set_attach(parent[, bone, position, rotation, forced_visible])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
-      Default `{x=0, y=0, z=0}`
+    * `parent`: `ObjectRef` to attach to
+    * `bone`: default `""` (the root bone)
+    * `position`: relative position, default `{x=0, y=0, z=0}`
+    * `rotation`: relative rotation in degrees, default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
-       should appear in first person. Default `false`.
+       should appear in first person, default `false`.
+    * Please also read the [Attachments] section above.
     * This command may fail silently (do nothing) when it would result
       in circular attachments.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible,
@@ -7065,8 +7081,8 @@ object you are working with still exists.
 * `hud_remove(id)`: remove the HUD element of the specified id
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
-    * element `stat` values:
-      `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
+    * `stat` supports the same keys as in the hud definition table except for
+      `"hud_elem_type"`.
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
@@ -7749,12 +7765,12 @@ gets activated (not loaded!)
         -- Definitions with identical labels will be listed as one.
 
         name = "modname:replace_legacy_door",
-        -- String or table with node names to trigger on
+        -- Identifier of the LBM, should follow the modname:<whatever> convention
 
         nodenames = {"default:lava_source"},
         -- List of node names to trigger the LBM on.
-        -- Also non-registered nodes will work.
-        -- Groups (as of group:groupname) will work as well.
+        -- Names of non-registered nodes and groups (as group:groupname)
+        -- will work as well.
 
         run_at_every_load = false,
         -- Whether to run the LBM's action every time a block gets activated,
@@ -8296,7 +8312,7 @@ Used by `minetest.register_node`.
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
-        -- oldmeta is the NodeMetaRef of the oldnode before deletion.
+        -- oldmeta are the metadata fields (table) of the node before deletion.
         -- drops is a table of ItemStacks, so any metadata to be preserved can
         -- be added directly to one or more of the dropped items. See
         -- "ItemStackMetaRef".
@@ -8627,8 +8643,7 @@ performance and computing power the practical limit is much lower.
 
         node_dungeon_alt = "default:mossycobble",
         -- Node used for randomly-distributed alternative structure nodes.
-        -- If alternative structure nodes are not wanted leave this absent for
-        -- performance reasons.
+        -- If alternative structure nodes are not wanted leave this absent.
 
         node_dungeon_stair = "stairs:stair_cobble",
         -- Node used for dungeon stairs.
@@ -8910,30 +8925,30 @@ Used by `minetest.create_detached_inventory`.
 HUD Definition
 --------------
 
-See [HUD] section.
+Since most values have multiple different functions, please see the
+documentation in [HUD] section.
 
-Used by `Player:hud_add`. Returned by `Player:hud_get`.
+Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
     {
-        hud_elem_type = "image",  -- See HUD element types
+        hud_elem_type = "image",
         -- Type of element, can be "image", "text", "statbar", "inventory",
-        -- "compass" or "minimap"
+        -- "waypoint", "image_waypoint", "compass" or "minimap"
 
         position = {x=0.5, y=0.5},
-        -- Left corner position of element
+        -- Top left corner position of element
 
         name = "<name>",
 
-        scale = {x = 2, y = 2},
+        scale = {x = 1, y = 1},
 
         text = "<text>",
 
         text2 = "<text>",
 
-        number = 2,
+        number = 0,
 
-        item = 3,
-        -- Selected item in inventory. 0 for no item selected.
+        item = 0,
 
         direction = 0,
         -- Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
@@ -8942,14 +8957,14 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         offset = {x=0, y=0},
 
-        size = { x=100, y=100 },
-        -- Size of element in pixels
+        world_pos = {x=0, y=0, z=0},
+
+        size = {x=0, y=0},
 
         z_index = 0,
-        -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
+        -- Z index: lower z-index HUDs are displayed behind higher z-index HUDs
 
         style = 0,
-        -- For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
     }
 
 Particle definition
