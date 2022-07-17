@@ -330,9 +330,6 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 
 bool checkMeshNormals(scene::IMesh *mesh)
 {
-	// Assume correct normals if this many first faces get it right.
-	static const u16 MAX_FACES_TO_CHECK = 9;
-
 	u32 buffer_count = mesh->getMeshBufferCount();
 
 	for (u32 i = 0; i < buffer_count; i++) {
