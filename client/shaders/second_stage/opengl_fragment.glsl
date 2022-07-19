@@ -70,6 +70,6 @@ void main(void)
 	color = applyToneMapping(color);
 #endif
 
-	gl_FragColor = color;
+	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 #endif
 }
