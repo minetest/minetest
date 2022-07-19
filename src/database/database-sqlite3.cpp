@@ -799,7 +799,7 @@ void ModMetadataDatabaseSQLite3::initStatements()
 	PREPARE_STATEMENT(get,
 		"SELECT `value` FROM `entries` WHERE `modname` = ? AND `key` = ? LIMIT 1");
 	PREPARE_STATEMENT(has,
-		"SELECT TRUE FROM `entries` WHERE `modname` = ? AND `key` = ? LIMIT 1");
+		"SELECT 1 FROM `entries` WHERE `modname` = ? AND `key` = ? LIMIT 1");
 	PREPARE_STATEMENT(set,
 		"REPLACE INTO `entries` (`modname`, `key`, `value`) VALUES (?, ?, ?)");
 	PREPARE_STATEMENT(remove, "DELETE FROM `entries` WHERE `modname` = ? AND `key` = ?");
