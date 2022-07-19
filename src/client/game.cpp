@@ -421,6 +421,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
 	Client *m_client;
 
 public:
@@ -455,6 +456,7 @@ public:
 		m_camera_offset_vertex("cameraOffset"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
+		m_texture_flags("textureFlags"),
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
@@ -524,9 +526,12 @@ public:
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 
-		SamplerLayer_t base_tex = 0, normal_tex = 1;
+		SamplerLayer_t base_tex = 0,
+				normal_tex = 1,
+				flags_tex = 2;
 		m_base_texture.set(&base_tex, services);
 		m_normal_texture.set(&normal_tex, services);
+		m_texture_flags.set(&flags_tex, services);
 	}
 };
 
