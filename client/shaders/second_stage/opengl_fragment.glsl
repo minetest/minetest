@@ -66,7 +66,7 @@ void main(void)
 		gl_FragColor = vec4(draw_type, draw_type, draw_type, 1);
 #else
 
-#ifdef ENABLE_TONE_MAPPING
+#if ENABLE_TONE_MAPPING
 	color = applyToneMapping(color);
 #endif
 
