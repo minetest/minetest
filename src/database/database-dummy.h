@@ -38,9 +38,13 @@ public:
 	void listPlayers(std::vector<std::string> &res);
 
 	bool getModEntries(const std::string &modname, StringMap *storage);
+	bool getModEntry(const std::string &modname,
+			const std::string &key, std::string *value);
+	bool hasModEntry(const std::string &modname, const std::string &key);
 	bool setModEntry(const std::string &modname,
 			const std::string &key, const std::string &value);
 	bool removeModEntry(const std::string &modname, const std::string &key);
+	bool removeModEntries(const std::string &modname);
 	void listMods(std::vector<std::string> *res);
 
 	void beginSave() {}

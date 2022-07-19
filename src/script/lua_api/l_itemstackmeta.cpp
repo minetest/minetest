@@ -36,7 +36,7 @@ ItemStackMetaRef* ItemStackMetaRef::checkobject(lua_State *L, int narg)
 	return *(ItemStackMetaRef**)ud;  // unbox pointer
 }
 
-Metadata* ItemStackMetaRef::getmeta(bool auto_create)
+IMetadata* ItemStackMetaRef::getmeta(bool auto_create)
 {
 	return &istack->getItem().metadata;
 }

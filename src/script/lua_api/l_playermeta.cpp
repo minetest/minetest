@@ -35,7 +35,7 @@ PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 	return *(PlayerMetaRef **)ud; // unbox pointer
 }
 
-Metadata *PlayerMetaRef::getmeta(bool auto_create)
+IMetadata *PlayerMetaRef::getmeta(bool auto_create)
 {
 	return metadata;
 }
@@ -60,7 +60,7 @@ int PlayerMetaRef::gc_object(lua_State *L)
 
 // Creates an PlayerMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void PlayerMetaRef::create(lua_State *L, Metadata *metadata)
+void PlayerMetaRef::create(lua_State *L, IMetadata *metadata)
 {
 	PlayerMetaRef *o = new PlayerMetaRef(metadata);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

@@ -42,7 +42,7 @@ private:
 	static const char className[];
 	static const luaL_Reg methods[];
 
-	virtual Metadata *getmeta(bool auto_create);
+	virtual IMetadata *getmeta(bool auto_create);
 	virtual void clearMeta();
 
 	// garbage collector

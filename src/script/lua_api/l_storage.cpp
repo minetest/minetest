@@ -128,7 +128,7 @@ ModMetadata* StorageRef::getobject(StorageRef *ref)
 	return co;
 }
 
-Metadata* StorageRef::getmeta(bool auto_create)
+IMetadata* StorageRef::getmeta(bool auto_create)
 {
 	return m_object;
 }
