@@ -98,7 +98,6 @@ LOCAL_CFLAGS += \
 	-DUSE_SOUND=1                   \
 	-DUSE_LEVELDB=0                 \
 	-DUSE_GETTEXT=1                 \
-	-DENABLE_UPDATE_CHECKER=0       \
 	-DVERSION_MAJOR=${versionMajor} \
 	-DVERSION_MINOR=${versionMinor} \
 	-DVERSION_PATCH=${versionPatch} \

@@ -17,13 +17,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ]]
 
+if not core.get_http_api then
+	function check_new_version()
+	end
+	return
+end
+
 local function version_info_formspec(data)
-	local title = fgettext("A new Minetest version is available")
+	local cur_ver = core.get_version()
+	local title = fgettext("A new $1 version is available", cur_ver.project)
 	local message =
-		fgettext("Current version: $1\nNew version: $2\n" ..
-				"Visit $3 to find out how to get the newest version to stay up to date" ..
-				" with the features and bugfixes.",
-			core.get_version().string, data.new_version, data.url)
+		fgettext("Installed version: $1\nNew version: $2\n" ..
+				"Visit $3 to find out how to get the newest version and stay up to date" ..
+				" with features and bugfixes.",
+			cur_ver.string, data.new_version or "", data.url or "")
 
 	local fs = {
 		"formspec_version[3]",
@@ -44,7 +51,7 @@ end
 
 local function version_info_buttonhandler(this, fields)
 	if fields.version_check_remind then
-		-- Only wait for the check interval
+		-- Erase last known, user will be reminded again at next check
 		core.settings:set("update_last_known", "")
 		this:delete()
 		return true
@@ -55,7 +62,9 @@ local function version_info_buttonhandler(this, fields)
 		return true
 	end
 	if fields.version_check_visit then
-		core.open_url(this.data.url)
+		if type(this.data.url) == "string" then
+			core.open_url(this.data.url)
+		end
 		this:delete()
 		return true
 	end
@@ -85,7 +94,7 @@ local function get_current_version_code()
 	local cur_major, cur_minor, cur_patch = cur_string:match("^(%d+).(%d+).(%d+)")
 
 	if not cur_patch then
-		core.log("error", "Failed to read version numbers (invalid tag format?)")
+		core.log("error", "Failed to parse version numbers (invalid tag format?)")
 		return
 	end
 
@@ -96,9 +105,9 @@ local function on_version_info_received(json)
 	local known_update = tonumber(core.settings:get("update_last_known")) or 0
 
 	-- Format: MMNNPPP (Major, Minor, Patch)
-	local new_number = json.latest.version_code
-	if not new_number then
-		core.log("error", "Failed to read version numbers (invalid tag format?)")
+	local new_number = type(json.latest) == "table" and json.latest.version_code
+	if type(new_number) ~= "number" then
+		core.log("error", "Failed to read version number (invalid response?)")
 		return
 	end
 
@@ -114,6 +123,7 @@ local function on_version_info_received(json)
 
 	core.settings:set("update_last_known", tostring(new_number))
 
+	-- Show version info dialog (once)
 	local tabs = ui.find_by_name("maintab")
 	tabs:hide()
 
