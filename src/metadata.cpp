@@ -116,14 +116,15 @@ const std::string *SimpleMetadata::getStringRaw(const std::string &name, std::st
 
 bool SimpleMetadata::setString(const std::string &name, const std::string &var)
 {
-	if (var.empty())
-		return m_stringvars.erase(name) > 0;
-
-	StringMap::iterator it = m_stringvars.find(name);
-	if (it != m_stringvars.end() && it->second == var)
-		return false;
-
-	m_stringvars[name] = var;
+	if (var.empty()) {
+		if (m_stringvars.erase(name) == 0)
+			return false;
+	} else {
+		StringMap::iterator it = m_stringvars.find(name);
+		if (it != m_stringvars.end() && it->second == var)
+			return false;
+		m_stringvars[name] = var;
+	}
 	m_modified = true;
 	return true;
 }
