@@ -87,7 +87,7 @@ public:
 	size_t size() const;
 	bool contains(const std::string &name) const override;
 	virtual bool setString(const std::string &name, const std::string &var) override;
-	const StringMap &getStrings(StringMap *) const override;
+	const StringMap &getStrings(StringMap *) const override final;
 
 	// Simple version of getters, possible due to in-memory storage:
 
