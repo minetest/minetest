@@ -45,8 +45,7 @@ bool IMetadata::operator==(const IMetadata &other) const
 const std::string &IMetadata::getString(const std::string &name, std::string *place,
 		u16 recursion) const
 {
-	std::string raw_;
-	const std::string *raw = getStringRaw(name, &raw_);
+	const std::string *raw = getStringRaw(name, place);
 	if (!raw) {
 		static const std::string empty_string = std::string("");
 		return empty_string;
@@ -58,8 +57,7 @@ const std::string &IMetadata::getString(const std::string &name, std::string *pl
 bool IMetadata::getStringToRef(const std::string &name,
 		std::string &str, u16 recursion) const
 {
-	std::string raw_;
-	const std::string *raw = getStringRaw(name, &raw_);
+	const std::string *raw = getStringRaw(name, &str);
 	if (!raw)
 		return false;
 
@@ -73,6 +71,7 @@ const std::string &IMetadata::resolveString(const std::string &str, std::string 
 		u16 recursion) const
 {
 	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
+		// It may be the case that &str == place, but that's fine.
 		return getString(str.substr(2, str.length() - 3), place, recursion + 1);
 	}
 
