@@ -243,11 +243,8 @@ bool ModMetadata::setString(const std::string &name, const std::string &var)
 const StringMap &ModMetadata::getStrings(StringMap *place) const
 {
 	place->clear();
-	if (m_database->getModEntries(m_mod_name, place))
-		return *place;
-
-	static const StringMap empty_map;
-	return empty_map;
+	m_database->getModEntries(m_mod_name, place);
+	return *place;
 }
 
 const std::string *ModMetadata::getStringRaw(const std::string &name, std::string *place) const
