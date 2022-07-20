@@ -201,6 +201,9 @@ void TestModMetadataDatabase::testRecallFail()
 	StringMap recalled;
 	mod_meta_db->getModEntries("mod1", &recalled);
 	UASSERT(recalled.empty());
+	std::string key1_value;
+	UASSERT(!mod_meta_db->getModEntry("mod1", "key1", &key1_value));
+	UASSERT(!mod_meta_db->hasModEntry("mod1", "key1"));
 }
 
 void TestModMetadataDatabase::testCreate()
@@ -214,8 +217,12 @@ void TestModMetadataDatabase::testRecall()
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	StringMap recalled;
 	mod_meta_db->getModEntries("mod1", &recalled);
-	UASSERT(recalled.size() == 1);
-	UASSERT(recalled["key1"] == "value1");
+	UASSERTCMP(std::size_t, ==, recalled.size(), 1);
+	UASSERTCMP(std::string, ==, recalled["key1"], "value1");
+	std::string key1_value;
+	UASSERT(mod_meta_db->getModEntry("mod1", "key1", &key1_value));
+	UASSERTCMP(std::string, ==, key1_value, "value1");
+	UASSERT(mod_meta_db->hasModEntry("mod1", "key1"));
 }
 
 void TestModMetadataDatabase::testChange()
@@ -229,8 +236,12 @@ void TestModMetadataDatabase::testRecallChanged()
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	StringMap recalled;
 	mod_meta_db->getModEntries("mod1", &recalled);
-	UASSERT(recalled.size() == 1);
-	UASSERT(recalled["key1"] == "value2");
+	UASSERTCMP(std::size_t, ==, recalled.size(), 1);
+	UASSERTCMP(std::string, ==, recalled["key1"], "value2");
+	std::string key1_value;
+	UASSERT(mod_meta_db->getModEntry("mod1", "key1", &key1_value));
+	UASSERTCMP(std::string, ==, key1_value, "value2");
+	UASSERT(mod_meta_db->hasModEntry("mod1", "key1"));
 }
 
 void TestModMetadataDatabase::testListMods()
@@ -239,7 +250,7 @@ void TestModMetadataDatabase::testListMods()
 	UASSERT(mod_meta_db->setModEntry("mod2", "key1", "value1"));
 	std::vector<std::string> mod_list;
 	mod_meta_db->listMods(&mod_list);
-	UASSERT(mod_list.size() == 2);
+	UASSERTCMP(size_t, ==, mod_list.size(), 2);
 	UASSERT(std::find(mod_list.cbegin(), mod_list.cend(), "mod1") != mod_list.cend());
 	UASSERT(std::find(mod_list.cbegin(), mod_list.cend(), "mod2") != mod_list.cend());
 }
@@ -248,4 +259,6 @@ void TestModMetadataDatabase::testRemove()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	UASSERT(mod_meta_db->removeModEntry("mod1", "key1"));
+	UASSERT(!mod_meta_db->removeModEntries("mod1"));
+	UASSERT(mod_meta_db->removeModEntries("mod2"));
 }
