@@ -112,5 +112,6 @@ public:
 protected:
 	StringMap m_stringvars;
 
-	const std::string *getStringRaw(const std::string &name, std::string *) const override;
+	const std::string *getStringRaw(const std::string &name,
+			std::string *) const override final;
 };
