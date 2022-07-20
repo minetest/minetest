@@ -43,17 +43,29 @@ public:
 	//
 
 	virtual bool contains(const std::string &name) const = 0;
+
+	// May put a string in *place and return a reference to that string.
 	const std::string &getString(const std::string &name, std::string *place,
 			u16 recursion = 0) const;
+
+	// If the entry is present, puts the value in str and returns true;
+	// otherwise just returns false.
 	bool getStringToRef(const std::string &name, std::string &str, u16 recursion = 0) const;
+
+	// Returns whether the metadata was (potentially) changed.
 	virtual bool setString(const std::string &name, const std::string &var) = 0;
+
 	inline bool removeString(const std::string &name) { return setString(name, ""); }
+
+	// May put strings in *place and return a reference to these strings.
 	virtual const StringMap &getStrings(StringMap *place) const = 0;
-	// Add support for variable names in values
+
+	// Add support for variable names in values. Uses place like getString.
 	const std::string &resolveString(const std::string &str, std::string *place,
 			u16 recursion = 0) const;
 
 protected:
+	// Returns nullptr to indicate absence of value. Uses place like getString.
 	virtual const std::string *getStringRaw(const std::string &name,
 			std::string *place) const = 0;
 };
