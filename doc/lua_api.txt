@@ -4904,6 +4904,9 @@ Utilities
           get_sky_as_table = true,
           -- VoxelManip:get_light_data accepts an optional buffer argument (5.7.0)
           get_light_data_buffer = true,
+          -- When using an appropriate backend (not the deprecated "files" backend),
+          -- mod storage data is not necessarily all kept in RAM (5.7.0)
+          mod_storage_on_disk = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
