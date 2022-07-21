@@ -117,8 +117,20 @@ else()
 	endif()
 endif()
 
-if(TARGET IrrlichtMt::IrrlichtMt)
+if(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
+	# retrieve version somehow
+	if(NOT IrrlichtMt_VERSION)
+		get_target_property(IrrlichtMt_VERSION IrrlichtMt VERSION)
+	endif()
 	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
+
+	set(TARGET_VER_S 1.9.0mt7)
+	string(REPLACE "mt" "." TARGET_VER ${TARGET_VER_S})
+	if(IrrlichtMt_VERSION VERSION_LESS ${TARGET_VER})
+		message(FATAL_ERROR "At least IrrlichtMt ${TARGET_VER_S} is required to build")
+	elseif(NOT DEVELOPMENT_BUILD AND IrrlichtMt_VERSION VERSION_GREATER ${TARGET_VER})
+		message(FATAL_ERROR "IrrlichtMt ${TARGET_VER_S} is required to build")
+	endif()
 endif()
 
 
