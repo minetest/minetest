@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-17 18:26+0000\n"
+"PO-Revision-Date: 2022-07-24 09:25+0000\n"
 "Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
@@ -115,12 +115,11 @@ msgstr "Servern har begärt en återanslutning:"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "En ny $1version är tillgänglig"
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Client Mods"
-msgstr "Välj moddar"
+msgstr "Klientmoddar"
 
 #: builtin/mainmenu/common.lua
 msgid ""
@@ -129,14 +128,18 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Installerad version: $1\n"
+"Ny version: $2\n"
+"Besök $3 och se hur man får den nyaste versionen och håller en uppdaterad "
+"med funktioner och buggfixar."
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "Senare"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Aldrig"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -152,7 +155,7 @@ msgstr "Servern stöder protokollversioner mellan $1 och $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Besök hemsida"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -164,11 +167,11 @@ msgstr "Vi stöder protokollversioner mellan version $1 och $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Aktiverad, har fel)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Ej nöjd)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -427,9 +430,8 @@ msgid "Decorations"
 msgstr "Dekorationer"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Varning: Utvecklingstestet är avsett för utvecklare."
+msgstr "Development Test är avsett för utvecklare."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -464,13 +466,12 @@ msgid "Increases humidity around rivers"
 msgstr "Ökar luftfuktigheten runt floderna"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Installera $1"
+msgstr "Installera ett spel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Installera ett annat spel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -609,11 +610,11 @@ msgstr "Bekräfta Lösenord"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Ansluter till $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Namn saknas"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -626,14 +627,12 @@ msgid "Password"
 msgstr "Lösenord"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Lösenorden matchar inte!"
+msgstr "Lösenorden passar inte"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Registrera och Anslut"
+msgstr "Registrera"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -668,14 +667,12 @@ msgid "Browse"
 msgstr "Bläddra"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Innehåll"
+msgstr "Innehåll: Spel"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Innehåll"
+msgstr "Innehåll: Moddar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -883,7 +880,7 @@ msgstr "Före detta huvudutvecklare"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
-msgstr ""
+msgstr "Dela felsökningslogg"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1016,7 +1013,7 @@ msgstr "Anslut till spel"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Logga in"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1031,7 +1028,6 @@ msgid "Refresh"
 msgstr "Uppdatera"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
 msgstr "Radera favorit"
 
@@ -1041,7 +1037,7 @@ msgstr "Serverbeskrivning"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(kräver spelstöd)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1088,9 +1084,8 @@ msgid "Dynamic shadows"
 msgstr "Dynamiska skuggor"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Dynamiska skuggor: "
+msgstr "Dynamiska skuggor:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1185,18 +1180,16 @@ msgid "Tone Mapping"
 msgstr "Tonmappning"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Touch-tröskel: (px)"
+msgstr "Touch-tröskel (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilinjärt filter"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Very High"
-msgstr "Extremt Hög"
+msgstr "Extremt hög"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
@@ -1215,9 +1208,8 @@ msgid "Waving Plants"
 msgstr "Vajande växter"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Anslutningsfel (tidsgräns nådd?)"
+msgstr "Anslutningsfel (protokollfel?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1354,9 +1346,8 @@ msgid "Camera update enabled"
 msgstr "Kamerauppdatering aktiverat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr "Kan inte visa blockgränser (behöver behörigheten 'basic_debug')"
+msgstr "Kan inte visa blockgränser (avaktiverad av modd eller spel)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1485,9 +1476,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "Aktiverat obegränsat visningsområde"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Skapar klient..."
+msgstr "Fel vid skapande av klient: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -2080,7 +2071,7 @@ msgstr "Tangent används redan"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Tagentbordsbindningar."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2186,11 +2177,12 @@ msgstr "sv"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Namnet är inte registrerat. För att skapa ett konto på servern, tryck "
+"'Registrera'"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Vänligen välj ett namn!"
+msgstr "Namnet är redan taget. Var snäll välj ett annat namn"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2357,7 +2349,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3d"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2456,9 +2448,8 @@ msgstr ""
 "för att vara säker) skapar ett fast floatlandslager."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "Infoga objektnamn"
+msgstr "Administratörsnamn"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2480,9 +2471,8 @@ msgstr ""
 "naturligt nattljus."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "Alltid flygläge och snabb"
+msgstr "Flyg alltid snabbt"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2565,7 +2555,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Ljud"
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
@@ -2628,7 +2618,6 @@ msgid "Bind address"
 msgstr "Bindesadress"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API noise parameters"
 msgstr "API temperatur- och fuktighetsoljudsparametrar för biotoper"
 
@@ -2642,7 +2631,7 @@ msgstr "Distans för optimering av blockskickning"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr ""
+msgstr "Guppande"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2669,9 +2658,8 @@ msgid "Builtin"
 msgstr "Inbyggd"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "Ändra kamera"
+msgstr "Kamera"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2839,7 +2827,6 @@ msgid "Client side node lookup range restriction"
 msgstr "Begränsing av klientsidig nodsökningsområde"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side Modding"
 msgstr "Klientmoddande"
 
@@ -2961,7 +2948,7 @@ msgstr "Konsolhöjd"
 
 #: src/settings_translation_file.cpp
 msgid "Content Repository"
-msgstr ""
+msgstr "Innehållsdatabas"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
@@ -3008,6 +2995,9 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"Styr hastigheten för sjunkande när man står stilla. Negativa värden leder "
+"till att\n"
+"du flyter upp istället."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -3081,7 +3071,7 @@ msgstr "Nivå av debuglogg"
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
+msgstr "Felsökning"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
@@ -3242,9 +3232,8 @@ msgid "Desynchronize block animation"
 msgstr "Desynkronisera blockanimation"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "Dekorationer"
+msgstr "Utvecklarinställningar"
 
 #: src/settings_translation_file.cpp
 msgid "Dig key"
@@ -3586,9 +3575,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering and Antialiasing"
-msgstr "Kantutjämning:"
+msgstr "Filtrering och kantutjämning"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3656,9 +3644,8 @@ msgid "Fog toggle key"
 msgstr "Växlingstagent för dimma"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font"
-msgstr "Typsnittsstorlek"
+msgstr "Typsnitt"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3822,9 +3809,8 @@ msgid "GUIs"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Gamepads"
-msgstr "Spel"
+msgstr "Gamepads"
 
 #: src/settings_translation_file.cpp
 msgid "General"
@@ -3866,14 +3852,12 @@ msgid "Graphics"
 msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics Effects"
-msgstr "Grafik"
+msgstr "Grafikeffekter"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics and Audio"
-msgstr "Grafik"
+msgstr "Grafik och ljud"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -3896,9 +3880,8 @@ msgid "HUD"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "Gränssnittsskalning"
+msgstr "HUD-skalning"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -4145,21 +4128,22 @@ msgstr ""
 "Kräver vajande vätskor för att aktiveras."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How long the server will wait before unloading unused mapblocks, stated in "
 "seconds.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Hur länge servern kommer vänta innan den urladdar oanvända mappblock.\n"
+"Hur länge servern kommer vänta innan den urladdar oanvända mappblock, i "
+"sekunder.\n"
 "Högre värde är smidigare, men använder mer RAM."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
-msgstr "Minska detta för att öka vätskans motstånd mot rörelser."
+msgstr ""
+"Hur mycket du saktas ner när du rör dig genom en vätska.\n"
+"Minska detta för att öka vätskans motstånd mot rörelser."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4226,12 +4210,11 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
-"Aktivera bekräftelse av registrering när du ansluter till servern.\n"
+"När aktiverad är kontoregistrering separat från login i gränsnittet.\n"
 "När inaktiverad registreras ett nytt konto automatiskt."
 
 #: src/settings_translation_file.cpp
@@ -4353,9 +4336,8 @@ msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Interval of sending time of day to clients, stated in seconds."
-msgstr "Fördröjning för att visa informationsrutor, i millisekunder."
+msgstr "Intervall för att skicka tiden på dagen för klienter, i sekunder."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
@@ -5096,9 +5078,8 @@ msgid "Light curve low gradient"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lighting"
-msgstr "Utjämnad Belysning"
+msgstr "Belysning"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5541,9 +5522,8 @@ msgid "Mod Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mod Security"
-msgstr "Aktivera modsäkerhet"
+msgstr "Moddsäkerhet"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
@@ -5654,9 +5634,8 @@ msgid "Noclip key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Node and Entity Highlighting"
-msgstr "Nodmarkering"
+msgstr "Nod- och väsenmarkering"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -6003,9 +5982,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screen"
-msgstr "Skärm:"
+msgstr "Skärm"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -6035,9 +6013,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Skärmdump"
+msgstr "Skärmdumpar"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -6110,19 +6087,16 @@ msgstr ""
 "18 = 4D \"Mandelbulb\" Julia set."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server"
-msgstr "Hosta server"
+msgstr "Server"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Gameplay"
-msgstr "- Servernamn: "
+msgstr "Servergameplay"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Security"
-msgstr "Serverbeskrivning"
+msgstr "Serversäkerhet"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -6149,9 +6123,8 @@ msgid "Server side occlusion culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server/Env Performance"
-msgstr "Serverport"
+msgstr "Server/Miljöprestanda"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -6463,9 +6436,8 @@ msgid "Temperature variation for biomes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Temporary Settings"
-msgstr "Inställningar"
+msgstr "Temporära inställningar"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
@@ -6694,9 +6666,8 @@ msgid "Touch screen threshold"
 msgstr "Tröskelvärde för pekskärm"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen"
-msgstr "Tröskelvärde för pekskärm"
+msgstr "Pekskärm"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
