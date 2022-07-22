@@ -6237,6 +6237,20 @@ Misc.
     * Replaces definition of a builtin hud element
     * `name`: `"breath"` or `"health"`
     * `hud_definition`: definition to replace builtin definition
+* `minetest.parse_relative_number(arg, relative_to)`: returns number or nil
+    * Helper function for chat commands.
+    * For parsing an optionally relative number of a chat command
+      parameter, using the chat command tilde notation.
+    * `arg`: String snippet containing the number; possible values:
+        * `"<number>"`: return as number
+        * `"~<number>"`: return `relative_to + <number>`
+        * `"~"`: return `relative_to`
+        * Anything else will return `nil`
+    * `relative_to`: Number to which the `arg` number might be relative to
+    * Examples:
+        * `minetest.parse_relative_number("5", 10)` returns 5
+        * `minetest.parse_relative_number("~5", 10)` returns 15
+        * `minetest.parse_relative_number("~", 10)` returns 10
 * `minetest.send_join_message(player_name)`
     * This function can be overridden by mods to change the join message.
 * `minetest.send_leave_message(player_name, timed_out)`
