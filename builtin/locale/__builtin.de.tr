@@ -72,7 +72,7 @@ Teleport to position or player=Zu Position oder Spieler teleportieren
 You don't have permission to teleport other players (missing privilege: @1).=Sie haben nicht die Erlaubnis, andere Spieler zu teleportieren (fehlendes Privileg: @1).
 ([-n] <name> <value>) | <name>=([-n] <Name> <Wert>) | <Name>
 Set or read server configuration setting=Serverkonfigurationseinstellung setzen oder lesen
-Failed. Cannot modify secure settings. Edit the settings file manually.=
+Failed. Cannot modify secure settings. Edit the settings file manually.=Fehlgeschlagen. Sicherheitseinstellungen können nicht modifiziert werden. Bearbeiten Sie die Einstellungsdatei manuell.
 Failed. Use '/set -n <name> <value>' to create a new setting.=Fehlgeschlagen. Benutzen Sie „/set -n <Name> <Wert>“, um eine neue Einstellung zu erstellen.
 @1 @= @2=@1 @= @2
 <not set>=<nicht gesetzt>
@@ -152,7 +152,7 @@ Server shutting down (operator request).=Server wird heruntergefahren (Betreiber
 Ban the IP of a player or show the ban list=Die IP eines Spielers verbannen oder die Bannliste anzeigen
 The ban list is empty.=Die Bannliste ist leer.
 Ban list: @1=Bannliste: @1
-You cannot ban players in singleplayer!=
+You cannot ban players in singleplayer!=Im Einzelspielermodus können Sie keine Spieler verbannen!
 Player is not online.=Spieler ist nicht online.
 Failed to ban player.=Konnte Spieler nicht verbannen.
 Banned @1.=@1 verbannt.
