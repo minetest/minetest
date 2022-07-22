@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-07-24 09:24+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"Last-Translator: Valentino <phamtomwhite@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -168,8 +168,9 @@ msgid "(Enabled, has error)"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Insatisfecho)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
