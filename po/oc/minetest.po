@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-20 19:27+0000\n"
+"PO-Revision-Date: 2022-07-31 17:28+0000\n"
 "Last-Translator: Walter Bulbazor <prbulbazor@protonmail.com>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/minetest/"
 "minetest/oc/>\n"
@@ -100,31 +100,31 @@ msgstr "<pas res disponible>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Se presenta una error dins un escrípt Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Se presenta una error:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Menú principau"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Tornar Conectar"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Lo servidor demandèt de se tornar conectar:"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Una novèla $1 version es disponible"
 
 #: builtin/mainmenu/common.lua
 msgid "Client Mods"
-msgstr ""
+msgstr "Mòds dau Client"
 
 #: builtin/mainmenu/common.lua
 msgid ""
@@ -133,46 +133,50 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Version installada: $1\n"
+"Version novèla: $2\n"
+"Vos chau visitar $3 per sabèr cossí tenèr la novèla version e gardar una "
+"version mesa a jorn per los foncionalitats e las reparacions de bugs."
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "Mai Tard"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Pas Jamai"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "La version dau protocòl correspònda pas. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Lo servidor impausa la version $1 dau protocòl. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Lo servidor pòt suportar de versions dau protocòl entre $1 e $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Visitar le sit"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Suportem mas la version $1 dau protocòl."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Suportem de versions dau protocòl entre $1 e $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Activat, a una error)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Insatisfait)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -182,422 +186,429 @@ msgstr ""
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Annular"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "Dependéncias:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Tot desactivar"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Desactivar lo mòdpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Tot activar"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Activar lo mòdpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"Error per l'activacion dau mòd \"$1\" per çò qu'a de caractèrs pas "
+"autorizats. Mas los caractèrs [a-z0-9_] son autorizats."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Charchar Mai de Mòds"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Mòd:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "Pas de dependéncias (optionalas)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Lo juòc ten pas de descripcion provesida."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Pas de dependéncias"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Lo mòdpack ten pas de descripcion provesida."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Pas de dependéncias optionalas"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Dependéncias optionalas:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Sauvar"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Monde:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "activat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" exista dejà. Voletz l'espotir?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Las dependéncias $1 e $2 van s'installar."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 per $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 en descharjament,\n"
+"$2 en espeita"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr ""
+msgstr "Descharjament de $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "Las dependéncias que fasàn besonh per $1 pòdan pas se trobar."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 sera installat, e las dependéncias de $2 seràn ignoradas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Tot los paquets"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr ""
+msgstr "Dejá installat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "Tornar au Menú Principau"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr ""
+msgstr "Juòc de Basa:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB es pas disponible quand Minetest es compilat sens cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Descharjament..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Error per lo descharjament de $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
-msgstr ""
+msgstr "Juòcs"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Installar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
-msgstr ""
+msgstr "Installar $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr ""
+msgstr "Installar las dependéncias mancantas"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install: Unsupported file type or broken archive"
-msgstr ""
+msgstr "Installacion: Tipe de fichèir pas supportat o archiva cassada"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
-msgstr ""
+msgstr "Mòds"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Pas ges de paquets poguèron èstre quèrre"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Pas de resultats"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Pas de mesas a jorn"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Pas trobat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Espotir"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Verifiatz que lo juòc de basa es corrèct."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "En espeita"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Pacs de textura"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Desinstallar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Mesa a jorn"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Tot metre a jorn [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Agachar mai d'informacions dins un navegador wèb"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Un monde sona \"$1\" exista dejà"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Tarren en mai"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Freid de nautor"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Nautor sècha"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Mesclar de biòm"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Biòms"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Caunas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Cavas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Crear"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "Decoracions"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
-msgstr ""
+msgstr "Test de Desvelopament es per los desvelopair·e·a·s."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Donjons"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Tarren plat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Massas de tarren que flotàn dins lo ciau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Tarrens flotejants (experimentau)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generar un tarren pas fractau: Oceans e sostarrens"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Montèls"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Ribèiras mostas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Aumente la mostor a l'entorn de ribèiras"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install a game"
-msgstr ""
+msgstr "Installar un juòc"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Installar un autre juòc"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lacs"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Mostor bassa e chalor elevada fan venir las ribèiras pas plòndas e sèchas"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Generator de tarrens"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Drapèls de generator de tarren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "Drapèls specifics dau generator de tarren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Montanhas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Rajada de gadòlha"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Ret de tunèls e de gròtas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "Pas de juòc selectionat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Redusa la chalor embei l'altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Redusa la mostor embei l'altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Ribèiras"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Ribèiras au nivèl de la mar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Grana"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Transicion doça entre los biòms"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Estructuras aparéisson per le tarren (pas d'efèit per los aubres e l'èrba de "
+"jungla creats per la v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Estructuras aparéisson per le tarren, en generau d'aubres e de plantas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperat, Desertic"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperat, Desertic, Jungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperat, Desertic, Jungla, Tondra, Taïga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Erosia de la surfàcia dau tarren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Aubres e èrba de jungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Variar la plondor de la ribèira"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Mai grandas caunas plondorosas dins lo sostarren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "Nom dau monde"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Avètz pas ges de juòc installat."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Sètz surat de vaudre suprimar \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Suprimar"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: error per suprimar \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: chamin \"$1\" pas valide"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Suprimar lo Monde \"$1\"?"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
@@ -631,11 +642,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Acceptar"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Tornar sonar lo Mòdpack:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -645,19 +656,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Pas de descripcion o de paramètre bailat)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "Brut 2D"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Tornar a la Paja de Paramètres"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Navegar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
@@ -669,95 +680,95 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivat"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Modifiar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Activat"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "Lacunaritada"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Octavas"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Descalatge"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistence"
-msgstr ""
+msgstr "Persisténcia"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Bailatz un nombre entèir valide."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Bailatz un nombre valide."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Tornar per defaut"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Eschala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Charchar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "Seleccionar un repertòre"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "Seleccionar un fichèir"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Show technical names"
-msgstr ""
+msgstr "Mostrar los noms tecnics"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "Chau que la valor siáge au mens $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "Chau pas que la valor siáge mai granda que $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Escart X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Escart Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Escart Z"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -765,14 +776,14 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "valor absoluda"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "defaut"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -780,67 +791,71 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "polit"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Activat)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 mòds"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Error per installar $1 vès $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr ""
+msgstr "Installar un Mòd: Pas possible de trobar lo nom reau dau mòd per: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
+"Installar un Mòd: Pas possible de trobar un nom de dorsèir convenant per lo "
+"mòdpack $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
+msgstr "Se pòt pas trobar un mòd o un mòdpack valide"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "Se pòt pas installar $1 coma un pack de texturas"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr ""
+msgstr "Se pòt pas installar un juòc coma un $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr ""
+msgstr "Se pòt pas installar un mòd coma un $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr ""
+msgstr "Se pòt pas installar un mòdpack coma un $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Charjament..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr ""
+msgstr "La lista de servidors publics es pas activada"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Essatjatz de tornar activar la lista de servidors e verifiatz vòstra "
+"connexion d'internet."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "A prepaus"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Collaboradors Actius"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
@@ -848,7 +863,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Developaires Principaus"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -862,11 +877,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Ancians Collaboradors"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Ancians Developaires Principaus"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
@@ -1143,7 +1158,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "Shaders"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
