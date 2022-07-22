@@ -14,17 +14,17 @@ run () {
 	fi
 }
 
-[ -e $minetest ] || { echo "executable $minetest missing"; exit 1; }
+[ -e "$minetest" ] || { echo "executable $minetest missing"; exit 1; }
 
-rm -rf $worldpath
-mkdir -p $worldpath/worldmods
+rm -rf "$worldpath"
+mkdir -p "$worldpath/worldmods"
 
 settings=(sqlite_synchronous=0 helper_mode=mapgen)
 [ -n "$PROFILER" ] && settings+=(profiler_print_interval=15)
-printf '%s\n' "${settings[@]}" >$testspath/server.conf \
+printf '%s\n' "${settings[@]}" >"$testspath/server.conf" \
 
-ln -s $dir/helper_mod $worldpath/worldmods/
+ln -s "$dir/helper_mod" "$worldpath/worldmods/"
 
-args=(--config $conf_server --world $worldpath --gameid $gameid)
+args=(--config "$conf_server" --world "$worldpath" --gameid $gameid)
 [ -n "$PROFILER" ] && args+=(--verbose)
-run $minetest --server "${args[@]}"
+run "$minetest" --server "${args[@]}"
