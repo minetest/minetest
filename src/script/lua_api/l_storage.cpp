@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 int ModApiStorage::l_get_mod_storage(lua_State *L)
 {
-	// Note that this is wrapped in Lua, see builtin/[...].lua
+	// Note that this is wrapped in Lua, see builtin/common/mod_storage.lua
 	std::string mod_name = readParam<std::string>(L, 1);
 
 	ModMetadata *store = nullptr;
