@@ -1072,6 +1072,8 @@ fake_function() {
 	gettext("Key for taking screenshots.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Drop item key");
 	gettext("Key for dropping the currently selected item.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Swap hand items");
+	gettext("Key for swapping items between main hand and offhand.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("View zoom key");
 	gettext("Key to use view zoom when possible.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Hotbar slot 1 key");
