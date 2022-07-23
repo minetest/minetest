@@ -320,6 +320,9 @@ view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
+#    Draw main hand on left side of screen, offhand on right side.
+mirror_hands (Mirror hands) bool false
+
 [**Camera]
 
 #    Field of view in degrees.

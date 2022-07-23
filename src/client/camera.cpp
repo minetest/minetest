@@ -63,6 +63,11 @@ WieldNode::WieldNode(HandIndex index, Client *client, scene::ISceneManager *mgr)
 	m_meshnode->drop(); // mgr grabbed it
 }
 
+int WieldNode::getDirection()
+{
+	return g_settings->getBool("mirror_hands") ? -m_direction : m_direction;
+}
+
 void WieldNode::step(f32 dtime)
 {
 	bool was_under_zero = m_change_timer < 0;
@@ -135,7 +140,7 @@ void WieldNode::addArmInertia(f32 player_yaw, v3f camera_direction)
 				m_cam_vel_old.X = m_cam_vel.X;
 
 			f32 acc_X = 0.12f * (m_cam_vel.X - (gap_X * 0.1f));
-			m_offset.X += (m_last_cam_pos.X < player_yaw ? acc_X : -acc_X) * m_direction;
+			m_offset.X += (m_last_cam_pos.X < player_yaw ? acc_X : -acc_X) * getDirection();
 
 			if (m_last_cam_pos.X != player_yaw)
 				m_last_cam_pos.X = player_yaw;
@@ -190,6 +195,7 @@ void WieldNode::addArmInertia(f32 player_yaw, v3f camera_direction)
 
 void WieldNode::update(video::SColor player_light_color, f32 view_bobbing_anim, f32 tool_reload_ratio)
 {
+	int direction = getDirection();
 	m_player_light_color = player_light_color;
 
 	// Position the wielded item
@@ -231,15 +237,15 @@ void WieldNode::update(video::SColor player_light_color, f32 view_bobbing_anim, 
 		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
 		core::quaternion quat_slerp;
 		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
-		quat_slerp.W *= m_direction;
-		quat_slerp.X *= m_direction;
+		quat_slerp.W *= direction;
+		quat_slerp.X *= direction;
 		quat_slerp.toEuler(rot);
 		rot *= core::RADTODEG;
-		pos.X *= m_direction;
+		pos.X *= direction;
 	} else {
 		f32 bobfrac = my_modf(view_bobbing_anim);
-		pos.X *= m_direction;
-		pos.X -= sin(bobfrac*M_PI*2.0+M_PI*m_index) * 3.0 * m_direction;
+		pos.X *= direction;
+		pos.X -= sin(bobfrac*M_PI*2.0+M_PI*m_index) * 3.0 * direction;
 		pos.Y += sin(my_modf(bobfrac*2.0)*M_PI+M_PI*m_index) * 3.0;
 	}
 

@@ -78,6 +78,7 @@ class WieldNode
 {
 public:
 	WieldNode(HandIndex index, Client *client, scene::ISceneManager *mgr);
+	int getDirection();
 	void step(f32 dtime);
 	void addArmInertia(f32 player_yaw, v3f camera_direction);
 	void update(video::SColor player_light_color, f32 view_bobbing_anim, f32 tool_reload_ratio);
