@@ -794,6 +794,7 @@ protected:
 	void processItemSelection(u16 *new_playeritem);
 
 	void dropSelectedItem(bool single_item = false);
+	void swapOffhand();
 	void openInventory();
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
@@ -2023,6 +2024,8 @@ void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
 		dropSelectedItem(isKeyDown(KeyType::SNEAK));
+	} else if (wasKeyDown(KeyType::SWAP_OFFHAND)) {
+		swapOffhand();
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::BACKWARD)) {
@@ -2187,6 +2190,34 @@ void Game::dropSelectedItem(bool single_item)
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
 	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
+	client->inventoryAction(a);
+}
+
+
+void Game::swapOffhand()
+{
+
+	IMoveAction *a = new IMoveAction();
+	a->count = 0;
+	a->from_inv.setCurrentPlayer();
+	a->from_list = "main";
+	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
+	a->to_inv.setCurrentPlayer();
+	a->to_list = "offhand";
+	a->to_i = 0;
+
+	ItemStack selected;
+	client->getEnv().getLocalPlayer()->getWieldedItem(&selected, nullptr);
+
+	if (selected.name == "") {
+		auto tmp_list = a->from_list;
+		auto tmp_i = a->from_i;
+		a->from_list = a->to_list;
+		a->from_i = a->to_i;
+		a->to_list = tmp_list;
+		a->to_i = tmp_i;
+	}
+
 	client->inventoryAction(a);
 }
 
@@ -4383,6 +4414,7 @@ void Game::showPauseMenu()
 		"- %s: place/use\n"
 		"- %s: sneak/climb down\n"
 		"- %s: drop item\n"
+		"- %s: swap hand items\n"
 		"- %s: inventory\n"
 		"- Mouse: turn/look\n"
 		"- Mouse wheel: select item\n"
@@ -4401,6 +4433,7 @@ void Game::showPauseMenu()
 		GET_KEY_NAME(keymap_place),
 		GET_KEY_NAME(keymap_sneak),
 		GET_KEY_NAME(keymap_drop),
+		GET_KEY_NAME(keymap_swap_offhand),
 		GET_KEY_NAME(keymap_inventory),
 		GET_KEY_NAME(keymap_chat)
 	);

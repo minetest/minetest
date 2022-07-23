@@ -2210,6 +2210,10 @@ keymap_screenshot (Screenshot) key KEY_F12
 #    Key for dropping the currently selected item.
 keymap_drop (Drop item key) key KEY_KEY_Q
 
+#    Key for swapping items between main hand and offhand.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_swap_offhand (Swap hand items) key KEY_KEY_F
+
 #    Key to use view zoom when possible.
 keymap_zoom (View zoom key) key KEY_KEY_Z
 
