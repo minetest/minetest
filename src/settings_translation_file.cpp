@@ -86,6 +86,8 @@ fake_function() {
 	gettext("Enable view bobbing and amount of view bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
 	gettext("Fall bobbing factor");
 	gettext("Multiplier for fall bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
+	gettext("Mirror hands");
+	gettext("Draw main hand on left side of screen, offhand on right side.");
 	gettext("Camera");
 	gettext("Near plane");
 	gettext("Camera 'near clipping plane' distance in nodes, between 0 and 0.25\nOnly works on GLES platforms. Most users will not need to change this.\nIncreasing can reduce artifacting on weaker GPUs.\n0.1 = Default, 0.25 = Good value for weaker tablets.");

@@ -45,7 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
-#define HANDS (int i = 0, s = +1; i <= 1; i++, s *= -1) // i is index, s is sign
+#define HANDS (int i = 0, s = +1; i <= +1; i++, s = -1, (void) s) // i is index, s is sign
 
 Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
@@ -529,6 +529,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	m_player_light_color = player->light_color;
 
 	for HANDS {
+		if (g_settings->getBool("mirror_hands"))
+			s *= -1;
+
 		// Position the wielded item
 		//v3f wield_position = v3f(45, -35, 65);
 		v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);

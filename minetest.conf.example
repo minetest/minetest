@@ -212,6 +212,10 @@
 #    type: float min: 0 max: 100
 # fall_bobbing_amount = 0.03
 
+#    Draw main hand on left side of screen, offhand on right side.
+#    type: bool
+# mirror_hands = false
+
 ### Camera
 
 #    Camera 'near clipping plane' distance in nodes, between 0 and 0.25
