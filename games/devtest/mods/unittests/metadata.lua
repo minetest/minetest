@@ -1,4 +1,4 @@
--- Tests of generic metadata functionality
+-- Tests of generic and specific metadata functionality
 
 local function test_metadata(meta)
 	local compare_meta = ItemStack("unittests:iron_lump"):get_meta()
@@ -60,9 +60,11 @@ local function test_metadata(meta)
 	assert(not meta:equals(compare_meta))
 end
 
-local storage = core.get_mod_storage()
+local storage_a = core.get_mod_storage()
+local storage_b = core.get_mod_storage()
 local function test_mod_storage()
-	test_metadata(storage)
+	assert(storage_a == storage_b)
+	test_metadata(storage_a)
 end
 unittests.register("test_mod_storage", test_mod_storage)
 
