@@ -727,6 +727,7 @@ protected:
 	void processItemSelection(u16 *new_playeritem);
 
 	void dropSelectedItem(bool single_item = false);
+	void swapOffhand();
 	void openInventory();
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
@@ -2067,6 +2068,8 @@ void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
 		dropSelectedItem(isKeyDown(KeyType::SNEAK));
+	} else if (wasKeyDown(KeyType::SWAP_OFFHAND)) {
+		swapOffhand();
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::BACKWARD)) {
@@ -2244,6 +2247,34 @@ void Game::dropSelectedItem(bool single_item)
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
 	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
+	client->inventoryAction(a);
+}
+
+
+void Game::swapOffhand()
+{
+
+	IMoveAction *a = new IMoveAction();
+	a->count = 0;
+	a->from_inv.setCurrentPlayer();
+	a->from_list = "main";
+	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
+	a->to_inv.setCurrentPlayer();
+	a->to_list = "offhand";
+	a->to_i = 0;
+
+	ItemStack selected;
+	client->getEnv().getLocalPlayer()->getWieldedItem(&selected, nullptr);
+
+	if (selected.name == "") {
+		auto tmp_list = a->from_list;
+		auto tmp_i = a->from_i;
+		a->from_list = a->to_list;
+		a->from_i = a->to_i;
+		a->to_list = tmp_list;
+		a->to_i = tmp_i;
+	}
+
 	client->inventoryAction(a);
 }
 
@@ -4241,6 +4272,14 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.damage_flash -= 384.0f * dtime;
 	}
 
+	/*
+		==================== End scene ====================
+	*/
+
+	driver->endScene();
+
+	stats->drawtime = tt_draw.stop(true);
+	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
 

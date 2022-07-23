@@ -42,6 +42,7 @@ public:
 
 		// Other
 		DROP,
+		SWAP_OFFHAND,
 		INVENTORY,
 		CHAT,
 		CMD,
