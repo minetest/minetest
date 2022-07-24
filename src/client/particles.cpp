@@ -875,7 +875,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	);
 	p.acc = v3f(
 		0.0f,
-		-player->movement_gravity * player->physics_override_gravity / BS,
+		-player->movement_gravity * player->physics_override.gravity / BS,
 		0.0f
 	);
 	p.pos = v3f(

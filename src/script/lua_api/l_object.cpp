@@ -1434,14 +1434,17 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
+	RemotePlayer *player = playersao->getPlayer();
+	auto &phys = player->physics_override;
+
 	if (lua_istable(L, 2)) {
 		bool modified = false;
-		modified |= getfloatfield(L, 2, "speed", playersao->m_physics_override_speed);
-		modified |= getfloatfield(L, 2, "jump", playersao->m_physics_override_jump);
-		modified |= getfloatfield(L, 2, "gravity", playersao->m_physics_override_gravity);
-		modified |= getboolfield(L, 2, "sneak", playersao->m_physics_override_sneak);
-		modified |= getboolfield(L, 2, "sneak_glitch", playersao->m_physics_override_sneak_glitch);
-		modified |= getboolfield(L, 2, "new_move", playersao->m_physics_override_new_move);
+		modified |= getfloatfield(L, 2, "speed", phys.speed);
+		modified |= getfloatfield(L, 2, "jump", phys.jump);
+		modified |= getfloatfield(L, 2, "gravity", phys.gravity);
+		modified |= getboolfield(L, 2, "sneak", phys.sneak);
+		modified |= getboolfield(L, 2, "sneak_glitch", phys.sneak_glitch);
+		modified |= getboolfield(L, 2, "new_move", phys.new_move);
 		if (modified)
 			playersao->m_physics_override_sent = false;
 	} else {
@@ -1450,15 +1453,15 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		log_deprecated(L, "Deprecated use of set_physics_override(num, num, num)");
 
 		if (!lua_isnil(L, 2)) {
-			playersao->m_physics_override_speed = lua_tonumber(L, 2);
+			phys.speed = lua_tonumber(L, 2);
 			playersao->m_physics_override_sent = false;
 		}
 		if (!lua_isnil(L, 3)) {
-			playersao->m_physics_override_jump = lua_tonumber(L, 3);
+			phys.jump = lua_tonumber(L, 3);
 			playersao->m_physics_override_sent = false;
 		}
 		if (!lua_isnil(L, 4)) {
-			playersao->m_physics_override_gravity = lua_tonumber(L, 4);
+			phys.gravity = lua_tonumber(L, 4);
 			playersao->m_physics_override_sent = false;
 		}
 	}
@@ -1470,22 +1473,23 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = getplayersao(ref);
-	if (playersao == nullptr)
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
 		return 0;
 
+	const auto &phys = player->physics_override;
 	lua_newtable(L);
-	lua_pushnumber(L, playersao->m_physics_override_speed);
+	lua_pushnumber(L, phys.speed);
 	lua_setfield(L, -2, "speed");
-	lua_pushnumber(L, playersao->m_physics_override_jump);
+	lua_pushnumber(L, phys.jump);
 	lua_setfield(L, -2, "jump");
-	lua_pushnumber(L, playersao->m_physics_override_gravity);
+	lua_pushnumber(L, phys.gravity);
 	lua_setfield(L, -2, "gravity");
-	lua_pushboolean(L, playersao->m_physics_override_sneak);
+	lua_pushboolean(L, phys.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, playersao->m_physics_override_sneak_glitch);
+	lua_pushboolean(L, phys.sneak_glitch);
 	lua_setfield(L, -2, "sneak_glitch");
-	lua_pushboolean(L, playersao->m_physics_override_new_move);
+	lua_pushboolean(L, phys.new_move);
 	lua_setfield(L, -2, "new_move");
 	return 1;
 }

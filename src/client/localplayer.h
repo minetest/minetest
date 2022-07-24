@@ -62,14 +62,6 @@ public:
 	bool swimming_vertical = false;
 	bool swimming_pitch = false;
 
-	float physics_override_speed = 1.0f;
-	float physics_override_jump = 1.0f;
-	float physics_override_gravity = 1.0f;
-	bool physics_override_sneak = true;
-	bool physics_override_sneak_glitch = false;
-	// Temporary option for old move code
-	bool physics_override_new_move = true;
-
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);

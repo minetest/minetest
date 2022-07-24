@@ -117,7 +117,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 			continue;
 		// And the node(s) above have to be nonwalkable
 		bool ok = true;
-		if (!physics_override_sneak_glitch) {
+		if (!physics_override.sneak_glitch) {
 			u16 height =
 				ceilf((m_collisionbox.MaxEdge.Y - m_collisionbox.MinEdge.Y) / BS);
 			for (u16 y = 1; y <= height; y++) {
@@ -149,7 +149,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	node.getCollisionBoxes(nodemgr, &nodeboxes);
 	m_sneak_node_bb_top = getNodeBoundingBox(nodeboxes);
 
-	if (physics_override_sneak_glitch) {
+	if (physics_override.sneak_glitch) {
 		// Detect sneak ladder:
 		// Node two meters above sneak node must be solid
 		node = map->getNode(m_sneak_node + v3s16(0, 2, 0),
@@ -173,7 +173,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_standing_node = floatToInt(m_position, BS);
 
 	// Temporary option for old move code
-	if (!physics_override_new_move) {
+	if (!physics_override.new_move) {
 		old_move(dtime, env, pos_max_d, collision_info);
 		return;
 	}
@@ -301,7 +301,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		&position, &m_speed, accel_f);
 
 	bool could_sneak = control.sneak && !free_move && !in_liquid &&
-		!is_climbing && physics_override_sneak;
+		!is_climbing && physics_override.sneak;
 
 	// Add new collisions to the vector
 	if (collision_info && !free_move) {
@@ -376,7 +376,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		}
 
 		if (y_diff > 0 && m_speed.Y <= 0.0f &&
-				(physics_override_sneak_glitch || y_diff < BS * 0.6f)) {
+				(physics_override.sneak_glitch || y_diff < BS * 0.6f)) {
 			// Move player to the maximal height when falling or when
 			// the ledge is climbed on the next step.
 
@@ -440,7 +440,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Jump key pressed while jumping off from a bouncy block
 	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
 		m_speed.Y >= -0.5f * BS) {
-		float jumpspeed = movement_speed_jump * physics_override_jump;
+		float jumpspeed = movement_speed_jump * physics_override.jump;
 		if (m_speed.Y > 1.0f) {
 			// Reduce boost when speed already is high
 			m_speed.Y += jumpspeed / (1.0f + (m_speed.Y / 16.0f));
@@ -588,7 +588,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			*/
 			v3f speedJ = getSpeed();
 			if (speedJ.Y >= -0.5f * BS) {
-				speedJ.Y = movement_speed_jump * physics_override_jump;
+				speedJ.Y = movement_speed_jump * physics_override.jump;
 				setSpeed(speedJ);
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
 			}
@@ -647,8 +647,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	}
 
 	// Accelerate to target speed with maximum increment
-	accelerate((speedH + speedV) * physics_override_speed,
-		incH * physics_override_speed * slip_factor, incV * physics_override_speed,
+	accelerate((speedH + speedV) * physics_override.speed,
+		incH * physics_override.speed * slip_factor, incV * physics_override.speed,
 		pitch_move);
 }
 
@@ -855,7 +855,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	if (control.sneak && m_sneak_node_exists &&
 			!(fly_allowed && player_settings.free_move) && !in_liquid &&
-			physics_override_sneak) {
+			physics_override.sneak) {
 		f32 maxd = 0.5f * BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
 		position.X = rangelim(position.X, lwn_f.X - maxd, lwn_f.X + maxd);
@@ -926,7 +926,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_need_to_get_new_sneak_node = true;
 	}
 
-	if (m_need_to_get_new_sneak_node && physics_override_sneak) {
+	if (m_need_to_get_new_sneak_node && physics_override.sneak) {
 		m_sneak_node_bb_ymax = 0.0f;
 		v3s16 pos_i_bottom = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
 		v2f player_p2df(position.X, position.Z);
@@ -956,7 +956,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			if (!is_valid_position || nodemgr->get(node).walkable)
 				continue;
 			// If not 'sneak_glitch' the node 2 nodes above it has to be nonwalkable
-			if (!physics_override_sneak_glitch) {
+			if (!physics_override.sneak_glitch) {
 				node = map->getNode(p + v3s16(0, 2, 0), &is_valid_position);
 				if (!is_valid_position || nodemgr->get(node).walkable)
 					continue;
@@ -1032,7 +1032,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Jump key pressed while jumping off from a bouncy block
 	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
 			m_speed.Y >= -0.5f * BS) {
-		float jumpspeed = movement_speed_jump * physics_override_jump;
+		float jumpspeed = movement_speed_jump * physics_override.jump;
 		if (m_speed.Y > 1.0f) {
 			// Reduce boost when speed already is high
 			m_speed.Y += jumpspeed / (1.0f + (m_speed.Y / 16.0f));
