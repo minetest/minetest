@@ -1,0 +1,1 @@
+-DNDEBUG -DUSE_CMAKE_CONFIG_H -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough  -mfpmath=sse -msse -pipe -funroll-loops -O3 -fomit-frame-pointer -fno-math-errno -fno-trapping-math -ffinite-math-only -fno-signed-zeros
