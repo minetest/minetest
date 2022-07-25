@@ -23,13 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shadows/dynamicshadowsrender.h"
 #include "settings.h"
 
-
-RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: device(_device), client(_client), hud(_hud), shadow_renderer(createShadowRenderer(device, client)), pipeline(new RenderPipeline()), 
-	virtual_size_scale(1.0f)
-{
-}
-
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud, 
 		ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, v2f _virtual_size_scale)
 	: device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer), 
