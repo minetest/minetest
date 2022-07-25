@@ -10,6 +10,14 @@ strace="${FILENAME%.o}".strace
 strace_deps="${FILENAME%.o}".strace_deps
 strace_deps_ne="${FILENAME%.o}".strace_deps_ne
 
+# FIXME: This code generates 3 unecessary dependency relations on the first build.
+# This means a single file might be rebuild unnecessarily on a later build, once.
+GENERATED_HEADERS="cmake_config.h cmake_config_githash.h test_config.h"
+for GENERATED_HEADER in ${GENERATED_HEADERS}; do
+ HEADER_PATH="${SRC_DIR}/${GENERATED_HEADER}"
+ test -e "${HEADER_PATH}" || redo-ifchange "${HEADER_PATH}"
+done
+
 redo-ifchange "${SRC_DIR}/INCLUDE_DIRS"
 INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) $(cat ${SRC_DIR}/INCLUDE_DIRS )"
 redo-ifchange "${SRC_DIR}/CXXFLAGS"
