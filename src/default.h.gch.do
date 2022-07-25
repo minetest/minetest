@@ -21,16 +21,10 @@ done
 redo-ifchange "${SRC_DIR}/INCLUDE_DIRS"
 INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) $(cat ${SRC_DIR}/INCLUDE_DIRS )"
 redo-ifchange "${SRC_DIR}/CXXFLAGS"
-redo-ifchange "${SRC_DIR}/precompile.h.gch"
-CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS) -MD -MF ${compiler_deps} -include precompile.h"
+CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS) -MD -MF ${compiler_deps}"
 
-SRC=$(
- find  "$(dirname ${FILENAME})" \
-  -maxdepth 1 \
-  -name "$(basename "${FILENAME%.o}.cpp")" \
-  -o \
-  -name "$(basename "${FILENAME%.o}.c")"
- )
+SRC="${1%.gch}"
+redo-ifchange "${SRC}"
 
 if command -v strace >/dev/null; then
  # Record non-existence header dependencies.
