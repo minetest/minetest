@@ -18,13 +18,10 @@ for GENERATED_HEADER in ${GENERATED_HEADERS}; do
  test -e "${HEADER_PATH}" || redo-ifchange "${HEADER_PATH}"
 done
 
-redo-ifchange "${SRC_DIR}/INCLUDE_DIRS"
-INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) $(cat ${SRC_DIR}/INCLUDE_DIRS )"
-redo-ifchange "${SRC_DIR}/CXXFLAGS"
-CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS) -MD -MF ${compiler_deps}"
-
 SRC="${1%.gch}"
-redo-ifchange "${SRC}"
+redo-ifchange "${SRC_DIR}/INCLUDE_DIRS" "${SRC_DIR}/CXXFLAGS" "${SRC}"
+INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) $(cat ${SRC_DIR}/INCLUDE_DIRS )"
+CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS) -MD -MF ${compiler_deps}"
 
 if command -v strace >/dev/null; then
  # Record non-existence header dependencies.

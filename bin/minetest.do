@@ -17,21 +17,16 @@ OBJECTS=$(
  done
 )
 
-redo-ifchange ${OBJECTS}
+IRRLICHTMT=$(realpath "${SRC_DIR}"/../lib/irrlichtmt/lib/Linux/libIrrlichtMt.a)
+redo-ifchange ${OBJECTS} "${SRC_DIR}"/CXXFLAGS "${SRC_DIR}"/LIBRARIES "${IRRLICHTMT}"
+
+CXXFLAGS="$(cat "${SRC_DIR}"/CXXFLAGS)"
+
+LIBRARIES=$(cat "${SRC_DIR}"/LIBRARIES)
+LIBFLAGS="$(printf -- '-l%s ' ${LIBRARIES})"
 
 deps=minetest.deps
 deps_ne=minetest.deps_ne
-
-redo-ifchange "${SRC_DIR}"/CXXFLAGS
-CXXFLAGS="$(cat "${SRC_DIR}"/CXXFLAGS)"
-
-redo-ifchange "${SRC_DIR}"/LIBRARIES
-LIBRARIES=$(cat "${SRC_DIR}"/LIBRARIES)
-
-IRRLICHTMT=$(realpath "${SRC_DIR}"/../lib/irrlichtmt/lib/Linux/libIrrlichtMt.a)
-redo-ifchange "${IRRLICHTMT}"
-
-LIBFLAGS="$(printf -- '-l%s ' ${LIBRARIES})"
 
 if command -v strace >/dev/null; then
  # Record non-existence header dependencies.
