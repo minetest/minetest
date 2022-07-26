@@ -61,8 +61,8 @@ if command -v strace >/dev/null; then
   >"${strace_deps_ne}"
 
  while read -r dependency_ne; do
-  test -f "${dependency_ne}" || redo-ifcreate  "${dependency_ne}"
- done <"${strace_deps_ne}"
+  test -f "${dependency_ne}" || printf '%s\n'  "${dependency_ne}"
+ done <"${strace_deps_ne}" | xargs redo-ifcreate
  unlink "${strace_deps_ne}"
 
  grep --invert-match '1 ENOENT' <"${strace}"\
@@ -72,8 +72,8 @@ if command -v strace >/dev/null; then
   |uniq \
   >"${strace_deps}"
  while read -r dependency; do
-  test -f "${dependency}" && redo-ifchange  "${dependency}"
- done <"${strace_deps}"
+  test -f "${dependency}" && printf '%s\n'  "${dependency}"
+ done <"${strace_deps}" | xargs redo-ifchange
  unlink "${strace_deps}"
 
  unlink "${strace}"
