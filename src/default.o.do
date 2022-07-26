@@ -25,8 +25,12 @@ CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS)"
 case ${FILENAME} in
  *benchmark/benchmark.o) ;;
  *)
-  redo-ifchange "${SRC_DIR}/precompile.h.gch"
-  CXXFLAGS="${CXXFLAGS} -include precompile.h"
+  # Only use precompiled header if it exists, i.e. was built manually.
+  if test -e "${SRC_DIR}/precompile.h.gch"; then
+   CXXFLAGS="${CXXFLAGS} -include precompile.h"
+  else
+   redo-ifcreate "${SRC_DIR}/precompile.h.gch"
+  fi
  ;;
 esac
 
