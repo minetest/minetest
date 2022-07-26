@@ -20,7 +20,7 @@ done
 
 redo-ifchange "${SRC_DIR}/INCLUDE_DIRS" "${SRC_DIR}/CXXFLAGS"
 INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) $(cat ${SRC_DIR}/INCLUDE_DIRS )"
-CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS) -MD -MF ${compiler_deps}"
+CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS)"
 
 case ${FILENAME} in
  *benchmark/benchmark.o) ;;
@@ -80,10 +80,9 @@ else
    echo "$folder/strace"
   done | xargs redo-ifcreate
  )
- c++ ${CXXFLAGS} -o "${3}" -c "${SRC}"
+ c++ ${CXXFLAGS} -o "${3}" -c "${SRC}"  -MD -MF "${compiler_deps}"
+ read DEPS <"${compiler_deps}"
+ : ${DEPS#*:}
+ redo-ifchange ${DEPS#*:}
+ unlink "${compiler_deps}"
 fi
-
-read DEPS <"${compiler_deps}"
-: ${DEPS#*:}
-redo-ifchange ${DEPS#*:}
-unlink "${compiler_deps}"
