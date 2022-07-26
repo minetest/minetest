@@ -34,4 +34,4 @@ local function test_content_ids_async(cb)
 	end
 	core.handle_async(func, cb, test_content_ids)
 end
-unittests.register("test_content_ids_async", test_content_ids_async, {player=true, async=true})
+unittests.register("test_content_ids_async", test_content_ids_async, {async=true})
