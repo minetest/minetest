@@ -19,8 +19,12 @@ for GENERATED_HEADER in ${GENERATED_HEADERS}; do
 done
 
 redo-ifchange "${SRC_DIR}/INCLUDE_DIRS" "${SRC_DIR}/CXXFLAGS"
-INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) $(cat ${SRC_DIR}/INCLUDE_DIRS )"
-CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) $(cat ${SRC_DIR}/CXXFLAGS)"
+
+read -r INCLUDE_DIRS <"${SRC_DIR}/INCLUDE_DIRS"
+INCLUDE_DIRS="${SRC_DIR} ${SRC_DIR}/script $(realpath ${SRC_DIR}/../lib/irrlichtmt/include) $(realpath ${SRC_DIR}/../lib/catch2) ${INCLUDE_DIRS}"
+
+read -r CXXFLAGS <"${SRC_DIR}/CXXFLAGS"
+CXXFLAGS="$(printf -- '-I%s ' ${INCLUDE_DIRS}) ${CXXFLAGS}"
 
 case ${FILENAME} in
  *benchmark/benchmark.o) ;;
