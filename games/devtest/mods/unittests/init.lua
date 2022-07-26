@@ -178,6 +178,7 @@ dofile(modpath .. "/crafting.lua")
 dofile(modpath .. "/itemdescription.lua")
 dofile(modpath .. "/async_env.lua")
 dofile(modpath .. "/entity.lua")
+dofile(modpath .. "/content_ids.lua")
 
 --------------
 
