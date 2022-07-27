@@ -2509,7 +2509,13 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	if (player->getPlayerSettings().continuous_forward &&
 			client->activeObjectsReceived() && !player->isDead()) {
 		control.movement_speed = 1.0f;
-		control.movement_direction = 0.0f;
+		// set diagonal direction if left xor right is pressed
+		if (isKeyDown(KeyType::LEFT) == isKeyDown(KeyType::RIGHT))
+			control.movement_direction = 0.0f; // both pressed or neither pressed, move straight
+		else if (isKeyDown(KeyType::LEFT))
+			control.movement_direction = -M_PI / 4; // move left-forward diagonally
+		else if (isKeyDown(KeyType::RIGHT))
+			control.movement_direction = M_PI / 4; // move right-forward diagonally
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
