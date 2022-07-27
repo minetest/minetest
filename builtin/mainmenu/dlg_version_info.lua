@@ -34,15 +34,15 @@ local function version_info_formspec(data)
 
 	local fs = {
 		"formspec_version[3]",
-		"size[10,5.5]",
+		"size[12.8,7]",
 		"style_type[label;textcolor=#0E0]",
-		"label[0.375,0.775;", core.formspec_escape(title), "]",
-		"textarea[0.375,1.375;9.25,2.75;;;",
+		"label[0.5,0.8;", core.formspec_escape(title), "]",
+		"textarea[0.4,1.6;12,3.4;;;",
 			core.formspec_escape(message), "]",
-		"container[0.375,4.375]",
-		"button[0,0;2.92,0.75;version_check_visit;", fgettext("Visit website"), "]",
-		"button[3.16,0;2.92,0.75;version_check_remind;", fgettext("Later"), "]",
-		"button[6.33,0;2.92,0.75;version_check_never;", fgettext("Never"), "]",
+		"container[0.4,5.8]",
+		"button[0.0,0;4.0,0.8;version_check_visit;", fgettext("Visit website"), "]",
+		"button[4.5,0;3.5,0.8;version_check_remind;", fgettext("Later"), "]",
+		"button[8.5.5,0;3.5,0.8;version_check_never;", fgettext("Never"), "]",
 		"container_end[]",
 	}
 
