@@ -102,6 +102,12 @@ local function get_current_version_code()
 end
 
 local function on_version_info_received(json)
+	local maintab = ui.find_by_name("maintab")
+	if maintab.hidden then
+		-- Another dialog is open, abort.
+		return
+	end
+
 	local known_update = tonumber(core.settings:get("update_last_known")) or 0
 
 	-- Format: MMNNPPP (Major, Minor, Patch)
@@ -124,11 +130,10 @@ local function on_version_info_received(json)
 	core.settings:set("update_last_known", tostring(new_number))
 
 	-- Show version info dialog (once)
-	local tabs = ui.find_by_name("maintab")
-	tabs:hide()
+	maintab:hide()
 
 	local version_info_dlg = create_version_info_dlg(json.latest.version, json.latest.url)
-	version_info_dlg:set_parent(tabs)
+	version_info_dlg:set_parent(maintab)
 	version_info_dlg:show()
 
 	ui.update()
