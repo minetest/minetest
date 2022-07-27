@@ -15,7 +15,7 @@ git rev-parse HEAD |redo-stamp
  cd ../..
  cmake . -DBUILD_SHARED_LIBS=OFF
  make
-)
+) >&2
 mv "\${1}" "\${3}"
 EOF
 
