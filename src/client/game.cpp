@@ -2510,11 +2510,13 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->getMovementDirection()
 	);
 
-	// autoforward if set: move towards pointed position at maximum speed
+	// autoforward if set: move at maximum speed
 	if (player->getPlayerSettings().continuous_forward &&
 			client->activeObjectsReceived() && !player->isDead()) {
 		control.movement_speed = 1.0f;
-		control.movement_direction = 0.0f;
+		// sideways movement only
+		float dx = sin(control.movement_direction);
+		control.movement_direction = atan2(dx, 1.0f);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
