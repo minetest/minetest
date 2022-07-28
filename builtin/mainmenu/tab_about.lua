@@ -94,12 +94,25 @@ local previous_contributors = {
 	"Jeija <jeija@mesecons.net>",
 }
 
-local function buildCreditList(source)
-	local ret = {}
-	for i = 1, #source do
-		ret[i] = core.formspec_escape(source[i])
+local function prepare_credits(dest, source)
+	for _, s in ipairs(source) do
+		-- if there's text inside brackets make it gray-ish
+		s = s:gsub("%[.-%]", core.colorize("#aaa", "%1"))
+		dest[#dest+1] = s
 	end
-	return table.concat(ret, ",,")
+end
+
+local function build_hacky_list(items, spacing)
+	spacing = spacing or 0.5
+	local y = spacing / 2
+	local ret = {}
+	for _, item in ipairs(items) do
+		if item ~= "" then
+			ret[#ret+1] = ("label[0,%f;%s]"):format(y, core.formspec_escape(item))
+		end
+		y = y + spacing
+	end
+	return table.concat(ret, ""), y
 end
 
 return {
@@ -108,40 +121,62 @@ return {
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
-		local fs = "image[0.75,0.5;2.2,2.2;" .. core.formspec_escape(logofile) .. "]" ..
+
+		local credit_list = {}
+		table.insert_all(credit_list, {
+			core.colorize("#ff0", fgettext("Core Developers"))
+		})
+		prepare_credits(credit_list, core_developers)
+		table.insert_all(credit_list, {
+			"",
+			core.colorize("#ff0", fgettext("Core Team"))
+		})
+		prepare_credits(credit_list, core_team)
+		table.insert_all(credit_list, {
+			"",
+			core.colorize("#ff0", fgettext("Active Contributors"))
+		})
+		prepare_credits(credit_list, active_contributors)
+		table.insert_all(credit_list, {
+			"",
+			core.colorize("#ff0", fgettext("Previous Core Developers"))
+		})
+		prepare_credits(credit_list, previous_core_developers)
+		table.insert_all(credit_list, {
+			"",
+			core.colorize("#ff0", fgettext("Previous Contributors"))
+		})
+		prepare_credits(credit_list, previous_contributors)
+		local credit_fs, scroll_height = build_hacky_list(credit_list)
+		-- account for the visible portion
+		scroll_height = math.max(0, scroll_height - 6.9)
+
+		local fs = "image[1.5,0.6;2.5,2.5;" .. core.formspec_escape(logofile) .. "]" ..
 			"style[label_button;border=false]" ..
-			"button[0.5,2;2.5,2;label_button;" .. version.project .. " " .. version.string .. "]" ..
-			"button[0.75,2.75;2,2;homepage;minetest.net]" ..
-			"tablecolumns[color;text]" ..
-			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
-			"#FFFF00," .. fgettext("Core Developers") .. ",," ..
-			buildCreditList(core_developers) .. ",,," ..
-			"#FFFF00," .. fgettext("Core Team") .. ",," ..
-			buildCreditList(core_team) .. ",,," ..
-			"#FFFF00," .. fgettext("Active Contributors") .. ",," ..
-			buildCreditList(active_contributors) .. ",,," ..
-			"#FFFF00," .. fgettext("Previous Core Developers") ..",," ..
-			buildCreditList(previous_core_developers) .. ",,," ..
-			"#FFFF00," .. fgettext("Previous Contributors") .. ",," ..
-			buildCreditList(previous_contributors) .. "," ..
-			";1]"
+			"button[0.1,3.4;5.3,0.5;label_button;" ..
+			core.formspec_escape(version.project .. " " .. version.string) .. "]" ..
+			"button[1.5,4.1;2.5,0.8;homepage;minetest.net]" ..
+			"scroll_container[5.5,0.1;9.5,6.9;scroll_credits;vertical;" ..
+			tostring(scroll_height / 1000) .. "]" .. credit_fs ..
+			"scroll_container_end[]"..
+			"scrollbar[15,0.1;0.4,6.9;vertical;scroll_credits;0]"
 
 		-- Render information
-		fs = fs .. "label[0.75,4.9;" ..
+		fs = fs .. "style[label_button2;border=false]" ..
+			"button[0.1,6;5.3,1;label_button2;" ..
 			fgettext("Active renderer:") .. "\n" ..
 			core.formspec_escape(core.get_screen_info().render_info) .. "]"
 
 		if PLATFORM == "Android" then
-			fs = fs .. "button[0,4;3.5,1;share_debug;" .. fgettext("Share debug log") .. "]"
+			fs = fs .. "button[0.5,5.1;4.5,0.8;share_debug;" .. fgettext("Share debug log") .. "]"
 		else
 			fs = fs .. "tooltip[userdata;" ..
 					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
 							"and texture packs in a file manager / explorer.") .. "]"
-			fs = fs .. "button[0,4;3.5,1;userdata;" .. fgettext("Open User Data Directory") .. "]"
+			fs = fs .. "button[0.5,5.1;4.5,0.8;userdata;" .. fgettext("Open User Data Directory") .. "]"
 		end
 
-		return fs
+		return fs, "size[15.5,7.1,false]real_coordinates[true]"
 	end,
 	cbf_button_handler = function(this, fields, name, tabdata)
 		if fields.homepage then
