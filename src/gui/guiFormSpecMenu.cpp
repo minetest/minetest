@@ -825,12 +825,23 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	core::rect<s32> middle;
 	if (parts.size() >= 4)
 		parseMiddleRect(parts[3], &middle);
+	
+	gui::IGUIElement *e;
+	if (middle.getArea() > 0) {
+		GUIAnimatedImage *image = new GUIAnimatedImage(Environment, data->current_parent,
+			spec.fid, rect);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
-		spec.fid, rect);
-
-	e->setTexture(texture);
-	e->setMiddleRect(middle);
+		image->setTexture(texture);
+		image->setMiddleRect(middle);
+		e = image;
+	}
+	else {
+		gui::IGUIImage *image = Environment->addImage(rect, data->current_parent, spec.fid, nullptr, true);
+		image->setImage(texture);
+		image->setScaleImage(true);
+		image->grab(); // compensate for drop in addImage
+		e = image;
+	}
 
 	auto style = getDefaultStyleForElement("image", spec.fname);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
