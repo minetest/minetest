@@ -15,48 +15,46 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
---------------------------------------------------------------------------------
+-- https://github.com/orgs/minetest/teams/engine/members
 
 local core_developers = {
-	"Perttu Ahola (celeron55) <celeron55@gmail.com>",
+	"Perttu Ahola (celeron55) <celeron55@gmail.com> [Project founder]",
 	"sfan5 <sfan5@live.de>",
+	"ShadowNinja <shadowninja@minetest.net>",
 	"Nathanaëlle Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
-	"paramat",
 	"Andrew Ward (rubenwardy) <rw@rubenwardy.com>",
 	"Krock/SmallJoker <mk939@ymail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
-	"Pierre-Yves Rollo <dev@pyrollo.com>",
 	"v-rob <robinsonvincent89@gmail.com>",
 	"hecks",
 	"Hugues Ross <hugues.ross@gmail.com>",
 	"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>",
 }
 
+local core_team = {
+	"Zughy [Issue triager]",
+}
+
 -- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
 
 local active_contributors = {
-	"Wuzzy [I18n for builtin, liquid features, fixes]",
-	"Zughy [Various features and fixes]",
-	"numzero [Graphics and rendering]",
-	"Desour [Internal fixes, Clipboard on X11]",
-	"Lars Müller [Various internal fixes]",
-	"JosiahWI [CMake, cleanups and fixes]",
-	"HybridDog [builtin, documentation]",
-	"Jude Melton-Houghton [Database implementation]",
-	"savilli [Fixes]",
+	"Wuzzy [Features, translations, devtest]",
+	"Lars Müller [Lua optimizations and fixes]",
+	"Jude Melton-Houghton [Optimizations, bugfixes]",
+	"paradust7 [Performance, fixes, Irrlicht refactoring]",
+	"Desour [Fixes]",
+	"ROllerozxa [Main menu]",
+	"savilli [Bugfixes]",
+	"Lexi Hale [Particlespawner animation]",
 	"Liso [Shadow Mapping]",
-	"MoNTE48 [Build fix]",
-	"Jean-Patrick Guerrero (kilbith) [Fixes]",
-	"ROllerozxa [Code cleanups]",
-	"Lejo [bitop library integration]",
-	"LoneWolfHT [Build fixes]",
+	"JosiahWI [Fixes, build system]",
+	"numzero [Graphics and rendering]",
+	"HybridDog [Fixes]",
 	"NeroBurner [Joystick]",
-	"Elias Fleckenstein [Internal fixes]",
-	"David CARLIER [Unix & Haiku build fixes]",
 	"pecksin [Clickable web links]",
-	"srfqi [Android & rendering fixes]",
-	"EvidenceB [Formspec]",
+	"Daroc Alden [Fixes]",
+	"Jean-Patrick Guerrero (kilbith) [Fixes]",
 }
 
 local previous_core_developers = {
@@ -71,25 +69,29 @@ local previous_core_developers = {
 	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
 	"sapier",
 	"Zeno",
-	"ShadowNinja <shadowninja@minetest.net>",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"Aaron Suen <warr1024@gmail.com>",
+	"paramat",
+	"Pierre-Yves Rollo <dev@pyrollo.com>",
 }
 
 local previous_contributors = {
-	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest Logo]",
+	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest logo]",
 	"red-001 <red-001@outlook.ie>",
 	"Giuseppe Bilotta",
+	"ClobberXD",
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
+	"MoNTE48",
 	"Constantin Wenger (SpeedProg)",
 	"Ciaran Gultnieks (CiaranG)",
 	"Paul Ouellette (pauloue)",
 	"stujones11",
+	"srifqi",
 	"Rogier <rogier777@gmail.com>",
 	"Gregory Currie (gregorycu)",
 	"JacobF",
-	"Jeija <jeija@mesecons.net> [HTTP, particles]",
+	"Jeija <jeija@mesecons.net>",
 }
 
 local function buildCreditList(source)
@@ -115,6 +117,8 @@ return {
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
 			"#FFFF00," .. fgettext("Core Developers") .. ",," ..
 			buildCreditList(core_developers) .. ",,," ..
+			"#FFFF00," .. fgettext("Core Team") .. ",," ..
+			buildCreditList(core_team) .. ",,," ..
 			"#FFFF00," .. fgettext("Active Contributors") .. ",," ..
 			buildCreditList(active_contributors) .. ",,," ..
 			"#FFFF00," .. fgettext("Previous Core Developers") ..",," ..
