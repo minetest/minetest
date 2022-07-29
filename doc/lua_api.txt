@@ -2311,7 +2311,7 @@ Version History
 * Formspec version 5 (5.5.0):
   * Added padding[] element
 * Formspec version 6 (5.6.0):
-  * Add nine-slice images, animated_images, and fgimg_middle
+  * Add nine-slice images, animated_image, and fgimg_middle
 
 Elements
 --------
