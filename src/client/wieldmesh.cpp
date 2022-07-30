@@ -384,9 +384,11 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	m_colors.clear();
 	m_base_color = idef->getItemstackColor(item, client);
 
+	const auto wield_image = item.getWieldImage(idef);
+
 	// If wield_image needs to be checked and is defined, it overrides everything else
-	if (!def.wield_image.empty() && check_wield_image) {
-		setExtruded(def.wield_image, def.wield_overlay, def.wield_scale, tsrc,
+	if (!wield_image.empty() && check_wield_image) {
+		setExtruded(wield_image, def.wield_overlay, def.wield_scale, tsrc,
 			1);
 		m_colors.emplace_back();
 		// overlay is white, if present
@@ -471,9 +473,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
-		if (!def.inventory_image.empty()) {
-			setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
-				tsrc, 1);
+		const auto inventory_image = item.getInventoryImage(idef);
+		if (!inventory_image.empty()) {
+			setExtruded(inventory_image, def.inventory_overlay,
+				def.wield_scale, tsrc, 1);
 		} else {
 			setExtruded("no_texture.png", "", def.wield_scale, tsrc, 1);
 		}
@@ -578,8 +581,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	bool cull_backface = f.needsBackfaceCulling();
 
 	// If inventory_image is defined, it overrides everything else
-	if (!def.inventory_image.empty()) {
-		mesh = getExtrudedMesh(tsrc, def.inventory_image,
+	const auto inventory_image = item.getInventoryImage(idef);
+	if (!inventory_image.empty()) {
+		mesh = getExtrudedMesh(tsrc, inventory_image,
 			def.inventory_overlay);
 		result->buffer_colors.emplace_back();
 		// overlay is white, if present
