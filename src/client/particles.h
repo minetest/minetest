@@ -39,7 +39,6 @@ struct ClientTexture
 	video::ITexture *ref = nullptr;
 
 	ClientTexture() = default;
-	ClientTexture(const ClientTexture&) = default;
 	ClientTexture(const ServerParticleTexture& p, ITextureSource *t):
 			tex(p),
 			ref(t->getTextureForMesh(p.string)) {};
@@ -52,7 +51,6 @@ struct ClientTexRef
 	ParticleTexture* tex = nullptr;
 	video::ITexture* ref = nullptr;
 	ClientTexRef() = default;
-	ClientTexRef(const ClientTexRef&) = default;
 
 	/* constructor used by particles spawned from a spawner */
 	ClientTexRef(ClientTexture& t):

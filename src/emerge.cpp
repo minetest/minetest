@@ -504,7 +504,7 @@ EmergeThread *EmergeManager::getOptimalThread()
 
 void EmergeManager::reportCompletedEmerge(EmergeAction action)
 {
-	assert((int)action < ARRLEN(m_completed_emerge_counter));
+	assert((size_t)action < ARRLEN(m_completed_emerge_counter));
 	m_completed_emerge_counter[(int)action]->increment();
 }
 

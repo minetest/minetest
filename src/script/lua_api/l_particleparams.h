@@ -226,15 +226,18 @@ namespace LuaParticleParams
 
 			// get the effect settings
 			lua_getfield(L, -1, "style");
-			lua_isnil(L,-1) || (readLuaValue(L, field.style), true);
+			if (!lua_isnil(L,-1))
+				readLuaValue(L, field.style);
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "reps");
-			lua_isnil(L,-1) || (readLuaValue(L, field.reps), true);
+			if (!lua_isnil(L,-1))
+				readLuaValue(L, field.reps);
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "start");
-			lua_isnil(L,-1) || (readLuaValue(L, field.beginning), true);
+			if (!lua_isnil(L,-1))
+				readLuaValue(L, field.beginning);
 			lua_pop(L, 1);
 
 			goto done;

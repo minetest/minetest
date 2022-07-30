@@ -96,7 +96,7 @@ void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 {
 	// Iterate mods in reverse load order: Media loading expects higher priority media files first
 	// and mods loading later should be able to override media of already loaded mods
-	const auto mods = configuration.getMods();
+	const auto &mods = configuration.getMods();
 	for (auto it = mods.crbegin(); it != mods.crend(); it++) {
 		const ModSpec &spec = *it;
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "textures");
