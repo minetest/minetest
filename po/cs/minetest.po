@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2021-11-22 18:50+0000\n"
-"Last-Translator: Ondřej Pfrogner <ondrej.andre.pfrogner@gmail.com>\n"
+"PO-Revision-Date: 2022-07-31 17:28+0000\n"
+"Last-Translator: Fjuro <fjuro@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6374,9 +6374,8 @@ msgstr ""
 "Použijte 0 pro výchozí kvalitu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Snímek obrazovky"
+msgstr "Obrázky"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
