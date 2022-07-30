@@ -95,7 +95,7 @@ namespace ParticleParamTypes
 		using This = Parameter<T, PN>;
 
 		Parameter() = default;
-		Parameter(const This& a) = default;
+
 		template <typename... Args>
 		Parameter(Args... args) : val(args...) {}
 
@@ -165,7 +165,6 @@ namespace ParticleParamTypes
 		f32 bias = 0;
 
 		RangedParameter() = default;
-		RangedParameter(const This& a) = default;
 		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {}
 		template <typename M> RangedParameter(M b) : min(b),     max(b)     {}
 
@@ -245,7 +244,6 @@ namespace ParticleParamTypes
 		T start, end;
 
 		TweenedParameter() = default;
-		TweenedParameter(const This& a) = default;
 		TweenedParameter(T _start, T _end)          : start(_start),  end(_end) {}
 		template <typename M> TweenedParameter(M b) : start(b),       end(b) {}
 
