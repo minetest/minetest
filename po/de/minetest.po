@@ -115,7 +115,7 @@ msgstr "Der Server hat um eine Wiederverbindung gebeten:"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr "Eine neue Version $1 ist verfügbar"
+msgstr "Eine neue $1-Version ist verfügbar"
 
 #: builtin/mainmenu/common.lua
 msgid "Client Mods"
@@ -130,7 +130,7 @@ msgid ""
 msgstr ""
 "Installierte Version: $1\n"
 "Neue Version: $2\n"
-"Besuchen Sie $3, um herauszufinden, wie man die neueste Version erhält auf "
+"Besuchen Sie $3, um herauszufinden, wie man die neueste Version erhält und auf "
 "dem neuesten Stand mit Features und Fehlerbehebungen bleibt."
 
 #: builtin/mainmenu/common.lua
@@ -1036,7 +1036,7 @@ msgstr "Neu laden"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
-msgstr "Favoriten entfernen"
+msgstr "Favorit entfernen"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1216,11 +1216,11 @@ msgstr "Wehende Pflanzen"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "Verbindungsfehler (Zeitüberschreitung?)."
+msgstr "Verbindung abgebrochen (Protokollfehler?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
-msgstr "Verbindungsfehler, Zeitüberschreitung."
+msgstr "Zeitüberschreitung."
 
 #: src/client/client.cpp
 msgid "Done!"
@@ -1240,7 +1240,7 @@ msgstr "Lade Texturen …"
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Shader erneuern…"
+msgstr "Shader erneuern …"
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -3409,7 +3409,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
-msgstr "Login/Registrierung teilen"
+msgstr "Login und Registrierung trennen"
 
 #: src/settings_translation_file.cpp
 msgid ""
