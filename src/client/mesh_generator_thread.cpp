@@ -50,7 +50,8 @@ QueuedMeshUpdate::~QueuedMeshUpdate()
 */
 
 MeshUpdateQueue::MeshUpdateQueue(Client *client):
-	m_client(client)
+	m_client(client),
+	m_next_cache_cleanup(0)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
@@ -230,6 +231,15 @@ void MeshUpdateQueue::cleanupCache()
 			sizeof(MapNode) / 1000;
 	g_profiler->avg("MeshUpdateQueue MapBlock cache size kB",
 			mapblock_kB * m_cache.size());
+
+	// Iterating the entire cache can get pretty expensive so don't do it too often
+	{
+		constexpr int cleanup_interval = 250;
+		const u64 now = porting::getTimeMs();
+		if (m_next_cache_cleanup > now)
+			return;
+		m_next_cache_cleanup = now + cleanup_interval;
+	}
 
 	// The cache size is kept roughly below cache_soft_max_size, not letting
 	// anything get older than cache_seconds_max or deleted before 2 seconds.
