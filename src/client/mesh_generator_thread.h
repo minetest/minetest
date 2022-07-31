@@ -83,6 +83,7 @@ private:
 	std::vector<QueuedMeshUpdate *> m_queue;
 	std::set<v3s16> m_urgents;
 	std::map<v3s16, CachedMapBlockData *> m_cache;
+	u64 m_next_cache_cleanup; // milliseconds
 	std::mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes
