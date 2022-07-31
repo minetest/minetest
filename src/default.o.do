@@ -2,13 +2,12 @@
 set -eu
 
 FILENAME=$(realpath "${1}")
+
 BASE_DIR=${FILENAME%/src/*}
 SRC_DIR="${BASE_DIR}/src"
 
 compiler_deps="${FILENAME%.o}".compiler_deps
 strace="${FILENAME%.o}".strace
-strace_deps="${FILENAME%.o}".strace_deps
-strace_deps_ne="${FILENAME%.o}".strace_deps_ne
 
 # FIXME: This code generates 3 unecessary dependency relations on the first build.
 # This means a single file might be rebuild unnecessarily on a later build, once.
@@ -58,23 +57,20 @@ if command -v strace >/dev/null; then
   |cut -d'"' -f2\
   |sort \
   |uniq \
-  >"${strace_deps_ne}"
-
- while read -r dependency_ne; do
-  test -f "${dependency_ne}" || printf '%s\n'  "${dependency_ne}"
- done <"${strace_deps_ne}" | xargs redo-ifcreate
- unlink "${strace_deps_ne}"
+  |while read -r dependency_ne; do
+    test -f "${dependency_ne}" || printf '%s\n'  "${dependency_ne}"
+   done \
+  |xargs redo-ifcreate
 
  grep --invert-match '1 ENOENT' <"${strace}"\
   |grep '".*"'\
   |cut -d'"' -f2\
   |sort \
   |uniq \
-  >"${strace_deps}"
- while read -r dependency; do
-  test -f "${dependency}" && printf '%s\n'  "${dependency}"
- done <"${strace_deps}" | xargs redo-ifchange
- unlink "${strace_deps}"
+  |while read -r dependency; do
+    test -f "${dependency}" && printf '%s\n'  "${dependency}"
+   done \
+  |xargs redo-ifchange
 
  unlink "${strace}"
 else
