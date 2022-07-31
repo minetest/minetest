@@ -158,8 +158,7 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 			size_t *cache_hit_counter)
 {
 	CachedMapBlockData *cached_block = nullptr;
-	std::map<v3s16, CachedMapBlockData*>::iterator it =
-			m_cache.find(p);
+	auto it = m_cache.find(p);
 
 	if (it != m_cache.end()) {
 		cached_block = it->second;
@@ -193,7 +192,7 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 
 CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3s16 &p)
 {
-	std::map<v3s16, CachedMapBlockData*>::iterator it = m_cache.find(p);
+	auto it = m_cache.find(p);
 	if (it != m_cache.end()) {
 		return it->second;
 	}
@@ -250,12 +249,11 @@ void MeshUpdateQueue::cleanupCache()
 
 	int t_now = time(0);
 
-	for (std::map<v3s16, CachedMapBlockData*>::iterator it = m_cache.begin();
-			it != m_cache.end(); ) {
+	for (auto it = m_cache.begin(); it != m_cache.end(); ) {
 		CachedMapBlockData *cached_block = it->second;
 		if (cached_block->refcount_from_queue == 0 &&
 				cached_block->last_used_timestamp < t_now - cache_seconds) {
-			m_cache.erase(it++);
+			it = m_cache.erase(it);
 			delete cached_block;
 		} else {
 			++it;
