@@ -826,6 +826,10 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	if (parts.size() >= 4)
 		parseMiddleRect(parts[3], &middle);
 	
+	// Temporary fix for issue #12581 in 5.6.0.
+	// Use legacy image when not rendering 9-slice image because GUIAnimatedImage 
+	// uses NNAA filter which causes visual artifacts when image uses alpha blending.
+
 	gui::IGUIElement *e;
 	if (middle.getArea() > 0) {
 		GUIAnimatedImage *image = new GUIAnimatedImage(Environment, data->current_parent,
