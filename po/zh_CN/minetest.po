@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-05-19 18:13+0000\n"
-"Last-Translator: GT-610 <myddz1005@163.com>\n"
+"PO-Revision-Date: 2022-08-04 10:15+0000\n"
+"Last-Translator: Conight <xfddwhh@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -114,12 +114,11 @@ msgstr "服务器已请求重新连接："
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "新的 $1 版本可用"
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Client Mods"
-msgstr "选择Mod"
+msgstr "客户端 Mods"
 
 #: builtin/mainmenu/common.lua
 msgid ""
@@ -128,14 +127,17 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"已安装的版本：$1\n"
+"新版本：$2\n"
+"访问 $3 以了解如何获取最新版本并及时跟进功能和错误修复。"
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "稍后"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "从不"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -151,7 +153,7 @@ msgstr "服务器支持协议版本为 $1 至 $2。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "访问网站"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -163,11 +165,11 @@ msgstr "我们支持的协议版本为 $1 至 $2。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "（已启用，出错）"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "（不满足）"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -425,9 +427,8 @@ msgid "Decorations"
 msgstr "装饰"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "警告：开发测试是为开发者提供的。"
+msgstr "开发测试版适用于开发者。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -605,12 +606,11 @@ msgstr "确认密码"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "加入 $1"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Missing name"
-msgstr "地图生成器名称"
+msgstr "缺失名称"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -623,14 +623,12 @@ msgid "Password"
 msgstr "密码"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "密码不匹配！"
+msgstr "密码不匹配"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "注册并加入"
+msgstr "注册"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -1013,7 +1011,7 @@ msgstr "加入游戏"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "登录"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1028,9 +1026,8 @@ msgid "Refresh"
 msgstr "刷新"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "远程端口"
+msgstr "移除收藏"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1085,9 +1082,8 @@ msgid "Dynamic shadows"
 msgstr "动态阴影"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "动态阴影: "
+msgstr "动态阴影："
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1212,9 +1208,8 @@ msgid "Waving Plants"
 msgstr "摇摆植物"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "连接出错（超时？）"
+msgstr "连接中断（协议错误？）。"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1482,9 +1477,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "启用无限视野"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "正在建立客户端..."
+msgstr "创建客户端出错：%s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -2077,7 +2072,7 @@ msgstr "按键已被占用"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "按键绑定。"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2182,12 +2177,11 @@ msgstr "zh_CN"
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
-msgstr ""
+msgstr "名称未注册。如想要在当前服务器创建一个账户，请点击“注册”"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "请选择名称！"
+msgstr "名称已被占用。请选择其他名称"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2350,7 +2344,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3d"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2445,9 +2439,8 @@ msgstr ""
 "创建一个密实的悬空岛层。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "添加物品名称"
+msgstr "管理员名称"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2468,9 +2461,8 @@ msgstr ""
 "在夜晚的自然光照下作用很小。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "保持飞行和快速模式"
+msgstr "保持快速飞行"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2549,7 +2541,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "声音"
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
@@ -2626,7 +2618,7 @@ msgstr "最优方块发送距离"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr ""
+msgstr "摆动"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2653,9 +2645,8 @@ msgid "Builtin"
 msgstr "内置"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "改变相机"
+msgstr "相机"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2821,9 +2812,8 @@ msgid "Client side node lookup range restriction"
 msgstr "客户端方块查询范围限制"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side Modding"
-msgstr "客户端mod"
+msgstr "客户端修改"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2909,6 +2899,10 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
+"向客户端发送地图块时使用的压缩级别。\n"
+"-1 - 使用默认压缩级别\n"
+"0 - 最小压缩，最快\n"
+"9 - 最佳压缩，最慢"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2935,9 +2929,8 @@ msgid "Console height"
 msgstr "控制台高度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Content Repository"
-msgstr "在线内容仓库（ContentDB）"
+msgstr "内容仓库"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
@@ -2982,6 +2975,8 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"控制静止时在液体中的下沉速度。\n"
+"负值会导致你上升。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -3056,7 +3051,7 @@ msgstr "调试日志级别"
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
+msgstr "调试"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
@@ -3211,9 +3206,8 @@ msgid "Desynchronize block animation"
 msgstr "去同步块动画"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "装饰"
+msgstr "开发者选项"
 
 #: src/settings_translation_file.cpp
 msgid "Dig key"
@@ -3321,7 +3315,7 @@ msgstr "启用摇杆"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr ""
+msgstr "启用操纵杆。 需要重启才能生效"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3443,9 +3437,8 @@ msgid ""
 msgstr "允许不影响可玩性的轻微视觉错误，以此减少 CPU 负载，或提高渲染性能。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine profiler"
-msgstr "山谷轮廓"
+msgstr "引擎性能分析"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3472,7 +3465,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr ""
+msgstr "FPS"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
@@ -3629,9 +3622,8 @@ msgid "Fog toggle key"
 msgstr "雾启用/禁用键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font"
-msgstr "字体大小"
+msgstr "字体"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3658,14 +3650,12 @@ msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "默认字体大小，单位pt。"
+msgstr "在 96 DPI 下默认字体大小 1 unit = 1 pixel"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "等宽字体大小，单位pt。"
+msgstr "在 96 DPI 下等宽字体大小 1 unit = 1 pixel"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3794,7 +3784,7 @@ msgstr "GUI缩放过滤器 txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "界面"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3803,21 +3793,20 @@ msgstr "子游戏"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "通用"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "全局回调"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "全局地图生成属性。\n"
-"在地图生成器 v6 中‘decorations’标签控制除树木和丛林草外所有装饰物。\n"
+"在地图生成器 v6 中 “decorations” 标签控制除树木和丛林草外所有装饰物。\n"
 "在其他地图生成器中此标签控制所有装饰物。"
 
 #: src/settings_translation_file.cpp
@@ -3846,9 +3835,8 @@ msgid "Graphics Effects"
 msgstr "图形"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics and Audio"
-msgstr "图形"
+msgstr "图形和音频"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -3868,12 +3856,11 @@ msgstr "HTTP Mods"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "GUI缩放"
+msgstr "HUD 缩放"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -4128,21 +4115,21 @@ msgstr ""
 "需要波动液体启用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How long the server will wait before unloading unused mapblocks, stated in "
 "seconds.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"在卸载不使用的地图区块前，服务器要等待多少时间。\n"
+"在卸载不使用的地图区块前，服务器要等待多少秒。\n"
 "值越高越平滑，但是会使用更多内存。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
-msgstr "减小此值以增加液体对运动的阻力。"
+msgstr ""
+"在液体中移动时你的速度减慢了多少。\n"
+"减小此值以增加液体对运动的阻力。"
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4214,13 +4201,12 @@ msgstr ""
 "下降。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
-"在连接到服务器时启用注册确认。\n"
-"如果禁用，新账号会自动注册。"
+"如果启用，帐户注册与 UI 中的登录是分开的。\n"
+"如果禁用，新帐户将在登录时自动注册。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4249,11 +4235,10 @@ msgid ""
 msgstr "如果启用，则在飞行或游泳时相对于玩家的仰角来移动方向。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
-msgstr "如果启用，新玩家将无法使用空密码加入。"
+msgstr "如果启用，玩家将无法在没有密码的情况下加入或修改密码为空密码。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4361,9 +4346,8 @@ msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr "保存世界重要变化的时间间隔，以秒为单位。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Interval of sending time of day to clients, stated in seconds."
-msgstr "向客户端发送时间的间隔。"
+msgstr "一天中向客户端发送时间的间隔，以秒为单位。"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
@@ -4418,9 +4402,8 @@ msgid "Joystick button repetition interval"
 msgstr "摇杆按钮重复间隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
-msgstr "摇杆无效区"
+msgstr "摇杆死区"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
