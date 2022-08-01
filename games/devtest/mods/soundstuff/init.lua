@@ -172,3 +172,51 @@ minetest.register_node("soundstuff:positional", {
 	tiles = { "soundstuff_node_sound.png" },
 })
 
+
+minetest.register_entity("soundstuff:source", {
+	initial_properties = {
+		visual = "sprite",
+		textures = { "soundstuff_node_sound.png" },
+	},
+
+	on_activate = function(self)
+		self.handle = minetest.sound_play("soundstuff_gunshot", {
+			object = self.object,
+			loop = true,
+			max_hear_distance = 32,
+		})
+		self.angle = 0
+	end,
+
+	on_step = function(self, dtime)
+		local target = self.target
+		if not self.target or not self.target:get_pos() then
+			self.object:remove()
+			minetest.sound_stop(self.handle)
+			return
+		end
+
+		self.angle = self.angle - 0.5 * dtime
+
+		local direction = vector.copy({ x = math.cos(self.angle), y = 0, z = math.sin(self.angle) })
+		local pos = target:get_pos() + direction * 10
+		self.object:move_to(pos, true)
+	end
+})
+
+
+minetest.register_chatcommand("test3dsound", {
+	func = function(name)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "You need to be online"
+		end
+
+		local obj = minetest.add_entity(player:get_pos(), "soundstuff:source")
+		if not obj then
+			return false, "Failed to spawn"
+		end
+
+		obj:get_luaentity().target = player
+	end
+})
