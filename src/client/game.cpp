@@ -2405,6 +2405,10 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
+	if (isMenuActive())
+		device->getCursorControl()->setRelativeMode(false);
+	else
+		device->getCursorControl()->setRelativeMode(true);
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
 

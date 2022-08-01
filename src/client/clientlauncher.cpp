@@ -552,6 +552,8 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 #ifndef ANDROID
 	m_rendering_engine->get_raw_device()->getCursorControl()->setVisible(true);
 #endif
+	// Set absolute mouse mode
+	m_rendering_engine->get_raw_device()->getCursorControl()->setRelativeMode(false);
 
 	/* show main menu */
 	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);
