@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
-"Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
+"PO-Revision-Date: 2022-08-04 10:15+0000\n"
+"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
 "Language: pt\n"
@@ -1145,7 +1145,6 @@ msgid "Opaque Water"
 msgstr "Água Opaca"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
 msgstr "Partículas"
 
@@ -2187,9 +2186,8 @@ msgstr ""
 "'Registrar'"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "O nome foi tomado. Por favor, escolha outro nome"
+msgstr "Este nome já foi escolhido. Por favor, escolha outro nome"
 
 #: src/settings_translation_file.cpp
 msgid ""
