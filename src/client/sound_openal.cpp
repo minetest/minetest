@@ -269,10 +269,12 @@ struct PlayingSound
 class SoundManagerSingleton
 {
 public:
+	bool m_force_hrtf;
 	unique_ptr_alcdevice  m_device;
 	unique_ptr_alccontext m_context;
-public:
-	SoundManagerSingleton() :
+
+	SoundManagerSingleton(bool force_hrtf):
+		m_force_hrtf(force_hrtf),
 		m_device(nullptr, delete_alcdevice),
 		m_context(nullptr, delete_alccontext)
 	{
@@ -285,8 +287,11 @@ public:
 			return false;
 		}
 
+		ALCint hrtfSetting = m_force_hrtf ? ALC_TRUE : ALC_DONT_CARE_SOFT;
+		ALCint attributes[] = { ALC_HRTF_SOFT, hrtfSetting, 0 };
+
 		if (!(m_context = unique_ptr_alccontext(
-				alcCreateContext(m_device.get(), nullptr), delete_alccontext))) {
+				alcCreateContext(m_device.get(), attributes), delete_alccontext))) {
 			errorstream << "Audio: Global Initialization: Failed to create context" << std::endl;
 			return false;
 		}
@@ -303,9 +308,14 @@ public:
 			return false;
 		}
 
-		infostream << "Audio: Global Initialized: OpenAL " << alGetString(AL_VERSION)
-			<< ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER)
-			<< std::endl;
+		ALCint has_hrtf;
+		alcGetIntegerv(m_device.get(), ALC_HRTF_SOFT, 1, &has_hrtf);
+
+		actionstream << "Audio: Global Initialized: OpenAL " << alGetString(AL_VERSION)
+			<< ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER);
+		if (has_hrtf)
+			actionstream << " with HRTF enabled";
+		actionstream << std::endl;
 
 		return true;
 	}
@@ -719,9 +729,9 @@ public:
 	}
 };
 
-std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
+std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton(bool force_hrtf)
 {
-	auto smg = std::make_shared<SoundManagerSingleton>();
+	auto smg = std::make_shared<SoundManagerSingleton>(force_hrtf);
 	if (!smg->init()) {
 		smg.reset();
 	}

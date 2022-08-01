@@ -26,6 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class SoundManagerSingleton;
 extern std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 
-std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton();
+std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton(bool force_hrtf);
 ISoundManager *createOpenALSoundManager(
 		SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher);

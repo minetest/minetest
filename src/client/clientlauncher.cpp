@@ -97,8 +97,10 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	init_args(start_data, cmd_args);
 
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound"))
-		g_sound_manager_singleton = createSoundManagerSingleton();
+	if (g_settings->getBool("enable_sound")) {
+		bool force_hrtf = g_settings->getBool("force_enable_hrtf");
+		g_sound_manager_singleton = createSoundManagerSingleton(force_hrtf);
+	}
 #endif
 
 	if (!init_engine()) {

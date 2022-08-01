@@ -457,6 +457,9 @@ sound_volume (Volume) float 0.7 0.0 1.0
 #    pause menu.
 mute_sound (Mute sound) bool false
 
+#    Enable this when using headphones to get better 3d sound quality.
+force_enable_hrtf (Enable better 3d sounds for headphones) bool false
+
 [*User Interfaces]
 
 #    Set the language. Leave empty to use the system language.
