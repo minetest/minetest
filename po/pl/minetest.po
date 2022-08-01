@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-08-04 10:15+0000\n"
-"Last-Translator: Adam Jagoda <kontakt@lukasz.xyz>\n"
+"Last-Translator: Artur Adamczyk <artur.adamczyk@szkolazmartwychwstanek.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -123,7 +123,6 @@ msgid "Client Mods"
 msgstr "Mody klienta"
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid ""
 "Installed version: $1\n"
 "New version: $2\n"
@@ -169,7 +168,7 @@ msgstr "Wspieramy protokoły w wersji od $1 do $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Włączone, zawiera błąd)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
@@ -432,9 +431,8 @@ msgid "Decorations"
 msgstr "Dekoracje"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Ostrzeżenie: The Development Test jest przeznaczony dla programistów."
+msgstr "Development Test jest przeznaczony dla programistów."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -469,13 +467,12 @@ msgid "Increases humidity around rivers"
 msgstr "Zwiększa wilgotność wokół rzek"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Zainstaluj $1"
+msgstr "Zainstaluj grę"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Zainstaluj inną grę"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -616,12 +613,11 @@ msgstr "Potwierdź hasło"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Dołączanie $1"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Missing name"
-msgstr "Nazwa generatora mapy"
+msgstr "Brak nazwy"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -634,14 +630,12 @@ msgid "Password"
 msgstr "Hasło"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Hasła nie są jednakowe!"
+msgstr "Hasła nie są jednakowe"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Zarejestruj się i dołącz"
+msgstr "Zarejestruj się"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -676,14 +670,12 @@ msgid "Browse"
 msgstr "Przeglądaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Zawartość"
+msgstr "Zawartość: Gry"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Zawartość"
+msgstr "Zawartość: Mody"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -893,9 +885,8 @@ msgid "Previous Core Developers"
 msgstr "Poprzedni Główni Deweloperzy"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Share debug log"
-msgstr "Pokaż informacje debugowania"
+msgstr "Pokaż informacje debugowania"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1028,7 +1019,7 @@ msgstr "Dołącz do gry"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Zaloguj się"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1043,9 +1034,8 @@ msgid "Refresh"
 msgstr "Odśwież"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "Port zdalny"
+msgstr "Usuń ulubione"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1053,7 +1043,7 @@ msgstr "Opis serwera"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(wymagana obsługa gry)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1100,9 +1090,8 @@ msgid "Dynamic shadows"
 msgstr "Cienie dynamiczne"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Cienie dynamiczne: "
+msgstr "Cienie dynamiczne:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1197,9 +1186,8 @@ msgid "Tone Mapping"
 msgstr "Tone Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Próg dotyku (px)"
+msgstr "Próg dotyku (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1227,9 +1215,8 @@ msgid "Waving Plants"
 msgstr "Falujące rośliny"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Błąd połączenia (brak odpowiedzi?)"
+msgstr "Połączenie zostało przerwane (błąd protokołu?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1366,10 +1353,8 @@ msgid "Camera update enabled"
 msgstr "Aktualizowanie kamery włączone"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
-"Nie można wyświetlić granic bloków (wymagane uprawnienie 'basic_debug')"
+msgstr "Nie można wyświetlić granic bloków (wyłączone przez mod lub grę)"
 
 #: src/client/game.cpp
 msgid "Change Password"
