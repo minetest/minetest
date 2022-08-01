@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-24 18:04+0000\n"
+"PO-Revision-Date: 2022-10-20 11:57+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -115,7 +115,7 @@ msgstr "Le serveur souhaite rétablir une connexion :"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr "Une nouvelle $1 version est disponible"
+msgstr "Une nouvelle version de $1 est disponible"
 
 #: builtin/mainmenu/common.lua
 msgid "Client Mods"
@@ -876,7 +876,7 @@ msgid ""
 msgstr ""
 "Ouvre le répertoire qui contient les mondes, les jeux, les mods et les packs "
 "de textures\n"
-"fournis par l'utilisateur dans un gestionnaire de fichiers/explorateur."
+"fournis par l'utilisateur dans un gestionnaire de fichiers / explorateur."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -928,7 +928,7 @@ msgstr "Désinstaller le paquet"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "Utiliser un pack de texture"
+msgstr "Utiliser le pack de textures"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -7370,7 +7370,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr "Touche basculer en mode caméra"
+msgstr "Touche mode caméra"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -7928,7 +7928,7 @@ msgstr "Délai d'interruption de cURL lors d'un téléchargement de fichier"
 
 #: src/settings_translation_file.cpp
 msgid "cURL interactive timeout"
-msgstr "Délai d'interruption interactive de cURL"
+msgstr "Délai d'interruption interactif de cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
