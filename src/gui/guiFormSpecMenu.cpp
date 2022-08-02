@@ -1686,7 +1686,7 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 
 void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
 {
-	MY_CHECKCLIENT("list");
+	MY_CHECKCLIENT("hypertext");
 
 	std::vector<std::string> parts;
 	if (!precheckElement("hypertext", element, 4, 4, parts))

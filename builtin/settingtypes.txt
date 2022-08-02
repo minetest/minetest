@@ -571,6 +571,19 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    If disabled, new accounts will be registered automatically when logging in.
 enable_split_login_register (Enable split login/register) bool true
 
+#    URL to JSON file which provides information about the newest Minetest release
+update_information_url (Update information URL) string https://www.minetest.net/release_info.json
+
+#    Unix timestamp (integer) of when the client last checked for an update
+#    Set this value to "disabled" to never check for updates.
+update_last_checked (Last update check) string
+
+#    Version number which was last seen during an update check.
+#
+#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
+#    Ex: 5.5.0 is 005005000
+update_last_known (Last known version update) int 0
+
 [*Server]
 
 #    Name of the player.

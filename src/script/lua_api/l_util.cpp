@@ -480,6 +480,8 @@ int ModApiUtil::l_get_version(lua_State *L)
 		lua_setfield(L, table, "hash");
 	}
 
+	lua_pushboolean(L, DEVELOPMENT_BUILD);
+	lua_setfield(L, table, "is_dev");
 	return 1;
 }
 

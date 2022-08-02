@@ -4926,6 +4926,7 @@ Utilities
     * `string`: Simple version, eg, "1.2.3-dev"
     * `hash`: Full git version (only set if available),
       eg, "1.2.3-dev-01234567-dirty".
+    * `is_dev`: Boolean value indicating whether it's a development build
   Use this for informational purposes only. The information in the returned
   table does not represent the capabilities of the engine, nor is it
   reliable or verifiable. Compatible forks will have a different name and
