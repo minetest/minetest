@@ -91,7 +91,7 @@ namespace ParticleParamTypes
 		using ValType = T;
 		using pickFactors = float[PN];
 
-		T val;
+		T val = T();
 		using This = Parameter<T, PN>;
 
 		Parameter() = default;
