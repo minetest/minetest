@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
+"PO-Revision-Date: 2022-08-04 10:15+0000\n"
 "Last-Translator: Walter Bulbazor <prbulbazor@protonmail.com>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/minetest/"
 "minetest/oc/>\n"
@@ -612,11 +612,11 @@ msgstr "Suprimar lo Monde \"$1\"?"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Confirmar lo Senhau"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Jonhar $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
@@ -859,7 +859,7 @@ msgstr "Collaboradors Actius"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr ""
+msgstr "Rendador actiu:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -867,7 +867,7 @@ msgstr "Developaires Principaus"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
-msgstr ""
+msgstr "Dobrir lo Repertòre de Donadas d'Utilizaire"
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
@@ -889,43 +889,43 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Navigar per lo contengut en linha"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "Contengut"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "Desactivar lo Pack de Textures"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Informacion:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Paquets Installats:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Ges de dependéncias"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "Ges de descripcion dau paquet disponible"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Tornar sonar"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "Desinstallar lo Paquet"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "Utilizar un Pack de Textures"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -937,11 +937,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Mòde Creatiu"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Activar los Degats"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
@@ -953,11 +953,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Installar de juòcs de ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Novèl"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
@@ -973,11 +973,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr ""
+msgstr "Seleccionar los Mòds"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Seleccionar un Monde:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
