@@ -659,6 +659,9 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+
+	LuaSettings::create(L, g_settings, g_settings_path);
+	lua_setfield(L, top, "settings");
 }
 
 void ModApiUtil::InitializeAsync(lua_State *L, int top)

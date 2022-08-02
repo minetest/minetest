@@ -417,6 +417,12 @@ void ScriptApiSecurity::setLuaEnv(lua_State *L, int thread)
 
 bool ScriptApiSecurity::isSecure(lua_State *L)
 {
+#ifndef SERVER
+	auto script = ModApiBase::getScriptApiBase(L);
+	// CSM keeps no globals backup but is always secure
+	if (script->getType() == ScriptingType::Client)
+		return true;
+#endif
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	bool secure = !lua_isnil(L, -1);
 	lua_pop(L, 1);
