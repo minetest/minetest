@@ -57,19 +57,14 @@ if command -v strace >/dev/null; then
   |cut -d'"' -f2\
   |sort \
   |uniq \
-  |while read -r dependency_ne; do
-    test -f "${dependency_ne}" || printf '%s\n'  "${dependency_ne}"
-   done \
+  |grep --invert-match "${3}$" \
   |xargs redo-ifcreate
 
- grep --invert-match '1 ENOENT' <"${strace}"\
+ grep --invert-match '1 ENOENT\|S_IFDIR' <"${strace}"\
   |grep '".*"'\
   |cut -d'"' -f2\
   |sort \
   |uniq \
-  |while read -r dependency; do
-    test -f "${dependency}" && printf '%s\n'  "${dependency}"
-   done \
   |xargs redo-ifchange
 
  unlink "${strace}"
