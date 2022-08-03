@@ -754,7 +754,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	shaders_header << "#define FOG_START " << core::clamp(g_settings->getFloat("fog_start"), 0.0f, 0.99f) << "\n";
 
-	if (g_settings->getBool("enable_dynamic_shadows")) {
+	if (g_settings->getBool("enable_dynamic_shadows") &&
+			g_settings->get("video_driver") == "opengl") {
 		shaders_header << "#define ENABLE_DYNAMIC_SHADOWS 1\n";
 		if (g_settings->getBool("shadow_map_color"))
 			shaders_header << "#define COLORED_SHADOWS 1\n";
