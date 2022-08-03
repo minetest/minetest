@@ -862,8 +862,7 @@ static void updateFastFaceRow(
 		g_settings->getBool("enable_waving_water");
 
 	static thread_local const bool force_not_tiling =
-			g_settings->getBool("enable_dynamic_shadows") &&
-			g_settings->get("video_driver") == "opengl";
+			g_settings->getBool("enable_dynamic_shadows");
 
 	v3s16 p = startpos;
 
