@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-08-04 10:15+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"Last-Translator: Valentino <phamtomwhite@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -2205,15 +2205,14 @@ msgstr ""
 "al tocar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Usar palanca virtual para activar el botón \"aux\".\n"
-"Si está activado, la palanca virtual también activará el botón \"aux\" fuera "
-"del círculo principal."
+"(Android) Usar el joystick virtual para activar el botón \"Aux1\".\n"
+"Si está activado, el joystick virtual también activará el botón \"Aux1\" "
+"fuera del círculo principal."
 
 #: src/settings_translation_file.cpp
 msgid ""
