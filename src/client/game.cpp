@@ -920,8 +920,7 @@ private:
 
 #ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
-	bool m_android_touchtarget;
-	bool m_android_use_crosshair;
+	bool m_touch_use_crosshair;
 #endif
 #ifdef __ANDROID__
 	bool m_android_chat_open;
@@ -1054,8 +1053,7 @@ bool Game::startup(bool *kill,
 	m_first_loop_after_window_activation = true;
 
 #ifdef HAVE_TOUCHSCREENGUI
-	m_android_touchtarget = g_settings->getBool("touchtarget");
-	m_android_use_crosshair = g_settings->getBool("touch_use_crosshair");
+	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
 #endif
 
 	g_client_translations->clear();
@@ -2990,7 +2988,7 @@ void Game::updateCamera(f32 dtime)
 
 #ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui)
-			g_touchscreengui->setUseCrosshair(m_android_use_crosshair ||
+			g_touchscreengui->setUseCrosshair(m_touch_use_crosshair ||
 					camera->getCameraMode() == CAMERA_MODE_THIRD);
 #endif
 
@@ -3104,7 +3102,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	shootline.end = shootline.start + camera_direction * BS * d;
 
 #ifdef HAVE_TOUCHSCREENGUI
-	if (m_android_touchtarget && g_touchscreengui && !m_android_use_crosshair &&
+	if (g_touchscreengui && !m_touch_use_crosshair &&
 			camera->getCameraMode() == CAMERA_MODE_FIRST) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
@@ -4003,7 +4001,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 #ifdef HAVE_TOUCHSCREENGUI
-	if (!m_android_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST)
+	if (!m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST)
 		draw_crosshair = false;
 #endif
 	m_rendering_engine->draw_scene(skycolor, m_game_ui->m_flags.show_hud,

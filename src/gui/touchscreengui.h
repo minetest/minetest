@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/tile.h"
 #include "client/game.h"
-#include "client/camera.h"
 
 using namespace irr;
 using namespace irr::core;
