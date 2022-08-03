@@ -422,11 +422,18 @@ bool setSystemPaths()
 		path_share += DIR_DELIM "..";
 	}
 
-	// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
-	DWORD len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
-	FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
+	// Use %MINETEST_USER_PATH%
+	DWORD len = GetEnvironmentVariable("MINETEST_USER_PATH", buf, sizeof(buf));
+	FATAL_ERROR_IF(len > sizeof(buf), "Failed to get MINETEST_USER_PATH (too large for buffer)");
+	if (len == 0) {
+		// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
+		len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
+		FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
+		path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
+	} else {
+		path_user = std::string(buf);
+	}
 
-	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
 	return true;
 }
 
@@ -486,8 +493,13 @@ bool setSystemPaths()
 	}
 
 #ifndef __ANDROID__
-	path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
-		+ PROJECT_NAME;
+	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
+	if (minetest_user_path && minetest_user_path[0] != '\0') {
+		path_user = std::string(minetest_user_path);
+	} else {
+		path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
+			+ PROJECT_NAME;
+	}
 #endif
 
 	return true;
@@ -510,9 +522,14 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	path_user = std::string(getHomeOrFail())
-		+ "/Library/Application Support/"
-		+ PROJECT_NAME;
+	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
+	if (minetest_user_path && minetest_user_path[0] != '\0') {
+		path_user = std::string(minetest_user_path);
+	} else {
+		path_user = std::string(getHomeOrFail())
+			+ "/Library/Application Support/"
+			+ PROJECT_NAME;
+	}
 	return true;
 }
 
@@ -522,8 +539,13 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
-	path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
-		+ lowercase(PROJECT_NAME);
+	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
+	if (minetest_user_path && minetest_user_path[0] != '\0') {
+		path_user = std::string(minetest_user_path);
+	} else {
+		path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
+			+ lowercase(PROJECT_NAME);
+	}
 	return true;
 }
 
