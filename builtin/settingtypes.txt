@@ -119,7 +119,7 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 
 #    (Android) Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
-use_crosshair (Use crosshair) bool false
+touch_use_crosshair (Use crosshair for touch screen) bool false
 
 #    (Android) Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.

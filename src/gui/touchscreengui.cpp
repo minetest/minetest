@@ -425,7 +425,6 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
-	m_use_crosshair = g_settings->getBool("use_crosshair");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	button_size = MYMIN(m_screensize.Y / 4.5f,
 			RenderingEngine::getDisplayDensity() *
@@ -679,16 +678,15 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 			auto *translated = new SEvent;
 			memset(translated, 0, sizeof(SEvent));
 			translated->EventType               = EET_MOUSE_INPUT_EVENT;
+			translated->MouseInput.X            = m_move_downlocation.X;
+			translated->MouseInput.Y            = m_move_downlocation.Y;
 			translated->MouseInput.Shift        = false;
 			translated->MouseInput.Control      = false;
 			translated->MouseInput.ButtonStates = 0;
 			translated->MouseInput.Event        = EMIE_LMOUSE_LEFT_UP;
-			if (m_use_crosshair || m_camera_mode == CAMERA_MODE_THIRD) {
+			if (m_draw_crosshair) {
 				translated->MouseInput.X = m_screensize.X / 2;
 				translated->MouseInput.Y = m_screensize.Y / 2;
-			} else {
-				translated->MouseInput.X = m_move_downlocation.X;
-				translated->MouseInput.Y = m_move_downlocation.Y;
 			}
 			m_receiver->OnEvent(*translated);
 			delete translated;
@@ -809,11 +807,10 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_move_id                  = event.TouchInput.ID;
 					m_move_has_really_moved    = false;
 					m_move_downtime            = porting::getTimeMs();
+					m_move_downlocation        = v2s32(event.TouchInput.X, event.TouchInput.Y);
 					m_move_sent_as_mouse_event = false;
-					if (m_use_crosshair || m_camera_mode == CAMERA_MODE_THIRD)
+					if (m_draw_crosshair)
 						m_move_downlocation = v2s32(m_screensize.X / 2, m_screensize.Y / 2);
-					else
-						m_move_downlocation = v2s32(event.TouchInput.X, event.TouchInput.Y);
 				}
 			}
 		}
@@ -833,8 +830,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 
 		if (m_has_move_id) {
 			if (event.TouchInput.ID == m_move_id &&
-					(!m_move_sent_as_mouse_event || m_use_crosshair ||
-					m_camera_mode == CAMERA_MODE_THIRD)) {
+					(!m_move_sent_as_mouse_event || m_draw_crosshair)) {
 				double distance = sqrt(
 						(m_pointerpos[event.TouchInput.ID].X - event.TouchInput.X) *
 						(m_pointerpos[event.TouchInput.ID].X - event.TouchInput.X) +
@@ -859,7 +855,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dy * d), -180), 180);
 
 					// update shootline
-					if (m_use_crosshair || m_camera_mode == CAMERA_MODE_THIRD) {
+					if (m_draw_crosshair) {
 						X = m_screensize.X / 2;
 						Y = m_screensize.Y / 2;
 					}
@@ -1023,18 +1019,17 @@ bool TouchScreenGUI::doubleTapDetection()
 	if (distance > (20 + m_touchscreen_threshold))
 		return false;
 
-	s32 mX = m_key_events[0].x;
-	s32 mY = m_key_events[0].y;
-	if (m_use_crosshair || m_camera_mode == CAMERA_MODE_THIRD) {
-		mX = m_screensize.X / 2;
-		mY = m_screensize.Y / 2;
+	v2s32 mPos = v2s32(m_key_events[0].x, m_key_events[0].y);
+	if (m_draw_crosshair) {
+		mPos.X = m_screensize.X / 2;
+		mPos.Y = m_screensize.Y / 2;
 	}
 
 	auto *translated = new SEvent();
 	memset(translated, 0, sizeof(SEvent));
 	translated->EventType               = EET_MOUSE_INPUT_EVENT;
-	translated->MouseInput.X            = mX;
-	translated->MouseInput.Y            = mY;
+	translated->MouseInput.X            = mPos.X;
+	translated->MouseInput.Y            = mPos.Y;
 	translated->MouseInput.Shift        = false;
 	translated->MouseInput.Control      = false;
 	translated->MouseInput.ButtonStates = EMBSM_RIGHT;
@@ -1043,7 +1038,7 @@ bool TouchScreenGUI::doubleTapDetection()
 	m_shootline = m_device
 			->getSceneManager()
 			->getSceneCollisionManager()
-			->getRayFromScreenCoordinates(v2s32(mX, mY));
+			->getRayFromScreenCoordinates(mPos);
 
 	translated->MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
 	verbosestream << "TouchScreenGUI::translateEvent right click press" << std::endl;
@@ -1146,7 +1141,7 @@ void TouchScreenGUI::step(float dtime)
 		if (delta > MIN_DIG_TIME_MS) {
 			s32 mX = m_move_downlocation.X;
 			s32 mY = m_move_downlocation.Y;
-			if (m_use_crosshair || m_camera_mode == CAMERA_MODE_THIRD) {
+			if (m_draw_crosshair) {
 				mX = m_screensize.X / 2;
 				mY = m_screensize.Y / 2;
 			}
