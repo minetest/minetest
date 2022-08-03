@@ -228,6 +228,10 @@ local function formspec(tabview, name, tabdata)
 				"label[8.25,3.2;" .. fgettext("(game support required)") .. "]" ..
 					"dropdown[8.25,3.7;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
 					.. getSettingIndex.ShadowMapping() .. "]"
+		else
+			tab_string = tab_string ..
+				"label[8.38,2.7;" .. core.colorize("#888888",
+					fgettext("Dynamic shadows")) .. "]"
 		end
 	else
 		tab_string = tab_string ..
