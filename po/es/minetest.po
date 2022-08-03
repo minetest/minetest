@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-08-04 10:15+0000\n"
-"Last-Translator: Valentino <phamtomwhite@protonmail.com>\n"
+"Last-Translator: Andrés Morgensen <expressindia_aeromax@slmail.me>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -885,9 +885,8 @@ msgid "Previous Core Developers"
 msgstr "Antiguos desarrolladores principales"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Share debug log"
-msgstr "Mostrar la informacion de la depuración"
+msgstr "Compartir el registro de debug"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1314,9 +1313,8 @@ msgid "- Server Name: "
 msgstr "- Nombre del servidor: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Ha ocurrido un error:"
+msgstr "Ha ocurrido un error de serialización:"
 
 #: src/client/game.cpp
 #, c-format
@@ -1652,7 +1650,7 @@ msgstr "No se puede conectar a %s porque IPv6 esta"
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "No se puede escuchar en %s porque IPv6 está desactivado"
 
 #: src/client/game.cpp
 #, c-format
@@ -2805,9 +2803,8 @@ msgid "Chat toggle key"
 msgstr "Tecla alternativa para el chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Chat visible"
+msgstr "Enlaces web del chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
