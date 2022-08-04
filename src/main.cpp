@@ -77,6 +77,9 @@ extern "C" {
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 
+#define ENV_MINETEST_COLOR "MINETEST_COLOR"
+#define ENV_CLICOLOR "CLICOLOR"
+
 typedef std::map<std::string, ValueSpec> OptionList;
 
 /**********************************************************************
@@ -120,6 +123,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
 static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
 
+static void get_env_opts(Settings& settings);
+
 /**********************************************************************/
 
 
@@ -136,6 +141,7 @@ int main(int argc, char *argv[])
 	g_logger.addOutputMaxLevel(&stderr_output, LL_ACTION);
 
 	Settings cmd_args;
+	get_env_opts(cmd_args);
 	bool cmd_args_ok = get_cmdline_opts(argc, argv, &cmd_args);
 	if (!cmd_args_ok
 			|| cmd_args.getFlag("help")
@@ -1127,4 +1133,40 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 
 	actionstream << "Done, " << count << " blocks were recompressed." << std::endl;
 	return true;
+}
+
+static void get_env_opts(Settings &settings)
+{
+	// allows turning on/off colored output via env (see issue #7553)
+	// CLICOLOR is a de-facto standard option for colors in ANSI-capable environments.
+	// CLICOLOR != 0: ANSI colors are supported
+	// CLICOLOR == 0: ANSI colors are NOT supported
+	const char *clicolor_raw = std::getenv(ENV_CLICOLOR);
+	if (clicolor_raw) {
+		const std::string color = clicolor_raw;
+		if (color == "0") {
+			settings.set("color", "never");
+		} else {
+			settings.set("color", "always");
+		}
+	}
+	// MINETEST_COLOR may be defined to "always", "never", or "auto" (auto => same as not
+	// defined)
+	const char *minetest_color_raw = std::getenv(ENV_MINETEST_COLOR);
+	if (minetest_color_raw) {
+		const std::string color = minetest_color_raw;
+		if (color == "always") {
+			settings.set("color", "always");
+		} else if (color == "never") {
+			settings.set("color", "never");
+		} else if (color != "auto") {
+			// if anything else but auto, warn that it has no effect (auto is default so
+			// we ignore it)
+			warningstream << "Environment variable " << ENV_MINETEST_COLOR
+						  << " set to invalid value '" << color
+						  << "' (must be one of 'always', 'never', "
+							 "'auto'), so it is ignored."
+						  << std::endl;
+		}
+	}
 }
