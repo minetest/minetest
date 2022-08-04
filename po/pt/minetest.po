@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-08-04 10:15+0000\n"
-"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
+"PO-Revision-Date: 2022-08-07 20:19+0000\n"
+"Last-Translator: Kauã Maia <kaua.cousillas03@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
 "Language: pt\n"
@@ -4192,7 +4192,6 @@ msgstr ""
 "O valor mais alto é mais suave, mas usará mais RAM."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
@@ -4315,12 +4314,12 @@ msgstr ""
 "quando a voar ou a nadar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
 msgstr ""
-"Se ativado, novos jogadores não podem entrar com uma palavra-passe vazia."
+"Se ativado, novos jogadores não podem entrar sem uma senha, ou uma senha "
+"vazia."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5388,10 +5387,8 @@ msgstr ""
 "indicado em segundos."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of time between NodeTimer execution cycles, stated in seconds."
-msgstr ""
-"Duração do tempo entre ciclos de execução do NodeTimer, indicado em segundos."
+msgstr "Duração entre ciclos de execução do NodeTimer, indicado em segundos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5832,16 +5829,15 @@ msgstr ""
 "Definido como -1 para quantidade ilimitada."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of packets sent per send step, if you have a slow connection\n"
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
-"Número máximo de pacotes enviados por etapa de envio, se tiver uma conexão "
-"lenta\n"
-"tente reduzi-lo, mas não o reduza para um número abaixo do dobro do alvo\n"
-"número de cliente."
+"Número máximo de pacotes enviados por etapa de envio, se você tem uma "
+"conexão lenta,\n"
+"tente reduzir isso, mas não reduza a um número abaixo do dobro do número de "
+"cliente alvo."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -6505,9 +6501,8 @@ msgstr ""
 "quando as imagens são dimensionadas em tamanhos não inteiros."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screen"
-msgstr "Ecrã"
+msgstr "Tela"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -6540,9 +6535,8 @@ msgstr ""
 "Use 0 para qualidade padrão."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Captura de ecrã"
+msgstr "Capturas de tela"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -6684,7 +6678,6 @@ msgstr ""
 "por clientes."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
@@ -6692,20 +6685,19 @@ msgid ""
 msgstr ""
 "Coloque a força da sombra gama.\n"
 "Ajusta a intensidade das sombras dinâmicas no jogo.\n"
-"Valor mais baixo significa sombras mais claras, maior valor significa "
+"Um valor mais baixo significa sombras mais claras, maior valor significa "
 "sombras mais escuras."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
 msgstr ""
 "Defina o tamanho do raio de sombras suaves.\n"
-"Valores mais baixos significam sombras mais nítidas e valores altos sombras "
+"Valores mais baixos significam sombras mais nítidas, e valores altos sombras "
 "suaves.\n"
-"Valor mínimo 1.0 e valor máximo 10.0"
+"Valor mínimo: 1.0; valor máximo: 15.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7221,13 +7213,12 @@ msgstr ""
 "Shaders são suportados por OpenGL (somente desktop) e OGLES2 (experimental)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
 msgstr ""
-"A sensibilidade dos eixos do joystick para movimentar o \n"
-"frustum de exibição no jogo."
+"A sensibilidade dos eixos do joystick para movimentar o\n"
+"campo de exibição no jogo."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7650,9 +7641,8 @@ msgid "Waving plants"
 msgstr "Balançar das Plantas"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Weblink color"
-msgstr "Cor da caixa de seleção"
+msgstr "Cor do link"
 
 #: src/settings_translation_file.cpp
 msgid ""
