@@ -1155,9 +1155,6 @@ static void get_env_opts(Settings &settings)
 	// Implemented according to no-color.org (08-2022)
 	const char* no_color_raw = std::getenv(ENV_NO_COLOR);
 	if (no_color_raw && no_color_raw[0] != '\0') {
-		const std::string color = clicolor_raw;
-		if (color[0] != '\0') {
-			settings.set("color", "never");
-		}
+		settings.set("color", "never");
 	}
 }
