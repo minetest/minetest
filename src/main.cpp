@@ -79,6 +79,7 @@ extern "C" {
 
 #define ENV_NO_COLOR "NO_COLOR"
 #define ENV_CLICOLOR "CLICOLOR"
+#define ENV_CLICOLOR_FORCE "CLICOLOR_FORCE"
 
 typedef std::map<std::string, ValueSpec> OptionList;
 
@@ -1147,14 +1148,28 @@ static void get_env_opts(Settings &settings)
 		if (color == "0") {
 			settings.set("color", "never");
 		} else {
-			settings.set("color", "always");
+			// auto since it still could be not a tty
+			settings.set("color", "auto");
 		}
 	}
 	// NO_COLOR only specifies that NO color is allowed - whether or not
 	// we actually give the user color is up to the "auto" mode.
 	// Implemented according to no-color.org (08-2022)
-	const char* no_color_raw = std::getenv(ENV_NO_COLOR);
-	if (no_color_raw && no_color_raw[0] != '\0') {
-		settings.set("color", "never");
+	const char *no_color_raw = std::getenv(ENV_NO_COLOR);
+	if (no_color_raw) {
+		const std::string color = no_color_raw;
+		if (!color.empty()) {
+			settings.set("color", "never");
+		}
+	}
+	// CLICOLOR_FORCE is another option of the CLICOLOR semi-standard, which
+	// should turn on colors "no matter what".
+	const char *clicolor_force_raw = std::getenv(ENV_CLICOLOR_FORCE);
+	if (clicolor_force_raw) {
+		const std::string color = clicolor_force_raw;
+		if (color != "0") {
+			// should ALWAYS have colors, so we ignore tty (no "auto")
+			settings.set("color", "always");
+		}
 	}
 }
