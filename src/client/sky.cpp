@@ -354,11 +354,12 @@ void Sky::update(float time_of_day, float time_brightness,
 	}
 
 	m_time_of_day = time_of_day;
+	float raw_time_brightness = 1.0f - 2.0f * abs(time_of_day - 0.5f);
 	m_time_brightness = time_brightness;
 	m_sunlight_seen = sunlight_seen;
 	m_in_clouds = false;
 
-	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
+	bool is_dawn = (raw_time_brightness >= 0.395833f && raw_time_brightness < 0.416666f);
 
 	video::SColorf bgcolor_bright_normal_f = m_sky_params.sky_color.day_horizon;
 	video::SColorf bgcolor_bright_indoor_f = m_sky_params.sky_color.indoors;
@@ -398,7 +399,7 @@ void Sky::update(float time_of_day, float time_brightness,
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 				cloudcolor_bright_dawn_f, color_change_fraction);
 		} else {
-			if (time_brightness < 0.13f) { // Night
+			if (raw_time_brightness < 0.395833f) { // Night
 				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
 					bgcolor_bright_night_f, color_change_fraction);
 				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
