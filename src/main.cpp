@@ -77,7 +77,7 @@ extern "C" {
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 
-#define ENV_MINETEST_COLOR "MINETEST_COLOR"
+#define ENV_NO_COLOR "NO_COLOR"
 #define ENV_CLICOLOR "CLICOLOR"
 
 typedef std::map<std::string, ValueSpec> OptionList;
@@ -1148,6 +1148,16 @@ static void get_env_opts(Settings &settings)
 			settings.set("color", "never");
 		} else {
 			settings.set("color", "always");
+		}
+	}
+	// NO_COLOR only specifies that NO color is allowed - whether or not
+	// we actually give the user color is up to the "auto" mode.
+	// Implemented according to no-color.org (08-2022)
+	const char* no_color_raw = std::getenv(ENV_NO_COLOR);
+	if (no_color_raw && no_color_raw[0] != '\0') {
+		const std::string color = clicolor_raw;
+		if (color[0] != '\0') {
+			settings.set("color", "never");
 		}
 	}
 }
