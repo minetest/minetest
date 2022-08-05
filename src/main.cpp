@@ -1150,23 +1150,4 @@ static void get_env_opts(Settings &settings)
 			settings.set("color", "always");
 		}
 	}
-	// MINETEST_COLOR may be defined to "always", "never", or "auto" (auto => same as not
-	// defined)
-	const char *minetest_color_raw = std::getenv(ENV_MINETEST_COLOR);
-	if (minetest_color_raw) {
-		const std::string color = minetest_color_raw;
-		if (color == "always") {
-			settings.set("color", "always");
-		} else if (color == "never") {
-			settings.set("color", "never");
-		} else if (color != "auto") {
-			// if anything else but auto, warn that it has no effect (auto is default so
-			// we ignore it)
-			warningstream << "Environment variable " << ENV_MINETEST_COLOR
-						  << " set to invalid value '" << color
-						  << "' (must be one of 'always', 'never', "
-							 "'auto'), so it is ignored."
-						  << std::endl;
-		}
-	}
 }
