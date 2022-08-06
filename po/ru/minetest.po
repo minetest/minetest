@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-08-06 06:02+0000\n"
-"Last-Translator: Темак <artemkotlubai@yandex.ru>\n"
+"PO-Revision-Date: 2022-08-06 06:36+0000\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -120,7 +120,7 @@ msgstr "Доступна новая версия $1"
 
 #: builtin/mainmenu/common.lua
 msgid "Client Mods"
-msgstr "Выберите моды"
+msgstr "Клиентские дополнения"
 
 #: builtin/mainmenu/common.lua
 msgid ""
@@ -634,7 +634,7 @@ msgstr "Пароли не совпадают"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr "Зарегистрироваться"
+msgstr "Регистрация"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -670,11 +670,11 @@ msgstr "Обзор"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
-msgstr "Содержание: Игры"
+msgstr "Содержимое: Игры"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
-msgstr "Содержание: Дополнения"
+msgstr "Содержимое: Дополнения"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -864,7 +864,7 @@ msgstr "Основные разработчики"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
-msgstr "Открыть папку данных пользователя"
+msgstr "Папка данных пользователя"
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
@@ -972,7 +972,7 @@ msgstr "Порт"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr "Выберите моды"
+msgstr "Выбор дополнений"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1073,7 +1073,7 @@ msgstr "Запоминать размер окна"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr "Билинейная фильтрация"
+msgstr "Билинейный фильтр"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -1113,11 +1113,11 @@ msgstr "Размытие текстур"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Размытие текстур + анизотр. фильтр"
+msgstr "Размытие + анизо. фильтр"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "Без фильтрации"
+msgstr "Без фильтра"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -1181,7 +1181,7 @@ msgstr "Текстурирование:"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr "Тональное отображение"
+msgstr "Отображение тонов"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touch threshold (px):"
@@ -1189,7 +1189,7 @@ msgstr "Чувствительность (в точках):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr "Трилинейная фильтрация"
+msgstr "Трилинейный фильтр"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very High"
@@ -2036,7 +2036,7 @@ msgstr "Консоль"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr "Видимость -"
+msgstr "Уменш. дальность"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -2056,7 +2056,7 @@ msgstr "Вперёд"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr "Увеличить видимость"
+msgstr "Увел. дальность"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -2108,11 +2108,11 @@ msgstr "Красться"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr "Вкл/выкл игровой интерфейс"
+msgstr "Вкл/откл интерфейс"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr "Вкл/выкл историю чата"
+msgstr "Вкл/откл журнал чата"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -2183,7 +2183,7 @@ msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
 "Имя не зарегистрировано. Чтобы создать учётную запись на этом сервере, "
-"нажмите \"Зарегистрироваться\""
+"нажмите «Регистрация»"
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
@@ -3588,7 +3588,7 @@ msgstr "Шум глубины наполнителя"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr "Кинематографическое тональное отображение"
+msgstr "Кинематографическое отображение тонов"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5283,7 +5283,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr "Клавиатура и Мышь"
+msgstr "Клавиатура и мышь"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -7744,11 +7744,11 @@ msgid ""
 "setting names in All Settings.\n"
 "Controlled by the checkbox in the \"All settings\" menu."
 msgstr ""
-"Показывать ли технические названия.\n"
-"Влияет на моды и наборы текстур в разделе \"Содержание\" и \"Выбор "
-"дополнений\", а также\n"
-"на названия настроек во всех настройках.\n"
-"Управляется с помощью галочки в разделе \"Все настройки\"."
+"Отображение технических названий.\n"
+"Влияет на моды и наборы текстур в разделе «Содержимое» и «Выбор дополнений»,"
+"\n"
+"а также на названия параметров во всех настройках.\n"
+"Управляется с помощью флажка в меню «Все настройки»."
 
 #: src/settings_translation_file.cpp
 msgid ""
