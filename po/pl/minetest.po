@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-08-07 20:19+0000\n"
-"Last-Translator: Adam Jagoda <kontakt@lukasz.xyz>\n"
+"Last-Translator: marcin <martinwolski04@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -849,7 +849,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "O"
+msgstr "O Minetest"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -1095,7 +1095,7 @@ msgstr "Cienie dynamiczne:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr "Ozdobne liście"
+msgstr "Dokładne liście"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
