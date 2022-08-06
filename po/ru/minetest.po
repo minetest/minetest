@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-08-07 20:19+0000\n"
-"Last-Translator: Темак <artemkotlubai@yandex.ru>\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -2036,7 +2036,7 @@ msgstr "Консоль"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr "Уменш. дальность"
+msgstr "Умен. дальность"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
