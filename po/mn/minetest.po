@@ -8,45 +8,49 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-08-07 20:19+0000\n"
+"Last-Translator: Batkhuyag Bavuudorj <batkhuyag2006@gmail.com>\n"
+"Language-Team: Mongolian <https://hosted.weblate.org/projects/minetest/"
+"minetest/mn/>\n"
 "Language: mn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Өгсөн тушаал: "
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Xoocoн тушаал."
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Алдаатай тушаал: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "Онлайн тоглогчдыг харах"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Энэ тушаалыг сервер хүчингүй болгосон байна."
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Онлайн тоглогчид: "
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr ""
+msgstr "Үндсэн цэс рүү буцах"
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Xүлээгдэж буй чатны жагсаал хоослох"
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -54,28 +58,30 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Та үхсэн"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Дахин төрөх"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Боломжтой тушаалууд: "
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"'.help <тушаал>' гэж илүү мэдээлэл авна, эсвэл '.help all' гэж бүх "
+"мэдээллийг гаргана."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Боломжтой тушаалууд:"
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Тушаал өгөх боломжгүй: "
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -83,55 +89,56 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Тушаалуудад тусламж авах"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "За"
 
 #: builtin/fstk/ui.lua
+#, fuzzy
 msgid "<none available>"
-msgstr ""
+msgstr "<боломж байхгүй>"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Серверээс дахин холбогдох хүсэлт ирэв:"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Дахин холбогдох"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Үндсэн цэс"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Lua код-нд алдаа үүссэн:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Алдаа үүссэн:"
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Сервер $1 болон $2 хувилбарын протокол дэмждэг. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Сервер $1 хувилбарын протокол дэмждэг. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Бид $1 болон $2 хоорондох хувилбарын протокол дэмждэг."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Бид зөвхөн $1 хувилбарын протокол дэмждэг."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Протоколын хувилбар таарсангүй. "
 
 #: builtin/mainmenu/common.lua
 msgid "Client Mods"
@@ -139,7 +146,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Шинэ $1 хувилбар ашиглах боломжтой байна."
 
 #: builtin/mainmenu/common.lua
 msgid ""
@@ -148,38 +155,42 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Татагдсан хувилбар: $1\n"
+"Шинэ хувилбар: $2\n"
+"Яаж хамгийн сүүлийн үеийн хувилбар татахыг мэдэх болон шинэ үйлдлүүд, алдаа "
+"засалтаас хоцрохгүйн тулд $3 зочилоорой."
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Вебсайтаар зочилох"
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "Дараа"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Хэзээ ч үгүй"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Ертөнц:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "modpack-нд тайлбар байхгүй."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Тоглоомны тайлбар байхгүй."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Сэтгэл хангаагүй)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Идэвхжсэн, алдаатай)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
