@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-08-04 10:15+0000\n"
-"Last-Translator: Темак <artemkotlubai@yandex.ru>\n"
+"PO-Revision-Date: 2022-08-06 06:02+0000\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -348,7 +348,7 @@ msgstr "Дополнения не могут быть получены"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Ничего не найдено"
+msgstr "Нет результатов"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
@@ -856,7 +856,7 @@ msgstr "Активные участники"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr "Активный визуализатор:"
+msgstr "Активный отрисовщик:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -1018,7 +1018,7 @@ msgstr "Подключиться к игре"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr "Имя пользователя"
+msgstr "Войти"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1134,7 +1134,7 @@ msgstr "Обводка нод"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr "Ничего"
+msgstr "Нет"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1528,7 +1528,7 @@ msgstr "Туман включён"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr "Информация об игре:"
+msgstr "Сведения об игре:"
 
 #: src/client/game.cpp
 msgid "Game paused"
@@ -6656,9 +6656,8 @@ msgid "Server side occlusion culling"
 msgstr "Отсечение невидимой геометрии на стороне сервера"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server/Env Performance"
-msgstr "Порт сервера"
+msgstr "Производительность сервера/окружения"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -7386,7 +7385,7 @@ msgstr "Компромиссы для производительности"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
-msgstr ""
+msgstr "Дальность сортировки по прозрачности"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
