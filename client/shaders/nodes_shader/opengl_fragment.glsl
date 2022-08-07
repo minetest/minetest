@@ -455,5 +455,5 @@ void main(void)
 
 	gl_FragData[0] = col;
 	gl_FragData[1] = vec4((vNormal + 1.) / 2., DRAW_TYPE / 256.);
-	gl_FragData[2] = vec4((fogDistance-length(eyeVec))/1000, 0,0,0);
+	gl_FragData[2] = vec4((fogDistance-length(eyeVec))/1000., 0., 0., 0.);
 }
