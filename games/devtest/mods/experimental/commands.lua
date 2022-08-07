@@ -43,7 +43,8 @@ minetest.register_chatcommand("test_bulk_set_node", {
 	end,
 })
 
--- Safeguard against too much optimization.
+-- Safeguard against too much optimization. This way the results cannot be optimized
+-- away, but they can be garbage collected (due to __mode = "k").
 _G._bench_content_ids_data = setmetatable({}, {__mode = "k"})
 
 local function bench_name2content()
