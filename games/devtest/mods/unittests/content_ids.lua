@@ -22,7 +22,7 @@ end
 test_content_ids()
 
 -- Run after mods have loaded.
-unittests.register("test_content_ids", test_content_ids, {player=true})
+unittests.register("test_content_ids", test_content_ids)
 
 -- Run in async environment.
 local function test_content_ids_async(cb)
