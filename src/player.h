@@ -104,6 +104,7 @@ struct PlayerPhysicsOverride
 
 	bool sneak = true;
 	bool sneak_glitch = false;
+	// "Temporary" option for old move code
 	bool new_move = true;
 };
 
