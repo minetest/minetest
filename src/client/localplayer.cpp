@@ -1123,7 +1123,7 @@ void LocalPlayer::handleAutojump(f32 dtime, f32 gravity, Environment *env,
 
 	float jumpspeed = movement_speed_jump * physics_override_jump;
 	float peak_dtime = jumpspeed / gravity; // at the peak of the jump v = gt <=> t = v / g
-	float jump_height = (jumpspeed - 0.5 * gravity * peak_dtime) * peak_dtime; // s = vt - 1/2 gt^2
+	float jump_height = (jumpspeed - 0.5f * gravity * peak_dtime) * peak_dtime; // s = vt - 1/2 gt^2
 	v3f jump_pos = initial_position + v3f(0.0f, jump_height, 0.0f);
 	v3f jump_speed = initial_speed;
 
