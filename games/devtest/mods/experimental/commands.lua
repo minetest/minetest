@@ -69,21 +69,20 @@ local function bench_content2name()
 	local t = {}
 	_G._bench_content_ids_data[t] = true
 
+	-- Try to estimate the highest content ID that's used
+	-- (not accurate but good enough for this test)
 	local n = 0
 	for _ in pairs(minetest.registered_nodes) do
 		n = n + 1
 	end
 
 	local get_name_from_content_id = minetest.get_name_from_content_id
-	local CONTENT_UNKNOWN = minetest.CONTENT_UNKNOWN
 
 	local start = minetest.get_us_time()
 
 	for i = 1, 200 do
 		for j = 0, n do
-			if j ~= CONTENT_UNKNOWN then
-				t[#t + 1] = get_name_from_content_id(j)
-			end
+			t[#t + 1] = get_name_from_content_id(j)
 		end
 	end
 
