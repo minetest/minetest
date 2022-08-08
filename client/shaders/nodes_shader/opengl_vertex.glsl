@@ -221,13 +221,20 @@ void main(void)
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
+#if MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
+		// The shadow shaders don't apply waving when creating the shadow-map.
+		// We are using the not waved inVertexPosition to avoid ugly self-shadowing.
+		vec4 shadow_pos = inVertexPosition;
+#else
+		vec4 shadow_pos = pos;
+#endif
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 
 		/* normalOffsetScale is in world coordinates (1/10th of a meter)
 		   z_bias is in light space coordinates */
 		float normalOffsetScale, z_bias;
-		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * pos));
+		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * shadow_pos));
 		if (f_normal_length > 0.0) {
 			nNormal = normalize(vNormal);
 			cosLight = dot(nNormal, -v_LightDirection);
@@ -245,7 +252,7 @@ void main(void)
 		}
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
-		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (pos + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
+		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (shadow_pos + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
 		shadow_position.z -= z_bias;
 		perspective_factor = pFactor;
 
