@@ -179,7 +179,9 @@ public:
 		return res;
 	}
 
-	double getPitch() { return m_camera_pitch; }
+	double getPitch() const { return m_camera_pitch; }
+
+	void setPitch(double camera_pitch, v2s32 screen_XY);
 
 	/*
 	 * Returns a line which describes what the player is pointing at.
@@ -198,6 +200,9 @@ public:
 
 	void hide();
 	void show();
+
+	bool is_visible() const { return m_visible; }
+
 
 private:
 	IrrlichtDevice *m_device;

@@ -2453,27 +2453,30 @@ f32 Game::getSensitivityScaleFactor() const
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 {
 #ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui) {
+	if (g_touchscreengui && g_touchscreengui->is_visible()) {
 		cam->camera_yaw   += g_touchscreengui->getYawChange();
 		cam->camera_pitch  = g_touchscreengui->getPitch();
-	} else {
-#endif
-		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
-		v2s32 dist = input->getMousePos() - center;
-
-		if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
-			dist.Y = -dist.Y;
-		}
-
-		f32 sens_scale = getSensitivityScaleFactor();
-		cam->camera_yaw   -= dist.X * m_cache_mouse_sensitivity * sens_scale;
-		cam->camera_pitch += dist.Y * m_cache_mouse_sensitivity * sens_scale;
-
-		if (dist.X != 0 || dist.Y != 0)
-			input->setMousePos(center.X, center.Y);
-#ifdef HAVE_TOUCHSCREENGUI
 	}
 #endif
+	v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
+	v2s32 dist = input->getMousePos() - center;
+
+	if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
+		dist.Y = -dist.Y;
+	}
+
+	f32 sens_scale = getSensitivityScaleFactor();
+	cam->camera_yaw   -= dist.X * m_cache_mouse_sensitivity * sens_scale;
+	cam->camera_pitch += dist.Y * m_cache_mouse_sensitivity * sens_scale;
+
+	if (dist.X != 0 || dist.Y != 0) {
+		input->setMousePos(center.X, center.Y);
+#ifdef HAVE_TOUCHSCREENGUI
+		// on mouse motion, hide the touchscreen gui
+		if (g_touchscreengui)
+			g_touchscreengui->hide();
+#endif
+	}
 
 	if (m_cache_enable_joysticks) {
 		f32 sens_scale = getSensitivityScaleFactor();
@@ -2483,6 +2486,12 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 	}
 
 	cam->camera_pitch = rangelim(cam->camera_pitch, -89.5, 89.5);
+
+#ifdef HAVE_TOUCHSCREENGUI
+	// keep the touchscreen pitch information up to date even if it's hidden
+	if (g_touchscreengui)
+		g_touchscreengui->setPitch(cam->camera_pitch, center);
+#endif
 }
 
 

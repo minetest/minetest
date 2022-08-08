@@ -721,14 +721,23 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 
 void TouchScreenGUI::translateEvent(const SEvent &event)
 {
+	const bool touch_event = (event.EventType != EET_TOUCH_INPUT_EVENT);
+
 	if (!m_visible) {
-		infostream
-			<< "TouchScreenGUI::translateEvent got event but not visible!"
-			<< std::endl;
+		// if we receive a touch event while hidden, re-enabled the touch UI
+		// without further processing
+		if (touch_event) {
+			this->show();
+		} else {
+			infostream
+				<< "TouchScreenGUI::translateEvent got event but not visible!"
+				<< std::endl;
+		}
 		return;
 	}
 
-	if (event.EventType != EET_TOUCH_INPUT_EVENT)
+	// ignore non-touch events
+	if (!touch_event)
 		return;
 
 	if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
@@ -846,6 +855,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					const double d = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f) * 3.0f;
 
 					m_camera_yaw_change -= dx * d;
+					// TODO FIXME why do we clamp to ±180 here
+					// but this is clamped to ±89.5 in updateCameraOrientation?
 					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dy * d), -180), 180);
 
 					// update shootline
@@ -1079,6 +1090,15 @@ TouchScreenGUI::~TouchScreenGUI()
 		m_joystick_btn_center->guibutton->drop();
 		m_joystick_btn_center->guibutton = nullptr;
 	}
+}
+
+void TouchScreenGUI::setPitch(double camera_pitch, v2s32 screen_XY)
+{
+	m_camera_pitch = camera_pitch;
+	m_shootline = m_device
+		->getSceneManager()
+		->getSceneCollisionManager()
+		->getRayFromScreenCoordinates(screen_XY);
 }
 
 void TouchScreenGUI::step(float dtime)
