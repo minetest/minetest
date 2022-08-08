@@ -101,6 +101,12 @@ function core.register_entity(name, prototype)
 	end
 	name = check_modname_prefix(tostring(name))
 
+	-- Check prototype (not exhaustive)
+	if prototype.max_hp ~= nil then
+		assert(type(prototype.max_hp) == "number")
+		assert(prototype.max_hp % 1 == 0 and prototype.max_hp > 0, "max_hp must be a positive integer")
+	end
+
 	prototype.name = name
 	prototype.__index = prototype  -- so that it can be used as a metatable
 
