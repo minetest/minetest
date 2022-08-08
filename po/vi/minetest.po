@@ -485,17 +485,17 @@ msgstr "Độ ẩm thấp và nhiệt độ cao làm cho sông cạn hoặc khô
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Thế hệ bản đồ"
+msgstr "Trình dựng địa hình (Mapgen)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen flags"
-msgstr "Cờ của Mapgen"
+msgstr "Trạng thái của trình dựng địa hình (Mapgen)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Cờ cụ thể của Mapgen"
+msgstr "Trạng thái cụ thể của trình dựng địa hình (Mapgen)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -527,12 +527,12 @@ msgstr "Sông"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr "Sông theo mực nước biển"
+msgstr "Sông tại mực nước biển"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "Mã khởi tạo"
+msgstr "Mã dựng địa hình"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -644,7 +644,7 @@ msgstr "Chấp nhận"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Đổi tên mod:"
+msgstr "Đổi tên modpack:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
