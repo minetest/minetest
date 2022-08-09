@@ -858,7 +858,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 void GenericCAO::updateLight(u32 day_night_ratio)
 {
-	if (m_glow < 0)
+	if (m_prop.glow < 0)
 		return;
 
 	u16 light_at_pos = 0;
@@ -872,7 +872,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 		MapNode n = m_env->getMap().getNode(pos[i], &this_ok);
 		if (this_ok) {
 			u16 this_light = getInteriorLight(n, 0, m_client->ndef());
-			u8 this_light_intensity = MYMAX(this_light & 0xFF, (this_light >> 8) && 0xFF);
+			u8 this_light_intensity = MYMAX(this_light & 0xFF, this_light >> 8);
 			if (this_light_intensity > light_at_pos_intensity) {
 				light_at_pos = this_light;
 				light_at_pos_intensity = this_light_intensity;
@@ -883,7 +883,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (!pos_ok)
 		light_at_pos = LIGHT_SUN;
 
-	video::SColor light = encode_light(light_at_pos, m_glow);
+	video::SColor light = encode_light(light_at_pos, m_prop.glow);
 	if (!m_enable_shaders)
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 
@@ -905,12 +905,8 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 		if (m_prop.visual == "upright_sprite") {
 			if (!m_meshnode)
 				return;
-
-			scene::IMesh *mesh = m_meshnode->getMesh();
-			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-				buf->getMaterial().EmissiveColor = light_color;
-			}
+			for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i)
+				m_meshnode->getMaterial(i).EmissiveColor = light_color;
 		} else {
 			scene::ISceneNode *node = getSceneNode();
 			if (!node)
@@ -1178,7 +1174,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				// Reduce footstep gain, as non-local-player footsteps are
 				// somehow louder.
 				spec.gain *= 0.6f;
-				m_client->sound()->playSoundAt(spec, false, getPosition());
+				m_client->sound()->playSoundAt(spec, getPosition());
 			}
 		}
 	}
@@ -1323,7 +1319,6 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
-	m_glow = m_prop.glow;
 
 	video::ITexture *shadow_texture = nullptr;
 	if (auto shadow = RenderingEngine::get_shadow_renderer())
@@ -1500,7 +1495,7 @@ void GenericCAO::updateTextures(std::string mod)
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			// Set mesh color (only if lighting is disabled)
-			if (!m_prop.colors.empty() && m_glow < 0)
+			if (!m_prop.colors.empty() && m_prop.glow < 0)
 				setMeshColor(mesh, m_prop.colors[0]);
 		}
 	}

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include "gameparams.h"
 #include <string>
 #include <list>
 
@@ -49,6 +50,8 @@ struct MainMenuData {
 
 	// Data to be passed to the script
 	MainMenuDataForScript script_data;
+
+	ELoginRegister allow_login_or_register = ELoginRegister::Any;
 
 	MainMenuData() = default;
 };

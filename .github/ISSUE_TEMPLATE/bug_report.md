@@ -8,8 +8,8 @@ assignees: ''
 
 ##### Minetest version
 <!--
-Paste Minetest version between quotes below
-If you are on a devel version, please add git commit hash
+Paste Minetest version between quotes below.
+If you are on a devel version, please add git commit hash.
 You can use `minetest --version` to find it.
 -->
 ```
@@ -29,4 +29,4 @@ OpenGL version:
 <!-- Describe your problem here -->
 
 ##### Steps to reproduce
-<!-- For bug reports or build issues, explain how the problem happened -->
+<!-- Explain how the problem has happened, providing a minimal test (i.e. a code snippet reduced to the bone) where possible -->

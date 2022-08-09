@@ -127,7 +127,6 @@ private:
 	float m_step_distance_counter = 0.0f;
 	video::SColor m_last_light = video::SColor(0xFFFFFFFF);
 	bool m_is_visible = false;
-	s8 m_glow = 0;
 	// Material
 	video::E_MATERIAL_TYPE m_material_type;
 	// Settings

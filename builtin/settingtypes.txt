@@ -631,8 +631,8 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
-#    Minimum value: 1.0; maximum value: 10.0
-shadow_soft_radius (Soft shadow radius) float 1.0 1.0 10.0
+#    Minimum value: 1.0; maximum value: 15.0
+shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 
 #    Set the tilt of Sun/Moon orbit in degrees.
 #    Value of 0 means no tilt / vertical orbit.
@@ -988,7 +988,7 @@ mute_sound (Mute sound) bool false
 [Client]
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
-clickable_chat_weblinks (Chat weblinks) bool false
+clickable_chat_weblinks (Chat weblinks) bool true
 
 #    Optional override for chat weblink color.
 chat_weblink_color (Weblink color) string
@@ -1033,9 +1033,9 @@ serverlist_file (Serverlist file) string favoriteservers.json
 #    0 to disable queueing and -1 to make the queue size unlimited.
 max_out_chat_queue_size (Maximum size of the out chat queue) int 20
 
-#    Enable register confirmation when connecting to server.
-#    If disabled, new account will be registered automatically.
-enable_register_confirmation (Enable register confirmation) bool true
+#    If enabled, account registration is separate from login in the UI.
+#    If disabled, new accounts will be registered automatically when logging in.
+enable_split_login_register (Enable split login/register) bool true
 
 [*Advanced]
 
@@ -1468,7 +1468,8 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    -    action
 #    -    info
 #    -    verbose
-debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
+#    -    trace
+debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose,trace
 
 #    If the file size of debug.txt exceeds the number of megabytes specified in
 #    this setting when it is opened, the file is moved to debug.txt.1,
@@ -1477,7 +1478,7 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 debug_log_size_max (Debug log file size threshold) int 50
 
 #    Minimal level of logging to be written to chat.
-chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose,trace
 
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.

@@ -386,6 +386,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -457,6 +460,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
+
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
 		if (!def.inventory_image.empty()) {
@@ -469,6 +476,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 

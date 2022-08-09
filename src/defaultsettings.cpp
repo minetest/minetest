@@ -64,8 +64,7 @@ void set_default_settings()
 	settings->setDefault("enable_client_modding", "false");
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
-	settings->setDefault("enable_register_confirmation", "true");
-	settings->setDefault("clickable_chat_weblinks", "false");
+	settings->setDefault("enable_split_login_register", "true");
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Keymap
@@ -275,7 +274,7 @@ void set_default_settings()
 	settings->setDefault("shadow_filters", "1");
 	settings->setDefault("shadow_poisson_filter", "true");
 	settings->setDefault("shadow_update_frames", "8");
-	settings->setDefault("shadow_soft_radius", "1.0");
+	settings->setDefault("shadow_soft_radius", "5.0");
 	settings->setDefault("shadow_sky_body_orbit_tilt", "0.0");
 
 	// Input
@@ -457,7 +456,6 @@ void set_default_settings()
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
-	settings->setDefault("fps_max", "0");
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -465,6 +463,9 @@ void set_default_settings()
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
+	settings->setDefault("clickable_chat_weblinks", "false");
+#else
+	settings->setDefault("clickable_chat_weblinks", "true");
 #endif
 	// Altered settings for Android
 #ifdef __ANDROID__

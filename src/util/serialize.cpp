@@ -18,15 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serialize.h"
-#include "pointer.h"
 #include "porting.h"
 #include "util/string.h"
+#include "util/hex.h"
 #include "exceptions.h"
 #include "irrlichttypes.h"
 
-#include <sstream>
-#include <iomanip>
-#include <vector>
+#include <iostream>
+#include <cassert>
 
 FloatType g_serialize_f32_type = FLOATTYPE_UNKNOWN;
 
@@ -120,121 +119,148 @@ std::string deSerializeString32(std::istream &is)
 }
 
 ////
-//// JSON
+//// JSON-like strings
 ////
 
 std::string serializeJsonString(const std::string &plain)
 {
-	std::ostringstream os(std::ios::binary);
-	os << "\"";
+	std::string tmp;
+
+	tmp.reserve(plain.size() + 2);
+	tmp.push_back('"');
 
 	for (char c : plain) {
 		switch (c) {
 			case '"':
-				os << "\\\"";
+				tmp.append("\\\"");
 				break;
 			case '\\':
-				os << "\\\\";
-				break;
-			case '/':
-				os << "\\/";
+				tmp.append("\\\\");
 				break;
 			case '\b':
-				os << "\\b";
+				tmp.append("\\b");
 				break;
 			case '\f':
-				os << "\\f";
+				tmp.append("\\f");
 				break;
 			case '\n':
-				os << "\\n";
+				tmp.append("\\n");
 				break;
 			case '\r':
-				os << "\\r";
+				tmp.append("\\r");
 				break;
 			case '\t':
-				os << "\\t";
+				tmp.append("\\t");
 				break;
 			default: {
 				if (c >= 32 && c <= 126) {
-					os << c;
+					tmp.push_back(c);
 				} else {
-					u32 cnum = (u8)c;
-					os << "\\u" << std::hex << std::setw(4)
-						<< std::setfill('0') << cnum;
+					// We pretend that Unicode codepoints map to bytes (they don't)
+					u8 cnum = static_cast<u8>(c);
+					tmp.append("\\u00");
+					tmp.push_back(hex_chars[cnum >> 4]);
+					tmp.push_back(hex_chars[cnum & 0xf]);
 				}
 				break;
 			}
 		}
 	}
 
-	os << "\"";
-	return os.str();
+	tmp.push_back('"');
+	return tmp;
+}
+
+static void deSerializeJsonString(std::string &s)
+{
+	assert(s.size() >= 2);
+	assert(s.front() == '"' && s.back() == '"');
+
+	size_t w = 0; // write index
+	size_t i = 1; // read index
+	const size_t len = s.size() - 1; // string length with trailing quote removed
+
+	while (i < len) {
+		char c = s[i++];
+		assert(c != '"');
+
+		if (c != '\\') {
+			s[w++] = c;
+			continue;
+		}
+
+		if (i >= len)
+			throw SerializationError("JSON string ended prematurely");
+		char c2 = s[i++];
+		switch (c2) {
+			case 'b':
+				s[w++] = '\b';
+				break;
+			case 'f':
+				s[w++] = '\f';
+				break;
+			case 'n':
+				s[w++] = '\n';
+				break;
+			case 'r':
+				s[w++] = '\r';
+				break;
+			case 't':
+				s[w++] = '\t';
+				break;
+			case 'u': {
+				if (i + 3 >= len)
+					throw SerializationError("JSON string ended prematurely");
+				unsigned char v[4] = {};
+				for (int j = 0; j < 4; j++)
+					hex_digit_decode(s[i+j], v[j]);
+				i += 4;
+				u32 hexnumber = (v[0] << 12) | (v[1] << 8) | (v[2] << 4) | v[3];
+				// Note that this does not work for anything other than ASCII
+				// but these functions do not actually interact with real JSON input.
+				s[w++] = (int) hexnumber;
+				break;
+			}
+			default:
+				s[w++] = c2;
+				break;
+		}
+	}
+
+	assert(w <= i && i <= len);
+	// Truncate string to current write index
+	s.resize(w);
 }
 
 std::string deSerializeJsonString(std::istream &is)
 {
-	std::ostringstream os(std::ios::binary);
-	char c, c2;
+	std::string tmp;
+	char c;
+	bool was_backslash = false;
 
 	// Parse initial doublequote
-	is >> c;
+	c = is.get();
 	if (c != '"')
 		throw SerializationError("JSON string must start with doublequote");
+	tmp.push_back(c);
 
-	// Parse characters
+	// Grab the entire json string
 	for (;;) {
 		c = is.get();
 		if (is.eof())
 			throw SerializationError("JSON string ended prematurely");
 
-		if (c == '"') {
-			return os.str();
-		}
-
-		if (c == '\\') {
-			c2 = is.get();
-			if (is.eof())
-				throw SerializationError("JSON string ended prematurely");
-			switch (c2) {
-				case 'b':
-					os << '\b';
-					break;
-				case 'f':
-					os << '\f';
-					break;
-				case 'n':
-					os << '\n';
-					break;
-				case 'r':
-					os << '\r';
-					break;
-				case 't':
-					os << '\t';
-					break;
-				case 'u': {
-					int hexnumber;
-					char hexdigits[4 + 1];
-
-					is.read(hexdigits, 4);
-					if (is.eof())
-						throw SerializationError("JSON string ended prematurely");
-					hexdigits[4] = 0;
-
-					std::istringstream tmp_is(hexdigits, std::ios::binary);
-					tmp_is >> std::hex >> hexnumber;
-					os << (char)hexnumber;
-					break;
-				}
-				default:
-					os << c2;
-					break;
-			}
-		} else {
-			os << c;
-		}
+		tmp.push_back(c);
+		if (was_backslash)
+			was_backslash = false;
+		else if (c == '\\')
+			was_backslash = true;
+		else if (c == '"')
+			break; // found end of string
 	}
 
-	return os.str();
+	deSerializeJsonString(tmp);
+	return tmp;
 }
 
 std::string serializeJsonStringIfNeeded(const std::string &s)
@@ -248,41 +274,21 @@ std::string serializeJsonStringIfNeeded(const std::string &s)
 
 std::string deSerializeJsonStringIfNeeded(std::istream &is)
 {
-	std::stringstream tmp_os(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
-	bool expect_initial_quote = true;
-	bool is_json = false;
-	bool was_backslash = false;
-	for (;;) {
-		char c = is.get();
-		if (is.eof())
-			break;
+	// Check for initial quote
+	char c = is.peek();
+	if (is.eof())
+		return "";
 
-		if (expect_initial_quote && c == '"') {
-			tmp_os << c;
-			is_json = true;
-		} else if(is_json) {
-			tmp_os << c;
-			if (was_backslash)
-				was_backslash = false;
-			else if (c == '\\')
-				was_backslash = true;
-			else if (c == '"')
-				break; // Found end of string
-		} else {
-			if (c == ' ') {
-				// Found end of word
-				is.unget();
-				break;
-			}
-
-			tmp_os << c;
-		}
-		expect_initial_quote = false;
-	}
-	if (is_json) {
-		return deSerializeJsonString(tmp_os);
+	if (c == '"') {
+		// json string: defer to the right implementation
+		return deSerializeJsonString(is);
 	}
 
-	return tmp_os.str();
+	// not a json string:
+	std::string tmp;
+	std::getline(is, tmp, ' ');
+	if (!is.eof())
+		is.unget(); // we hit a space, put it back
+	return tmp;
 }
 

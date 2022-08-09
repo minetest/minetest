@@ -117,13 +117,13 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	}
 }
 
-void LuaEntitySAO::dispatchScriptDeactivate()
+void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 {
 	// Ensure that this is in fact a registered entity,
 	// and that it isn't already gone.
 	// The latter also prevents this from ever being called twice.
 	if (m_registered && !isGone())
-		m_env->getScriptIface()->luaentity_Deactivate(m_id);
+		m_env->getScriptIface()->luaentity_Deactivate(m_id, removal);
 }
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
@@ -337,17 +337,7 @@ u32 LuaEntitySAO::punch(v3f dir,
 		if (result.did_punch) {
 			setHP((s32)getHP() - result.damage,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
-
-			// create message and add to list
-			sendPunchCommand();
 		}
-	}
-
-	if (getHP() == 0 && !isGone()) {
-		clearParentAttachment();
-		clearChildAttachments();
-		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
-		markForRemoval();
 	}
 
 	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
@@ -402,6 +392,20 @@ std::string LuaEntitySAO::getDescription()
 void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
 	m_hp = rangelim(hp, 0, U16_MAX);
+
+	sendPunchCommand();
+
+	if (m_hp == 0 && !isGone()) {
+		clearParentAttachment();
+		clearChildAttachments();
+		if (m_registered) {
+			ServerActiveObject *killer = nullptr;
+			if (reason.type == PlayerHPChangeReason::PLAYER_PUNCH)
+				killer = reason.object;
+			m_env->getScriptIface()->luaentity_on_death(m_id, killer);
+		}
+		markForRemoval();
+	}	
 }
 
 u16 LuaEntitySAO::getHP() const

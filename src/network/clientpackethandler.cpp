@@ -101,11 +101,20 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	// Authenticate using that method, or abort if there wasn't any method found
 	if (chosen_auth_mechanism != AUTH_MECHANISM_NONE) {
-		if (chosen_auth_mechanism == AUTH_MECHANISM_FIRST_SRP &&
-				!m_simple_singleplayer_mode &&
-				!getServerAddress().isLocalhost() &&
-				g_settings->getBool("enable_register_confirmation")) {
-			promptConfirmRegistration(chosen_auth_mechanism);
+		bool is_register = chosen_auth_mechanism == AUTH_MECHANISM_FIRST_SRP;
+		ELoginRegister mode = is_register ? ELoginRegister::Register : ELoginRegister::Login;
+		if (m_allow_login_or_register != ELoginRegister::Any &&
+				m_allow_login_or_register != mode) {
+			m_chosen_auth_mech = AUTH_MECHANISM_NONE;
+			m_access_denied = true;
+			if (m_allow_login_or_register == ELoginRegister::Login) {
+				m_access_denied_reason =
+						gettext("Name is not registered. To create an account on this server, click 'Register'");
+			} else {
+				m_access_denied_reason =
+						gettext("Name is taken. Please choose another name");
+			}
+			m_con->Disconnect();
 		} else {
 			startAuth(chosen_auth_mechanism);
 		}
@@ -561,6 +570,10 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 
 	u16 hp;
 	*pkt >> hp;
+	bool damage_effect = true;
+	try {
+		*pkt >> damage_effect;
+	} catch (PacketError &e) {};
 
 	player->hp = hp;
 
@@ -572,6 +585,7 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 		ClientEvent *event = new ClientEvent();
 		event->type = CE_PLAYER_DAMAGE;
 		event->player_damage.amount = oldhp - hp;
+		event->player_damage.effect = damage_effect;
 		m_client_event_queue.push(event);
 	}
 }
@@ -764,7 +778,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	m_nodedef->deSerialize(tmp_os);
+	m_nodedef->deSerialize(tmp_os, m_proto_ver);
 	m_nodedef_received = true;
 }
 
@@ -783,7 +797,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	m_itemdef->deSerialize(tmp_os);
+	m_itemdef->deSerialize(tmp_os, m_proto_ver);
 	m_itemdef_received = true;
 }
 
@@ -804,22 +818,18 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	*/
 
 	s32 server_id;
-	std::string name;
 
-	float gain;
+	SimpleSoundSpec spec;
 	u8 type; // 0=local, 1=positional, 2=object
 	v3f pos;
 	u16 object_id;
-	bool loop;
-	float fade = 0.0f;
-	float pitch = 1.0f;
 	bool ephemeral = false;
 
-	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+	*pkt >> server_id >> spec.name >> spec.gain >> type >> pos >> object_id >> spec.loop;
 
 	try {
-		*pkt >> fade;
-		*pkt >> pitch;
+		*pkt >> spec.fade;
+		*pkt >> spec.pitch;
 		*pkt >> ephemeral;
 	} catch (PacketError &e) {};
 
@@ -827,17 +837,17 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain, fade, pitch);
+			client_id = m_sound->playSound(spec);
 			break;
 		case 1: // positional
-			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
+			client_id = m_sound->playSoundAt(spec, pos);
 			break;
 		case 2:
 		{ // object
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
 				pos = cao->getPosition();
-			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
+			client_id = m_sound->playSoundAt(spec, pos);
 			break;
 		}
 		default:

@@ -50,7 +50,7 @@ local labels = {
 		fgettext("Low"),
 		fgettext("Medium"),
 		fgettext("High"),
-		fgettext("Ultra High")
+		fgettext("Very High")
 	}
 }
 
@@ -160,7 +160,7 @@ local function formspec(tabview, name, tabdata)
 				.. getSettingIndex.NodeHighlighting() .. "]" ..
 		"dropdown[0.25,3.6;3.5;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
 				.. getSettingIndex.Leaves() .. "]" ..
-		"box[4,0;3.75,4.5;#999999]" ..
+		"box[4,0;3.75,4.9;#999999]" ..
 		"label[4.25,0.1;" .. fgettext("Texturing:") .. "]" ..
 		"dropdown[4.25,0.55;3.5;dd_filters;" .. dd_options.filters[1] .. ";"
 				.. getSettingIndex.Filter() .. "]" ..
@@ -169,9 +169,6 @@ local function formspec(tabview, name, tabdata)
 		"label[4.25,2.15;" .. fgettext("Antialiasing:") .. "]" ..
 		"dropdown[4.25,2.6;3.5;dd_antialiasing;" .. dd_options.antialiasing[1] .. ";"
 				.. getSettingIndex.Antialiasing() .. "]" ..
-		"label[4.25,3.45;" .. fgettext("Screen:") .. "]" ..
-		"checkbox[4.25,3.6;cb_autosave_screensize;" .. fgettext("Autosave Screen Size") .. ";"
-				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
 		"box[8,0;3.75,4.5;#999999]"
 
 	local video_driver = core.settings:get("video_driver")
@@ -203,10 +200,15 @@ local function formspec(tabview, name, tabdata)
 
 	if core.settings:get("touchscreen_threshold") ~= nil then
 		tab_string = tab_string ..
-			"label[4.3,4.2;" .. fgettext("Touchthreshold: (px)") .. "]" ..
-			"dropdown[4.25,4.65;3.5;dd_touchthreshold;0,10,20,30,40,50;" ..
+			"label[4.25,3.5;" .. fgettext("Touch threshold (px):") .. "]" ..
+			"dropdown[4.25,3.95;3.5;dd_touchthreshold;0,10,20,30,40,50;" ..
 			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) ..
-			"]box[4.0,4.5;3.75,1.0;#999999]"
+			"]"
+	else
+		tab_string = tab_string ..
+			"label[4.25,3.65;" .. fgettext("Screen:") .. "]" ..
+			"checkbox[4.25,3.9;cb_autosave_screensize;" .. fgettext("Autosave Screen Size") .. ";"
+					.. dump(core.settings:get_bool("autosave_screensize")) .. "]"
 	end
 
 	if shaders_enabled then
@@ -219,8 +221,9 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"..
-			"label[8.25,3.0;" .. fgettext("Dynamic shadows: ") .. "]" ..
-			"dropdown[8.25,3.5;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
+			"label[8.25,2.8;" .. fgettext("Dynamic shadows:") .. "]" ..
+			"label[8.25,3.2;" .. fgettext("(game support required)") .. "]" ..
+					"dropdown[8.25,3.7;3.5;dd_shadows;" .. dd_options.shadow_levels[1] .. ";"
 					.. getSettingIndex.ShadowMapping() .. "]"
 	else
 		tab_string = tab_string ..
@@ -364,11 +367,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.settings:set("enable_dynamic_shadows", "false")
 	else
 		local shadow_presets = {
-			[2] = { 55,  512,  "true", 0, "false" },
-			[3] = { 82,  1024, "true", 1, "false" },
-			[4] = { 240, 2048, "true", 1, "false" },
-			[5] = { 240, 2048, "true", 2,  "true" },
-			[6] = { 300, 4096, "true", 2,  "true" },
+			[2] = { 62,  512,  "true", 0, "false" },
+			[3] = { 93,  1024, "true", 0, "false" },
+			[4] = { 140, 2048, "true", 1, "false" },
+			[5] = { 210, 4096, "true", 2,  "true" },
+			[6] = { 300, 8192, "true", 2,  "true" },
 		}
 		local s = shadow_presets[table.indexof(labels.shadow_levels, fields["dd_shadows"])]
 		if s then

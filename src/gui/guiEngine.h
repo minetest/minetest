@@ -296,7 +296,7 @@ private:
 	clouddata   m_cloud;
 
 	/** start playing a sound and return handle */
-	s32 playSound(const SimpleSoundSpec &spec, bool looped);
+	s32 playSound(const SimpleSoundSpec &spec);
 	/** stop playing a sound started with playSound() */
 	void stopSound(s32 handle);
 

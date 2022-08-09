@@ -63,6 +63,15 @@ Zughy:
 
 appgurueu:
   textures/base/pack/server_incompatible.png
+  
+erlehmann, Warr1024, rollerozxa:
+  textures/base/pack/no_screenshot.png
+
+kilbith:
+  textures/base/pack/server_favorite.png
+
+SmallJoker
+  textures/base/pack/server_favorite_delete.png (based on server_favorite.png)
 
 License of Minetest source code
 -------------------------------

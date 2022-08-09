@@ -52,6 +52,7 @@ set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
+set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
 
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 
@@ -77,7 +78,6 @@ if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 		# IrrlichtMtConfig.cmake
 		message(FATAL_ERROR "Could not find IrrlichtMtConfig.cmake in ${IRRLICHTMT_BUILD_DIR}/cmake.")
 	endif()
-# This is done here so that relative search paths are more reasonable
 elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
 	if(BUILD_CLIENT)
@@ -107,9 +107,9 @@ else()
 
 		include(MinetestFindIrrlichtHeaders)
 		if(NOT IRRLICHT_INCLUDE_DIR)
-			message(FATAL_ERROR "Irrlicht or IrrlichtMt headers are required to build the server, but none found.\n${explanation_msg}")
+			message(FATAL_ERROR "IrrlichtMt headers are required to build the server, but none found.\n${explanation_msg}")
 		endif()
-		message(STATUS "Found Irrlicht headers: ${IRRLICHT_INCLUDE_DIR}")
+		message(STATUS "Found IrrlichtMt headers: ${IRRLICHT_INCLUDE_DIR}")
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
 		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
 		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
@@ -278,6 +278,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
 		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
 			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
 	endif()
+endif()
+
+if(BUILD_BENCHMARKS)
+	add_subdirectory(lib/catch2)
 endif()
 
 # Subdirectories

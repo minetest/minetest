@@ -96,7 +96,12 @@ void parseContentInfo(ContentSpec &spec)
 
 	Settings conf;
 	if (!conf_path.empty() && conf.readConfigFile(conf_path.c_str())) {
-		if (conf.exists("name"))
+		if (conf.exists("title"))
+			spec.title = conf.get("title");
+		else if (spec.type == "game" && conf.exists("name"))
+			spec.title = conf.get("name");
+
+		if (spec.type != "game" && conf.exists("name"))
 			spec.name = conf.get("name");
 
 		if (conf.exists("description"))

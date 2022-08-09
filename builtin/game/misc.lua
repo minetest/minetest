@@ -121,53 +121,6 @@ function core.get_player_radius_area(player_name, radius)
 end
 
 
-function core.hash_node_position(pos)
-	return (pos.z + 32768) * 65536 * 65536
-		 + (pos.y + 32768) * 65536
-		 +  pos.x + 32768
-end
-
-
-function core.get_position_from_hash(hash)
-	local x = (hash % 65536) - 32768
-	hash  = math.floor(hash / 65536)
-	local y = (hash % 65536) - 32768
-	hash  = math.floor(hash / 65536)
-	local z = (hash % 65536) - 32768
-	return vector.new(x, y, z)
-end
-
-
-function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
-		return 0
-	end
-	return core.registered_items[name].groups[group]
-end
-
-
-function core.get_node_group(name, group)
-	core.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
-	return core.get_item_group(name, group)
-end
-
-
-function core.setting_get_pos(name)
-	local value = core.settings:get(name)
-	if not value then
-		return nil
-	end
-	return core.string_to_pos(value)
-end
-
-
--- See l_env.cpp for the other functions
-function core.get_artificial_light(param1)
-	return math.floor(param1 / 16)
-end
-
-
 -- To be overriden by protection mods
 
 function core.is_protected(pos, name)
@@ -284,40 +237,30 @@ end
 core.dynamic_media_callbacks = {}
 
 
--- PNG encoder safety wrapper
+-- Transfer of certain globals into async environment
+-- see builtin/async/game.lua for the other side
 
-local o_encode_png = core.encode_png
-function core.encode_png(width, height, data, compression)
-	if type(width) ~= "number" then
-		error("Incorrect type for 'width', expected number, got " .. type(width))
+local function copy_filtering(t, seen)
+	if type(t) == "userdata" or type(t) == "function" then
+		return true -- don't use nil so presence can still be detected
+	elseif type(t) ~= "table" then
+		return t
 	end
-	if type(height) ~= "number" then
-		error("Incorrect type for 'height', expected number, got " .. type(height))
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		local k_ = seen[k] or copy_filtering(k, seen)
+		local v_ = seen[v] or copy_filtering(v, seen)
+		n[k_] = v_
 	end
+	return n
+end
 
-	local expected_byte_count = width * height * 4
-
-	if type(data) ~= "table" and type(data) ~= "string" then
-		error("Incorrect type for 'data', expected table or string, got " .. type(data))
-	end
-
-	local data_length = type(data) == "table" and #data * 4 or string.len(data)
-
-	if data_length ~= expected_byte_count then
-		error(string.format(
-			"Incorrect length of 'data', width and height imply %d bytes but %d were provided",
-			expected_byte_count,
-			data_length
-		))
-	end
-
-	if type(data) == "table" then
-		local dataBuf = {}
-		for i = 1, #data do
-			dataBuf[i] = core.colorspec_to_bytes(data[i])
-		end
-		data = table.concat(dataBuf)
-	end
-
-	return o_encode_png(width, height, data, compression or 6)
+function core.get_globals_to_transfer()
+	local all = {
+		registered_items = copy_filtering(core.registered_items),
+		registered_aliases = core.registered_aliases,
+	}
+	return all
 end

@@ -1,21 +1,13 @@
-# Locate Irrlicht or IrrlichtMt headers on system.
+# Locate IrrlichtMt headers on system.
 
-foreach(libname IN ITEMS IrrlichtMt Irrlicht)
-	string(TOLOWER "${libname}" libname2)
-
-	find_path(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
-		DOC "Path to the directory with IrrlichtMt includes"
-		PATHS
-		/usr/local/include/${libname2}
-		/usr/include/${libname2}
-		/system/develop/headers/${libname2} #Haiku
-		PATH_SUFFIXES "include/${libname2}"
-	)
-
-	if(IRRLICHT_INCLUDE_DIR)
-		break()
-	endif()
-endforeach()
+find_path(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
+	DOC "Path to the directory with IrrlichtMt includes"
+	PATHS
+	/usr/local/include/irrlichtmt
+	/usr/include/irrlichtmt
+	/system/develop/headers/irrlichtmt #Haiku
+	PATH_SUFFIXES "include/irrlichtmt"
+)
 
 # Handholding for users
 if(IRRLICHT_INCLUDE_DIR AND (NOT IS_DIRECTORY "${IRRLICHT_INCLUDE_DIR}" OR

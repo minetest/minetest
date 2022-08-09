@@ -640,7 +640,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 
 	v3f pos = checkFloatPos(L, 1);
 	const char *name = luaL_checkstring(L, 2);
-	const char *staticdata = luaL_optstring(L, 3, "");
+	std::string staticdata = readParam<std::string>(L, 3, "");
 
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
