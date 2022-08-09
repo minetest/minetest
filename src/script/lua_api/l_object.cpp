@@ -1366,7 +1366,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_newtable(L);
 	if (player == nullptr)
 		return 1;
-	
+
 	const PlayerControl &control = player->getPlayerControl();
 	lua_pushboolean(L, control.direction_keys & (1 << 0));
 	lua_setfield(L, -2, "up");
@@ -2082,10 +2082,9 @@ int ObjectRef::l_set_stars(lua_State *L)
 
 		star_params.scale = getfloatfield_default(L, 2,
 			"scale", star_params.scale);
+		star_params.day_opacity = getfloatfield_default(L, 2,
+			"day_opacity", star_params.day_opacity);
 	}
-
-	star_params.day_opacity = getfloatfield_default(L, 2,
-		"day_opacity", star_params.day_opacity);
 
 	getServer(L)->setStars(player, star_params);
 	return 0;
