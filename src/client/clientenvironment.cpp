@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "content_cao.h"
+#include "porting.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
@@ -512,4 +513,9 @@ void ClientEnvironment::getSelectedActiveObjects(
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}
+}
+
+void ClientEnvironment::updateFrameTime()
+{
+	m_frame_time = porting::getTimeMs();
 }
