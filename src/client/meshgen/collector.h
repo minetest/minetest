@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include <vector>
 #include "irrlichttypes.h"
+#include "irr_v3d.h"
 #include <S3DVertex.h>
 #include "client/tile.h"
 
@@ -40,9 +41,10 @@ struct MeshCollector
 	// bounding sphere radius and center
 	f32 m_bounding_radius_sq = 0.0f;
 	v3f m_center_pos;
+	v3f offset;
 
 	// center_pos: pos to use for bounding-sphere, in BS-space
-	MeshCollector(const v3f center_pos) : m_center_pos(center_pos) {}
+	MeshCollector(const v3f center_pos, v3f _offset) : m_center_pos(center_pos), offset(_offset) {}
 
 	// clang-format off
 	void append(const TileSpec &material,

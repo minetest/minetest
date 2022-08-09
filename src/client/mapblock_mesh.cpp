@@ -1226,7 +1226,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	MeshCollector collector(m_bounding_sphere_center);
+	v3f offset = intToFloat((data->m_blockpos - data->m_blockpos / 8 * 8) * MAP_BLOCKSIZE, BS);
+	MeshCollector collector(m_bounding_sphere_center, offset);
 
 	{
 		// avg 0ms (100ms spikes when loading textures the first time)
