@@ -16,7 +16,7 @@ variables:
   stage: build
   before_script:
    - apt-get update
-   - DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
+   - DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev xorg-dev
   script:
     - git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
     - mkdir build && cd build
@@ -61,28 +61,6 @@ variables:
 ##
 ## Debian
 ##
-
-# Stretch
-
-build:debian-9:
- extends: .build_template
- image: debian:9
-
-package:debian-9:
-  extends: .debpkg_template
-  image: debian:9
-  needs:
-    - build:debian-9
-  variables:
-    JSONCPP_PKG: libjsoncpp1
-    LEVELDB_PKG: libleveldb1v5
-    JPEG_PKG: libjpeg62-turbo
-
-deploy:debian-9:
-  extends: .debpkg_install
-  image: debian:9
-  needs:
-    - package:debian-9
 
 # Buster
 
@@ -267,7 +245,7 @@ package:appimage-client:
   stage: package
   image: appimagecrafters/appimage-builder
   needs:
-    - build:ubuntu-18.04
+    - build:ubuntu-20.04
   before_script:
     - apt-get update -y
     - apt-get install -y git
