@@ -131,6 +131,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getNoiseParams("mgfractal_np_cave1",        np_cave1);
 	settings->getNoiseParams("mgfractal_np_cave2",        np_cave2);
 	settings->getNoiseParams("mgfractal_np_dungeons",     np_dungeons);
+	iterations = std::max<u16>(iterations, 1);
 }
 
 

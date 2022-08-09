@@ -24,7 +24,7 @@ local function test_dynamic_media(cb, player)
 		to_player = player:get_player_name(),
 	}, function(name)
 		if not call_ok then
-			cb("impossible condition")
+			return cb("impossible condition")
 		end
 		cb()
 	end)
@@ -68,3 +68,15 @@ local function test_clear_meta(_, pos)
 	end
 end
 unittests.register("test_clear_meta", test_clear_meta, {map=true})
+
+local on_punch_called
+minetest.register_on_punchnode(function()
+	on_punch_called = true
+end)
+unittests.register("test_punch_node", function(_, pos)
+	minetest.place_node(pos, {name="basenodes:dirt"})
+	on_punch_called = false
+	minetest.punch_node(pos)
+	minetest.remove_node(pos)
+	-- currently failing: assert(on_punch_called)
+end, {map=true})

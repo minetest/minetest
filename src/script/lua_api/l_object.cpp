@@ -1858,6 +1858,8 @@ void ObjectRef::set_stars(lua_State *L, int table_index, RemotePlayer *player)
 
 		star_params.scale = getfloatfield_default(L, -1,
 			"scale", star_params.scale);
+		star_params.day_opacity = getfloatfield_default(L, -1,
+			"day_opacity", star_params.day_opacity);
 	}
 
 	getServer(L)->setStars(player, star_params);
@@ -1989,6 +1991,8 @@ static void push_stars(lua_State *L, const StarParams &star_params)
 	lua_setfield(L, -2, "star_color");
 	lua_pushnumber(L, star_params.scale);
 	lua_setfield(L, -2, "scale");
+	lua_pushnumber(L, star_params.day_opacity);
+	lua_setfield(L, -2, "day_opacity");
 }
 
 static void push_clouds(lua_State *L, const CloudParams &cloud_params)

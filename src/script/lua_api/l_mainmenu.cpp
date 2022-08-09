@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/renderingengine.h"
 #include "network/networkprotocol.h"
-
+#include "content/mod_configuration.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, std::string name)
@@ -405,6 +405,100 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 		}
 		lua_setfield(L, -2, "optional_depends");
 	}
+
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
+{
+	std::string worldpath = luaL_checkstring(L, 1);
+
+	ModConfiguration modmgr;
+
+	// Add all game mods
+	SubgameSpec gamespec = findWorldSubgame(worldpath);
+	modmgr.addGameMods(gamespec);
+	modmgr.addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
+
+	// Add user-configured mods
+	std::vector<ModSpec> modSpecs;
+
+	luaL_checktype(L, 2, LUA_TTABLE);
+
+	lua_pushnil(L);
+	while (lua_next(L, 2)) {
+		// Ignore non-string keys
+		if (lua_type(L, -2) != LUA_TSTRING) {
+			throw LuaError(
+					"Unexpected non-string key in table passed to "
+					"core.check_mod_configuration");
+		}
+
+		std::string modpath = luaL_checkstring(L, -1);
+		lua_pop(L, 1);
+		std::string virtual_path = lua_tostring(L, -1);
+
+		modSpecs.emplace_back();
+		ModSpec &spec = modSpecs.back();
+		spec.name = fs::GetFilenameFromPath(modpath.c_str());
+		spec.path = modpath;
+		spec.virtual_path = virtual_path;
+		if (!parseModContents(spec)) {
+			throw LuaError("Not a mod!");
+		}
+	}
+
+	modmgr.addMods(modSpecs);
+	try {
+		modmgr.checkConflictsAndDeps();
+	} catch (const ModError &err) {
+		errorstream << err.what() << std::endl;
+
+		lua_newtable(L);
+
+		lua_pushboolean(L, false);
+		lua_setfield(L, -2, "is_consistent");
+
+		lua_newtable(L);
+		lua_setfield(L, -2, "unsatisfied_mods");
+
+		lua_newtable(L);
+		lua_setfield(L, -2, "satisfied_mods");
+
+		lua_pushstring(L, err.what());
+		lua_setfield(L, -2, "error_message");
+		return 1;
+	}
+
+
+	lua_newtable(L);
+
+	lua_pushboolean(L, modmgr.isConsistent());
+	lua_setfield(L, -2, "is_consistent");
+
+	lua_newtable(L);
+	int top = lua_gettop(L);
+	unsigned int index = 1;
+	for (const auto &spec : modmgr.getUnsatisfiedMods()) {
+		lua_pushnumber(L, index);
+		push_mod_spec(L, spec, true);
+		lua_settable(L, top);
+		index++;
+	}
+
+	lua_setfield(L, -2, "unsatisfied_mods");
+
+	lua_newtable(L);
+	top = lua_gettop(L);
+	index = 1;
+	for (const auto &spec : modmgr.getMods()) {
+		lua_pushnumber(L, index);
+		push_mod_spec(L, spec, false);
+		lua_settable(L, top);
+		index++;
+	}
+	lua_setfield(L, -2, "satisfied_mods");
 
 	return 1;
 }
@@ -921,6 +1015,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_worlds);
 	API_FCT(get_games);
 	API_FCT(get_content_info);
+	API_FCT(check_mod_configuration);
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(show_keys_menu);

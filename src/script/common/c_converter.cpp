@@ -18,8 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
+#include <lua.h>
+#include <lauxlib.h>
 }
 
 #include "util/numeric.h"
@@ -29,26 +29,27 @@ extern "C" {
 #include "common/c_internal.h"
 #include "constants.h"
 #include <set>
+#include <cmath>
 
 
-#define CHECK_TYPE(index, name, type) { \
+#define CHECK_TYPE(index, name, type) do { \
 		int t = lua_type(L, (index)); \
 		if (t != (type)) { \
 			throw LuaError(std::string("Invalid ") + (name) + \
 				" (expected " + lua_typename(L, (type)) + \
 				" got " + lua_typename(L, t) + ")."); \
 		} \
-	}
-#define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
-#define CHECK_FLOAT_RANGE(value, name) \
-if (value < F1000_MIN || value > F1000_MAX) { \
-	std::ostringstream error_text; \
-	error_text << "Invalid float vector dimension range '" name "' " << \
-	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
-	" got " << value << ")." << std::endl; \
-	throw LuaError(error_text.str()); \
-}
-#define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
+	} while(0)
+
+#define CHECK_FLOAT(value, name) do {\
+		if (std::isnan(value) || std::isinf(value)) { \
+			throw LuaError("Invalid float value for '" name \
+				"' (NaN or infinity)"); \
+		} \
+	} while (0)
+
+#define CHECK_POS_COORD(name) CHECK_TYPE(-1, "vector coordinate " name, LUA_TNUMBER)
+#define CHECK_POS_TAB(index) CHECK_TYPE(index, "vector", LUA_TTABLE)
 
 
 /**
@@ -58,6 +59,22 @@ static void set_vector_metatable(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
 	lua_setmetatable(L, -2);
+}
+
+// Retrieve an integer vector where all components are optional
+template<class T>
+static bool getv3intfield(lua_State *L, int index,
+		const char *fieldname, T &result)
+{
+	lua_getfield(L, index, fieldname);
+	bool got = false;
+	if (lua_istable(L, -1)) {
+		got |= getintfield(L, -1, "x", result.X);
+		got |= getintfield(L, -1, "y", result.Y);
+		got |= getintfield(L, -1, "z", result.Z);
+	}
+	lua_pop(L, 1);
+	return got;
 }
 
 void push_v3f(lua_State *L, v3f p)
@@ -145,10 +162,12 @@ v2f check_v2f(lua_State *L, int index)
 	lua_getfield(L, index, "x");
 	CHECK_POS_COORD("x");
 	p.X = lua_tonumber(L, -1);
+	CHECK_FLOAT(p.X, "x");
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	p.Y = lua_tonumber(L, -1);
+	CHECK_FLOAT(p.Y, "y");
 	lua_pop(L, 1);
 	return p;
 }
@@ -176,17 +195,17 @@ v3f check_v3f(lua_State *L, int index)
 	lua_getfield(L, index, "x");
 	CHECK_POS_COORD("x");
 	pos.X = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.X, "x")
+	CHECK_FLOAT(pos.X, "x");
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	pos.Y = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Y, "y")
+	CHECK_FLOAT(pos.Y, "y");
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
 	CHECK_POS_COORD("z");
 	pos.Z = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Z, "z")
+	CHECK_FLOAT(pos.Z, "z");
 	lua_pop(L, 1);
 	return pos;
 }
@@ -214,17 +233,17 @@ v3d check_v3d(lua_State *L, int index)
 	lua_getfield(L, index, "x");
 	CHECK_POS_COORD("x");
 	pos.X = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.X, "x")
+	CHECK_FLOAT(pos.X, "x");
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	pos.Y = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Y, "y")
+	CHECK_FLOAT(pos.Y, "y");
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
 	CHECK_POS_COORD("z");
 	pos.Z = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Z, "z")
+	CHECK_FLOAT(pos.Z, "z");
 	lua_pop(L, 1);
 	return pos;
 }

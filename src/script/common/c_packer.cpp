@@ -568,7 +568,7 @@ void script_dump_packed(const PackedValue *val)
 				printf("table(%d, %d)", i.uidata1, i.uidata2);
 				break;
 			case LUA_TFUNCTION:
-				printf("function(%d byte)", i.sdata.size());
+				printf("function(%lu byte)", i.sdata.size());
 				break;
 			case LUA_TUSERDATA:
 				printf("userdata %s %p", i.sdata.c_str(), i.ptrdata);

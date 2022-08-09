@@ -14,7 +14,8 @@ android {
 						"versionMajor=${versionMajor}",
 						"versionMinor=${versionMinor}",
 						"versionPatch=${versionPatch}",
-						"versionExtra=${versionExtra}"
+						"versionExtra=${versionExtra}",
+						"developmentBuild=${developmentBuild}"
 			}
 		}
 	}

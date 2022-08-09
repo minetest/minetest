@@ -35,6 +35,13 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	screensize = driver->getScreenSize();
 	virtual_size = screensize;
 
+	// disable if unsupported
+	if (g_settings->getBool("enable_dynamic_shadows") && (
+		g_settings->get("video_driver") != "opengl" ||
+		!g_settings->getBool("enable_shaders"))) {
+		g_settings->setBool("enable_dynamic_shadows", false);
+	}
+
 	if (g_settings->getBool("enable_shaders") &&
 			g_settings->getBool("enable_dynamic_shadows")) {
 		shadow_renderer = new ShadowRenderer(device, client);

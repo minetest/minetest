@@ -99,11 +99,7 @@ struct MediaInfo
 // Combines the pure sound (SimpleSoundSpec) with positional information
 struct ServerPlayingSound
 {
-	enum Type {
-		SSP_LOCAL,
-		SSP_POSITIONAL,
-		SSP_OBJECT
-	} type = SSP_LOCAL;
+	SoundLocation type = SoundLocation::Local;
 
 	float gain = 1.0f; // for amplification of the base sound
 	float max_hear_distance = 32 * BS;

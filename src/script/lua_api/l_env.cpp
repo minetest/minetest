@@ -1219,7 +1219,8 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 	sortBoxVerticies(bpmin, bpmax);
 
 	size_t num_blocks = VoxelArea(bpmin, bpmax).getVolume();
-	assert(num_blocks != 0);
+	if (num_blocks == 0)
+		return 0;
 
 	if (lua_isfunction(L, 3)) {
 		callback = LuaEmergeAreaCallback;

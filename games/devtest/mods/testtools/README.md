@@ -40,6 +40,14 @@ Usage:
 
 * Punch: Open node metadata editor
 
+## Item Meta Editor
+Edit and view metadata of items.
+
+Usage:
+
+* Place/Punch: Opens item metadata editor of the item in the next
+               inventory slot from the wielded item
+
 ## Entity Rotator
 Changes the entity rotation (with `set_rotation`).
 

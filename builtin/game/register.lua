@@ -1,4 +1,4 @@
--- Minetest: builtin/misc_register.lua
+-- Minetest: builtin/register.lua
 
 local S = core.get_translator("__builtin")
 

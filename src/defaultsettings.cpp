@@ -335,6 +335,12 @@ void set_default_settings()
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, desktop_default");
 #endif
 
+	settings->setDefault("update_information_url", "https://www.minetest.net/release_info.json");
+#if ENABLE_UPDATE_CHECKER
+	settings->setDefault("update_last_checked", "");
+#else
+	settings->setDefault("update_last_checked", "disabled");
+#endif
 
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
@@ -479,7 +485,6 @@ void set_default_settings()
 	settings->setDefault("emergequeue_limit_generate", "16");
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
-	settings->setDefault("fps_max", "30");
 	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("map_compression_level_disk", "-1");

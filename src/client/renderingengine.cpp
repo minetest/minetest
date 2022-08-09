@@ -86,8 +86,12 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screen_w = g_settings->getU16("screen_w");
-	u16 screen_h = g_settings->getU16("screen_h");
+#ifdef __ANDROID__
+	u16 screen_w = 0, screen_h = 0;
+#else
+	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
+	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
+#endif
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
@@ -598,7 +602,7 @@ static float calcDisplayDensity()
 float RenderingEngine::getDisplayDensity()
 {
 	static float cached_display_density = calcDisplayDensity();
-	return cached_display_density * g_settings->getFloat("display_density_factor");
+	return std::max(cached_display_density * g_settings->getFloat("display_density_factor"), 0.5f);
 }
 
 #elif defined(_WIN32)
@@ -626,14 +630,15 @@ float RenderingEngine::getDisplayDensity()
 		display_density = calcDisplayDensity(get_video_driver());
 		cached = true;
 	}
-	return display_density * g_settings->getFloat("display_density_factor");
+	return std::max(display_density * g_settings->getFloat("display_density_factor"), 0.5f);
 }
 
 #else
 
 float RenderingEngine::getDisplayDensity()
 {
-	return (g_settings->getFloat("screen_dpi") / 96.0) * g_settings->getFloat("display_density_factor");
+	return std::max(g_settings->getFloat("screen_dpi") / 96.0f *
+		g_settings->getFloat("display_density_factor"), 0.5f);
 }
 
 #endif

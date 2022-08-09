@@ -1388,11 +1388,10 @@ HUD element types
 -----------------
 
 The position field is used for all element types.
-
 To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
-The name field is not yet used, but should contain a description of what the
+The `name` field is not yet used, but should contain a description of what the
 HUD element represents.
 
 The `direction` field is the direction in which something is drawn.
@@ -1425,10 +1424,9 @@ Supports negative values. By convention, the following values are recommended:
 *   100: Temporary text messages or notification icons
 *  1000: Full-screen effects such as full-black screen or credits.
          This includes effects that cover the entire screen
-* Other: If your HUD element doesn't fit into any category, pick a number
-         between the suggested values
 
-
+If your HUD element doesn't fit into any category, pick a number
+between the suggested values
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
@@ -1458,6 +1456,8 @@ Displays text on the HUD.
 * `offset`: offset in pixels from position.
 * `size`: size of the text.
   The player-set font size is multiplied by size.x (y value isn't used).
+* `style`: determines font style
+  Bitfield with 1 = bold, 2 = italic, 4 = monospace
 
 ### `statbar`
 
@@ -1480,7 +1480,7 @@ Displays a horizontal bar made up of half-images with an optional background.
 * `text`: The name of the inventory list to be displayed.
 * `number`: Number of items in the inventory to be displayed.
 * `item`: Position of item that is selected.
-* `direction`
+* `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
 
 ### `waypoint`
@@ -1524,7 +1524,7 @@ Displays an image oriented or translated according to current heading direction.
 * `text`: The name of the texture to use.
 * `alignment`: The alignment of the image.
 * `offset`: Offset in pixels from position.
-* `dir`: How the image is rotated/translated:
+* `direction`: How the image is rotated/translated:
   * 0 - Rotate as heading direction
   * 1 - Rotate in reverse direction
   * 2 - Translate as landscape direction
@@ -2255,7 +2255,7 @@ player named `<name>`.
 
 When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
-For coloured text you can use `minetest.colorize`.
+For colored text you can use `minetest.colorize`.
 
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
@@ -2310,6 +2310,8 @@ Version History
   * Allow dropdown indexing events
 * Formspec version 5 (5.5.0):
   * Added padding[] element
+* Formspec version 6 (5.6.0):
+  * Add nine-slice images, animated_image, and fgimg_middle
 
 Elements
 --------
@@ -2432,7 +2434,7 @@ Elements
 
 ### `listring[<inventory location>;<list name>]`
 
-* Allows to create a ring of inventory lists
+* Appends to an internal ring of inventory lists.
 * Shift-clicking on items in one element of the ring
   will send them to the next inventory list inside the ring
 * The first occurrence of an element inside the ring will
@@ -2474,20 +2476,25 @@ Elements
 * `bgcolor` tooltip background color as `ColorString` (optional)
 * `fontcolor` tooltip font color as `ColorString` (optional)
 
-### `image[<X>,<Y>;<W>,<H>;<texture name>]`
+### `image[<X>,<Y>;<W>,<H>;<texture name>;<middle>]`
 
-* Show an image
+* Show an image.
+* `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
+    * Requires formspec version >= 6.
+    * See `background9[]` documentation for more information.
 
-### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>]`
+### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>;<middle>]`
 
 * Show an animated image. The image is drawn like a "vertical_frames" tile
-    animation (See [Tile animation definition]), but uses a frame count/duration
-    for simplicity
+  animation (See [Tile animation definition]), but uses a frame count/duration for simplicity
 * `name`: Element name to send when an event occurs. The event value is the index of the current frame.
 * `texture name`: The image to use.
 * `frame count`: The number of frames animating the image.
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
-* `frame start` (Optional): The index of the frame to start on. Default `1`.
+* `frame start` (optional): The index of the frame to start on. Default `1`.
+* `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
+    * Requires formspec version >= 6.
+    * See `background9[]` documentation for more information.
 
 ### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
 
@@ -2545,8 +2552,6 @@ Elements
         will be added to the width and height of the texture, allowing it to be used as the
         distance from the far end.
     * All numbers in middle are integers.
-* Example for formspec 8x4 in 16x resolution:
-  image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 * Available since formspec version 2
@@ -3103,6 +3108,8 @@ Some types may inherit styles from parent types.
         * This is deprecated, use states instead.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
+    * fgimg_middle - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
     * sound - a sound to be played when triggered.
 * scrollbar
@@ -3648,6 +3655,9 @@ Translations
 
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
+
+Consider using the tool [update_translations](https://github.com/minetest-tools/update_translations)
+to generate and update translation files automatically from the Lua source.
 
 Translating a string
 --------------------
@@ -4510,26 +4520,26 @@ generated chunk by the current mapgen.
 
 Returns a table mapping requested generation notification types to arrays of
 positions at which the corresponding generated structures are located within
-the current chunk. To set the capture of positions of interest to be recorded
-on generate, use `minetest.set_gen_notify()`.
-For decorations, the returned positions are the ground surface 'place_on'
-nodes, not the decorations themselves. A 'simple' type decoration is often 1
-node above the returned position and possibly displaced by 'place_offset_y'.
+the current chunk. To enable the capture of positions of interest to be recorded
+call `minetest.set_gen_notify()` first.
 
-Possible fields of the table returned are:
+Possible fields of the returned table are:
 
-* `dungeon`
-* `temple`
+* `dungeon`: bottom center position of dungeon rooms
+* `temple`: as above but for desert temples (mgv6 only)
 * `cave_begin`
 * `cave_end`
 * `large_cave_begin`
 * `large_cave_end`
-* `decoration`
+* `decoration#id` (see below)
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
-numeric unique decoration ID as returned by `minetest.get_decoration_id`.
+numeric unique decoration ID as returned by `minetest.get_decoration_id()`.
+For example, `decoration#123`.
 
-
+The returned positions are the ground surface 'place_on' nodes,
+not the decorations themselves. A 'simple' type decoration is often 1
+node above the returned position and possibly displaced by 'place_offset_y'.
 
 
 Registered entities
@@ -4846,6 +4856,11 @@ Utilities
           abm_min_max_y = true,
           -- dynamic_add_media supports passing a table with options (5.5.0)
           dynamic_add_media_table = true,
+          -- particlespawners support texpools and animation of properties,
+          -- particle textures support smooth fade and scale animations, and
+          -- sprite-sheet particle animations can by synced to the lifetime
+          -- of individual particles (5.6.0)
+          particlespawner_tweenable = true,
           -- allows get_sky to return a table instead of separate values (5.6.0)
           get_sky_as_table = true,
       }
@@ -4911,6 +4926,7 @@ Utilities
     * `string`: Simple version, eg, "1.2.3-dev"
     * `hash`: Full git version (only set if available),
       eg, "1.2.3-dev-01234567-dirty".
+    * `is_dev`: Boolean value indicating whether it's a development build
   Use this for informational purposes only. The information in the returned
   table does not represent the capabilities of the engine, nor is it
   reliable or verifiable. Compatible forks will have a different name and
@@ -5074,7 +5090,7 @@ Call these functions only at load time!
     * Called when a node is punched
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world. Modifying nodes inside the area
-      is a bit faster than usually.
+      is a bit faster than usual.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
@@ -6812,6 +6828,21 @@ Lua back to the engine.
 Doing so is much less error-prone and you will never need to wonder if the
 object you are working with still exists.
 
+### Attachments
+
+It is possible to attach objects to other objects (`set_attach` method).
+
+When an object is attached, it is positioned relative to the parent's position
+and rotation. `get_pos` and `get_rotation` will always return the parent's
+values and changes via their setter counterparts are ignored.
+
+To change position or rotation call `set_attach` again with the new values.
+
+**Note**: Just like model dimensions, the relative position in `set_attach`
+must be multiplied by 10 compared to world positions.
+
+It is also possible to attach to a bone of the parent object. In that case the
+child will follow movement and rotation of that bone.
 
 ### Methods
 
@@ -6864,12 +6895,13 @@ object you are working with still exists.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
 * `set_attach(parent[, bone, position, rotation, forced_visible])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
-      Default `{x=0, y=0, z=0}`
+    * `parent`: `ObjectRef` to attach to
+    * `bone`: default `""` (the root bone)
+    * `position`: relative position, default `{x=0, y=0, z=0}`
+    * `rotation`: relative rotation in degrees, default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
-       should appear in first person. Default `false`.
+       should appear in first person, default `false`.
+    * Please also read the [Attachments] section above.
     * This command may fail silently (do nothing) when it would result
       in circular attachments.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible,
@@ -7050,8 +7082,8 @@ object you are working with still exists.
 * `hud_remove(id)`: remove the HUD element of the specified id
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
-    * element `stat` values:
-      `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
+    * `stat` supports the same keys as in the hud definition table except for
+      `"hud_elem_type"`.
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
@@ -7211,6 +7243,9 @@ object you are working with still exists.
     * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
+        * `day_opacity`: Float for maximum opacity of stars at day.
+            No effect if `visible` is false.
+            (default: 0.0; maximum: 1.0; minimum: 0.0)
         * `count`: Integer number to set the number of stars in
             the skybox. Only applies to `"skybox"` and `"regular"` sky types.
             (default: `1000`)
@@ -7743,12 +7778,12 @@ gets activated (not loaded!)
         -- Definitions with identical labels will be listed as one.
 
         name = "modname:replace_legacy_door",
-        -- String or table with node names to trigger on
+        -- Identifier of the LBM, should follow the modname:<whatever> convention
 
         nodenames = {"default:lava_source"},
         -- List of node names to trigger the LBM on.
-        -- Also non-registered nodes will work.
-        -- Groups (as of group:groupname) will work as well.
+        -- Names of non-registered nodes and groups (as group:groupname)
+        -- will work as well.
 
         run_at_every_load = false,
         -- Whether to run the LBM's action every time a block gets activated,
@@ -7992,7 +8027,6 @@ Used by `minetest.register_node`.
 
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
         -- Textures of node; +Y, -Y, +X, -X, +Z, -Z
-        -- Old field name was 'tile_images'.
         -- List can be shortened to needed length.
 
         overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6},
@@ -8004,7 +8038,6 @@ Used by `minetest.register_node`.
 
         special_tiles = {tile definition 1, Tile definition 2},
         -- Special textures of node; used rarely.
-        -- Old field name was 'special_materials'.
         -- List can be shortened to needed length.
 
         color = ColorSpec,
@@ -8292,7 +8325,7 @@ Used by `minetest.register_node`.
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
-        -- oldmeta is the NodeMetaRef of the oldnode before deletion.
+        -- oldmeta are the metadata fields (table) of the node before deletion.
         -- drops is a table of ItemStacks, so any metadata to be preserved can
         -- be added directly to one or more of the dropped items. See
         -- "ItemStackMetaRef".
@@ -8623,8 +8656,7 @@ performance and computing power the practical limit is much lower.
 
         node_dungeon_alt = "default:mossycobble",
         -- Node used for randomly-distributed alternative structure nodes.
-        -- If alternative structure nodes are not wanted leave this absent for
-        -- performance reasons.
+        -- If alternative structure nodes are not wanted leave this absent.
 
         node_dungeon_stair = "stairs:stair_cobble",
         -- Node used for dungeon stairs.
@@ -8906,30 +8938,30 @@ Used by `minetest.create_detached_inventory`.
 HUD Definition
 --------------
 
-See [HUD] section.
+Since most values have multiple different functions, please see the
+documentation in [HUD] section.
 
-Used by `Player:hud_add`. Returned by `Player:hud_get`.
+Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
     {
-        hud_elem_type = "image",  -- See HUD element types
+        hud_elem_type = "image",
         -- Type of element, can be "image", "text", "statbar", "inventory",
-        -- "compass" or "minimap"
+        -- "waypoint", "image_waypoint", "compass" or "minimap"
 
         position = {x=0.5, y=0.5},
-        -- Left corner position of element
+        -- Top left corner position of element
 
         name = "<name>",
 
-        scale = {x = 2, y = 2},
+        scale = {x = 1, y = 1},
 
         text = "<text>",
 
         text2 = "<text>",
 
-        number = 2,
+        number = 0,
 
-        item = 3,
-        -- Selected item in inventory. 0 for no item selected.
+        item = 0,
 
         direction = 0,
         -- Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
@@ -8938,14 +8970,14 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         offset = {x=0, y=0},
 
-        size = { x=100, y=100 },
-        -- Size of element in pixels
+        world_pos = {x=0, y=0, z=0},
+
+        size = {x=0, y=0},
 
         z_index = 0,
-        -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
+        -- Z index: lower z-index HUDs are displayed behind higher z-index HUDs
 
         style = 0,
-        -- For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
     }
 
 Particle definition
@@ -8985,6 +9017,8 @@ Used by `minetest.add_particle`.
 
         texture = "image.png",
         -- The texture of the particle
+        -- v5.6.0 and later: also supports the table format described in the
+        -- following section
 
         playername = "singleplayer",
         -- Optional, if specified spawns particle only on the player's client
@@ -9006,6 +9040,12 @@ Used by `minetest.add_particle`.
         -- If set to a valid number 1-6, specifies the tile from which the
         -- particle texture is picked.
         -- Otherwise, the default behavior is used. (currently: any random tile)
+
+        drag = {x=0, y=0, z=0},
+        -- v5.6.0 and later: Optional drag value, consult the following section
+
+        bounce = {min = ..., max = ..., bias = 0},
+        -- v5.6.0 and later: Optional bounce range, consult the following section
     }
 
 
@@ -9014,7 +9054,20 @@ Used by `minetest.add_particle`.
 
 Used by `minetest.add_particlespawner`.
 
+Before v5.6.0, particlespawners used a different syntax and had a more limited set
+of features. Definition fields that are the same in both legacy and modern versions
+are shown in the next listing, and the fields that are used by legacy versions are
+shown separated by a comment; the modern fields are too complex to compactly
+describe in this manner and are documented after the listing.
+
+The older syntax can be used in combination with the newer syntax (e.g. having
+`minpos`, `maxpos`, and `pos` all set) to support older servers. On newer servers,
+the new syntax will override the older syntax; on older servers, the newer syntax
+will be ignored.
+
     {
+        -- Common fields (same name and meaning in both new and legacy syntax)
+
         amount = 1,
         -- Number of particles spawned over the time period `time`.
 
@@ -9022,22 +9075,6 @@ Used by `minetest.add_particlespawner`.
         -- Lifespan of spawner in seconds.
         -- If time is 0 spawner has infinite lifespan and spawns the `amount` on
         -- a per-second basis.
-
-        minpos = {x=0, y=0, z=0},
-        maxpos = {x=0, y=0, z=0},
-        minvel = {x=0, y=0, z=0},
-        maxvel = {x=0, y=0, z=0},
-        minacc = {x=0, y=0, z=0},
-        maxacc = {x=0, y=0, z=0},
-        minexptime = 1,
-        maxexptime = 1,
-        minsize = 1,
-        maxsize = 1,
-        -- The particles' properties are random values between the min and max
-        -- values.
-        -- applies to: pos, velocity, acceleration, expirationtime, size
-        -- If `node` is set, min and maxsize can be set to 0 to spawn
-        -- randomly-sized particles (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collide with `walkable` nodes and, depending on the
@@ -9067,8 +9104,11 @@ Used by `minetest.add_particlespawner`.
 
         animation = {Tile Animation definition},
         -- Optional, specifies how to animate the particles' texture
+        -- v5.6.0 and later: set length to -1 to sychronize the length
+        -- of the animation with the expiration time of individual particles.
+        -- (-2 causes the animation to be played twice, and so on)
 
-        glow = 0
+        glow = 0,
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
 
@@ -9082,7 +9122,306 @@ Used by `minetest.add_particlespawner`.
         -- If set to a valid number 1-6, specifies the tile from which the
         -- particle texture is picked.
         -- Otherwise, the default behavior is used. (currently: any random tile)
+
+        -- Legacy definition fields
+
+        minpos = {x=0, y=0, z=0},
+        maxpos = {x=0, y=0, z=0},
+        minvel = {x=0, y=0, z=0},
+        maxvel = {x=0, y=0, z=0},
+        minacc = {x=0, y=0, z=0},
+        maxacc = {x=0, y=0, z=0},
+        minexptime = 1,
+        maxexptime = 1,
+        minsize = 1,
+        maxsize = 1,
+        -- The particles' properties are random values between the min and max
+        -- values.
+        -- applies to: pos, velocity, acceleration, expirationtime, size
+        -- If `node` is set, min and maxsize can be set to 0 to spawn
+        -- randomly-sized particles (just like actual node dig particles).
     }
+
+### Modern definition fields
+
+After v5.6.0, spawner properties can be defined in several different ways depending
+on the level of control you need. `pos` for instance can be set as a single vector,
+in which case all particles will appear at that exact point throughout the lifetime
+of the spawner. Alternately, it can be specified as a min-max pair, specifying a
+cubic range the particles can appear randomly within. Finally, some properties can
+be animated by suffixing their key with `_tween` (e.g. `pos_tween`) and supplying
+a tween table.
+
+The following definitions are all equivalent, listed in order of precedence from
+lowest (the legacy syntax) to highest (tween tables). If multiple forms of a
+property definition are present, the highest-precidence form will be selected
+and all lower-precedence fields will be ignored, allowing for graceful
+degradation in older clients).
+
+    {
+      -- old syntax
+      maxpos = {x = 0, y = 0, z = 0},
+      minpos = {x = 0, y = 0, z = 0},
+
+      -- absolute value
+      pos = 0,
+      -- all components of every particle's position vector will be set to this
+      -- value
+
+      -- vec3
+      pos = vector.new(0,0,0),
+      -- all particles will appear at this exact position throughout the lifetime
+      -- of the particlespawner
+
+      -- vec3 range
+      pos = {
+            -- the particle will appear at a position that is picked at random from
+            -- within a cubic range
+
+            min = vector.new(0,0,0),
+            -- `min` is the minimum value this property will be set to in particles
+            -- spawned by the generator
+
+            max = vector.new(0,0,0),
+            -- `max` is the minimum value this property will be set to in particles
+            -- spawned by the generator
+
+            bias = 0,
+            -- when `bias` is 0, all random values are exactly as likely as any
+            -- other. when it is positive, the higher it is, the more likely values
+            -- will appear towards the minimum end of the allowed spectrum. when
+            -- it is negative, the lower it is, the more likely values will appear
+            -- towards the maximum end of the allowed spectrum. the curve is
+            -- exponential and there is no particular maximum or minimum value
+        },
+
+        -- tween table
+        pos_tween = {...},
+        -- a tween table should consist of a list of frames in the same form as the
+        -- untweened pos property above, which the engine will interpolate between,
+        -- and optionally a number of properties that control how the interpolation
+        -- takes place. currently **only two frames**, the first and the last, are
+        -- used, but extra frames are accepted for the sake of forward compatibility.
+        -- any of the above definition styles can be used here as well in any combination
+        -- supported by the property type
+
+        pos_tween = {
+            style = "fwd",
+            -- linear animation from first to last frame (default)
+            style = "rev",
+            -- linear animation from last to first frame
+            style = "pulse",
+            -- linear animation from first to last then back to first again
+            style = "flicker",
+            -- like "pulse", but slightly randomized to add a bit of stutter
+
+            reps = 1,
+            -- number of times the animation is played over the particle's lifespan
+
+            start = 0.0,
+            -- point in the spawner's lifespan at which the animation begins. 0 is
+            -- the very beginning, 1 is the very end
+
+            -- frames can be defined in a number of different ways, depending on the
+            -- underlying type of the property. for now, all but the first and last
+            -- frame are ignored
+
+            -- frames
+
+                -- floats
+                0, 0,
+
+                -- vec3s
+                vector.new(0,0,0),
+                vector.new(0,0,0),
+
+                -- vec3 ranges
+                { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+                { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+
+                -- mixed
+                0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+        },
+    }
+
+All of the properties that can be defined in this way are listed in the next
+section, along with the datatypes they accept.
+
+#### List of particlespawner properties
+All of the properties in this list can be animated with `*_tween` tables
+unless otherwise specified. For example, `jitter` can be tweened by setting
+a `jitter_tween` table instead of (or in addition to) a `jitter` table/value.
+Types used are defined in the previous section.
+
+* vec3 range `pos`: the position at which particles can appear
+* vec3 range `vel`: the initial velocity of the particle
+* vec3 range `acc`: the direction and speed with which the particle
+  accelerates
+* vec3 range `jitter`: offsets the velocity of each particle by a random
+  amount within the specified range each frame. used to create Brownian motion.
+* vec3 range `drag`: the amount by which absolute particle velocity along
+  each axis is decreased per second.  a value of 1.0 means that the particle
+  will be slowed to a stop over the space of a second; a value of -1.0 means
+  that the particle speed will be doubled every second. to avoid interfering
+  with gravity provided by `acc`, a drag vector like `vector.new(1,0,1)` can
+  be used instead of a uniform value.
+* float range `bounce`: how bouncy the particles are when `collisiondetection`
+  is turned on. values less than or equal to `0` turn off particle bounce;
+  `1` makes the particles bounce without losing any velocity, and `2` makes
+  them double their velocity with every bounce.  `bounce` is not bounded but
+  values much larger than `1.0` probably aren't very useful.
+* float range `exptime`: the number of seconds after which the particle
+  disappears.
+* table `attract`: sets the birth orientation of particles relative to various
+  shapes defined in world coordinate space. this is an alternative means of
+  setting the velocity which allows particles to emerge from or enter into
+  some entity or node on the map, rather than simply being assigned random
+  velocity values within a range. the velocity calculated by this method will
+  be **added** to that specified by `vel` if `vel` is also set, so in most
+  cases **`vel` should be set to 0**. `attract` has the fields:
+  * string `kind`: selects the kind of shape towards which the particles will
+    be oriented. it must have one of the following values:
+    * `"none"`: no attractor is set and the `attractor` table is ignored
+    * `"point"`: the particles are attracted to a specific point in space.
+      use this also if you want a sphere-like effect, in combination with
+      the `radius` property.
+    * `"line"`: the particles are attracted to an (infinite) line passing
+      through the points `origin` and `angle`. use this for e.g. beacon
+      effects, energy beam effects, etc.
+    * `"plane"`: the particles are attracted to an (infinite) plane on whose
+      surface `origin` designates a point in world coordinate space. use this
+      for e.g. particles entering or emerging from a portal.
+  * float range `strength`: the speed with which particles will move towards
+    `attractor`. If negative, the particles will instead move away from that
+    point.
+  * vec3 `origin`: the origin point of the shape towards which particles will
+    initially be oriented. functions as an offset if `origin_attached` is also
+    set.
+  * vec3 `direction`: sets the direction in which the attractor shape faces. for
+    lines, this sets the angle of the line; e.g. a vector of (0,1,0) will
+    create a vertical line that passes through `origin`. for planes, `direction`
+    is the surface normal of an infinite plane on whose surface `origin` is
+    a point. functions as an offset if `direction_attached` is also set.
+  * entity `origin_attached`: allows the origin to be specified as an offset
+    from the position of an entity rather than a coordinate in world space.
+  * entity `direction_attached`: allows the direction to be specified as an offset
+    from the position of an entity rather than a coordinate in world space.
+  * bool `die_on_contact`: if true, the particles' lifetimes are adjusted so
+    that they will die as they cross the attractor threshold. this behavior
+    is the default but is undesirable for some kinds of animations; set it to
+    false to allow particles to live out their natural lives.
+* vec3 range `radius`: if set, particles will be arranged in a sphere around
+  `pos`. A constant can be used to create a spherical shell of particles, a
+  vector to create an ovoid shell, and a range to create a volume; e.g.
+  `{min = 0.5, max = 1, bias = 1}` will allow particles to appear between 0.5
+  and 1 nodes away from `pos` but will cluster them towards the center of the
+  sphere. Usually if `radius` is used, `pos` should be a single point, but it
+  can still be a range if you really know what you're doing (e.g. to create a
+  "roundcube" emitter volume).
+
+### Textures
+
+In versions before v5.6.0, particlespawner textures could only be specified as a single
+texture string. After v5.6.0, textures can now be specified as a table as well. This
+table contains options that allow simple animations to be applied to the texture.
+
+    texture = {
+        name = "mymod_particle_texture.png",
+        -- the texture specification string
+
+        alpha = 1.0,
+        -- controls how visible the particle is; at 1.0 the particle is fully
+        -- visible, at 0, it is completely invisible.
+
+        alpha_tween = {1, 0},
+        -- can be used instead of `alpha` to animate the alpha value over the
+        -- particle's lifetime. these tween tables work identically to the tween
+        -- tables used in particlespawner properties, except that time references
+        -- are understood with respect to the particle's lifetime, not the
+        -- spawner's. {1,0} fades the particle out over its lifetime.
+
+        scale = 1,
+        scale = {x = 1, y = 1},
+        -- scales the texture onscreen
+
+        scale_tween = {
+            {x = 1, y = 1},
+            {x = 0, y = 1},
+        },
+        -- animates the scale over the particle's lifetime. works like the
+        -- alpha_tween table, but can accept two-dimensional vectors as well as
+        -- integer values. the example value would cause the particle to shrink
+        -- in one dimension over the course of its life until it disappears
+
+        blend = "alpha",
+        -- (default) blends transparent pixels with those they are drawn atop
+        -- according to the alpha channel of the source texture. useful for
+        -- e.g. material objects like rocks, dirt, smoke, or node chunks
+        blend = "add",
+        -- adds the value of pixels to those underneath them, modulo the sources
+        -- alpha channel. useful for e.g. bright light effects like sparks or fire
+        blend = "screen",
+        -- like "add" but less bright. useful for subtler light effecs. note that
+        -- this is NOT formally equivalent to the "screen" effect used in image
+        -- editors and compositors, as it does not respect the alpha channel of
+        -- of the image being blended
+        blend = "sub",
+        -- the inverse of "add"; the value of the source pixel is subtracted from
+        -- the pixel underneath it. a white pixel will turn whatever is underneath
+        -- it black; a black pixel will be "transparent". useful for creating
+        -- darkening effects
+
+        animation = {Tile Animation definition},
+        -- overrides the particlespawner's global animation property for a single
+        -- specific texture
+    }
+
+Instead of setting a single texture definition, it is also possible to set a
+`texpool` property. A `texpool` consists of a list of possible particle textures.
+Every time a particle is spawned, the engine will pick a texture at random from
+the `texpool` and assign it as that particle's texture. You can also specify a
+`texture` in addition to a `texpool`; the `texture` value will be ignored on newer
+clients but will be sent to older (pre-v5.6.0) clients that do not implement
+texpools.
+
+    texpool = {
+        "mymod_particle_texture.png";
+        { name = "mymod_spark.png", fade = "out" },
+        {
+          name = "mymod_dust.png",
+          alpha = 0.3,
+          scale = 1.5,
+          animation = {
+                type = "vertical_frames",
+                aspect_w = 16, aspect_h = 16,
+
+                length = 3,
+                -- the animation lasts for 3s and then repeats
+                length = -3,
+                -- repeat the animation three times over the particle's lifetime
+                -- (post-v5.6.0 clients only)
+          },
+        },
+  }
+
+#### List of animatable texture properties
+
+While animated particlespawner values vary over the course of the particlespawner's
+lifetime, animated texture properties vary over the lifespans of the individual
+particles spawned with that texture. So a particle with the texture property
+
+    alpha_tween = {
+        0.0, 1.0,
+        style = "pulse",
+        reps = 4,
+    }
+
+would be invisible at its spawning, pulse visible four times throughout its
+lifespan, and then vanish again before expiring.
+
+* float `alpha` (0.0 - 1.0): controls the visibility of the texture
+* vec2 `scale`: controls the size of the displayed billboard onscreen. Its units
+  are multiples of the parent particle's assigned size (see the `size` property above)
 
 `HTTPRequest` definition
 ------------------------

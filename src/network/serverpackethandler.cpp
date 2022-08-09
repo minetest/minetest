@@ -108,8 +108,10 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// Use the highest version supported by both
 	u8 depl_serial_v = std::min(client_max, our_max);
 	// If it's lower than the lowest supported, give up.
+#if SER_FMT_VER_LOWEST_READ > 0
 	if (depl_serial_v < SER_FMT_VER_LOWEST_READ)
 		depl_serial_v = SER_FMT_VER_INVALID;
+#endif
 
 	if (depl_serial_v == SER_FMT_VER_INVALID) {
 		actionstream << "Server: A mismatched client tried to connect from " <<

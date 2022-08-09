@@ -38,9 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mesh.h"
 #include "nodedef.h"
-#include "serialization.h" // For decompressZlib
 #include "settings.h"
-#include "sound.h"
 #include "tool.h"
 #include "wieldmesh.h"
 #include <algorithm>
@@ -1199,7 +1197,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 	}
 
-	if (!getParent() && node && fabs(m_prop.automatic_rotate) > 0.001f) {
+	if (node && fabs(m_prop.automatic_rotate) > 0.001f) {
 		// This is the child node's rotation. It is only used for automatic_rotate.
 		v3f local_rot = node->getRotation();
 		local_rot.Y = modulo360f(local_rot.Y - dtime * core::RADTODEG *
@@ -1320,12 +1318,6 @@ void GenericCAO::updateTextures(std::string mod)
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
 
-	video::ITexture *shadow_texture = nullptr;
-	if (auto shadow = RenderingEngine::get_shadow_renderer())
-		shadow_texture = shadow->get_texture();
-
-	const u32 TEXTURE_LAYER_SHADOW = 3;
-
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
 			std::string texturestring = "no_texture.png";
@@ -1336,7 +1328,6 @@ void GenericCAO::updateTextures(std::string mod)
 			m_spritenode->getMaterial(0).MaterialTypeParam = 0.5f;
 			m_spritenode->setMaterialTexture(0,
 					tsrc->getTextureForMesh(texturestring));
-			m_spritenode->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 			// This allows setting per-material colors. However, until a real lighting
 			// system is added, the code below will have no effect. Once MineTest
@@ -1372,7 +1363,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
 				material.TextureLayer[0].Texture = texture;
-				material.TextureLayer[TEXTURE_LAYER_SHADOW].Texture = shadow_texture;
 				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setFlag(video::EMF_BACK_FACE_CULLING, m_prop.backface_culling);
@@ -1423,7 +1413,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(texturestring));
-				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 				material.getTextureMatrix(0).makeIdentity();
 
 				// This allows setting per-material colors. However, until a real lighting
@@ -1450,7 +1439,6 @@ void GenericCAO::updateTextures(std::string mod)
 				auto& material = m_meshnode->getMaterial(0);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(tname));
-				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1475,7 +1463,6 @@ void GenericCAO::updateTextures(std::string mod)
 				auto& material = m_meshnode->getMaterial(1);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(tname));
-				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest

@@ -349,7 +349,6 @@ public:
 	u16 getProtoVersion()
 	{ return m_proto_ver; }
 
-	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	bool m_simple_singleplayer_mode;
 
 	float mediaReceiveProgress();
@@ -492,6 +491,7 @@ private:
 	ParticleManager m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;
 	std::string m_address_name;
+	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
 	bool m_minimap_disabled_by_server = false;

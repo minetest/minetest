@@ -421,6 +421,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
 	Client *m_client;
 
 public:
@@ -455,6 +456,7 @@ public:
 		m_camera_offset_vertex("cameraOffset"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
+		m_texture_flags("textureFlags"),
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
@@ -524,9 +526,12 @@ public:
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 
-		SamplerLayer_t base_tex = 0, normal_tex = 1;
+		SamplerLayer_t base_tex = 0,
+				normal_tex = 1,
+				flags_tex = 2;
 		m_base_texture.set(&base_tex, services);
 		m_normal_texture.set(&normal_tex, services);
+		m_texture_flags.set(&flags_tex, services);
 	}
 };
 
@@ -841,7 +846,6 @@ private:
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
-	bool registration_confirmation_shown = false;
 
 	std::unique_ptr<GameUI> m_game_ui;
 	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
@@ -1905,7 +1909,7 @@ void Game::processKeyInput()
 		if (client->modsLoaded())
 			openConsole(0.2, L".");
 		else
-			m_game_ui->showStatusText(wgettext("Client side scripting is disabled"));
+			m_game_ui->showTranslatedStatusText("Client side scripting is disabled");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
@@ -1932,7 +1936,7 @@ void Game::processKeyInput()
 		}
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
-			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+			float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
 			g_settings->setFloat("sound_volume", new_volume);
 			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
 			m_game_ui->showStatusText(msg);
@@ -1941,7 +1945,7 @@ void Game::processKeyInput()
 		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
-			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+			float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
 			g_settings->setFloat("sound_volume", new_volume);
 			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
 			m_game_ui->showStatusText(msg);
@@ -2505,11 +2509,13 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->getMovementDirection()
 	);
 
-	// autoforward if set: move towards pointed position at maximum speed
+	// autoforward if set: move at maximum speed
 	if (player->getPlayerSettings().continuous_forward &&
 			client->activeObjectsReceived() && !player->isDead()) {
 		control.movement_speed = 1.0f;
-		control.movement_direction = 0.0f;
+		// sideways movement only
+		float dx = sin(control.movement_direction);
+		control.movement_direction = atan2(dx, 1.0f);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -2876,6 +2882,7 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarCount(event->star_params->count);
 	sky->setStarColor(event->star_params->starcolor);
 	sky->setStarScale(event->star_params->scale);
+	sky->setStarDayOpacity(event->star_params->day_opacity);
 	delete event->star_params;
 }
 
@@ -4081,10 +4088,10 @@ void FpsControl::reset()
  */
 void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 {
-	const u64 frametime_min = 1000000.0f / (
-		device->isWindowFocused() && !g_menumgr.pausesGame()
+	const float fps_limit = (device->isWindowFocused() && !g_menumgr.pausesGame())
 			? g_settings->getFloat("fps_max")
-			: g_settings->getFloat("fps_max_unfocused"));
+			: g_settings->getFloat("fps_max_unfocused");
+	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
 
 	u64 time = porting::getTimeUs();
 
@@ -4133,9 +4140,9 @@ void Game::readSettings()
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
-	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
+	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
+	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.25f, 2.0);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

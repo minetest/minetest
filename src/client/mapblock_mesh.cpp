@@ -1174,7 +1174,7 @@ void PartialMeshBuffer::beforeDraw() const
 void PartialMeshBuffer::afterDraw() const
 {
 	// Take the data back
-	m_vertex_indexes = std::move(m_buffer->Indices.steal());
+	m_vertex_indexes = m_buffer->Indices.steal();
 }
 
 /*

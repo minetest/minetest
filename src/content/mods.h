@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "config.h"
 #include "metadata.h"
+#include "subgames.h"
 
 class ModMetadataDatabase;
 
@@ -87,8 +88,12 @@ struct ModSpec
 	void checkAndLog() const;
 };
 
-// Retrieves depends, optdepends, is_modpack and modpack_content
-void parseModContents(ModSpec &mod);
+/**
+ * Retrieves depends, optdepends, is_modpack and modpack_content
+ *
+ * @returns false if not a mod
+ */
+bool parseModContents(ModSpec &mod);
 
 /**
  * Gets a list of all mods and modpacks in path
@@ -104,85 +109,6 @@ std::map<std::string, ModSpec> getModsInPath(const std::string &path,
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
 
-// a ModConfiguration is a subset of installed mods, expected to have
-// all dependencies fullfilled, so it can be used as a list of mods to
-// load when the game starts.
-class ModConfiguration
-{
-public:
-	// checks if all dependencies are fullfilled.
-	bool isConsistent() const { return m_unsatisfied_mods.empty(); }
-
-	const std::vector<ModSpec> &getMods() const { return m_sorted_mods; }
-
-	const std::vector<ModSpec> &getUnsatisfiedMods() const
-	{
-		return m_unsatisfied_mods;
-	}
-
-	void printUnsatisfiedModsError() const;
-
-protected:
-	ModConfiguration(const std::string &worldpath);
-
-	/**
-	 * adds all mods in the given path. used for games, modpacks
-	 * and world-specific mods (worldmods-folders)
-	 *
-	 * @param path To search, should be absolute
-	 * @param virtual_path Virtual path for this directory, see comment in ModSpec
-	 */
-	void addModsInPath(const std::string &path, const std::string &virtual_path);
-
-	// adds all mods in the set.
-	void addMods(const std::vector<ModSpec> &new_mods);
-
-	/**
-	 * @param settings_path Path to world.mt
-	 * @param modPaths Map from virtual name to mod path
-	 */
-	void addModsFromConfig(const std::string &settings_path,
-			const std::unordered_map<std::string, std::string> &modPaths);
-
-	void checkConflictsAndDeps();
-
-protected:
-	// list of mods sorted such that they can be loaded in the
-	// given order with all dependencies being fullfilled. I.e.,
-	// every mod in this list has only dependencies on mods which
-	// appear earlier in the vector.
-	std::vector<ModSpec> m_sorted_mods;
-
-private:
-	// move mods from m_unsatisfied_mods to m_sorted_mods
-	// in an order that satisfies dependencies
-	void resolveDependencies();
-
-	// mods with unmet dependencies. Before dependencies are resolved,
-	// this is where all mods are stored. Afterwards this contains
-	// only the ones with really unsatisfied dependencies.
-	std::vector<ModSpec> m_unsatisfied_mods;
-
-	// set of mod names for which an unresolved name conflict
-	// exists. A name conflict happens when two or more mods
-	// at the same level have the same name but different paths.
-	// Levels (mods in higher levels override mods in lower levels):
-	// 1. game mod in modpack; 2. game mod;
-	// 3. world mod in modpack; 4. world mod;
-	// 5. addon mod in modpack; 6. addon mod.
-	std::unordered_set<std::string> m_name_conflicts;
-
-	// Deleted default constructor
-	ModConfiguration() = default;
-};
-
-#ifndef SERVER
-class ClientModConfiguration : public ModConfiguration
-{
-public:
-	ClientModConfiguration(const std::string &path);
-};
-#endif
 
 class ModMetadata : public Metadata
 {
