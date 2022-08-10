@@ -24,6 +24,7 @@ core.features = {
 	particlespawner_tweenable = true,
 	dynamic_add_media_table = true,
 	get_sky_as_table = true,
+	get_light_data_buffer = true,
 }
 
 function core.has_feature(arg)

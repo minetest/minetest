@@ -4386,12 +4386,15 @@ Methods
       `minetest.get_mapgen_object`.
     * (`p1`, `p2`) is the area in which lighting is set, defaults to the whole
       area if left out.
-* `get_light_data()`: Gets the light data read into the `VoxelManip` object
+* `get_light_data([buffer])`: Gets the light data read into the
+  `VoxelManip` object
     * Returns an array (indices 1 to volume) of integers ranging from `0` to
       `255`.
     * Each value is the bitwise combination of day and night light values
       (`0` to `15` each).
     * `light = day + (night * 16)`
+    * If the param `buffer` is present, this table will be used to store the
+      result instead.
 * `set_light_data(light_data)`: Sets the `param1` (light) contents of each node
   in the `VoxelManip`.
     * expects lighting data in the same format that `get_light_data()` returns
@@ -4863,6 +4866,8 @@ Utilities
           particlespawner_tweenable = true,
           -- allows get_sky to return a table instead of separate values (5.6.0)
           get_sky_as_table = true,
+          -- VoxelManip:get_light_data accepts an optional buffer argument (5.7.0)
+          get_light_data_buffer = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`

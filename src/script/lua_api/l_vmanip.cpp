@@ -260,11 +260,17 @@ int LuaVoxelManip::l_get_light_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
+	bool use_buffer  = lua_istable(L, 2);
+
 	MMVManip *vm = o->vm;
 
 	u32 volume = vm->m_area.getVolume();
 
-	lua_createtable(L, volume, 0);
+	if (use_buffer)
+		lua_pushvalue(L, 2);
+	else
+		lua_createtable(L, volume, 0);
+
 	for (u32 i = 0; i != volume; i++) {
 		lua_Integer light = vm->m_data[i].param1;
 		lua_pushinteger(L, light);
