@@ -445,18 +445,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	// Render all mesh buffers in order
 	drawcall_count += draw_order.size();
-	u16 i = 0;
 
 	for (auto &descriptor : draw_order) {
 		scene::IMeshBuffer *buf = descriptor.getBuffer();
-
-		// Check and abort if the machine is swapping a lot
-		// Avoid checking too frequently because getTimerTime() is expensive
-		if (++i % 128 == 0 && draw.getTimerTime() > 2000) {
-			infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
-					"returning." << std::endl;
-			return;
-		}
 
 		if (!descriptor.m_reuse_material) {
 			auto &material = buf->getMaterial();
@@ -801,18 +792,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 	// Render all mesh buffers in order
 	drawcall_count += draw_order.size();
-	u16 i = 0;
 
 	for (auto &descriptor : draw_order) {
 		scene::IMeshBuffer *buf = descriptor.getBuffer();
-
-		// Check and abort if the machine is swapping a lot
-		// Avoid checking too frequently because getTimerTime() is expensive
-		if (++i % 128 == 0 && draw.getTimerTime() > 1000) {
-			infostream << "ClientMap::renderMapShadows(): Rendering "
-					"took >1s, returning." << std::endl;
-			break;
-		}
 
 		if (!descriptor.m_reuse_material) {
 			// override some material properties
