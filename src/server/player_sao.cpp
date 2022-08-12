@@ -617,11 +617,24 @@ bool PlayerSAO::checkMovementCheat()
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
-	if (m_privs.count("fast") != 0)
-		player_max_walk = m_player->movement_speed_fast; // Fast speed
-	else
-		player_max_walk = m_player->movement_speed_walk; // Normal speed
-	player_max_walk *= m_player->physics_override.speed;
+	float speed_walk = m_player->movement_speed_walk *= m_player->physics_override.speed;
+	float speed_fast = m_player->movement_speed_fast;
+	float speed_crouch = m_player->movement_speed_crouch *= m_player->physics_override.speed_crouch;
+
+	// Get permissible max. speed
+	if (m_privs.count("fast") != 0) {
+		// Fast priv: Get the highest speed of fast, walk or crouch
+		// (it is not forbidden the 'fast' speed is
+		// not actually the fastest)
+		player_max_walk = MYMAX(speed_crouch, speed_fast);
+		player_max_walk = MYMAX(player_max_walk, speed_walk);
+	} else {
+		// Get the highest speed of walk or crouch
+		// (it is not forbidden the 'walk' speed is
+		// lower than the crouch speed)
+		player_max_walk = MYMAX(speed_crouch, speed_walk);
+	}
+
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
 
 	player_max_jump = m_player->movement_speed_jump * m_player->physics_override.jump;
